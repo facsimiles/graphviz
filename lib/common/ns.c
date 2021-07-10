@@ -933,17 +933,15 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
 /* graphSize:
  * Compute no. of nodes and edges in the graph
  */
-static void
-graphSize (graph_t * g, int* nn, int* ne)
-{
-    int i, nnodes, nedges;
+static void graphSize(graph_t *g, size_t *nn, size_t *ne) {
+    size_t nnodes, nedges;
     node_t *n;
     edge_t *e;
    
     nnodes = nedges = 0;
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	nnodes++;
-	for (i = 0; (e = ND_out(n).list[i]); i++) {
+	for (size_t i = 0; (e = ND_out(n).list[i]); i++) {
 	    nedges++;
 	}
     }
@@ -974,10 +972,10 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
     check_cycles(g);
 #endif
     if (Verbose) {
-	int nn, ne;
+	size_t nn, ne;
 	graphSize (g, &nn, &ne);
-	fprintf(stderr, "%s %d nodes %d edges maxiter=%d balance=%d\n", ns,
-	    nn, ne, maxiter, balance);
+	fprintf(stderr, "%s %" PRISIZE_T " nodes %" PRISIZE_T
+	        " edges maxiter=%d balance=%d\n", ns, nn, ne, maxiter, balance);
 	start_timer();
     }
     bool feasible = init_graph(&ctx, g);
