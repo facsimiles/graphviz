@@ -507,6 +507,10 @@ int agxset(void *obj, Agsym_t *sym, const char *value) {
   return agxset_(obj, sym, value, false);
 }
 
+int agxset_html(void *obj, Agsym_t *sym, const char *value) {
+  return agxset_(obj, sym, value, true);
+}
+
 int agsafeset(void *obj, char *name, const char *value, const char *def) {
     Agsym_t *a;
 
