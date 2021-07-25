@@ -475,8 +475,7 @@ int agset(void *obj, char *name, const char *value) {
     return rv;
 }
 
-int agxset(void *obj, Agsym_t * sym, const char *value)
-{
+static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
     Agraph_t *g;
     Agobj_t *hdr;
     Agattr_t *data;
@@ -487,14 +486,14 @@ int agxset(void *obj, Agsym_t * sym, const char *value)
     data = agattrrec(hdr);
     assert(sym->id >= 0 && sym->id < topdictsize(obj));
     agstrfree(g, data->str[sym->id]);
-    data->str[sym->id] = agstrdup(g, value);
+    data->str[sym->id] = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     if (hdr->tag.objtype == AGRAPH) {
 	/* also update dict default */
 	Dict_t *dict;
 	dict = agdatadict(g, false)->dict.g;
 	if ((lsym = aglocaldictsym(dict, sym->name))) {
 	    agstrfree(g, lsym->defval);
-	    lsym->defval = agstrdup(g, value);
+	    lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
 	} else {
 	    lsym = agnewsym(g, sym->name, value, sym->id, AGTYPE(hdr));
 	    dtinsert(dict, lsym);
@@ -502,6 +501,10 @@ int agxset(void *obj, Agsym_t * sym, const char *value)
     }
     agmethod_upd(g, obj, sym);
     return SUCCESS;
+}
+
+int agxset(void *obj, Agsym_t *sym, const char *value) {
+  return agxset_(obj, sym, value, false);
 }
 
 int agsafeset(void *obj, char *name, const char *value, const char *def) {
