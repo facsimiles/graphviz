@@ -400,16 +400,6 @@ int aghtmlstr(const char *s)
     return key->is_html;
 }
 
-void agmarkhtmlstr(char *s)
-{
-    refstr_t *key;
-
-    if (s == NULL)
-	return;
-    key = (refstr_t *) (s - offsetof(refstr_t, store[0]));
-    key->is_html = 1;
-}
-
 #ifdef DEBUG
 static int refstrprint(const refstr_t *r) {
     fprintf(stderr, "%s\n", r->s);
