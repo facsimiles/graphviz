@@ -96,32 +96,6 @@ void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
     glexpose();
 }
 
-void btnToolMove_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-
-void btnToolAddNode_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-void btnToolDeleteNode_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-void btnToolFindNode_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-void btnToolAddEdge_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-void btnToolDeleteEdge_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-void btnToolFindEdge_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-void btnToolCursor_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-
 void on_btnActivateGraph_clicked(GtkWidget * widget, gpointer user_data)
 {
     int graphId;

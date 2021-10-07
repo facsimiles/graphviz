@@ -18,9 +18,6 @@
 #include <common/memory.h>
 #include <cgraph/strcasecmp.h>
 
-
-static char guibuffer[BUFSIZ];	//general purpose buffer
-
 GladeXML *xml;			//global libglade vars
 GtkWidget *gladewidget;
 

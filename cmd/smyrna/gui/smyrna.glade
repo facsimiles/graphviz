@@ -623,7 +623,6 @@
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">False</property>
-		      <signal name="clicked" handler="btnToolCursor_clicked"/>
 		    </widget>
 		    <packing>
 		      <property name="expand">False</property>
@@ -640,7 +639,6 @@
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">False</property>
-		      <signal name="clicked" handler="btnToolSingleSelect_clicked"/>
 		    </widget>
 		    <packing>
 		      <property name="expand">False</property>
@@ -657,7 +655,6 @@
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">False</property>
-		      <signal name="clicked" handler="btnToolRectSelect_clicked"/>
 		    </widget>
 		    <packing>
 		      <property name="expand">False</property>
@@ -674,7 +671,6 @@
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">False</property>
-		      <signal name="clicked" handler="btnToolRectXSelect_clicked"/>
 		    </widget>
 		    <packing>
 		      <property name="expand">False</property>
@@ -728,7 +724,6 @@
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">False</property>
-		      <signal name="clicked" handler="btnToolPan_clicked"/>
 		    </widget>
 		    <packing>
 		      <property name="expand">False</property>
@@ -745,7 +740,6 @@
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">False</property>
-		      <signal name="clicked" handler="btnToolZoom_clicked"/>
 		    </widget>
 		    <packing>
 		      <property name="expand">False</property>
@@ -762,7 +756,6 @@
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">False</property>
-		      <signal name="clicked" handler="btnToolZoomIn_clicked"/>
 		    </widget>
 		    <packing>
 		      <property name="expand">False</property>
@@ -867,7 +860,6 @@
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">False</property>
-		      <signal name="clicked" handler="btnToolMove_clicked"/>
 		    </widget>
 		    <packing>
 		      <property name="expand">False</property>

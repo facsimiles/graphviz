@@ -490,26 +490,6 @@ typedef struct
 	NUM_COLS
     };
 
-
-/*    typedef struct _mouse_attr {
-	int mouse_down;
-	int mouse_mode;
-	int pick;
-	float mouse_X;
-	float mouse_Y;
-	float begin_x;
-	float begin_y;
-	float dx;
-	float dy;
-	float GLX;	
-	float GLpos.y;
-	float GLpos.z;
-	mouse_rotate_axis rotate_axis;
-	clicked_mouse_button button;
-    } mouse_attr;*/
-
-
-
     typedef struct _attribute {
 	char Type;
 	char *Name;
