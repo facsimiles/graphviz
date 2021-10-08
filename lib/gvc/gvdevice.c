@@ -52,6 +52,7 @@ static uint64_t crc;
 #include <gvc/gvcint.h>
 #include <gvc/gvcproc.h>
 #include <common/logic.h>
+#include <common/utils.h>
 #include <gvc/gvio.h>
 
 static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typical for Linux, Mac OS X and Windows memory allocation */
@@ -270,6 +271,11 @@ int gvputs(GVJ_t * job, const char *s)
 	return EOF;
     }
     return 1;
+}
+
+int gvputs_xml(GVJ_t *job, const char *s) {
+  const xml_flags_t flags = {.dash = 1, .nbsp = 1};
+  return xml_escape(s, flags, (int (*)(void *, const char *))gvputs, job);
 }
 
 int gvputc(GVJ_t * job, int c)

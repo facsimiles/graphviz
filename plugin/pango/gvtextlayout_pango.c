@@ -10,6 +10,8 @@
 
 #include "config.h"
 
+#include <assert.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <gvc/gvplugin_render.h>
@@ -63,6 +65,14 @@ static char *xstrdup(const char *str) {
     abort();
   }
   return s;
+}
+
+// wrapper to handle difference in calling conventions between `agxbput` and
+// `xml_escape`’s `cb`
+static int agxbput_int(void *buffer, const char *s) {
+  size_t len = agxbput(buffer, s);
+  assert(len <= INT_MAX);
+  return (int)len;
 }
 
 static boolean pango_textlayout(textspan_t * span, char **fontpath)
@@ -210,7 +220,8 @@ static boolean pango_textlayout(textspan_t * span, char **fontpath)
 	if (flags & HTML_SUB)
 	    agxbput(&xb,"<sub>");
 
-	agxbput (&xb,xml_string0(span->str, TRUE));
+	const xml_flags_t xml_flags = {.raw = 1, .dash = 1, .nbsp = 1};
+	xml_escape(span->str, xml_flags, agxbput_int, &xb);
 
 	if (flags & HTML_SUB)
 	    agxbput(&xb,"</sub>");

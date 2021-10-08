@@ -39,6 +39,10 @@ extern "C" {
     GVIO_API int gvferror (FILE *stream);
     GVIO_API int gvputc(GVJ_t * job, int c);
     GVIO_API int gvputs(GVJ_t * job, const char *s);
+
+    // `gvputs`, but XML-escape the input string
+    GVIO_API int gvputs_xml(GVJ_t* job, const char *s);
+
     GVIO_API int gvflush (GVJ_t * job);
     GVIO_API void gvprintf(GVJ_t * job, const char *format, ...);
     GVIO_API void gvprintdouble(GVJ_t * job, double num);

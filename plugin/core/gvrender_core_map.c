@@ -12,14 +12,19 @@
 
 #include <stdlib.h>
 
+#include <common/types.h>
+#include <common/utils.h>
 #include <gvc/gvplugin_render.h>
 #include <gvc/gvplugin_device.h>
 #include <gvc/gvio.h>
 
-extern char *xml_string(char *str);
-extern char *xml_url_string(char *str);
-
 typedef enum { FORMAT_IMAP, FORMAT_ISMAP, FORMAT_CMAP, FORMAT_CMAPX, } format_type;
+
+// wrapper around `xml_escape` to set flags for URL escaping
+static void xml_url_puts(GVJ_t *job, const char *s) {
+  const xml_flags_t flags = {0};
+  (void)xml_escape(s, flags, (int(*)(void*, const char*))gvputs, job);
+}
 
 static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, int nump,
                 char* url, char *tooltip, char *target, char *id)
@@ -90,22 +95,22 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
         }
         if (id && id[0]) {
             gvputs(job, " id=\"");
-	    gvputs(job, xml_url_string(id));
+	    xml_url_puts(job, id);
 	    gvputs(job, "\"");
 	}
         if (url && url[0]) {
             gvputs(job, " href=\"");
-	    gvputs(job, xml_url_string(url));
+	    xml_url_puts(job, url);
 	    gvputs(job, "\"");
 	}
         if (target && target[0]) {
             gvputs(job, " target=\"");
-	    gvputs(job, xml_string(target));
+	    gvputs_xml(job, target);
 	    gvputs(job, "\"");
 	}
         if (tooltip && tooltip[0]) {
             gvputs(job, " title=\"");
-	    gvputs(job, xml_string(tooltip));
+	    gvputs_xml(job, tooltip);
 	    gvputs(job, "\"");
 	}
         /*
@@ -147,32 +152,30 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
 static void map_begin_page(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
-    char *s;
 
     switch (job->render.id) {
     case FORMAT_IMAP:
         gvputs(job, "base referer\n");
         if (obj->url && obj->url[0]) {
 	    gvputs(job, "default ");
-	    gvputs(job, xml_string(obj->url));
+	    gvputs_xml(job, obj->url);
 	    gvputs(job, "\n");
 	}
         break;
     case FORMAT_ISMAP:
         if (obj->url && obj->url[0]) {
 	    gvputs(job, "default ");
-	    gvputs(job, xml_string(obj->url));
+	    gvputs_xml(job, obj->url);
 	    gvputs(job, " ");
-	    gvputs(job, xml_string(agnameof(obj->u.g)));
+	    gvputs_xml(job, agnameof(obj->u.g));
 	    gvputs(job, "\n");
 	}
         break;
     case FORMAT_CMAPX:
-	s = xml_string(agnameof(obj->u.g));
 	gvputs(job, "<map id=\"");
-	gvputs(job, s);
+	gvputs_xml(job, agnameof(obj->u.g));
 	gvputs(job, "\" name=\"");
-	gvputs(job, s);
+	gvputs_xml(job, agnameof(obj->u.g));
 	gvputs(job, "\">\n");
         break;
     default:

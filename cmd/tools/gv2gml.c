@@ -217,14 +217,29 @@ emitSpline (char* s, FILE* outFile, int ix)
 
 }
 
+// `fputs` wrapper to handle the difference in calling convention to what
+// `xml_escape`’s `cb` expects
+static inline int put(void *stream, const char *s) {
+  return fputs(s, stream);
+}
+
+// write a string to the given file, XML-escaping the input
+static inline int xml_puts(FILE *stream, const char *s) {
+  const xml_flags_t flags = {.dash = 1, .nbsp = 1};
+  return xml_escape(s, flags, put, stream);
+}
+
 static void 
 emitAttr (char* name, char* value, FILE* outFile, int ix)
 {
     indent (ix, outFile);
     if (isNumber (value))
 	fprintf (outFile, "%s %s\n", name, value);
-    else  
-	fprintf (outFile, "%s \"%s\"\n", name, xml_string(value));
+    else {
+	fprintf(outFile, "%s \"", name);
+	xml_puts(outFile, value);
+	fputs("\"\n", outFile);
+    }
 }
 
 /* node attributes:

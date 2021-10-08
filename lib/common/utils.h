@@ -31,19 +31,40 @@ extern "C" {
 #define UTILS_API extern
 #endif
 
+    // options to tweak the behavior of XML escaping
+    typedef struct {
+      // assume no embedded escapes, and escape "\n" and "\r"
+      unsigned raw : 1;
+      // escape '-'
+      unsigned dash : 1;
+      // escape consecutive ' '
+      unsigned nbsp : 1;
+    } xml_flags_t;
+
     UTILS_API nodequeue *new_queue(int);
     UTILS_API void free_queue(nodequeue *);
     UTILS_API void enqueue(nodequeue *, Agnode_t *);
     UTILS_API Agnode_t *dequeue(nodequeue *);
     UTILS_API pointf Bezier(pointf *, int, double, pointf *, pointf *);
     UTILS_API void attach_attrs_and_arrows(graph_t*, int*, int*);
-    UTILS_API char *xml_string(char *str);
-    UTILS_API char *xml_string0(char *str, boolean raw);
+
+    /** XML-escape a string
+     *
+     * \param s Source string to process.
+     * \param flags Options of how to configure escaping.
+     * \param cb An `fputs` analogue for emitting escaped output.
+     * \param state Caller-defined data to pass to `cb`.
+     * \return The first negative value `cb` returns or the last return value of
+     *   `cb`.
+     */
+    UTILS_API int xml_escape(const char *s, xml_flags_t flags,
+                             int (*cb)(void *state, const char *s),
+                             void *state);
+
     UTILS_API void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend);
     UTILS_API double yDir (double y);
     UTILS_API char *ps_string(char *s, int);
     UTILS_API char *strdup_and_subst_obj(char *str, void *obj);
-    UTILS_API char *xml_url_string(char *s);
     UTILS_API void epsf_emit_body(GVJ_t *job, usershape_t *us);
     UTILS_API void epsf_define(GVJ_t * job);
     UTILS_API void undoClusterEdges(graph_t * g);
