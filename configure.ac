@@ -1107,18 +1107,14 @@ else
     use_php="No (swig not available)"
   else
     if test `$SWIG -php7 2>&1 | $EGREP -c '(Unable|No target)'` -eq 1; then
-      if test `$SWIG -php5 2>&1 | $EGREP -c '(Unable|No target)'` -eq 1; then
-        SWIG_PHP_OPT='-php'
-      else
-        SWIG_PHP_OPT='-php5'
-      fi
+      SWIG_PHP_OPT='-php'
     else
       SWIG_PHP_OPT='-php7'
     fi
-    if test `$SWIG -help 2>&1 | $EGREP -c "(-php|-php5|-php7) *- Generate"` = 0 ; then
-      use_php="No (swig does not support -php or -php5 or -php7 option)"
+    if test `$SWIG -help 2>&1 | $EGREP -c "(-php|-php7) *- Generate"` = 0 ; then
+      use_php="No (swig does not support -php or -php7 option)"
     else
-      AC_CHECK_PROGS(PHP,php7.2,php7,php,php5)
+      AC_CHECK_PROGS(PHP,php7.2,php7,php)
       if test "x$PHP" = "x"; then
         use_php="No (php not available)"
       else

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Lefty is disabled by default in the Autotools build system. To re-enable it,
   pass `--enable-lefty` to `./configure`. In a future release, Lefty will be
   removed.
+- remove PHP5 support in SWIG bindings
 
 ### Fixed
 
