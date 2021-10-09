@@ -81,7 +81,6 @@ extern "C" {
 
     UTILS_API Agnode_t *UF_find(Agnode_t *);
     UTILS_API Agnode_t *UF_union(Agnode_t *, Agnode_t *);
-    UTILS_API void UF_remove(Agnode_t *, Agnode_t *);
     UTILS_API void UF_singleton(Agnode_t *);
     UTILS_API void UF_setname(Agnode_t *, Agnode_t *);
 

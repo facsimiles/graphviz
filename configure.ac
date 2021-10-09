@@ -2672,7 +2672,6 @@ AC_CONFIG_FILES(Makefile
 	lib/ast/Makefile
 	lib/sfio/Makefile
 	lib/sfio/Sfio_f/Makefile
-	lib/spine/Makefile
 	lib/vmalloc/Makefile
 	lib/dotgen/Makefile
 	lib/neatogen/Makefile

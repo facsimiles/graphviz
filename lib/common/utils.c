@@ -182,13 +182,6 @@ node_t *UF_union(node_t * u, node_t * v)
     return v;
 }
 
-void UF_remove(node_t * u, node_t * v)
-{
-    assert(ND_UF_size(u) == 1);
-    ND_UF_parent(u) = u;
-    ND_UF_size(v) -= ND_UF_size(u);
-}
-
 void UF_singleton(node_t * u)
 {
     ND_UF_size(u) = 1;

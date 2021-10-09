@@ -218,12 +218,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ccomps", "cmd\tools\ccomps.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvplugin_gdiplus", "plugin\gdiplus\gvplugin_gdiplus.vcxproj", "{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spine", "lib\spine\spine.vcxproj", "{4DBC1707-9797-4BAD-8989-08AF459F8840}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
-		{83CF0498-7884-49D3-8B3C-263C5AF5FE1B} = {83CF0498-7884-49D3-8B3C-263C5AF5FE1B}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "version", "lib\version\version.vcxproj", "{320318AF-81FB-446A-9DB4-7D561F712761}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lefty", "cmd\lefty\lefty.vcxproj", "{40597156-1B95-4A22-8F2B-D6B81B747CF0}"

@@ -282,7 +282,6 @@ textfont_dict_close
 textspan_size    
 translate_bb    
 UF_find    
-UF_remove    
 UF_setname    
 UF_singleton    
 UF_union    
