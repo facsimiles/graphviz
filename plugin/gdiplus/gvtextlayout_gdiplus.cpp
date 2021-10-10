@@ -21,8 +21,8 @@ using namespace Gdiplus;
 
 static int CALLBACK fetch_first_font(
 	const LOGFONTA *logFont,
-	const TEXTMETRICA *textMetrics,
-	DWORD fontType,
+	const TEXTMETRICA * /* textMetrics */,
+	DWORD /* fontType */,
 	LPARAM lParam)
 {
 	/* save the first font we see in the font enumeration */
@@ -66,7 +66,7 @@ void gdiplus_free_layout(void *layout)
 		delete reinterpret_cast<Layout*>(layout);
 };
 
-boolean gdiplus_textlayout(textspan_t *span, char **fontpath)
+boolean gdiplus_textlayout(textspan_t *span, char ** /* fontpath */)
 {
 	/* ensure GDI+ is started up: since we get called outside of a job, we can't rely on GDI+ startup then */
 	UseGdiplus();

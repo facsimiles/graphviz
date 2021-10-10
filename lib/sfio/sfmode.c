@@ -37,7 +37,9 @@
 /* the below is for protecting the application from SIGPIPE */
 #include		<signal.h>
 typedef void (*Sfsignal_f) (int);
+#ifdef SIGPIPE
 static int _Sfsigp = 0;		/* # of streams needing SIGPIPE protection */
+#endif
 
 /* done at exiting time */
 static void _sfcleanup(void)
@@ -203,7 +205,7 @@ int _sfpopen(Sfio_t * f, int fd, int pid, int stdio)
 int _sfpclose(Sfio_t * f)
 {
     Sfproc_t *p;
-    int pid, status;
+    int pid = 0, status;
 
     if (!(p = f->proc))
 	return -1;

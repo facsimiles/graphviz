@@ -43,6 +43,7 @@ set( HAVE_ANN       ${ANN_FOUND}        )
 set( HAVE_EXPAT     ${EXPAT_FOUND}      )
 set( HAVE_LIBGD     ${GD_FOUND}         )
 set( HAVE_ZLIB      ${ZLIB_FOUND}       )
+set( HAVE_GTS       ${GTS_FOUND}        )
 
 if (LTDL_FOUND)
     set(ENABLE_LTDL 1)

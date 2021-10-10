@@ -1,4 +1,4 @@
-LIBRARY    "gvc"
+LIBRARY    "libgvc"
 
 EXPORTS
 add_box    

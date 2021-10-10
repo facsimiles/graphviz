@@ -99,6 +99,8 @@ target_include_directories(neatogen PRIVATE
     ${GRAPHVIZ_LIB_DIR}/gvc
     ${GRAPHVIZ_LIB_DIR}/pack
     ${GRAPHVIZ_LIB_DIR}/pathplan
+    ${GLIB_INCLUDE_DIR}
+    ${GLIBCONFIG_INCLUDE_DIR}
 )
 
 target_link_libraries(neatogen PRIVATE
@@ -106,4 +108,8 @@ target_link_libraries(neatogen PRIVATE
     gvc
     pathplan
     sparse
+    ${GLIB_LIBRARY}
+    ${GTS_LIBRARY}
+    rbtree
+    sfdpgen
 )

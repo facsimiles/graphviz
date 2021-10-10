@@ -83,7 +83,7 @@ static xdot_state_t* xd;
 
 static void xdot_str_xbuf (agxbuf* xb, char* pfx, const char* s)
 {
-    agxbprint (xb, "%s%zu -%s ", pfx, strlen(s), s);
+    agxbprint (xb, "%s%d -%s ", pfx, (int)strlen(s), s);
 }
 
 static void xdot_str (GVJ_t *job, char* pfx, const char* s)

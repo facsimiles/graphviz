@@ -216,11 +216,17 @@ gvplugin_library_t *gvplugin_library_load(GVC_t * gvc, char *path)
 #else
     strcpy(sym, s + 4);         /* strip leading "/lib" or "/cyg" */
 #endif
-#if defined(__CYGWIN__) || defined(__MINGW32__)
+#if defined(__MINGW64__)
+    s = strchr(sym, '.');       /* strip trailing ".dll" */
+#elif defined(__CYGWIN__) || defined(__MINGW32__)
     s = strchr(sym, '-');       /* strip trailing "-1.dll" */
 #else
     s = strchr(sym, '.');       /* strip trailing ".so.0" or ".dll" or ".sl" */
 #endif
+    if (s == NULL) {
+        agerr(AGERR, "s is empty\n");
+        return NULL;
+    }
     strcpy(s, suffix);          /* append "_LTX_library" */
 
     ptr = lt_dlsym(hndl, sym);

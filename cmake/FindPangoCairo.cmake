@@ -3,7 +3,7 @@ include(FindPackageHandleStandardArgs)
 if (WIN32)
     find_path(PangoCairo_INCLUDE_DIR pango/pangocairo.h PATH_SUFFIXES pango-1.0)
     find_path(GLIB_INCLUDE_DIR glib.h PATH_SUFFIXES glib-2.0)
-    find_path(GLIBCONFIG_INCLUDE_DIR glibconfig.h PATH_SUFFIXES glib-2.0/include)
+    find_path(GLIBCONFIG_INCLUDE_DIR glibconfig.h PATH_SUFFIXES lib/glib-2.0/include)
 
     find_library(GLIB_LIBRARY NAMES glib-2.0)
     find_library(GOBJECT_LIBRARY NAMES gobject-2.0)

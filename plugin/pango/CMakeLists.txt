@@ -13,6 +13,10 @@ add_library(gvplugin_pango SHARED
   	gvtextlayout_pango.c
 )
 
+set(CMAKE_FIND_DEBUG_MODE TRUE)
+find_path(HARFBUZZ_INCLUDE_DIR hb.h PATH_SUFFIXES harfbuzz)
+set(CMAKE_FIND_DEBUG_MODE FALSE)
+
 target_include_directories(gvplugin_pango PRIVATE
     ${GRAPHVIZ_LIB_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -24,6 +28,7 @@ target_include_directories(gvplugin_pango PRIVATE
     ${GRAPHVIZ_LIB_DIR}/pathplan
     ${Cairo_INCLUDE_DIRS}/cairo
     ${PangoCairo_INCLUDE_DIRS}
+    ${HARFBUZZ_INCLUDE_DIR}
 )
 
 target_link_libraries(gvplugin_pango

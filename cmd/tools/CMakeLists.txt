@@ -264,6 +264,8 @@ target_link_libraries(gvpack
     gvc
     gvplugin_neato_layout
     ingraphs
+    rbtree
+    sfdpgen
 )
 
 tool_defaults(gvpack)

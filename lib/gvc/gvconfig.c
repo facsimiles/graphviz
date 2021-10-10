@@ -263,7 +263,6 @@ char * gvconfig_libdir(GVC_t * gvc)
     static char line[BSZ];
     static char *libdir;
     static boolean dirShown = 0; 
-    char *tmp;
 
     if (!libdir) {
         libdir=getenv("GVBINDIR");
@@ -385,7 +384,8 @@ static bool is_plugin(const char *filepath) {
 
 #if defined(_WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     // Windows libraries do not have a version in the filename
-
+#elif defined(__MINGW64__)
+    // Mingw64 libraries do not have a version in the filename
 #elif defined(GVPLUGIN_VERSION)
     // turn GVPLUGIN_VERSION into a string
     #define STRINGIZE_(x) #x
@@ -416,6 +416,10 @@ static bool is_plugin(const char *filepath) {
     // ensure the remainder conforms to what we expect of a shared library
 #if defined(DARWIN_DYLIB)
     if (len < 2 || isdigit(filepath[len - 2]) || filepath[len - 1] != '.') {
+	return false;
+    }
+#elif defined(_WIN64)
+    if (len < 1 || isdigit(filepath[len - 1])) {
 	return false;
     }
 #elif defined(__MINGW32__) || defined(__CYGWIN__)

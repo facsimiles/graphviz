@@ -18,6 +18,7 @@ pacman -S --noconfirm --needed ${MINGW_PACKAGE_PREFIX}-ninja
 pacman -S --noconfirm --needed ${MINGW_PACKAGE_PREFIX}-nsis
 pacman -S --noconfirm --needed ${MINGW_PACKAGE_PREFIX}-tcl
 pacman -S --noconfirm --needed ${MINGW_PACKAGE_PREFIX}-zlib
+pacman -S --noconfirm --needed ${MINGW_PACKAGE_PREFIX}-gts
 
 export PATH=$PATH:/c/Git/cmd
 
