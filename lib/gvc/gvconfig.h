@@ -10,8 +10,7 @@
 
 /* Header used by plugins */
 
-#ifndef GVCONFIG_H
-#define GVCONFIG_H
+#pragma once
 
 #include "gvplugin.h"
 
@@ -24,4 +23,3 @@ extern void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplug
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVCONFIG_H */

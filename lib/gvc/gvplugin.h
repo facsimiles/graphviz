@@ -10,8 +10,7 @@
 
 /* Header used by plugins */
 
-#ifndef GVPLUGIN_H
-#define GVPLUGIN_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,4 +56,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVPLUGIN_H */

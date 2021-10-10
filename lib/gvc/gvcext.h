@@ -10,8 +10,7 @@
 
 /* Common header used by both clients and plugins */
 
-#ifndef GVCEXT_H
-#define GVCEXT_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,8 +65,4 @@ extern lt_symlist_t lt_preloaded_symbols[];
 
 #ifdef __cplusplus
 }
-#endif
-
-
-
 #endif

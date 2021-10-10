@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVCOMMON_H
-#define GVCOMMON_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,4 +33,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVCOMMON_H */

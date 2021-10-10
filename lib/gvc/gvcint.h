@@ -10,8 +10,7 @@
 
 /* Common header used by both clients and plugins */
 
-#ifndef GVCINT_H
-#define GVCINT_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -153,4 +152,3 @@ extern void gvFreeCloneGVC (GVC_t *);
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVCINT_H */

@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVDEVICE_H
-#define GVDEVICE_H
+#pragma once
 
 #include "gvcjob.h"
 
@@ -54,5 +53,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-#endif				/* GVDEVICE_H */

@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef			GVC_H
-#define			GVC_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -128,5 +127,3 @@ GVC_API int gvToolTred(graph_t *g);
 #ifdef __cplusplus
 }
 #endif
-
-#endif			/* GVC_H */

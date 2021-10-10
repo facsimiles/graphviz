@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVPLUGIN_IMAGELOAD_H
-#define GVPLUGIN_IMAGELOAD_H
+#pragma once
 
 #include "types.h"
 #include "gvplugin.h"
@@ -47,4 +46,3 @@ GVPLUGIN_LOADIMAGE_API void gvusershape_file_release(usershape_t *us);
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVPLUGIN_IMAGELOAD_H */

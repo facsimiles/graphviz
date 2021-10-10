@@ -10,8 +10,7 @@
 
 /* This is the public header for the callers of libgvc */
 
-#ifndef GVCPROC_H
-#define GVCPROC_H
+#pragma once
 
 /* these are intended to be private entry points - see gvc.h for the public ones */
 
@@ -119,5 +118,3 @@
     void gv_argvlist_set_item(gv_argvlist_t *list, int index, char *item);
     void gv_argvlist_reset(gv_argvlist_t *list);
     void gv_argvlist_free(gv_argvlist_t *list);
-
-#endif				/* GVCPROC_H */

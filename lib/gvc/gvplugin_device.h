@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVDEVICE_PLUGIN_H
-#define GVDEVICE_PLUGIN_H
+#pragma once
 
 #include "types.h"
 #include "gvplugin.h"
@@ -28,4 +27,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVDEVICE_PLUGIN_H */

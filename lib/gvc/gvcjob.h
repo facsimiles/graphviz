@@ -10,8 +10,7 @@
 
 /* Common header used by both clients and plugins */
 
-#ifndef GVCJOB_H
-#define GVCJOB_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -371,4 +370,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVCJOB_H */
