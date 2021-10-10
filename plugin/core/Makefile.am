@@ -31,8 +31,7 @@ libgvplugin_core_C_la_SOURCES = \
 	gvrender_core_vml.c \
 	gvrender_core_pov.c \
 	gvrender_core_pic.c \
-	gvloadimage_core.c \
-	ps.txt
+	gvloadimage_core.c
 
 libgvplugin_core_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_core_la_SOURCES = $(libgvplugin_core_C_la_SOURCES)
@@ -40,11 +39,6 @@ libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la \
 				$(top_builddir)/lib/cgraph/libcgraph.la \
 				$(top_builddir)/lib/cdt/libcdt.la \
 				$(top_builddir)/lib/xdot/libxdot.la
-
-gvrender_core_ps.o gvrender_core_ps.lo: ps.h
-
-ps.h : $(srcdir)/ps.txt
-	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(srcdir)/ps.txt > ps.h
 
 if WITH_WIN32
 libgvplugin_core_la_LDFLAGS += -no-undefined
@@ -56,5 +50,3 @@ libgvplugin_core_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_core_LTX_library
 endif
 
 EXTRA_DIST = ps.h gvplugin_core.vcxproj*
-
-DISTCLEANFILES = ps.h

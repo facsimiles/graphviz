@@ -22,7 +22,7 @@
 #include <cgraph/agxbuf.h>
 #include <common/const.h>
 #include <common/utils.h>
-#include <ps.h>
+#include "../core/ps.h"
 
 using namespace LASi;
 using namespace std;

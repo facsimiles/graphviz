@@ -152,8 +152,6 @@ lib/common/htmlparse.output
 lib/common/svgcolor_lib
 lib/expr/exparse.c
 lib/vpsc/pairingheap/.dirstamp
-plugin/core/ps.h
-plugin/lasi/ps.h
 plugin/xlib/vimdot
 
 ## Binaries

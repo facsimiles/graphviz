@@ -1,11 +1,3 @@
-# Generate ps.h from ps.txt
-add_custom_command(
-    OUTPUT ps.h
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/ps.txt
-    COMMAND ${AWK_EXECUTABLE} -v RS="\\r*\\n" -f ${TOP_SOURCE_DIR}/awk/stringize.awk
-            ${CMAKE_CURRENT_SOURCE_DIR}/ps.txt > ${CMAKE_CURRENT_BINARY_DIR}/ps.h
-)
-
 add_library(gvplugin_core SHARED
     # Header files
     ps.h

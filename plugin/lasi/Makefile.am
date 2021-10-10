@@ -23,18 +23,12 @@ endif
 libgvplugin_lasi_C_la_SOURCES = \
 	gvplugin_lasi.c \
 	gvrender_lasi.cpp \
-	gvloadimage_lasi.c \
-	$(top_srcdir)/plugin/core/ps.txt
+	gvloadimage_lasi.c
 
 libgvplugin_lasi_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_lasi_la_SOURCES = $(libgvplugin_lasi_C_la_SOURCES)
 libgvplugin_lasi_la_LIBADD = \
 	$(top_builddir)/lib/gvc/libgvc.la @LASI_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
-
-gvrender_lasi.o gvrender_lasi.lo: ps.h
-
-ps.h : $(top_srcdir)/plugin/core/ps.txt   
-	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(top_srcdir)/plugin/core/ps.txt > ps.h
 
 if WITH_WIN32
 libgvplugin_lasi_la_LDFLAGS += -no-undefined
@@ -43,8 +37,3 @@ endif
 if WITH_DARWIN9
 libgvplugin_lasi_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_lasi_LTX_library
 endif
-
-EXTRA_DIST = ps.h
-
-DISTCLEANFILES = ps.h
-
