@@ -27,7 +27,7 @@ typedef struct same_t {
 } same_t;
 
 static int sameedge(same_t * same, int n_same, node_t * n, edge_t * e, char *id);
-static void sameport(node_t * u, elist * l, double arr_len);
+static void sameport(node_t * u, elist * l);
 
 void dot_sameports(graph_t * g)
 /* merge edge ports in G */
@@ -58,13 +58,13 @@ void dot_sameports(graph_t * g)
 	}
 	for (i = 0; i < n_samehead; i++) {
 	    if (samehead[i].l.size > 1)
-		sameport(n, &samehead[i].l, samehead[i].arr_len);
+		sameport(n, &samehead[i].l);
 	    free_list(samehead[i].l);
 	    /* I sure hope I don't need to free the char* id */
 	}
 	for (i = 0; i < n_sametail; i++) {
 	    if (sametail[i].l.size > 1)
-		sameport(n, &sametail[i].l, sametail[i].arr_len);
+		sameport(n, &sametail[i].l);
 	    free_list(sametail[i].l);
 	    /* I sure hope I don't need to free the char* id */
 	}
@@ -101,7 +101,7 @@ static int sameedge(same_t * same, int n_same, node_t * n, edge_t * e, char *id)
     return n_same;
 }
 
-static void sameport(node_t * u, elist * l, double arr_len)
+static void sameport(node_t * u, elist * l)
 /* make all edges in L share the same port on U. The port is placed on the
    node boundary and the average angle between the edges. FIXME: this assumes
    naively that the edges are straight lines, which is wrong if they are long.
@@ -173,48 +173,10 @@ static void sameport(node_t * u, elist * l, double arr_len)
     prt.side = 0;
     prt.name = NULL;
 
-#ifdef OBSOLETE
-/* This is commented because a version of gcc cannot handle it otherwise.
-This code appears obsolete and wrong. First, we don't use arr_prt
-anymore, as we have previously ifdef'ed out the code below where it
-is used. In addition, it resets the rank height. But we've already
-positioned the nodes, so it can cause the new ht2, when added to a
-node's y coordinate to give a value in the middle of the rank above.
-This causes havoc when constructing box for spline routing.
-See bug 419.
-If we really want to make room for arrowheads, this should be done in
-the general case that the user sets a small ranksep, and requires repositioning
-nodes and maintaining equal separation when specified
-*/
-    /* compute ARR_PORT at a distance ARR_LEN away from the boundary */
-    if ((arr_prt.defined = arr_len && TRUE)) {
-	arr_prt.p.x = ROUND(x1 + x * arr_len);
-	arr_prt.p.y = ROUND(y1 + y * arr_len);
-	arr_prt.bp = 0;
-	arr_prt.side = 0;
-	arr_prt.constrained = FALSE;
-	arr_prt.order =
-	    (MC_SCALE * (ND_lw_i(u) + arr_prt.p.x)) / (ND_lw_i(u) +
-						       ND_rw_i(u));
-	/* adjust ht so that splines.c uses feasible boxes.
-	   FIXME: I guess this adds an extra box for all edges in the rank */
-	if (u == l->list[0]->head) {
-	    if (GD_rank(u->graph)[ND_rank(u)].ht2 <
-		(ht = fabs(arr_prt.p.y)))
-		GD_rank(u->graph)[ND_rank(u)].ht2 = ht;
-	} else {
-	    if (GD_rank(u->graph)[ND_rank(u)].ht1 <
-		(ht = fabs(arr_prt.p.y)))
-		GD_rank(u->graph)[ND_rank(u)].ht1 = ht;
-	}
-    }
-#endif
-
     /* assign one of the ports to every edge */
     for (i = 0; i < l->size; i++) {
 	e = l->list[i];
 	arrow_flags(e, &sflag, &eflag);
-#ifndef OBSOLETE
 	for (; e; e = ED_to_virt(e)) {	/* assign to all virt edges of e */
 	    for (f = e; f;
 		 f = ED_edge_type(f) == VIRTUAL &&
@@ -237,16 +199,6 @@ nodes and maintaining equal separation when specified
 		    ED_tail_port(f) = prt;
 	    }
 	}
-#else
-	for (; e; e = ED_to_virt(e)) {	/* assign to all virt edges of e */
-	    if (aghead(e) == u)
-		ED_head_port(e) =
-		    arr_port.defined && !eflag ? arr_prt : prt;
-	    if (agtail(e) == u)
-		ED_tail_port(e) =
-		    arr_port.defined && !sflag ? arr_prt : prt;
-	}
-#endif
     }
 
     ND_has_port(u) = TRUE;	/* kinda pointless, because mincross is already done */

@@ -18,6 +18,7 @@
 #include <dotgen/dot.h>
 #include <limits.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -148,8 +149,8 @@ getmainedge(edge_t * e)
 
 static boolean spline_merge(node_t * n)
 {
-    return ((ND_node_type(n) == VIRTUAL)
-	    && ((ND_in(n).size > 1) || (ND_out(n).size > 1)));
+    return ND_node_type(n) == VIRTUAL
+	    && (ND_in(n).size > 1 || ND_out(n).size > 1);
 }
 
 static boolean swap_ends_p(edge_t * e)
@@ -170,15 +171,19 @@ static splineInfo sinfo = {.swapEnds = swap_ends_p,
 
 int portcmp(port p0, port p1)
 {
-    int rv;
     if (p1.defined == FALSE)
-	return (p0.defined ? 1 : 0);
+	return p0.defined ? 1 : 0;
     if (p0.defined == FALSE)
 	return -1;
-    rv = p0.p.x - p1.p.x;
-    if (rv == 0)
-	rv = p0.p.y - p1.p.y;
-    return rv;
+    if (p0.p.x < p1.p.x)
+	return -1;
+    if (p0.p.x > p1.p.x)
+	return 1;
+    if (p0.p.y < p1.p.y)
+	return -1;
+    if (p0.p.y > p1.p.y)
+	return 1;
+    return 0;
 }
 
 /* swap_bezier:
@@ -372,12 +377,10 @@ static void _dot_splines(graph_t * g, int normalize)
 		ED_label(fe)->pos = ND_coord(n);
 		ED_label(fe)->set = TRUE;
 	    }
-	    if ((ND_node_type(n) != NORMAL) &&
-		(sinfo.splineMerge(n) == FALSE))
+	    if (ND_node_type(n) != NORMAL && sinfo.splineMerge(n) == FALSE)
 		continue;
 	    for (k = 0; (e = ND_out(n).list[k]); k++) {
-		if ((ED_edge_type(e) == FLATORDER)
-		    || (ED_edge_type(e) == IGNORED))
+		if (ED_edge_type(e) == FLATORDER || ED_edge_type(e) == IGNORED)
 		    continue;
 		setflags(e, REGULAREDGE, FWDEDGE, MAINGRAPH);
 		edges[n_edges++] = e;
@@ -418,8 +421,7 @@ static void _dot_splines(graph_t * g, int normalize)
      * alternatively, the edges would be routed identically if
      * routed separately.
      */
-    qsort((char *) &edges[0], n_edges, sizeof(edges[0]),
-	  (qsort_cmpf) edgecmp);
+    qsort(edges, n_edges, sizeof(edges[0]), (qsort_cmpf)edgecmp);
 
     /* FIXME: just how many boxes can there be? */
     P->boxes = N_NEW(n_nodes + 20 * 2 * NSUB, boxf);
@@ -428,7 +430,7 @@ static void _dot_splines(graph_t * g, int normalize)
     if (et == ET_LINE) {
     /* place regular edge labels */
 	for (n = GD_nlist(g); n; n = ND_next(n)) {
-	    if ((ND_node_type(n) == VIRTUAL) && (ND_label(n))) {
+	    if (ND_node_type(n) == VIRTUAL && ND_label(n)) {
 		place_vnlabel(n);
 	    }
 	}
@@ -519,7 +521,7 @@ static void _dot_splines(graph_t * g, int normalize)
 
     /* place regular edge labels */
     for (n = GD_nlist(g); n; n = ND_next(n)) {
-	if ((ND_node_type(n) == VIRTUAL) && (ND_label(n))) {
+	if (ND_node_type(n) == VIRTUAL && ND_label(n)) {
 	    place_vnlabel(n);
 	    updateBB(g, ND_label(n));
 	}
@@ -558,7 +560,7 @@ finish :
     /* end vladimir */
 
 #ifdef ORTHO
-    if ((et != ET_ORTHO) && (et != ET_CURVED))  {
+    if (et != ET_ORTHO && et != ET_CURVED)  {
 #else
     if (et != ET_CURVED) {
 #endif
@@ -622,9 +624,9 @@ setflags(edge_t *e, int hint1, int hint2, int f3)
 	f2 = hint2;
     else {
 	if (f1 == REGULAREDGE)
-	    f2 = (ND_rank(agtail(e)) < ND_rank(aghead(e))) ? FWDEDGE : BWDEDGE;
+	    f2 = ND_rank(agtail(e)) < ND_rank(aghead(e)) ? FWDEDGE : BWDEDGE;
 	else if (f1 == FLATEDGE)
-	    f2 = (ND_order(agtail(e)) < ND_order(aghead(e))) ?  FWDEDGE : BWDEDGE;
+	    f2 = ND_order(agtail(e)) < ND_order(aghead(e)) ?  FWDEDGE : BWDEDGE;
 	else			/* f1 == SELF*EDGE */
 	    f2 = FWDEDGE;
     }
@@ -966,17 +968,8 @@ static edge_t*
 cloneEdge (graph_t* g, node_t* tn, node_t* hn, edge_t* orig)
 {
     edge_t* e = agedge(g, tn, hn,NULL,1);
-    /* for (; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig)); */
     agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
     agcopyattr (orig, e);
-/*
-    if (orig->tail != ND_alg(tn)) {
-	char* hdport = agget (orig, HEAD_ID);
-	char* tlport = agget (orig, TAIL_ID);
-	agset (e, TAIL_ID, (hdport ? hdport : ""));
-	agset (e, HEAD_ID, (tlport ? tlport : ""));
-    }
-*/
 
     return e;
 }
@@ -1079,15 +1072,15 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
 
     miny = tp.y + LBL_SPACE/2.0;
     maxy = miny + ED_label(e)->dimen.y;
-    uminx = ctrx - (ED_label(e)->dimen.x)/2.0;
-    umaxx = ctrx + (ED_label(e)->dimen.x)/2.0;
+    uminx = ctrx - ED_label(e)->dimen.x / 2.0;
+    umaxx = ctrx + ED_label(e)->dimen.x / 2.0;
 
     for (i = 1; i < n_lbls; i++) {
 	e = earray[i];
 	if (i%2) {  /* down */
 	    if (i == 1) {
-		lminx = ctrx - (ED_label(e)->dimen.x)/2.0;
-		lmaxx = ctrx + (ED_label(e)->dimen.x)/2.0;
+		lminx = ctrx - ED_label(e)->dimen.x / 2.0;
+		lmaxx = ctrx + ED_label(e)->dimen.x / 2.0;
 	    }
 	    miny -= LBL_SPACE + ED_label(e)->dimen.y;
 	    points[0] = tp;
@@ -1104,7 +1097,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
 	    points[6].y = miny;
 	    points[7].x = lminx;
 	    points[7].y = tp.y;
-	    ctry = miny + (ED_label(e)->dimen.y)/2.0;
+	    ctry = miny + ED_label(e)->dimen.y / 2.0;
 	}
 	else {   /* up */
 	    points[0] = tp;
@@ -1122,7 +1115,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
 	    points[6].y = maxy + LBL_SPACE;
 	    points[7].x = tp.x;
 	    points[7].y = maxy + LBL_SPACE;
-	    ctry =  maxy + (ED_label(e)->dimen.y)/2.0 + LBL_SPACE;
+	    ctry =  maxy + ED_label(e)->dimen.y / 2.0 + LBL_SPACE;
 	    maxy += ED_label(e)->dimen.y + LBL_SPACE;
 	}
 	poly.pn = 8;
@@ -1200,13 +1193,13 @@ makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et
     tp = add_pointf(ND_coord(tn), ED_tail_port(e).p);
     hp = add_pointf(ND_coord(hn), ED_head_port(e).p);
 
-    stepy = (cnt > 1) ? ND_ht(tn) / (double)(cnt - 1) : 0.;
-    dy = tp.y - ((cnt > 1) ? ND_ht(tn) / 2. : 0.);
+    stepy = cnt > 1 ? ND_ht(tn) / (double)(cnt - 1) : 0.;
+    dy = tp.y - (cnt > 1 ? ND_ht(tn) / 2. : 0.);
 
     for (i = 0; i < cnt; i++) {
 	e = edges[ind + i];
 	pointn = 0;
-	if ((et == ET_SPLINE) || (et == ET_LINE)) {
+	if (et == ET_SPLINE || et == ET_LINE) {
 	    points[pointn++] = tp;
 	    points[pointn++] = pointfof((2 * tp.x + hp.x) / 3, dy);
 	    points[pointn++] = pointfof((2 * hp.x + tp.x) / 3, dy);
@@ -1257,7 +1250,7 @@ make_flat_adj_edges(graph_t* g, path* P, edge_t** edges, int ind, int cnt, edge_
     static int warned;
 
     tn = agtail(e0), hn = aghead(e0);
-    if ((shapeOf(tn) == SH_RECORD) || (shapeOf(hn) == SH_RECORD)) {
+    if (shapeOf(tn) == SH_RECORD || shapeOf(hn) == SH_RECORD) {
 	if (!warned) {
 	    warned = 1;
 	    agerr (AGWARN, "flat edge between adjacent nodes one of which has a record shape - replace records with HTML-like labels\n");
@@ -1456,7 +1449,7 @@ make_flat_labeled_edge(graph_t* g, spline_info_t* sp, path* P, edge_t* e, int et
 	endp = add_pointf(ND_coord(hn), ED_head_port(e).p);
 
         lp = ED_label(e)->pos;
-	lp.y -= (ED_label(e)->dimen.y)/2.0;
+	lp.y -= ED_label(e)->dimen.y / 2.0;
 	points[1] = points[0] = startp;
 	points[2] = points[3] = points[4] = lp;
 	points[5] = points[6] = endp;
@@ -1522,7 +1515,7 @@ make_flat_bottom_edges(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges,
     else {
 	vspace = GD_ranksep(g);
     }
-    stepx = ((double)(sp->Multisep)) / (cnt+1); 
+    stepx = ((double)sp->Multisep) / (cnt + 1); 
     stepy = vspace / (cnt+1);
 
     makeBottomFlatEnd (g, sp, P, tn, e, &tend, TRUE);
@@ -1623,8 +1616,8 @@ make_flat_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int ind
 
     tside = ED_tail_port(e).side;
     hside = ED_head_port(e).side;
-    if (((tside == BOTTOM) && (hside != TOP)) ||
-        ((hside == BOTTOM) && (tside != TOP))) {
+    if ((tside == BOTTOM && hside != TOP) ||
+        (hside == BOTTOM && tside != TOP)) {
 	make_flat_bottom_edges (g, sp, P, edges, ind, cnt, e, et == ET_SPLINE);
 	return;
     }
@@ -1696,9 +1689,8 @@ leftOf (pointf p1, pointf p2, pointf p3)
 {
     int d;
 
-    d = ((p1.y - p2.y) * (p3.x - p2.x)) -
-        ((p3.y - p2.y) * (p1.x - p2.x));
-    return (d > 0);
+    d = (p1.y - p2.y) * (p3.x - p2.x) - (p3.y - p2.y) * (p1.x - p2.x);
+    return d > 0;
 }
 
 /* makeLineEdge:
@@ -1732,7 +1724,7 @@ makeLineEdge(graph_t* g, edge_t* fe, pointf* points, node_t** hp)
     hn = aghead(e);
     tn = agtail(e);
     delr = abs(ND_rank(hn)-ND_rank(tn));
-    if ((delr == 1) || ((delr == 2) && (GD_has_labels(g->root) & EDGE_LABEL)))
+    if (delr == 1 || (delr == 2 && (GD_has_labels(g->root) & EDGE_LABEL)))
 	return 0;
     if (agtail(fe) == agtail(e)) {
 	*hp = hn;
@@ -1853,7 +1845,7 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
     if ((et == ET_LINE) && (pointn = makeLineEdge (g, fe, pointfs, &hn))) {
     }
     else {
-	int splines = et == ET_SPLINE;
+	bool is_spline = et == ET_SPLINE;
 	boxes_t boxes = {0};
 	pointn = 0;
 	segfirst = e;
@@ -1896,7 +1888,7 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
 	    assert(boxes.size <= (size_t)INT_MAX && "integer overflow");
 	    completeregularpath(P, segfirst, e, &tend, &hend, boxes.data,
 	                        (int)boxes.size, 1);
-	    if (splines) ps = routesplines(P, &pn);
+	    if (is_spline) ps = routesplines(P, &pn);
 	    else {
 		ps = routepolylines (P, &pn);
 		if ((et == ET_LINE) && (pn > 4)) {
@@ -1948,9 +1940,9 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
 	completeregularpath(P, segfirst, e, &tend, &hend, boxes.data, (int)boxes.size,
 	                    longedge);
 	boxes_free(&boxes);
-	if (splines) ps = routesplines(P, &pn);
+	if (is_spline) ps = routesplines(P, &pn);
 	else ps = routepolylines (P, &pn);
-	if ((et == ET_LINE) && (pn > 4)) {
+	if (et == ET_LINE && pn > 4) {
 	    /* Here we have used the polyline case to handle
 	     * an edge between two nodes on adjacent ranks. If the
 	     * results really is a polyline, straighten it.
@@ -2012,6 +2004,9 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
 		    pathend_t * tendp, pathend_t * hendp, boxf * boxes,
 		    int boxn, int flag)
 {
+    // this implementation of completeregularpath ignores the flag
+    (void)flag;
+
     edge_t *uleft, *uright, *lleft, *lright;
     int i, fb, lb;
     splines *spl;
@@ -2171,14 +2166,14 @@ void refineregularends(edge_t *left, edge_t *right, pathend_t *endp, int dir,
 	for (k = endp->boxn - 1; k > j; k--)
 	    endp->boxes[k + (nsub - 1)] = endp->boxes[k];
 	for (i = 0; i < nsub; i++) {
-	    bp = &endp->boxes[j + ((dir == 1) ? i : (nsub - i - 1))];
+	    bp = &endp->boxes[j + (dir == 1 ? i : (nsub - i - 1))];
 	    *bp = eb;
 	    bp->UR.y = eb.UR.y - y * i / nsub;
 	    bp->LL.y = eb.UR.y - y * (i + 1) / nsub;
 	    if (bp->UR.y == bp->LL.y)
 		abort();
 	}
-	endp->boxn += (nsub - 1);
+	endp->boxn += nsub - 1;
 	j += nsub - 1;
     }
     if (left) {
@@ -2190,38 +2185,33 @@ void refineregularends(edge_t *left, edge_t *right, pathend_t *endp, int dir,
 	    boxes[i].LL.x = MAX(pp.x, cp.x);
 	    pp = cp;
 	}
-	pp = spline_at_y(lspls, (dir == 1) ?
-			 endp->boxes[1].UR.y : endp->boxes[1].LL.y);
+	pp = spline_at_y(lspls, dir == 1 ? endp->boxes[1].UR.y : endp->boxes[1].LL.y);
 	for (i = 1; i < endp->boxn; i++) {
-	    cp = spline_at_y(lspls, (dir == 1) ?
+	    cp = spline_at_y(lspls, dir == 1 ?
 			     endp->boxes[i].LL.y : endp->boxes[i].UR.y);
 	    endp->boxes[i].LL.x = MIN(endp->nb.UR.x, MAX(pp.x, cp.x));
 	    pp = cp;
 	}
-	i = (dir == 1) ? 0 : *boxnp - 1;
-	if (boxes[i].LL.x > endp->boxes[endp->boxn - 1].UR.x - MINW)
-	    boxes[i].LL.x = endp->boxes[endp->boxn - 1].UR.x - MINW;
+	i = dir == 1 ? 0 : *boxnp - 1;
+	boxes[i].LL.x = fmin(boxes[i].LL.x, endp->boxes[endp->boxn - 1].UR.x - MINW);
     }
     if (right) {
 	if (!(rspls = getsplinepoints(right))) return;
 	pp = spline_at_y(rspls, boxes[0].UR.y);
 	for (i = 0; i < nsub; i++) {
 	    cp = spline_at_y(rspls, boxes[i].LL.y);
-	    /*boxes[i].UR.x = AVG (pp.x, cp.x); */
 	    boxes[i].UR.x = AVG(pp.x, cp.x);
 	    pp = cp;
 	}
-	pp = spline_at_y(rspls, (dir == 1) ?
-			 endp->boxes[1].UR.y : endp->boxes[1].LL.y);
+	pp = spline_at_y(rspls, dir == 1 ? endp->boxes[1].UR.y : endp->boxes[1].LL.y);
 	for (i = 1; i < endp->boxn; i++) {
-	    cp = spline_at_y(rspls, (dir == 1) ?
+	    cp = spline_at_y(rspls, dir == 1 ?
 			     endp->boxes[i].LL.y : endp->boxes[i].UR.y);
 	    endp->boxes[i].UR.x = MAX(endp->nb.LL.x, AVG(pp.x, cp.x));
 	    pp = cp;
 	}
-	i = (dir == 1) ? 0 : *boxnp - 1;
-	if (boxes[i].UR.x < endp->boxes[endp->boxn - 1].LL.x + MINW)
-	    boxes[i].UR.x = endp->boxes[endp->boxn - 1].LL.x + MINW;
+	i = dir == 1 ? 0 : *boxnp - 1;
+	boxes[i].UR.x = fmax(boxes[i].UR.x, endp->boxes[endp->boxn - 1].LL.x + MINW);
     }
 }
 #endif
@@ -2280,14 +2270,12 @@ static void adjustregularpath(path * P, int fb, int lb)
 static boxf rank_box(spline_info_t* sp, graph_t * g, int r)
 {
     boxf b;
-    node_t /* *right0, *right1, */  * left0, *left1;
+    node_t *left0, *left1;
 
     b = sp->Rank_box[r];
     if (b.LL.x == b.UR.x) {
 	left0 = GD_rank(g)[r].v[0];
-	/* right0 = GD_rank(g)[r].v[GD_rank(g)[r].n - 1]; */
 	left1 = GD_rank(g)[r + 1].v[0];
-	/* right1 = GD_rank(g)[r + 1].v[GD_rank(g)[r + 1].n - 1]; */
 	b.LL.x = sp->LeftBound;
 	b.LL.y = ND_coord(left1).y + GD_rank(g)[r + 1].ht2;
 	b.UR.x = sp->RightBound;
@@ -2308,7 +2296,7 @@ static int straight_len(node_t * n)
 	v = aghead(ND_out(v).list[0]);
 	if (ND_node_type(v) != VIRTUAL)
 	    break;
-	if ((ND_out(v).size != 1) || (ND_in(v).size != 1))
+	if (ND_out(v).size != 1 || ND_in(v).size != 1)
 	    break;
 	if (ND_coord(v).x != ND_coord(n).x)
 	    break;
@@ -2340,7 +2328,7 @@ static void recover_slack(edge_t * e, path * p)
     for (vn = aghead(e);
 	 ND_node_type(vn) == VIRTUAL && !sinfo.splineMerge(vn);
 	 vn = aghead(ND_out(vn).list[0])) {
-	while ((b < p->nbox) && (p->boxes[b].LL.y > ND_coord(vn).y))
+	while (b < p->nbox && p->boxes[b].LL.y > ND_coord(vn).y)
 	    b++;
 	if (b >= p->nbox)
 	    break;
@@ -2371,11 +2359,11 @@ static edge_t *top_bound(edge_t * e, int side)
     for (i = 0; (f = ND_out(agtail(e)).list[i]); i++) {
 	if (side * (ND_order(aghead(f)) - ND_order(aghead(e))) <= 0)
 	    continue;
-	if ((ED_spl(f) == NULL)
-	    && ((ED_to_orig(f) == NULL) || (ED_spl(ED_to_orig(f)) == NULL)))
+	if (ED_spl(f) == NULL
+	    && (ED_to_orig(f) == NULL || ED_spl(ED_to_orig(f)) == NULL))
 	    continue;
-	if ((ans == NULL)
-	    || (side * (ND_order(aghead(ans)) - ND_order(aghead(f))) > 0))
+	if (ans == NULL
+	    || side * (ND_order(aghead(ans)) - ND_order(aghead(f))) > 0)
 	    ans = f;
     }
     return ans;
@@ -2389,11 +2377,11 @@ static edge_t *bot_bound(edge_t * e, int side)
     for (i = 0; (f = ND_in(aghead(e)).list[i]); i++) {
 	if (side * (ND_order(agtail(f)) - ND_order(agtail(e))) <= 0)
 	    continue;
-	if ((ED_spl(f) == NULL)
-	    && ((ED_to_orig(f) == NULL) || (ED_spl(ED_to_orig(f)) == NULL)))
+	if (ED_spl(f) == NULL
+	    && (ED_to_orig(f) == NULL || ED_spl(ED_to_orig(f)) == NULL))
 	    continue;
-	if ((ans == NULL)
-	    || (side * (ND_order(agtail(ans)) - ND_order(agtail(f))) > 0))
+	if (ans == NULL
+	    || side * (ND_order(agtail(ans)) - ND_order(agtail(f))) > 0)
 	    ans = f;
     }
     return ans;
@@ -2403,8 +2391,8 @@ static edge_t *bot_bound(edge_t * e, int side)
 
 static int cl_vninside(graph_t * cl, node_t * n)
 {
-    return (BETWEEN(GD_bb(cl).LL.x, (double)(ND_coord(n).x), GD_bb(cl).UR.x) &&
-	    BETWEEN(GD_bb(cl).LL.y, (double)(ND_coord(n).y), GD_bb(cl).UR.y));
+    return BETWEEN(GD_bb(cl).LL.x, (double)(ND_coord(n).x), GD_bb(cl).UR.x) &&
+	    BETWEEN(GD_bb(cl).LL.y, (double)(ND_coord(n).y), GD_bb(cl).UR.y);
 }
 
 /* All nodes belong to some cluster, which may be the root graph.
@@ -2431,16 +2419,16 @@ static Agraph_t *cl_bound(graph_t* g,  node_t *n, node_t *adj)
     }
     if (ND_node_type(adj) == NORMAL) {
 	cl = REAL_CLUSTER(adj);
-	if (cl && (cl != tcl) && (cl != hcl))
+	if (cl && cl != tcl && cl != hcl)
 	    rv = cl;
     } else {
 	orig = ED_to_orig(ND_out(adj).list[0]);
 	cl = REAL_CLUSTER(agtail(orig));
-	if (cl && (cl != tcl) && (cl != hcl) && cl_vninside(cl, adj))
+	if (cl && cl != tcl && cl != hcl && cl_vninside(cl, adj))
 	    rv = cl;
 	else {
 	    cl = REAL_CLUSTER(aghead(orig));
-	    if (cl && (cl != tcl) && (cl != hcl) && cl_vninside(cl, adj))
+	    if (cl && cl != tcl && cl != hcl && cl_vninside(cl, adj))
 		rv = cl;
 	}
     }
@@ -2470,13 +2458,13 @@ static boxf maximal_bbox(graph_t* g, spline_info_t* sp, node_t* vn, edge_t* ie, 
     b = (double)(ND_coord(vn).x - ND_lw(vn) - FUDGE);
     if ((left = neighbor(g, vn, ie, oe, -1))) {
 	if ((left_cl = cl_bound(g, vn, left)))
-	    nb = GD_bb(left_cl).UR.x + (double)(sp->Splinesep);
+	    nb = GD_bb(left_cl).UR.x + (double)sp->Splinesep;
 	else {
 	    nb = (double)(ND_coord(left).x + ND_mval(left));
 	    if (ND_node_type(left) == NORMAL)
 		nb += GD_nodesep(g) / 2.;
 	    else
-		nb += (double)(sp->Splinesep);
+		nb += (double)sp->Splinesep;
 	}
 	if (nb < b)
 	    b = nb;
@@ -2485,19 +2473,19 @@ static boxf maximal_bbox(graph_t* g, spline_info_t* sp, node_t* vn, edge_t* ie, 
 	rv.LL.x = MIN(ROUND(b), sp->LeftBound);
 
     /* we have to leave room for our own label! */
-    if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
+    if (ND_node_type(vn) == VIRTUAL && ND_label(vn))
 	b = (double)(ND_coord(vn).x + 10);
     else
 	b = (double)(ND_coord(vn).x + ND_rw(vn) + FUDGE);
     if ((right = neighbor(g, vn, ie, oe, 1))) {
 	if ((right_cl = cl_bound(g, vn, right)))
-	    nb = GD_bb(right_cl).LL.x - (double)(sp->Splinesep);
+	    nb = GD_bb(right_cl).LL.x - (double)sp->Splinesep;
 	else {
 	    nb = ND_coord(right).x - ND_lw(right);
 	    if (ND_node_type(right) == NORMAL)
 		nb -= GD_nodesep(g) / 2.;
 	    else
-		nb -= (double)(sp->Splinesep);
+		nb -= (double)sp->Splinesep;
 	}
 	if (nb > b)
 	    b = nb;
@@ -2505,7 +2493,7 @@ static boxf maximal_bbox(graph_t* g, spline_info_t* sp, node_t* vn, edge_t* ie, 
     } else
 	rv.UR.x = MAX(ROUND(b), sp->RightBound);
 
-    if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn))) {
+    if (ND_node_type(vn) == VIRTUAL && ND_label(vn)) {
 	rv.UR.x -= ND_rw(vn);
 	if (rv.UR.x < rv.LL.x) rv.UR.x = ND_coord(vn).x;
     }
@@ -2522,9 +2510,9 @@ neighbor(graph_t* g, node_t *vn, edge_t *ie, edge_t *oe, int dir)
     node_t *n, *rv = NULL;
     rank_t *rank = &(GD_rank(g)[ND_rank(vn)]);
 
-    for (i = ND_order(vn) + dir; ((i >= 0) && (i < rank->n)); i += dir) {
+    for (i = ND_order(vn) + dir; i >= 0 && i < rank->n; i += dir) {
 	n = rank->v[i];
-	if ((ND_node_type(n) == VIRTUAL) && (ND_label(n))) {
+	if (ND_node_type(n) == VIRTUAL && ND_label(n)) {
 	    rv = n;
 	    break;
 	}

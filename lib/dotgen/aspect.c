@@ -493,7 +493,7 @@ static double computeCombiAR(graph_t * g)
  * found to be empty.
  * This function removes the empty layers.
  */
-static void zapLayers(graph_t * g)
+static void zapLayers(void)
 {
     int i, j;
     int start = 0;
@@ -569,7 +569,7 @@ void rank3(graph_t * g, aspect_t * asp)
     rank1(g);
 
     computeLayerWidths(g);
-    zapLayers(g);
+    zapLayers();
     asp->combiAR = computeCombiAR(g);
 }
 
