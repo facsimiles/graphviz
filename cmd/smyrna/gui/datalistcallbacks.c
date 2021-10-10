@@ -21,18 +21,6 @@ void on_TVNodes_close (GtkWidget * widget, gpointer user_data)
     gtk_widget_hide(glade_xml_get_widget(xml, "frmTVNodes"));
 }
 
-void cgbTVSelect_toggled_cb(GtkWidget * widget, gpointer user_data)
-{
-}
-void cgbTVVisible_toggled_cb(GtkWidget * widget, gpointer user_data)
-{
-
-}
-void cgbTVHighlighted_toggled_cb(GtkWidget * widget, gpointer user_data)
-{
-
-}
-
 void btnTVShowAll_clicked_cb(GtkWidget * widget, gpointer user_data)
 {
     tv_show_all();

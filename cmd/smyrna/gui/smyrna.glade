@@ -1300,7 +1300,6 @@
 	      <property name="active">False</property>
 	      <property name="inconsistent">False</property>
 	      <property name="draw_indicator">True</property>
-	      <signal name="toggled" handler="cgbTVSelect_toggled_cb"/>
 
 	      <child>
 		<placeholder/>
@@ -1426,7 +1425,6 @@
 	      <property name="active">False</property>
 	      <property name="inconsistent">False</property>
 	      <property name="draw_indicator">True</property>
-	      <signal name="toggled" handler="cgbTVVisible_toggled_cb"/>
 
 	      <child>
 		<placeholder/>
@@ -1450,7 +1448,6 @@
 	      <property name="active">False</property>
 	      <property name="inconsistent">False</property>
 	      <property name="draw_indicator">True</property>
-	      <signal name="toggled" handler="cgbTVHighlighted_toggled_cb"/>
 	    </widget>
 	    <packing>
 	      <property name="x">202</property>
@@ -1519,7 +1516,6 @@
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <signal name="clicked" handler="btnTVSelectAll_clicked_cb"/>
 	    </widget>
 	    <packing>
 	      <property name="x">3</property>
@@ -1537,7 +1533,6 @@
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <signal name="clicked" handler="btnTVUnselectAll_clicked_cb"/>
 	    </widget>
 	    <packing>
 	      <property name="x">80</property>
@@ -1554,7 +1549,6 @@
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <signal name="clicked" handler="btnTVHighlightAll_clicked_cb"/>
 	    </widget>
 	    <packing>
 	      <property name="x">178</property>
@@ -1571,7 +1565,6 @@
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <signal name="clicked" handler="btnTVUnhighlightAll_clicked_cb"/>
 	    </widget>
 	    <packing>
 	      <property name="x">259</property>
@@ -1687,7 +1680,6 @@
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
-		  <signal name="clicked" handler="btnTVDelete_clicked_cb"/>
 		</widget>
 		<packing>
 		  <property name="x">1</property>
@@ -1704,7 +1696,6 @@
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
-		  <signal name="clicked" handler="btnTVFilter_clicked_cb"/>
 		</widget>
 		<packing>
 		  <property name="x">84</property>
@@ -1753,7 +1744,6 @@
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
-		  <signal name="clicked" handler="btnTVFirst_clicked_cb"/>
 		</widget>
 		<packing>
 		  <property name="x">7</property>
@@ -1770,7 +1760,6 @@
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
-		  <signal name="clicked" handler="btnTVPrevious_clicked_cb"/>
 		</widget>
 		<packing>
 		  <property name="x">51</property>
@@ -1787,7 +1776,6 @@
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
-		  <signal name="clicked" handler="btnTVNext_clicked_cb"/>
 		</widget>
 		<packing>
 		  <property name="x">95</property>
@@ -1804,7 +1792,6 @@
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
-		  <signal name="clicked" handler="btnTVLast_clicked_cb"/>
 		</widget>
 		<packing>
 		  <property name="x">140</property>
@@ -1847,7 +1834,6 @@
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
-		  <signal name="clicked" handler="btnTVGotopage_clicked_cb"/>
 		</widget>
 		<packing>
 		  <property name="x">317</property>
@@ -2624,7 +2610,6 @@
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
-	      <signal name="clicked" handler="btnTVFilterClear_clicked_cb"/>
 	    </widget>
 	    <packing>
 	      <property name="x">467</property>
