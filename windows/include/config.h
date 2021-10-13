@@ -115,8 +115,7 @@
 #define HAVE_GTKGLEXT 1
 
 /* Define if you have the gts library */
-#undef HAVE_GTS
-#define HAVE_GTS 0
+/* #undef HAVE_GTS */
 
 /* Define to 1 if you have the <IL/il.h> header file. */
 /* #undef HAVE_IL_IL_H */
