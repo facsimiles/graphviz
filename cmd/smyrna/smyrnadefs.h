@@ -59,33 +59,10 @@ typedef struct _ArcBall_t ArcBall_t;
 #define MM_FISHEYE_PICK		22  /*fisheye select foci point*/
 #define MM_POLYGON_SELECT   30
 
-
-
-#define GLOBAL_Z_OFFSET			0.001
-
 #define MAX_ZOOM	500.0f
 #define MIN_ZOOM	0.005f
-#define ZOOM_STEPS	100
 
-#define ZOOM_STEP	0.5
 #define DEG2RAD  G_PI/180
-#define RAD2DEG	  1/0.017453292519943
-
-#define UNHIGHLIGHTED_ALPHA	0.3
-#define Z_FORWARD_PLANE -0.00201
-#define Z_MIDDLE_PLANE 0.0000
-#define Z_BACK_PLANE -0.00199
-
-#define NODE_ZOOM_LIMIT	-25.3
-#define NODE_CIRCLE_LIMIT	-7.3
-
-#define GL_DOTSIZE_CONSTANT -18
-#define DOUBLE_IT 10.00
-
-
-#define SPHERE_SLICE_COUNT 6
-#define DOT_SIZE_CORRECTION_FAC 0.3
-
 
 #define EXPAND_CAPACITY_VALUE 50
 #define DEFAULT_ATTR_LIST_CAPACITY 100

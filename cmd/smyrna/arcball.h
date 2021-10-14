@@ -48,7 +48,7 @@
 # include <assert.h>
 
 //Math types derived from the KempoApi tMath library
-typedef union Tuple2f_t {
+typedef union {
     struct {
 	GLfloat X, Y;
     } s;
@@ -56,7 +56,7 @@ typedef union Tuple2f_t {
     GLfloat T[2];
 } Tuple2fT;			//A generic 2-element tuple that is represented by single-precision floating point x,y coordinates. 
 
-typedef union Tuple3f_t {
+typedef union {
     struct {
 	GLfloat X, Y, Z;
     } s;
@@ -64,7 +64,7 @@ typedef union Tuple3f_t {
     GLfloat T[3];
 } Tuple3fT;			//A generic 3-element tuple that is represented by single precision-floating point x,y,z coordinates. 
 
-typedef union Tuple4f_t {
+typedef union {
     struct {
 	GLfloat X, Y, Z, W;
     } s;
@@ -72,7 +72,7 @@ typedef union Tuple4f_t {
     GLfloat T[4];
 } Tuple4fT;			//A 4-element tuple represented by single-precision floating point x,y,z,w coordinates. 
 
-typedef union Matrix3f_t {
+typedef union {
     GLfloat M[9];
     struct {
 	//column major
@@ -118,7 +118,7 @@ typedef union Matrix3f_t {
     } s;
 } Matrix3fT;			//A single precision floating point 3 by 3 matrix. 
 
-typedef union Matrix4f_t {
+typedef union {
     GLfloat M[16];
     struct {
 	//column major

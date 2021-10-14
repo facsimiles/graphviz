@@ -22,7 +22,6 @@
 #include <viewport.h>
 
 #include <gvpr/gvpr.h>
-extern GladeXML *xml;		//global libglade vars
 
 static ssize_t outfn(void *sp, const char *buf, size_t nbyte, void *dp)
 {
