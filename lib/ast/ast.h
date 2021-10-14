@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef AST_H
-#define AST_H
 
 #include <sfio/sfio.h>
 #include <stdlib.h>
@@ -84,8 +83,6 @@ extern "C" {
     extern int strgrpmatch(const char *, const char *, int *, int, int);
     extern int stresc(char *);
     extern char *strcopy(char *s, const char *t);
-
-#endif
 
 #ifdef __cplusplus
 }

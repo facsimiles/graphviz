@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,9 +21,6 @@ extern "C" {
  * 1-6 char lower-case keyword -> long hash
  * digit args passed as HASHKEYN('2')
  */
-
-#ifndef _HASHKEY_H
-#define _HASHKEY_H
 
 #define HASHKEYMAX			6
 #define HASHKEYBIT			5
@@ -47,8 +46,6 @@ extern "C" {
     extern long strkey(const char *);
 
 #undef	extern
-
-#endif
 
 #ifdef __cplusplus
 }

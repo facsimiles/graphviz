@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,9 +17,6 @@ extern "C" {
 /*
  * standalone mini error interface
  */
-
-#ifndef _ERROR_H
-#define _ERROR_H
 
 #include <stdarg.h>
 #include <errno.h>
@@ -67,8 +66,6 @@ extern "C" {
     extern void errorv(const char *, int, const char *, va_list);
 
 #undef PRINTF_LIKE
-
-#endif
 
 #ifdef __cplusplus
 }

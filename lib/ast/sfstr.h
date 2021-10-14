@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,17 +18,12 @@ extern "C" {
  * macro interface for sfio write strings
  */
 
-#ifndef _SFSTR_H
-#define _SFSTR_H
-
 #include <sfio/sfio.h>
 
 #define sfstropen()	sfnew((Sfio_t*)0,(char*)0,-1,-1,SF_WRITE|SF_STRING)
 #define sfstrclose(f)	sfclose(f)
 
 #define sfstruse(f)	(sfputc(f,0), (char*)((f)->next = (f)->data) )
-
-#endif
 
 #ifdef __cplusplus
 }

@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef UNISTD_H
-#define UNISTD_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,6 +39,4 @@ extern char* getcwd (char*, int);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
