@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef GPRSTATE_H
-#define GPRSTATE_H
 
 #include <sfio/sfio.h>
 #include "cgraph.h"
@@ -78,8 +77,6 @@ extern "C" {
     extern void closeGPRState(Gpr_t* state);
     extern void initGPRState(Gpr_t *, Vmalloc_t *);
     extern int validTVT(int);
-
-#endif
 
 #ifdef __cplusplus
 }

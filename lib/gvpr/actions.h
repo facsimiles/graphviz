@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef ACTIONS_H
-#define ACTIONS_H
 
 #include "cgraph.h"
 #include <expr/expr.h>
@@ -49,8 +48,6 @@ extern "C" {
     extern char *colorx (Expr_t* ex, char* incolor, char* fmt, Sfio_t* fp);
     extern void gvstart_timer(void);
     extern double gvelapsed_sec(void);
-
-#endif
 
 #ifdef __cplusplus
 }

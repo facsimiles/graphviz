@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef QUEUE_H
-#define QUEUE_H
 
 #include "cgraph.h"
 
@@ -35,8 +34,6 @@ extern void* head(queue*);
 #define mkQueue()  mkQ(Dtqueue)
 #define pull(q)  (pop(q,1))
 #define head(q)  (pop(q,0))
-
-#endif
 
 #ifdef __cplusplus
 }

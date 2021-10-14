@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef PARSE_H
-#define PARSE_H
 
     typedef enum { Begin =
 	    0, End, BeginG, EndG, Node, Edge, Eof, Error } case_t;
@@ -48,8 +47,6 @@ extern "C" {
 
     extern parse_prog *parseProg(char *, int);
     extern void freeParseProg (parse_prog *);
-
-#endif
 
 #ifdef __cplusplus
 }

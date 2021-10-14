@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef COMPILE_H
-#define COMPILE_H
 
 #include <sfio/sfio.h>
 #include <parse.h>
@@ -91,8 +90,6 @@ extern "C" {
     extern Agraph_t *openSubg(Agraph_t * g, char *name);
     extern Agnode_t *openNode(Agraph_t * g, char *name);
     extern Agedge_t *openEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key);
-
-#endif
 
 #ifdef __cplusplus
 }

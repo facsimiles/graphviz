@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef GVPR_H
-#define GVPR_H
 
 #ifdef _WIN32
 #   ifdef GVDLL
@@ -66,8 +65,6 @@ typedef struct {
 } gvpropts;
 
 GVPR_API extern int gvpr (int argc, char *argv[], gvpropts* opts);
-
-#endif
 
 #ifdef __cplusplus
 }
