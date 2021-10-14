@@ -7,8 +7,8 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
-#ifndef LAB_H
-#define LAB_H
+
+#pragma once
 
 struct rgb_struct {
   double r, g, b;/* 0 to 255 */
@@ -38,5 +38,3 @@ double *lab_gamut(const char *lightness, int *n);  /* give a list of n points  i
 void color_blend_rgb2lab(char *color_list, const int maxpoints, double **colors); /* give a color list of the form "#ff0000,#00ff00,...", get a list of around maxpoints
 										     colors in an array colors0 of size [maxpoints*3] of the form {{l,a,b},...}.
 										     If *colors0 is NULL, it will be allocated. */
-
-#endif

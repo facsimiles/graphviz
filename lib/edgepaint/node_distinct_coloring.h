@@ -8,11 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef NODE_DISTINCT_COLORING_H
-#define NODE_DISTINCT_COLORING_H
+#pragma once
 
 enum {COLOR_RGB, COLOR_GRAY, COLOR_LAB};
 enum {ERROR_BAD_COLOR_SCHEME = -9};
 int node_distinct_coloring(char *color_scheme, char *lightness, int weightedQ, SparseMatrix A, real accuracy, int iter_max, int seed, int *cdim, real **colors);
-
-#endif

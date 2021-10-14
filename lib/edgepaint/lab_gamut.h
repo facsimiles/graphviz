@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef LAB_GAMUT_H
-#define LAB_GAMUT_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,6 +37,4 @@ EXTERN extern int lab_gamut_data_size;
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

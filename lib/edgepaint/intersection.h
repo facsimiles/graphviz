@@ -8,9 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef INTERSECTION_H
-#define INTERSECTION_H
+#pragma once
 
 real intersection_angle(real *p1, real *p2, real *q1, real *q2);
-
-#endif
