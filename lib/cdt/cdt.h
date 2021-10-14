@@ -1,5 +1,4 @@
-#ifndef _CDT_H
-#define _CDT_H		1
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -270,5 +269,3 @@ CDT_API unsigned int	dtstrhash(unsigned int, void*, int);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _CDT_H */

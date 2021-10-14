@@ -1,5 +1,4 @@
-#ifndef _DTHDR_H
-#define _DTHDR_H	1
+#pragma once
 
 /*	Internal definitions for libcdt.
 **	Written by Kiem-Phong Vo (5/25/96)
@@ -47,5 +46,3 @@
 #define LROTATE(x,y)	(lrotate(x,y), (x) = (y))
 
 #define NOTUSED(x)	(void)(x)
-
-#endif /* _DTHDR_H */
