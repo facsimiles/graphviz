@@ -53,8 +53,7 @@ int sfungetc(Sfio_t * f, int c)
 
     /* make a string stream for unget characters */
     if (f->disc != _Sfudisc) {
-	if (!(uf = sfnew(NULL, NULL, (size_t) SF_UNBOUND,
-			 -1, SF_STRING | SF_READ))) {
+	if (!(uf = sfnew(NULL, NULL, SF_UNBOUND, -1, SF_STRING|SF_READ))) {
 	    c = -1;
 	    goto done;
 	}

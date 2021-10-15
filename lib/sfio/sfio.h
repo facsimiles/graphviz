@@ -26,6 +26,7 @@ extern "C" {
 #   include <sys/types.h>
 #endif // HAVE_SYS_TYPES_H
 
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -172,7 +173,7 @@ extern "C" {
 #define SF_SETFD	(-1)	/* about to set the file descriptor     */
 
 #define SF_BUFSIZE	8192	/* default buffer size                  */
-#define SF_UNBOUND	(-1)	/* unbounded buffer size                */
+#define SF_UNBOUND SIZE_MAX // unbounded buffer size
 
      extern ssize_t _Sfi;
 

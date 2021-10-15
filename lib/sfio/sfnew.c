@@ -51,7 +51,7 @@ Sfio_t *sfnew(Sfio_t * oldf, void * buf, size_t size, int file,
 		return NULL;
 
 	    if (f->data
-		&& ((flags & SF_STRING) || size != (size_t) SF_UNBOUND)) {
+		&& ((flags & SF_STRING) || size != SF_UNBOUND)) {
 		if (sflags & SF_MALLOC)
 		    free(f->data);
 		f->data = NULL;
@@ -88,7 +88,7 @@ Sfio_t *sfnew(Sfio_t * oldf, void * buf, size_t size, int file,
     f->getr = f->tiny[0] = 0;
 
     f->mode |= SF_INIT;
-    if (size != (size_t) SF_UNBOUND) {
+    if (size != SF_UNBOUND) {
 	f->size = size;
 	f->data = size <= 0 ? NULL : (uchar *) buf;
     }

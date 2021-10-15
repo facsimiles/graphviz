@@ -23,7 +23,9 @@
 
 #include <expr/exlib.h>
 #include <expr/exop.h>
+#include <inttypes.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,23 +80,21 @@ lexname(int op, int subop)
  * Returns 1 if item existed, zero otherwise
  * 
  */
-static int
-evaldyn (Expr_t * ex, Exnode_t * expr, void *env, int delete)
-{
+static int evaldyn(Expr_t *ex, Exnode_t *exnode, void *env, int delete) {
 	Exassoc_t *b;
 	Extype_t v;
 	char buf[32];
 	Extype_t key;
 	char *keyname;
 
-	v = eval(ex, expr->data.variable.index, env);
-	if (expr->data.variable.symbol->index_type == INTEGER) {
-		if (!(b = dtmatch((Dt_t *) expr->data.variable.symbol->local.pointer, &v))) {
+	v = eval(ex, exnode->data.variable.index, env);
+	if (exnode->data.variable.symbol->index_type == INTEGER) {
+		if (!(b = dtmatch((Dt_t *)exnode->data.variable.symbol->local.pointer, &v))) {
 			return 0;
 		}
 	} 
 	else {
-		int type = expr->data.variable.index->type;
+		int type = exnode->data.variable.index->type;
 		if (type != STRING) {
 			if (!BUILTIN(type)) {
 				key = (*ex->disc->keyf) (ex, v, type, ex->disc);
@@ -104,13 +104,13 @@ evaldyn (Expr_t * ex, Exnode_t * expr, void *env, int delete)
 			keyname = buf;
 		} else
 			keyname = v.string;
-		if (!(b = dtmatch((Dt_t *) expr->data.variable.
+		if (!(b = dtmatch((Dt_t *)exnode->data.variable.
 			symbol->local.pointer, keyname))) {
 			return 0;
 		}
 	}
 	if (delete) {
-		dtdelete ((Dt_t*)expr->data.variable.symbol->local.pointer, b);
+		dtdelete((Dt_t *)exnode->data.variable.symbol->local.pointer, b);
 		free (b);
 	}
 	return 1;
@@ -120,30 +120,28 @@ evaldyn (Expr_t * ex, Exnode_t * expr, void *env, int delete)
  * return dynamic (associative array) variable value
  * assoc will point to the associative array bucket
  */
-
-static Extype_t
-getdyn(Expr_t* ex, Exnode_t* expr, void* env, Exassoc_t** assoc)
-{
+static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
+                       Exassoc_t **assoc) {
 	Exassoc_t*	b;
 	Extype_t	v;
 
-	if (expr->data.variable.index)
+	if (exnode->data.variable.index)
 	{
 		Extype_t key;
 		char	buf[2*sizeof(key.integer)+1];  /* no. of hex chars needed plus null byte */
 		char *keyname;
 
-		v = eval(ex, expr->data.variable.index, env);
-		if (expr->data.variable.symbol->index_type == INTEGER) {
-			if (!(b = dtmatch((Dt_t *) expr->data.variable.symbol->local.pointer, &v)))
+		v = eval(ex, exnode->data.variable.index, env);
+		if (exnode->data.variable.symbol->index_type == INTEGER) {
+			if (!(b = dtmatch((Dt_t *) exnode->data.variable.symbol->local.pointer, &v)))
 			{
 				if (!(b = newof(0, Exassoc_t, 1, 0)))
 					exnospace();
 				b->key = v;
-				dtinsert((Dt_t *) expr->data.variable.symbol->local.  pointer, b);
+				dtinsert((Dt_t *)exnode->data.variable.symbol->local.  pointer, b);
 			}
 		} else {
-			int type = expr->data.variable.index->type;
+			int type = exnode->data.variable.index->type;
 			if (type != STRING) {
 				if (!BUILTIN(type)) {
 					key = (*ex->disc->keyf) (ex, v, type, ex->disc);
@@ -153,27 +151,27 @@ getdyn(Expr_t* ex, Exnode_t* expr, void* env, Exassoc_t** assoc)
 				keyname = buf;
 			} else
 				keyname = v.string;
-			if (!(b = dtmatch((Dt_t *) expr->data.variable.symbol->local.pointer, keyname)))
+			if (!(b = dtmatch((Dt_t *)exnode->data.variable.symbol->local.pointer, keyname)))
 			{
 				if (!(b = newof(0, Exassoc_t, 1, strlen(keyname))))
 					exnospace();
 				strcpy(b->name, keyname);
 				b->key = v;
-				dtinsert((Dt_t *) expr->data.variable.symbol->local.pointer, b);
+				dtinsert((Dt_t *)exnode->data.variable.symbol->local.pointer, b);
 			}
 		}
 		*assoc = b;
 		if (b)
 		{
-			if (expr->data.variable.symbol->type == STRING && !b->value.string)
-				b->value = exzero(expr->data.variable.symbol->type);
+			if (exnode->data.variable.symbol->type == STRING && !b->value.string)
+				b->value = exzero(exnode->data.variable.symbol->type);
 			return b->value;
 		}
-		v = exzero(expr->data.variable.symbol->type);
+		v = exzero(exnode->data.variable.symbol->type);
 		return v;
 	}
 	*assoc = 0;
-	return expr->data.variable.symbol->value->data.constant.value;
+	return exnode->data.variable.symbol->value->data.constant.value;
 }
 
 typedef struct
@@ -369,14 +367,11 @@ prformat(void* vp, Sffmt_t* dp)
 /*
  * print a list of strings
  */
-
-static int
-prints(Expr_t * ex, Exnode_t * expr, void *env, Sfio_t * sp)
-{
+static int prints(Expr_t *ex, Exnode_t *exnode, void *env, Sfio_t *sp) {
     Extype_t v;
     Exnode_t *args;
 
-    args = expr->data.operand.left;
+    args = exnode->data.operand.left;
     while (args) {
 	v = eval(ex, args->data.operand.left, env);
 	sfputr(sp, v.string, -1);
@@ -389,20 +384,19 @@ prints(Expr_t * ex, Exnode_t * expr, void *env, Sfio_t * sp)
 /*
  * do printf
  */
-
-static int
-print(Expr_t* ex, Exnode_t* expr, void* env, Sfio_t* sp)
-{
+static int print(Expr_t *ex, Exnode_t *exnode, void *env, Sfio_t *sp) {
 	Print_t*	x;
 	Extype_t		v;
 	Fmt_t			fmt;
 
 	if (!sp)
 	{
-		v = eval(ex, expr->data.print.descriptor, env);
-		if (v.integer < 0 || v.integer >= elementsof(ex->file) || (!(sp = ex->file[v.integer]) && !(sp = ex->file[v.integer] = sfnew(NULL, NULL, SF_UNBOUND, v.integer, SF_READ|SF_WRITE))))
+		v = eval(ex, exnode->data.print.descriptor, env);
+		if (v.integer < 0 || (long long unsigned)v.integer >= elementsof(ex->file) ||
+		    (!(sp = ex->file[v.integer]) &&
+		    !(sp = ex->file[v.integer] = sfnew(NULL, NULL, SF_UNBOUND, v.integer, SF_READ|SF_WRITE))))
 		{
-			exerror("printf: %d: invalid descriptor", v.integer);
+			exerror("printf: %" PRIdMAX ": invalid descriptor", (intmax_t)v.integer);
 			return -1;
 		}
 	}
@@ -410,7 +404,7 @@ print(Expr_t* ex, Exnode_t* expr, void* env, Sfio_t* sp)
 	fmt.fmt.extf = prformat;
 	fmt.expr = ex;
 	fmt.env = env;
-	x = expr->data.print.args;
+	x = exnode->data.print.args;
 	if (x->format)
 		do
 		{
@@ -528,7 +522,7 @@ scan(Expr_t* ex, Exnode_t* expr, void* env, Sfio_t* sp)
 			v.integer = 0;
 		if (v.integer < 0 || v.integer >= elementsof(ex->file) || (!(sp = ex->file[v.integer]) && !(sp = ex->file[v.integer] = sfnew(NULL, NULL, SF_UNBOUND, v.integer, SF_READ|SF_WRITE))))
 		{
-			exerror("scanf: %d: invalid descriptor", v.integer);
+			exerror("scanf: %" PRIdMAX ": invalid descriptor", (intmax_t)v.integer);
 			return 0;
 		}
 	}
@@ -1063,11 +1057,13 @@ static Extype_t exsubstr(Expr_t * ex, Exnode_t * expr, void *env)
 	len = strlen(s.string);
 	i = eval(ex, expr->data.string.pat, env);
 	if (i.integer < 0 || len < i.integer)
-		exerror("illegal start index in substr(%s,%d)", s.string, i.integer);
+		exerror("illegal start index in substr(%s,%" PRIdMAX ")", s.string,
+		        (intmax_t)i.integer);
 	if (expr->data.string.repl) {
 		l = eval(ex, expr->data.string.repl, env);
 		if (l.integer < 0 || len - i.integer < l.integer)
-	    exerror("illegal length in substr(%s,%d,%d)", s.string, i.integer, l.integer);
+	    exerror("illegal length in substr(%s,%" PRIdMAX ",%" PRIdMAX ")",
+	            s.string, (intmax_t)i.integer, (intmax_t)l.integer);
 	} else
 		l.integer = len - i.integer;
 

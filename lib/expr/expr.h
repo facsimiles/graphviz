@@ -271,7 +271,13 @@ extern void		exclose(Expr_t*, int);
 extern int		excomp(Expr_t*, const char*, int, const char*, Sfio_t*);
 extern char*		excontext(Expr_t*, char*, int);
 extern int		exdump(Expr_t*, Exnode_t*, Sfio_t*);
+#ifdef __GNUC__
+__attribute__((format(printf, 1, 2)))
+#endif
 extern void		exerror(const char*, ...);
+#ifdef __GNUC__
+__attribute__((format(printf, 1, 2)))
+#endif
 extern void		exwarn(const char *, ...);
 extern Extype_t		exeval(Expr_t*, Exnode_t*, void*);
 extern Exnode_t*	exexpr(Expr_t*, const char*, Exid_t*, int);

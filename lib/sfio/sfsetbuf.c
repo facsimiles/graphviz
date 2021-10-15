@@ -123,7 +123,7 @@ void *sfsetbuf(Sfio_t * f, void * buf, size_t size)
 
     /* pure read/string streams must have a valid string */
     if ((f->flags & (SF_RDWR | SF_STRING)) == SF_RDSTR &&
-	(size == (size_t) SF_UNBOUND || !buf))
+	(size == SF_UNBOUND || !buf))
 	size = 0;
 
     /* set disc to the first discipline with a seekf */
@@ -208,7 +208,7 @@ void *sfsetbuf(Sfio_t * f, void * buf, size_t size)
 
     /* get buffer space */
   setbuf:
-    if (size == (size_t) SF_UNBOUND) {	/* define a default size suitable for block transfer */
+    if (size == SF_UNBOUND) {	/* define a default size suitable for block transfer */
 	if (init && osize > 0)
 	    size = osize;
 	else if (f == sfstderr && (f->mode & SF_WRITE))

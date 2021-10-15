@@ -71,9 +71,7 @@ Sfio_t *sfopen(Sfio_t * f, const char *file, const char *mode)
 
 #endif
     if (sflags & SF_STRING) {
-	f = sfnew(f, (char *) file,
-		  file ? (size_t) strlen(file) : (size_t)
-		  SF_UNBOUND, -1, sflags);
+	f = sfnew(f, (char *)file, file ? strlen(file) : SF_UNBOUND, -1, sflags);
     } else {
 	if (!file)
 	    return NULL;
@@ -114,8 +112,7 @@ Sfio_t *sfopen(Sfio_t * f, const char *file, const char *mode)
 
 	/* we may have to reset the file descriptor to its old value */
 	oldfd = f ? f->file : -1;
-	if ((f = sfnew(f, NULL, (size_t) SF_UNBOUND, fd, sflags))
-	    && oldfd >= 0)
+	if ((f = sfnew(f, NULL, SF_UNBOUND, fd, sflags)) && oldfd >= 0)
 	     (void) sfsetfd(f, oldfd);
     }
 
