@@ -20,7 +20,7 @@
 #include <common/memory.h>
 #include <common/logic.h>
 
-#if HAVE_GTS
+#ifdef HAVE_GTS
 #include <gts.h>
 
 static gboolean triangle_is_hole(GtsTriangle * t)
