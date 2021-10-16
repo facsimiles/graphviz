@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -172,8 +173,8 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
      */
     for (i = 0; i < nsegs; i++) {
 	edges[i] = gts_edge_new(ecl,
-		 (GtsVertex *) (vertices[ segs[ 2 * i]]),
-		 (GtsVertex *) (vertices[ segs[ 2 * i + 1]]));
+		 (GtsVertex *)vertices[segs[2 * i]],
+		 (GtsVertex *)vertices[segs[2 * i + 1]]);
     }
 
     for (i = 0; i < npt; i++)
@@ -303,9 +304,8 @@ static void addEdge (GtsSegment * e, estate* es)
     es->n += 1;
 }
 
-/* If qsort_r ever becomes standardized, this should be used
- * instead of having a global variable.
- */
+// when moving to C11, qsort_s should be used instead of having a global
+// variable
 static double* _vals;
 typedef int (*qsort_cmpf) (const void *, const void *);
 
@@ -545,7 +545,7 @@ get_triangles (double *x, int n, int* tris)
 
     in.numberofpoints = n;
     in.numberofpointattributes = 0;
-    in.pointlist = (REAL *) N_GNEW(in.numberofpoints * 2, REAL);
+    in.pointlist = N_GNEW(in.numberofpoints * 2, REAL);
 
     for (i = 0; i < n; i++){
 	in.pointlist[i*2] = x[i*2];
@@ -557,20 +557,20 @@ get_triangles (double *x, int n, int* tris)
     in.numberofholes = 0;
     in.numberofregions = 0;
     in.regionlist = NULL;
-    mid.pointlist = (REAL *) NULL;            /* Not needed if -N switch used. */
-    mid.pointattributelist = (REAL *) NULL;
-    mid.pointmarkerlist = (int *) NULL; /* Not needed if -N or -B switch used. */
-    mid.trianglelist = (int *) NULL;          /* Not needed if -E switch used. */
-    mid.triangleattributelist = (REAL *) NULL;
-    mid.neighborlist = (int *) NULL;         /* Needed only if -n switch used. */
-    mid.segmentlist = (int *) NULL;
-    mid.segmentmarkerlist = (int *) NULL;
-    mid.edgelist = (int *) NULL;             /* Needed only if -e switch used. */
-    mid.edgemarkerlist = (int *) NULL;   /* Needed if -e used and -B not used. */
-    vorout.pointlist = (REAL *) NULL;        /* Needed only if -v switch used. */
-    vorout.pointattributelist = (REAL *) NULL;
-    vorout.edgelist = (int *) NULL;          /* Needed only if -v switch used. */
-    vorout.normlist = (REAL *) NULL;         /* Needed only if -v switch used. */
+    mid.pointlist = NULL; // Not needed if -N switch used.
+    mid.pointattributelist = NULL;
+    mid.pointmarkerlist = NULL; /* Not needed if -N or -B switch used. */
+    mid.trianglelist = NULL; // Not needed if -E switch used.
+    mid.triangleattributelist = NULL;
+    mid.neighborlist = NULL; // Needed only if -n switch used.
+    mid.segmentlist = NULL;
+    mid.segmentmarkerlist = NULL;
+    mid.edgelist = NULL; // Needed only if -e switch used.
+    mid.edgemarkerlist = NULL; // Needed if -e used and -B not used.
+    vorout.pointlist = NULL; // Needed only if -v switch used.
+    vorout.pointattributelist = NULL;
+    vorout.edgelist = NULL; // Needed only if -v switch used.
+    vorout.normlist = NULL; // Needed only if -v switch used.
 
     /* Triangulate the points.  Switches are chosen to read and write a  */
     /*   PSLG (p), preserve the convex hull (c), number everything from  */
@@ -765,8 +765,7 @@ static void remove_edge(v_data * graph, int source, int dest)
     int i;
     for (i = 1; i < graph[source].nedges; i++) {
 	if (graph[source].edges[i] == dest) {
-	    graph[source].edges[i] =
-		graph[source].edges[--graph[source].nedges];
+	    graph[source].edges[i] = graph[source].edges[--graph[source].nedges];
 	    break;
 	}
     }
@@ -778,7 +777,6 @@ v_data *UG_graph(double *x, double *y, int n, int accurate_computation)
     int i;
     double dist_ij, dist_ik, dist_jk, x_i, y_i, x_j, y_j;
     int j, k, neighbor_j, neighbor_k;
-    int removed;
 
     if (n == 2) {
 	int *edges = N_GNEW(4, int);
@@ -818,24 +816,17 @@ v_data *UG_graph(double *x, double *y, int n, int accurate_computation)
 		}
 		x_j = x[neighbor_j];
 		y_j = y[neighbor_j];
-		dist_ij =
-		    (x_j - x_i) * (x_j - x_i) + (y_j - y_i) * (y_j - y_i);
-		removed = FALSE;
+		dist_ij = (x_j - x_i) * (x_j - x_i) + (y_j - y_i) * (y_j - y_i);
+		bool removed = false;
 		for (k = 0; k < n && !removed; k++) {
-		    dist_ik =
-			(x[k] - x_i) * (x[k] - x_i) + (y[k] -
-						       y_i) * (y[k] - y_i);
+		    dist_ik = (x[k] - x_i) * (x[k] - x_i) + (y[k] - y_i) * (y[k] - y_i);
 		    if (dist_ik < dist_ij) {
-			dist_jk =
-			    (x[k] - x_j) * (x[k] - x_j) + (y[k] -
-							   y_j) * (y[k] -
-								   y_j);
+			dist_jk = (x[k] - x_j) * (x[k] - x_j) + (y[k] - y_j) * (y[k] - y_j);
 			if (dist_jk < dist_ij) {
 			    // remove the edge beteween i and neighbor j
-			    delaunay[i].edges[j] =
-				delaunay[i].edges[--delaunay[i].nedges];
+			    delaunay[i].edges[j] = delaunay[i].edges[--delaunay[i].nedges];
 			    remove_edge(delaunay, neighbor_j, i);
-			    removed = TRUE;
+			    removed = true;
 			}
 		    }
 		}
@@ -853,26 +844,22 @@ v_data *UG_graph(double *x, double *y, int n, int accurate_computation)
 		neighbor_j = delaunay[i].edges[j];
 		x_j = x[neighbor_j];
 		y_j = y[neighbor_j];
-		dist_ij =
-		    (x_j - x_i) * (x_j - x_i) + (y_j - y_i) * (y_j - y_i);
+		dist_ij = (x_j - x_i) * (x_j - x_i) + (y_j - y_i) * (y_j - y_i);
 		// now look at i'th neighbors to see whether there is a node in the "forbidden region"
 		// we will also go through neighbor_j's neighbors when we traverse the edge from its other side
-		removed = FALSE;
+		bool removed = false;
 		for (k = 1; k < delaunay[i].nedges && !removed; k++) {
 		    neighbor_k = delaunay[i].edges[k];
-		    dist_ik =
-			(x[neighbor_k] - x_i) * (x[neighbor_k] - x_i) +
+		    dist_ik = (x[neighbor_k] - x_i) * (x[neighbor_k] - x_i) +
 			(y[neighbor_k] - y_i) * (y[neighbor_k] - y_i);
 		    if (dist_ik < dist_ij) {
-			dist_jk =
-			    (x[neighbor_k] - x_j) * (x[neighbor_k] - x_j) +
+			dist_jk = (x[neighbor_k] - x_j) * (x[neighbor_k] - x_j) +
 			    (y[neighbor_k] - y_j) * (y[neighbor_k] - y_j);
 			if (dist_jk < dist_ij) {
 			    // remove the edge beteween i and neighbor j
-			    delaunay[i].edges[j] =
-				delaunay[i].edges[--delaunay[i].nedges];
+			    delaunay[i].edges[j] = delaunay[i].edges[--delaunay[i].nedges];
 			    remove_edge(delaunay, neighbor_j, i);
-			    removed = TRUE;
+			    removed = true;
 			}
 		    }
 		}
