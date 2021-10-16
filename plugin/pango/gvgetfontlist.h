@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef _GVGETFONTLIST_H
-#define _GVGETFONTLIST_H
+#pragma once
 
 #include <pango/pangocairo.h>
 
@@ -27,5 +26,3 @@ extern gv_font_map* get_font_mapping(PangoFontMap * pfm);
 #ifdef __cplusplus
 }
 #endif
-
-#endif  /* _GVGETFONTLIST_H */

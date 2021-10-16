@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVPLUGIN_QUARTZ_H
-#define GVPLUGIN_QUARTZ_H
+#pragma once
 
 #include <Availability.h>
 
@@ -62,6 +61,4 @@ void quartz_free_layout(void *layout);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

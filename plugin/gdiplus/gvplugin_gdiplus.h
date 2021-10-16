@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GVPLUGIN_GDIPLUS_H
-#define GVPLUGIN_GDIPLUS_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -64,5 +63,3 @@ void gdiplus_free_layout(void *layout);
 void UseGdiplus();
 const Gdiplus::StringFormat* GetGenericTypographic();
 void SaveBitmapToStream(Gdiplus::Bitmap &bitmap, IStream *stream, int format);
-
-#endif

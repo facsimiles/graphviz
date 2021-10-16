@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GV_FILESTREAM_H
-#define GV_FILESTREAM_H
+#pragma once
 
 #include <stdio.h>
 #include <sys/stat.h>
@@ -92,5 +91,3 @@ private:
 	FILE *_file;
 
 };
-
-#endif
