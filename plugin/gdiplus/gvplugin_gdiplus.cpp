@@ -96,7 +96,7 @@ extern "C" {
 #   define GVPLUGIN_GDIPLUS_API
 #endif
 
-GVPLUGIN_GDIPLUS_API gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
+GVPLUGIN_GDIPLUS_API gvplugin_library_t gvplugin_gdiplus_LTX_library = { (char *)"gdiplus", apis };
 
 #ifdef __cplusplus
 }

@@ -125,22 +125,22 @@ HRESULT FileStream::Seek(
 }
 
 HRESULT FileStream::SetSize( 
-    ULARGE_INTEGER libNewSize)
+    ULARGE_INTEGER /* libNewSize */)
 {
 	return E_NOTIMPL;
 }
 
 HRESULT FileStream::CopyTo( 
-    IStream *pstm,
-	ULARGE_INTEGER cb,
-    ULARGE_INTEGER *pcbRead,
-    ULARGE_INTEGER *pcbWritten)
+    IStream * /* pstm */,
+	ULARGE_INTEGER /* cb */,
+    ULARGE_INTEGER * /* pcbRead */,
+    ULARGE_INTEGER * /* pcbWritten */)
 {
 	return E_NOTIMPL;
 }
 
 HRESULT FileStream::Commit( 
-    DWORD grfCommitFlags)
+    DWORD /* grfCommitFlags */)
 {
 	return E_NOTIMPL;
 }
@@ -151,17 +151,17 @@ HRESULT FileStream::Revert()
 }
 
 HRESULT FileStream::LockRegion( 
-    ULARGE_INTEGER libOffset,
-    ULARGE_INTEGER cb,
-    DWORD dwLockType)
+    ULARGE_INTEGER /* libOffset */,
+    ULARGE_INTEGER /* cb */,
+    DWORD /* dwLockType */)
 {
 	return E_NOTIMPL;
 }
 
 HRESULT FileStream::UnlockRegion( 
-    ULARGE_INTEGER libOffset,
-    ULARGE_INTEGER cb,
-    DWORD dwLockType)
+    ULARGE_INTEGER /* libOffset */,
+    ULARGE_INTEGER /* cb */,
+    DWORD /* dwLockType */)
 {
 	return E_NOTIMPL;
 }
@@ -204,7 +204,7 @@ HRESULT FileStream::Stat(
 }
 
 HRESULT FileStream::Clone( 
-    IStream **ppstm)
+    IStream ** /* ppstm */)
 {
 	return E_NOTIMPL;
 }
