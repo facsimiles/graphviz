@@ -294,6 +294,7 @@ target_include_directories(gxl2gv PRIVATE
 
 target_link_libraries(gxl2gv
     cgraph
+    gvc
     ingraphs
     ${EXPAT_LIBRARIES}
 )

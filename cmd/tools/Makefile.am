@@ -74,6 +74,7 @@ endif
 gxl2gv_SOURCES = cvtgxl.c gv2gxl.c gxl2gv.c
 
 gxl2gv_LDADD = \
+	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la @EXPAT_LIBS@ 
@@ -387,9 +388,6 @@ EXTRA_DIST = $(man_MANS) $(pdf) bcomps.vcxproj* \
 	gmlscan.c gmlparse.c gmlparse.h gml2gv.vcxproj* \
 	graphml2gv.vcxproj* gv2gml.vcxproj*
 
-# FIXME - these are missing
-#	gv2gxl.vcxproj*
-		
 CLEANFILES = stamp.h 
 
 DISTCLEANFILES = $(pdf) gmlparse.[ch] gmlscan.c \

@@ -16,11 +16,11 @@ static bool isalpha_no_locale(char c) {
  *                          or &#[0-9]*;        (e.g. &#38; )
  *                          or &#x[0-9a-fA-F]*; (e.g. &#x6C34; )
  */
-static int xml_isentity(const char *s)
+static bool xml_isentity(const char *s)
 {
     s++;			/* already known to be '&' */
     if (*s == ';') { // '&;' is not a valid entity
-	return 0;
+	return false;
     }
     if (*s == '#') {
 	s++;
@@ -37,8 +37,8 @@ static int xml_isentity(const char *s)
 	    s++;
     }
     if (*s == ';')
-	return 1;
-    return 0;
+	return true;
+    return false;
 }
 
 /** XML-escape a character
