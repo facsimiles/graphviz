@@ -73,7 +73,7 @@ static double B23(double t);
  * Return 0 on success and -1 on failure, including no memory.
  */
 int Proutespline(Pedge_t * edges, int edgen, Ppolyline_t input,
-		 Ppoint_t * evs, Ppolyline_t * output)
+		 Ppoint_t evs[2], Ppolyline_t * output)
 {
     Ppoint_t *inps;
     int inpn;

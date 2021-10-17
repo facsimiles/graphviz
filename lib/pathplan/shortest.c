@@ -90,7 +90,7 @@ static int growops(int);
  * points supplied in eps. The resulting polyline is stored in output.
  * Return 0 on success, -1 on bad input, -2 on memory allocation problem. 
  */
-int Pshortestpath(Ppoly_t * polyp, Ppoint_t * eps, Ppolyline_t * output)
+int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
 {
     int pi, minpi;
     double minx;
