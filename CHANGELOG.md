@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (2.49.3)]
 
+### Changed
+
+- Git is no longer a required build dependency in the CMake build system
+
 ## [2.49.2] – 2021-10-16
 
 ### Changed
