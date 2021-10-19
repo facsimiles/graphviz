@@ -1248,6 +1248,44 @@ def test_2131():
 
   assert p.returncode == 0, "gv2gml rejected a basic graph"
 
+@pytest.mark.skipif(shutil.which("gvpr") is None,
+                    reason="gvpr not available")
+@pytest.mark.parametrize("examine", ("indices", "tokens"))
+def test_2138(examine: str):
+  """
+  gvpr splitting and tokenizing should not result in trailing garbage
+  https://gitlab.com/graphviz/graphviz/-/issues/2138
+  """
+
+  # find our co-located GVPR program
+  script = (Path(__file__).parent / "2138.gvpr").resolve()
+  assert script.exists(), "missing test case"
+
+  # run it with NUL input
+  out = subprocess.check_output(["gvpr", "-f", script],
+                                stdin=subprocess.DEVNULL)
+
+  # Decode into text. We do this instead of `universal_newlines=True` above
+  # because the trailing garbage can contain invalid UTF-8 data causing cryptic
+  # failures. We want to correctly surface this as trailing garbage, not an
+  # obscure UTF-8 decoding error.
+  result = out.decode("utf-8", "replace")
+
+  if examine == "indices":
+    # check no indices are miscalculated
+    index_re = r"^// index of space \(st\) :\s*(?P<index>-?\d+)\s*<< must " \
+               r"NOT be less than -1$"
+    for m in re.finditer(index_re, result, flags=re.MULTILINE):
+      index = int(m.group("index"))
+      assert index >= -1, "illegal index computed"
+
+  if examine == "tokens":
+    # check for text the author of 2138.gvpr expected to find
+    assert "// tok[3]    >>3456789<<   should NOT include trailing spaces or " \
+      "junk chars" in result, "token 3456789 not found or has trailing garbage"
+    assert "// tok[7]    >>012<<   should NOT include trailing spaces or "     \
+      "junk chars" in result, "token 012 not found or has trailing garbage"
+
 def test_package_version():
   """
   The graphviz_version.h header should define a non-empty PACKAGE_VERSION

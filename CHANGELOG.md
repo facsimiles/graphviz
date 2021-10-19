@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (2.49.3)]
 
+### Fixed
+
+- gvpr "split", "tokens", and "index" functions produce incorrect results #2138.
+  This was a regression that occurred between 2.47.1 and 2.47.2.
+
 ## [2.49.2] – 2021-10-16
 
 ### Changed

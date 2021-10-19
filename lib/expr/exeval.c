@@ -890,7 +890,8 @@ exsplit(Expr_t * ex, Exnode_t * expr, void *env)
 		if (tok == NULL) {
 			tok = exnospace();
 		} else {
-			strncpy(tok, str, sz + 1);
+			memcpy(tok, str, sz);
+			tok[sz] = '\0';
 		}
 		addItem (arr, v, tok);
 		v.integer++;
@@ -933,7 +934,8 @@ extokens(Expr_t * ex, Exnode_t * expr, void *env)
 		if (tok == NULL) {
 			tok = exnospace();
 		} else {
-			strncpy(tok, str, sz + 1);
+			memcpy(tok, str, sz);
+			tok[sz] = '\0';
 		}
 		addItem (arr, v, tok);
 		v.integer++;
