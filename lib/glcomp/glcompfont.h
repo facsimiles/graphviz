@@ -7,8 +7,8 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
-#ifndef glCompFont_H
-#define glCompFont_H
+
+#pragma once
 
 #include <stdlib.h>
 #include <string.h>
@@ -38,5 +38,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

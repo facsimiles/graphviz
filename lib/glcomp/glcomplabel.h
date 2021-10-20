@@ -7,8 +7,8 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
-#ifndef GLCOMPLABEL_H
-#define GLCOMPLABEL_H
+
+#pragma once
 
 #include <glcomp/glcompdefs.h>
 
@@ -24,5 +24,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

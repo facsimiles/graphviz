@@ -7,8 +7,8 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
-#ifndef GLCOMPBUTTON_H
-#define GLCOMPBUTTON_H
+
+#pragma once
 
 #include <glcomp/glcompdefs.h>
 
@@ -38,5 +38,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

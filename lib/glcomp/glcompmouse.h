@@ -7,8 +7,8 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
-#ifndef GLCOMPMOUSE_H
-#define GLCOMPMOUSE_H
+
+#pragma once
 
 #include <glcomp/glcompdefs.h>
 
@@ -34,5 +34,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

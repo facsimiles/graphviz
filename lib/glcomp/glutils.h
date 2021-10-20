@@ -8,8 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GLUTILS_H
-#define GLUTILS_H
+#pragma once
+
 #ifdef _WIN32
 #include "windows.h"
 #endif
@@ -61,5 +61,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

@@ -12,8 +12,7 @@
   includes glPanel,glCompButton,glCompCustomButton,clCompLabel,glCompStyle
 */
 
-#ifndef glCompFontURE_H
-#define glCompFontURE_H
+#pragma once
 
 #ifdef _WIN32
 #include "windows.h"
@@ -38,5 +37,4 @@ extern "C" {
     extern void glCompDeleteTexture(glCompTex * t);
 #ifdef __cplusplus
 }
-#endif
 #endif

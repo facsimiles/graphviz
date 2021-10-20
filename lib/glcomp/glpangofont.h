@@ -8,8 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GLPANGOFONT_H
-#define GLPANGOFONT_H
+#pragma once
+
 #include <cairo/cairo.h>
 #include <pango/pangocairo.h>
 #include <png.h>
@@ -29,5 +29,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

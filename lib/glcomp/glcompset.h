@@ -11,8 +11,8 @@
 /*Open GL basic component set
   includes glPanel,glCompButton,glCompCustomButton,clCompLabel,glCompStyle
 */
-#ifndef GLCOMPSET_H
-#define GLCOMPSET_H
+
+#pragma once
 
 #include <glcomp/glcompfont.h>
 #include <glcomp/glcomptextpng.h>
@@ -36,5 +36,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

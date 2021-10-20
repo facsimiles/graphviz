@@ -7,8 +7,8 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
-#ifndef GLCOMPDEFS_H
-#define GLCOMPDEFS_H
+
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -388,5 +388,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

@@ -8,8 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef XDOT_H
-#define XDOT_H
+#pragma once
+
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -181,5 +181,4 @@ XDOT_API void freeXDotColor (xdot_color*);
 
 #ifdef __cplusplus
 }
-#endif
 #endif
