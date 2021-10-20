@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef ATT_GRAPH_H
-#define ATT_GRAPH_H
+#pragma once
 
 #include <inttypes.h>
 #include "cdt.h"
@@ -458,5 +457,4 @@ and edges are embedded in main graph objects but allocated separately in subgrap
 
 #ifdef __cplusplus
 }
-#endif
 #endif

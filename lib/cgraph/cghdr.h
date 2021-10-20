@@ -8,8 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef ATT_GRAPHPVT_H
-#define ATT_GRAPHPVT_H 1
+#pragma once
+
 #define _BLD_cgraph 1
 
 #ifdef _WIN32
@@ -156,5 +156,3 @@ void agrecord_callback(Agraph_t * g, Agobj_t * obj, cb_t kind,
 void aginitcb(Agraph_t * g, void *obj, Agcbstack_t * disc);
 void agupdcb(Agraph_t * g, void *obj, Agsym_t * sym, Agcbstack_t * disc);
 void agdelcb(Agraph_t * g, void *obj, Agcbstack_t * disc);
-
-#endif				/* ATT_GRAPHPVT_H */

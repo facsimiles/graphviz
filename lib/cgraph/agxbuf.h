@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef         AGXBUF_H
-#define         AGXBUF_H
 
 #include <stddef.h>
 
@@ -140,8 +139,6 @@ static inline int agxbputc(agxbuf * xb, char c) {
  * called, use agxbuse instead of agxbdisown.
  */
     AGXBUF_API char *agxbdisown(agxbuf * xb);
-
-#endif
 
 #ifdef __cplusplus
 }
