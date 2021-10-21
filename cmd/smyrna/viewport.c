@@ -205,8 +205,6 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->drawedgelabels=atoi(get_attribute_value("labelshowedges", view, g));
     view->nodeScale=atof(get_attribute_value("nodesize", view, g))*.30;
 
-    view->FontSizeConst = 0;	//this will be calculated later in topview.c while calculating optimum font size
-
     view->glutfont =
 	get_glut_font(atoi(get_attribute_value("labelglutfont", view, g)));
     colorxlate(get_attribute_value("nodelabelcolor", view, g), &cl,
@@ -255,13 +253,9 @@ static void get_data_dir(void)
 {
     if (view->template_file) {
 	free(view->template_file);
-	free(view->glade_file);
-	free(view->attr_file);
     }
 
     view->template_file = strdup(smyrnaPath("template.dot"));
-    view->glade_file = strdup(smyrnaPath("smyrna.glade"));
-    view->attr_file = strdup(smyrnaPath("attrs.txt"));
 }
 
 void init_viewport(ViewInfo * view)
@@ -399,7 +393,6 @@ void init_viewport(ViewInfo * view)
     g_timer_stop(view->timer);
     view->active_frame = 0;
     view->total_frames = 1500;
-    view->frame_length = 1;
     /*add a call back to the main() */
     g_timeout_add_full((gint) G_PRIORITY_DEFAULT, (guint) 100,
 		       gl_main_expose, NULL, NULL);
@@ -408,11 +401,9 @@ void init_viewport(ViewInfo * view)
     view->active_camera = -1;
     set_viewport_settings_from_template(view, view->systemGraphs.def_attrs);
     view->dfltViewType = VT_NONE;
-    view->dfltEngine = GVK_NONE;
     view->Topview->Graphdata.GraphFileName = (char *) 0;
     view->Topview->Graphdata.Modified = 0;
     view->colschms = NULL;
-    view->flush = 1;
     view->arcball = NEW(ArcBall_t);
     view->keymap.down=0;
     load_mouse_actions (view);

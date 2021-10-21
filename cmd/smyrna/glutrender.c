@@ -106,7 +106,6 @@ static void cb_mouseclick(int button, int state, int x, int y)
     }
     else
     {
-	view->FontSizeConst = GetOGLDistance(14);
 	view->arcball->isDragging = 0;
 	view->widgets->common.functions.mouseup((glCompObj*)view->widgets,(GLfloat) x,(GLfloat) y,getGlCompMouseType(button));
 

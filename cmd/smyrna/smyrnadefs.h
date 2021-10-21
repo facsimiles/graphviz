@@ -102,7 +102,6 @@ typedef struct
 }attr_list;
 
 
-    typedef enum { nodshapedot, nodeshapecircle } node_shape;
     typedef enum { leftmousebutton, rightmousebutton,
 	    thirdmousebutton } clicked_mouse_button;
     typedef enum { MOUSE_ROTATE_X, MOUSE_ROTATE_Y, MOUSE_ROTATE_XY,
@@ -601,10 +600,6 @@ typedef struct
 
 	/*0 advanced users with editing options 1 nonice users just navigate (glmenu system) */
 	int topviewusermode;
-	/*this should not be confused with graphviz node shapes, it can be dot or circles (dots are rendered mych faster, circle looks handsome, if graph is ulta large go with dot */
-//      node_shape nodeshape;
-	/*if true and nodeshape is nodeshapecircle , radius of nodes changes with degree */
-	int nodesizewithdegree;
 
 	/*open gl canvas, used to be a globa variable before looks better wrapped in viewinfo */
 	GtkWidget *drawing_area;
@@ -622,7 +617,6 @@ typedef struct
 	GTimer *timer3;
 	int active_frame;
 	int total_frames;
-	int frame_length;
 	/*lately added */
 	int drawnodes;
 	int drawedges;
@@ -639,22 +633,13 @@ typedef struct
 	int labelshowedges;
 
 	viewtype_t dfltViewType;
-	gvk_layout dfltEngine;
-	GtkTextBuffer *consoleText;
-	float FontSizeConst;
 	glCompSet *widgets;	//for novice user open gl menu
-	int visiblenodecount;	/*helper variable to know the number of the nodes being rendered, good data to optimize speed */
 	char *initFileName;	//file name from command line
 	int initFile;
 	int drawSplines;
 	colorschemaset *colschms;
-	char *glade_file;
 	char* temp;
 	char *template_file;
-	char *attr_file;
-	int flush;
-	gvprscript *scripts;
-	int script_count;	/*# of scripts */
 	GtkComboBox *graphComboBox;	/*pointer to graph combo box at top right */
 	ArcBall_t *arcball;
 	keymap_t keymap;

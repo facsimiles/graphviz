@@ -293,7 +293,6 @@ static gboolean button_release_event(GtkWidget * widget,
     (void)data;
 
     if (view->widgets == 0) return FALSE;
-    view->FontSizeConst = GetOGLDistance(14);
     view->arcball->isDragging = 0;
     view->widgets->common.functions.mouseup((glCompObj*)view->widgets,(GLfloat) event->x,(GLfloat) event->y,getGlCompMouseType(event->button));
 

@@ -332,7 +332,7 @@ static int get_active_frame(topview * t)
     gdouble seconds;
     int fr;
     seconds = g_timer_elapsed(view->timer, &microseconds);
-    fr = (int) (seconds / ((double) view->frame_length / (double) 1000));
+    fr = (int)(seconds * 1000.0);
     if (fr < view->total_frames) {
 
 	if (fr == view->active_frame)
