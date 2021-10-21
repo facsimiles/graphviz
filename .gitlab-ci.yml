@@ -389,6 +389,18 @@ ubuntu21-04-build:
     variables:
       IMAGE: ubuntu-21.04
 
+ubuntu21-10-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-21.10
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-21.10
+
 ubuntu21-04-static-build:
     <<: *deb_build_definition
     before_script:
@@ -415,6 +427,32 @@ ubuntu21-04-static-build:
     variables:
       IMAGE: ubuntu-21.04
 
+ubuntu21-10-static-build:
+    <<: *deb_build_definition
+    before_script:
+        - export CONFIGURE_OPTIONS="--disable-shared --enable-static"
+        - echo experimental > COLLECTION
+    needs:
+        - job: docker_build_ubuntu-21.10
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+            - Packages/*/*/*/*/*/*deb
+            - Packages/*/*/*/*/*/*.xz
+            - Metadata/*/*/*/configure.log
+            - GRAPHVIZ_VERSION
+            - COLLECTION
+        reports:
+            metrics: metrics.txt
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-21.10
+
 out-of-source-build:
     <<: *deb_build_definition
     script:
@@ -424,7 +462,7 @@ out-of-source-build:
         - rm $logfile
         - cat metrics.txt
     needs:
-        - job: docker_build_ubuntu-21.04
+        - job: docker_build_ubuntu-21.10
           artifacts: false
         - job: portable-source
           artifacts: true
@@ -436,7 +474,7 @@ out-of-source-build:
         reports:
             metrics: metrics.txt
     variables:
-      IMAGE: ubuntu-21.04
+      IMAGE: ubuntu-21.10
 
 macos-autotools-build:
     <<: *macos_build_definition
@@ -568,6 +606,23 @@ ubuntu21-04-cmake-build:
     variables:
       IMAGE: ubuntu-21.04
 
+ubuntu21-10-cmake-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-21.10
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS=-Werror
+        - export CXXFLAGS=-Werror
+        - export CMAKE_OPTIONS="-Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
+        - echo experimental > COLLECTION
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-21.10
+
 ubuntu21-04-cmake-minimal-build:
     <<: *deb_build_definition
     needs:
@@ -592,6 +647,31 @@ ubuntu21-04-cmake-minimal-build:
         - linux
     variables:
       IMAGE: ubuntu-21.04
+
+ubuntu21-10-cmake-minimal-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-21.10
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS=-Werror
+        - export CXXFLAGS=-Werror
+        - export CMAKE_OPTIONS=""
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Denable_ltdl=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_expat=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_digcola=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_ipsepcola=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_ortho=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_sfdp=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_smyrna=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_zlib=OFF"
+        - echo experimental > COLLECTION
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-21.10
 
 ubuntu21-04-cmake-ASan-build-for-ctest:
     <<: *deb_build_definition
@@ -637,6 +717,51 @@ ubuntu21-04-cmake-ASan-build-for-ctest:
         - linux
     variables:
       IMAGE: ubuntu-21.04
+
+ubuntu21-10-cmake-ASan-build-for-ctest:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-21.10
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS=-Werror
+        - export CXXFLAGS=-Werror
+        - export CMAKE_OPTIONS="-Duse_sanitizers=ON -Duse_coverage=ON -Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
+        - echo experimental > COLLECTION
+    # override the deb_build_definition artifacts since we need more
+    # files from the build directory when running ctest in the test
+    # stage.
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+            # the C++ test programs
+            - build/tests/test_*
+            # the ctest files
+            - build/**/CTestTestfile.cmake
+            # archive all shared libraries produced directly by "cmake
+            # --build" (but not those in the install directory that
+            # cpack has copied). In the test stage, the test
+            # executables load them from those directory locations
+            # since LD_LIBRARY_PATH is automatically set up to contain
+            # them.
+            - build/lib/**/lib*.so.*
+            - build/plugin/**/lib*.so.*
+            # the coverage analysis needs the .gcno files
+            - build/**/*.gcno
+            # the dot program is needed to configure the plugins before running pre-install tests
+            - build/cmd/dot/dot
+            # the packages need to be installed for the post-install tests
+            - Packages/*/*/*/*/*/*deb
+            - Metadata/*/*/*/configure.log
+        reports:
+            metrics: metrics.txt
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-21.10
 
 centos7-cmake-build:
     <<: *rpm_build_definition
@@ -840,6 +965,18 @@ ubuntu21-04-test:
     variables:
       IMAGE: ubuntu-21.04
 
+ubuntu21-10-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "ubuntu21-10-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-21.10
+
 centos7-test:
     <<: *linux_test_definition
     before_script:
@@ -973,6 +1110,20 @@ ubuntu21-04-cmake-test:
     variables:
       IMAGE: ubuntu-21.04
 
+ubuntu21-10-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py > GRAPHVIZ_VERSION
+        - echo experimental > COLLECTION
+    needs:
+        - job: "ubuntu21-10-cmake-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-21.10
+
 ubuntu21.04-cmake-ASan-test-including-ctest:
     <<: *linux_test_definition_including_ctest
     before_script:
@@ -989,6 +1140,23 @@ ubuntu21.04-cmake-ASan-test-including-ctest:
         - linux
     variables:
       IMAGE: ubuntu-21.04
+
+ubuntu21.10-cmake-ASan-test-including-ctest:
+    <<: *linux_test_definition_including_ctest
+    before_script:
+        - export build_system="cmake"
+        - export CFLAGS=" -g -fsanitize=address,undefined"
+        - export CXXFLAGS=" -g -fsanitize=address,undefined"
+        - export LDFLAGS=" -g -fsanitize=address,undefined"
+        - python3 gen_version.py > GRAPHVIZ_VERSION
+        - echo experimental > COLLECTION
+    needs:
+        - job: "ubuntu21-10-cmake-ASan-build-for-ctest"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-21.10
 
 centos7-cmake-test:
     <<: *linux_test_definition
@@ -1133,6 +1301,11 @@ docker_build_ubuntu-21.04:
   variables:
     IMAGE: ubuntu-21.04
 
+docker_build_ubuntu-21.10:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: ubuntu-21.10
+
 docker_push_centos7:
   <<: *docker_push_definition
   variables:
@@ -1189,11 +1362,18 @@ docker_push_ubuntu-21.04:
   needs:
     - docker_build_ubuntu-21.04
 
+docker_push_ubuntu-21.10:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: ubuntu-21.10
+  needs:
+    - docker_build_ubuntu-21.10
+
 lint_pylint:
-  image: "$CI_REGISTRY_IMAGE/ubuntu-21.04:$CI_COMMIT_SHA"
+  image: "$CI_REGISTRY_IMAGE/ubuntu-21.10:$CI_COMMIT_SHA"
   stage: test
   needs:
-    - docker_build_ubuntu-21.04
+    - docker_build_ubuntu-21.10
   script:
     - logfile=`mktemp`
     - python3 -m pylint --rcfile=.pylintrc `find . -name '*.py' | xargs` --exit-zero |& tee $logfile

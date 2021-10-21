@@ -73,7 +73,8 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 	{ if((endd-d) >= n) { while(n--) *d++ = (uchar)c; } \
 	  else \
 	  { SFEND(f); n_output += (w = SFNPUTC(f,c,n)) > 0 ? w : 0; SFBUF(f); \
-	    if(n != w) goto done; n = 0;\
+	    if(n != w) goto done; \
+	    n = 0; \
 	  } \
 	}
 #define SFwrite(f,s,n) \
