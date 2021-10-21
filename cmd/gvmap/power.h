@@ -8,12 +8,9 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef POWER_H
-#define POWER_H
+#pragma once
 
 #include <sparse/general.h>
 
 void power_method(void *A, int n, int K, int random_seed,
   real **eigv, real *eigs);
-
-#endif

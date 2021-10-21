@@ -8,13 +8,10 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef COUNTRY_GRAPH_CLUSTERING_H
-#define COUNTRY_GRAPH_CLUSTERING_H
+#pragma once
 
 #include <sparse/SparseMatrix.h>
 
 void country_graph_coloring(int seed, SparseMatrix A, int **p);
 
 void improve_antibandwidth_by_swapping(SparseMatrix A, int *p);
-
-#endif

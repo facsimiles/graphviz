@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef GRAPH_GENERATOR_H
-#define GRAPH_GENERATOR_H
+#pragma once
 
 typedef void (*edgefn)(int, int);
 
@@ -36,4 +35,3 @@ typedef struct treegen_s treegen_t;
 extern treegen_t* makeTreeGen (int);
 extern void makeRandomTree (treegen_t*, edgefn);
 extern void freeTreeGen(treegen_t*);
-#endif

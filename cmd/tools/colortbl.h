@@ -8,10 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
     hsbcolor_t color_lib[] = {
 	{"aliceblue", 147, 15, 255},
 	{"antiquewhite", 24, 35, 250},
@@ -666,7 +662,3 @@ extern "C" {
 	{"yellow4", 42, 255, 139},
 	{"yellowgreen", 56, 192, 205},
     };
-
-#ifdef __cplusplus
-}
-#endif

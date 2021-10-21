@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef MAKE_MAP_H
-#define MAKE_MAP_H
+#pragma once
 
 #include <sparse/SparseMatrix.h>
 #include <cgraph/cgraph.h>
@@ -37,5 +36,3 @@ enum {POLY_LINE_REAL_EDGE, POLY_LINE_NOT_REAL_EDGE};
 #define edge_tail(e) edge_table[2*(e)+1]
 #define cycle_prev(e) cycle[2*(e)]
 #define cycle_next(e) cycle[2*(e)+1]
-
-#endif
