@@ -26,7 +26,6 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
 {
     GtkWidget *dialog;
     GtkFileFilter *filter;
-    int i = 0;
 
     filter = gtk_file_filter_new();
     gtk_file_filter_add_pattern(filter, "*.gv");
@@ -44,11 +43,8 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
 	char *filename;
 	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 
-	i = view->SignalBlock;
-	view->SignalBlock = 1;
 	add_graph_to_viewport_from_file(filename);
 	g_free(filename);
-	view->SignalBlock = i;
     }
 
     gtk_widget_destroy(dialog);

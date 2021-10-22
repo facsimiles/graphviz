@@ -77,9 +77,6 @@ static void set_boundaries(Agraph_t * g, topview * t)
     view->bdyTop = top;
     view->bdxRight = right;
     view->bdyBottom = bottom;
-
-    view->bdzTop = 0;
-    view->bdzBottom = 0;
 }
 
 static void draw_xdot(xdot* x,float base_z)
@@ -890,10 +887,7 @@ void initSmGraph(Agraph_t * g,topview* rv)
     /*set topologilca fisheye to NULL */
     rv->fisheyeParams.h = '\0';
 
-    if (view->dfltViewType == VT_TOPFISH)
-	rv->fisheyeParams.active = 1;
-    else
-	rv->fisheyeParams.active = 0;
+    rv->fisheyeParams.active = 0;
     rv->cache.node_id=-1;
     rv->cache.selnode_id=-1;
     rv->cache.edge_id=-1;

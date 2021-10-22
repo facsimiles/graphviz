@@ -302,8 +302,6 @@ void init_viewport(ViewInfo * view)
     view->bdxRight = 500;
     view->bdyBottom = 0;
     view->bdyTop = 500;
-    view->bdzBottom = 0;
-    view->bdzTop = 0;
 
     view->borderColor.R = 1;
     view->borderColor.G = 0;
@@ -346,14 +344,12 @@ void init_viewport(ViewInfo * view)
     view->LineWidth = 1;
 
     //default view settings , camera is not active
-    view->GLDepth = 1;		//should be set before GetFixedOGLPos(int x, int y,float kts) funtion is used!!!!
     view->panx = 0;
     view->pany = 0;
     view->panz = 0;
 
 
     view->zoom = -20;
-    view->texture = 1;
     view->FontSize = 52;
 
     view->topviewusermode = TOP_VIEW_USER_NOVICE_MODE;	//for demo
@@ -367,7 +363,6 @@ void init_viewport(ViewInfo * view)
     view->fmg.active = 0;
     view->mouse.down = 0;
     view->activeGraph = -1;
-    view->SignalBlock = 0;
     view->Topview = GNEW(topview);
     view->Topview->fisheyeParams.fs = 0;
     view->Topview->xDot=NULL;
@@ -400,7 +395,6 @@ void init_viewport(ViewInfo * view)
     view->camera_count = 0;
     view->active_camera = -1;
     set_viewport_settings_from_template(view, view->systemGraphs.def_attrs);
-    view->dfltViewType = VT_NONE;
     view->Topview->Graphdata.GraphFileName = (char *) 0;
     view->Topview->Graphdata.Modified = 0;
     view->colschms = NULL;

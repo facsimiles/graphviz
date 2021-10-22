@@ -155,14 +155,6 @@ typedef struct
     } colorschemaset;
 
     typedef enum {
-	VT_NONE,
-	VT_XDOT,
-	VT_TOPVIEW,
-	VT_TOPFISH,
-    } viewtype_t;
-
-
-    typedef enum {
 	GVE_NONE = -1,
 	GVE_GRAPH,
 	GVE_CLUSTER,
@@ -548,17 +540,12 @@ typedef struct
 	int bdVisible;		//if borders are visible (boundries of the drawing,
 	/*border coordinates, needs to be calculated for each graph */
 
-	/*randomize node colors or use default node color */
-	int rndNodeColor;
-
-	/*randomize edge colors or use default edge color */
-	int rndEdgeColor;
 	/*Font Size */
 	float FontSize;
 
 
-	float bdxLeft, bdyTop, bdzTop;
-	float bdxRight, bdyBottom, bdzBottom;
+	float bdxLeft, bdyTop;
+	float bdxRight, bdyBottom;
 
 	/*reserved , not being used yet */
 	GEunit unit;		//default pixels :0  
@@ -571,11 +558,6 @@ typedef struct
 	int graphCount;
 	/*active graph */
 	int activeGraph;
-
-	/*texture data */
-	int texture;		/*1 texturing enabled, 0 disabled */
-	/*opengl depth value to convert mouse to GL coords */
-	float GLDepth;
 
 	/*stores the info about status of mouse,pressed? what button ? where? */
 //	mouse_attr mouse;
@@ -592,20 +574,12 @@ typedef struct
 	viewport_camera **cameras;
 	int camera_count;	//number of cameras
 	int active_camera;
-	viewport_camera *selected_camera;	//selected camera does not have to nec. be active one 
-
-	/*data attributes are read from graph's attributes DataAttribute1 and DataAttribute2 */
-	char *node_data_attribute1;	/*for topview graphs this is the node data attribute to put as label */
-	char *node_data_attribute2;	/*for topview graphs this is the node data attribute to be stored and used for something else */
 
 	/*0 advanced users with editing options 1 nonice users just navigate (glmenu system) */
 	int topviewusermode;
 
 	/*open gl canvas, used to be a globa variable before looks better wrapped in viewinfo */
 	GtkWidget *drawing_area;
-
-	/*some boolean variable for variety hacks used in the software */
-	int SignalBlock;
 
 	/*Topview data structure, refer topview.h for more info */
 	topview *Topview;
@@ -632,7 +606,6 @@ typedef struct
 	int labelshownodes;
 	int labelshowedges;
 
-	viewtype_t dfltViewType;
 	glCompSet *widgets;	//for novice user open gl menu
 	char *initFileName;	//file name from command line
 	int initFile;
