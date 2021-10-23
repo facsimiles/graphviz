@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (2.49.4)]
 
+### Changed
+
+- `GVLayout` functions in the C++ API now take `std::string_view` parameters
+  where they prevously took `const std::string&` parameters
+
 ## [2.49.3] – 2021-10-22
 
 ### Fixed
