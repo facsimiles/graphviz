@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
 
 #include "GVContext.h"
 #include "GVRenderData.h"
@@ -25,12 +26,12 @@ namespace GVC {
 class GVLAYOUT_API GVLayout {
 public:
   GVLayout(const std::shared_ptr<GVContext> &gvc,
-           const std::shared_ptr<CGraph::AGraph> &g, const std::string &engine);
-  GVLayout(GVContext &&gvc, CGraph::AGraph &&g, const std::string &engine);
+           const std::shared_ptr<CGraph::AGraph> &g, std::string_view engine);
+  GVLayout(GVContext &&gvc, CGraph::AGraph &&g, std::string_view engine);
   GVLayout(std::shared_ptr<GVContext> gvc, CGraph::AGraph &&g,
-           const std::string &engine);
+           std::string_view engine);
   GVLayout(GVContext &&gvc, std::shared_ptr<CGraph::AGraph> g,
-           const std::string &engine);
+           std::string_view engine);
   ~GVLayout();
 
   // default copy since we manage resources through movable types
@@ -42,7 +43,7 @@ public:
   GVLayout &operator=(GVLayout &&) = default;
 
   // render the layout in the specified format
-  GVRenderData render(const std::string &format) const;
+  GVRenderData render(std::string_view format) const;
 
 private:
   std::shared_ptr<GVContext> m_gvc;

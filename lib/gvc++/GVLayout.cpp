@@ -1,7 +1,7 @@
 #include <cassert>
 #include <memory>
 #include <stdexcept>
-#include <string>
+#include <string_view>
 
 #include "GVContext.h"
 #include "GVLayout.h"
@@ -13,29 +13,29 @@ namespace GVC {
 
 GVLayout::GVLayout(const std::shared_ptr<GVContext> &gvc,
                    const std::shared_ptr<CGraph::AGraph> &g,
-                   const std::string &engine)
+                   std::string_view engine)
     : m_gvc(gvc), m_g(g) {
   if (gvLayoutDone(g->c_struct())) {
     gvFreeLayout(gvc->c_struct(), g->c_struct());
     throw std::runtime_error("Previous layout not yet destroyed");
   }
-  const auto rc = gvLayout(gvc->c_struct(), g->c_struct(), engine.c_str());
+  const auto rc = gvLayout(gvc->c_struct(), g->c_struct(), engine.data());
   if (rc) {
     throw std::runtime_error("Layout failed");
   }
 }
 
 GVLayout::GVLayout(GVContext &&gvc, CGraph::AGraph &&g,
-                   const std::string &engine)
+                   std::string_view engine)
     : GVLayout(std::make_shared<GVContext>(std::move(gvc)),
                std::make_shared<CGraph::AGraph>(std::move(g)), engine) {}
 
 GVLayout::GVLayout(std::shared_ptr<GVContext> gvc, CGraph::AGraph &&g,
-                   const std::string &engine)
+                   std::string_view engine)
     : GVLayout(gvc, std::make_shared<CGraph::AGraph>(std::move(g)), engine) {}
 
 GVLayout::GVLayout(GVContext &&gvc, std::shared_ptr<CGraph::AGraph> g,
-                   const std::string &engine)
+                   std::string_view engine)
     : GVLayout(std::make_shared<GVContext>(std::move(gvc)), g, engine) {}
 
 GVLayout::~GVLayout() {
@@ -48,11 +48,11 @@ GVLayout::~GVLayout() {
   gvFreeLayout(m_gvc->c_struct(), m_g->c_struct());
 }
 
-GVRenderData GVLayout::render(const std::string &format) const {
+GVRenderData GVLayout::render(std::string_view format) const {
   char *result = nullptr;
   unsigned int length = 0;
   const auto rc = gvRenderData(m_gvc->c_struct(), m_g->c_struct(),
-                               format.c_str(), &result, &length);
+                               format.data(), &result, &length);
   if (rc) {
     if (result) {
       gvFreeRenderData(result);
