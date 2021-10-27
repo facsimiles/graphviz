@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef NODESET_H
-#define NODESET_H
 
 #include  <render.h>
 
@@ -33,8 +32,6 @@ extern "C" {
 
 #ifdef DEBUG
     extern void printNodeset(nodeset_t *);
-#endif
-
 #endif
 
 #ifdef __cplusplus

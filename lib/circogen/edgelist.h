@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef EDGELIST_H
-#define EDGELIST_H
 
 #include  <render.h>
 
@@ -31,8 +30,6 @@ extern "C" {
     extern int size_edgelist(edgelist * list);
 #ifdef DEBUG
     extern void print_edge(edgelist *);
-#endif
-
 #endif
 
 #ifdef __cplusplus

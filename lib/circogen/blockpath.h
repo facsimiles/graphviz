@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef BLOCKPATH_H
-#define BLOCKPATH_H
 
 #include <circogen/circular.h>
 
@@ -22,8 +21,6 @@ extern "C" {
 
 #ifdef DEBUG
     extern void prTree(Agraph_t * g);
-#endif
-
 #endif
 
 #ifdef __cplusplus

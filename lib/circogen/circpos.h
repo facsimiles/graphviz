@@ -8,19 +8,16 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef CIRCPOS_H
-#define CIRCPOS_H
 
 #include <render.h>
 #include <circogen/circular.h>
 
     extern void circPos(Agraph_t * g, block_t * sn, circ_state *);
-
-#endif
 
 #ifdef __cplusplus
 }

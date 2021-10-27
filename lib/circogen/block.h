@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef BLOCK_H
-#define BLOCK_H
 
 #include  <circogen/nodelist.h>
 
@@ -56,8 +55,6 @@ extern "C" {
 #define COALESCED_F   (1 << 0)
 #define COALESCED(b) (BLK_FLAGS(b)&COALESCED_F)
 #define SET_COALESCED(b) (BLK_FLAGS(b) |= COALESCED_F)
-
-#endif
 
 #ifdef __cplusplus
 }

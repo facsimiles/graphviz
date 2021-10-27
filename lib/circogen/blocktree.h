@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef BLOCKTREE_H
-#define BLOCKTREE_H
 
 #include <render.h>
 #include <circogen/circular.h>
@@ -22,8 +21,6 @@ extern "C" {
     extern void freeBlocktree(block_t *);
 #ifdef DEBUG
     extern void print_blocktree(block_t * sn, int depth);
-#endif
-
 #endif
 
 #ifdef __cplusplus

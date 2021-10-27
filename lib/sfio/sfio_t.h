@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef _SFIO_T_H
-#define _SFIO_T_H	1
 
 /*	This header file is for library writers who need to know certain
 **	internal info concerning the full Sfio_t structure. Including this
@@ -103,8 +102,6 @@ extern "C" {
 	  (f)->lpos = (Sfoff_t)0,			/* lpos		*/ \
 	  (f)->iosz = (size_t)0				/* iosz		*/ \
 	)
-
-#endif				/* _SFIO_T_H */
 
 #ifdef __cplusplus
 }

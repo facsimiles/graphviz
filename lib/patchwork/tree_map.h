@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef TREE_MAP_H
-#define TREE_MAP_H
+#pragma once
 
 #include <sparse/SparseMatrix.h>
 
@@ -21,5 +20,3 @@ typedef struct rectangle_struct {
 extern rectangle* tree_map(int n, real *area, rectangle fillrec);
 
 extern rectangle rectangle_new(real x, real y, real width, real height);
-
-#endif

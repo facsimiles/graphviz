@@ -8,10 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-
-
-#ifndef _PACK_H
-#define _PACK_H 1
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,5 +87,4 @@ typedef unsigned int packval_t;
 #undef PACK_API
 #ifdef __cplusplus
 }
-#endif
 #endif

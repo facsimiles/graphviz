@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef _SFIO_H
-#define _SFIO_H	1
 
 /*	Public header file for the sfio library
 **
@@ -253,7 +252,6 @@ extern "C" {
 #define sfgetc(f)				( __sf_getc(f)			)
 #define sffileno(f)				( __sf_fileno(f)		)
 #define sfslen()				( __sf_slen()			)
-#endif				/* _SFIO_H */
 #ifdef __cplusplus
 }
 #endif

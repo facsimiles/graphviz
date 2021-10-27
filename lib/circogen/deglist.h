@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef DEGLIST_H
-#define DEGLIST_H
 
 /* List of nodes sorted by increasing degree */
 
@@ -29,8 +28,6 @@ extern "C" {
 
 #ifdef DEBUG
     extern void printDeglist(deglist_t *);
-#endif
-
 #endif
 
 #ifdef __cplusplus

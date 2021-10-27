@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef CIRCULAR_H
-#define CIRCULAR_H
+#pragma once
 
 #include "render.h"
 #include <circogen/block.h>
@@ -135,5 +134,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

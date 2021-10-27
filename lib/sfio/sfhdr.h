@@ -8,12 +8,12 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef _SFHDR_H
-#define _SFHDR_H	1
 #if !defined(_BLD_sfio)
 #define _BLD_sfio	1
 #endif
@@ -607,7 +607,6 @@ extern "C" {
     extern int fstat(int, Stat_t *);
 #endif
 
-#endif /*_SFHDR_H*/
 #ifdef __cplusplus
 }
 #endif

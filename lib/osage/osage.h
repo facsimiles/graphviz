@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef CLUSTER_H
-#define CLUSTER_H
+#pragma once
 
 #include "render.h"
 
@@ -22,5 +21,4 @@ extern void cluster_cleanup(Agraph_t * g);
 
 #ifdef __cplusplus
 }
-#endif
 #endif

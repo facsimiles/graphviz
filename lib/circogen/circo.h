@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef CIRCO_H
-#define CIRCO_H
+#pragma once
 
 #include "render.h"
 
@@ -24,5 +23,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

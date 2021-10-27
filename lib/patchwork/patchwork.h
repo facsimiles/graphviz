@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef PATCHWORK_H
-#define PATCHWORK_H
+#pragma once
 
 #include "render.h"
 #include <fdpgen/fdp.h>
@@ -31,5 +30,4 @@ extern void patchworkLayout(Agraph_t *g);
 
 #ifdef __cplusplus
 }
-#endif
 #endif
