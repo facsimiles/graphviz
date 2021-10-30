@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef FDPDBG_H
-#define FDPDBG_H
 
 #ifdef DEBUG
 
@@ -31,8 +30,6 @@ extern "C" {
     extern void dump(graph_t * g, int doAll, int doBB);
     extern void dumpE(graph_t * g, int derived);
     extern void dumpG(graph_t * g, char *fname, int);
-
-#endif
 
 #endif
 

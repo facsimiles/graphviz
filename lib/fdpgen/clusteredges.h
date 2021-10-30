@@ -8,19 +8,16 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef CLUSTEREDGES_H
-#define CLUSTEREDGES_H
 
 #include <common/render.h>
 #include <neatogen/adjust.h>
 
     extern int compoundEdges(graph_t * g, expand_t* pm, int splines);
-
-#endif
 
 #ifdef __cplusplus
 }

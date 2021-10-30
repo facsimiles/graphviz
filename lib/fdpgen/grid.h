@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef GRID_H
-#define GRID_H
 
 #include "config.h"
 
@@ -45,8 +44,6 @@ extern "C" {
     extern cell *findGrid(Grid *, int, int);
     extern void delGrid(Grid *);
     extern int gLength(cell * p);
-
-#endif
 
 #ifdef __cplusplus
 }

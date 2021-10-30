@@ -8,18 +8,15 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef COMP_H
-#define COMP_H
-
 #include <common/render.h>
 
     extern graph_t **findCComp(graph_t *, int *, int *);
-
-#endif
 
 #ifdef __cplusplus
 }

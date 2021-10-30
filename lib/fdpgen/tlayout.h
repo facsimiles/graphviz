@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef TLAYOUT_H
-#define TLAYOUT_H
 
 #include <fdpgen/fdp.h>
 #include <fdpgen/xlayout.h>
@@ -24,8 +23,6 @@ typedef enum {
 
     extern void fdp_initParams(graph_t *);
     extern void fdp_tLayout(graph_t *, xparams *);
-
-#endif
 
 #ifdef __cplusplus
 }

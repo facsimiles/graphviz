@@ -8,12 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef XLAYOUT_H
-#define XLAYOUT_H
 
 #include <fdpgen/fdp.h>
 
@@ -26,8 +25,6 @@ extern "C" {
     } xparams;
 
     extern void fdp_xLayout(graph_t *, xparams *);
-
-#endif
 
 #ifdef __cplusplus
 }

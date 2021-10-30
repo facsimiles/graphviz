@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef FDP_H
-#define FDP_H
+#pragma once
 
 #include <common/render.h>
 
@@ -111,5 +110,4 @@ typedef struct fdpParms_s fdpParms_t;
 
 #ifdef __cplusplus
 }
-#endif
 #endif
