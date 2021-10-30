@@ -21,10 +21,10 @@ pkginclude_HEADERS = arith.h geom.h color.h types.h textspan.h usershape.h
 noinst_HEADERS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h colortbl.h entities.h globals.h \
 	logic.h const.h macros.h htmllex.h htmltable.h pointset.h intset.h \
-	timing.h ps_font_equiv.h
+	textspan_lut.h timing.h ps_font_equiv.h
 noinst_LTLIBRARIES = libcommon_C.la
 
-libcommon_C_la_SOURCES = arrows.c colxlate.c ellipse.c textspan.c \
+libcommon_C_la_SOURCES = arrows.c colxlate.c ellipse.c textspan.c textspan_lut.c \
 	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c intset.c postproc.c routespl.c splines.c psusershape.c \
 	timing.c labels.c ns.c shapes.c utils.c geom.c taper.c \

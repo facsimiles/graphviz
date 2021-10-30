@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (2.49.4)]
 
+### Added
+
+- hard-coded lookup tables for fallback font metrics for more fonts and font
+  variants
+
 ## [2.49.3] – 2021-10-22
 
 ### Fixed

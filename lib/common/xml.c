@@ -8,15 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// variant of `isalpha` that assumes a C locale
-static bool isalpha_no_locale(char c) {
-  if (c >= 'a' && c <= 'z')
-    return true;
-  if (c >= 'A' && c <= 'Z')
-    return true;
-  return false;
-}
-
 /* return true if *s points to &[A-Za-z]+;      (e.g. &Ccedil; )
  *                          or &#[0-9]*;        (e.g. &#38; )
  *                          or &#x[0-9a-fA-F]*; (e.g. &#x6C34; )

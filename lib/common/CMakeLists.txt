@@ -58,6 +58,7 @@ add_library(common_obj OBJECT
     ps_font_equiv.h
     render.h
     textspan.h
+    textspan_lut.h
     types.h
     usershape.h
     utils.h
@@ -86,6 +87,7 @@ add_library(common_obj OBJECT
     splines.c
     taper.c
     textspan.c
+    textspan_lut.c
     timing.c
     utils.c
     xml.c
