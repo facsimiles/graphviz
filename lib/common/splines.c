@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,15 +15,17 @@
 
 #include <math.h>
 #include <common/render.h>
+#include <cgraph/unreachable.h>
+#include <stdbool.h>
 
 #ifdef DEBUG
 static int debugleveln(edge_t* e, int i)
 {
-    return (GD_showboxes(agraphof(aghead(e))) == i ||
+    return GD_showboxes(agraphof(aghead(e))) == i ||
 	    GD_showboxes(agraphof(agtail(e))) == i ||
 	    ED_showboxes(e) == i ||
 	    ND_showboxes(aghead(e)) == i ||
-	    ND_showboxes(agtail(e)) == i);
+	    ND_showboxes(agtail(e)) == i;
 }
 
 static void showPoints(pointf ps[], int pn)
@@ -85,11 +87,9 @@ arrow_clip(edge_t * fe, node_t * hn,
     }
     else {
 	if (sflag)
-	    *startp =
-		arrowStartClip(e, ps, *startp, *endp, spl, sflag);
+	    *startp = arrowStartClip(e, ps, *startp, *endp, spl, sflag);
 	if (eflag)
-	    *endp =
-		arrowEndClip(e, ps, *startp, *endp, spl, eflag);
+	    *endp = arrowEndClip(e, ps, *startp, *endp, spl, eflag);
     }
 }
 
@@ -97,7 +97,7 @@ arrow_clip(edge_t * fe, node_t * hn,
  * Clip bezier to shape using binary search.
  * The details of the shape are passed in the inside_context;
  * The function providing the inside test is passed as a parameter.
- * left_inside specifies that sp[0] is inside the node, 
+ * left_inside specifies that sp[0] is inside the node,
  * else sp[3] is taken as inside.
  * The points p are in node coordinates.
  */
@@ -107,7 +107,7 @@ void bezier_clip(inside_t * inside_context,
 {
     pointf seg[4], best[4], pt, opt, *left, *right;
     double low, high, t, *idir, *odir;
-    boolean found;
+    bool found;
     int i;
 
     if (left_inside) {
@@ -123,7 +123,7 @@ void bezier_clip(inside_t * inside_context,
 	idir = &high;
 	odir = &low;
     }
-    found = FALSE;
+    found = false;
     low = 0.0;
     high = 1.0;
     do {
@@ -135,7 +135,7 @@ void bezier_clip(inside_t * inside_context,
 	} else {
 	    for (i = 0; i < 4; i++)
 		best[i] = seg[i];
-	    found = TRUE;
+	    found = true;
 	    *odir = t;
 	}
     } while (fabs(opt.x - pt.x) > .5 || fabs(opt.y - pt.y) > .5);
@@ -168,8 +168,7 @@ shape_clip0(inside_t * inside_context, node_t * n, pointf curve[4],
 	c[i].y = curve[i].y - ND_coord(n).y;
     }
 
-    bezier_clip(inside_context, ND_shape(n)->fns->insidefn, c,
-		left_inside);
+    bezier_clip(inside_context, ND_shape(n)->fns->insidefn, c, left_inside);
 
     for (i = 0; i < 4; i++) {
 	curve[i].x = c[i].x + ND_coord(n).x;
@@ -180,7 +179,7 @@ shape_clip0(inside_t * inside_context, node_t * n, pointf curve[4],
 
 /* shape_clip:
  * Clip Bezier to node shape
- * Uses curve[0] to determine which which side is inside the node. 
+ * Uses curve[0] to determine which which side is inside the node.
  * NOTE: This test is bad. It is possible for previous call to
  * shape_clip to produce a Bezier with curve[0] moved to the boundary
  * for which insidefn(curve[0]) is true. Thus, if the new Bezier is
@@ -255,7 +254,7 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
     for (orig = fe; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 
     /* may be a reversed flat edge */
-    if (!info->ignoreSwap && (ND_rank(tn) == ND_rank(hn)) && (ND_order(tn) > ND_order(hn))) {
+    if (!info->ignoreSwap && ND_rank(tn) == ND_rank(hn) && ND_order(tn) > ND_order(hn)) {
 	node_t *tmp;
 	tmp = hn;
 	hn = tn;
@@ -281,7 +280,7 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
 	for (start = 0; start < pn - 4; start += 3) {
 	    p2.x = ps[start + 3].x - ND_coord(tn).x;
 	    p2.y = ps[start + 3].y - ND_coord(tn).y;
-	    if (ND_shape(tn)->fns->insidefn(&inside_context, p2) == FALSE)
+	    if (!ND_shape(tn)->fns->insidefn(&inside_context, p2))
 		break;
 	}
 	shape_clip0(&inside_context, tn, &ps[start], TRUE);
@@ -293,13 +292,13 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
 	for (end = pn - 4; end > 0; end -= 3) {
 	    p2.x = ps[end].x - ND_coord(hn).x;
 	    p2.y = ps[end].y - ND_coord(hn).y;
-	    if (ND_shape(hn)->fns->insidefn(&inside_context, p2) == FALSE)
+	    if (!ND_shape(hn)->fns->insidefn(&inside_context, p2))
 		break;
 	}
 	shape_clip0(&inside_context, hn, &ps[end], FALSE);
     } else
 	end = pn - 4;
-    for (; start < pn - 4; start += 3) 
+    for (; start < pn - 4; start += 3)
 	if (! APPROXEQPT(ps[start], ps[start + 3], MILLIPOINT))
 	    break;
     for (; end > 0; end -= 3)
@@ -325,7 +324,7 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
     newspl->size = end - start + 4;
 }
 
-static double 
+static double
 conc_slope(node_t* n)
 {
     double s_in, s_out, m_in, m_out;
@@ -341,10 +340,10 @@ conc_slope(node_t* n)
     p.x = ND_coord(n).x - (s_in / cnt_in);
     p.y = ND_coord(n).y - ND_coord(agtail(ND_in(n).list[0])).y;
     m_in = atan2(p.y, p.x);
-    p.x = (s_out / cnt_out) - ND_coord(n).x;
+    p.x = s_out / cnt_out - ND_coord(n).x;
     p.y = ND_coord(aghead(ND_out(n).list[0])).y - ND_coord(n).y;
     m_out = atan2(p.y, p.x);
-    return ((m_in + m_out) / 2.0);
+    return (m_in + m_out) / 2.0;
 }
 
 void add_box(path * P, boxf b)
@@ -355,13 +354,13 @@ void add_box(path * P, boxf b)
 
 /* beginpath:
  * Set up boxes near the tail node.
- * For regular nodes, the result should be a list of contiguous rectangles 
+ * For regular nodes, the result should be a list of contiguous rectangles
  * such that the last one has the smallest LL.y and its LL.y is above
  * the bottom of the rank (rank.ht1).
- * 
+ *
  * For flat edges, we assume endp->sidemask has been set. For regular
  * edges, we set this, but it doesn't appear to be needed any more.
- * 
+ *
  * In many cases, we tweak the x or y coordinate of P->start.p by 1.
  * This is because of a problem in the path routing code. If the starting
  * point actually lies on the polygon, in some cases, the router gets
@@ -417,7 +416,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     P->nbox = 0;
     P->data = (void *) e;
     endp->np = P->start.p;
-    if ((et == REGULAREDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_tail_port(e).side))) {
+    if (et == REGULAREDGE && ND_node_type(n) == NORMAL && (side = ED_tail_port(e).side)) {
 	edge_t* orig;
 	boxf b0, b = endp->nb;
 	if (side & TOP) {
@@ -431,7 +430,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b.UR.x = ND_coord(n).x - ND_lw(n) - (FUDGE-2);
 		b.UR.y = b0.LL.y;
 		b.LL.y = ND_coord(n).y - HT2(n);
-		b.LL.x -= 1;
+		--b.LL.x;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
 	    }
@@ -444,11 +443,11 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.UR.y = b0.LL.y;
 		b.LL.y = ND_coord(n).y - HT2(n);
-		b.UR.x += 1;
+		++b.UR.x;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
-	    } 
-	    P->start.p.y += 1;
+	    }
+	    ++P->start.p.y;
 	    endp->boxn = 2;
 	}
 	else if (side & BOTTOM) {
@@ -456,7 +455,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.UR.y = MAX(b.UR.y,P->start.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.y -= 1;
+	    --P->start.p.y;
 	}
 	else if (side & LEFT) {
 	    endp->sidemask = LEFT;
@@ -465,7 +464,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.UR.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.x -= 1;
+	    --P->start.p.x;
 	}
 	else {
 	    endp->sidemask = RIGHT;
@@ -474,7 +473,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.UR.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.x += 1;
+	    ++P->start.p.x;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == agtail(orig))
@@ -483,14 +482,14 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    ED_head_port(orig).clip = FALSE;
 	return;
     }
-    if ((et == FLATEDGE) && ((side = ED_tail_port(e).side))) {
+    if (et == FLATEDGE && (side = ED_tail_port(e).side)) {
 	boxf b0, b = endp->nb;
 	edge_t* orig;
 	if (side & TOP) {
 	    b.LL.y = MIN(b.LL.y,P->start.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.y += 1;
+	    ++P->start.p.y;
 	}
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
@@ -501,7 +500,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord(n).y + HT2(n);
-		b.UR.x += 1;
+		++b.UR.x;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
 		endp->boxn = 2;
@@ -511,7 +510,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b;
 		endp->boxn = 1;
 	    }
-	    P->start.p.y -= 1;
+	    --P->start.p.y;
 	}
 	else if (side & LEFT) {
 	    b.UR.x = P->start.p.x+1;
@@ -525,7 +524,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.x -= 1;
+	    --P->start.p.x;
 	}
 	else {
 	    b.LL.x = P->start.p.x;
@@ -539,7 +538,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.x += 1;
+	    ++P->start.p.x;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == agtail(orig))
@@ -577,10 +576,10 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case REGULAREDGE:
 	    endp->boxes[0].UR.y = P->start.p.y;
 	    endp->sidemask = BOTTOM;
-	    P->start.p.y -= 1;
+	    --P->start.p.y;
 	    break;
-	}    
-    }    
+	}
+    }
 }
 
 void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
@@ -591,7 +590,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 
     n = aghead(e);
 
-    if (ED_head_port(e).dyna) 
+    if (ED_head_port(e).dyna)
 	ED_head_port(e) = resolvePort(aghead(e), agtail(e), &ED_head_port(e));
     if (ND_shape(n))
 	pboxfn = ND_shape(n)->fns->pboxfn;
@@ -611,7 +610,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    P->end.constrained = FALSE;
     }
     endp->np = P->end.p;
-    if ((et == REGULAREDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_head_port(e).side))) {
+    if (et == REGULAREDGE && ND_node_type(n) == NORMAL && (side = ED_head_port(e).side)) {
 	edge_t* orig;
 	boxf b0, b = endp->nb;
 	if (side & TOP) {
@@ -619,7 +618,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->end.p.y += 1;
+	    ++P->end.p.y;
 	}
 	else if (side & BOTTOM) {
 	    endp->sidemask = BOTTOM;
@@ -632,7 +631,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b.UR.x = ND_coord(n).x - ND_lw(n) - (FUDGE-2);
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord(n).y + HT2(n);
-		b.LL.x -= 1;
+		--b.LL.x;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
 	    }
@@ -645,12 +644,12 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord(n).y + HT2(n);
-		b.UR.x += 1;
+		++b.UR.x;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
-	    } 
+	    }
 	    endp->boxn = 2;
-	    P->end.p.y -= 1;
+	    --P->end.p.y;
 	}
 	else if (side & LEFT) {
 	    endp->sidemask = LEFT;
@@ -659,7 +658,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->end.p.x -= 1;
+	    --P->end.p.x;
 	}
 	else {
 	    endp->sidemask = RIGHT;
@@ -668,7 +667,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->end.p.x += 1;
+	    ++P->end.p.x;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == aghead(orig))
@@ -679,14 +678,14 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	return;
     }
 
-    if ((et == FLATEDGE) && ((side = ED_head_port(e).side))) {
+    if (et == FLATEDGE && (side = ED_head_port(e).side)) {
 	boxf b0, b = endp->nb;
 	edge_t* orig;
 	if (side & TOP) {
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->end.p.y += 1;
+	    ++P->end.p.y;
 	}
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
@@ -697,7 +696,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b.UR.x = ND_coord(n).x - ND_lw(n) - 2;
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord(n).y + HT2(n);
-		b.LL.x -= 1;
+		--b.LL.x;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
 		endp->boxn = 2;
@@ -707,7 +706,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b;
 		endp->boxn = 1;
 	    }
-	    P->end.p.y -= 1;
+	    --P->end.p.y;
 	}
 	else if (side & LEFT) {
 	    b.UR.x = P->end.p.x+1;
@@ -721,7 +720,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->end.p.x -= 1;
+	    --P->end.p.x;
 	}
 	else {
 	    b.LL.x = P->end.p.x-1;
@@ -735,7 +734,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->end.p.x += 1;
+	    ++P->end.p.x;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == aghead(orig))
@@ -757,8 +756,8 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 
 	switch (et) {
 	case SELFEDGE:
-	    /* offset of -1 is symmetric w.r.t. beginpath() 
-	     * FIXME: is any of this right?  what if self-edge 
+	    /* offset of -1 is symmetric w.r.t. beginpath()
+	     * FIXME: is any of this right?  what if self-edge
 	     * doesn't connect from BOTTOM to TOP??? */
 	    assert(0);  /* at present, we don't use endpath for selfedges */
 	    endp->boxes[0].LL.y = P->end.p.y + 1;
@@ -773,7 +772,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case REGULAREDGE:
 	    endp->boxes[0].LL.y = P->end.p.y;
 	    endp->sidemask = TOP;
-	    P->end.p.y += 1;
+	    ++P->end.p.y;
 	    break;
 	}
     }
@@ -817,7 +816,7 @@ else
 
 
 static void selfBottom (edge_t* edges[], int ind, int cnt,
-	double sizex, double stepy, splineInfo* sinfo) 
+	double sizex, double stepy, splineInfo* sinfo)
 {
     pointf tp, hp, np;
     node_t *n;
@@ -830,8 +829,7 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     e = edges[ind];
     n = agtail(e);
 
-    stepx = (sizex / 2.) / cnt;
-    stepx = MAX(stepx,2.);
+    stepx = fmax(sizex / 2.0 / cnt, 2.0);
     np = ND_coord(n);
     tp = ED_tail_port(e).p;
     tp.x += np.x;
@@ -841,8 +839,9 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     hp.y += np.y;
     if (tp.x >= hp.x) sgn = 1;
     else sgn = -1;
-    dy = ND_ht(n)/2., dx = 0.;
-    // certain adjustments are required for some point_pairs in order to improve the 
+    dy = ND_ht(n) / 2.0;
+    dx = 0.0;
+    // certain adjustments are required for some point_pairs in order to improve the
     // display of the edge path between them
     point_pair = convert_sides_to_points(ED_tail_port(e).side,ED_head_port(e).side);
     switch(point_pair){
@@ -851,11 +850,14 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
       default:
 		break;
     }
-    ty = MIN(dy, 3*(tp.y + dy - np.y));
-    hy = MIN(dy, 3*(hp.y + dy - np.y));
+    ty = fmin(dy, 3 * (tp.y + dy - np.y));
+    hy = fmin(dy, 3 * (hp.y + dy - np.y));
     for (i = 0; i < cnt; i++) {
         e = edges[ind++];
-        dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
+        dy += stepy;
+        ty += stepy;
+        hy += stepy;
+        dx += sgn * stepx;
         pointn = 0;
         points[pointn++] = tp;
         points[pointn++] = pointfof(tp.x + dx, tp.y - ty / 3);
@@ -887,7 +889,7 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
 
 static void
 selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
-           splineInfo* sinfo) 
+           splineInfo* sinfo)
 {
     int i, sgn, point_pair;
     double hy, ty,  stepx, dx, dy, height;
@@ -900,8 +902,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
     e = edges[ind];
     n = agtail(e);
 
-    stepx = (sizex / 2.) / cnt;
-    stepx = MAX(stepx, 2.);
+    stepx = fmax(sizex / 2.0 / cnt, 2.0);
     np = ND_coord(n);
     tp = ED_tail_port(e).p;
     tp.x += np.x;
@@ -912,7 +913,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
     if (tp.x >= hp.x) sgn = 1;
     else sgn = -1;
     dy = ND_ht(n)/2., dx = 0.;
-    // certain adjustments are required for some point_pairs in order to improve the 
+    // certain adjustments are required for some point_pairs in order to improve the
     // display of the edge path between them
     point_pair = convert_sides_to_points(ED_tail_port(e).side,ED_head_port(e).side);
     switch(point_pair){
@@ -936,7 +937,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
 	case 51:
 	case 57:
 	case 58:
-		dx = sgn*((((ND_lw(n)-(np.x-tp.x)) + (ND_rw(n)-(hp.x-np.x)))/3.));
+		dx = sgn * ((ND_lw(n) - (np.x - tp.x) + (ND_rw(n) - (hp.x - np.x))) / 3.0);
 		break;
 	case 73:
  		dx = sgn*(ND_lw(n)-(np.x-tp.x) + stepx);
@@ -945,21 +946,28 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
 		dx = sgn*(ND_lw(n)-(np.x-tp.x));
 		break;
 	case 84:
-		dx = sgn*((((ND_lw(n)-(np.x-tp.x)) + (ND_rw(n)-(hp.x-np.x)))/2.) + stepx);
-		break;
+          dx = sgn *
+               ((ND_lw(n) - (np.x - tp.x) + (ND_rw(n) - (hp.x - np.x))) / 2.0 +
+                stepx);
+          break;
 	case 74:
 	case 75:
 	case 85:
-		dx = sgn*((((ND_lw(n)-(np.x-tp.x)) + (ND_rw(n)-(hp.x-np.x)))/2.) + 2*stepx);
-		break;
+          dx = sgn *
+               ((ND_lw(n) - (np.x - tp.x) + (ND_rw(n) - (hp.x - np.x))) / 2.0 +
+                2 * stepx);
+          break;
 	default:
 		break;
     }
-    ty = MIN(dy, 3*(np.y + dy - tp.y));
-    hy = MIN(dy, 3*(np.y + dy - hp.y));
+    ty = fmin(dy, 3 * (np.y + dy - tp.y));
+    hy = fmin(dy, 3 * (np.y + dy - hp.y));
     for (i = 0; i < cnt; i++) {
         e = edges[ind++];
-        dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
+        dy += stepy;
+        ty += stepy;
+        hy += stepy;
+        dx += sgn * stepx;
         pointn = 0;
         points[pointn++] = tp;
         points[pointn++] = pointfof(tp.x + dx, tp.y + ty / 3);
@@ -991,7 +999,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
 
 static void
 selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
-           splineInfo* sinfo) 
+           splineInfo* sinfo)
 {
     int i, sgn, point_pair;
     double hx, tx, stepy, dx, dy, width;
@@ -1004,8 +1012,7 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     e = edges[ind];
     n = agtail(e);
 
-    stepy = (sizey / 2.) / cnt;
-    stepy = MAX(stepy, 2.);
+    stepy = fmax(sizey / 2.0 / cnt, 2.0);
     np = ND_coord(n);
     tp = ED_tail_port(e).p;
     tp.x += np.x;
@@ -1016,22 +1023,25 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     if (tp.y >= hp.y) sgn = 1;
     else sgn = -1;
     dx = ND_rw(n), dy = 0;
-    // certain adjustments are required for some point_pairs in order to improve the 
+    // certain adjustments are required for some point_pairs in order to improve the
     // display of the edge path between them
     point_pair = convert_sides_to_points(ED_tail_port(e).side,ED_head_port(e).side);
     switch(point_pair){
-      case 32: 
+      case 32:
       case 65:	if(tp.y == hp.y)
 		  sgn = -sgn;
 		break;
       default:
 		break;
     }
-    tx = MIN(dx, 3*(np.x + dx - tp.x));
-    hx = MIN(dx, 3*(np.x + dx - hp.x));
+    tx = fmin(dx, 3 * (np.x + dx - tp.x));
+    hx = fmin(dx, 3 * (np.x + dx - hp.x));
     for (i = 0; i < cnt; i++) {
         e = edges[ind++];
-        dx += stepx, tx += stepx, hx += stepx, dy += sgn*stepy;
+        dx += stepx;
+        tx += stepx;
+        hx += stepx;
+        dy += sgn * stepy;
         pointn = 0;
         points[pointn++] = tp;
         points[pointn++] = pointfof(tp.x + tx / 3, tp.y + dy);
@@ -1063,7 +1073,7 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
 
 static void
 selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
-          splineInfo* sinfo) 
+          splineInfo* sinfo)
 {
     int i, sgn,point_pair;
     double hx, tx, stepy, dx, dy, width;
@@ -1076,8 +1086,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     e = edges[ind];
     n = agtail(e);
 
-    stepy = (sizey / 2.) / cnt;
-    stepy = MAX(stepy,2.);
+    stepy = fmax(sizey / 2.0 / cnt, 2.0);
     np = ND_coord(n);
     tp = ED_tail_port(e).p;
     tp.x += np.x;
@@ -1085,12 +1094,12 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     hp = ED_head_port(e).p;
     hp.x += np.x;
     hp.y += np.y;
-    
-    
+
+
     if (tp.y >= hp.y) sgn = 1;
     else sgn = -1;
     dx = ND_lw(n), dy = 0.;
-    // certain adjustments are required for some point_pairs in order to improve the 
+    // certain adjustments are required for some point_pairs in order to improve the
     // display of the edge path between them
     point_pair = convert_sides_to_points(ED_tail_port(e).side,ED_head_port(e).side);
     switch(point_pair){
@@ -1102,11 +1111,14 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
       default:
 		break;
     }
-    tx = MIN(dx, 3*(tp.x + dx - np.x));
-    hx = MIN(dx, 3*(hp.x + dx - np.x));
+    tx = fmin(dx, 3 * (tp.x + dx - np.x));
+    hx = fmin(dx, 3 * (hp.x + dx - np.x));
     for (i = 0; i < cnt; i++) {
         e = edges[ind++];
-        dx += stepx, tx += stepx, hx += stepx, dy += sgn*stepy;
+        dx += stepx;
+        tx += stepx;
+        hx += stepx;
+        dy += sgn * stepy;
         pointn = 0;
         points[pointn++] = tp;
         points[pointn++] = pointfof(tp.x - tx / 3, tp.y + dy);
@@ -1114,7 +1126,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
         points[pointn++] = pointfof(np.x - dx, (tp.y+hp.y)/2);
         points[pointn++] = pointfof(np.x - dx, hp.y - dy);
         points[pointn++] = pointfof(hp.x - hx / 3, hp.y - dy);
-      
+
         points[pointn++] = hp;
         if (ED_label(e)) {
     	if (GD_flip(agraphof(agtail(e)))) {
@@ -1152,11 +1164,11 @@ selfRightSpace (edge_t* e)
     double label_width;
     textlabel_t* l = ED_label(e);
 
-    if (((!ED_tail_port(e).defined) && (!ED_head_port(e).defined)) ||
-        (!(ED_tail_port(e).side & LEFT) && 
+    if ((!ED_tail_port(e).defined && !ED_head_port(e).defined) ||
+        (!(ED_tail_port(e).side & LEFT) &&
          !(ED_head_port(e).side & LEFT) &&
-          ((ED_tail_port(e).side != ED_head_port(e).side) || 
-          (!(ED_tail_port(e).side & (TOP|BOTTOM)))))) {
+          (ED_tail_port(e).side != ED_head_port(e).side ||
+          !(ED_tail_port(e).side & (TOP|BOTTOM))))) {
 	sw = SELF_EDGE_SIZE;
 	if (l) {
 	    label_width = GD_flip(agraphof(aghead(e))) ? l->dimen.y : l->dimen.x;
@@ -1182,15 +1194,15 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, double sizex,
     e = edges[ind];
 
     /* self edge without ports or
-     * self edge with all ports inside, on the right, or at most 1 on top 
-     * and at most 1 on bottom 
+     * self edge with all ports inside, on the right, or at most 1 on top
+     * and at most 1 on bottom
      */
-    
-    if (((!ED_tail_port(e).defined) && (!ED_head_port(e).defined)) ||
-        (!(ED_tail_port(e).side & LEFT) && 
+
+    if ((!ED_tail_port(e).defined && !ED_head_port(e).defined) ||
+        (!(ED_tail_port(e).side & LEFT) &&
          !(ED_head_port(e).side & LEFT) &&
-          ((ED_tail_port(e).side != ED_head_port(e).side) || 
-          (!(ED_tail_port(e).side & (TOP|BOTTOM)))))) {
+          (ED_tail_port(e).side != ED_head_port(e).side ||
+          !(ED_tail_port(e).side & (TOP|BOTTOM))))) {
 	selfRight(edges, ind, cnt, sizex, sizey, sinfo);
     }
 
@@ -1291,16 +1303,15 @@ polylineMidpoint (splines* spl, pointf* pp, pointf* pq)
 	    if (d >= dist) {
 		*pp = pf;
 		*pq = qf;
-		mf.x = ((qf.x*dist) + (pf.x*(d-dist)))/d; 
-		mf.y = ((qf.y*dist) + (pf.y*(d-dist)))/d; 
+		mf.x = (qf.x * dist + pf.x * (d - dist)) / d;
+		mf.y = (qf.y * dist + pf.y * (d - dist)) / d;
 		return mf;
 	    }
 	    else
 		dist -= d;
 	}
     }
-    assert (FALSE);   /* should never get here */
-    return mf;
+    UNREACHABLE();
 }
 
 pointf
@@ -1313,7 +1324,7 @@ edgeMidpoint (graph_t* g, edge_t * e)
     if (APPROXEQPT(p, q, MILLIPOINT)) { /* degenerate spline */
 	spf = p;
     }
-    else if ((et == ET_SPLINE) || (et == ET_CURVED)) {
+    else if (et == ET_SPLINE || et == ET_CURVED) {
 	d.x = (q.x + p.x) / 2.;
 	d.y = (p.y + q.y) / 2.;
 	spf = dotneato_closest(ED_spl(e), d);
@@ -1366,8 +1377,8 @@ int place_portlabel(edge_t * e, boolean head_p)
     if (ED_edge_type(e) == IGNORED)
 	return 0;
     /* add label here only if labelangle or labeldistance is defined; else, use external label */
-    if ((!E_labelangle || (*(la = AGXGET(e,E_labelangle)) == '\0')) &&
-	(!E_labeldistance || (*(ld = AGXGET(e,E_labeldistance)) == '\0'))) {
+    if ((!E_labelangle || *(la = AGXGET(e,E_labelangle)) == '\0') &&
+	(!E_labeldistance || *(ld = AGXGET(e,E_labeldistance)) == '\0')) {
 	return 0;
     }
 
@@ -1412,7 +1423,7 @@ splines *getsplinepoints(edge_t * e)
 
     for (le = e; !(sp = ED_spl(le)) && ED_edge_type(le) != NORMAL;
 	 le = ED_to_orig(le));
-    if (sp == NULL) 
+    if (sp == NULL)
 	agerr (AGERR, "getsplinepoints: no spline points available for edge (%s,%s)\n",
 	    agnameof(agtail(e)), agnameof(aghead(e)));
     return sp;
