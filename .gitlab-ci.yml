@@ -365,18 +365,6 @@ ubuntu20-04-build:
     variables:
       IMAGE: ubuntu-20.04
 
-ubuntu20-10-build:
-    <<: *deb_build_definition
-    needs:
-        - job: docker_build_ubuntu-20.10
-          artifacts: false
-        - job: portable-source
-          artifacts: true
-    tags:
-        - linux
-    variables:
-      IMAGE: ubuntu-20.10
-
 ubuntu21-04-build:
     <<: *deb_build_definition
     needs:
@@ -555,39 +543,6 @@ ubuntu18-04-cmake-build:
         - linux
     variables:
       IMAGE: ubuntu-18.04
-
-ubuntu20-10-cmake-build:
-    <<: *deb_build_definition
-    needs:
-        - job: docker_build_ubuntu-20.10
-          artifacts: false
-    before_script:
-        - export build_system="cmake"
-        # fail on any compiler warnings
-        - export CFLAGS=-Werror
-        - export CXXFLAGS=-Werror
-        - echo experimental > COLLECTION
-    tags:
-        - linux
-    variables:
-      IMAGE: ubuntu-20.10
-
-ubuntu20-10-cmake-ASan-build:
-    <<: *deb_build_definition
-    needs:
-        - job: docker_build_ubuntu-20.10
-          artifacts: false
-    before_script:
-        - export build_system="cmake"
-        # fail on any compiler warnings
-        - export CFLAGS=-Werror
-        - export CXXFLAGS=-Werror
-        - export CMAKE_OPTIONS="-Duse_sanitizers=ON"
-        - echo experimental > COLLECTION
-    tags:
-        - linux
-    variables:
-      IMAGE: ubuntu-20.10
 
 ubuntu21-04-cmake-build:
     <<: *deb_build_definition
@@ -942,18 +897,6 @@ ubuntu20-04-test:
     variables:
       IMAGE: ubuntu-20.04
 
-ubuntu20-10-test:
-    <<: *linux_test_definition
-    before_script:
-        - export build_system="autotools"
-    needs:
-        - job: "ubuntu20-10-build"
-          artifacts: true
-    tags:
-        - linux
-    variables:
-      IMAGE: ubuntu-20.10
-
 ubuntu21-04-test:
     <<: *linux_test_definition
     before_script:
@@ -1062,40 +1005,6 @@ ubuntu18-04-cmake-test:
         - linux
     variables:
       IMAGE: ubuntu-18.04
-
-ubuntu20-10-cmake-test:
-    <<: *linux_test_definition
-    before_script:
-        - export build_system="cmake"
-        - python3 gen_version.py > GRAPHVIZ_VERSION
-        - echo experimental > COLLECTION
-    needs:
-        - job: "ubuntu20-10-cmake-build"
-          artifacts: true
-    tags:
-        - linux
-    variables:
-      IMAGE: ubuntu-20.10
-
-ubuntu20-10-cmake-ASan-test:
-    <<: *linux_test_definition
-    before_script:
-        - export build_system="cmake"
-        - export CFLAGS=" -g -fsanitize=address,undefined"
-        - export CXXFLAGS=" -g -fsanitize=address,undefined"
-        - export LDFLAGS=" -g -fsanitize=address,undefined"
-        # FIXME: remove the following when Graphviz can pass the test suite
-        # leak-free
-        - export ASAN_OPTIONS=detect_leaks=0
-        - python3 gen_version.py > GRAPHVIZ_VERSION
-        - echo experimental > COLLECTION
-    needs:
-        - job: "ubuntu20-10-cmake-ASan-build"
-          artifacts: true
-    tags:
-        - linux
-    variables:
-      IMAGE: ubuntu-20.10
 
 ubuntu21-04-cmake-test:
     <<: *linux_test_definition
@@ -1292,11 +1201,6 @@ docker_build_ubuntu-20.04:
   variables:
     IMAGE: ubuntu-20.04
 
-docker_build_ubuntu-20.10:
-  <<: *docker_build_definition
-  variables:
-    IMAGE: ubuntu-20.10
-
 docker_build_ubuntu-21.04:
   <<: *docker_build_definition
   variables:
@@ -1348,13 +1252,6 @@ docker_push_ubuntu-20.04:
     IMAGE: ubuntu-20.04
   needs:
     - docker_build_ubuntu-20.04
-
-docker_push_ubuntu-20.10:
-  <<: *docker_push_definition
-  variables:
-    IMAGE: ubuntu-20.10
-  needs:
-    - docker_build_ubuntu-20.10
 
 docker_push_ubuntu-21.04:
   <<: *docker_push_definition
