@@ -33,7 +33,6 @@ static int ioput(Agraph_t * g, iochan_t * ofile, char *str)
 static int write_body(Agraph_t * g, iochan_t * ofile);
 static int Level;
 static int Max_outputline = MAX_OUTPUTLINE;
-static unsigned char Attrs_not_written_flag;
 static Agsym_t *Tailport, *Headport;
 
 static int indent(Agraph_t * g, iochan_t * ofile)
@@ -287,7 +286,6 @@ static int write_hdr(Agraph_t * g, iochan_t * ofile, int top)
     bool root = false;
     bool hasName = true;
 
-    Attrs_not_written_flag = AGATTRWF(g);
     strict = "";
     if (NOT(top) && agparent(g))
 	kind = "sub";

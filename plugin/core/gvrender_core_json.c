@@ -43,9 +43,8 @@ typedef enum {
 
 typedef struct {
     int Level;
-    boolean isLatin;
-    boolean doXDot;
-    boolean Attrs_not_written_flag;
+    bool isLatin;
+    bool doXDot;
 } state_t;
 
 typedef struct {
@@ -712,7 +711,6 @@ static void json_end_graph(GVJ_t *job)
     sp.Level = 0;
     sp.isLatin = GD_charset(g) == CHAR_LATIN1;
     sp.doXDot = job->render.id == FORMAT_JSON || job->render.id == FORMAT_XDOT_JSON;
-    sp.Attrs_not_written_flag = 0;
     write_graph(g, job, TRUE, &sp);
 }
 

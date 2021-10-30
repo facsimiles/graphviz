@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -455,7 +456,7 @@ gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     gdImagePtr im = (gdImagePtr) job->context;
     pointf p0, p1, V[4];
     int i, j, step, pen;
-    boolean pen_ok, fill_ok;
+    bool pen_ok, fill_ok;
     gdImagePtr brush = NULL;
     gdPoint F[4];
 
@@ -501,7 +502,7 @@ static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     gdImagePtr brush = NULL;
     int i;
     int pen;
-    boolean pen_ok, fill_ok;
+    bool pen_ok, fill_ok;
 
     if (!im)
 	return;
@@ -535,7 +536,7 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
     gdImagePtr im = (gdImagePtr) job->context;
     double dx, dy;
     int pen;
-    boolean pen_ok, fill_ok;
+    bool pen_ok, fill_ok;
     gdImagePtr brush = NULL;
 
     if (!im)
@@ -565,7 +566,7 @@ static void gdgen_polyline(GVJ_t * job, pointf * A, int n)
     pointf p, p1;
     int i;
     int pen;
-    boolean pen_ok;
+    bool pen_ok;
     gdImagePtr brush = NULL;
 
     if (!im)
