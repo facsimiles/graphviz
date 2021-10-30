@@ -2,8 +2,18 @@
 Graphviz miscellaneous test cases
 """
 
+import itertools
 import json
+import os
+from pathlib import Path
+import platform
 import subprocess
+import sys
+import tempfile
+import pytest
+
+sys.path.append(os.path.dirname(__file__))
+from gvtest import compile_c, ROOT #pylint: disable=C0413
 
 def test_json_node_order():
   """
@@ -71,3 +81,109 @@ def test_json_edge_order():
   edges = [(data["objects"][e["tail"]]["name"],
             data["objects"][e["head"]]["name"]) for e in data["edges"]]
   assert edges == expected
+
+@pytest.mark.skipif(platform.system() != "Linux",
+                    reason="TODO: make this test case portable")
+def test_xml_escape():
+  """
+  Check the functionality of ../lib/common/xml.c:xml_escape.
+  """
+
+  # locate our test program
+  xml_c = Path(__file__).parent / "../lib/common/xml.c"
+  assert xml_c.exists(), "missing xml.c"
+
+  with tempfile.TemporaryDirectory() as tmp:
+
+    # write a dummy config.h to allow standalone compilation
+    with open(Path(tmp) / "config.h", "wt") as _:
+      pass
+
+    # compile the stub to something we can run
+    xml_exe = Path(tmp) / "xml.exe"
+    cflags = ["-std=c99", "-DTEST_XML", "-I", tmp, "-I", ROOT / "lib", "-I",
+              ROOT / "lib/gvc", "-I", ROOT / "lib/pathplan", "-I",
+              ROOT / "lib/cgraph", "-I", ROOT / "lib/cdt", "-Wall", "-Wextra"]
+    compile_c(xml_c, cflags, dst=xml_exe)
+
+    def escape(dash: bool, nbsp: bool, raw: bool, utf8: bool, s: str) -> str:
+      args = [xml_exe]
+      if dash:
+        args += ["--dash"]
+      if nbsp:
+        args += ["--nbsp"]
+      if raw:
+        args += ["--raw"]
+      if utf8:
+        args += ["--utf8"]
+      args += [s]
+
+      # We would like to pass `encoding="utf-8"`, or even better
+      # `universal_newlines=True`. However, neither of these seem to work as
+      # described in Python == 3.6. Observable using Ubuntu 18.04 in CI.
+      # Instead, we encode and decode manually.
+      args = [str(a).encode("utf-8") for a in args]
+      out = subprocess.check_output(args)
+      decoded = out.decode("utf-8")
+
+      return decoded
+
+    for dash, nbsp, raw, utf8 in itertools.product((False, True), repeat=4):
+
+      # something basic with nothing escapable
+      plain = "the quick brown fox"
+      plain_escaped = escape(dash, nbsp, raw, utf8, plain)
+      assert plain == plain_escaped, "text incorrectly modified"
+
+      # basic tag escaping
+      tag = "template <typename T> void foo(T t);"
+      tag_escaped = escape(dash, nbsp, raw, utf8, tag)
+      assert tag_escaped == "template &lt;typename T&gt; void foo(T t);", \
+        "incorrect < or > escaping"
+
+      # something with an embedded escape
+      embedded = "salt &amp; pepper"
+      embedded_escaped = escape(dash, nbsp, raw, utf8, embedded)
+      if raw:
+        assert embedded_escaped == "salt &amp;amp; pepper", "missing & escape"
+      else:
+        assert embedded_escaped == embedded, "text incorrectly modified"
+
+      # hyphen escaping
+      hyphen = "UTF-8"
+      hyphen_escaped = escape(dash, nbsp, raw, utf8, hyphen)
+      if dash:
+        assert hyphen_escaped == "UTF&#45;8", "incorrect dash escape"
+      else:
+        assert hyphen_escaped == hyphen, "text incorrectly modified"
+
+      # line endings
+      nl = "the quick\nbrown\rfox"
+      nl_escaped = escape(dash, nbsp, raw, utf8, nl)
+      if raw:
+        assert nl_escaped == "the quick&#10;brown&#13;fox", \
+          "incorrect new line escape"
+      else:
+        # allow benign modification of the \r
+        assert nl_escaped in (nl, "the quick\nbrown\nfox"), \
+          "text incorrectly modified"
+
+      # non-breaking space escaping
+      two = "the quick  brown fox"
+      two_escaped = escape(dash, nbsp, raw, utf8, two)
+      if nbsp:
+        assert two_escaped == "the quick &#160;brown fox", \
+          "incorrect nbsp escape"
+      else:
+        assert two_escaped == two, "text incorrectly modified"
+
+      # cases from table in https://en.wikipedia.org/wiki/UTF-8
+      for c, expected in (("$", "$"), ("¢", "&#xa2;"), ("ह", "&#x939;"),
+                          ("€", "&#x20ac;"), ("한", "&#xd55c;"),
+                          ("𐍈", "&#x10348;")):
+        unescaped = f"character |{c}|"
+        escaped = escape(dash, nbsp, raw, utf8, unescaped)
+        if utf8:
+          assert escaped == f"character |{expected}|", "bad UTF-8 escaping"
+        else:
+          assert escaped == unescaped, "bad UTF-8 passthrough"

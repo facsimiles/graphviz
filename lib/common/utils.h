@@ -39,6 +39,8 @@ extern "C" {
       unsigned dash : 1;
       // escape consecutive ' '
       unsigned nbsp : 1;
+      // anticipate non-ASCII characters that need to be encoded
+      unsigned utf8 : 1;
     } xml_flags_t;
 
     UTILS_API nodequeue *new_queue(int);
