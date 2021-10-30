@@ -101,19 +101,6 @@ typedef struct
 	int with_widgets;
 }attr_list;
 
-
-    typedef enum { leftmousebutton, rightmousebutton,
-	    thirdmousebutton } clicked_mouse_button;
-    typedef enum { MOUSE_ROTATE_X, MOUSE_ROTATE_Y, MOUSE_ROTATE_XY,
-	    MOUSE_ROTATE_Z } mouse_rotate_axis;
-
-
-    typedef struct
-    {
-	unsigned char *data;
-	int w;
-	int h;
-    }image_data;
     typedef struct 
     {
 	xdot_op op;
@@ -123,30 +110,13 @@ typedef struct
 	int layer;
 	int listId;/*opengl list id*/
 	glCompImage* img;
-	/* image_data iData; */
     } sdot_op;	
 	
-	
-
-#define MAX_BTN_CNT 50
     typedef struct {
 	float perc;
 	glCompColor c;
 
     } colorschema;
-
-    typedef enum { gvpr_no_arg,gvpr_obj_arg,gvpr_string_arg,gvpr_sel_node_arg,gvpr_sel_edge_arg} gvpr_arg_type;
-
-    typedef struct {
-	char* def;
-	char *script;
-	char *args;
-	char *attr_name;	/*attribute name to identify script in the graph */
-	void* obj;
-	gvpr_arg_type arg_type;
-    } gvprscript;
-    //_on_click="(gvpr_no_arg)N{node.color="red"){N.color="blue"}";
-
 
     typedef struct {
 	int schemacount;       /* number of colors */
@@ -172,23 +142,6 @@ typedef struct
 	GVK_SFDP		/* keep last */
     } gvk_layout;
 
-    typedef struct {
-	int anglex;
-	int angley;
-	int anglez;
-    } rotation;
-
-    typedef struct {
-	int anglex;
-	int angley;
-	int anglez;
-    } gl3DNav;
-
-
-    typedef struct {
-
-	    int a;
-    } topviewdata;
     typedef struct
     {
 	int node_id;
@@ -200,7 +153,6 @@ typedef struct
     }topviewcache;
 
     typedef struct xdot_set xdot_set;
-    typedef enum { GEpixels, GEinches, GEmm } GEunit;
     typedef struct {
 	int color;
 	int pos;
@@ -240,12 +192,6 @@ typedef struct
 	int edgeid;		/*for only edges,  > 0  multiedges */
 
     } element_data;
-    typedef struct _temp_node_record	//helper record to identofy head and tail of edges
-    {
-	Agrec_t h;
-	int ID;
-	int TVref;		//topview data structure reference
-    } temp_node_record;
 
 #define OD_Visible(p) (p.data.Visible)
 #define OD_Locked(p) (p.data.Locked)
@@ -264,17 +210,7 @@ typedef struct
 	float targety;
 	float targetz;
 	int index;
-	float anglexy;
-	float anglexyz;
 
-	float anglex;
-	float angley;
-	float anglez;
-
-
-	float camera_vectorx;
-	float camera_vectory;
-	float camera_vectorz;
 	float r;
 
 
@@ -413,7 +349,6 @@ typedef struct
 	topview_edge *Edges;
 	int Nodecount;
 	int Edgecount;
-	topviewdata *TopviewData;
 	void *customptr;
 	struct {
 	    int active;	//1 draw hierarchy 0 draw regular topview
@@ -449,14 +384,6 @@ typedef struct
 	selection sel;
 	
     } topview;
-
-
-
-    enum {
-	COL_NAME = 0,
-	COL_FILENAME,
-	NUM_COLS
-    };
 
     typedef struct _attribute {
 	char Type;
@@ -501,7 +428,7 @@ typedef struct
 	float zoom;
 
 	/*clipping coordinates, to avoid unnecesarry rendering */
-	float clipX1, clipX2, clipY1, clipY2, clipZ1, clipZ2;
+	float clipX1, clipX2, clipY1, clipY2;
 
 	/*background color */
 	glCompColor bgColor;
@@ -546,9 +473,6 @@ typedef struct
 
 	float bdxLeft, bdyTop;
 	float bdxRight, bdyBottom;
-
-	/*reserved , not being used yet */
-	GEunit unit;		//default pixels :0  
 
 	/*screen window size in 2d */
 	int w, h;

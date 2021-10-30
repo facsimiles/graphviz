@@ -879,29 +879,30 @@ windows-mingw64-cmake-build:
     except:
         - tags
 
-windows-cygwin-cmake-build:
-    stage: build
-    needs: []
-    script:
-        # change line endings from crlf to lf
-        - git rm --cached -r .
-        - git -c core.autocrlf=false reset --hard
-        - choco install --yes --no-progress cygwin
-        # avoid BOM in COLLECTION file
-        - echo experimental | Out-File COLLECTION -Encoding ascii
-        - $Env:build_system = "cmake"
-        - C:\tools\cygwin\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
-    artifacts:
-        when: always
-        expire_in: 1 week
-        paths:
-            - COLLECTION
-            - Packages/*/*/*/*/*/*.zip
-            - Packages/*/*/*/*/*/*.bz2
-    tags:
-        - windows
-    except:
-        - tags
+# FIXME: https://gitlab.com/graphviz/graphviz/-/issues/2145
+# windows-cygwin-cmake-build:
+#     stage: build
+#     needs: []
+#     script:
+#         # change line endings from crlf to lf
+#         - git rm --cached -r .
+#         - git -c core.autocrlf=false reset --hard
+#         - choco install --yes --no-progress cygwin
+#         # avoid BOM in COLLECTION file
+#         - echo experimental | Out-File COLLECTION -Encoding ascii
+#         - $Env:build_system = "cmake"
+#         - C:\tools\cygwin\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
+#     artifacts:
+#         when: always
+#         expire_in: 1 week
+#         paths:
+#             - COLLECTION
+#             - Packages/*/*/*/*/*/*.zip
+#             - Packages/*/*/*/*/*/*.bz2
+#     tags:
+#         - windows
+#     except:
+#         - tags
 
 meta-data:
     stage: test
