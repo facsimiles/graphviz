@@ -86,7 +86,7 @@ then
   fi
   $LAYOUT -Goverlap=prism $FLAGS1 | gvmap $FLAGS2 | neato -n2 $FLAGS3
 else
-  while (( $# > 0 ))
+  while $(( $# > 0 ))
   do
     if [ -f "$1" ]
     then

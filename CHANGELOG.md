@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - hard-coded lookup tables for fallback font metrics for more fonts and font
   variants
 
+### Fixed
+
+- remove Bashism from `gvmap.sh` #2151
+
 ## [2.49.3] – 2021-10-22
 
 ### Fixed
