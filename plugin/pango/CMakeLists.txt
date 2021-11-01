@@ -42,7 +42,7 @@ install(
 )
 
 # Include DLLs with this library on Windows
-if (WIN32)
+if (WIN32 AND install_win_dependency_dlls)
     install(
         FILES
             ${Cairo_RUNTIME_LIBRARIES}

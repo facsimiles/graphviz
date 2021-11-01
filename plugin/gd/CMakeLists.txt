@@ -36,7 +36,7 @@ install(
 )
 
 # Include DLLs with this library on Windows
-if (WIN32)
+if (WIN32 AND install_win_dependency_dlls)
     install(
         FILES
             ${GD_RUNTIME_LIBRARIES}
