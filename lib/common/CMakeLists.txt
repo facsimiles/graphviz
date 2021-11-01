@@ -106,6 +106,7 @@ target_include_directories(common_obj PRIVATE
     ${GRAPHVIZ_LIB_DIR}/pack
     ${GRAPHVIZ_LIB_DIR}/pathplan
     ${GRAPHVIZ_LIB_DIR}/xdot
+    ${EXPAT_INCLUDE_DIRS}
 )
 
 if (WIN32)
