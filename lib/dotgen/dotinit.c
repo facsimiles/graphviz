@@ -284,7 +284,7 @@ static void dotLayout(Agraph_t * g)
     aspect_t* asp;
     int maxphase = late_int(g, agfindgraphattr(g,"phase"), -1, 1);
 
-    setEdgeType (g, ET_SPLINE);
+    setEdgeType (g, EDGETYPE_SPLINE);
     asp = setAspect (g, &aspect);
 
     dot_init_subg(g,g);

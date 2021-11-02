@@ -370,9 +370,9 @@ namespace Visio
 			gvputs(job, "</Misc>\n");
 			
 			gvputs(job, "<Layout>\n");
-			gvprintf(job, "<ShapeRouteStyle>%d</ShapeRouteStyle>\n", edgeType == ET_LINE ? LORouteCenterToCenter : LORouteRightAngle);
+			gvprintf(job, "<ShapeRouteStyle>%d</ShapeRouteStyle>\n", edgeType == EDGETYPE_LINE ? LORouteCenterToCenter : LORouteRightAngle);
 			gvputs(job, "<ConFixedCode>6</ConFixedCode>\n");
-			gvprintf(job, "<ConLineRouteExt>%d</ConLineRouteExt>\n", edgeType == ET_LINE || edgeType == ET_PLINE ? LORouteExtStraight : LORouteExtNURBS);
+			gvprintf(job, "<ConLineRouteExt>%d</ConLineRouteExt>\n", edgeType == EDGETYPE_LINE || edgeType == EDGETYPE_PLINE ? LORouteExtStraight : LORouteExtNURBS);
 			gvputs(job, "<ShapeSplittable>1</ShapeSplittable>\n");
 			gvputs(job, "</Layout>\n");
 			
@@ -436,7 +436,7 @@ namespace Visio
 			PrintTexts(job);
 			
 			/* output Line, Fill, Geom */
-			graphic.Print(job, first, last, edgeType != ET_LINE && edgeType != ET_PLINE);
+			graphic.Print(job, first, last, edgeType != EDGETYPE_LINE && edgeType != EDGETYPE_PLINE);
 			
 			gvputs(job, "</Shape>\n");
 			return true;

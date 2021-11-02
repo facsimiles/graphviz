@@ -42,6 +42,9 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef HAVE_DLFCN_H */
 
+/* Define to 1 if you have the `dl_iterate_phdr` function */
+/* #undef HAVE_DL_ITERATE_PHDR */
+
 /* Define to 1 if you have the `drand48' function. */
 /* #undef HAVE_DRAND48 */
 

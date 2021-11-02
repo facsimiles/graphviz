@@ -126,7 +126,7 @@ static void patchwork_init_node_edge(graph_t * g)
 static void patchwork_init_graph(graph_t * g)
 {
     N_shape = agattr(g, AGNODE, "shape","box");
-    setEdgeType (g, ET_LINE);
+    setEdgeType (g, EDGETYPE_LINE);
     /* GD_ndim(g) = late_int(g,agfindattr(g,"dim"),2,2); */
     Ndim = GD_ndim(g) = 2;	/* The algorithm only makes sense in 2D */
     mkClusters(g, NULL, g);

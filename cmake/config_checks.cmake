@@ -21,14 +21,15 @@ check_include_file( getopt.h            HAVE_GETOPT_H           )
 # Function checks
 include(CheckFunctionExists)
 
-check_function_exists( drand48          HAVE_DRAND48        )
-check_function_exists( getpagesize      HAVE_GETPAGESIZE    )
-check_function_exists( getenv           HAVE_GETENV         )
-check_function_exists( lrand48          HAVE_LRAND48        )
-check_function_exists( setenv           HAVE_SETENV         )
-check_function_exists( setmode          HAVE_SETMODE        )
-check_function_exists( sincos           HAVE_SINCOS         )
-check_function_exists( srand48          HAVE_SRAND48        )
+check_function_exists( dl_iterate_phdr  HAVE_DL_ITERATE_PHDR )
+check_function_exists( drand48          HAVE_DRAND48         )
+check_function_exists( getpagesize      HAVE_GETPAGESIZE     )
+check_function_exists( getenv           HAVE_GETENV          )
+check_function_exists( lrand48          HAVE_LRAND48         )
+check_function_exists( setenv           HAVE_SETENV          )
+check_function_exists( setmode          HAVE_SETMODE         )
+check_function_exists( sincos           HAVE_SINCOS          )
+check_function_exists( srand48          HAVE_SRAND48         )
 
 # Type checks
 # The function check_size_type also checks if the type exists

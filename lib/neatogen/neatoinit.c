@@ -606,7 +606,7 @@ static void neato_init_graph (Agraph_t * g)
 {
     int outdim;
 
-    setEdgeType (g, ET_LINE);
+    setEdgeType (g, EDGETYPE_LINE);
     outdim = late_int(g, agfindgraphattr(g, "dimen"), 2, 2);
     GD_ndim(agroot(g)) = late_int(g, agfindgraphattr(g, "dim"), outdim, 2);
     Ndim = GD_ndim(g->root) = MIN(GD_ndim(g->root), MAXDIM);
@@ -1459,7 +1459,7 @@ void neato_layout(Agraph_t * g)
 		    nodeInduce(gc);
 		    neatoLayout(g, gc, layoutMode, model, &am);
 		    removeOverlapWith(gc, &am);
-		    setEdgeType (gc, ET_LINE);
+		    setEdgeType (gc, EDGETYPE_LINE);
 		    if (noTranslate) doEdges(gc);
 		    else spline_edges(gc);
 		}

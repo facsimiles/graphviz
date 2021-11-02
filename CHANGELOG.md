@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - hard-coded lookup tables for fallback font metrics for more fonts and font
   variants
 
+### Changed
+
+- Check for existence of `dl_iterate_phdr(3)` and if it is available, prefer
+  using it instead of iterating over `/proc/self/maps` for computing `libdir`.
+
 ### Fixed
 
 - remove Bashism from `gvmap.sh` #2151

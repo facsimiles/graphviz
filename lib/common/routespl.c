@@ -1125,7 +1125,7 @@ makeStraightEdges(graph_t * g, edge_t** edges, int e_cnt, int et, splineInfo* si
     pointf dumb[4];
     node_t *n;
     node_t *head;
-    bool curved = et == ET_CURVED;
+    bool curved = et == EDGETYPE_CURVED;
     pointf perp;
     pointf del;
     edge_t *e0;
@@ -1184,7 +1184,7 @@ makeStraightEdges(graph_t * g, edge_t** edges, int e_cnt, int et, splineInfo* si
 		dumber[3 - j] = dumb[j];
 	    }
 	}
-	if (et == ET_PLINE) {
+	if (et == EDGETYPE_PLINE) {
 	    Ppoint_t pts[4];
 	    Ppolyline_t spl, line;
 

@@ -10,6 +10,10 @@
 
 #include "config.h"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE 1
+#endif
+
 #include <gvc/gvconfig.h>
 
 #include <ctype.h>
@@ -17,6 +21,9 @@
 #include	<string.h>
 
 #ifdef ENABLE_LTDL
+#ifdef HAVE_DL_ITERATE_PHDR
+#include <link.h>
+#endif
 #include	<sys/types.h>
 #ifdef _WIN32
 #include <windows.h>
@@ -258,12 +265,30 @@ static void gvconfig_write_library_config(GVC_t *gvc, char *path, gvplugin_libra
 #define DOTLIBS "/.libs"
 #define STRLEN(s) (sizeof(s)-1)
 
+#ifdef HAVE_DL_ITERATE_PHDR
+static int line_callback(struct dl_phdr_info *info, size_t size, void *line)
+{
+   const char *path = info->dlpi_name;
+   char *tmp = strstr(path, "/libgvc.");
+   (void) size;
+   if (tmp) {
+        *tmp = 0;
+        /* Check for real /lib dir. Don't accept pre-install /.libs */
+        if (strcmp(strrchr(path,'/'), DOTLIBS) != 0) {
+            memmove(line, path, strlen(path) + 1);  /* use line buffer for result */
+            strcat(line, "/graphviz");  /* plugins are in "graphviz" subdirectory */
+            return 1;
+        }
+   }
+   return 0;
+}
+#endif
+
 char * gvconfig_libdir(GVC_t * gvc)
 {
     static char line[BSZ];
     static char *libdir;
     static boolean dirShown = 0; 
-    char *tmp;
 
     if (!libdir) {
         libdir=getenv("GVBINDIR");
@@ -297,7 +322,7 @@ char * gvconfig_libdir(GVC_t * gvc)
 	    const char* path;
 	    for (i = 0; i < c; ++i) {
 		path = _dyld_get_image_name(i);
-		tmp = strstr(path, "/libgvc.");
+		const char* tmp = strstr(path, "/libgvc.");
 		if (tmp) {
 		    if (tmp > path) {
 			/* Check for real /lib dir. Don't accept pre-install /.libs */
@@ -320,6 +345,9 @@ char * gvconfig_libdir(GVC_t * gvc)
 		    break;
 		}
 	    }
+#elif defined(HAVE_DL_ITERATE_PHDR)
+	    dl_iterate_phdr(line_callback, line);
+	    libdir = line;
 #else
 	    FILE* f = fopen ("/proc/self/maps", "r");
 	    char* path;
@@ -332,7 +360,7 @@ char * gvconfig_libdir(GVC_t * gvc)
 		    path = strchr (line, '/');
 		    if (!path)
 		        continue;
-		    tmp = strstr (path, "/libgvc.");
+		    char* tmp = strstr (path, "/libgvc.");
 		    if (tmp) {
 			*tmp = 0;
 			/* Check for real /lib dir. Don't accept pre-install /.libs */

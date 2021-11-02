@@ -546,7 +546,7 @@ void makeSpline(graph_t* g, edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPt
  * remain in the cluster's bounding box and, conversely, a cluster's box
  * is not altered to reflect intra-cluster edges.
  * If Nop > 1 and the spline exists, it is just copied.
- * NOTE: if edgetype = ET_NONE, we shouldn't be here.
+ * NOTE: if edgetype = EDGETYPE_NONE, we shouldn't be here.
  */
 static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 {
@@ -566,10 +566,10 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 #endif
     
     /* build configuration */
-    if (edgetype >= ET_PLINE) {
+    if (edgetype >= EDGETYPE_PLINE) {
 	obs = N_NEW(agnnodes(g), Ppoly_t *);
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    obp = makeObstacle(n, pmargin, edgetype == ET_ORTHO);
+	    obp = makeObstacle(n, pmargin, edgetype == EDGETYPE_ORTHO);
 	    if (obp) {
 		ND_lim(n) = i; 
 		obs[i++] = obp;
@@ -583,10 +583,10 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     npoly = i;
     if (obs) {
 	if ((legal = Plegal_arrangement(obs, npoly))) {
-	    if (edgetype != ET_ORTHO) vconfig = Pobsopen(obs, npoly);
+	    if (edgetype != EDGETYPE_ORTHO) vconfig = Pobsopen(obs, npoly);
 	}
 	else {
-	    if (edgetype == ET_ORTHO)
+	    if (edgetype == EDGETYPE_ORTHO)
 		agerr(AGWARN, "the bounding boxes of some nodes touch - falling back to straight line edges\n");
 	    else 
 		agerr(AGWARN, "some nodes with margin (%.02f,%.02f) touch - falling back to straight line edges\n", pmargin->x, pmargin->y);
@@ -596,8 +596,8 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     /* route edges  */
     if (Verbose)
 	fprintf(stderr, "Creating edges using %s\n",
-	    (legal && edgetype == ET_ORTHO) ? "orthogonal lines" :
-	    (vconfig ? (edgetype == ET_SPLINE ? "splines" : "polylines") : 
+	    (legal && edgetype == EDGETYPE_ORTHO) ? "orthogonal lines" :
+	    (vconfig ? (edgetype == EDGETYPE_SPLINE ? "splines" : "polylines") :
 		"line segments"));
     if (vconfig) {
 	/* path-finding pass */
@@ -608,7 +608,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 	}
     }
 #ifdef ORTHO
-    else if (legal && edgetype == ET_ORTHO) {
+    else if (legal && edgetype == EDGETYPE_ORTHO) {
 	orthoEdges (g, 0);
 	useEdges = 1;
     }
@@ -631,7 +631,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, boxf);
 		}
 		makeSelfArcs(P, e, GD_nodesep(g->root));
-	    } else if (vconfig) { /* ET_SPLINE or ET_PLINE */
+	    } else if (vconfig) { /* EDGETYPE_SPLINE or EDGETYPE_PLINE */
 #ifdef HAVE_GTS
 		if (ED_count(e) > 1 || BOUNDARY_PORT(e)) {
 		    int fail = 0;
@@ -640,7 +640,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 			makeStraightEdge(g, e, edgetype, &sinfo);
 		    else { 
 			if (!rtr) rtr = mkRouter (obs, npoly);
-			fail = makeMultiSpline(g, e, rtr, edgetype == ET_PLINE);
+			fail = makeMultiSpline(g, e, rtr, edgetype == EDGETYPE_PLINE);
 		    } 
 		    if (!fail) continue;
 		}
@@ -653,7 +653,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 		if (Concentrate) cnt = 1; /* only do representative */
 		e0 = e;
 		for (i = 0; i < cnt; i++) {
-		    if (edgetype == ET_SPLINE)
+		    if (edgetype == EDGETYPE_SPLINE)
 			makeSpline(g, e0, obs, npoly, TRUE);
 		    else
 			makePolyline(g, e0);
@@ -771,13 +771,13 @@ void spline_edges0(graph_t * g, boolean set_aspect)
 {
     int et = EDGE_TYPE (g);
     if (set_aspect) neato_set_aspect(g);
-    if (et == ET_NONE) return;
+    if (et == EDGETYPE_NONE) return;
 #ifndef ORTHO
-    if (et == ET_ORTHO) {
+    if (et == EDGETYPE_ORTHO) {
 	agerr (AGWARN, "Orthogonal edges not yet supported\n");
-	et = ET_PLINE; 
-	GD_flags(g->root) &= ~ET_ORTHO;
-	GD_flags(g->root) |= ET_PLINE;
+	et = EDGETYPE_PLINE;
+	GD_flags(g->root) &= ~EDGETYPE_ORTHO;
+	GD_flags(g->root) |= EDGETYPE_PLINE;
     }
 #endif
     spline_edges1(g, et);

@@ -1030,7 +1030,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 
 static void fdp_init_graph(Agraph_t * g)
 {
-    setEdgeType (g, ET_LINE);
+    setEdgeType (g, EDGETYPE_LINE);
     GD_alg(g) = NEW(gdata);	/* freed in cleanup_graph */
     GD_ndim(g) = late_int(g, agattr(g,AGRAPH, "dim", NULL), 2, 2);
     Ndim = GD_ndim(g) = MIN(GD_ndim(g), MAXDIM);
@@ -1067,18 +1067,18 @@ fdpSplines (graph_t * g)
     int trySplines = 0;
     int et = EDGE_TYPE(g);
 
-    if (et > ET_ORTHO) {
-	if (et == ET_COMPOUND) {
-	    trySplines = splineEdges(g, compoundEdges, ET_SPLINE);
+    if (et > EDGETYPE_ORTHO) {
+	if (et == EDGETYPE_COMPOUND) {
+	    trySplines = splineEdges(g, compoundEdges, EDGETYPE_SPLINE);
 	    /* When doing the edges again, accept edges done by compoundEdges */
 	    if (trySplines)
 		Nop = 2;
 	}
-	if (trySplines || et != ET_COMPOUND) {
+	if (trySplines || et != EDGETYPE_COMPOUND) {
 	    if (HAS_CLUST_EDGE(g)) {
 		agerr(AGWARN,
 		      "splines and cluster edges not supported - using line segments\n");
-		et = ET_LINE;
+		et = EDGETYPE_LINE;
 	    } else {
 		spline_edges1(g, et);
 	    }
@@ -1100,7 +1100,7 @@ void fdp_layout(graph_t * g)
     }
     neato_set_aspect(g);
 
-    if (EDGE_TYPE(g) != ET_NONE) fdpSplines (g); 
+    if (EDGE_TYPE(g) != EDGETYPE_NONE) fdpSplines (g);
 
     gv_postprocess(g, 0);
     PSinputscale = save_scale;

@@ -398,7 +398,7 @@ countClusterLabels (Agraph_t* g)
  * TODO: interaction with spline=ortho
  */
   /* True if edges geometries were computed and this edge has a geometry */
-#define HAVE_EDGE(ep) ((et != ET_NONE) && (ED_spl(ep) != NULL))
+#define HAVE_EDGE(ep) ((et != EDGETYPE_NONE) && (ED_spl(ep) != NULL))
 
 static void addXLabels(Agraph_t * gp)
 {

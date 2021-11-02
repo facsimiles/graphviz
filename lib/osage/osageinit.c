@@ -63,7 +63,7 @@ static void cluster_init_graph(graph_t * g)
     Agnode_t *n;
     Agedge_t *e;
 
-    setEdgeType (g, ET_LINE);
+    setEdgeType (g, EDGETYPE_LINE);
     Ndim = GD_ndim(g)=2;	/* The algorithm only makes sense in 2D */
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -364,7 +364,7 @@ void osage_layout(Agraph_t *g)
     }
     else {
 	int et = EDGE_TYPE (g);
-	if (et != ET_NONE) spline_edges1(g, et);
+	if (et != EDGETYPE_NONE) spline_edges1(g, et);
     }
     dotneato_postprocess(g);
 }

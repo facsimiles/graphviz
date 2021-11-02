@@ -1674,31 +1674,31 @@ static int edgeType(const char *s, int dflt)
     }
 
     if (*s == '0') { /* false */
-	return ET_LINE;
+	return EDGETYPE_LINE;
     } else if (*s >= '1' && *s <= '9') { /* true */
-	return ET_SPLINE;
+	return EDGETYPE_SPLINE;
     } else if (strcasecmp(s, "curved") == 0) {
-	return ET_CURVED;
+	return EDGETYPE_CURVED;
     } else if (strcasecmp(s, "compound") == 0) {
-	return ET_COMPOUND;
+	return EDGETYPE_COMPOUND;
     } else if (strcasecmp(s, "false") == 0) {
-	return ET_LINE;
+	return EDGETYPE_LINE;
     } else if (strcasecmp(s, "line") == 0) {
-	return ET_LINE;
+	return EDGETYPE_LINE;
     } else if (strcasecmp(s, "none") == 0) {
-	return ET_NONE;
+	return EDGETYPE_NONE;
     } else if (strcasecmp(s, "no") == 0) {
-	return ET_LINE;
+	return EDGETYPE_LINE;
     } else if (strcasecmp(s, "ortho") == 0) {
-	return ET_ORTHO;
+	return EDGETYPE_ORTHO;
     } else if (strcasecmp(s, "polyline") == 0) {
-	return ET_PLINE;
+	return EDGETYPE_PLINE;
     } else if (strcasecmp(s, "spline") == 0) {
-	return ET_SPLINE;
+	return EDGETYPE_SPLINE;
     } else if (strcasecmp(s, "true") == 0) {
-	return ET_SPLINE;
+	return EDGETYPE_SPLINE;
     } else if (strcasecmp(s, "yes") == 0) {
-	return ET_SPLINE;
+	return EDGETYPE_SPLINE;
     }
 
     agerr(AGWARN, "Unknown \"splines\" value: \"%s\" - ignored\n", s);
@@ -1710,12 +1710,12 @@ static int edgeType(const char *s, int dflt)
  * If the attribute is not defined, use default.
  * If the attribute is "", use NONE.
  * If attribute value matches (case indepedent), use match.
- *   ortho => ET_ORTHO
- *   none => ET_NONE
- *   line => ET_LINE
- *   polyline => ET_PLINE
- *   spline => ET_SPLINE
- * If attribute is boolean, true means ET_SPLINE, false means ET_LINE.
+ *   ortho => EDGETYPE_ORTHO
+ *   none => EDGETYPE_NONE
+ *   line => EDGETYPE_LINE
+ *   polyline => EDGETYPE_PLINE
+ *   spline => EDGETYPE_SPLINE
+ * If attribute is boolean, true means EDGETYPE_SPLINE, false means EDGETYPE_LINE.
  * Else warn and use default.
  */
 void setEdgeType (graph_t* g, int dflt)
@@ -1727,7 +1727,7 @@ void setEdgeType (graph_t* g, int dflt)
 	et = dflt;
     }
     else if (*s == '\0') {
-	et = ET_NONE;
+	et = EDGETYPE_NONE;
     }
     else et = edgeType (s, dflt);
     GD_flags(g) |= et;

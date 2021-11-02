@@ -47,7 +47,7 @@ static void sfdp_init_graph(Agraph_t * g)
 {
     int outdim;
 
-    setEdgeType(g, ET_LINE);
+    setEdgeType(g, EDGETYPE_LINE);
     outdim = late_int(g, agfindgraphattr(g, "dimen"), 2, 2);
     GD_ndim(agroot(g)) = late_int(g, agfindgraphattr(g, "dim"), outdim, 2);
     Ndim = GD_ndim(agroot(g)) = MIN(GD_ndim(agroot(g)), MAXDIM);
@@ -327,7 +327,7 @@ void sfdp_layout(graph_t * g)
 		nodeInduce(sg);
 		sfdpLayout(sg, ctrl, hops, pad);
 		if (doAdjust) removeOverlapWith(sg, &am);
-		setEdgeType(sg, ET_LINE);
+		setEdgeType(sg, EDGETYPE_LINE);
 		spline_edges(sg);
 	    }
 	    packSubgraphs(ncc, ccs, g, &pinfo);

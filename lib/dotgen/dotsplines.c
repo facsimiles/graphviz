@@ -324,15 +324,15 @@ static void _dot_splines(graph_t * g, int normalize)
     fwdedgea.out.base.data = (Agrec_t*)&fwdedgeai;
     fwdedgeb.out.base.data = (Agrec_t*)&fwdedgebi;
 
-    if (et == ET_NONE) return; 
-    if (et == ET_CURVED) {
+    if (et == EDGETYPE_NONE) return;
+    if (et == EDGETYPE_CURVED) {
 	resetRW (g);
 	if (GD_has_labels(g->root) & EDGE_LABEL) {
 	    agerr (AGWARN, "edge labels with splines=curved not supported in dot - use xlabels\n");
 	}
     } 
 #ifdef ORTHO
-    if (et == ET_ORTHO) {
+    if (et == EDGETYPE_ORTHO) {
 	resetRW (g);
 	if (GD_has_labels(g->root) & EDGE_LABEL) {
 	    setEdgeLabelPos (g);
@@ -427,7 +427,7 @@ static void _dot_splines(graph_t * g, int normalize)
     P->boxes = N_NEW(n_nodes + 20 * 2 * NSUB, boxf);
     sd.Rank_box = N_NEW(i, boxf);
 
-    if (et == ET_LINE) {
+    if (et == EDGETYPE_LINE) {
     /* place regular edge labels */
 	for (n = GD_nlist(g); n; n = ND_next(n)) {
 	    if (ND_node_type(n) == VIRTUAL && ND_label(n)) {
@@ -472,7 +472,7 @@ static void _dot_splines(graph_t * g, int normalize)
 		break;
 	}
 
-	if (et == ET_CURVED) {
+	if (et == EDGETYPE_CURVED) {
 	    int ii;
 	    edge_t* e0;
 	    edge_t** edgelist;
@@ -560,9 +560,9 @@ finish :
     /* end vladimir */
 
 #ifdef ORTHO
-    if (et != ET_ORTHO && et != ET_CURVED)  {
+    if (et != EDGETYPE_ORTHO && et != EDGETYPE_CURVED)  {
 #else
-    if (et != ET_CURVED) {
+    if (et != EDGETYPE_CURVED) {
 #endif
 	free(edges);
 	free(P->boxes);
@@ -1120,7 +1120,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
 	}
 	poly.pn = 8;
 	poly.ps = (Ppoint_t*)points;
-	ps = simpleSplineRoute (tp, hp, poly, &pn, et == ET_PLINE);
+	ps = simpleSplineRoute (tp, hp, poly, &pn, et == EDGETYPE_PLINE);
 	if (pn == 0) return;
 	ED_label(e)->pos.x = ctrx;
 	ED_label(e)->pos.y = ctry;
@@ -1172,7 +1172,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
 	}
 	poly.pn = 8;
 	poly.ps = (Ppoint_t*)points;
-	ps = simpleSplineRoute (tp, hp, poly, &pn, et == ET_PLINE);
+	ps = simpleSplineRoute (tp, hp, poly, &pn, et == EDGETYPE_PLINE);
 	if (pn == 0) return;
 	clip_and_install(e, aghead(e), ps, pn, &sinfo);
     }
@@ -1199,13 +1199,13 @@ makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et
     for (i = 0; i < cnt; i++) {
 	e = edges[ind + i];
 	pointn = 0;
-	if (et == ET_SPLINE || et == ET_LINE) {
+	if (et == EDGETYPE_SPLINE || et == EDGETYPE_LINE) {
 	    points[pointn++] = tp;
 	    points[pointn++] = pointfof((2 * tp.x + hp.x) / 3, dy);
 	    points[pointn++] = pointfof((2 * hp.x + tp.x) / 3, dy);
 	    points[pointn++] = hp;
 	}
-	else {   /* ET_PLINE */
+	else {   /* EDGETYPE_PLINE */
 	    points[pointn++] = tp;
 	    points[pointn++] = tp;
 	    points[pointn++] = pointfof((2 * tp.x + hp.x) / 3, dy);
@@ -1442,7 +1442,7 @@ make_flat_labeled_edge(graph_t* g, spline_info_t* sp, path* P, edge_t* e, int et
     ED_label(e)->pos = ND_coord(ln);
     ED_label(e)->set = TRUE;
 
-    if (et == ET_LINE) {
+    if (et == EDGETYPE_LINE) {
 	pointf startp, endp, lp;
 
 	startp = add_pointf(ND_coord(tn), ED_tail_port(e).p);
@@ -1483,7 +1483,7 @@ make_flat_labeled_edge(graph_t* g, spline_info_t* sp, path* P, edge_t* e, int et
 	for (size_t j = 0; j < boxn; j++) add_box(P, boxes[j]);
 	for (i = hend.boxn - 1; i >= 0; i--) add_box(P, hend.boxes[i]);
 
-	if (et == ET_SPLINE) ps = routesplines(P, &pn);
+	if (et == EDGETYPE_SPLINE) ps = routesplines(P, &pn);
 	else ps = routepolylines(P, &pn);
 	if (pn == 0) return;
     }
@@ -1609,7 +1609,7 @@ make_flat_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int ind
 	return;
     }
 
-    if (et == ET_LINE) {
+    if (et == EDGETYPE_LINE) {
 	makeSimpleFlat (agtail(e), aghead(e), edges, ind, cnt, et);
 	return;
     }
@@ -1618,7 +1618,7 @@ make_flat_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int ind
     hside = ED_head_port(e).side;
     if ((tside == BOTTOM && hside != TOP) ||
         (hside == BOTTOM && tside != TOP)) {
-	make_flat_bottom_edges (g, sp, P, edges, ind, cnt, e, et == ET_SPLINE);
+	make_flat_bottom_edges (g, sp, P, edges, ind, cnt, e, et == EDGETYPE_SPLINE);
 	return;
     }
 
@@ -1672,7 +1672,7 @@ make_flat_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int ind
 	for (size_t k = 0; k < boxn; k++) add_box(P, boxes[k]);
 	for (j = hend.boxn - 1; j >= 0; j--) add_box(P, hend.boxes[j]);
 
-	if (et == ET_SPLINE) ps = routesplines(P, &pn);
+	if (et == EDGETYPE_SPLINE) ps = routesplines(P, &pn);
 	else ps = routepolylines(P, &pn);
 	if (pn == 0)
 	    return;
@@ -1842,10 +1842,10 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
 
     /* compute the spline points for the edge */
 
-    if ((et == ET_LINE) && (pointn = makeLineEdge (g, fe, pointfs, &hn))) {
+    if ((et == EDGETYPE_LINE) && (pointn = makeLineEdge (g, fe, pointfs, &hn))) {
     }
     else {
-	bool is_spline = et == ET_SPLINE;
+	bool is_spline = et == EDGETYPE_SPLINE;
 	boxes_t boxes = {0};
 	pointn = 0;
 	segfirst = e;
@@ -1891,7 +1891,7 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
 	    if (is_spline) ps = routesplines(P, &pn);
 	    else {
 		ps = routepolylines (P, &pn);
-		if ((et == ET_LINE) && (pn > 4)) {
+		if ((et == EDGETYPE_LINE) && (pn > 4)) {
 		    ps[1] = ps[0];
 		    ps[3] = ps[2] = ps[pn-1];
 		    pn = 4;
@@ -1942,7 +1942,7 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
 	boxes_free(&boxes);
 	if (is_spline) ps = routesplines(P, &pn);
 	else ps = routepolylines (P, &pn);
-	if (et == ET_LINE && pn > 4) {
+	if (et == EDGETYPE_LINE && pn > 4) {
 	    /* Here we have used the polyline case to handle
 	     * an edge between two nodes on adjacent ranks. If the
 	     * results really is a polyline, straighten it.
