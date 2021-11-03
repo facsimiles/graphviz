@@ -326,7 +326,7 @@ char * gvconfig_libdir(GVC_t * gvc)
 		if (tmp) {
 		    if (tmp > path) {
 			/* Check for real /lib dir. Don't accept pre-install /.libs */
-			char* s = tmp-1;
+			const char *s = tmp - 1;
 			/* back up to previous slash (or head of string) */
 			while ((*s != '/') && (s > path)) s--;
 			if (strncmp (s, DOTLIBS, STRLEN(DOTLIBS)) == 0)
