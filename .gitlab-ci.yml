@@ -232,7 +232,11 @@ portable-source:
     except:
         - tags
 
-.test_template_including_ctest: &test_definition_including_ctest
+.linux_test_template: &linux_test_definition
+    <<: *test_definition
+    image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
+
+.linux_test_template_including_ctest: &linux_test_definition_including_ctest
     stage: test
     script:
         - export GV_VERSION=$( cat GRAPHVIZ_VERSION )
@@ -265,13 +269,6 @@ portable-source:
             cobertura: coverage.xml
     except:
         - tags
-
-.linux_test_template: &linux_test_definition
-    <<: *test_definition
-    image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
-
-.linux_test_template_including_ctest: &linux_test_definition_including_ctest
-    <<: *test_definition_including_ctest
     image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
 
 centos7-build:
