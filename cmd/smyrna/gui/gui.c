@@ -131,21 +131,6 @@ void load_attributes(void)
 		    attr[attrcount].Default = strdup(ss);
 		    break;
 		case 3:
-		    if (strstr(ss, "ANY_ELEMENT")) {
-			attr[attrcount].ApplyTo[GVE_GRAPH] = 1;
-			attr[attrcount].ApplyTo[GVE_CLUSTER] = 1;
-			attr[attrcount].ApplyTo[GVE_NODE] = 1;
-			attr[attrcount].ApplyTo[GVE_EDGE] = 1;
-		    } else {
-			attr[attrcount].ApplyTo[GVE_GRAPH] =
-			    strstr(ss, "GRAPH") ? 1 : 0;
-			attr[attrcount].ApplyTo[GVE_CLUSTER] =
-			    strstr(ss, "CLUSTER") ? 1 : 0;
-			attr[attrcount].ApplyTo[GVE_NODE] =
-			    strstr(ss, "NODE") ? 1 : 0;
-			attr[attrcount].ApplyTo[GVE_EDGE] =
-			    strstr(ss, "EDGE") ? 1 : 0;
-		    }
 		    break;
 		case 4:
 		    if (strstr(ss, "ALL_ENGINES")) {

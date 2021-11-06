@@ -829,15 +829,9 @@ void updateSmGraph(Agraph_t * g,topview* t)
     float totalELength=0;
 
     t->Nodecount=0;
-    t->Edgecount=0;
-    t->avgedgelength=0;
     t->maxedgelen=0;
     t->minedgelen=-1;
 
-    t->picked_node_count = 0;
-    t->picked_nodes = '\0';
-    t->picked_edge_count = 0;
-    t->picked_edges = '\0';
     t->global_z=0;
     t->sel.selPoly.cnt=0;
     t->sel.selPoly.pts=NULL;
@@ -848,7 +842,6 @@ void updateSmGraph(Agraph_t * g,topview* t)
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
-	    t->Edgecount++;
 	    eLength=getEdgeLength(e);
 	    if((t->minedgelen == -1) || (t->minedgelen > eLength))
 		t->minedgelen=eLength;
@@ -863,7 +856,6 @@ void updateSmGraph(Agraph_t * g,topview* t)
     aginit(g, AGEDGE, "edgeRec", sizeof(edgeRec), 0);
 
     set_boundaries(g,t);
-    t->avgedgelength = totalELength / t->Edgecount;
     view->Topview=t;
 
 
@@ -878,10 +870,6 @@ void updateSmGraph(Agraph_t * g,topview* t)
 }
 void initSmGraph(Agraph_t * g,topview* rv)
 {
-    rv->maxnodedegree = 1;
-
-        
-
     /*create attribute list*/
     rv->attributes=load_attr_list(view->g[view->activeGraph]);
     rv->filtered_attr_list=NULL;

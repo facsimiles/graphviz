@@ -174,25 +174,6 @@ typedef struct
 	smyrna_view_mode mode;
     }mouse_action_t;
 
-    typedef struct _object_data	//has to be attached to every Node, Edge, Graph and cluster
-    {
-	Agrec_t h;
-	int ID;
-	char *ObjName;
-	int ObjType;
-	int Layer;
-	int Visible;
-	int Selected;
-	int NumDataCount;
-	float *NumData;
-	int StrDataCount;
-	char **StrData;
-	int param;		//generic purpose param
-	int TVRef;		//Topview reference
-	int edgeid;		/*for only edges,  > 0  multiedges */
-
-    } element_data;
-
 #define OD_Visible(p) (p.data.Visible)
 #define OD_Locked(p) (p.data.Locked)
 #define OD_Highlighted(p) (p.data.Highlighted)
@@ -216,49 +197,6 @@ typedef struct
 
 	cam_t type;		//
     } viewport_camera;
-
-
-
-    typedef struct 
-	{
-		Agnode_t *Node;
-		/*original coordinates */
-		float x;
-		float y;
-		float z;
-		/*coordinates to draw */
-		float distorted_x;
-		float distorted_y;
-		float distorted_z;
-		float zoom_factor;
-		int in_fish_eye;	//boolean value if to apply fisheye
-		glCompColor Color;
-		char *Label;
-		char *Label2;
-		int degree;
-		float node_alpha;
-		int valid;
-		element_data data;
-		float size;
-		xdot* xDot;
-    } topview_node;
-
-    typedef struct 
-	{
-		Agedge_t *Edge;		//edge itself
-		float x1;
-		float y1;
-		float z1;
-		float x2;
-		float y2;
-		float z2;
-		float length;
-		topview_node *Node1;	//Tail
-		topview_node *Node2;	//Head
-		glCompColor Color;
-		element_data data;
-		xdot* xDot;
-    } topview_edge;
 
     typedef struct _graph_data {
 	Agrec_t h;
@@ -345,11 +283,7 @@ typedef struct
     } selection;
 
     typedef struct {
-	topview_node *Nodes;
-	topview_edge *Edges;
 	int Nodecount;
-	int Edgecount;
-	void *customptr;
 	struct {
 	    int active;	//1 draw hierarchy 0 draw regular topview
 	    reposition_t repos;
@@ -362,17 +296,9 @@ typedef struct
 	    focus_t *fs;
     	} fisheyeParams;
 
-	topview_node **picked_nodes;
-	int picked_node_count;
-	topview_edge **picked_edges;
-	int picked_edge_count;
-
 	graph_data Graphdata;
-	int maxnodedegree;
 	float maxedgelen;
 	float minedgelen;
-	float avgedgelength;
-	float init_zoom;
 	float fitin_zoom;
 	xdot* xDot;
 	float global_z;
@@ -380,7 +306,6 @@ typedef struct
 	attr_list* filtered_attr_list;
 
 	topviewcache cache;
-	int xdotId;
 	selection sel;
 	
     } topview;
@@ -389,7 +314,6 @@ typedef struct
 	char Type;
 	char *Name;
 	char *Default;
-	char ApplyTo[GVE_EDGE + 1];
 	char Engine[GVK_FDP + 1];
 	char **ComboValues;
 	int ComboValuesCount;
