@@ -47,7 +47,6 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*/*/*/*.rpm
             - Packages/*/*/*/*/*.rpm
             - Metadata/*/*/*/configure.log
             - GRAPHVIZ_VERSION
@@ -70,7 +69,7 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*/*/*/*deb
+            - Packages/*/*/*/*/*deb
             - Metadata/*/*/*/configure.log
             - GRAPHVIZ_VERSION
             - COLLECTION
@@ -102,8 +101,8 @@ portable-source:
         paths:
             - GRAPHVIZ_VERSION
             - COLLECTION
-            - Packages/*/*/*/*/*/*.zip
-            - Packages/*/*/*/*/*/*.tar.gz
+            - Packages/*/*/*/*/*.zip
+            - Packages/*/*/*/*/*.tar.gz
             - Metadata/*/*/*/configure.log
         reports:
             metrics: metrics.txt
@@ -197,7 +196,7 @@ portable-source:
         - $ID = "windows"
         - $VERSION_ID = "10"
         - $COLLECTION = $( cat COLLECTION )
-        - $DIR = "Packages\${COLLECTION}\${ID}\${VERSION_ID}\$env:build_system\$env:configuration\$Env:project_platform"
+        - $DIR = "Packages\${COLLECTION}\${ID}\${VERSION_ID}\$env:build_system\$env:configuration"
         - mkdir -p $DIR
         - >-
             if($env:build_system -eq "cmake") {
@@ -209,8 +208,8 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-        - Packages/*/*/*/*/*/*/*.exe
-        - Packages/*/*/*/*/*/*/*.zip
+        - Packages/*/*/*/*/*/*.exe
+        - Packages/*/*/*/*/*/*.zip
         reports:
             metrics: metrics.txt
             junit: report.xml
@@ -403,8 +402,8 @@ ubuntu21-04-static-build:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*/*/*/*deb
-            - Packages/*/*/*/*/*/*.xz
+            - Packages/*/*/*/*/*deb
+            - Packages/*/*/*/*/*.xz
             - Metadata/*/*/*/configure.log
             - GRAPHVIZ_VERSION
             - COLLECTION
@@ -429,8 +428,8 @@ ubuntu21-10-static-build:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*/*/*/*deb
-            - Packages/*/*/*/*/*/*.xz
+            - Packages/*/*/*/*/*deb
+            - Packages/*/*/*/*/*.xz
             - Metadata/*/*/*/configure.log
             - GRAPHVIZ_VERSION
             - COLLECTION
@@ -494,7 +493,7 @@ windows-cygwin-build:
         paths:
             - GRAPHVIZ_VERSION
             - COLLECTION
-            - Packages/*/*/*/*/*/*.xz
+            - Packages/*/*/*/*/*.xz
     tags:
         - windows
     except:
@@ -522,7 +521,7 @@ windows-cygwin-build-using-autogen:
         expire_in: 1 week
         paths:
             - COLLECTION
-            - Packages/*/*/*/*/*/*.xz
+            - Packages/*/*/*/*/*.xz
     tags:
         - windows
     except:
@@ -664,7 +663,7 @@ ubuntu21-04-cmake-ASan-build-for-ctest:
             # the dot program is needed to configure the plugins before running pre-install tests
             - build/cmd/dot/dot
             # the packages need to be installed for the post-install tests
-            - Packages/*/*/*/*/*/*deb
+            - Packages/*/*/*/*/*deb
             - Metadata/*/*/*/configure.log
         reports:
             metrics: metrics.txt
@@ -709,7 +708,7 @@ ubuntu21-10-cmake-ASan-build-for-ctest:
             # the dot program is needed to configure the plugins before running pre-install tests
             - build/cmd/dot/dot
             # the packages need to be installed for the post-install tests
-            - Packages/*/*/*/*/*/*deb
+            - Packages/*/*/*/*/*deb
             - Metadata/*/*/*/configure.log
         reports:
             metrics: metrics.txt
@@ -806,8 +805,8 @@ windows-mingw32-cmake-build:
         expire_in: 1 week
         paths:
             - COLLECTION
-            - Packages/*/*/*/*/*/*.exe
-            - Packages/*/*/*/*/*/*.zip
+            - Packages/*/*/*/*/*.exe
+            - Packages/*/*/*/*/*.zip
     tags:
         - windows
     except:
@@ -827,8 +826,8 @@ windows-mingw64-cmake-build:
         expire_in: 1 week
         paths:
             - COLLECTION
-            - Packages/*/*/*/*/*/*.exe
-            - Packages/*/*/*/*/*/*.zip
+            - Packages/*/*/*/*/*.exe
+            - Packages/*/*/*/*/*.zip
     tags:
         - windows
     except:
@@ -852,8 +851,8 @@ windows-mingw64-cmake-build:
 #         expire_in: 1 week
 #         paths:
 #             - COLLECTION
-#             - Packages/*/*/*/*/*/*.zip
-#             - Packages/*/*/*/*/*/*.bz2
+#             - Packages/*/*/*/*/*.zip
+#             - Packages/*/*/*/*/*.bz2
 #     tags:
 #         - windows
 #     except:
