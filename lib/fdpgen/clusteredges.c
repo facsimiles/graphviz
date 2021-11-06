@@ -267,7 +267,7 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 		    P = NEW(path);
 		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, boxf);
 		}
-		makeSelfArcs(P, e, GD_nodesep(g));
+		makeSelfArcs(e, GD_nodesep(g));
 	    } else if (ED_count(e)) {
 		objl = objectList(e, pm);
 		if (Plegal_arrangement(objl->obs, objl->cnt)) {
@@ -300,7 +300,7 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 		for (e0 = e; e0; e0 = ED_to_virt(e0)) {
 		    ED_path(e0) =
 			getPath(e0, vconfig, 0, objl->obs, objl->cnt);
-		    makeSpline(g, e0, objl->obs, objl->cnt, FALSE);
+		    makeSpline(e0, objl->obs, objl->cnt, FALSE);
 		}
 		resetObjlist(objl);
 	    }

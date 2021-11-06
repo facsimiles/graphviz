@@ -17,4 +17,4 @@ typedef struct router_s router_t;
 
 extern void freeRouter (router_t* rtr);
 extern router_t* mkRouter (Ppoly_t** obs, int npoly);
-extern int makeMultiSpline(graph_t* g, edge_t* e, router_t * rtr, int);
+extern int makeMultiSpline(edge_t* e, router_t * rtr, int);

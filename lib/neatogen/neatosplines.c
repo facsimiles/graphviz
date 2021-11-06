@@ -234,14 +234,14 @@ static edge_t *equivEdge(Dt_t * map, edge_t * e)
  * We have to handle port labels here.
  * as well as update the bbox from edge labels.
  */
-void makeSelfArcs(path * P, edge_t * e, int stepx)
+void makeSelfArcs(edge_t * e, int stepx)
 {
     int cnt = ED_count(e);
 
     if (cnt == 1 || Concentrate) {
 	edge_t *edges1[1];
 	edges1[0] = e;
-	makeSelfEdge(P, edges1, 0, 1, stepx, stepx, &sinfo);
+	makeSelfEdge(edges1, 0, 1, stepx, stepx, &sinfo);
 	if (ED_label(e))
 	    updateBB(agraphof(agtail(e)), ED_label(e));
 	makePortLabels(e);
@@ -252,7 +252,7 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
 	    edges[i] = e;
 	    e = ED_to_virt(e);
 	}
-	makeSelfEdge(P, edges, 0, cnt, stepx, stepx, &sinfo);
+	makeSelfEdge(edges, 0, cnt, stepx, stepx, &sinfo);
 	for (i = 0; i < cnt; i++) {
 	    e = edges[i];
 	    if (ED_label(e))
@@ -472,9 +472,7 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
 
 /* makePolyline:
  */
-static void
-makePolyline(graph_t* g, edge_t * e)
-{
+static void makePolyline(edge_t * e) {
     Ppolyline_t spl, line = ED_path(e);
     Ppoint_t p0, q0;
 
@@ -484,7 +482,7 @@ makePolyline(graph_t* g, edge_t * e)
     if (Verbose > 1)
 	fprintf(stderr, "polyline %s %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
     clip_and_install(e, aghead(e), spl.ps, spl.pn, &sinfo);
-    addEdgeLabels(g, e, p0, q0);
+    addEdgeLabels(e, p0, q0);
 }
 
 /* makeSpline:
@@ -497,7 +495,7 @@ makePolyline(graph_t* g, edge_t * e)
  * is on or inside one of the obstacles and, if so, tells the shortest path
  * computation to ignore them. 
  */
-void makeSpline(graph_t* g, edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
+void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
 {
     Ppolyline_t line, spline;
     Pvector_t slopes[2];
@@ -532,7 +530,7 @@ void makeSpline(graph_t* g, edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPt
 	fprintf(stderr, "spline %s %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
     clip_and_install(e, aghead(e), spline.ps, spline.pn, &sinfo);
     free(barriers);
-    addEdgeLabels(g, e, p, q);
+    addEdgeLabels(e, p, q);
 }
 
   /* True if either head or tail has a port on its boundary */
@@ -620,7 +618,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 /* fprintf (stderr, "%s -- %s %d\n", agnameof(agtail(e)), agnameof(aghead(e)), ED_count(e)); */
 	    node_t *head = aghead(e);
 	    if (useEdges && ED_spl(e)) {
-		addEdgeLabels(g, e,
+		addEdgeLabels(e,
 			      add_pointf(ND_coord(n), ED_tail_port(e).p),
 			      add_pointf(ND_coord(head), ED_head_port(e).p));
 	    } 
@@ -630,7 +628,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 		    P = NEW(path);
 		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, boxf);
 		}
-		makeSelfArcs(P, e, GD_nodesep(g->root));
+		makeSelfArcs(e, GD_nodesep(g->root));
 	    } else if (vconfig) { /* EDGETYPE_SPLINE or EDGETYPE_PLINE */
 #ifdef HAVE_GTS
 		if (ED_count(e) > 1 || BOUNDARY_PORT(e)) {
@@ -640,7 +638,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 			makeStraightEdge(g, e, edgetype, &sinfo);
 		    else { 
 			if (!rtr) rtr = mkRouter (obs, npoly);
-			fail = makeMultiSpline(g, e, rtr, edgetype == EDGETYPE_PLINE);
+			fail = makeMultiSpline(e, rtr, edgetype == EDGETYPE_PLINE);
 		    } 
 		    if (!fail) continue;
 		}
@@ -654,9 +652,9 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 		e0 = e;
 		for (i = 0; i < cnt; i++) {
 		    if (edgetype == EDGETYPE_SPLINE)
-			makeSpline(g, e0, obs, npoly, TRUE);
+			makeSpline(e0, obs, npoly, TRUE);
 		    else
-			makePolyline(g, e0);
+			makePolyline(e0);
 		    e0 = ED_to_virt(e0);
 		}
 	    } else {

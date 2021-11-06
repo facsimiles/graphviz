@@ -98,8 +98,6 @@ extern "C" {
     RENDER_API Ppolyline_t* ellipticWedge (pointf ctr, double major, double minor, double angle0, double angle1);
     RENDER_API void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
     RENDER_API char* getObjId (GVJ_t* job, void* obj, agxbuf* xb);
-    /* RENDER_API void emit_begin_edge(GVJ_t * job, edge_t * e, char**); */
-    /* RENDER_API void emit_end_edge(GVJ_t * job); */
     RENDER_API void emit_graph(GVJ_t * job, graph_t * g);
     RENDER_API void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t *);
     RENDER_API int emit_once(char *message);
@@ -120,7 +118,7 @@ extern "C" {
     RENDER_API void* init_xdot (Agraph_t* g);
     RENDER_API int initMapData (GVJ_t*, char*, char*, char*, char*, char*, void*);
     RENDER_API boolean isPolygon(node_t *);
-    RENDER_API void makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt,
+    RENDER_API void makeSelfEdge(edge_t * edges[], int ind, int cnt,
 	double sizex, double sizey, splineInfo * sinfo);
     RENDER_API textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor);
     RENDER_API bezier *new_spline(edge_t * e, int sz);
@@ -129,7 +127,7 @@ extern "C" {
     RENDER_API int place_portlabel(edge_t * e, boolean head_p);
     RENDER_API void makePortLabels(edge_t * e);
     RENDER_API pointf edgeMidpoint(graph_t* g, edge_t * e);
-    RENDER_API void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq);
+    RENDER_API void addEdgeLabels(edge_t * e, pointf rp, pointf rq);
     RENDER_API void pop_obj_state(GVJ_t *job);
     RENDER_API obj_state_t* push_obj_state(GVJ_t *job);
     RENDER_API int rank(graph_t * g, int balance, int maxiter);

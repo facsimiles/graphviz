@@ -1186,7 +1186,7 @@ selfRightSpace (edge_t* e)
  * Perhaps for self-edges, the label should be centered.
  */
 void
-makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, double sizex,
+makeSelfEdge(edge_t * edges[], int ind, int cnt, double sizex,
 	     double sizey, splineInfo * sinfo)
 {
     edge_t *e;
@@ -1342,14 +1342,12 @@ edgeMidpoint (graph_t* g, edge_t * e)
 /* addEdgeLabels:
  * rp and rq are the port points of the tail and head node.
  * Adds label, headlabel and taillabel.
- * The use of 2 and 4 in computing ld.x and ld.y are fudge factors, to
- * introduce a bit of spacing.
  * Updates bounding box.
  * We try to use the actual endpoints of the spline, as they may differ
  * significantly from rp and rq, but if the spline is degenerate (e.g.,
  * the nodes overlap), we use rp and rq.
  */
-void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq)
+void addEdgeLabels(edge_t * e, pointf rp, pointf rq)
 {
     makePortLabels(e);
 }
