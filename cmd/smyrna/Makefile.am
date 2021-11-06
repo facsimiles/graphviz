@@ -7,9 +7,11 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib \
         -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt \
+        -I$(top_srcdir)/lib/gvc \
         -I$(top_srcdir)/lib/xdot \
         -I$(top_srcdir)/lib/gvpr \
         -I$(top_srcdir)/lib/common \
+        -I$(top_srcdir)/lib/pathplan \
         -I$(top_srcdir)/cmd/smyrna/gui \
 	$(GTK_CFLAGS) $(GLUT_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS) $(XRENDER_CFLAGS)
 
@@ -65,10 +67,12 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
+		$(top_builddir)/lib/gvc/libgvc_C.la \
 		$(top_builddir)/lib/gvpr/libgvpr_C.la \
 		$(top_builddir)/lib/expr/libexpr_C.la \
 		$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
+		$(top_builddir)/lib/pathplan/libpathplan_C.la \
 		$(GTK_LIBS) $(GLUT_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(X_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) $(MATH_LIBS) $(EXTRA_SMYRNA_LDFLAGS)
 
 smyrna_static_SOURCES = $(smyrna_SOURCES)
@@ -78,10 +82,12 @@ smyrna_static_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
+		$(top_builddir)/lib/gvc/libgvc_C.la \
 		$(top_builddir)/lib/gvpr/libgvpr_C.la \
 		$(top_builddir)/lib/expr/libexpr_C.la \
 		$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
+		$(top_builddir)/lib/pathplan/libpathplan_C.la \
 		$(GTK_LIBS) $(GLUT_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(X_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) $(MATH_LIBS)
 
 if ENABLE_MAN_PDFS

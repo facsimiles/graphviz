@@ -15,6 +15,7 @@
 #include <glcomp/glutils.h>
 #include <common/memory.h>
 #include <GL/glut.h>
+#include <stddef.h>
 
 static void print_bitmap_string(void *font, char *s)
 {
@@ -60,7 +61,7 @@ glCompFont *glNewFont (glCompSet * s, char *text, glCompColor * c,glCompFontType
     if (font->type == gluttext)
 	font->glutfont = DEFAULT_GLUT_FONT;
     else
-	font->glutfont = (void *) 0;
+	font->glutfont = NULL;
 
     font->fontdesc = strdup(fontdesc);
     font->size = fs;

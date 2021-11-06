@@ -15,9 +15,12 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 */
 #include "draw.h"
 #include <common/colorprocs.h>
+#include <common/types.h>
+#include <common/utils.h>
 #include "smyrna_utils.h"
 #include <glcomp/glutils.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include <xdot/xdot.h>
 #include "viewport.h"
@@ -320,6 +323,18 @@ static void InsertImage(sdot_op * o, int param)
     }
 }
 
+// see usage in EmbedText
+static int put(void *buffer, const char *s) {
+  char **b = buffer;
+
+  for (; *s != '\0'; ++s) {
+    **b = *s;
+    ++(*b);
+  }
+
+  return 0;
+}
+
 static void EmbedText(sdot_op* o, int param)
 {
 	(void)param;
@@ -343,12 +358,22 @@ static void EmbedText(sdot_op* o, int param)
 	y=o->op.u.text.y;
 	if (!o->font)
 	{
-		o->font=glNewFont(
-		view->widgets,
-		xml_string (o->op.u.text.text),
-		&view->penColor,
-		pangotext,
-		font_op->op.u.font.name,font_op->op.u.font.size,0);
+		// allocate a buffer large enough to hold the maximum escaped version of the
+		// text
+		char *escaped = calloc(sizeof(char), strlen(o->op.u.text.text) *
+		                                     sizeof("&#xFFFFFFFF;") + 1);
+		if (escaped == NULL)
+		  return;
+
+		// XML-escape the text
+		const xml_flags_t flags = {.dash = 1, .nbsp = 1};
+		char **ptr = &escaped;
+		(void)xml_escape(o->op.u.text.text, flags, put, ptr);
+
+		o->font = glNewFont(view->widgets, escaped, &view->penColor, pangotext,
+		                    font_op->op.u.font.name, font_op->op.u.font.size, 0);
+
+		free(escaped);
 	}
 	glCompDrawText3D(o->font,x,y,view->Topview->global_z,o->op.u.text.width,font_op->op.u.font.size);
 

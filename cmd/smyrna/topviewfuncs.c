@@ -19,6 +19,8 @@
 #include <glcomp/glutils.h>
 #include "selectionfuncs.h"
 #include <common/memory.h>
+#include <common/types.h>
+#include <common/utils.h>
 #include <ctype.h>
 
 static xdot *parseXdotwithattrs(void *e)
