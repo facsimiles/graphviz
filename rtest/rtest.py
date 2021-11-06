@@ -3,8 +3,6 @@
 """
 Graphviz regression test driver
 
-Also relies on strps.awk.
-
 TODO:
  Report differences with shared version and with new output.
 """
@@ -126,16 +124,25 @@ def doDiff(OUTFILE, testname, subtest_index, fmt):
           file=sys.stderr)
     return
   if F in ["ps", "ps2"]:
-    with open(TMPFILE1, mode="w") as fd:
-      subprocess.check_call(
-        ["awk", "-f", "strps.awk", FILE1],
-        stdout=fd,
-      )
-    with open(TMPFILE2, mode="w") as fd:
-      subprocess.check_call(
-        ["awk", "-f", "strps.awk", FILE2],
-        stdout=fd,
-      )
+
+    with open(FILE1, "rt") as src:
+      with open(TMPFILE1, "wt") as dst:
+        done_setup = False
+        for line in src:
+          if done_setup:
+            dst.write(line)
+          else:
+            done_setup = re.match(r"%%End.*Setup", line) is not None
+
+    with open(FILE2, "rt") as src:
+      with open(TMPFILE2, "wt") as dst:
+        done_setup = False
+        for line in src:
+          if done_setup:
+            dst.write(line)
+          else:
+            done_setup = re.match(r"%%End.*Setup", line) is not None
+
     returncode = 0 if filecmp.cmp(TMPFILE1, TMPFILE2) else -1
   elif F == "svg":
     with open(FILE1) as f:
