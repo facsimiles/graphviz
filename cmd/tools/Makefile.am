@@ -121,13 +121,6 @@ ccomps.1.ps: $(srcdir)/ccomps.1
 endif
 endif
 
-#tred2_SOURCES = tred2.c
-#
-#tred2_LDADD = \
-#	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-#	$(top_builddir)/lib/cgraph/libcgraph.la \
-#	$(top_builddir)/lib/gvc/libgvc.la
-
 tred_SOURCES = tred.c
 
 tred_LDADD = \

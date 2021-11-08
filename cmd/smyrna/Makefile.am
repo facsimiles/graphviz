@@ -18,7 +18,6 @@ AM_CPPFLAGS = \
 bin_PROGRAMS =
 man_MANS = 
 pdf_DATA = 
-if WITH_SMYRNA
 if ENABLE_SHARED
 bin_PROGRAMS += smyrna 
 endif
@@ -28,7 +27,6 @@ endif
 man_MANS += smyrna.1
 if ENABLE_MAN_PDFS
 pdf_DATA += smyrna.1.pdf
-endif
 endif
 
 if ENABLE_MAN_PDFS

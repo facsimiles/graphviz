@@ -9,8 +9,12 @@ bin_PROGRAMS = dotty
 else
 bin_SCRIPTS = dotty
 endif
+if WITH_LEFTY
 lefty_DATA = dotty.lefty dotty_draw.lefty dotty_edit.lefty \
         dotty_layout.lefty dotty_ui.lefty
+else
+lefty_DATA =
+endif
 endif
 
 man_MANS = dotty.1
