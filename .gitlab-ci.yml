@@ -125,6 +125,7 @@ portable-source:
     script:
         - $ErrorActionPreference = "Stop"
         - $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+        - choco config set cacheLocation choco-cache
         - choco install --yes --no-progress --params "/InstallDir:C:\Python3" python3
         - $env:Path = "C:\Python3;" + $env:Path
         - python --version
@@ -481,6 +482,7 @@ windows-cygwin-build:
         # change line endings from crlf to lf
         - git rm --cached -r .
         - git -c core.autocrlf=false reset --hard
+        - choco config set cacheLocation choco-cache
         - choco install --yes --no-progress cygwin
         # avoid BOM in COLLECTION file
         - echo experimental | Out-File COLLECTION -Encoding ascii
@@ -494,6 +496,10 @@ windows-cygwin-build:
             - GRAPHVIZ_VERSION
             - COLLECTION
             - Packages/*/*/*/*/*.xz
+    cache:
+        key: windows-cygwin-build
+        paths:
+            - choco-cache
     tags:
         - windows
     except:
@@ -506,6 +512,7 @@ windows-cygwin-build-using-autogen:
         # change line endings from crlf to lf
         - git rm --cached -r .
         - git -c core.autocrlf=false reset --hard
+        - choco config set cacheLocation choco-cache
         - choco install --yes --no-progress cygwin
         - choco install --yes --no-progress --params "/InstallDir:C:\Python3" python3
         - $env:Path = "C:\Python3;" + $env:Path
@@ -522,6 +529,10 @@ windows-cygwin-build-using-autogen:
         paths:
             - COLLECTION
             - Packages/*/*/*/*/*.xz
+    cache:
+        key: windows-cygwin-build-using-autogen
+        paths:
+            - choco-cache
     tags:
         - windows
     except:
@@ -752,6 +763,10 @@ windows-cmake-Win32-release-build:
         - $Env:project_platform = "Win32"
         - $Env:configuration = "Release"
         - $Env:build_system = "cmake"
+    cache:
+        key: windows-cmake-Win32-release-build
+        paths:
+            - choco-cache
 
 windows-cmake-Win32-debug-build:
     <<: *windows_build_definition
@@ -760,6 +775,10 @@ windows-cmake-Win32-debug-build:
         - $Env:project_platform = "Win32"
         - $Env:configuration = "Debug"
         - $Env:build_system = "cmake"
+    cache:
+        key: windows-cmake-Win32-debug-build
+        paths:
+            - choco-cache
 
 windows-cmake-x64-release-build:
     <<: *windows_build_definition
@@ -768,6 +787,10 @@ windows-cmake-x64-release-build:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Release"
         - $Env:build_system = "cmake"
+    cache:
+        key: windows-cmake-x64-release-build
+        paths:
+            - choco-cache
 
 windows-cmake-x64-debug-build:
     <<: *windows_build_definition
@@ -776,6 +799,10 @@ windows-cmake-x64-debug-build:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Debug"
         - $Env:build_system = "cmake"
+    cache:
+        key: windows-cmake-x64-debug-build
+        paths:
+            - choco-cache
 
 windows-msbuild-Win32-release-build:
     <<: *windows_build_definition
@@ -783,6 +810,10 @@ windows-msbuild-Win32-release-build:
         - $Env:project_platform = "Win32"
         - $Env:configuration = "Release"
         - $Env:build_system = "msbuild"
+    cache:
+        key: windows-msbuild-Win32-release-build
+        paths:
+            - choco-cache
 
 windows-msbuild-Win32-debug-build:
     <<: *windows_build_definition
@@ -790,11 +821,16 @@ windows-msbuild-Win32-debug-build:
         - $Env:project_platform = "Win32"
         - $Env:configuration = "Debug"
         - $Env:build_system = "msbuild"
+    cache:
+        key: windows-msbuild-Win32-debug-build
+        paths:
+            - choco-cache
 
 windows-mingw32-cmake-build:
     stage: build
     needs: []
     script:
+        - choco config set cacheLocation choco-cache
         - choco install --yes --no-progress msys2
         # avoid BOM in COLLECTION file
         - echo experimental | Out-File COLLECTION -Encoding ascii
@@ -807,6 +843,10 @@ windows-mingw32-cmake-build:
             - COLLECTION
             - Packages/*/*/*/*/*.exe
             - Packages/*/*/*/*/*.zip
+    cache:
+        key: windows-mingw32-cmake-build
+        paths:
+            - choco-cache
     tags:
         - windows
     except:
@@ -816,6 +856,7 @@ windows-mingw64-cmake-build:
     stage: build
     needs: []
     script:
+        - choco config set cacheLocation choco-cache
         - choco install --yes --no-progress msys2
         # avoid BOM in COLLECTION file
         - echo experimental | Out-File COLLECTION -Encoding ascii
@@ -828,6 +869,10 @@ windows-mingw64-cmake-build:
             - COLLECTION
             - Packages/*/*/*/*/*.exe
             - Packages/*/*/*/*/*.zip
+    cache:
+        key: windows-mingw64-cmake-build
+        paths:
+            - choco-cache
     tags:
         - windows
     except:
@@ -841,6 +886,7 @@ windows-mingw64-cmake-build:
 #         # change line endings from crlf to lf
 #         - git rm --cached -r .
 #         - git -c core.autocrlf=false reset --hard
+#         - choco config set cacheLocation choco-cache
 #         - choco install --yes --no-progress cygwin
 #         # avoid BOM in COLLECTION file
 #         - echo experimental | Out-File COLLECTION -Encoding ascii
@@ -853,6 +899,10 @@ windows-mingw64-cmake-build:
 #             - COLLECTION
 #             - Packages/*/*/*/*/*.zip
 #             - Packages/*/*/*/*/*.bz2
+#     cache:
+#         key: windows-cygwin-cmake-build
+#         paths:
+#             - choco-cache
 #     tags:
 #         - windows
 #     except:
