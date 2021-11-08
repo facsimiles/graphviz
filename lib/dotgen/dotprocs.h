@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef DOTPROCS_H
-#define DOTPROCS_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,5 +79,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
 #endif

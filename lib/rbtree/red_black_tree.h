@@ -2,8 +2,7 @@
 *      See the LICENSE file for copyright infomation.     *
 **********************************************************/
 
-#ifndef RED_BLACK_TREE_H
-#define RED_BLACK_TREE_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +70,4 @@ void NullFunction(void*);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

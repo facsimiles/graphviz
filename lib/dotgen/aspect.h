@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef		ASPECT_H
-#define		ASPECT_H
+#pragma once
 
 typedef struct aspect_t {
     double targetAR;      /* target aspect ratio */
@@ -27,6 +26,3 @@ extern void rank3(graph_t * g, aspect_t * asp);
 extern void initEdgeTypes(graph_t * g);
 extern void init_UF_size(graph_t * g);
 extern int countDummyNodes(graph_t * g);
-
-#endif				/* ASPECT_H */
-

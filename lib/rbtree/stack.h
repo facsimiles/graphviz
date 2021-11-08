@@ -1,9 +1,8 @@
 /**********************************************************
 *      See the LICENSE file for copyright information.     *
 **********************************************************/
-    
-#ifndef STACK_H
-#define STACK_H
+
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +70,4 @@ void StackDestroy(stk_stack * theStack,void DestFunc(void * a));
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

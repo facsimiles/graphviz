@@ -8,11 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-
-#ifndef		DOT_H
-#define		DOT_H
+#pragma once
 
 #include	"render.h"
 #include	<dotgen/dotprocs.h>
-
-#endif				/* DOT_H */

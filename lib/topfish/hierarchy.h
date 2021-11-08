@@ -8,8 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef _HIERARCHY_H_
-#define _HIERARCHY_H_
+#pragma once
 
 #include <neatogen/sparsegraph.h>
 
@@ -102,5 +101,3 @@ void find_active_ancestor_info(Hierarchy * hierarchy, int level, int node, int *
 int find_old_active_ancestor(Hierarchy * hierarchy, int level, int node);
 int locateByIndex(Hierarchy*, int, int*);
 int findGlobalIndexesOfActiveNeighbors(Hierarchy*, int, int**);
-
-#endif
