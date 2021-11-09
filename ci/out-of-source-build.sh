@@ -19,7 +19,7 @@ tar xfz graphviz-${GV_VERSION}.tar.gz
 # setup a directory for building in
 mkdir build
 cd build
-../graphviz-${GV_VERSION}/configure
+../graphviz-${GV_VERSION}/configure --enable-lefty
 
 # build Graphviz
 make

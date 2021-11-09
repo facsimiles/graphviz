@@ -1,5 +1,6 @@
-#!/bin/sh -e
+#!/usr/bin/env bash
 
+set -e
 set -x
 
 if [ "$( uname -s )" = "Darwin" ]; then
