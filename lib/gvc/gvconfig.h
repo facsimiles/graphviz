@@ -18,7 +18,9 @@
 extern "C" {
 #endif
 
-extern void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplugin_library_t *library);
+extern void gvconfig_plugin_install_from_library(GVC_t * gvc,
+                                                 char *package_path,
+                                                 gvplugin_library_t *library);
 
 #ifdef __cplusplus
 }
