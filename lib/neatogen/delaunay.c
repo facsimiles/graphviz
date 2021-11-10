@@ -611,23 +611,23 @@ get_triangles (double *x, int n, int* tris)
 
     *tris = mid.numberoftriangles;
     
-    FREE(in.pointlist);
-    FREE(in.pointattributelist);
-    FREE(in.pointmarkerlist);
-    FREE(in.regionlist);
-    FREE(mid.pointlist);
-    FREE(mid.pointattributelist);
-    FREE(mid.pointmarkerlist);
-    FREE(mid.triangleattributelist);
-    FREE(mid.neighborlist);
-    FREE(mid.segmentlist);
-    FREE(mid.segmentmarkerlist);
-    FREE(mid.edgelist);
-    FREE(mid.edgemarkerlist);
-    FREE(vorout.pointlist);
-    FREE(vorout.pointattributelist);
-    FREE(vorout.edgelist);
-    FREE(vorout.normlist);
+    free(in.pointlist);
+    free(in.pointattributelist);
+    free(in.pointmarkerlist);
+    free(in.regionlist);
+    free(mid.pointlist);
+    free(mid.pointattributelist);
+    free(mid.pointmarkerlist);
+    free(mid.triangleattributelist);
+    free(mid.neighborlist);
+    free(mid.segmentlist);
+    free(mid.segmentmarkerlist);
+    free(mid.edgelist);
+    free(mid.edgemarkerlist);
+    free(vorout.pointlist);
+    free(vorout.pointattributelist);
+    free(vorout.edgelist);
+    free(vorout.normlist);
 
     return mid.trianglelist;
 }

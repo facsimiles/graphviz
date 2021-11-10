@@ -136,8 +136,8 @@ for (i = 0; i < ns1 - 1; i++){
     }
   }
 
-  FREE(x1);
-  FREE(x2);
+  free(x1);
+  free(x2);
   return 0;
 }
 
@@ -254,15 +254,13 @@ Agraph_t* edge_distinct_coloring(char *color_scheme, char *lightness, Agraph_t* 
  RETURN:
   SparseMatrix_delete(A);
   SparseMatrix_delete(C);
-  FREE(colors);
-  FREE(x);
+  free(colors);
+  free(x);
   if (xsplines){
     for (i = 0; i < ne; i++){
-      if (xsplines[i]) FREE(xsplines[i]);
+      free(xsplines[i]);
     }
-    FREE(xsplines);
+    free(xsplines);
   }
   return g;
-
 }
-

@@ -66,8 +66,6 @@ extern unsigned char Verbose;
 #define REALLOC grealloc
 #endif    /* STANDALONE */
 
-#define FREE free
-
 #ifndef DEBUG
 #ifndef NDEBUG
 #define NDEBUG /* switch off assert*/

@@ -151,7 +151,7 @@ static void sfdpLayout(graph_t * g, spring_electrical_control ctrl,
     free(pos);
     SparseMatrix_delete (A);
     if (D) SparseMatrix_delete (D);
-    if (edge_label_nodes) FREE(edge_label_nodes);
+    free(edge_label_nodes);
 }
 
 static int

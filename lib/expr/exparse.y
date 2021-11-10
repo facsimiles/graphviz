@@ -368,8 +368,7 @@ statement	:	'{' statement_list '}'
 
 			$$ = exnewnode(expr.program, $1->index, 1, INTEGER, $3, exnewnode(expr.program, DEFAULT, 1, 0, sw->defcase, sw->firstcase));
 			expr.swstate = expr.swstate->prev;
-			if (sw->base)
-				free(sw->base);
+			free(sw->base);
 			if (sw != &swstate)
 				free(sw);
 			expr.declare = 0;

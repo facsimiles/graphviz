@@ -151,8 +151,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt, int weight
   }
   *color_diff0 = color_diff;
   *color_diff_sum0 = color_diff_sum;
-  FREE(x);
-  
+  free(x);
 }
  
 static void node_distinct_coloring_internal(int scheme, QuadTree qt, int weightedQ,  SparseMatrix A, int cdim, real accuracy, int iter_max, int seed, real *colors){
@@ -269,7 +268,7 @@ int node_distinct_coloring(char *color_scheme, char *lightness, int weightedQ, S
     }
     SparseMatrix_delete(B);
   }
-  FREE(ctmp);
+  free(ctmp);
 
   if (A != A0) SparseMatrix_delete(A);
   return 0;

@@ -422,9 +422,9 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
   SparseMatrix_delete(polys);
   SparseMatrix_delete(poly_lines);
   SparseMatrix_delete(poly_point_map);
-  FREE(xcombined);
-  FREE(x_poly);
-  FREE(polys_groups);
+  free(xcombined);
+  free(x_poly);
+  free(polys_groups);
 }
 
 

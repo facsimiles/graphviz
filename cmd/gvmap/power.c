@@ -113,6 +113,6 @@ void power_method(void *A, int n, int K, int random_seed,
       }
     } while (res < 1 - tolerance && iter++ < maxit);
   }
-  FREE(u);
-  FREE(vv);  
+  free(u);
+  free(vv);
 }

@@ -166,9 +166,8 @@ void furtherest_point(int k, int dim, real *wgt, real *pts, real *center, real w
 
   QuadTree_delete(qt0);
 
-  FREE(candidates);
-  FREE(candidates2);
-
+  free(candidates);
+  free(candidates2);
 }
 
 
@@ -290,7 +289,6 @@ void furtherest_point_in_list(int k, int dim, real *wgt, real *pts, QuadTree qt,
 
   }/* continue down the quadtree */
 
-  FREE(candidates);
-  FREE(candidates2);
-
+  free(candidates);
+  free(candidates2);
 }

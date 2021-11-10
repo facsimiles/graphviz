@@ -75,7 +75,7 @@ static Operator Operator_matmul_new(SparseMatrix A){
 
 
 static void Operator_matmul_delete(Operator o){
-  FREE(o);
+  free(o);
 }
 
 
@@ -147,8 +147,8 @@ static Operator Operator_diag_precon_new(SparseMatrix A){
 }
 
 static void Operator_diag_precon_delete(Operator o){
-  FREE(o->data);
-  FREE(o);
+  free(o->data);
+  free(o);
 }
 
 static real conjugate_gradient(Operator A, Operator precon, int n, real *x, real *rhs, real tol, int maxit){
@@ -203,7 +203,7 @@ static real conjugate_gradient(Operator A, Operator precon, int n, real *x, real
 
     rho_old = rho;
   }
-  FREE(z); FREE(r); FREE(p); FREE(q);
+  free(z); free(r); free(p); free(q);
 #ifdef DEBUG
     _statistics[0] += iter - 1;
 #endif
@@ -232,10 +232,9 @@ real cg(Operator Ax, Operator precond, int n, int dim, real *x0, real *rhs, real
       rhs[i*dim+k] = x[i];
     }
   }
-  FREE(x);
-  FREE(b);
+  free(x);
+  free(b);
   return res;
-
 }
 
 static real* jacobi(SparseMatrix A, int dim, real *x0, real *rhs, int maxit, int *flag){
@@ -278,11 +277,10 @@ static real* jacobi(SparseMatrix A, int dim, real *x0, real *rhs, int maxit, int
   }
 
 
-  FREE(x);
-  FREE(y);
-  FREE(b);
+  free(x);
+  free(y);
+  free(b);
   return rhs;
-
 }
 
 real SparseMatrix_solve(SparseMatrix A, int dim, real *x0, real *rhs, real tol, int maxit, int method, int *flag){

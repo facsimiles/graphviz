@@ -272,9 +272,9 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE * f, int format)
     default:
 	A = NULL;
     }
-    FREE(I);
-    FREE(J);
-    FREE(val);
+    free(I);
+    free(J);
+    free(val);
 
     if (mm_is_symmetric(matcode)) {
 	SparseMatrix_set_symmetric(A);

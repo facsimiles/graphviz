@@ -43,7 +43,7 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, real *x){
   ia = D->ia;
   ja = D->ja;
   if (D->type != MATRIX_TYPE_REAL){
-    FREE(D->a);
+    free(D->a);
     D->type = MATRIX_TYPE_REAL;
     D->a = N_GNEW(D->nz,real);
   }
@@ -284,8 +284,8 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
   sm->Lw->nz = nz;
   sm->Lwd->nz = nz;
 
-  FREE(mask);
-  FREE(avg_dist);
+  free(mask);
+  free(avg_dist);
   SparseMatrix_delete(ID);
   return sm;
 }
@@ -737,9 +737,9 @@ real StressMajorizationSmoother_smooth(StressMajorizationSmoother sm, int dim, r
     SparseMatrix_delete(Lw);
   }
 
-  FREE(x0);
-  FREE(y);
-  FREE(x00);
+  free(x0);
+  free(y);
+  free(x00);
   return diff;
   
 }
@@ -748,9 +748,9 @@ void StressMajorizationSmoother_delete(StressMajorizationSmoother sm){
   if (!sm) return;
   if (sm->Lw) SparseMatrix_delete(sm->Lw);
   if (sm->Lwd) SparseMatrix_delete(sm->Lwd);
-  if (sm->lambda) FREE(sm->lambda);
+  free(sm->lambda);
   if (sm->data) sm->data_deallocator(sm->data);
-  FREE(sm);
+  free(sm);
 }
 
 
@@ -848,7 +848,7 @@ TriangleSmoother TriangleSmoother_new(SparseMatrix A, int dim, real lambda0, rea
   for (i = 0; i < iw[m]; i++) d[i] *= s;
   sm->scaling = s;
 
-  FREE(avg_dist);
+  free(avg_dist);
 
   return sm;
 }
@@ -968,8 +968,8 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
   sm->ctrl->step /= 2;
   sm->ctrl->maxiter = 20;
 
-  FREE(mask);
-  FREE(avg_dist);
+  free(mask);
+  free(avg_dist);
   SparseMatrix_delete(ID);
 
   return sm;

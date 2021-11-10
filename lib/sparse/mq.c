@@ -139,7 +139,7 @@ static real get_mq(SparseMatrix A, int *assignment, int *ncluster0, real *mq_in0
   *mq_in0 = mq_in;
   *mq_out0 = mq_out;
   *dout0 = dout;
-  FREE(counts);
+  free(counts);
 
   if (k > 1){
     return 2*(mq_in/k - mq_out/(k*(k-1)));
@@ -213,12 +213,12 @@ static void Multilevel_MQ_Clustering_delete(Multilevel_MQ_Clustering grid){
   }
   SparseMatrix_delete(grid->P);
   SparseMatrix_delete(grid->R);
-  FREE(grid->matching);
-  FREE(grid->deg_intra);
-  FREE(grid->dout);
-  FREE(grid->wgt);
+  free(grid->matching);
+  free(grid->deg_intra);
+  free(grid->dout);
+  free(grid->wgt);
   Multilevel_MQ_Clustering_delete(grid->next);
-  FREE(grid);
+  free(grid);
 }
 
 static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ_Clustering grid, int maxcluster){
@@ -467,16 +467,16 @@ static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ
     P = SparseMatrix_transpose(R);
     B = SparseMatrix_multiply(R, A);
     if (!B) {
-        FREE(deg_intra_new);
-        FREE(wgt_new);
-        FREE(dout_new);
+        free(deg_intra_new);
+        free(wgt_new);
+        free(dout_new);
         goto RETURN;
     }
     cA = SparseMatrix_multiply(B, P); 
     if (!cA) {
-        FREE(deg_intra_new);
-        FREE(wgt_new);
-        FREE(dout_new);
+        free(deg_intra_new);
+        free(wgt_new);
+        free(dout_new);
         goto RETURN;
     }
     SparseMatrix_delete(B);
@@ -500,17 +500,17 @@ static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ
     /* no more improvement, stop and final clustering found */
     for (i = 0; i < n; i++) matching[i] = i;
 
-    FREE(deg_intra_new);
-    FREE(wgt_new);
-    FREE(dout_new);
+    free(deg_intra_new);
+    free(wgt_new);
+    free(dout_new);
   }
 
  RETURN:
   for (i = 0; i < n; i++) SingleLinkedList_delete(neighbors[i], free);
-  FREE(neighbors);
+  free(neighbors);
 
-  FREE(deg_inter);
-  FREE(mask);
+  free(deg_inter);
+  free(mask);
   return grid;
 }
 
@@ -571,7 +571,7 @@ static void hierachical_mq_clustering(SparseMatrix A, int maxcluster,
     real *v = NULL;
     P = cgrid->prev->P;
     SparseMatrix_multiply_vector(P, u, &v, FALSE);
-    FREE(u);
+    free(u);
     u = v;
     cgrid = cgrid->prev;
   }
@@ -583,10 +583,9 @@ static void hierachical_mq_clustering(SparseMatrix A, int maxcluster,
     *assignment = matching;
   }
   for (i = 0; i < grid->n; i++) (matching)[i] = (int) u[i];
-  FREE(u);
+  free(u);
 
   Multilevel_MQ_Clustering_delete(grid);
-  
 }
 
 

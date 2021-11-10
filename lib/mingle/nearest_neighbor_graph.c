@@ -44,11 +44,9 @@ SparseMatrix nearest_neighbor_graph(int nPts, int num_neigbors, double *x, doubl
   A = NULL;
 #endif
 
-  FREE(irn);
-  FREE(jcn);
-  FREE(val);
+  free(irn);
+  free(jcn);
+  free(val);
 
   return A;
-
-
 }

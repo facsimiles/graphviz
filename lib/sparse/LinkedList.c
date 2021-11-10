@@ -10,9 +10,6 @@
 
 #include <sparse/LinkedList.h>
 #include <common/memory.h>
-#define FREE free
-
-
 
 SingleLinkedList SingleLinkedList_new(void *data){
   SingleLinkedList head;
@@ -37,7 +34,7 @@ void SingleLinkedList_delete(SingleLinkedList head,  void (*linklist_deallocator
   do {
     next = head->next;
     if (head->data) linklist_deallocator(head->data);
-    if (head) FREE(head);
+    free(head);
     head = next;
   } while (head);
 
@@ -91,7 +88,7 @@ void DoubleLinkedList_delete(DoubleLinkedList head,  void (*linklist_deallocator
   do {
     next = head->next;
     if (head->data) linklist_deallocator(head->data);
-    if (head) FREE(head);
+    free(head);
     head = next;
   } while (head);
 
@@ -134,7 +131,7 @@ void DoubleLinkedList_delete_element(DoubleLinkedList l, void (*linklist_dealloc
     prev = l->prev;
     
     if (l->data) linklist_deallocator(l->data);
-    FREE(l);
+    free(l);
     l = NULL;
 
     if (next) next->prev = prev;
@@ -142,43 +139,3 @@ void DoubleLinkedList_delete_element(DoubleLinkedList l, void (*linklist_dealloc
     if (!prev) *head = next;
   }
 }
-
-
-/*
-static void print_int(void *d){
-  int *i = (int*) d;
-  printf("%d\n",*i);
-}
-
-main(){
-  DoubleLinkedList l, ll;
-
-  int i, *j;
-
-  for (;;){
-  j = malloc(sizeof(int));
-  j[0] = -1;
-  l = DoubleLinkedList_new((void*) j);
-
-  for (i = 0; i < 10; i++){
-    j = malloc(sizeof(int));
-    j[0] = i;
-    l = DoubleLinkedList_prepend(l, (void*) j);
-    
-  }
-  DoubleLinkedList_print(l, print_int);
-
-  ll = DoubleLinkedList_get_next(l);
-  DoubleLinkedList_delete_element(ll, free, &l);
-  printf("after delete 8\n");
-  DoubleLinkedList_print(l, print_int);
-
-  DoubleLinkedList_delete_element(l, free, &l);
-  printf("after delete first elemnt\n");
-  DoubleLinkedList_print(l, print_int);
-
-  DoubleLinkedList_delete(l, free);
-  }
-}
-
-*/

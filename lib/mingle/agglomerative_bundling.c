@@ -74,10 +74,10 @@ static void Agglomerative_Ink_Bundling_delete(Agglomerative_Ink_Bundling grid){
   /* on level 0, R0 = NULL, on level 1, R0 = R */
   if (grid->level > 1) SparseMatrix_delete(grid->R0);
   SparseMatrix_delete(grid->R);
-  FREE(grid->inks);
+  free(grid->inks);
 
   Agglomerative_Ink_Bundling_delete(grid->next);
-  FREE(grid);
+  free(grid);
 }
 
 static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_establish(Agglomerative_Ink_Bundling grid, int *pick, real angle_param, real angle){
@@ -288,10 +288,10 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_establish(Agglomera
   }
 
  RETURN:
-  FREE(matching);
+  free(matching);
   for (i = 0; i < n; i++) Vector_delete(cedges[i]);
-  FREE(cedges);
-  FREE(mask);
+  free(cedges);
+  free(mask);
   return grid;
 }
 
@@ -309,7 +309,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_new(SparseMatrix A0
   pick = MALLOC(sizeof(int)*A0->m);
   
   grid = Agglomerative_Ink_Bundling_establish(grid, pick, angle_param, angle);
-  FREE(pick);
+  free(pick);
 
   if (A != A0) grid->delete_top_level_A = TRUE;/* be sure to clean up later */
 
@@ -446,7 +446,7 @@ static pedge* agglomerative_ink_bundling_internal(int dim, SparseMatrix A, pedge
 
     agglomerative_ink_bundling_internal(dim, A_mid, mid_edges, nneighbors, recurse_level, MAX_RECURSE_LEVEL, angle_param, angle, open_gl, current_ink, ink00, flag);
     SparseMatrix_delete(A_mid);
-    FREE(xx);
+    free(xx);
     
     /* patching edges with the new mid-section */
     for (i = 0; i < R->m; i++){

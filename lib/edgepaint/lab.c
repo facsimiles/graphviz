@@ -197,7 +197,7 @@ QuadTree lab_gamut_quadtree(const char *lightness, int max_qtree_level){
   qt = QuadTree_new_from_point_list(dim, n, max_qtree_level, x, NULL);
 
 
-  FREE(x);
+  free(x);
   return qt;
 }
 
@@ -281,6 +281,6 @@ void color_blend_rgb2lab(char *color_list, const int maxpoints, double **colors0
       while (jj < nc -1 && dists[jj] < dists[ii] + step) jj++;
     }
   }
-  FREE(dists);
-  FREE(lab);  
+  free(dists);
+  free(lab);
 }

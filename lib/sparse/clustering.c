@@ -65,7 +65,7 @@ static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_init(Sp
     grid->deg_total = deg_total;
     grid->deg = deg;
     grid->modularity = modularity;
-    FREE(indeg);
+    free(indeg);
   }
 
 
@@ -83,11 +83,11 @@ static void Multilevel_Modularity_Clustering_delete(Multilevel_Modularity_Cluste
   }
   SparseMatrix_delete(grid->P);
   SparseMatrix_delete(grid->R);
-  FREE(grid->matching);
-  FREE(grid->deg);
+  free(grid->matching);
+  free(grid->deg);
 
   Multilevel_Modularity_Clustering_delete(grid->next);
-  FREE(grid);
+  free(grid);
 }
 
 static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Multilevel_Modularity_Clustering grid, int ncluster_target){
@@ -194,13 +194,13 @@ static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establi
       } else if (n - ncluster_target <= ncluster_target - nc){/* ncluster_target close to n */
 	fprintf(stderr,"ncluster_target = %d, close to n=%d\n", ncluster_target, n);
 	for (i = 0; i < n; i++) matching[i] = i;
-	FREE(deg_new);
+	free(deg_new);
 	goto RETURN;
       }
     } else if (n < ncluster_target){
       fprintf(stderr,"n < target\n");
       for (i = 0; i < n; i++) matching[i] = i;
-      FREE(deg_new);
+      free(deg_new);
       goto RETURN;
     }
   }
@@ -221,12 +221,12 @@ static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establi
     P = SparseMatrix_transpose(R);
     B = SparseMatrix_multiply(R, A);
     if (!B) {
-      FREE(deg_new);
+      free(deg_new);
       goto RETURN;
     }
     cA = SparseMatrix_multiply(B, P); 
     if (!cA) {
-      FREE(deg_new);
+      free(deg_new);
       goto RETURN;
     }
     SparseMatrix_delete(B);
@@ -245,19 +245,19 @@ static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establi
     /* if we want a small number of cluster but right now we have too many, we will force agglomeration */
     if (ncluster_target > 0 && nc > ncluster_target && !(grid->agglomerate_regardless)){
       grid->agglomerate_regardless = TRUE;
-      FREE(deg_inter);
-      FREE(mask);
-      FREE(deg_new);
+      free(deg_inter);
+      free(mask);
+      free(deg_new);
       return Multilevel_Modularity_Clustering_establish(grid, ncluster_target);
     }
     /* no more improvement, stop and final clustering found */
     for (i = 0; i < n; i++) matching[i] = i;
-    FREE(deg_new);
+    free(deg_new);
   }
 
  RETURN:
-  FREE(deg_inter);
-  FREE(mask);
+  free(deg_inter);
+  free(mask);
   return grid;
 }
 
@@ -330,7 +330,7 @@ static void hierachical_modularity_clustering(SparseMatrix A, int ncluster_targe
     real *v = NULL;
     P = cgrid->prev->P;
     SparseMatrix_multiply_vector(P, u, &v, FALSE);
-    FREE(u);
+    free(u);
     u = v;
     cgrid = cgrid->prev;
   }
@@ -342,10 +342,9 @@ static void hierachical_modularity_clustering(SparseMatrix A, int ncluster_targe
     *assignment = matching;
   }
   for (i = 0; i < grid->n; i++) (matching)[i] = (int) u[i];
-  FREE(u);
+  free(u);
 
   Multilevel_Modularity_Clustering_delete(grid);
-  
 }
 
 

@@ -41,9 +41,9 @@ static node_data node_data_new(int dim, real weight, real *coord, int id){
 
 static void node_data_delete(void *d){
   node_data nd = (node_data) d;
-  FREE(nd->coord);
-  /*delete outside   if (nd->data) FREE(nd->data);*/
-  FREE(nd);
+  free(nd->coord);
+  /*delete outside   if (nd->data) free(nd->data);*/
+  free(nd);
 }
 
 static real node_data_get_weight(void *d){
@@ -354,9 +354,9 @@ QuadTree QuadTree_new_from_point_list(int dim, int n, int max_level, real *coord
   xmax = MALLOC(sizeof(real)*dim);
   center = MALLOC(sizeof(real)*dim);
   if (!xmin || !xmax || !center) {
-      FREE(xmin);
-      FREE(xmax);
-      FREE(center);
+      free(xmin);
+      free(xmax);
+      free(center);
       return NULL;
   }
 
@@ -390,9 +390,9 @@ QuadTree QuadTree_new_from_point_list(int dim, int n, int max_level, real *coord
   }
 
 
-  FREE(xmin);
-  FREE(xmax);
-  FREE(center);
+  free(xmin);
+  free(xmax);
+  free(center);
   return qt;
 }
 
@@ -419,17 +419,17 @@ void QuadTree_delete(QuadTree q){
   int i, dim;
   if (!q) return;
   dim = q->dim;
-  FREE(q->center);
-  FREE(q->average);
-  if (q->data) FREE(q->data);
+  free(q->center);
+  free(q->average);
+  free(q->data);
   if (q->qts){
     for (i = 0; i < 1<<dim; i++){
       QuadTree_delete(q->qts[i]);
     }
-    FREE(q->qts);
+    free(q->qts);
   }
   SingleLinkedList_delete(q->l, node_data_delete);
-  FREE(q);
+  free(q);
 }
 
 static int QuadTree_get_quadrant(int dim, real *center, real *coord){

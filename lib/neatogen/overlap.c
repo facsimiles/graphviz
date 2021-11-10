@@ -85,8 +85,8 @@ typedef struct scan_point_struct scan_point;
 
 
 static int comp_scan_points(const void *p, const void *q){
-  const scan_point *pp = (const scan_point *) p;
-  const scan_point *qq = (const scan_point *) q;
+  const scan_point *pp = p;
+  const scan_point *qq = q;
   if (pp->x > qq->x){
     return 1;
   } else if (pp->x < qq->x){
@@ -112,11 +112,8 @@ static int NodeComp(const void* a,const void* b) {
 }
 
 static void NodePrint(const void* a) {
-  const scan_point *aa;
-
-  aa = (const scan_point *) a;
+  const scan_point *aa = a;
   fprintf(stderr, "node {%d, %f, %d}\n", aa->node, aa->x, aa->status);
-
 }
 
 static void InfoPrint(void* a) {
@@ -240,8 +237,8 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width, int 
   }
 
 check_overlap_RETURN:
-   FREE(scanpointsx);
-  FREE(scanpointsy);
+   free(scanpointsx);
+  free(scanpointsy);
   RBTreeDestroy(treey);
 
   B = SparseMatrix_from_coordinate_format(A);
@@ -261,11 +258,11 @@ static void relative_position_constraints_delete(void *d){
   relative_position_constraints data;
   if (!d) return;
   data = (relative_position_constraints) d;
-  if (data->irn) FREE(data->irn);
-  if (data->jcn) FREE(data->jcn);
-  if (data->val) FREE(data->val);
+  free(data->irn);
+  free(data->jcn);
+  free(data->val);
   /* other stuff inside relative_position_constraints is assed back to the user hence no need to deallocator*/
-  FREE(d);
+  free(d);
 }
 
 static relative_position_constraints relative_position_constraints_new(SparseMatrix A_constr, int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes){
@@ -529,8 +526,8 @@ static void print_bounding_box(int n, int dim, real *x){
   for (i = 0; i < dim; i++) fprintf(stderr,"{%f,%f}, ",xmin[i], xmax[i]);
   fprintf(stderr,"\n");
 
-  FREE(xmin);
-  FREE(xmax);
+  free(xmin);
+  free(xmax);
 }
 
 static int check_convergence(real max_overlap, real res, int has_penalty_terms, real epsilon){

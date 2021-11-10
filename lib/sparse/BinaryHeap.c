@@ -33,12 +33,12 @@ BinaryHeap BinaryHeap_new(int (*cmp)(void*item1, void*item2)){
 
 void BinaryHeap_delete(BinaryHeap h, void (*del)(void* item)){
   if (!h) return;
-  FREE(h->id_to_pos);
-  FREE(h->pos_to_id);
+  free(h->id_to_pos);
+  free(h->pos_to_id);
   IntStack_delete(h->id_stack);
   if (del) for (size_t i = 0; i < h->len; i++) del((h->heap)[i]);
-  FREE(h->heap);
-  FREE(h);
+  free(h->heap);
+  free(h);
 }
 
 static BinaryHeap BinaryHeap_realloc(BinaryHeap h){
@@ -267,7 +267,7 @@ void BinaryHeap_sanity_check(BinaryHeap h){
   for (size_t i = 0; i < h->len + IntStack_get_length(h->id_stack); i++)
     assert(mask[i] != 0);
 
-  FREE(mask);
+  free(mask);
 }
 void BinaryHeap_print(BinaryHeap h, void (*pnt)(void*)){
   size_t k = 2;

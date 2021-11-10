@@ -62,7 +62,7 @@ void map_palette_optimal_coloring(char *color_scheme, char *lightness, SparseMat
     SparseMatrix_distance_matrix(A, 0, &dist);
     SparseMatrix_delete(A);
     A = SparseMatrix_from_dense(n, n, dist);
-    FREE(dist);
+    free(dist);
     A = SparseMatrix_remove_diagonal(A);
     SparseMatrix_export(stdout, A);
   }
@@ -81,8 +81,7 @@ void map_palette_optimal_coloring(char *color_scheme, char *lightness, SparseMat
     (*rgb_g)[i+1] = (float) colors[cdim*i + 1];
     (*rgb_b)[i+1] = (float) colors[cdim*i + 2];
   }
-  FREE(colors);
-
+  free(colors);
 }
 
 void map_optimal_coloring(int seed, SparseMatrix A, float *rgb_r,  float *rgb_g, float *rgb_b){
@@ -100,8 +99,7 @@ void map_optimal_coloring(int seed, SparseMatrix A, float *rgb_r,  float *rgb_g,
   for (i = 0; i < n; i++) rgb_g[i] = u[i];
   vector_float_take(n, rgb_b, n, p, &u);
   for (i = 0; i < n; i++) rgb_b[i] = u[i];
-  FREE(u);
-
+  free(u);
 }
 
 static int get_poly_id(int ip, SparseMatrix point_poly_map){
@@ -309,9 +307,8 @@ static void plot_dot_polygons(agxbuf *sbuff, real line_width,
       dot_one_poly(sbuff, -1, 1, np, xp, yp, cstring);
     }
   }
-  FREE(xp);
-  FREE(yp);
-
+  free(xp);
+  free(yp);
 }
 
 void plot_dot_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys,
@@ -410,7 +407,7 @@ static void get_tri(int n, int dim, real *x, int *nt, struct Triangle **T, Spars
 
   *nt = ntri;
 
-  FREE(trilist);
+  free(trilist);
 }
 
 static SparseMatrix get_country_graph(int n, SparseMatrix A, int *groups, int GRP_RANDOM, int GRP_BBOX){
@@ -470,8 +467,8 @@ static void conn_comp(int n, SparseMatrix A, int *groups, SparseMatrix *poly_poi
   SparseMatrix_delete(B);
   SparseMatrix_delete(BB);
   *poly_point_map = SparseMatrix_new(ncomps, n, n, MATRIX_TYPE_PATTERN, FORMAT_CSR);
-  FREE((*poly_point_map)->ia);
-  FREE((*poly_point_map)->ja);
+  free((*poly_point_map)->ia);
+  free((*poly_point_map)->ja);
   (*poly_point_map)->ia = comps_ptr;
   (*poly_point_map)->ja = comps;
   (*poly_point_map)->nz = n;
@@ -635,8 +632,8 @@ static void get_poly_lines(int exclude_random, int nt, SparseMatrix graph, Spars
   SparseMatrix_delete(*poly_lines);
   *poly_lines = A;
 
-  FREE(tlist);
-  FREE(elist);
+  free(tlist);
+  free(elist);
 }
 
 static void plot_cycle(int head, int *cycle, int *edge_table, real *x){
@@ -939,13 +936,13 @@ static void get_polygon_solids(int nt, SparseMatrix E, int ncomps, int *comps_pt
   *polys = B;
   
   SparseMatrix_delete(half_edges);
-  FREE(cycle);
-  FREE(edge_cycle_map);
-  FREE(elist);
-  FREE(emask);
-  FREE(edge_table);
-
+  free(cycle);
+  free(edge_cycle_map);
+  free(elist);
+  free(emask);
+  free(edge_table);
 }
+
 static void get_polygons(int exclude_random, int n, int nrandom, int dim, SparseMatrix graph, int *grouping,
 			 int nt, struct Triangle *Tp, SparseMatrix E, int *nverts, real **x_poly, 
 			 int *npolys, SparseMatrix *poly_lines, SparseMatrix *polys, int **polys_groups, SparseMatrix *poly_point_map, SparseMatrix *country_graph){
@@ -1025,8 +1022,8 @@ static void get_polygons(int exclude_random, int n, int nrandom, int dim, Sparse
   B = get_country_graph(n, E, groups, GRP_RANDOM, GRP_BBOX);
   *country_graph = B;
 
-  FREE(groups);
-  FREE(mask);
+  free(groups);
+  free(mask);
 }
 
 static int make_map_internal(int exclude_random, int include_OK_points,
@@ -1279,7 +1276,7 @@ static int make_map_internal(int exclude_random, int include_OK_points,
       *nrandom += n - nh;/* count everything except cluster HIGHLIGHT_SET as random */
       n = nh;
       if (Verbose) fprintf(stderr,"nh = %d\n",nh);
-      FREE(xtemp);
+      free(xtemp);
     }
   }
 
@@ -1288,10 +1285,10 @@ static int make_map_internal(int exclude_random, int include_OK_points,
 	       poly_point_map, country_graph);
 
   SparseMatrix_delete(E);
-  FREE(Tp);
-  FREE(xran);
-  if (grouping != grouping0) FREE(grouping);
-  if (x != x0) FREE(x);
+  free(Tp);
+  free(xran);
+  if (grouping != grouping0) free(grouping);
+  if (x != x0) free(x);
   return 0;
 }
 
@@ -1585,8 +1582,8 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 			    shore_depth_tol, xcombined, nverts, x_poly, 
 			    npolys, poly_lines, polys, polys_groups, poly_point_map, country_graph, highlight_cluster, flag);
     if (graph != graph0) SparseMatrix_delete(graph);
-    FREE(groups); 
-    FREE(X);
+    free(groups);
+    free(X);
   }
 
   return res;

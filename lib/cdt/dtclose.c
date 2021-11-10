@@ -33,7 +33,7 @@ int dtclose(Dt_t* dt)
 	}
 
 	if(dt->type == DT_MALLOC)
-		free((void*)dt);
+		free(dt);
 	else if(ev == 0 && dt->type == DT_MEMORYF)
 		(*dt->memoryf)(dt, (void*)dt, 0, disc);
 

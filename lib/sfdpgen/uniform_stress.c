@@ -41,7 +41,7 @@ UniformStressSmoother UniformStressSmoother_new(int dim, SparseMatrix A, real *x
   sm->data = MALLOC(sizeof(real)*2);
   ((real*) sm->data)[0] = alpha;
   ((real*) sm->data)[1] = M;
-  sm->data_deallocator = FREE;
+  sm->data_deallocator = free;
   sm->tol_cg = 0.01;
   sm->maxit_cg = (int)sqrt((double) A->m);
 

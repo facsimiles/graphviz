@@ -24,7 +24,6 @@
 #include <getopt.h>
 
 #define MALLOC malloc
-#define FREE free
 #define test_flag(a, flag) ((a)&(flag))
 #define real double
 #define BUFS         1024
@@ -195,8 +194,8 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
     }
 
     agxbfree (&xb);
-    FREE(color);
-    FREE(arr);
+    free(color);
+    free(arr);
     return g;
 }
 

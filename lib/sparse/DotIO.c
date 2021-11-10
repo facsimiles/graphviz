@@ -241,7 +241,7 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
       }
     }
     if (!has_positions) {
-      FREE(*x);
+      free(*x);
       *x = NULL;
     }
   }
@@ -256,11 +256,11 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
 
 done:
   if (format != FORMAT_COORD){
-    FREE(I);
-    FREE(J);
-    FREE(val);
+    free(I);
+    free(J);
+    free(val);
   }
-  if (valD) FREE(valD);
+  free(valD);
 
   return A;
 }
@@ -610,15 +610,15 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
       }
     }
     if (!has_position){
-      FREE(*x);
+      free(*x);
       *x = NULL;
     }
   }
 
 
-  FREE(I);
-  FREE(J);
-  FREE(val);
+  free(I);
+  free(J);
+  free(val);
 
   return A;
 }
@@ -703,10 +703,10 @@ void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme){
     }
   }
 
-  FREE(I);
-  FREE(J);
-  FREE(val);
-  FREE(clusters);
+  free(I);
+  free(J);
+  free(val);
+  free(clusters);
 
   SparseMatrix_delete(A);
 

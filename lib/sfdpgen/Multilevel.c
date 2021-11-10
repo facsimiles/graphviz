@@ -39,7 +39,7 @@ Multilevel_control Multilevel_control_new(int scheme, int mode){
 }
 
 void Multilevel_control_delete(Multilevel_control ctrl){
-  FREE(ctrl);
+  free(ctrl);
 }
 
 static Multilevel Multilevel_init(SparseMatrix A, SparseMatrix D, real *node_weights){
@@ -75,9 +75,9 @@ void Multilevel_delete(Multilevel grid){
   }
   SparseMatrix_delete(grid->P);
   SparseMatrix_delete(grid->R);
-  if (grid->node_weights && grid->level > 0) FREE(grid->node_weights);
+  if (grid->node_weights && grid->level > 0) free(grid->node_weights);
   Multilevel_delete(grid->next);
-  FREE(grid);
+  free(grid);
 }
 
 static void maximal_independent_vertex_set(SparseMatrix A, int randomize, int **vset, int *nvset, int *nzc){
@@ -119,7 +119,7 @@ static void maximal_independent_vertex_set(SparseMatrix A, int randomize, int **
 	}
       }
     }
-    FREE(p);
+    free(p);
   }
   (*nzc) += *nvset;
 }
@@ -163,7 +163,7 @@ static void maximal_independent_vertex_set_RS(SparseMatrix A, int randomize, int
       i = p[ii];
       PriorityQueue_push(q, i, ia[i+1] - ia[i]);
     }
-    FREE(p);
+    free(p);
   }
 
   while (PriorityQueue_pop(q, &i, &gain)){
@@ -236,7 +236,7 @@ static void maximal_independent_edge_set(SparseMatrix A, int randomize, int **ma
 	}
       }
     }
-    FREE(p);
+    free(p);
   }
 }
 
@@ -313,7 +313,7 @@ static void maximal_independent_edge_set_heavest_edge_pernode(SparseMatrix A, in
 	  (*nmatch)--;
       }
     }
-    FREE(p);
+    free(p);
   }
 }
 
@@ -491,10 +491,10 @@ static void maximal_independent_edge_set_heavest_edge_pernode_leaves_first(Spars
       }
     }
 
-    FREE(p);
+    free(p);
   }
 
-  FREE(matched);
+  free(matched);
 }
 
 
@@ -619,15 +619,15 @@ static void maximal_independent_edge_set_heavest_edge_pernode_supernodes_first(S
 	(*clusterp)[++(*ncluster)] = nz;
       }
     }
-    FREE(p);
+    free(p);
 
   }
 
-  FREE(super);
+  free(super);
 
-  FREE(superp);
+  free(superp);
 
-  FREE(matched);
+  free(matched);
 }
 
 static int scomp(const void *s1, const void *s2){
@@ -735,10 +735,10 @@ static void maximal_independent_edge_set_heavest_cluster_pernode_leaves_first(Sp
       (*clusterp)[++(*ncluster)] = nz;
     }
   }
-  FREE(p);
+  free(p);
 
 
-  FREE(matched);
+  free(matched);
 }
 static void maximal_independent_edge_set_heavest_edge_pernode_scaled(SparseMatrix A, int randomize, int **matching, int *nmatch){
   int i, ii, j, *ia, *ja, m, n, *p = NULL;
@@ -811,7 +811,7 @@ static void maximal_independent_edge_set_heavest_edge_pernode_scaled(SparseMatri
 	  (*nmatch)--;
       }
     }
-    FREE(p);
+    free(p);
   }
 }
 
@@ -1074,15 +1074,15 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
     goto RETURN;
   }
  RETURN:
-  if (matching) FREE(matching);
-  if (vset) FREE(vset);
-  if (irn) FREE(irn);
-  if (jcn) FREE(jcn);
-  if (val) FREE(val);
+  free(matching);
+  free(vset);
+  free(irn);
+  free(jcn);
+  free(val);
   if (B) SparseMatrix_delete(B);
 
-  if(cluster) FREE(cluster);
-  if(clusterp) FREE(clusterp);
+  free(cluster);
+  free(clusterp);
 }
 
 void Multilevel_coarsen(SparseMatrix A, SparseMatrix *cA, SparseMatrix D, SparseMatrix *cD, real *node_wgt, real **cnode_wgt,
@@ -1123,7 +1123,7 @@ void Multilevel_coarsen(SparseMatrix A, SparseMatrix *cA, SparseMatrix D, Sparse
     if (*cD) SparseMatrix_delete(*cD);
     *cD = cD0;
 
-    if (*cnode_wgt) FREE(*cnode_wgt);
+    if (*cnode_wgt) free(*cnode_wgt);
     *cnode_wgt = cnode_wgt0;
     A = cA0;
     D = cD0;

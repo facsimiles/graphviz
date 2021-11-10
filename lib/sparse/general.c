@@ -140,8 +140,7 @@ void vector_ordering(int n, real *v, int **p){
   qsort(u, n, sizeof(real)*2, comp_ascend);
 
   for (i = 0; i < n; i++) (*p)[i] = (int) u[2*i+1];
-  FREE(u);
-
+  free(u);
 }
 
 void vector_sort_int(int n, int *v){

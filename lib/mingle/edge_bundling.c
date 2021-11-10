@@ -81,8 +81,8 @@ pedge pedge_wgt_new(int np, int dim, real *x, real wgt){
 
 }
 void pedge_delete(pedge e){
-  FREE(e->x);
-  FREE(e);
+  free(e->x);
+  free(e);
 }
 
 pedge pedge_flip(pedge e){
@@ -98,7 +98,7 @@ pedge pedge_flip(pedge e){
     memcpy(&x[(n-1-i)*dim], &x[i*dim], sizeof(real)*dim);
     memcpy(&x[i*dim], y, sizeof(real)*dim);
   }
-  FREE(y);
+  free(y);
   return e;
 }
 
@@ -574,8 +574,8 @@ static pedge* force_directed_edge_bundling(SparseMatrix A, pedge* edges, int max
 
   }
 
-  FREE(force_t);
-  FREE(force_a);
+  free(force_t);
+  free(force_a);
   return edges;
 }
 

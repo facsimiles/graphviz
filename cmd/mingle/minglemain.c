@@ -458,7 +458,7 @@ bundle (Agraph_t* g, opts_t* opts)
 
 	SparseMatrix_delete(A);
 	A = B;
-	FREE(x);
+	free(x);
 	x = xx;
 
 	dim = 2;

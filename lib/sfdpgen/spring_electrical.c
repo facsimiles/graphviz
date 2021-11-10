@@ -70,7 +70,7 @@ spring_electrical_control spring_electrical_control_new(){
 }
 
 void spring_electrical_control_delete(spring_electrical_control ctrl){
-  FREE(ctrl);
+  free(ctrl);
 }
 
 static char* smoothings[] = {
@@ -104,7 +104,7 @@ void spring_electrical_control_print(spring_electrical_control ctrl){
 }
 
 void oned_optimizer_delete(oned_optimizer opt){
-  FREE(opt);
+  free(opt);
 }
 
 oned_optimizer oned_optimizer_new(int i){
@@ -440,9 +440,9 @@ ang1 = 0; ang2 = 2*PI; maxang = 2*PI;
   }
 
 
-  FREE(checked);
-  FREE(angles);
-  FREE(leaves);
+  free(checked);
+  free(angles);
+  free(leaves);
 }
 
 void force_print(FILE *fp, int n, int dim, real *x, real *force){
@@ -659,9 +659,9 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
   oned_optimizer_delete(qtree_level_optimizer);
   ctrl->max_qtree_level = max_qtree_level;
 
-  FREE(xold);
+  free(xold);
   if (A != A0) SparseMatrix_delete(A);
-  FREE(force);
+  free(force);
 }
 
 static void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrical_control ctrl, real *node_weights, real *x, int *flag){
@@ -902,14 +902,13 @@ static void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_el
     oned_optimizer_delete(qtree_level_optimizer);
     ctrl->max_qtree_level = max_qtree_level;
   }
-  if (xold) FREE(xold);
+  free(xold);
   if (A != A0) SparseMatrix_delete(A);
-  if (f) FREE(f);
-  if (center) FREE(center);
-  if (supernode_wgts) FREE(supernode_wgts);
-  if (distances) FREE(distances);
-  FREE(force);
-
+  free(f);
+  free(center);
+  free(supernode_wgts);
+  free(distances);
+  free(force);
 }
 
 
@@ -1150,13 +1149,12 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
     oned_optimizer_delete(qtree_level_optimizer);
     ctrl->max_qtree_level = max_qtree_level;
   }
-  if (xold) FREE(xold);
+  free(xold);
   if (A != A0) SparseMatrix_delete(A);
-  if (f) FREE(f);
-  if (center) FREE(center);
-  if (supernode_wgts) FREE(supernode_wgts);
-  if (distances) FREE(distances);
-
+  free(f);
+  free(center);
+  free(supernode_wgts);
+  free(distances);
 }
 
 static void scale_coord(int n, int dim, real *x, int *id, int *jd, real *d, real dj){
@@ -1433,13 +1431,12 @@ static void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, sp
   if (ctrl->beautify_leaves) beautify_leaves(dim, A, x);
 
  RETURN:
-  if (xold) FREE(xold);
+  free(xold);
   if (A != A0) SparseMatrix_delete(A);
-  if (f) FREE(f);
-  if (center) FREE(center);
-  if (supernode_wgts) FREE(supernode_wgts);
-  if (distances) FREE(distances);
-
+  free(f);
+  free(center);
+  free(supernode_wgts);
+  free(distances);
 }
 
 
@@ -1631,13 +1628,12 @@ void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D
   if (ctrl->beautify_leaves) beautify_leaves(dim, A, x);
 
  RETURN:
-  if (xold) FREE(xold);
+  free(xold);
   if (A != A0) SparseMatrix_delete(A);
-  if (f) FREE(f);
-  if (center) FREE(center);
-  if (supernode_wgts) FREE(supernode_wgts);
-  if (distances) FREE(distances);
-
+  free(f);
+  free(center);
+  free(supernode_wgts);
+  free(distances);
 }
 
 
@@ -1679,7 +1675,7 @@ void interpolate_coord(int dim, SparseMatrix A, real *x){
     }
   }
 
-  FREE(y);
+  free(y);
 }
 static void prolongate(int dim, SparseMatrix A, SparseMatrix P, SparseMatrix R, real *x, real *y, int coarsen_scheme_used, real delta){
   int nc, *ia, *ja, i, j, k;
@@ -1723,7 +1719,7 @@ int power_law_graph(SparseMatrix A){
     max = MAX(max, mask[deg]);
   }
   if (mask[1] > 0.8*max && mask[1] > 0.3*m) res = TRUE;
-  FREE(mask);
+  free(mask);
   return res;
 }
 
@@ -1851,7 +1847,7 @@ static void attach_edge_label_coordinates(int dim, SparseMatrix A, int n_edge_la
     }
   }
 
-  FREE(mask);
+  free(mask);
 }
 
 static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_nodes, int *edge_label_nodes){
@@ -1917,9 +1913,9 @@ static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_n
 
   B = SparseMatrix_from_coordinate_arrays(nz, id, id, irn, jcn, NULL, MATRIX_TYPE_PATTERN, sizeof(real));
 
-  FREE(irn);
-  FREE(jcn);
-  FREE(mask);
+  free(irn);
+  free(jcn);
+  free(mask);
   return B;
 
 }
@@ -1979,7 +1975,7 @@ static void multilevel_spring_electrical_embedding_core(int dim, SparseMatrix A0
     remove_overlap(dim, A, x, label_sizes, ctrl->overlap, ctrl->initial_scaling,
 		   ctrl->edge_labeling_scheme, n_edge_label_nodes, edge_label_nodes, A, ctrl->do_shrinking);
     SparseMatrix_delete(A2);
-    FREE(x2);
+    free(x2);
     if (A != A0) SparseMatrix_delete(A);
 
     return;
@@ -2052,7 +2048,7 @@ static void multilevel_spring_electrical_embedding_core(int dim, SparseMatrix A0
     }
     if (Multilevel_is_finest(grid)) break;
     if (*flag) {
-      FREE(xc);
+      free(xc);
       goto RETURN;
     }
     P = grid->P;
@@ -2064,7 +2060,7 @@ static void multilevel_spring_electrical_embedding_core(int dim, SparseMatrix A0
       xf = MALLOC(sizeof(real)*grid->n*dim);
     }
     prolongate(dim, grid->A, P, grid->R, xc, xf, coarsen_scheme_used, (ctrl->K)*0.001);
-    FREE(xc);
+    free(xc);
     xc = xf;
     ctrl->random_start = FALSE;
     ctrl->K = ctrl->K * 0.75;

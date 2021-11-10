@@ -26,8 +26,8 @@ IntStack IntStack_new(void){
 
 void IntStack_delete(IntStack s){
   if (s){
-    FREE(s->stack);
-    FREE(s);
+    free(s->stack);
+    free(s);
   }
 }
 

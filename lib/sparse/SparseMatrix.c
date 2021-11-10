@@ -282,7 +282,7 @@ int SparseMatrix_is_symmetric(SparseMatrix A, int test_pattern_symmetry_only){
     SparseMatrix_set_pattern_symmetric(A);
   }
  RETURN:
-  FREE(mask);
+  free(mask);
 
   SparseMatrix_delete(B);
   return res;
@@ -407,10 +407,10 @@ void SparseMatrix_delete(SparseMatrix A){
   /* return a sparse matrix skeleton with row dimension m and storage nz. If nz == 0, 
      only row pointers are allocated */
   if (!A) return;
-  if (A->ia) FREE(A->ia);
-  if (A->ja) FREE(A->ja);
-  if (A->a) FREE(A->a);
-  FREE(A);
+  free(A->ia);
+  free(A->ja);
+  free(A->a);
+  free(A);
 }
 static void SparseMatrix_print_csr(char *c, SparseMatrix A){
   int *ia, *ja;
@@ -994,7 +994,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
   C->nz = nz;
 
  RETURN:
-  if (mask) FREE(mask);
+  free(mask);
 
   return C;
 }
@@ -1295,9 +1295,8 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
   C->nz = nz;
 
  RETURN:
-  FREE(mask);
+  free(mask);
   return C;
-
 }
 
 
@@ -1482,9 +1481,8 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
   D->nz = nz;
 
  RETURN:
-  FREE(mask);
+  free(mask);
   return D;
-
 }
 
 SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A, int what_to_sum){
@@ -1591,7 +1589,7 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A, int what_to_sum){
     break;
   }
   A->nz = nz;
-  FREE(mask);
+  free(mask);
   return A;
 }
 
@@ -2003,9 +2001,9 @@ void SparseMatrix_weakly_connected_components(SparseMatrix A0, int *ncomp, int *
     
   }
   if (A != A0) SparseMatrix_delete(A);
-  if (levelset_ptr) FREE(levelset_ptr);
+  free(levelset_ptr);
 
-  FREE(mask);
+  free(mask);
 }
 
 
@@ -2125,15 +2123,15 @@ static int Dijkstra_internal(SparseMatrix A, int root, real *dist, int *nlist, i
 	//fprintf(stderr," reset neighbor id=%d, dist=%f, hid = %d, a[%d]=%f, dist=%f\n",jj, ndata->dist,heap_id, jj, a[j], ndata->dist);
      }
     }
-    FREE(ndata_min);
+    free(ndata_min);
   }
   *nlist = found;
   *dist_max = dist[i];
 
 
-  BinaryHeap_delete(h, FREE);
-  FREE(heap_ids);
-  if (a && a != A->a) FREE(a);
+  BinaryHeap_delete(h, free);
+  free(heap_ids);
+  if (a && a != A->a) free(a);
   if (found == m || mask){
     return 0;
   } else {
@@ -2247,9 +2245,8 @@ void SparseMatrix_decompose_to_supervariables(SparseMatrix A, int *ncluster, int
   printf("\n");
 #endif
 
-  FREE(mask);
-  FREE(super);
-
+  free(mask);
+  free(super);
 }
 
 SparseMatrix SparseMatrix_get_augmented(SparseMatrix A){
@@ -2289,11 +2286,10 @@ SparseMatrix SparseMatrix_get_augmented(SparseMatrix A){
   B = SparseMatrix_from_coordinate_arrays(nz, m + n, m + n, irn, jcn, val, type, A->size);
   SparseMatrix_set_symmetric(B);
   SparseMatrix_set_pattern_symmetric(B);
-  if (irn) FREE(irn);
-  if (jcn) FREE(jcn);
-  if (val) FREE(val);
+  free(irn);
+  free(jcn);
+  free(val);
   return B;
-
 }
 
 SparseMatrix SparseMatrix_to_square_matrix(SparseMatrix A, int bipartite_options){
@@ -2452,21 +2448,21 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
     }
     break;
   case MATRIX_TYPE_UNKNOWN:
-    FREE(rmask);
-    FREE(cmask);
+    free(rmask);
+    free(cmask);
     return NULL;
   default:
-    FREE(rmask);
-    FREE(cmask);
+    free(rmask);
+    free(cmask);
     return NULL;
   }
 
   B = SparseMatrix_from_coordinate_arrays(nz, nrow, ncol, irn, jcn, v, A->type, A->size);
-  FREE(cmask);
-  FREE(rmask);
-  FREE(irn);
-  FREE(jcn);
-  if (v) FREE(v);
+  free(cmask);
+  free(rmask);
+  free(irn);
+  free(jcn);
+  if (v) free(v);
 
 
   return B;
@@ -2477,7 +2473,7 @@ SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A){
   real *a;
   int i;
 
-  if (A->a) FREE(A->a);
+  free(A->a);
   A->a = MALLOC(sizeof(real)*((size_t)A->nz));
   a = (real*) (A->a);
   for (i = 0; i < A->nz; i++) a[i] = 1.;
@@ -2555,14 +2551,13 @@ int SparseMatrix_distance_matrix(SparseMatrix D0, int weighted, real **dist0){
     }
   }
 
-  if (levelset_ptr) FREE(levelset_ptr);
-  if (levelset) FREE(levelset);
-  if (mask) FREE(mask);
+  free(levelset_ptr);
+  free(levelset);
+  free(mask);
   
   if (D != D0) SparseMatrix_delete(D);
-  if (list) FREE(list);
+  free(list);
   return flag;
-
 }
 
 SparseMatrix SparseMatrix_distance_matrix_khops(int khops, SparseMatrix D0, int weighted){
@@ -2640,13 +2635,13 @@ SparseMatrix SparseMatrix_distance_matrix_khops(int khops, SparseMatrix D0, int 
   C = SparseMatrix_from_coordinate_format(B);
   SparseMatrix_delete(B);
 
-  if (levelset_ptr) FREE(levelset_ptr);
-  if (levelset) FREE(levelset);
-  if (mask) FREE(mask);
-  if (dist) FREE(dist);
+  free(levelset_ptr);
+  free(levelset);
+  free(mask);
+  free(dist);
 
   if (D != D0) SparseMatrix_delete(D);
-  if (list) FREE(list);
+  free(list);
   /* I can not find a reliable way to make the matrix symmetric. Right now I use a mask array to
      limit consider of only nodes with in k hops, but even this is not symmetric. e.g.,
      . 10  10    10  10
