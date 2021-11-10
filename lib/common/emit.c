@@ -1101,8 +1101,7 @@ static bool selectedlayer(GVJ_t *job, char *spec)
  * efficient way to do this, but this is simple and until we find people
  * using huge numbers of layers, it should be adequate.
  */
-static int* parse_layerselect(GVC_t *gvc, graph_t * g, char *p)
-{
+static int *parse_layerselect(GVC_t *gvc, char *p) {
     int* laylist = N_GNEW(gvc->numLayers+2,int);
     int i, cnt = 0;
     for (i = 1; i <=gvc->numLayers; i++) {
@@ -1199,7 +1198,7 @@ static void init_layering(GVC_t * gvc, graph_t * g)
     if ((str = agget(g, "layers")) != 0) {
 	gvc->numLayers = parse_layers(gvc, g, str);
  	if ((str = agget(g, "layerselect")) != 0 && *str) {
-	    gvc->layerlist = parse_layerselect(gvc, g, str);
+	    gvc->layerlist = parse_layerselect(gvc, str);
 	}
     } else {
 	gvc->layerIDs = NULL;
@@ -1645,7 +1644,7 @@ static void emit_background(GVJ_t * job, graph_t *g)
 	emit_xdot (job, xd);
 }
 
-static void setup_page(GVJ_t * job, graph_t * g)
+static void setup_page(GVJ_t * job)
 {
     point pagesArrayElem = job->pagesArrayElem, pagesArraySize = job->pagesArraySize;
 	
@@ -1720,7 +1719,7 @@ static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
     return false;
 }
 
-static bool edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
+static bool edge_in_layer(GVJ_t *job, edge_t * e)
 {
     char *pe, *pn;
     int cnt;
@@ -2217,6 +2216,9 @@ static double revfunc (double curlen, double totallen, double initwid)
 
 static double nonefunc (double curlen, double totallen, double initwid)
 {
+    (void)curlen;
+    (void)totallen;
+
     return initwid / 2.0;
 }
 
@@ -2731,10 +2733,7 @@ emit_edge_label(GVJ_t* job, textlabel_t* lbl, emit_state_t lkind, int explicit,
  * a hot spot around point p.
  */
 static void nodeIntersect (GVJ_t * job, pointf p, 
-    boolean explicit_iurl, char* iurl,
-    boolean explicit_itooltip, char* itooltip,
-    boolean explicit_itarget, char* itarget)
-{
+    boolean explicit_iurl, char* iurl, boolean explicit_itooltip) {
     obj_state_t *obj = job->obj;
     char* url;
     bool explicit;
@@ -2790,8 +2789,7 @@ static void emit_end_edge(GVJ_t * job)
 	else /* No arrow at start of splines */
 	    p = bz.list[0];
 	nodeIntersect (job, p, obj->explicit_tailurl, obj->tailurl,
-	    obj->explicit_tailtooltip, obj->tailtooltip, 
-	    obj->explicit_tailtarget, obj->tailtarget); 
+	    obj->explicit_tailtooltip);
         
 	/* process intersection with head node */
 	bz = ED_spl(e)->list[ED_spl(e)->size - 1];
@@ -2800,8 +2798,7 @@ static void emit_end_edge(GVJ_t * job)
 	else /* No arrow at end of splines */
 	    p = bz.list[bz.size - 1];
 	nodeIntersect (job, p, obj->explicit_headurl, obj->headurl,
-	    obj->explicit_headtooltip, obj->headtooltip, 
-	    obj->explicit_headtarget, obj->headtarget); 
+	    obj->explicit_headtooltip);
     }
 
     emit_edge_label(job, ED_label(e), EMIT_ELABEL,
@@ -2833,7 +2830,7 @@ static void emit_edge(GVJ_t * job, edge_t * e)
     char **sp;
     char *p;
 
-    if (edge_in_box(e, job->clip) && edge_in_layer(job, agraphof(aghead(e)), e) ) {
+    if (edge_in_box(e, job->clip) && edge_in_layer(job, e) ) {
 
 	s = malloc(strlen(agnameof(agtail(e))) + 2 + strlen(agnameof(aghead(e))) + 1);
 	strcpy(s,agnameof(agtail(e)));
@@ -3420,7 +3417,7 @@ static void emit_page(GVJ_t * job, graph_t * g)
 	saveid = NULL;
 
     setColorScheme (agget (g, "colorscheme"));
-    setup_page(job, g);
+    setup_page(job);
     gvrender_begin_page(job);
     gvrender_set_pencolor(job, DEFAULT_COLOR);
     gvrender_set_fillcolor(job, DEFAULT_FILL);

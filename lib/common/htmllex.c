@@ -581,7 +581,7 @@ static htmlimg_t *mkImg(char **atts)
     return img;
 }
 
-static textfont_t *mkFont(GVC_t *gvc, char **atts, int flags, int ul)
+static textfont_t *mkFont(GVC_t *gvc, char **atts, int flags)
 {
     textfont_t tf = {NULL,NULL,NULL,0.0,0,0};
 
@@ -631,28 +631,28 @@ static void startElement(void *user, const char *name, char **atts)
 	htmllval.cell = mkCell(atts);
 	state.tok = T_cell;
     } else if (strcasecmp(name, "FONT") == 0) {
-	htmllval.font = mkFont(gvc, atts, 0, 0);
+	htmllval.font = mkFont(gvc, atts, 0);
 	state.tok = T_font;
     } else if (strcasecmp(name, "B") == 0) {
-	htmllval.font = mkFont(gvc, 0, HTML_BF, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_BF);
 	state.tok = T_bold;
     } else if (strcasecmp(name, "S") == 0) {
-	htmllval.font = mkFont(gvc, 0, HTML_S, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_S);
 	state.tok = T_s;
     } else if (strcasecmp(name, "U") == 0) {
-	htmllval.font = mkFont(gvc, 0, HTML_UL, 1);
+	htmllval.font = mkFont(gvc, 0, HTML_UL);
 	state.tok = T_underline;
     } else if (strcasecmp(name, "O") == 0) {
-	htmllval.font = mkFont(gvc, 0, HTML_OL, 1);
+	htmllval.font = mkFont(gvc, 0, HTML_OL);
 	state.tok = T_overline;
     } else if (strcasecmp(name, "I") == 0) {
-	htmllval.font = mkFont(gvc, 0, HTML_IF, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_IF);
 	state.tok = T_italic;
     } else if (strcasecmp(name, "SUP") == 0) {
-	htmllval.font = mkFont(gvc, 0, HTML_SUP, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_SUP);
 	state.tok = T_sup;
     } else if (strcasecmp(name, "SUB") == 0) {
-	htmllval.font = mkFont(gvc, 0, HTML_SUB, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_SUB);
 	state.tok = T_sub;
     } else if (strcasecmp(name, "BR") == 0) {
 	mkBR(atts);
@@ -673,6 +673,8 @@ static void startElement(void *user, const char *name, char **atts)
 
 static void endElement(void *user, const char *name)
 {
+    (void)user;
+
     if (strcasecmp(name, "TABLE") == 0) {
 	state.tok = T_end_table;
 	state.inCell = 1;
@@ -733,6 +735,8 @@ static void endElement(void *user, const char *name)
  */
 static void characterData(void *user, const char *s, int length)
 {
+    (void)user;
+
     int i, cnt = 0;
     unsigned char c;
 

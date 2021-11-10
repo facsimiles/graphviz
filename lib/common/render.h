@@ -92,9 +92,6 @@ extern "C" {
     RENDER_API int dotneato_usage(int);
     RENDER_API void dotneato_postprocess(Agraph_t *);
     RENDER_API void gv_postprocess(Agraph_t *, int);
-    RENDER_API void dotneato_set_margins(GVC_t * gvc, Agraph_t *);
-    RENDER_API void dotneato_write(GVC_t * gvc, graph_t *g);
-    RENDER_API void dotneato_write_one(GVC_t * gvc, graph_t *g);
     RENDER_API Ppolyline_t* ellipticWedge (pointf ctr, double major, double minor, double angle0, double angle1);
     RENDER_API void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
     RENDER_API char* getObjId (GVJ_t* job, void* obj, agxbuf* xb);
@@ -106,7 +103,6 @@ extern "C" {
     RENDER_API void epsf_init(node_t * n);
     RENDER_API void epsf_free(node_t * n);
     RENDER_API shape_desc *find_user_shape(const char *);
-    RENDER_API void free_line(textspan_t *);
     RENDER_API void free_label(textlabel_t *);
     RENDER_API void free_textspan(textspan_t * tl, int);
     RENDER_API void getdouble(graph_t * g, char *name, double *result);
