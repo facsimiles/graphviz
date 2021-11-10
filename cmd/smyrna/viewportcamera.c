@@ -22,14 +22,6 @@ static viewport_camera *new_viewport_camera(ViewInfo * view)
     return NEW(viewport_camera);
 }
 
-static void viewport_update_camera_indexes(ViewInfo * view)
-{
-    int ind = 0;
-    for (ind = 0; ind < view->camera_count; ind++) {
-	view->cameras[ind]->index = ind;
-    }
-}
-
 static viewport_camera *add_camera_to_viewport(ViewInfo * view)
 {
     view->camera_count++;
@@ -37,7 +29,6 @@ static viewport_camera *add_camera_to_viewport(ViewInfo * view)
 	RALLOC(view->camera_count, view->cameras, viewport_camera *);
     view->cameras[view->camera_count - 1] = new_viewport_camera(view);
     view->active_camera = view->camera_count - 1;
-    viewport_update_camera_indexes(view);
     return view->cameras[view->camera_count - 1];
 }
 

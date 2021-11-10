@@ -152,12 +152,10 @@ typedef struct
 	int edgelabel_id;
     }topviewcache;
 
-    typedef struct xdot_set xdot_set;
     typedef struct {
 	int color;
 	int pos;
 	int selection;
-	int visibility;
 	int nodesize;
 
 
@@ -174,14 +172,6 @@ typedef struct
 	smyrna_view_mode mode;
     }mouse_action_t;
 
-#define OD_Visible(p) (p.data.Visible)
-#define OD_Locked(p) (p.data.Locked)
-#define OD_Highlighted(p) (p.data.Highlighted)
-
-
-
-    typedef enum { CAM_PERSPECTIVE, CAM_ORTHO } cam_t;
-
     typedef struct _viewport_camera {
 	float x;
 	float y;
@@ -190,22 +180,13 @@ typedef struct
 	float targetx;
 	float targety;
 	float targetz;
-	int index;
 
 	float r;
-
-
-	cam_t type;		//
     } viewport_camera;
 
     typedef struct _graph_data {
 	Agrec_t h;
 	char *GraphFileName;
-	//graph's location, change these to move the whole graph
-	int Modified;		//if graph has been modified after loading
-	float offsetx;
-	float offsety;
-	float offsetz;
     } graph_data;
 
 
@@ -232,13 +213,9 @@ typedef struct
 	glCompPoint posTail;
 	glCompPoint posHead;
 	int selected;
-	int visible;
-	int printLabel;
     }edgeRec;
 #define EREC(e) ((edgeRec*)(aggetrec(e,"edgeRec",0)))
-#define ED_visible(e) (EREC(e)->visible)
 #define ED_selected(e) (EREC(e)->selected)
-#define ED_printLabel(e) (EREC(e)->printLabel)
 #define ED_posTail(e) (EREC(e)->posTail)
 #define ED_posHead(e) (EREC(e)->posHead)
 
@@ -459,7 +436,6 @@ typedef struct
 	int initFile;
 	int drawSplines;
 	colorschemaset *colschms;
-	char* temp;
 	char *template_file;
 	GtkComboBox *graphComboBox;	/*pointer to graph combo box at top right */
 	ArcBall_t *arcball;

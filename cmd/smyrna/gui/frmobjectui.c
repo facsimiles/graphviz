@@ -463,9 +463,6 @@ static void set_refresh_filters(ViewInfo * v, int type, char *name)
 	v->refresh.nodesize = 1;
     if (strcasecmp(name, "selected") == 0)
 	v->refresh.selection = 1;
-    if (strcasecmp(name, "visible") == 0)
-	v->refresh.visibility = 1;
-
 }
 
 static void doApply (GtkWidget * widget, int doAll)

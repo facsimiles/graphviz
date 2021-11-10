@@ -58,7 +58,6 @@ static void select_edge(Agraph_t* g,Agedge_t*  obj,int reverse)
 	{
 	    agxset(obj,sel_attr,"0");
 	    ED_selected(obj) = 0;
-	    ED_printLabel(obj) = 0;
 	}
 	else
 	{
@@ -170,7 +169,6 @@ void pick_object_xyz(Agraph_t* g,topview* t,GLfloat x,GLfloat y,GLfloat z)
     {
 	select_edge(g,a,1);	
 	cacheSelectedEdges(g,t);
-	ED_printLabel((Agedge_t*)a) = 1;
     }
 }
 void pick_objects_rect(Agraph_t* g) 
@@ -228,7 +226,6 @@ void deselect_all(Agraph_t* g)
 	{
 	    agxset(e,esel_attr,"0");
 	    ED_selected(e) = 0;
-	    ED_printLabel(e) = 0;
 	}
     }
     cacheSelectedNodes(g,view->Topview);

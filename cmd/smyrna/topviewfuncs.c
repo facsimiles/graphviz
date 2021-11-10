@@ -624,11 +624,8 @@ static void renderEdgesFn (Agraph_t * g, edgefn ef, int skipSelected)
 		continue;
 
 	    if(!object_color(e,&c)) {
-		ED_visible(e) = 0;
 		continue;
 	    }
-	    else
-		ED_visible(e) = 1;
 	    if (ED_selected(e) && skipSelected)
 		continue;
 
