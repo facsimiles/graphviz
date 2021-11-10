@@ -20,8 +20,6 @@ typedef struct {
     int* neigh;  /* 3*nfaces indices of neighbor triangles */ 
 } surface_t;
 
-v_data *delaunay_triangulation(double *x, double *y, int n);
-
 int *delaunay_tri (double *x, double *y, int n, int* nedges);
 
 int *get_triangles (double *x, int n, int* ntris);

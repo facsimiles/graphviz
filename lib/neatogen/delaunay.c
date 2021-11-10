@@ -23,26 +23,27 @@
 #ifdef HAVE_GTS
 #include <gts.h>
 
-static gboolean triangle_is_hole(GtsTriangle * t)
+static gint triangle_is_hole(void *triangle, void *ignored)
 {
+    GtsTriangle *t = triangle;
+    (void)ignored;
+
     GtsEdge *e1, *e2, *e3;
     GtsVertex *v1, *v2, *v3;
-    gboolean ret;
 
     gts_triangle_vertices_edges(t, NULL, &v1, &v2, &v3, &e1, &e2, &e3);
 
     if ((GTS_IS_CONSTRAINT(e1) && GTS_SEGMENT(e1)->v1 != v1) ||
 	(GTS_IS_CONSTRAINT(e2) && GTS_SEGMENT(e2)->v1 != v2) ||
 	(GTS_IS_CONSTRAINT(e3) && GTS_SEGMENT(e3)->v1 != v3))
-	ret = TRUE;
-    else ret = FALSE;
-    return ret;
+	return TRUE;
+
+    return FALSE;
 }
 
 static guint delaunay_remove_holes(GtsSurface * surface)
 {
-    return gts_surface_foreach_face_remove(surface,
-				    (GtsFunc) triangle_is_hole, NULL);
+    return gts_surface_foreach_face_remove(surface, triangle_is_hole, NULL);
 }
 
 /* Derived classes for vertices and faces so we can assign integer ids
@@ -192,14 +193,14 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
 					       t->e1, t->e2, t->e3));
 
     for (i = 0; i < npt; i++) {
-	GtsVertex *v1 = (GtsVertex *) vertices[i];
-	GtsVertex *v = gts_delaunay_add_vertex(surface, v1, NULL);
+	GtsVertex *v4 = (GtsVertex *)vertices[i];
+	GtsVertex *v = gts_delaunay_add_vertex(surface, v4, NULL);
 
 	/* if v != NULL, it is a previously added pt with the same
-	 * coordinates as v1, in which case we replace v1 with v
+	 * coordinates as v4, in which case we replace v4 with v
 	 */
 	if (v) {
-	    gts_vertex_replace (v1, v);
+	    gts_vertex_replace(v4, v);
 	}
     }
 
@@ -229,32 +230,39 @@ typedef struct {
     v_data *delaunay;
 } estats;
     
-static void cnt_edge (GtsSegment * e, estats* sp)
-{
+static gint cnt_edge(void *edge, void *stats) {
+    GtsSegment *e = edge;
+    estats *sp = stats;
+
     sp->n++;
     if (sp->delaunay) {
-	sp->delaunay[((GVertex*)(e->v1))->idx].nedges++;
-	sp->delaunay[((GVertex*)(e->v2))->idx].nedges++;
+	sp->delaunay[((GVertex*)e->v1)->idx].nedges++;
+	sp->delaunay[((GVertex*)e->v2)->idx].nedges++;
     }
+
+    return 0;
 }
 
 static void
 edgeStats (GtsSurface* s, estats* sp)
 {
-    gts_surface_foreach_edge (s, (GtsFunc) cnt_edge, sp);
+    gts_surface_foreach_edge(s, cnt_edge, sp);
 }
 
-static void add_edge (GtsSegment * e, v_data* delaunay)
-{
-    int source = ((GVertex*)(e->v1))->idx;
-    int dest = ((GVertex*)(e->v2))->idx;
+static gint add_edge(void *edge, void *data) {
+    GtsSegment *e = edge;
+    v_data *delaunay = data;
+
+    int source = ((GVertex*)e->v1)->idx;
+    int dest = ((GVertex*)e->v2)->idx;
 
     delaunay[source].edges[delaunay[source].nedges++] = dest;
     delaunay[dest].edges[delaunay[dest].nedges++] = source;
+
+    return 0;
 }
 
-v_data *delaunay_triangulation(double *x, double *y, int n)
-{
+static v_data *delaunay_triangulation(double *x, double *y, int n) {
     v_data *delaunay;
     GtsSurface* s = tri(x, y, n, NULL, 0, 1);
     int i, nedges;
@@ -282,7 +290,7 @@ v_data *delaunay_triangulation(double *x, double *y, int n)
 	delaunay[i].edges[0] = i;
 	delaunay[i].nedges = 1;
     }
-    gts_surface_foreach_edge (s, (GtsFunc) add_edge, delaunay);
+    gts_surface_foreach_edge(s, add_edge, delaunay);
 
     gts_object_destroy (GTS_OBJECT (s));
 
@@ -294,14 +302,18 @@ typedef struct {
     int* edges;
 } estate;
 
-static void addEdge (GtsSegment * e, estate* es)
-{
-    int source = ((GVertex*)(e->v1))->idx;
-    int dest = ((GVertex*)(e->v2))->idx;
+static gint addEdge(void *edge, void *state) {
+    GtsSegment *e = edge;
+    estate *es = state;
 
-    es->edges[2*(es->n)] = source;
-    es->edges[2*(es->n)+1] = dest;
+    int source = ((GVertex*)e->v1)->idx;
+    int dest = ((GVertex*)e->v2)->idx;
+
+    es->edges[2 * es->n] = source;
+    es->edges[2 * es->n + 1] = dest;
     es->n += 1;
+
+    return 0;
 }
 
 // when moving to C11, qsort_s should be used instead of having a global
@@ -351,7 +363,7 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 	edges = N_GNEW(2 * nedges, int);
 	state.n = 0;
 	state.edges = edges;
-	gts_surface_foreach_edge (s, (GtsFunc) addEdge, &state);
+	gts_surface_foreach_edge(s, addEdge, &state);
     }
     else {
 	int* vs = N_GNEW(n, int);
@@ -386,10 +398,14 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
     return edges;
 }
 
-static void cntFace (GFace* fp, int* ip)
-{
+static gint cntFace(void *face, void *data) {
+    GFace *fp = face;
+    int *ip = data;
+
     fp->idx = *ip;
     *ip += 1;
+
+    return 0;
 }
 
 typedef struct {
@@ -403,14 +419,20 @@ typedef struct {
     int* neigh;
 } ninfo;
 
-static void addNeighbor (GFace* f, ninfo* es)
-{
+static gint addNeighbor(void *face, void *ni) {
+    GFace *f = face;
+    ninfo *es = ni;
+
     es->neigh[es->nneigh] = f->idx;
     es->nneigh++;
+
+    return 0;
 }
 
-static void addFace (GFace* f, fstate* es)
-{
+static gint addFace(void *face, void *state) {
+    GFace *f = face;
+    fstate *es = state;
+
     int i, myid = f->idx;
     int* ip = es->faces + 3*myid;
     int* neigh = es->neigh + 3*myid;
@@ -418,27 +440,33 @@ static void addFace (GFace* f, fstate* es)
     GtsVertex *v1, *v2, *v3;
 
     gts_triangle_vertices (&f->v.triangle, &v1, &v2, &v3);
-    *ip++ = ((GVertex*)(v1))->idx;
-    *ip++ = ((GVertex*)(v2))->idx;
-    *ip++ = ((GVertex*)(v3))->idx;
+    *ip++ = ((GVertex*)v1)->idx;
+    *ip++ = ((GVertex*)v2)->idx;
+    *ip++ = ((GVertex*)v3)->idx;
 
     ni.nneigh = 0;
     ni.neigh = neigh;
-    gts_face_foreach_neighbor ((GtsFace*)f, 0, (GtsFunc) addNeighbor, &ni);
+    gts_face_foreach_neighbor((GtsFace*)f, 0, addNeighbor, &ni);
     for (i = ni.nneigh; i < 3; i++)
 	neigh[i] = -1;
+
+    return 0;
 }
 
-static void addTri (GFace* f, fstate* es)
-{
+static gint addTri(void *face, void *state) {
+    GFace *f = face;
+    fstate *es = state;
+
     int myid = f->idx;
     int* ip = es->faces + 3*myid;
     GtsVertex *v1, *v2, *v3;
 
     gts_triangle_vertices (&f->v.triangle, &v1, &v2, &v3);
-    *ip++ = ((GVertex*)(v1))->idx;
-    *ip++ = ((GVertex*)(v2))->idx;
-    *ip++ = ((GVertex*)(v3))->idx;
+    *ip++ = ((GVertex*)v1)->idx;
+    *ip++ = ((GVertex*)v2)->idx;
+    *ip++ = ((GVertex*)v3)->idx;
+
+    return 0;
 }
 
 /* mkSurface:
@@ -471,16 +499,16 @@ mkSurface (double *x, double *y, int n, int* segs, int nsegs)
 
     state.n = 0;
     state.edges = segs;
-    gts_surface_foreach_edge (s, (GtsFunc) addEdge, &state);
+    gts_surface_foreach_edge(s, addEdge, &state);
 
-    gts_surface_foreach_face (s, (GtsFunc) cntFace, &nfaces);
+    gts_surface_foreach_face(s, cntFace, &nfaces);
 
     faces = N_GNEW(3 * nfaces, int);
     neigh = N_GNEW(3 * nfaces, int);
 
     statf.faces = faces;
     statf.neigh = neigh;
-    gts_surface_foreach_face (s, (GtsFunc) addFace, &statf);
+    gts_surface_foreach_face(s, addFace, &statf);
 
     sf->nedges = nsegs;
     sf->edges = segs;
@@ -512,9 +540,9 @@ get_triangles (double *x, int n, int* tris)
     s = tri(x, NULL, n, NULL, 0, 0);
     if (!s) return NULL;
 
-    gts_surface_foreach_face (s, (GtsFunc) cntFace, &nfaces);
+    gts_surface_foreach_face(s, cntFace, &nfaces);
     statf.faces = N_GNEW(3 * nfaces, int);
-    gts_surface_foreach_face (s, (GtsFunc) addTri, &statf);
+    gts_surface_foreach_face(s, addTri, &statf);
 
     gts_object_destroy (GTS_OBJECT (s));
 
@@ -680,8 +708,7 @@ delaunay_tri (double *x, double *y, int n, int* nedges)
     return out.edgelist;
 }
 
-v_data *delaunay_triangulation(double *x, double *y, int n)
-{
+static v_data *delaunay_triangulation(double *x, double *y, int n) {
     v_data *delaunay;
     int nedges;
     int *edges;
@@ -737,8 +764,7 @@ int* get_triangles (double *x, int n, int* tris)
     agerr(AGERR, "get_triangles: %s\n", err);
     return 0;
 }
-v_data *delaunay_triangulation(double *x, double *y, int n)
-{
+static v_data *delaunay_triangulation(double *x, double *y, int n) {
     agerr(AGERR, "delaunay_triangulation: %s\n", err);
     return 0;
 }
