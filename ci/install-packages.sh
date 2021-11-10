@@ -12,8 +12,7 @@ else
 fi
 printf '%s\n' "${ID}" >OS_ID
 GV_VERSION=$( cat GRAPHVIZ_VERSION )
-COLLECTION=$( cat COLLECTION )
-DIR=Packages/${COLLECTION}/${ID}/${VERSION_ID}
+DIR=Packages/${ID}/${VERSION_ID}
 ARCH=$( uname -m )
 
 # Remove possible old version of Graphviz so that we can detect if

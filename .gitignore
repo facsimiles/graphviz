@@ -8,7 +8,6 @@ CMakeCache.txt
 # product of: make dist
 /graphviz-*.tar.gz
 /GRAPHVIZ_VERSION
-/COLLECTION
 
 cmd/gvedit/moc_csettings.cpp
 cmd/gvedit/moc_imageviewer.cpp

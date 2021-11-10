@@ -8,7 +8,6 @@ dnl Set Graphviz version information
 #	graphviz_version_major
 #	graphviz_version_minor
 #	graphviz_version_micro
-#	graphviz_collection
 #	graphviz_version_date
 #	graphviz_change_date
 #	graphviz_author_name
@@ -23,9 +22,6 @@ GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
 GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
 GRAPHVIZ_VERSION_MICRO=graphviz_version_micro()
 
-# NB: "stable" or "development"
-GRAPHVIZ_COLLECTION=graphviz_collection()
-
 # NB: date/time of last commit - or "0"
 GRAPHVIZ_VERSION_DATE=graphviz_version_date()
 
@@ -37,7 +33,7 @@ GRAPHVIZ_CHANGE_DATE=graphviz_change_date()
 # NB: git commit hash of last commit
 GRAPHVIZ_VERSION_COMMIT=graphviz_version_commit()
 
-GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
+GRAPHVIZ_SOURCES=graphviz/SOURCES
 
 AC_SUBST([GRAPHVIZ_VERSION_MAJOR])
 AC_SUBST([GRAPHVIZ_VERSION_MINOR])
@@ -48,7 +44,6 @@ AC_SUBST([GRAPHVIZ_AUTHOR_NAME])
 AC_SUBST([GRAPHVIZ_AUTHOR_EMAIL])
 AC_SUBST([GRAPHVIZ_CHANGE_DATE])
 AC_SUBST([GRAPHVIZ_VERSION_COMMIT])
-AC_SUBST([GRAPHVIZ_COLLECTION])
 AC_SUBST([GRAPHVIZ_SOURCES])
 
 dnl ===========================================================================

@@ -17,10 +17,9 @@ else
     # remove trailing text after actual version
     VERSION_ID=$( uname -r | sed "s/\([0-9\.]*\).*/\1/")
 fi
-COLLECTION=$( cat COLLECTION )
-META_DATA_DIR=Metadata/${COLLECTION}/${ID}/${VERSION_ID}
+META_DATA_DIR=Metadata/${ID}/${VERSION_ID}
 mkdir -p ${META_DATA_DIR}
-DIR=Packages/${COLLECTION}/${ID}/${VERSION_ID}
+DIR=Packages/${ID}/${VERSION_ID}
 ARCH=$( uname -m )
 mkdir -p ${DIR}/os
 mkdir -p ${DIR}/debug

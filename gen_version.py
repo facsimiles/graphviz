@@ -98,11 +98,6 @@ parser.add_argument("--committer-date-graphviz",
                     help="Print graphviz special formatted committer date in UTC "
                     "instead of version"
 )
-parser.add_argument("--collection",
-                    action="store_true",
-                    help='Print collection ("stable" or "development") '
-                    "instead of version"
-)
 parser.add_argument("--major",
                     dest="component",
                     action="store_const",
@@ -165,11 +160,6 @@ if args.date_format:
     print(f'#define BUILDDATE "{committer_date}"')
   else:
     print(committer_date)
-elif args.collection:
-  if args.definition:
-    print(f'#define COLLECTION "{collection}"')
-  else:
-    print(collection)
 elif args.component == "major":
   if args.definition:
     print(f'#define VERSION_MAJOR "{major_version}"')

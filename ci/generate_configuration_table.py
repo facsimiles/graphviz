@@ -31,7 +31,7 @@ def main(): # pylint: disable=missing-function-docstring
   parser.add_argument("--output-format", default="JSON",
                       choices=supported_output_formats,
                       help="Set output format.")
-  parser.add_argument("filename", nargs='*', help="Configuration log to read")
+  parser.add_argument("filename", nargs="*", help="Configuration log to read")
 
   opts = parser.parse_args()
 

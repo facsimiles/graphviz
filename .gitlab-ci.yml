@@ -29,7 +29,6 @@ portable-source:
         expire_in: 1 week
         paths:
             - GRAPHVIZ_VERSION
-            - COLLECTION
             - graphviz-*.tar.gz
             - graphviz-*.tar.xz
     except:
@@ -47,10 +46,9 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*/*/*.rpm
-            - Metadata/*/*/*/configure.log
+            - Packages/*/*/*/*.rpm
+            - Metadata/*/*/configure.log
             - GRAPHVIZ_VERSION
-            - COLLECTION
         reports:
             metrics: metrics.txt
     except:
@@ -69,10 +67,9 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*/*/*deb
-            - Metadata/*/*/*/configure.log
+            - Packages/*/*/*/*deb
+            - Metadata/*/*/configure.log
             - GRAPHVIZ_VERSION
-            - COLLECTION
         reports:
             metrics: metrics.txt
     except:
@@ -100,10 +97,9 @@ portable-source:
         expire_in: 1 week
         paths:
             - GRAPHVIZ_VERSION
-            - COLLECTION
-            - Packages/*/*/*/*/*.zip
-            - Packages/*/*/*/*/*.tar.gz
-            - Metadata/*/*/*/configure.log
+            - Packages/*/*/*/*.zip
+            - Packages/*/*/*/*.tar.gz
+            - Metadata/*/*/configure.log
         reports:
             metrics: metrics.txt
     except:
@@ -152,8 +148,6 @@ portable-source:
         - cat metrics.txt
         # avoid BOM in GRAPHVIZ_VERSION file
         - python gen_version.py | Out-File GRAPHVIZ_VERSION -Encoding ascii
-        # avoid BOM in COLLECTION file
-        - python gen_version.py --collection | Out-File COLLECTION -Encoding ascii
         # Package
         - $Env:GV_VERSION=$( cat GRAPHVIZ_VERSION )
         - >-
@@ -196,8 +190,7 @@ portable-source:
         # Create artifacts to archive
         - $ID = "windows"
         - $VERSION_ID = "10"
-        - $COLLECTION = $( cat COLLECTION )
-        - $DIR = "Packages\${COLLECTION}\${ID}\${VERSION_ID}\$env:build_system\$env:configuration"
+        - $DIR = "Packages\${ID}\${VERSION_ID}\$env:build_system\$env:configuration"
         - mkdir -p $DIR
         - >-
             if($env:build_system -eq "cmake") {
@@ -209,8 +202,8 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-        - Packages/*/*/*/*/*/*.exe
-        - Packages/*/*/*/*/*/*.zip
+        - Packages/*/*/*/*/*.exe
+        - Packages/*/*/*/*/*.zip
         reports:
             metrics: metrics.txt
             junit: report.xml
@@ -393,7 +386,6 @@ ubuntu21-04-static-build:
     <<: *deb_build_definition
     before_script:
         - export CONFIGURE_OPTIONS="--disable-shared --enable-static"
-        - echo experimental > COLLECTION
     needs:
         - job: docker_build_ubuntu-21.04
           artifacts: false
@@ -403,11 +395,10 @@ ubuntu21-04-static-build:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*/*/*deb
-            - Packages/*/*/*/*/*.xz
-            - Metadata/*/*/*/configure.log
+            - Packages/*/*/*/*deb
+            - Packages/*/*/*/*.xz
+            - Metadata/*/*/configure.log
             - GRAPHVIZ_VERSION
-            - COLLECTION
         reports:
             metrics: metrics.txt
     tags:
@@ -419,7 +410,6 @@ ubuntu21-10-static-build:
     <<: *deb_build_definition
     before_script:
         - export CONFIGURE_OPTIONS="--disable-shared --enable-static"
-        - echo experimental > COLLECTION
     needs:
         - job: docker_build_ubuntu-21.10
           artifacts: false
@@ -429,11 +419,10 @@ ubuntu21-10-static-build:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*/*/*deb
-            - Packages/*/*/*/*/*.xz
-            - Metadata/*/*/*/configure.log
+            - Packages/*/*/*/*deb
+            - Packages/*/*/*/*.xz
+            - Metadata/*/*/configure.log
             - GRAPHVIZ_VERSION
-            - COLLECTION
         reports:
             metrics: metrics.txt
     tags:
@@ -468,7 +457,6 @@ macos-autotools-build:
     <<: *macos_build_definition
     before_script:
         - python3 gen_version.py > GRAPHVIZ_VERSION # FIXME: remove when building from portable source
-        - echo experimental > COLLECTION
         - export build_system="autotools"
     tags:
         - shared-macos-amd64
@@ -484,8 +472,6 @@ windows-cygwin-build:
         - git -c core.autocrlf=false reset --hard
         - choco config set cacheLocation choco-cache
         - choco install --yes --no-progress cygwin
-        # avoid BOM in COLLECTION file
-        - echo experimental | Out-File COLLECTION -Encoding ascii
         - $Env:build_system = "autotools"
         # change line endings from crlf to lf by git checkout
         - C:\tools\cygwin\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
@@ -494,8 +480,7 @@ windows-cygwin-build:
         expire_in: 1 week
         paths:
             - GRAPHVIZ_VERSION
-            - COLLECTION
-            - Packages/*/*/*/*/*.xz
+            - Packages/*/*/*/*.xz
     cache:
         key: windows-cygwin-build
         paths:
@@ -516,8 +501,6 @@ windows-cygwin-build-using-autogen:
         - choco install --yes --no-progress cygwin
         - choco install --yes --no-progress --params "/InstallDir:C:\Python3" python3
         - $env:Path = "C:\Python3;" + $env:Path
-        # avoid BOM in COLLECTION file
-        - echo experimental | Out-File COLLECTION -Encoding ascii
         # avoid BOM in GRAPHVIZ_VERSION file
         - python gen_version.py | Out-File GRAPHVIZ_VERSION -Encoding ascii
         - $Env:build_system = "autotools"
@@ -527,8 +510,7 @@ windows-cygwin-build-using-autogen:
         when: always
         expire_in: 1 week
         paths:
-            - COLLECTION
-            - Packages/*/*/*/*/*.xz
+            - Packages/*/*/*/*.xz
     cache:
         key: windows-cygwin-build-using-autogen
         paths:
@@ -548,7 +530,6 @@ ubuntu18-04-cmake-build:
         # fail on any compiler warnings
         - export CFLAGS=-Werror
         - export CXXFLAGS=-Werror
-        - echo experimental > COLLECTION
     tags:
         - linux
     variables:
@@ -565,7 +546,6 @@ ubuntu21-04-cmake-build:
         - export CFLAGS=-Werror
         - export CXXFLAGS=-Werror
         - export CMAKE_OPTIONS="-Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
-        - echo experimental > COLLECTION
     tags:
         - linux
     variables:
@@ -582,7 +562,6 @@ ubuntu21-10-cmake-build:
         - export CFLAGS=-Werror
         - export CXXFLAGS=-Werror
         - export CMAKE_OPTIONS="-Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
-        - echo experimental > COLLECTION
     tags:
         - linux
     variables:
@@ -607,7 +586,6 @@ ubuntu21-04-cmake-minimal-build:
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_sfdp=OFF"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_smyrna=OFF"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_zlib=OFF"
-        - echo experimental > COLLECTION
     tags:
         - linux
     variables:
@@ -632,7 +610,6 @@ ubuntu21-10-cmake-minimal-build:
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_sfdp=OFF"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_smyrna=OFF"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_zlib=OFF"
-        - echo experimental > COLLECTION
     tags:
         - linux
     variables:
@@ -649,7 +626,6 @@ ubuntu21-04-cmake-ASan-build-for-ctest:
         - export CFLAGS=-Werror
         - export CXXFLAGS=-Werror
         - export CMAKE_OPTIONS="-Duse_sanitizers=ON -Duse_coverage=ON -Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
-        - echo experimental > COLLECTION
     # override the deb_build_definition artifacts since we need more
     # files from the build directory when running ctest in the test
     # stage.
@@ -674,8 +650,8 @@ ubuntu21-04-cmake-ASan-build-for-ctest:
             # the dot program is needed to configure the plugins before running pre-install tests
             - build/cmd/dot/dot
             # the packages need to be installed for the post-install tests
-            - Packages/*/*/*/*/*deb
-            - Metadata/*/*/*/configure.log
+            - Packages/*/*/*/*deb
+            - Metadata/*/*/configure.log
         reports:
             metrics: metrics.txt
     tags:
@@ -694,7 +670,6 @@ ubuntu21-10-cmake-ASan-build-for-ctest:
         - export CFLAGS=-Werror
         - export CXXFLAGS=-Werror
         - export CMAKE_OPTIONS="-Duse_sanitizers=ON -Duse_coverage=ON -Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
-        - echo experimental > COLLECTION
     # override the deb_build_definition artifacts since we need more
     # files from the build directory when running ctest in the test
     # stage.
@@ -719,8 +694,8 @@ ubuntu21-10-cmake-ASan-build-for-ctest:
             # the dot program is needed to configure the plugins before running pre-install tests
             - build/cmd/dot/dot
             # the packages need to be installed for the post-install tests
-            - Packages/*/*/*/*/*deb
-            - Metadata/*/*/*/configure.log
+            - Packages/*/*/*/*deb
+            - Metadata/*/*/configure.log
         reports:
             metrics: metrics.txt
     tags:
@@ -738,7 +713,6 @@ centos7-cmake-build:
         # fail on any compiler warnings
         - export CFLAGS=-Werror
         - export CXXFLAGS=-Werror
-        - echo experimental > COLLECTION
     tags:
         - linux
     variables:
@@ -747,7 +721,6 @@ centos7-cmake-build:
 macos-cmake-build:
     <<: *macos_build_definition
     before_script:
-        - echo experimental > COLLECTION
         - export build_system="cmake"
         # fail on any compiler warnings
         - export CFLAGS=-Werror
@@ -832,17 +805,14 @@ windows-mingw32-cmake-build:
     script:
         - choco config set cacheLocation choco-cache
         - choco install --yes --no-progress msys2
-        # avoid BOM in COLLECTION file
-        - echo experimental | Out-File COLLECTION -Encoding ascii
         - $Env:build_system = "cmake"
         - C:\tools\msys64\usr\bin\env MSYSTEM=MINGW32 C:\tools\msys64\usr\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/mingw-build.sh'
     artifacts:
         when: always
         expire_in: 1 week
         paths:
-            - COLLECTION
-            - Packages/*/*/*/*/*.exe
-            - Packages/*/*/*/*/*.zip
+            - Packages/*/*/*/*.exe
+            - Packages/*/*/*/*.zip
     cache:
         key: windows-mingw32-cmake-build
         paths:
@@ -858,17 +828,14 @@ windows-mingw64-cmake-build:
     script:
         - choco config set cacheLocation choco-cache
         - choco install --yes --no-progress msys2
-        # avoid BOM in COLLECTION file
-        - echo experimental | Out-File COLLECTION -Encoding ascii
         - $Env:build_system = "cmake"
         - C:\tools\msys64\usr\bin\env MSYSTEM=MINGW64 C:\tools\msys64\usr\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/mingw-build.sh'
     artifacts:
         when: always
         expire_in: 1 week
         paths:
-            - COLLECTION
-            - Packages/*/*/*/*/*.exe
-            - Packages/*/*/*/*/*.zip
+            - Packages/*/*/*/*.exe
+            - Packages/*/*/*/*.zip
     cache:
         key: windows-mingw64-cmake-build
         paths:
@@ -888,17 +855,14 @@ windows-mingw64-cmake-build:
 #         - git -c core.autocrlf=false reset --hard
 #         - choco config set cacheLocation choco-cache
 #         - choco install --yes --no-progress cygwin
-#         # avoid BOM in COLLECTION file
-#         - echo experimental | Out-File COLLECTION -Encoding ascii
 #         - $Env:build_system = "cmake"
 #         - C:\tools\cygwin\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
 #     artifacts:
 #         when: always
 #         expire_in: 1 week
 #         paths:
-#             - COLLECTION
-#             - Packages/*/*/*/*/*.zip
-#             - Packages/*/*/*/*/*.bz2
+#             - Packages/*/*/*/*.zip
+#             - Packages/*/*/*/*.bz2
 #     cache:
 #         key: windows-cygwin-cmake-build
 #         paths:
@@ -911,7 +875,7 @@ windows-mingw64-cmake-build:
 meta-data:
     stage: test
     script:
-        - CONFIGURE_LOGS=Metadata/*/*/*/configure.log
+        - CONFIGURE_LOGS=Metadata/*/*/configure.log
         - ci/generate_configuration_table.py --output-format HTML ${CONFIGURE_LOGS} > configuration-long-no-color.html
         - ci/generate_configuration_table.py --output-format HTML --short ${CONFIGURE_LOGS} > configuration-short-no-color.html
         - ci/generate_configuration_table.py --output-format HTML --short --color ${CONFIGURE_LOGS} > configuration-short-color-green-red.html
@@ -1046,7 +1010,6 @@ ubuntu18-04-cmake-test:
     before_script:
         - export build_system="cmake"
         - python3 gen_version.py > GRAPHVIZ_VERSION
-        - echo experimental > COLLECTION
     needs:
         - job: "ubuntu18-04-cmake-build"
           artifacts: true
@@ -1060,7 +1023,6 @@ ubuntu21-04-cmake-test:
     before_script:
         - export build_system="cmake"
         - python3 gen_version.py > GRAPHVIZ_VERSION
-        - echo experimental > COLLECTION
     needs:
         - job: "ubuntu21-04-cmake-build"
           artifacts: true
@@ -1074,7 +1036,6 @@ ubuntu21-10-cmake-test:
     before_script:
         - export build_system="cmake"
         - python3 gen_version.py > GRAPHVIZ_VERSION
-        - echo experimental > COLLECTION
     needs:
         - job: "ubuntu21-10-cmake-build"
           artifacts: true
@@ -1091,7 +1052,6 @@ ubuntu21.04-cmake-ASan-test-including-ctest:
         - export CXXFLAGS=" -g -fsanitize=address,undefined"
         - export LDFLAGS=" -g -fsanitize=address,undefined"
         - python3 gen_version.py > GRAPHVIZ_VERSION
-        - echo experimental > COLLECTION
     needs:
         - job: "ubuntu21-04-cmake-ASan-build-for-ctest"
           artifacts: true
@@ -1108,7 +1068,6 @@ ubuntu21.10-cmake-ASan-test-including-ctest:
         - export CXXFLAGS=" -g -fsanitize=address,undefined"
         - export LDFLAGS=" -g -fsanitize=address,undefined"
         - python3 gen_version.py > GRAPHVIZ_VERSION
-        - echo experimental > COLLECTION
     needs:
         - job: "ubuntu21-10-cmake-ASan-build-for-ctest"
           artifacts: true
@@ -1122,7 +1081,6 @@ centos7-cmake-test:
     before_script:
         - export build_system="cmake"
         - python3 gen_version.py > GRAPHVIZ_VERSION
-        - echo experimental > COLLECTION
         # Graphviz libs are installed in /usr/lib, but Centos 7 doesn't look there by default
         - export LD_LIBRARY_PATH=/usr/lib
     needs:

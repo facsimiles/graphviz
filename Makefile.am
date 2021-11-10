@@ -26,7 +26,6 @@ doxygen:
 
 dist-hook:
 	echo "@VERSION@" >GRAPHVIZ_VERSION
-	echo "@GRAPHVIZ_COLLECTION@" >COLLECTION
 
 BUILT_SOURCES = $(top_builddir)/graphviz_version.h
 
