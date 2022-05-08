@@ -27,6 +27,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <util/alloc.h>
 
 /// a compressed array of boolean values
@@ -92,6 +93,21 @@ static inline void bitarray_set(bitarray_t *self, size_t index, bool value) {
   } else {
     base[index / 8] &= (uint8_t)~(UINT8_C(1) << (index % 8));
   }
+}
+
+/// clear all bits in a bit array
+static inline void bitarray_clear(bitarray_t *self) {
+  assert(self != NULL);
+
+  // determine if this array is stored inline or not
+  uint8_t *const base =
+      self->size_bits <= sizeof(self->block) * 8 ? self->block : self->base;
+
+  // calculate byte extent covering the array
+  const size_t size = self->size_bits / 8 + (self->size_bits % 8 == 0 ? 0 : 1);
+
+  // zero all bits
+  memset(base, 0, size);
 }
 
 /// free underlying resources and leave a bit array empty
