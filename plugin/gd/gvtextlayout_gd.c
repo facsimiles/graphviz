@@ -136,7 +136,6 @@ static bool gd_textlayout(textspan_t * span, char **fontpath)
 	    /* fake a finite fontsize so that line length is calculated */
 	    fontsize = FONTSIZE_TOO_SMALL;
 	}
-	/* call gdImageStringFT with null *im to get brect and to set font cache */
 	bool fontlist_needs_free = false;
 #ifdef HAVE_GD_FONTCONFIG
 	gdFTUseFontConfig(1);  /* tell gd that we really want to use fontconfig, 'cos it s not the default */
@@ -150,6 +149,7 @@ static bool gd_textlayout(textspan_t * span, char **fontpath)
 	fontlist_needs_free = true;
 #endif
 
+	// call gdImageStringFT with null *im to get brect and to set font cache
 	err = gdImageStringFTEx(NULL, brect, -1, fontlist,
 				fontsize, 0, 0, 0, span->str, &strex);
 	if (fontlist_needs_free) {
