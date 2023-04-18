@@ -265,6 +265,12 @@ if(ENABLE_SWIG)
     )
     set_property(TARGET gv_tcl PROPERTY SWIG_COMPILE_OPTIONS -namespace)
     target_include_directories(gv_tcl PRIVATE SYSTEM ${TCL_INCLUDE_PATH})
+    if(HAVE_CXX_WSHADOW)
+      set_property(
+        TARGET gv_tcl
+        PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-shadow
+      )
+    endif()
     swig_link_libraries(gv_tcl PRIVATE gvc tclstubs ${TCL_LIBRARY})
 
     install(
