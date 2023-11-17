@@ -328,6 +328,10 @@ static void overlap_scaling(int dim, int m, double *x, double *width,
   scale_coord(dim, m, x, scale_best);
 }
 
+void OverlapSmoother_delete(OverlapSmoother sm) {
+  StressMajorizationSmoother_delete(sm);
+}
+
 static OverlapSmoother
 OverlapSmoother_new(SparseMatrix A, int m, int dim, double *x, double *width,
                     bool neighborhood_only, double *max_overlap,
@@ -422,12 +426,6 @@ OverlapSmoother_new(SparseMatrix A, int m, int dim, double *x, double *width,
   }
  RETURN:
   return sm;
-}
-
-void OverlapSmoother_delete(OverlapSmoother sm){
-
-  StressMajorizationSmoother_delete(sm);
-
 }
 
 double OverlapSmoother_smooth(OverlapSmoother sm, int dim, double *x){
