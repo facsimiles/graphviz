@@ -428,7 +428,7 @@ OverlapSmoother_new(SparseMatrix A, int m, int dim, double *x, double *width,
   return sm;
 }
 
-double OverlapSmoother_smooth(OverlapSmoother sm, int dim, double *x){
+static double OverlapSmoother_smooth(OverlapSmoother sm, int dim, double *x) {
   int maxit_sm = 1;/* only using 1 iteration of stress majorization 
 		      is found to give better results and save time! */
   return StressMajorizationSmoother_smooth(sm, dim, x, maxit_sm);
