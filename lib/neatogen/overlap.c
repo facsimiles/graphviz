@@ -328,6 +328,10 @@ static void overlap_scaling(int dim, int m, double *x, double *width,
   scale_coord(dim, m, x, scale_best);
 }
 
+typedef StressMajorizationSmoother OverlapSmoother;
+
+#define OverlapSmoother_struct StressMajorizationSmoother_struct
+
 static void OverlapSmoother_delete(OverlapSmoother sm) {
   StressMajorizationSmoother_delete(sm);
 }
