@@ -18,8 +18,6 @@ typedef  StressMajorizationSmoother OverlapSmoother;
 
 #define OverlapSmoother_struct StressMajorizationSmoother_struct
 
-PRIVATE void OverlapSmoother_delete(OverlapSmoother sm);
-
 enum {ELSCHEME_NONE = 0, ELSCHEME_PENALTY, ELSCHEME_PENALTY2, ELSCHEME_STRAIGHTLINE_PENALTY, ELSCHEME_STRAIGHTLINE_PENALTY2};
 
 struct relative_position_constraints_struct{
