@@ -328,7 +328,7 @@ static void overlap_scaling(int dim, int m, double *x, double *width,
   scale_coord(dim, m, x, scale_best);
 }
 
-void OverlapSmoother_delete(OverlapSmoother sm) {
+static void OverlapSmoother_delete(OverlapSmoother sm) {
   StressMajorizationSmoother_delete(sm);
 }
 
