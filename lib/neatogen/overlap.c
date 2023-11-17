@@ -327,12 +327,13 @@ static void overlap_scaling(int dim, int m, double *x, double *width,
   /* final scaling */
   scale_coord(dim, m, x, scale_best);
 }
- 
-OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, 
-				    int dim, double *x, double *width, bool neighborhood_only,
-				    double *max_overlap, double *min_overlap,
-				    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int shrink
-				    ){
+
+static OverlapSmoother
+OverlapSmoother_new(SparseMatrix A, int m, int dim, double *x, double *width,
+                    bool neighborhood_only, double *max_overlap,
+                    double *min_overlap, int edge_labeling_scheme,
+                    int n_constr_nodes, int *constr_nodes,
+                    SparseMatrix A_constr, int shrink) {
   int i, j, k, *iw, *jw, jdiag;
   SparseMatrix B;
   double *d, *w, diag_d, diag_w, dist;
