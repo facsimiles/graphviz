@@ -636,32 +636,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The PDF output format, `-Tpdf`, respects the environment variable
   `$SOURCE_DATE_EPOCH` for overriding `CreationDate` when built against Cairo
   ≥ 1.16.0. #2473
-- The legacy C# viewer app is no longer distributed in the portable source
-  tarball.
-- Graphviz headers no longer define the `FALSE` and `TRUE` constants.
-- The Autotools build system no longer supports Darwin 9 (Mac OSX Leopard).
-- **Breaking**: `Agraph_t.link` has been split into `Agraph_t.id_link` and
-  `Agraph_t.seq_link`. `Agraph_t.g_dict` has been split into `Agraph_t.g_id`
-  and `Agraph_t.g_seq`.
-- **Breaking**: `gvpropts.n_outgraphs` is now a `size_t`.
-- The OCaml bindings have been removed. If you use these bindings, please contact
-  the maintainers to notify them of the existence of users.
-- **Breaking**: `polygon_t.sides` and `polygon_t.peripheries` are now `size_t`s.
-- **Breaking**: liblab_gamut is no longer included in a Graphviz installation.
-  This library had no accompanying header, so using it was not easy. If you are
-  using this library, please contact the maintainers to notify them of the
-  existence of users. #2489
-- **Breaking**: `bezier.size` and `splines.size` are now `size_t`s.
-- **Breaking**: the gv.i and gv.cpp SWIG inputs are no longer included in a
-  Graphviz installation. #2491
-- **Breaking**: the `gvrender_engine_t.beziercurve`,
-  `gvrender_engine_t.library_shape`, `gvrender_engine_t.polygon`,  and
-  `gvrender_engine_t.polyline` callbacks now take the number of points, `n`, as
-  a `size_t`.
-- **Breaking**: the `AVG` macro has been removed.
-- **Breaking**: the `inside_t.s` union member gained members `lastn`, `radius`,
-  `last_poly`, `last`, `outp`, `scalex`, `scaley`, `box_URx`, and `box_URy`.
-  Zero initialize these when you construct instances of this type. #2498
+- Updated license to EPLv2.
 
 ### Fixed
 
