@@ -17,11 +17,11 @@ autoreconf -v --install --force || exit 1
 # otherwise "make dist" fails.
 touch config/depcomp
 
-# ensure COPYING is based on epl-v10.txt
-#   epl-v10.txt was obtained from: https://www.eclipse.org/legal/epl-v10.html
+# ensure COPYING is based on epl-v20.txt
+#   epl-v20.txt was obtained from: http://www.eclipse.org/legal/epl-v20.html
 #   by using lynx to print to .txt.
 rm -f COPYING
-cp epl-v10.txt COPYING
+cp epl-v20.txt COPYING
 
 # don't use any old cache, but create a new one
 rm -f config.cache

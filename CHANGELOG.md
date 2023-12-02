@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated license to EPLv2.
 - **Breaking**: `rank_t.cache_nc` is now a `int64_t`.
 - **Breaking**: The `agreadline` function has been removed. #2558
 - **Breaking**: `gvRenderData` takes its `length` parameter as a `size_t *`. The
@@ -636,7 +637,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The PDF output format, `-Tpdf`, respects the environment variable
   `$SOURCE_DATE_EPOCH` for overriding `CreationDate` when built against Cairo
   ≥ 1.16.0. #2473
-- Updated license to EPLv2.
 
 ### Fixed
 
