@@ -68,10 +68,7 @@ cellOf (snode* p, snode* q)
 static pointf
 midPt (cell* cp)
 {
-    pointf p;
-    p.x = MID(cp->bb.LL.x,cp->bb.UR.x);
-    p.y = MID(cp->bb.LL.y,cp->bb.UR.y);
-    return p;
+  return mid_pointf(cp->bb.LL, cp->bb.UR);
 }
 
 /* sidePt:
