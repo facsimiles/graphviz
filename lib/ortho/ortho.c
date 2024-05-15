@@ -1074,7 +1074,7 @@ static double
 vtrack (segment* seg, maze* m)
 {
   channel* chp = chanSearch(m->vchans, seg);
-  const double f = (double)seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
+  const double f = seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
   double left = chp->cp->bb.LL.x;
   double right = chp->cp->bb.UR.x;
   return left + f*(right-left);
