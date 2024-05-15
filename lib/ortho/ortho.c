@@ -36,6 +36,7 @@
 #include <common/pointset.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/gv_math.h>
 #include <util/list.h>
 #include <util/unused.h>
 
@@ -286,9 +287,7 @@ static int chancmpid(void *k1, void *k2) {
 static int dcmpid(void *k1, void *k2) {
   const double *key1 = k1;
   const double *key2 = k2;
-  if (*key1 > *key2) return 1;
-  if (*key1 < *key2) return -1;
-  return 0;
+  return fcmp(*key1, *key2);
 }   
 
 static Dtdisc_t chanDisc = {
