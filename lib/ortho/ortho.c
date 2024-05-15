@@ -1075,9 +1075,8 @@ vtrack (segment* seg, maze* m)
 {
   channel* chp = chanSearch(m->vchans, seg);
   const double f = seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
-  double left = chp->cp->bb.LL.x;
-  double right = chp->cp->bb.UR.x;
-  return left + f*(right-left);
+  const pointf interp = interpolate_pointf(f, chp->cp->bb.LL, chp->cp->bb.UR);
+  return interp.x;
 }
 
 static double htrack(segment *seg, maze *m) {
