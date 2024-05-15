@@ -65,9 +65,7 @@ cellOf (snode* p, snode* q)
     return p->cells[1];
 }
 
-static pointf
-midPt (cell* cp)
-{
+static pointf midPt(const cell *cp) {
   return mid_pointf(cp->bb.LL, cp->bb.UR);
 }
 
