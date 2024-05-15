@@ -52,7 +52,10 @@ int odb_flags;
 #endif
 
 #define CELL(n) ((cell*)ND_alg(n))
-#define MID(a,b) (((a)+(b))/2.0)
+
+static double MID(double a, double b) {
+  return (a + b) / 2.0;
+}
 
 /* cellOf:
  * Given 2 snodes sharing a cell, return the cell.
