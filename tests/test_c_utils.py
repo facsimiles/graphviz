@@ -25,7 +25,7 @@ def test_utility(utility: str):
     # extra C flags this compilation needs
     cflags = ["-I", lib]
     if platform.system() != "Windows":
-        cflags += ["-std=gnu11"]
+        cflags += ["-std=gnu17"]
 
     _, _ = run_c(src, cflags=cflags)
 
@@ -46,7 +46,7 @@ def test_overflow_h(builtins: bool):
     if not builtins:
         cflags += ["-DSUPPRESS_BUILTINS"]
     if platform.system() != "Windows":
-        cflags += ["-std=gnu11"]
+        cflags += ["-std=gnu17"]
 
     run_c(src, cflags=cflags)
 
@@ -64,7 +64,7 @@ def test_gv_find_me(tmp_path: Path):
     # extra C flags this compilation needs
     cflags = ["-I", lib]
     if platform.system() != "Windows":
-        cflags += ["-std=gnu11"]
+        cflags += ["-std=gnu17"]
 
     # pick a path to compile to
     exe = tmp_path / "test_gv_find_me.exe"

@@ -259,22 +259,22 @@ dnl checks for compilers
 
 AC_PROG_CC
 m4_version_prereq([2.70],[],[
-  AX_CHECK_COMPILE_FLAG([-std=gnu11],[
-    CFLAGS+=" -std=gnu11"
+  AX_CHECK_COMPILE_FLAG([-std=gnu17],[
+    CFLAGS+=" -std=gnu17"
   ],[
-    AX_CHECK_COMPILE_FLAG([-std=c11],[
-      CFLAGS+=" -std=c11"
+    AX_CHECK_COMPILE_FLAG([-std=c17],[
+      CFLAGS+=" -std=c17"
     ],[
-      AX_CHECK_COMPILE_FLAG([-std:c11],[
-        CFLAGS+=" -std:c11"
+      AX_CHECK_COMPILE_FLAG([-std:c17],[
+        CFLAGS+=" -std:c17"
       ],[
-        ac_cv_prog_cc_c11="no"
+        ac_cv_prog_cc_c17="no"
       ])
     ])
   ])
 ])
-if test "$ac_cv_prog_cc_c11" = "no"; then
-  AC_MSG_ERROR([C compiler does not support C11])
+if test "$ac_cv_prog_cc_c17" = "no"; then
+  AC_MSG_ERROR([C compiler does not support C17])
 fi
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17(noext,mandatory)

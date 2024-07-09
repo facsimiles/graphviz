@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - When using the CMake build system, the minimum required version of CMake has
   been upgraded 3.14.1 → 3.21.
+- Building Graphviz from source now requires a C compiler with ISO C17 support.
 
 ### Fixed
 
