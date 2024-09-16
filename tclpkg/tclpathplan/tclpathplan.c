@@ -866,6 +866,7 @@ vgpane(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[])
     vgpanes_append(&vgpaneTable, vg);
     vgpane_t *const vgp = vgpanes_back(&vgpaneTable);
     vgp->index = vgpanes_size(&vgpaneTable) - 1;
+    vgp->valid = true;
 
     agxbuf buffer = {0};
     agxbprint(&buffer, HANDLE_FORMAT, vgp->index);
