@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - When using the Tclpathplan module, created vgpanes can once again be named and
   addressed. This was a regression in Graphviz 12.1.2.
+- Omitting a polygon identifier when running triangulation using the Tclpathplan
+  module (e.g. `vgpane0 triangulate` instead of `vgpane0 triangulate 42`) no
+  longer goes unnoticed and reads invalid memory. This bug seems to have existed
+  since the first revision of Graphviz.
 
 ## [12.1.2] – 2024-09-28
 

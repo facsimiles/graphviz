@@ -4472,6 +4472,11 @@ def test_import_tcl_package(package: str):
     "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
 )
 @pytest.mark.xfail(
+    is_cmake() and is_macos(),
+    reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
+    strict=True,
+)
+@pytest.mark.xfail(
     not is_cmake() and is_macos(),
     reason="Autotools on macOS does not detect TCL",
     strict=True,
@@ -4481,7 +4486,6 @@ def test_import_tcl_package(package: str):
     reason="TCL packages are not built on Ubuntu 20.04 with CMake < 3.18",
     strict=True,
 )
-@pytest.mark.xfail(strict=True)
 def test_vgpane_bad_triangulation():
     """
     running Tclpathplan `triangulate` with incorrect arguments should be rejected

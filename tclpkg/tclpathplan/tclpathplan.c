@@ -755,9 +755,9 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	return TCL_ERROR;
 
     } else if (strcmp(argv[1], "triangulate") == 0) {
-	if (argc < 2) {
+	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-			     " id ", NULL);
+			     " ", argv[1], " id\"", NULL);
 	    return TCL_ERROR;
 	}
 
