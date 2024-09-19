@@ -102,7 +102,7 @@ static void attrstmt(aagscan_t scanner, int tkind, char *macroname);
 static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict);
 static void getedgeitems(aagscan_t scanner);
 static void newedge(Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key);
-static void edgerhs(Agnode_t *n, char *tport, item *hlist, char *key);
+static void edgerhs(aagscan_t scanner, Agnode_t *n, char *tport, item *hlist, char *key);
 static void appendattr(char *name, char *value);
 static void bindattrs(int kind);
 static void applyattrs(void *obj);
@@ -440,7 +440,6 @@ static void getedgeitems(aagscan_t scanner)
 
 static void endedge(aagscan_t scanner)
 {
-	(void)scanner;
 	char			*key;
 	item			*aptr,*tptr,*p;
 
@@ -461,11 +460,11 @@ static void endedge(aagscan_t scanner)
 		if (p->tag == T_subgraph) {
 			subg = p->u.subg;
 			for (t = agfstnode(subg); t; t = agnxtnode(subg,t))
-				edgerhs(agsubnode(S->g, t, 0), NULL, p->next, key);
+				edgerhs(scanner,agsubnode(S->g, t, 0), NULL, p->next, key);
 		}
 		else {
 			for (tptr = p->u.list; tptr; tptr = tptr->next)
-				edgerhs(tptr->u.n,tptr->str,p->next,key);
+				edgerhs(scanner,tptr->u.n,tptr->str,p->next,key);
 		}
 	}
 	deletelist(&S->nodelist);
@@ -509,8 +508,9 @@ concatPort (char* s1, char* s2)
 }
 
 
-static void edgerhs(Agnode_t *tail, char *tport, item *hlist, char *key)
+static void edgerhs(aagscan_t scanner, Agnode_t *tail, char *tport, item *hlist, char *key)
 {
+	(void)scanner;
 	Agnode_t		*head;
 	Agraph_t		*subg;
 	item			*hptr;
