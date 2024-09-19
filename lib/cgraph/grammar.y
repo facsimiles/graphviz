@@ -104,7 +104,7 @@ static void getedgeitems(aagscan_t scanner);
 static void newedge(aagscan_t scanner, Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key);
 static void edgerhs(aagscan_t scanner, Agnode_t *n, char *tport, item *hlist, char *key);
 static void appendattr(aagscan_t scanner, char *name, char *value);
-static void bindattrs(int kind);
+static void bindattrs(aagextra_t *ctx, int kind);
 static void applyattrs(void *obj);
 static void endgraph(aagscan_t scanner);
 static void endnode(aagscan_t scanner);
@@ -304,8 +304,9 @@ static void appendattr(aagscan_t scanner, char *name, char *value)
 	listapp(&S->attrlist, v);
 }
 
-static void bindattrs(int kind)
+static void bindattrs(aagextra_t *ctx, int kind)
 {
+	(void)ctx;
 	item		*aptr;
 	char		*name;
 
@@ -354,9 +355,9 @@ static void nomacros(void)
  */
 static void attrstmt(aagscan_t scanner, int tkind, char *macroname)
 {
-	(void)scanner;
 	item			*aptr;
 	int				kind = 0;
+	aagextra_t 		*ctx = aagget_extra(scanner);
 	Agsym_t*  sym;
 
 		/* creating a macro def */
@@ -371,7 +372,7 @@ static void attrstmt(aagscan_t scanner, int tkind, char *macroname)
 		case T_edge: kind = AGEDGE; break;
 		default: UNREACHABLE();
 	}
-	bindattrs(kind);	/* set up defaults for new attributes */
+	bindattrs(ctx, kind);	/* set up defaults for new attributes */
 	for (aptr = S->attrlist.first; aptr; aptr = aptr->next) {
 		/* If the tag is still T_atom, aptr->u.asym has not been set */
 		if (aptr->tag == T_atom) continue;
@@ -411,10 +412,10 @@ to construct edges.  these are the sort of notes you write to yourself
 in the future. */
 static void endnode(aagscan_t scanner)
 {
-	(void)scanner;
 	item	*ptr;
+	aagextra_t 	*ctx = aagget_extra(scanner);
 
-	bindattrs(AGNODE);
+	bindattrs(ctx, AGNODE);
 	for (ptr = S->nodelist.first; ptr; ptr = ptr->next)
 		applyattrs(ptr->u.n);
 	deletelist(&S->nodelist);
@@ -446,8 +447,9 @@ static void endedge(aagscan_t scanner)
 
 	Agnode_t		*t;
 	Agraph_t		*subg;
+	aagextra_t 		*ctx = aagget_extra(scanner);
 
-	bindattrs(AGEDGE);
+	bindattrs(ctx, AGEDGE);
 
 	/* look for "key" pseudo-attribute */
 	key = NULL;
