@@ -114,7 +114,6 @@ aagextra_t *aagget_extra(aagscan_t yyscanner);
 void aagset_in(FILE *, aagscan_t);
 
 int aagparse(aagscan_t scanner);
-void aglexinit(Agdisc_t * disc, void *ifile);
 void aglexeof(aagscan_t yyscanner);
 void aglexbad(aagscan_t yyscanner);
 

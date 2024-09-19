@@ -48,8 +48,6 @@
 // #define YY_BUF_SIZE 128000
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
 	/* this is a workaround for linux flex */
-static Agdisc_t	*Disc;
-static void 	*Ifile;
 
 #define YYSTYPE AAGSTYPE
 
@@ -61,9 +59,11 @@ static void 	*Ifile;
 #define isatty(x) gv_isatty_suppression
 int gv_isatty_suppression;
 
+static int read_input(aagscan_t yyscanner, char *buf, int max_size);
+
 #ifndef YY_INPUT
 #define YY_INPUT(buf,result,max_size) \
-	if ((result = Disc->io->afread(Ifile, buf, max_size)) < 0) \
+	if ((result = read_input(yyscanner, buf, max_size)) < 0) \
 		YY_FATAL_ERROR( "input in flex scanner failed" )
 #endif
 
@@ -208,13 +208,6 @@ int aagwrap(YY_CALL_ONLY_ARG)
 	return 1;
 }
 
-/* There is a hole here, because switching channels
- * requires pushing back whatever was previously read.
- * There probably is a right way of doing this.
- */
-void aglexinit(Agdisc_t *disc, void *ifile) { Disc = disc; Ifile = ifile;}
-
-
 static void beginstr(aagscan_t yyscanner) {
   aagextra_t *ctx = aagget_extra(yyscanner);
   // avoid unused variable warning in case assert() is compiled away.
@@ -309,4 +302,11 @@ static int chkNum(aagscan_t yyscanner) {
 	return 1;
     }
     else return 0;
+}
+
+
+static int read_input(aagscan_t scanner, char *buf, int max_size)
+{
+	aagextra_t *ctx = aagget_extra(scanner);
+	return ctx->Disc->io->afread(ctx->Ifile, buf, max_size);
 }

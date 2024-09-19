@@ -34,6 +34,8 @@ struct gstack_s;
 
 struct aagextra_s {
 	/* Common */
+	Agdisc_t *Disc;		/* discipline passed to agread or agconcat */
+	void *Ifile;
 	/* Parser */
 	/* Lexer */
 	int line_num; // = 1;
@@ -97,7 +99,7 @@ typedef struct gstack_s {
 /* functions */
 static void appendnode(char *name, char *port, char *sport);
 static void attrstmt(int tkind, char *macroname);
-static void startgraph(char *name, bool directed, bool strict);
+static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict);
 static void getedgeitems(void);
 static void newedge(Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key);
 static void edgerhs(Agnode_t *n, char *tport, item *hlist, char *key);
@@ -116,7 +118,6 @@ static void closesubg(void);
 
 /* global */
 static Agraph_t *G;				/* top level graph */
-static	Agdisc_t	*Disc;		/* discipline passed to agread or agconcat */
 static gstack_t *S;
 
 %}
@@ -145,7 +146,7 @@ graph		:  hdr body {freestack(); endgraph(scanner);}
 
 body		: '{' optstmtlist '}' ;
 
-hdr			:	optstrict graphtype optgraphname {startgraph($3,$2 != 0,$1 != 0);}
+hdr			:	optstrict graphtype optgraphname {startgraph(scanner,$3,$2 != 0,$1 != 0);}
 			;
 
 optgraphname:	atom {$$=$1;} | /* empty */ {$$=0;} ;
@@ -552,12 +553,13 @@ static void newedge(Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *ke
 /* graphs and subgraphs */
 
 
-static void startgraph(char *name, bool directed, bool strict)
+static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict)
 {
+	aagextra_t *ctx = aagget_extra(scanner);
 	if (G == NULL) {
 		SubgraphDepth = 0;
 		Agdesc_t req = {.directed = directed, .strict = strict, .maingraph = true};
-		Ag_G_global = G = agopen(name,req,Disc);
+		Ag_G_global = G = agopen(name,req,ctx->Disc);
 	}
 	else {
 		Ag_G_global = G;
@@ -609,6 +611,8 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 {
 	aagscan_t scanner = NULL;
 	aagextra_t extra = {
+		.Disc = disc ? disc : &AgDefaultDisc,
+		.Ifile = chan,
 		.line_num = 1,
 	};
 	if (InputFile) {
@@ -621,8 +625,6 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 	aagset_in(chan, scanner);
 	G = g;
 	Ag_G_global = NULL;
-	Disc = (disc? disc :  &AgDefaultDisc);
-	aglexinit(Disc, chan);
 	aagparse(scanner);
 	if (Ag_G_global == NULL) aglexbad(scanner);
 	aaglex_destroy(scanner);
