@@ -97,7 +97,7 @@ typedef struct gstack_s {
 } gstack_t;
 
 /* functions */
-static void appendnode(char *name, char *port, char *sport);
+static void appendnode(aagscan_t scanner, char *name, char *port, char *sport);
 static void attrstmt(int tkind, char *macroname);
 static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict);
 static void getedgeitems(void);
@@ -178,9 +178,9 @@ rcompound	:	T_edgeop {getedgeitems();} simple {getedgeitems();} rcompound {$$ = 
 
 nodelist	: node | nodelist ',' node ;
 
-node		: atom {appendnode($1,NULL,NULL);}
-            | atom ':' atom {appendnode($1,$3,NULL);}
-            | atom ':' atom ':' atom {appendnode($1,$3,$5);}
+node		: atom {appendnode(scanner,$1,NULL,NULL);}
+            | atom ':' atom {appendnode(scanner,$1,$3,NULL);}
+            | atom ':' atom ':' atom {appendnode(scanner,$1,$3,$5);}
             ;
 
 attrstmt	:  attrtype optmacroname attrlist {attrstmt($1,$2);}
@@ -389,8 +389,9 @@ static void attrstmt(int tkind, char *macroname)
 
 /* nodes */
 
-static void appendnode(char *name, char *port, char *sport)
+static void appendnode(aagscan_t scanner, char *name, char *port, char *sport)
 {
+	(void)scanner;
 	item		*elt;
 
 	if (sport) {
