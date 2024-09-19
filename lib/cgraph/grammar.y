@@ -661,11 +661,11 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 	aagset_in(chan, scanner);
 	Ag_G_global = NULL;
 	aagparse(scanner);
-	if (Ag_G_global == NULL) aglexbad(scanner);
+	if (extra.G == NULL) aglexbad(scanner);
 	aaglex_destroy(scanner);
 	agxbfree(&extra.InputFileBuffer);
 	agxbfree(&extra.Sbuf);
-	return Ag_G_global;
+	return extra.G;
 }
 
 Agraph_t *agread(void *fp, Agdisc_t *disc) {return agconcat(NULL,fp,disc); }

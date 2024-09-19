@@ -131,8 +131,8 @@ ID		({NAME}|{NUMBER})
 "subgraph"				return(T_subgraph);
 "->"				if (yyextra->graphType == T_digraph) return(T_edgeop); else return('-');
 "--"				if (yyextra->graphType == T_graph) return(T_edgeop); else return('-');
-{NAME}					{ yylval->str = agstrdup(Ag_G_global,aagget_text(yyscanner)); return(T_atom); }
-{NUMBER}				{ if (chkNum(yyscanner)) yyless(aagget_leng(yyscanner)-1); yylval->str = agstrdup(Ag_G_global,aagget_text(yyscanner)); return(T_atom); }
+{NAME}					{ yylval->str = agstrdup(yyextra->G,aagget_text(yyscanner)); return(T_atom); }
+{NUMBER}				{ if (chkNum(yyscanner)) yyless(aagget_leng(yyscanner)-1); yylval->str = agstrdup(yyextra->G,aagget_text(yyscanner)); return(T_atom); }
 ["]						BEGIN(qstring); beginstr(yyscanner);
 <qstring>["]			BEGIN(INITIAL); endstr(yyscanner); return (T_qatom);
 <qstring>[\\]["]		addstr (yyscanner,"\"");
@@ -225,12 +225,12 @@ static void addstr(aagscan_t yyscanner, char *src) {
 
 static void endstr(aagscan_t yyscanner) {
   aagextra_t *ctx = aagget_extra(yyscanner);
-  aagget_lval(yyscanner)->str = agstrdup(Ag_G_global, agxbuse(&ctx->Sbuf));
+  aagget_lval(yyscanner)->str = agstrdup(ctx->G, agxbuse(&ctx->Sbuf));
 }
 
 static void endstr_html(aagscan_t yyscanner) {
   aagextra_t *ctx = aagget_extra(yyscanner);
-  aagget_lval(yyscanner)->str = agstrdup_html(Ag_G_global, agxbuse(&ctx->Sbuf));
+  aagget_lval(yyscanner)->str = agstrdup_html(ctx->G, agxbuse(&ctx->Sbuf));
 }
 
 static void storeFileName(aagscan_t yyscanner, const char* fname, size_t len) {
