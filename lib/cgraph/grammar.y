@@ -37,6 +37,7 @@ struct aagextra_s {
 	/* Parser */
 	/* Lexer */
 	int line_num; // = 1;
+	int html_nest;  /* nesting level for html strings */
 };
 
 }

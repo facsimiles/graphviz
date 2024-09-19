@@ -48,7 +48,6 @@
 // #define YY_BUF_SIZE 128000
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
 	/* this is a workaround for linux flex */
-static int html_nest = 0;  /* nesting level for html strings */
 static const char* InputFile;
 static Agdisc_t	*Disc;
 static void 	*Ifile;
@@ -144,9 +143,9 @@ ID		({NAME}|{NUMBER})
 <qstring>[\\][\n]		yyextra->line_num++; /* ignore escaped newlines */
 <qstring>[\n]			addstr (yyscanner,"\n"); yyextra->line_num++;
 <qstring>([^"\\\n]*|[\\])		addstr(yyscanner,aagget_text(yyscanner));
-[<]						BEGIN(hstring); html_nest = 1; beginstr(yyscanner);
-<hstring>[>]			html_nest--; if (html_nest) addstr(yyscanner,aagget_text(yyscanner)); else {BEGIN(INITIAL); endstr_html(yyscanner); return (T_qatom);}
-<hstring>[<]			html_nest++; addstr(yyscanner,aagget_text(yyscanner));
+[<]						BEGIN(hstring); yyextra->html_nest = 1; beginstr(yyscanner);
+<hstring>[>]			yyextra->html_nest--; if (yyextra->html_nest) addstr(yyscanner,aagget_text(yyscanner)); else {BEGIN(INITIAL); endstr_html(yyscanner); return (T_qatom);}
+<hstring>[<]			yyextra->html_nest++; addstr(yyscanner,aagget_text(yyscanner));
 <hstring>[\n]			addstr(yyscanner,aagget_text(yyscanner)); yyextra->line_num++; /* add newlines */
 <hstring>([^><\n]*)		addstr(yyscanner,aagget_text(yyscanner));
 .						return aagget_text(yyscanner)[0];
