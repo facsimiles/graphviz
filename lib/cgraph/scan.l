@@ -73,7 +73,7 @@ static void storeFileName(char* fname, size_t len);
  * Process a possible preprocessor line directive.
  * aagtext = #.*
  */
-static void ppDirective (void);
+static void ppDirective (aagscan_t yyscanner);
 
 /* twoDots:
  * Return true if token has more than one '.';
@@ -117,7 +117,7 @@ ID		({NAME}|{NUMBER})
 <comment>"*"+[^*/\n]*	/* eat up '*'s not followed by '/'s */
 <comment>"*"+"/"		BEGIN(INITIAL);
 "//".*					/* ignore C++-style comments */
-^"#".*					ppDirective ();
+^"#".*					ppDirective (yyscanner);
 "#".*					/* ignore shell-like comments */
 [ \t\r]					/* ignore whitespace */
 "\xEF\xBB\xBF"				/* ignore BOM */
@@ -247,11 +247,12 @@ static void storeFileName(char* fname, size_t len) {
  * Process a possible preprocessor line directive.
  * aagtext = #.*
  */
-static void ppDirective (void)
+static void ppDirective (aagscan_t yyscanner)
 {
     int r, cnt, lineno;
     char buf[2];
     char* s = aagget_text() + 1;  /* skip initial # */
+    (void)yyscanner;
 
     if (startswith(s, "line")) s += strlen("line");
     r = sscanf(s, "%d %1[\"]%n", &lineno, buf, &cnt);
