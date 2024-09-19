@@ -86,7 +86,7 @@ static bool twoDots(void);
  * This way we can catch a number immediately followed by a name
  * or something like 123.456.78, and report this to the user.
  */
-static int chkNum(void);
+static int chkNum(aagscan_t yyscanner);
 
 #define yyscanner NULL
 #define aagget_lval(scanner) ((void)scanner, &aaglval)
@@ -130,7 +130,7 @@ ID		({NAME}|{NUMBER})
 "->"				if (graphType == T_digraph) return(T_edgeop); else return('-');
 "--"				if (graphType == T_graph) return(T_edgeop); else return('-');
 {NAME}					{ aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
-{NUMBER}				{ if (chkNum()) yyless(aagget_leng()-1); aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
+{NUMBER}				{ if (chkNum(yyscanner)) yyless(aagget_leng()-1); aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
 ["]						BEGIN(qstring); beginstr(yyscanner);
 <qstring>["]			BEGIN(INITIAL); endstr(yyscanner); return (T_qatom);
 <qstring>[\\]["]		addstr (yyscanner,"\"");
@@ -289,7 +289,9 @@ static bool twoDots(void) {
  * This way we can catch a number immediately followed by a name
  * or something like 123.456.78, and report this to the user.
  */
-static int chkNum(void) {
+static int chkNum(aagscan_t yyscanner) {
+    (void)yyscanner;
+
     char c = aagget_text()[aagget_leng() - 1]; // last character
     if ((!gv_isdigit(c) && c != '.') || (c == '.' && twoDots())) { // c is letter
 	const char* fname;
