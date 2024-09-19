@@ -101,7 +101,7 @@ static void appendnode(aagscan_t scanner, char *name, char *port, char *sport);
 static void attrstmt(aagscan_t scanner, int tkind, char *macroname);
 static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict);
 static void getedgeitems(aagscan_t scanner);
-static void newedge(Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key);
+static void newedge(aagscan_t scanner, Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key);
 static void edgerhs(aagscan_t scanner, Agnode_t *n, char *tport, item *hlist, char *key);
 static void appendattr(char *name, char *value);
 static void bindattrs(int kind);
@@ -510,7 +510,6 @@ concatPort (char* s1, char* s2)
 
 static void edgerhs(aagscan_t scanner, Agnode_t *tail, char *tport, item *hlist, char *key)
 {
-	(void)scanner;
 	Agnode_t		*head;
 	Agraph_t		*subg;
 	item			*hptr;
@@ -518,11 +517,11 @@ static void edgerhs(aagscan_t scanner, Agnode_t *tail, char *tport, item *hlist,
 	if (hlist->tag == T_subgraph) {
 		subg = hlist->u.subg;
 		for (head = agfstnode(subg); head; head = agnxtnode(subg,head))
-			newedge(tail, tport, agsubnode(S->g, head, 0), NULL, key);
+			newedge(scanner, tail, tport, agsubnode(S->g, head, 0), NULL, key);
 	}
 	else {
 		for (hptr = hlist->u.list; hptr; hptr = hptr->next)
-			newedge(tail, tport, agsubnode(S->g, hptr->u.n, 0), hptr->str, key);
+			newedge(scanner, tail, tport, agsubnode(S->g, hptr->u.n, 0), hptr->str, key);
 	}
 }
 
@@ -536,8 +535,9 @@ static void mkport(Agedge_t *e, char *name, char *val)
 	}
 }
 
-static void newedge(Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key)
+static void newedge(aagscan_t scanner, Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key)
 {
+	(void)scanner;
 	Agedge_t 	*e;
 
 	e = agedge(S->g, t, h, key, 1);
