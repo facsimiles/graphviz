@@ -38,6 +38,7 @@ struct aagextra_s {
 	/* Lexer */
 	int line_num; // = 1;
 	int html_nest;  /* nesting level for html strings */
+	int graphType;
 };
 
 }

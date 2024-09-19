@@ -51,7 +51,6 @@
 static const char* InputFile;
 static Agdisc_t	*Disc;
 static void 	*Ifile;
-static int graphType;
 
 #define YYSTYPE AAGSTYPE
 
@@ -128,12 +127,12 @@ ID		({NAME}|{NUMBER})
 "\xEF\xBB\xBF"				/* ignore BOM */
 "node"					return(T_node);			/* see tokens in agcanonstr */
 "edge"					return(T_edge);
-"graph"					if (!graphType) graphType = T_graph; return(T_graph);
-"digraph"				if (!graphType) graphType = T_digraph; return(T_digraph);
+"graph"					if (!yyextra->graphType) yyextra->graphType = T_graph; return(T_graph);
+"digraph"				if (!yyextra->graphType) yyextra->graphType = T_digraph; return(T_digraph);
 "strict"				return(T_strict);
 "subgraph"				return(T_subgraph);
-"->"				if (graphType == T_digraph) return(T_edgeop); else return('-');
-"--"				if (graphType == T_graph) return(T_edgeop); else return('-');
+"->"				if (yyextra->graphType == T_digraph) return(T_edgeop); else return('-');
+"--"				if (yyextra->graphType == T_graph) return(T_edgeop); else return('-');
 {NAME}					{ yylval->str = agstrdup(Ag_G_global,aagget_text(yyscanner)); return(T_atom); }
 {NUMBER}				{ if (chkNum(yyscanner)) yyless(aagget_leng(yyscanner)-1); yylval->str = agstrdup(Ag_G_global,aagget_text(yyscanner)); return(T_atom); }
 ["]						BEGIN(qstring); beginstr(yyscanner);
@@ -219,7 +218,7 @@ void agsetfile(const char* f) { InputFile = f; }
  * requires pushing back whatever was previously read.
  * There probably is a right way of doing this.
  */
-void aglexinit(Agdisc_t *disc, void *ifile) { Disc = disc; Ifile = ifile; graphType = 0;}
+void aglexinit(Agdisc_t *disc, void *ifile) { Disc = disc; Ifile = ifile;}
 
 
 static void beginstr(aagscan_t yyscanner) {
