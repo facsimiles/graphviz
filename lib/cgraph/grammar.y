@@ -110,7 +110,7 @@ static void endgraph(aagscan_t scanner);
 static void endnode(aagscan_t scanner);
 static void endedge(aagscan_t scanner);
 static void freestack(aagscan_t scanner);
-static char* concat(char*, char*);
+static char* concat(aagscan_t scanner, char*, char*);
 static char* concatPort(char*, char*);
 
 static void opensubg(aagscan_t scanner, char *name);
@@ -227,7 +227,7 @@ atom	:  T_atom {$$ = $1;}
 			;
 
 qatom	:  T_qatom {$$ = $1;}
-			|  qatom '+' T_qatom {$$ = concat($1,$3);}
+			|  qatom '+' T_qatom {$$ = concat(scanner, $1,$3);}
 			;
 %%
 
@@ -480,8 +480,9 @@ static void endedge(aagscan_t scanner)
 /* concat:
  */
 static char*
-concat (char* s1, char* s2)
+concat (aagscan_t scanner, char* s1, char* s2)
 {
+	(void)scanner;
   char*  s;
   char   buf[BUFSIZ];
   char*  sym;
