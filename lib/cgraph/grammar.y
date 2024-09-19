@@ -111,7 +111,7 @@ static void endnode(aagscan_t scanner);
 static void endedge(aagscan_t scanner);
 static void freestack(aagscan_t scanner);
 static char* concat(aagscan_t scanner, char*, char*);
-static char* concatPort(char*, char*);
+static char* concatPort(Agraph_t *G, char*, char*);
 
 static void opensubg(aagscan_t scanner, char *name);
 static void closesubg(aagscan_t scanner);
@@ -399,7 +399,7 @@ static void appendnode(aagscan_t scanner, char *name, char *port, char *sport)
 	item		*elt;
 
 	if (sport) {
-		port = concatPort (port, sport);
+		port = concatPort (G, port, sport);
 	}
 	elt = cons_node(agnode(S->g, name, 1), port);
 	listapp(&S->nodelist, elt);
@@ -500,7 +500,7 @@ concat (aagscan_t scanner, char* s1, char* s2)
 }
 
 static char*
-concatPort (char* s1, char* s2)
+concatPort (Agraph_t *G, char* s1, char* s2)
 {
   agxbuf buf = {0};
 
