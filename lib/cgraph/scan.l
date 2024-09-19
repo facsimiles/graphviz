@@ -48,7 +48,6 @@
 // #define YY_BUF_SIZE 128000
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
 	/* this is a workaround for linux flex */
-static int line_num = 1;
 static int html_nest = 0;  /* nesting level for html strings */
 static const char* InputFile;
 static Agdisc_t	*Disc;
@@ -118,7 +117,7 @@ ID		({NAME}|{NUMBER})
 %x hstring
 %%
 {GRAPH_EOF_TOKEN}		return(EOF);
-<INITIAL,comment>\n	line_num++;
+<INITIAL,comment>\n	yyextra->line_num++;
 "/*"					BEGIN(comment);
 <comment>[^*\n]*		/* eat anything not a '*' */
 <comment>"*"+[^*/\n]*	/* eat up '*'s not followed by '/'s */
@@ -142,13 +141,13 @@ ID		({NAME}|{NUMBER})
 <qstring>["]			BEGIN(INITIAL); endstr(yyscanner); return (T_qatom);
 <qstring>[\\]["]		addstr (yyscanner,"\"");
 <qstring>[\\][\\]		addstr (yyscanner,"\\\\");
-<qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
-<qstring>[\n]			addstr (yyscanner,"\n"); line_num++;
+<qstring>[\\][\n]		yyextra->line_num++; /* ignore escaped newlines */
+<qstring>[\n]			addstr (yyscanner,"\n"); yyextra->line_num++;
 <qstring>([^"\\\n]*|[\\])		addstr(yyscanner,aagget_text(yyscanner));
 [<]						BEGIN(hstring); html_nest = 1; beginstr(yyscanner);
 <hstring>[>]			html_nest--; if (html_nest) addstr(yyscanner,aagget_text(yyscanner)); else {BEGIN(INITIAL); endstr_html(yyscanner); return (T_qatom);}
 <hstring>[<]			html_nest++; addstr(yyscanner,aagget_text(yyscanner));
-<hstring>[\n]			addstr(yyscanner,aagget_text(yyscanner)); line_num++; /* add newlines */
+<hstring>[\n]			addstr(yyscanner,aagget_text(yyscanner)); yyextra->line_num++; /* add newlines */
 <hstring>([^><\n]*)		addstr(yyscanner,aagget_text(yyscanner));
 .						return aagget_text(yyscanner)[0];
 %%
@@ -162,7 +161,7 @@ void aagerror(aagscan_t yyscanner, const char *str)
 	if (InputFile) {
 		agxbprint (&xb, "%s: ", InputFile);
 	}
-	agxbprint (&xb, "%s in line %d", str, line_num);
+	agxbprint (&xb, "%s in line %d", str, yyextra->line_num);
 	if (*aagget_text(yyscanner)) {
 		agxbprint(&xb, " near '%s'", aagget_text(yyscanner));
 	}
@@ -215,7 +214,7 @@ int aagwrap(YY_CALL_ONLY_ARG)
 
   /* (Re)set file:
    */
-void agsetfile(const char* f) { InputFile = f; line_num = 1; }
+void agsetfile(const char* f) { InputFile = f; }
 
 /* There is a hole here, because switching channels
  * requires pushing back whatever was previously read.
@@ -275,7 +274,7 @@ static void ppDirective (aagscan_t yyscanner)
 	if (lineno <= 0) {
 	    return;
 	}
-	line_num = lineno - 1;
+	aagget_extra(yyscanner)->line_num = lineno - 1;
 	if (r > 1) { /* saw quote */
 	    char* p = s + cnt;
 	    char* e = p;
@@ -307,6 +306,7 @@ static int chkNum(aagscan_t yyscanner) {
     char c = aagget_text(yyscanner)[aagget_leng(yyscanner) - 1]; // last character
     if ((!gv_isdigit(c) && c != '.') || (c == '.' && twoDots(yyscanner))) { // c is letter
 	const char* fname;
+	aagextra_t *ctx = aagget_extra(yyscanner);
 
 	if (InputFile)
 	    fname = InputFile;
@@ -314,7 +314,7 @@ static int chkNum(aagscan_t yyscanner) {
 	    fname = "input";
 
 	agwarningf("syntax ambiguity - badly delimited number '%s' in line %d of "
-	  "%s splits into two tokens\n", aagget_text(yyscanner), line_num, fname);
+	  "%s splits into two tokens\n", aagget_text(yyscanner), ctx->line_num, fname);
 
 	return 1;
     }
