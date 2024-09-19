@@ -64,7 +64,7 @@ int gv_isatty_suppression;
 static agxbuf Sbuf;
 
 static void beginstr(aagscan_t yyscanner);
-static void addstr(char *src);
+static void addstr(aagscan_t yyscanner, char *src);
 static void endstr(void);
 static void endstr_html(void);
 static void storeFileName(char* fname, size_t len);
@@ -133,16 +133,16 @@ ID		({NAME}|{NUMBER})
 {NUMBER}				{ if (chkNum()) yyless(aagget_leng()-1); aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
 ["]						BEGIN(qstring); beginstr(yyscanner);
 <qstring>["]			BEGIN(INITIAL); endstr(); return (T_qatom);
-<qstring>[\\]["]		addstr ("\"");
-<qstring>[\\][\\]		addstr ("\\\\");
+<qstring>[\\]["]		addstr (yyscanner,"\"");
+<qstring>[\\][\\]		addstr (yyscanner,"\\\\");
 <qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
-<qstring>[\n]			addstr ("\n"); line_num++;
-<qstring>([^"\\\n]*|[\\])		addstr(aagget_text());
+<qstring>[\n]			addstr (yyscanner,"\n"); line_num++;
+<qstring>([^"\\\n]*|[\\])		addstr(yyscanner,aagget_text());
 [<]						BEGIN(hstring); html_nest = 1; beginstr(yyscanner);
-<hstring>[>]			html_nest--; if (html_nest) addstr(aagget_text()); else {BEGIN(INITIAL); endstr_html(); return (T_qatom);}
-<hstring>[<]			html_nest++; addstr(aagget_text());
-<hstring>[\n]			addstr(aagget_text()); line_num++; /* add newlines */
-<hstring>([^><\n]*)		addstr(aagget_text());
+<hstring>[>]			html_nest--; if (html_nest) addstr(yyscanner,aagget_text()); else {BEGIN(INITIAL); endstr_html(); return (T_qatom);}
+<hstring>[<]			html_nest++; addstr(yyscanner,aagget_text());
+<hstring>[\n]			addstr(yyscanner,aagget_text()); line_num++; /* add newlines */
+<hstring>([^><\n]*)		addstr(yyscanner,aagget_text());
 .						return aagget_text()[0];
 %%
 
@@ -218,7 +218,8 @@ static void beginstr(aagscan_t yyscanner) {
          "endstr()/endhtmlstr()?)");
 }
 
-static void addstr(char *src) {
+static void addstr(aagscan_t yyscanner, char *src) {
+  (void)yyscanner;
   agxbput(&Sbuf, src);
 }
 
