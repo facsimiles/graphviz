@@ -88,6 +88,9 @@ static bool twoDots(void);
  */
 static int chkNum(void);
 
+#define yyscanner NULL
+#define aagget_lval(scanner) ((void)scanner, &aaglval)
+
 
 /* The LETTER class below consists of ascii letters, underscore, all non-ascii
  * characters. This allows identifiers to have characters from any
@@ -142,6 +145,8 @@ ID		({NAME}|{NUMBER})
 <hstring>([^><\n]*)		addstr(aagget_text());
 .						return aagget_text()[0];
 %%
+
+#undef yyscanner
 
 void aagerror(const char *str);
 void aagerror(const char *str)
