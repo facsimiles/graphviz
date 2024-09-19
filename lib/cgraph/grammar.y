@@ -103,7 +103,7 @@ static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict
 static void getedgeitems(aagscan_t scanner);
 static void newedge(aagscan_t scanner, Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key);
 static void edgerhs(aagscan_t scanner, Agnode_t *n, char *tport, item *hlist, char *key);
-static void appendattr(char *name, char *value);
+static void appendattr(aagscan_t scanner, char *name, char *value);
 static void bindattrs(int kind);
 static void applyattrs(void *obj);
 static void endgraph(aagscan_t scanner);
@@ -206,7 +206,7 @@ optattrdefs	: optattrdefs attrdefs
 attrdefs	:  attrassignment optseparator
 			;
 
-attrassignment	:  atom '=' atom {appendattr($1,$3);}
+attrassignment	:  atom '=' atom {appendattr(scanner,$1,$3);}
 			;
 
 graphattrdefs : attrassignment
@@ -294,8 +294,9 @@ static void listapp(list_t *list, item *v)
 
 
 /* attrs */
-static void appendattr(char *name, char *value)
+static void appendattr(aagscan_t scanner, char *name, char *value)
 {
+	(void)scanner;
 	item		*v;
 
 	assert(value != NULL);
