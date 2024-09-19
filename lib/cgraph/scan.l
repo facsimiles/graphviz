@@ -63,7 +63,7 @@ int gv_isatty_suppression;
 /* buffer for arbitrary length strings (longer than BUFSIZ) */
 static agxbuf Sbuf;
 
-static void beginstr(void);
+static void beginstr(aagscan_t yyscanner);
 static void addstr(char *src);
 static void endstr(void);
 static void endstr_html(void);
@@ -131,14 +131,14 @@ ID		({NAME}|{NUMBER})
 "--"				if (graphType == T_graph) return(T_edgeop); else return('-');
 {NAME}					{ aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
 {NUMBER}				{ if (chkNum()) yyless(aagget_leng()-1); aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
-["]						BEGIN(qstring); beginstr();
+["]						BEGIN(qstring); beginstr(yyscanner);
 <qstring>["]			BEGIN(INITIAL); endstr(); return (T_qatom);
 <qstring>[\\]["]		addstr ("\"");
 <qstring>[\\][\\]		addstr ("\\\\");
 <qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
 <qstring>[\n]			addstr ("\n"); line_num++;
 <qstring>([^"\\\n]*|[\\])		addstr(aagget_text());
-[<]						BEGIN(hstring); html_nest = 1; beginstr();
+[<]						BEGIN(hstring); html_nest = 1; beginstr(yyscanner);
 <hstring>[>]			html_nest--; if (html_nest) addstr(aagget_text()); else {BEGIN(INITIAL); endstr_html(); return (T_qatom);}
 <hstring>[<]			html_nest++; addstr(aagget_text());
 <hstring>[\n]			addstr(aagget_text()); line_num++; /* add newlines */
@@ -210,7 +210,8 @@ void agsetfile(const char* f) { InputFile = f; line_num = 1; }
 void aglexinit(Agdisc_t *disc, void *ifile) { Disc = disc; Ifile = ifile; graphType = 0;}
 
 
-static void beginstr(void) {
+static void beginstr(aagscan_t yyscanner) {
+  (void)yyscanner;
   // nothing required, but we should not have pending string data
   assert(agxblen(&Sbuf) == 0 &&
          "pending string data that was not consumed (missing "
