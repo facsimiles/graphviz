@@ -69,7 +69,6 @@ int gv_isatty_suppression;
 #endif
 
 /* buffer for arbitrary length strings (longer than BUFSIZ) */
-static agxbuf Sbuf;
 
 static void beginstr(aagscan_t yyscanner);
 static void addstr(aagscan_t yyscanner, char *src);
@@ -166,15 +165,15 @@ void aagerror(aagscan_t yyscanner, const char *str)
 	else switch (YYSTATE) {
 	case qstring: {
 		agxbprint(&xb, " scanning a quoted string (missing endquote? longer than %d?)", YY_BUF_SIZE);
-		if (agxblen(&Sbuf) > 0) {
-			agxbprint(&xb, "\nString starting:\"%.80s", agxbuse(&Sbuf));
+		if (agxblen(&yyextra->Sbuf) > 0) {
+			agxbprint(&xb, "\nString starting:\"%.80s", agxbuse(&yyextra->Sbuf));
 		}
 		break;
 	}
 	case hstring: {
 		agxbprint(&xb, " scanning a HTML string (missing '>'? bad nesting? longer than %d?)", YY_BUF_SIZE);
-		if (agxblen(&Sbuf) > 0) {
-			agxbprint(&xb, "\nString starting:<%.80s", agxbuse(&Sbuf));
+		if (agxblen(&yyextra->Sbuf) > 0) {
+			agxbprint(&xb, "\nString starting:<%.80s", agxbuse(&yyextra->Sbuf));
 		}
 		break;
 	}
@@ -222,24 +221,28 @@ void aglexinit(Agdisc_t *disc, void *ifile) { Disc = disc; Ifile = ifile;}
 
 
 static void beginstr(aagscan_t yyscanner) {
-  (void)yyscanner;
+  aagextra_t *ctx = aagget_extra(yyscanner);
+  // avoid unused variable warning in case assert() is compiled away.
+  (void)ctx;
   // nothing required, but we should not have pending string data
-  assert(agxblen(&Sbuf) == 0 &&
+  assert(agxblen(&ctx->Sbuf) == 0 &&
          "pending string data that was not consumed (missing "
          "endstr()/endhtmlstr()?)");
 }
 
 static void addstr(aagscan_t yyscanner, char *src) {
-  (void)yyscanner;
-  agxbput(&Sbuf, src);
+  aagextra_t *ctx = aagget_extra(yyscanner);
+  agxbput(&ctx->Sbuf, src);
 }
 
 static void endstr(aagscan_t yyscanner) {
-  aagget_lval(yyscanner)->str = agstrdup(Ag_G_global, agxbuse(&Sbuf));
+  aagextra_t *ctx = aagget_extra(yyscanner);
+  aagget_lval(yyscanner)->str = agstrdup(Ag_G_global, agxbuse(&ctx->Sbuf));
 }
 
 static void endstr_html(aagscan_t yyscanner) {
-  aagget_lval(yyscanner)->str = agstrdup_html(Ag_G_global, agxbuse(&Sbuf));
+  aagextra_t *ctx = aagget_extra(yyscanner);
+  aagget_lval(yyscanner)->str = agstrdup_html(Ag_G_global, agxbuse(&ctx->Sbuf));
 }
 
 static void storeFileName(aagscan_t yyscanner, char* fname, size_t len) {

@@ -39,6 +39,8 @@ struct aagextra_s {
 	int line_num; // = 1;
 	int html_nest;  /* nesting level for html strings */
 	int graphType;
+	/* buffer for arbitrary length strings */
+	agxbuf Sbuf;
 };
 
 }
@@ -613,6 +615,7 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 	aagparse(scanner);
 	if (Ag_G_global == NULL) aglexbad(scanner);
 	aaglex_destroy(scanner);
+	agxbfree(&extra.Sbuf);
 	return Ag_G_global;
 }
 
