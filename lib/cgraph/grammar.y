@@ -109,7 +109,7 @@ static void applyattrs(aagextra_t *ctx, void *obj);
 static void endgraph(aagscan_t scanner);
 static void endnode(aagscan_t scanner);
 static void endedge(aagscan_t scanner);
-static void freestack(void);
+static void freestack(aagscan_t scanner);
 static char* concat(char*, char*);
 static char* concatPort(char*, char*);
 
@@ -139,8 +139,8 @@ static gstack_t *S;
 
 %%
 
-graph		:  hdr body {freestack(); endgraph(scanner);}
-			|  error	{if (G) {freestack(); endgraph(scanner); agclose(G); G = Ag_G_global = NULL;}}
+graph		:  hdr body {freestack(scanner); endgraph(scanner);}
+			|  error	{if (G) {freestack(scanner); endgraph(scanner); agclose(G); G = Ag_G_global = NULL;}}
 			|  /* empty */
 			;
 
@@ -605,8 +605,9 @@ static void closesubg(aagscan_t scanner)
 	assert(subg);
 }
 
-static void freestack(void)
+static void freestack(aagscan_t scanner)
 {
+	(void)scanner;
 	while (S) {
 		deletelist(&S->nodelist);
 		deletelist(&S->attrlist);
