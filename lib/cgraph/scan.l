@@ -66,7 +66,7 @@ static agxbuf Sbuf;
 static void beginstr(aagscan_t yyscanner);
 static void addstr(aagscan_t yyscanner, char *src);
 static void endstr(aagscan_t yyscanner);
-static void endstr_html(void);
+static void endstr_html(aagscan_t yyscanner);
 static void storeFileName(char* fname, size_t len);
 
 /* ppDirective:
@@ -139,7 +139,7 @@ ID		({NAME}|{NUMBER})
 <qstring>[\n]			addstr (yyscanner,"\n"); line_num++;
 <qstring>([^"\\\n]*|[\\])		addstr(yyscanner,aagget_text());
 [<]						BEGIN(hstring); html_nest = 1; beginstr(yyscanner);
-<hstring>[>]			html_nest--; if (html_nest) addstr(yyscanner,aagget_text()); else {BEGIN(INITIAL); endstr_html(); return (T_qatom);}
+<hstring>[>]			html_nest--; if (html_nest) addstr(yyscanner,aagget_text()); else {BEGIN(INITIAL); endstr_html(yyscanner); return (T_qatom);}
 <hstring>[<]			html_nest++; addstr(yyscanner,aagget_text());
 <hstring>[\n]			addstr(yyscanner,aagget_text()); line_num++; /* add newlines */
 <hstring>([^><\n]*)		addstr(yyscanner,aagget_text());
@@ -227,8 +227,8 @@ static void endstr(aagscan_t yyscanner) {
   aagget_lval(yyscanner)->str = agstrdup(Ag_G_global, agxbuse(&Sbuf));
 }
 
-static void endstr_html(void) {
-  aaglval.str = agstrdup_html(Ag_G_global, agxbuse(&Sbuf));
+static void endstr_html(aagscan_t yyscanner) {
+  aagget_lval(yyscanner)->str = agstrdup_html(Ag_G_global, agxbuse(&Sbuf));
 }
 
 static void storeFileName(char* fname, size_t len) {
