@@ -98,7 +98,7 @@ typedef struct gstack_s {
 
 /* functions */
 static void appendnode(aagscan_t scanner, char *name, char *port, char *sport);
-static void attrstmt(int tkind, char *macroname);
+static void attrstmt(aagscan_t scanner, int tkind, char *macroname);
 static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict);
 static void getedgeitems(void);
 static void newedge(Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key);
@@ -183,8 +183,8 @@ node		: atom {appendnode(scanner,$1,NULL,NULL);}
             | atom ':' atom ':' atom {appendnode(scanner,$1,$3,$5);}
             ;
 
-attrstmt	:  attrtype optmacroname attrlist {attrstmt($1,$2);}
-			|  graphattrdefs {attrstmt(T_graph,NULL);}
+attrstmt	:  attrtype optmacroname attrlist {attrstmt(scanner,$1,$2);}
+			|  graphattrdefs {attrstmt(scanner,T_graph,NULL);}
 			;
 
 attrtype :	T_graph {$$ = T_graph;}
@@ -351,8 +351,9 @@ static void nomacros(void)
  * First argument is always attrtype, so switch covers all cases.
  * This function is used to handle default attribute value assignment.
  */
-static void attrstmt(int tkind, char *macroname)
+static void attrstmt(aagscan_t scanner, int tkind, char *macroname)
 {
+	(void)scanner;
 	item			*aptr;
 	int				kind = 0;
 	Agsym_t*  sym;
