@@ -37,6 +37,7 @@ struct aagextra_s {
 	Agdisc_t *Disc;		/* discipline passed to agread or agconcat */
 	void *Ifile;
 	/* Parser */
+	int SubgraphDepth;
 	/* Lexer */
 	int line_num; // = 1;
 	int html_nest;  /* nesting level for html strings */
@@ -66,7 +67,6 @@ struct aagextra_s {
 #include <util/unreachable.h>
 
 static const char Key[] = "key";
-static int SubgraphDepth = 0;
 
 typedef union s {					/* possible items in generic list */
 		Agnode_t		*n;
@@ -113,8 +113,8 @@ static void freestack(void);
 static char* concat(char*, char*);
 static char* concatPort(char*, char*);
 
-static void opensubg(char *name);
-static void closesubg(void);
+static void opensubg(aagscan_t scanner, char *name);
+static void closesubg(aagscan_t scanner);
 
 /* global */
 static Agraph_t *G;				/* top level graph */
@@ -212,7 +212,7 @@ attrassignment	:  atom '=' atom {appendattr($1,$3);}
 graphattrdefs : attrassignment
 			;
 
-subgraph	:  optsubghdr {opensubg($1);} body {closesubg();}
+subgraph	:  optsubghdr {opensubg(scanner,$1);} body {closesubg(scanner);}
 			;
 
 optsubghdr	: T_subgraph atom {$$=$2;}
@@ -557,7 +557,7 @@ static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict
 {
 	aagextra_t *ctx = aagget_extra(scanner);
 	if (G == NULL) {
-		SubgraphDepth = 0;
+		ctx->SubgraphDepth = 0;
 		Agdesc_t req = {.directed = directed, .strict = strict, .maingraph = true};
 		Ag_G_global = G = agopen(name,req,ctx->Disc);
 	}
@@ -574,19 +574,22 @@ static void endgraph(aagscan_t scanner)
 	aginternalmapclearlocalnames(G);
 }
 
-static void opensubg(char *name)
+static void opensubg(aagscan_t scanner, char *name)
 {
-  if (++SubgraphDepth >= YYMAXDEPTH/2) {
+  aagextra_t *ctx = aagget_extra(scanner);
+
+  if (++ctx->SubgraphDepth >= YYMAXDEPTH/2) {
     agerrorf("subgraphs nested more than %d deep", YYMAXDEPTH);
   }
 	S = push(S, agsubg(S->g, name, 1));
 	agstrfree(G, name, false);
 }
 
-static void closesubg(void)
+static void closesubg(aagscan_t scanner)
 {
+	aagextra_t *ctx = aagget_extra(scanner);
 	Agraph_t *subg = S->g;
-  --SubgraphDepth;
+	--ctx->SubgraphDepth;
 	S = pop(S);
 	S->subg = subg;
 	assert(subg);
