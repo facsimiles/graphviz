@@ -65,7 +65,7 @@ static agxbuf Sbuf;
 
 static void beginstr(aagscan_t yyscanner);
 static void addstr(aagscan_t yyscanner, char *src);
-static void endstr(void);
+static void endstr(aagscan_t yyscanner);
 static void endstr_html(void);
 static void storeFileName(char* fname, size_t len);
 
@@ -132,7 +132,7 @@ ID		({NAME}|{NUMBER})
 {NAME}					{ aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
 {NUMBER}				{ if (chkNum()) yyless(aagget_leng()-1); aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
 ["]						BEGIN(qstring); beginstr(yyscanner);
-<qstring>["]			BEGIN(INITIAL); endstr(); return (T_qatom);
+<qstring>["]			BEGIN(INITIAL); endstr(yyscanner); return (T_qatom);
 <qstring>[\\]["]		addstr (yyscanner,"\"");
 <qstring>[\\][\\]		addstr (yyscanner,"\\\\");
 <qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
@@ -223,8 +223,8 @@ static void addstr(aagscan_t yyscanner, char *src) {
   agxbput(&Sbuf, src);
 }
 
-static void endstr(void) {
-  aaglval.str = agstrdup(Ag_G_global, agxbuse(&Sbuf));
+static void endstr(aagscan_t yyscanner) {
+  aagget_lval(yyscanner)->str = agstrdup(Ag_G_global, agxbuse(&Sbuf));
 }
 
 static void endstr_html(void) {
