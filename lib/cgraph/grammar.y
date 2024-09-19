@@ -107,8 +107,8 @@ static void appendattr(char *name, char *value);
 static void bindattrs(int kind);
 static void applyattrs(void *obj);
 static void endgraph(aagscan_t scanner);
-static void endnode(void);
-static void endedge(void);
+static void endnode(aagscan_t scanner);
+static void endedge(aagscan_t scanner);
 static void freestack(void);
 static char* concat(char*, char*);
 static char* concatPort(char*, char*);
@@ -166,7 +166,7 @@ stmt		:  attrstmt  optsemi
 			;
 
 compound 	:	simple rcompound optattr
-					{if ($2) endedge(); else endnode();}
+					{if ($2) endedge(scanner); else endnode(scanner);}
 			;
 
 simple		:	nodelist | subgraph ;
@@ -406,8 +406,9 @@ static void appendnode(char *name, char *port, char *sport)
 clean up S->subg in closesubg() because S->subg might be needed
 to construct edges.  these are the sort of notes you write to yourself
 in the future. */
-static void endnode(void)
+static void endnode(aagscan_t scanner)
 {
+	(void)scanner;
 	item	*ptr;
 
 	bindattrs(AGNODE);
@@ -434,8 +435,9 @@ static void getedgeitems(void)
 	if (v) listapp(&S->edgelist, v);
 }
 
-static void endedge(void)
+static void endedge(aagscan_t scanner)
 {
+	(void)scanner;
 	char			*key;
 	item			*aptr,*tptr,*p;
 
