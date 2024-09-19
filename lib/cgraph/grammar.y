@@ -38,6 +38,8 @@ struct aagextra_s {
 	/* Lexer */
 	int line_num; // = 1;
 	int html_nest;  /* nesting level for html strings */
+	const char *InputFile;
+	agxbuf InputFileBuffer;
 	int graphType;
 	/* buffer for arbitrary length strings */
 	agxbuf Sbuf;
@@ -597,6 +599,11 @@ static void freestack(void)
 		S = pop(S);
 	}
 }
+static const char *InputFile;
+
+  /* (Re)set file:
+   */
+void agsetfile(const char* f) { InputFile = f; }
 
 Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 {
@@ -604,6 +611,10 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 	aagextra_t extra = {
 		.line_num = 1,
 	};
+	if (InputFile) {
+		agxbput(&extra.InputFileBuffer, InputFile);
+		extra.InputFile = agxbuse(&extra.InputFileBuffer);
+	}
 	if (aaglex_init_extra(&extra, &scanner)) {
 		return NULL;
 	}
@@ -615,6 +626,7 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 	aagparse(scanner);
 	if (Ag_G_global == NULL) aglexbad(scanner);
 	aaglex_destroy(scanner);
+	agxbfree(&extra.InputFileBuffer);
 	agxbfree(&extra.Sbuf);
 	return Ag_G_global;
 }
