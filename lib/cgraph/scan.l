@@ -79,7 +79,7 @@ static void ppDirective (aagscan_t yyscanner);
  * Return true if token has more than one '.';
  * we know the last character is a '.'.
  */
-static bool twoDots(void);
+static bool twoDots(aagscan_t yyscanner);
 
 /* chkNum:
  * The regexp for NUMBER allows a terminating letter or '.'.
@@ -278,7 +278,8 @@ static void ppDirective (aagscan_t yyscanner)
  * Return true if token has more than one '.';
  * we know the last character is a '.'.
  */
-static bool twoDots(void) {
+static bool twoDots(aagscan_t yyscanner) {
+  (void)yyscanner;
   const char *dot = strchr(aagget_text(), '.');
   // was there a dot and was it not the last character?
   return dot != NULL && dot != &aagget_text()[aagget_leng() - 1];
@@ -290,10 +291,8 @@ static bool twoDots(void) {
  * or something like 123.456.78, and report this to the user.
  */
 static int chkNum(aagscan_t yyscanner) {
-    (void)yyscanner;
-
     char c = aagget_text()[aagget_leng() - 1]; // last character
-    if ((!gv_isdigit(c) && c != '.') || (c == '.' && twoDots())) { // c is letter
+    if ((!gv_isdigit(c) && c != '.') || (c == '.' && twoDots(yyscanner))) { // c is letter
 	const char* fname;
 
 	if (InputFile)
