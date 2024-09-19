@@ -105,7 +105,7 @@ static void newedge(aagscan_t scanner, Agnode_t *t, char *tport, Agnode_t *h, ch
 static void edgerhs(aagscan_t scanner, Agnode_t *n, char *tport, item *hlist, char *key);
 static void appendattr(aagscan_t scanner, char *name, char *value);
 static void bindattrs(aagextra_t *ctx, int kind);
-static void applyattrs(void *obj);
+static void applyattrs(aagextra_t *ctx, void *obj);
 static void endgraph(aagscan_t scanner);
 static void endnode(aagscan_t scanner);
 static void endedge(aagscan_t scanner);
@@ -322,8 +322,9 @@ static void bindattrs(aagextra_t *ctx, int kind)
 }
 
 /* attach node/edge specific attributes */
-static void applyattrs(void *obj)
+static void applyattrs(aagextra_t *ctx, void *obj)
 {
+	(void)ctx;
 	item		*aptr;
 
 	for (aptr = S->attrlist.first; aptr; aptr = aptr->next) {
@@ -417,7 +418,7 @@ static void endnode(aagscan_t scanner)
 
 	bindattrs(ctx, AGNODE);
 	for (ptr = S->nodelist.first; ptr; ptr = ptr->next)
-		applyattrs(ptr->u.n);
+		applyattrs(ctx, ptr->u.n);
 	deletelist(&S->nodelist);
 	deletelist(&S->attrlist);
 	deletelist(&S->edgelist);
@@ -542,6 +543,7 @@ static void mkport(aagscan_t scanner, Agedge_t *e, char *name, char *val)
 static void newedge(aagscan_t scanner, Agnode_t *t, char *tport, Agnode_t *h, char *hport, char *key)
 {
 	Agedge_t 	*e;
+	aagextra_t 	*ctx = aagget_extra(scanner);
 
 	e = agedge(S->g, t, h, key, 1);
 	if (e) {		/* can fail if graph is strict and t==h */
@@ -554,7 +556,7 @@ static void newedge(aagscan_t scanner, Agnode_t *t, char *tport, Agnode_t *h, ch
 		}
 		mkport(scanner, e,TAILPORT_ID,tp);
 		mkport(scanner, e,HEADPORT_ID,hp);
-		applyattrs(e);
+		applyattrs(ctx, e);
 	}
 }
 
