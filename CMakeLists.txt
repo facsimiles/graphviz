@@ -48,6 +48,8 @@ set(ENABLE_PERL AUTO CACHE STRING "Build Perl language bindings")
 set_property(CACHE ENABLE_PERL PROPERTY STRINGS AUTO ON OFF)
 set(ENABLE_PHP AUTO CACHE STRING "Build PHP language bindings")
 set_property(CACHE ENABLE_PHP PROPERTY STRINGS AUTO ON OFF)
+set(ENABLE_PYTHON AUTO CACHE STRING "Build Python language bindings")
+set_property(CACHE ENABLE_PYTHON PROPERTY STRINGS AUTO ON OFF)
 option(GRAPHVIZ_CLI "Build command line tools" ON)
 
 if(WIN32)
@@ -277,7 +279,9 @@ if(NOT ENABLE_SWIG STREQUAL "OFF")
     cmake_policy(SET CMP0086 NEW)
   endif()
 
-  find_package(SWIG COMPONENTS csharp d go guile java javascript lua perl5 php7)
+  find_package(SWIG
+    COMPONENTS csharp d go guile java javascript lua perl5 php7 python
+  )
   if(ENABLE_SWIG STREQUAL "AUTO")
     if(SWIG_FOUND)
       message(STATUS "setting -DENABLE_SWIG=ON")
@@ -449,6 +453,24 @@ if(NOT ENABLE_PHP STREQUAL "OFF")
   else()
     message(STATUS "setting -DENABLE_PHP=OFF")
     set(ENABLE_PHP OFF)
+  endif()
+endif()
+
+if(NOT ENABLE_PYTHON STREQUAL "OFF")
+  find_package(Python3 COMPONENTS Development)
+  if(ENABLE_SWIG AND SWIG_python_FOUND AND Python_Development_FOUND)
+    if(ENABLE_PYTHON STREQUAL "AUTO")
+      message(STATUS "setting -DENABLE_PYTHON=ON")
+      set(ENABLE_PYTHON ON)
+    endif()
+  elseif(ENABLE_PYTHON STREQUAL "ON")
+    message(
+      FATAL_ERROR "-DENABLE_SWIG=ON must be set and Python libraries must be \
+                   available to use -DENABLE_PYTHON=ON"
+    )
+  else()
+    message(STATUS "setting -DENABLE_PYTHON=OFF")
+    set(ENABLE_PYTHON OFF)
   endif()
 endif()
 
