@@ -248,7 +248,7 @@ struct glCompObj_ {
 
     typedef struct {
 	glMouseButtonType t;
-	glCompPoint pos; /*current mouse pos,*/
+	float x, y; ///< current mouse pos
 	glCompPoint GLpos;/*3d converted opengl position*/
 	glCompPoint GLinitPos;/*mouse button down pos*/
 	glCompPoint GLfinalPos;/*mouse button up pos*/

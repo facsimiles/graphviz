@@ -9,6 +9,7 @@
  *************************************************************************/
 
 #include <limits.h>
+#include <stddef.h>
 #include <util/alloc.h>
 #include "selectionfuncs.h"
 #include "topviewfuncs.h"
@@ -115,7 +116,7 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
     float nd; // node distance to point
     float ed; // edge distance to point
     float nodeSize=0;
-    void* rv=(void*)0;
+    void *rv = NULL;
 
     defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
 

@@ -14,16 +14,16 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/streq.h>
 
 static glCompTex *glCompSetAddNewTexture(glCompSet *s, int width, int height,
                                          const unsigned char *data, bool is2D) {
-    int Er, offset, ind;
+    int offset, ind;
     unsigned char *tarData;
 
     if (!data)
 	return NULL;
 
-    Er = 0;
     glCompTex *t = gv_alloc(sizeof(glCompTex));
     if (!is2D) {		/*use opengl texture */
 	glEnable(GL_TEXTURE_2D);
@@ -34,7 +34,8 @@ static glCompTex *glCompSetAddNewTexture(glCompSet *s, int width, int height,
 	if (glGetError() != GL_NO_ERROR) {		/*for some opengl based error , texture couldnt be created */
 	    /* drain the OpenGL error queue */
 	    while (glGetError() != GL_NO_ERROR);
-	    Er = 1;
+	    free(t);
+	    return NULL;
 	} else {
 	    glBindTexture(GL_TEXTURE_2D, t->id);
 	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -48,7 +49,7 @@ static glCompTex *glCompSetAddNewTexture(glCompSet *s, int width, int height,
 	    glDisable(GL_TEXTURE_2D);
 	}
     }
-    if (is2D && !Er) {
+    if (is2D) {
 	assert(width >= 0);
 	assert(height >= 0);
 	t->data = gv_calloc(4 * (unsigned)width * (unsigned)height,
@@ -62,11 +63,6 @@ static glCompTex *glCompSetAddNewTexture(glCompSet *s, int width, int height,
 	}
     }
 
-    if (Er) {
-	free(t->data);
-	free(t);
-	return NULL;
-    }
     t->userCount = 1;
     t->width = width;
     t->height = height;
@@ -98,11 +94,10 @@ glCompTex *glCompSetAddNewTexImage(glCompSet *s, int width, int height,
 
 glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs, char *text,
                                    bool is2D) {
-    int Er, width, height;
+    int width, height;
     glCompTex *t;
     cairo_surface_t *surface = NULL;
     unsigned char *data = NULL;
-    Er = 0;
     if (!def)
 	return NULL;
     /*first check if the same label with same font def created before
@@ -110,9 +105,9 @@ glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs, char *text,
      */
     for (size_t ind = 0; ind < s->textureCount; ind++) {
 	if (s->textures[ind]->type == glTexLabel) {
-	    if (strcmp(def, s->textures[ind]->def) == 0
+	    if (streq(def, s->textures[ind]->def)
 		&& s->textures[ind]->type == glTexLabel
-		&& strcmp(text, s->textures[ind]->text) == 0
+		&& streq(text, s->textures[ind]->text)
 		&& s->textures[ind]->fontSize==fs) {
 		s->textures[ind]->userCount++;
 		return s->textures[ind];
@@ -125,13 +120,9 @@ glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs, char *text,
     if (!data)			/*pango error , */
 	return NULL;
     t = glCompSetAddNewTexture(s, width, height, data, is2D);
-    if (!t)
-	Er = 1;
     cairo_surface_destroy(surface);
-
-    if (Er) {
+    if (!t) {
 	free(data);
-	free(t);
 	return NULL;
     }
 
