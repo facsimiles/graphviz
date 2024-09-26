@@ -291,10 +291,7 @@ static void glCompQuadVertex(glCompPoint * p0, glCompPoint * p1,
     glVertex3f(p3->x, p3->y, p3->z);
 }
 
-void glCompSetColor(glCompColor * c)
-{
-    glColor4f(c->R, c->G, c->B, c->A);
-}
+void glCompSetColor(glCompColor c) { glColor4f(c.R, c.G, c.B, c.A); }
 
 void glCompDrawRectangle(glCompRect * r)
 {

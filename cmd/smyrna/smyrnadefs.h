@@ -93,7 +93,7 @@ typedef struct
     {
 	xdot_op op;
 	void *obj;
-	glCompFont* font;
+	glCompFont font;
 	int layer;
 	glCompImage* img;
     } sdot_op;	

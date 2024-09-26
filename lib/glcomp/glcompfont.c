@@ -40,63 +40,57 @@ void glDeleteFont(glCompFont * f)
     free(f->fontdesc);
     if (f->tex)
 	glCompDeleteTexture(f->tex);
-    free(f);
-
+    *f = (glCompFont){0};
 }
 
-glCompFont *glNewFont(glCompSet *s, char *text, glCompColor *c, char *fontdesc,
-                      int fs, bool is2D) {
-    glCompFont *font = gv_alloc(sizeof(glCompFont));
-    font->reference = 0;
-    font->color.R = c->R;
-    font->color.G = c->G;
-    font->color.B = c->B;
-    font->color.A = c->A;
-    font->justify.VJustify = glFontVJustifyNone;
-    font->justify.HJustify = glFontHJustifyNone;
-    font->is2D=is2D;
+glCompFont glNewFont(glCompSet *s, char *text, glCompColor *c, char *fontdesc,
+                     int fs, bool is2D) {
+    glCompFont font = {0};
+    font.color.R = c->R;
+    font.color.G = c->G;
+    font.color.B = c->B;
+    font.color.A = c->A;
+    font.justify.VJustify = glFontVJustifyNone;
+    font.justify.HJustify = glFontHJustifyNone;
+    font.is2D = is2D;
 
-    font->glutfont = NULL;
+    font.glutfont = NULL;
 
-    font->fontdesc = gv_strdup(fontdesc);
-    font->size = fs;
-    font->transparent = 1;
+    font.fontdesc = gv_strdup(fontdesc);
+    font.size = fs;
+    font.transparent = 1;
     if (text)
-	font->tex =
-	    glCompSetAddNewTexLabel(s, font->fontdesc, font->size, text,
+	font.tex =
+	    glCompSetAddNewTexLabel(s, font.fontdesc, font.size, text,
 				    is2D);
     return font;
 
 }
 
-
-
-glCompFont *glNewFontFromParent(glCompObj * o, char *text)
-{
+glCompFont glNewFontFromParent(glCompObj *o, char *text) {
     glCompCommon *parent;
-    glCompFont *font = gv_alloc(sizeof(glCompFont));
+    glCompFont font = {0};
     parent = o->common.parent;
     if (parent) {
 	parent = o->common.parent;
-	font->reference = 1;
-	font->color.R = parent->font->color.R;
-	font->color.G = parent->font->color.G;
-	font->color.B = parent->font->color.B;
-	font->color.A = parent->font->color.A;
+	font.color.R = parent->font.color.R;
+	font.color.G = parent->font.color.G;
+	font.color.B = parent->font.color.B;
+	font.color.A = parent->font.color.A;
 
-	font->glutfont = parent->font->glutfont;
-	font->fontdesc = gv_strdup(parent->font->fontdesc);
-	font->size = parent->font->size;
-	font->transparent = parent->font->transparent;
-	font->justify.VJustify = parent->font->justify.VJustify;
-	font->justify.HJustify = parent->font->justify.HJustify;
-	font->is2D=parent->font->is2D;
+	font.glutfont = parent->font.glutfont;
+	font.fontdesc = gv_strdup(parent->font.fontdesc);
+	font.size = parent->font.size;
+	font.transparent = parent->font.transparent;
+	font.justify.VJustify = parent->font.justify.VJustify;
+	font.justify.HJustify = parent->font.justify.HJustify;
+	font.is2D = parent->font.is2D;
 	if (text) {
 	    if (strlen(text))
-		font->tex =
+		font.tex =
 		    glCompSetAddNewTexLabel(parent->compset,
-					    font->fontdesc, font->size,
-					    text, parent->font->is2D);
+					    font.fontdesc, font.size,
+					    text, parent->font.is2D);
 	}
     } else {			/*no parent */
 
@@ -112,13 +106,13 @@ glCompFont *glNewFontFromParent(glCompObj * o, char *text)
 }
 
 /*texture base 3d text rendering*/
-void glCompDrawText3D(glCompFont *f, float x, float y, double z, float w,
+void glCompDrawText3D(glCompFont f, float x, float y, double z, float w,
                       float h) {
 	glEnable(GL_BLEND);		// Turn Blending On
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindTexture(GL_TEXTURE_2D,f->tex->id);
+	glBindTexture(GL_TEXTURE_2D, f.tex->id);
 	glBegin(GL_QUADS);
 		glTexCoord2d(0.0f, 1.0f);glVertex3d(x,y,z);
 		glTexCoord2d(1.0f, 1.0f);glVertex3d(x+w,y,z);
@@ -131,38 +125,35 @@ void glCompDrawText3D(glCompFont *f, float x, float y, double z, float w,
 
 }
 
-void glCompDrawText(glCompFont *f, float x, float y) {
+void glCompDrawText(glCompFont f, float x, float y) {
     glRasterPos2f(x, y);
-    glDrawPixels(f->tex->width, f->tex->height, GL_RGBA, GL_UNSIGNED_BYTE,  f->tex->data);
+    glDrawPixels(f.tex->width, f.tex->height, GL_RGBA, GL_UNSIGNED_BYTE,  f.tex->data);
 }
 
 /*text rendering functions, depends on a globject to retrieve stats*/
-void glCompRenderText(glCompFont * f, glCompObj * parentObj)
-{
-    if (!f->tex)
+void glCompRenderText(glCompFont f, glCompObj *parentObj) {
+    if (!f.tex)
 	return;
     float x = 0;
     float y = 0;
     glCompCommon ref = parentObj->common;
-    switch (f->justify.HJustify) 
-    {
+    switch (f.justify.HJustify) {
     case glFontHJustifyNone:
 	x = ref.refPos.x;
 	break;
     case glFontHJustifyCenter:
-	x = ref.refPos.x + (ref.width - f->tex->width) / 2.0f;
+	x = ref.refPos.x + (ref.width - (float)f.tex->width) / 2.0f;
 	break;
     }
-    switch (f->justify.VJustify) {
+    switch (f.justify.VJustify) {
     case glFontVJustifyNone:
 	y = ref.pos.y;
 	break;
     case glFontVJustifyCenter:
-	y = ref.refPos.y + (ref.height - f->tex->height) / 2.0f;
+	y = ref.refPos.y + (ref.height - (float)f.tex->height) / 2.0f;
 	break;
     }
 
-    glCompSetColor(&f->color);
-		glCompDrawText(f,x,y);
-
+    glCompSetColor(f.color);
+    glCompDrawText(f, x, y);
 }

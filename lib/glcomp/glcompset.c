@@ -179,7 +179,7 @@ void glCompInitCommon(glCompObj *childObj, glCompObj *parentObj, float x,
 
 void glCompEmptyCommon(glCompCommon * c)
 {
-    glDeleteFont(c->font);
+  glDeleteFont(&c->font);
 }
 
 glCompSet *glCompSetNew(int w, int h)

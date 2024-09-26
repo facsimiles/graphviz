@@ -30,7 +30,7 @@ void to3D(int x, int y, float *X, float *Y, float *Z);
     extern void glCompDrawRectangle(glCompRect * r);
 void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b, float d,
                          glCompColor *c, bool bumped);
-    extern void glCompSetColor(glCompColor * c);
+void glCompSetColor(glCompColor c);
 
 float distBetweenPts(glCompPoint A, glCompPoint B, float R);
     extern int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,float RH);

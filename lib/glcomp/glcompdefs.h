@@ -140,8 +140,8 @@ DEFINE_LIST(glCompPoly, glCompPoint)
 	uint32_t id;
 	char *def;
 	char *text;
-	float width;
-	float height;
+	int width;
+	int height;
 	glCompTexType type;
 	int userCount;
 	int fontSize;
@@ -158,7 +158,6 @@ DEFINE_LIST(glCompPoly, glCompPoint)
 	int transparent;
 	glCompTex *tex;		/* texture, if type is pangotext */
 	int size;
-	int reference;		/*if font has references to parent */
 	glCompJustify justify;
 	bool is2D;
     } glCompFont;
@@ -193,7 +192,7 @@ typedef struct glCompSet_ glCompSet;
 	glCompSet *compset; ///< compset
 	void *parent;		/*parent widget */
 	int data;
-	glCompFont *font;	//pointer to font to use
+	glCompFont font; ///< font to use
 	glCompAlignment align;
 	glCompAnchor anchor;
 	int layer;		/*keep track of object order, what to draw on top */
