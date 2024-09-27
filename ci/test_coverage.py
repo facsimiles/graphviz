@@ -78,8 +78,7 @@ def main(args: List[str]) -> int:  # pylint: disable=C0116
                 "--initial",
                 "--directory",
                 ".",
-                "--rc",
-                "lcov_branch_coverage=1",
+                "--branch-coverage",
                 "--no-external",
             ]
             + exclude_options
@@ -97,8 +96,7 @@ def main(args: List[str]) -> int:  # pylint: disable=C0116
                 "--capture",
                 "--directory",
                 ".",
-                "--rc",
-                "lcov_branch_coverage=1",
+                "--branch-coverage",
                 "--no-external",
             ]
             + exclude_options
@@ -108,8 +106,7 @@ def main(args: List[str]) -> int:  # pylint: disable=C0116
         subprocess.check_call(
             [
                 "lcov",
-                "--rc",
-                "lcov_branch_coverage=1",
+                "--branch-coverage",
                 "--add-tracefile",
                 "app_base.info",
                 "-add-tracefile",
@@ -125,8 +122,7 @@ def main(args: List[str]) -> int:  # pylint: disable=C0116
                 "genhtml",
                 "--prefix",
                 cwd,
-                "--rc",
-                "lcov_branch_coverage=1",
+                "--branch-coverage",
                 "--output-directory",
                 "coverage/lcov",
                 "--show-details",
