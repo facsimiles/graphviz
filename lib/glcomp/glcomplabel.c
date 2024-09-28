@@ -18,25 +18,12 @@ static void glCompLabelDraw(void *label) {
   glCompLabel *p = label;
   glCompCommon ref = p->base.common;
   glCompCalcWidget(p->base.common.parent, &p->base.common, &ref);
-  /*draw background */
-  if (!p->transparent) {
-    glCompSetColor(p->base.common.color);
-    glBegin(GL_QUADS);
-    glVertex3d(ref.refPos.x, ref.refPos.y, ref.refPos.z);
-    glVertex3d(ref.refPos.x + ref.width, ref.refPos.y, ref.refPos.z);
-    glVertex3d(ref.refPos.x + ref.width, ref.refPos.y + ref.height,
-               ref.refPos.z);
-    glVertex3d(ref.refPos.x, ref.refPos.y + ref.height, ref.refPos.z);
-    glEnd();
-  }
   glCompRenderText(p->base.common.font, &p->base);
 }
 
 glCompLabel *glCompLabelNew(void *par, char *text) {
     glCompLabel *p = gv_alloc(sizeof(glCompLabel));
     glCompInitCommon(&p->base, par, 0, 0);
-    p->base.objType = glLabelObj;
-    p->transparent=1;
 
     p->text = gv_strdup(text);
     p->base.common.font = glNewFontFromParent(&p->base, text);

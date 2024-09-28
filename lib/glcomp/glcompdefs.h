@@ -34,10 +34,6 @@ extern "C" {
 #define	GLCOMPSET_PANEL_COLOR_G		0.44f
 #define	GLCOMPSET_PANEL_COLOR_B		0.87f
 #define	GLCOMPSET_PANEL_COLOR_ALPHA	0.5f
-#define	GLCOMPSET_PANEL_SHADOW_COLOR_R		0.0f
-#define	GLCOMPSET_PANEL_SHADOW_COLOR_G		0.0f
-#define	GLCOMPSET_PANEL_SHADOW_COLOR_B		0.0f
-#define	GLCOMPSET_PANEL_SHADOW_COLOR_A		0.3f
 #define GLCOMPSET_PANEL_SHADOW_WIDTH		4.0f
 
 #define	GLCOMPSET_BUTTON_COLOR_R		0.0f
@@ -72,8 +68,6 @@ extern "C" {
 	    glMouseMiddleButton } glMouseButtonType;
 
     typedef enum { glTexImage, glTexLabel } glCompTexType;
-    typedef enum { glPanelObj, glButtonObj, glLabelObj,
-	    glImageObj } glObjType;
 
     typedef struct glCompObj_ glCompObj;
 
@@ -203,7 +197,6 @@ typedef struct glCompSet_ glCompSet;
 
 /// object prototype
 struct glCompObj_ {
-  glObjType objType;
   glCompCommon common;
 };
 
@@ -212,15 +205,12 @@ struct glCompObj_ {
 	glCompObj base;
 	glCompTex *texture;
 	float width, height;  /* width and height in world coords */
-	/* char *pngFile; */
-	int stretch;
     } glCompImage;
 
 /*generic panel*/
     typedef struct {
 	glCompObj base;
 	float shadowwidth;
-	glCompColor shadowcolor;
 	char *text;
 	glCompImage *image;
     } glCompPanel;
@@ -229,7 +219,6 @@ struct glCompObj_ {
     typedef struct {
 	glCompObj base;
 	char *text;
-	int transparent;
     } glCompLabel;
 
 /*buttons*/

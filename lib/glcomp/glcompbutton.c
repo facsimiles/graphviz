@@ -24,7 +24,6 @@ glCompButton *glCompButtonNew(void *par, float x, float y, float w, float h,
                               char *caption) {
     glCompButton *p = gv_alloc(sizeof(glCompButton));
     glCompInitCommon(&p->base, par, x, y);
-    p->base.objType = glButtonObj;
     /*customize button color */
     p->base.common.color.R = GLCOMPSET_BUTTON_COLOR_R;
     p->base.common.color.G = GLCOMPSET_BUTTON_COLOR_G;
@@ -135,25 +134,11 @@ void glCompButtonDraw(glCompButton * p)
 
 void glCompButtonClick(glCompObj *o, float x, float y, glMouseButtonType t) {
     glCompButton *p = (glCompButton *) o;
-    glCompObj *obj;
-    glCompSet *s = o->common.compset;
     ((glCompButton *) o)->status=((glCompButton *) o)->refStatus ;
-    if (p->groupid > 0) 
-    {
-	for (size_t ind = 0; ind < s->objcnt; ind++) {
-	    obj = s->obj[ind];
-	    if (obj->objType == glButtonObj && obj != o) {
-		if (((glCompButton *) obj)->groupid == p->groupid)
-		    ((glCompButton *) obj)->status = false;
-	    }
-	}
-	p->status = true;
-    }
-    else {
-	if (p->groupid == -1) {
-	    p->status = !p->status;
-	} else
-	    p->status = false;
+    if (p->groupid == -1) {
+	p->status = !p->status;
+    } else {
+	p->status = false;
     }
     if (p->base.common.callbacks.click)
 	p->base.common.callbacks.click(&p->base, x, y, t);
