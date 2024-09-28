@@ -551,11 +551,11 @@ static void pov_ellipse(GVJ_t * job, pointf * A, int filled)
 	z = layerz - 6;
 
 	// A[0] center, A[1] corner of ellipse
-	float cx = (A[0].x + job->translation.x) * job->scale.x;
-	float cy = (A[0].y + job->translation.y) * job->scale.y;
-	float rx = (A[1].x - A[0].x) * job->scale.x;
-	float ry = (A[1].y - A[0].y) * job->scale.y;
-	float w = job->obj->penwidth / (rx + ry) / 2.0 * 5;
+	const double cx = (A[0].x + job->translation.x) * job->scale.x;
+	const double cy = (A[0].y + job->translation.y) * job->scale.y;
+	const double rx = (A[1].x - A[0].x) * job->scale.x;
+	const double ry = (A[1].y - A[0].y) * job->scale.y;
+	const double w = job->obj->penwidth / (rx + ry) / 2.0 * 5;
 
 	//draw rim (torus)
 	char *p = pov_color_as_str(job, job->obj->pencolor, 0.0);

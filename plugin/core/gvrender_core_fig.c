@@ -223,7 +223,8 @@ static void fig_textspan(GVJ_t * job, pointf p, textspan_t * span)
  * so the node sizes may be wrong.
  */
     double height = font_size;
-    double length = 2.0*font_size/3.0  * (double)strlen(span->str) / 2.0;
+    const size_t span_length = strlen(span->str);
+    const double length = 2.0 * font_size / 3.0  * (double)span_length / 2.0;
 
     pA = span->font->postscript_alias;
     if (pA) /* if it is a standard postscript font */

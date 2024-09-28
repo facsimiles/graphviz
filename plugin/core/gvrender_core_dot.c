@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include <assert.h>
+#include <math.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -90,6 +91,34 @@ static void xdot_str (GVJ_t *job, char* pfx, const char* s)
     xdot_str_xbuf (xbufs[emit_state], pfx, s);
 }
 
+/// output a color
+///
+/// @param xb Buffer to write to
+/// @param String prefix to prepend
+/// @param rgba Color in RGBA format
+static void xdot_str_color_xbuf(agxbuf *xb, const char *prefix,
+                                const unsigned char rgba[4]) {
+  if (rgba[3] == 0xFF) {
+    agxbprint(xb, "%s%" PRISIZE_T " -#%02x%02x%02x ", prefix, strlen("#FFFFFF"),
+              rgba[0], rgba[1], rgba[2]);
+  } else {
+    agxbprint(xb, "%s%" PRISIZE_T " -#%02x%02x%02x%02x ", prefix,
+              strlen("#FFFFFFFF"), rgba[0], rgba[1], rgba[2], rgba[3]);
+  }
+}
+
+/// output a color
+///
+/// @param job Job indicating which state buffer to write to
+/// @param prefix String prefix to prepend
+/// @param rgba Color in RGBA format
+static void xdot_str_color(GVJ_t *job, const char *prefix,
+                           const unsigned char rgba[4]) {
+  emit_state_t emit_state = job->obj->emit_state;
+  agxbuf *xb = xbufs[emit_state];
+  xdot_str_color_xbuf(xb, prefix, rgba);
+}
+
 /* xdot_fmt_num:
  * Convert double to string with space at end.
  * Trailing zeros are removed and decimal point, if possible.
@@ -119,27 +148,14 @@ static void xdot_points(GVJ_t *job, char c, pointf *A, size_t n) {
         xdot_point(xbufs[emit_state], A[i]);
 }
 
-static char*
-color2str (unsigned char rgba[4])
-{
-    static char buf [10];
-
-    if (rgba[3] == 0xFF)
-	snprintf(buf, sizeof(buf), "#%02x%02x%02x", rgba[0], rgba[1],  rgba[2]);
-    else
-	snprintf(buf, sizeof(buf), "#%02x%02x%02x%02x", rgba[0], rgba[1],  rgba[2],
-	         rgba[3]);
-    return buf;
-}
-
 static void xdot_pencolor (GVJ_t *job)
 {
-    xdot_str (job, "c ", color2str (job->obj->pencolor.u.rgba));
+  xdot_str_color(job, "c ", job->obj->pencolor.u.rgba);
 }
 
 static void xdot_fillcolor (GVJ_t *job)
 {
-    xdot_str (job, "C ", color2str (job->obj->fillcolor.u.rgba));
+  xdot_str_color(job, "C ", job->obj->fillcolor.u.rgba);
 }
 
 static void xdot_style (GVJ_t *job)
@@ -148,7 +164,7 @@ static void xdot_style (GVJ_t *job)
     char* p, **s;
 
     /* First, check if penwidth state is correct */
-    if (job->obj->penwidth != penwidth[job->obj->emit_state]) {
+    if (fabs(job->obj->penwidth - penwidth[job->obj->emit_state]) >= 0.0005) {
 	penwidth[job->obj->emit_state] = job->obj->penwidth;
 	agxbput (&xb, "setlinewidth(");
 	agxbprint(&xb, "%.3f", job->obj->penwidth);
@@ -522,7 +538,7 @@ static void xdot_color_stop(agxbuf *xb, double v, gvcolor_t *clr) {
   agxbprint(xb, "%.03f", v);
   agxbuf_trim_zeros(xb);
   agxbputc(xb, ' ');
-  xdot_str_xbuf(xb, "", color2str (clr->u.rgba));
+  xdot_str_color_xbuf(xb, "", clr->u.rgba);
 }
 
 static void xdot_gradient_fillcolor(GVJ_t *job, int filled, pointf *A, size_t n)
