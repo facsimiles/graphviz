@@ -140,7 +140,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	float r;
     } viewport_camera;
 
-    typedef struct _graph_data {
+    typedef struct {
 	Agrec_t h;
 	char *GraphFileName;
     } graph_data;
