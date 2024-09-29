@@ -237,19 +237,13 @@ static void drawtopfishnodes(topview * t)
 
 static void drawtopfishedges(topview * t)
 {
-    glCompColor srcColor;
-    glCompColor tarColor;
     glCompColor color;
 
     int level, v, i, n;
     Hierarchy *hp = t->fisheyeParams.h;
     static int max_visible_level = 0;
-    srcColor.R = view->Topview->fisheyeParams.srcColor.R;
-    srcColor.G = view->Topview->fisheyeParams.srcColor.G;
-    srcColor.B = view->Topview->fisheyeParams.srcColor.B;
-    tarColor.R = view->Topview->fisheyeParams.tarColor.R;
-    tarColor.G = view->Topview->fisheyeParams.tarColor.G;
-    tarColor.B = view->Topview->fisheyeParams.tarColor.B;
+    const glCompColor srcColor = view->Topview->fisheyeParams.srcColor;
+    const glCompColor tarColor = view->Topview->fisheyeParams.tarColor;
 
     //and edges
     glBegin(GL_LINES);
