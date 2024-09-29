@@ -197,7 +197,6 @@ struct glCompObj_ {
 	glCompObj base;
 	float shadowwidth;
 	char *text;
-	glCompImage *image;
     } glCompPanel;
 
 /*label*/
