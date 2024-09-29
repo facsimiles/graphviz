@@ -147,8 +147,10 @@ void glCompButtonClick(glCompObj *o, float x, float y, glMouseButtonType t) {
 void glCompButtonDoubleClick(glCompObj *obj, float x, float y,
 			     glMouseButtonType t)
 {
-    if (obj->common.callbacks.doubleclick)
-	obj->common.callbacks.doubleclick(obj, x, y, t);
+    (void)obj;
+    (void)x;
+    (void)y;
+    (void)t;
 }
 
 void glCompButtonMouseDown(glCompObj *obj, float x, float y,
