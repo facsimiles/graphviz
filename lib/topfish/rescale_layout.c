@@ -147,16 +147,8 @@ static void rescale_layout_polarFocus(v_data *graph, size_t n, double *x_coords,
 		}
     } else 
 	{
-		double factor;
 		// just to make milder behavior:
-		if (distortion >= 0) 
-		{
-			factor = sqrt(distortion);
-		} 
-		else 
-		{
-			factor = -sqrt(-distortion);
-		}
+		const double factor = (signbit(distortion) ? -1 : 1) * sqrt(fabs(distortion));
 		for (size_t i = 1; i < n; i++)
 		{
 			distances[ordering[i]] =
