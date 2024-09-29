@@ -23,7 +23,6 @@ int glCompButtonAddPngGlyph(glCompButton *b, const char *fileName);
 void glCompButtonClick(glCompObj *o, float x, float y, glMouseButtonType t);
 void glCompButtonMouseDown(glCompObj *o, float x, float y,
 				      glMouseButtonType t);
-void glCompButtonMouseOut(glCompObj *o, float x, float y);
 void glCompButtonMouseOver(glCompObj *o, float x, float y);
 void glCompButtonMouseUp(glCompObj *o, float x, float y, glMouseButtonType t);
     extern void glCompButtonHide(glCompButton * p);

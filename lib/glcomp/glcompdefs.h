@@ -77,8 +77,6 @@ extern "C" {
 				       float y, glMouseButtonType t);
     typedef void (*glcompmouseoverfunc_t) (glCompObj * obj, float x,
 					   float y);
-    typedef void (*glcompmouseoutfunc_t) (glCompObj * obj, float x,
-					  float y);
     typedef void (*glcompmousedownfunc_t) (glCompObj * obj, float x,
 					   float y, glMouseButtonType t);
     typedef void (*glcompmouseupfunc_t) (glCompObj * obj, float x,
@@ -155,7 +153,6 @@ DEFINE_LIST(glCompPoly, glCompPoint)
 	glcompdrawfunc_t draw;
 	glcompclickfunc_t click;
 	glcompmouseoverfunc_t mouseover;
-	glcompmouseoutfunc_t mouseout;
 	glcompmousedownfunc_t mousedown;
 	glcompmouseupfunc_t mouseup;
 	glcompmousedragfunct_t mousedrag;

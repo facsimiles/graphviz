@@ -20,7 +20,6 @@ extern "C" {
     extern void glCompMouseInit(glCompMouse * m);
 void glCompClick(glCompObj *o, float x, float y, glMouseButtonType t);
 void glCompMouseDown(glCompObj *obj, float x, float y, glMouseButtonType t);
-void glCompMouseOut(glCompObj *obj, float x, float y);
 void glCompMouseOver(glCompObj *obj, float x, float y);
 void glCompMouseUp(glCompObj *obj, float x, float y, glMouseButtonType t);
 void glCompMouseDrag(glCompObj *obj, float dx, float dy, glMouseButtonType t);

@@ -139,7 +139,6 @@ void glCompInitCommon(glCompObj *childObj, glCompObj *parentObj, float x,
     childObj->common.functions.click = NULL;
     childObj->common.functions.draw = NULL;
     childObj->common.functions.mousedown = NULL;
-    childObj->common.functions.mouseout = NULL;
     childObj->common.functions.mouseover = NULL;
     childObj->common.functions.mouseup = NULL;
 
