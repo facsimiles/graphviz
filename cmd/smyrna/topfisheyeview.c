@@ -62,9 +62,6 @@ static v_data *makeGraph(Agraph_t* gg, int *nedges)
     {
 	graph[i].edges = edges++;	/* reserve space for the self loop */
 	graph[i].ewgts = ewgts++;
-#ifdef STYLES
-	graph[i].styles = NULL;
-#endif
 	i_nedges = 1;		/* one for the self */
 
 	if (!g)
