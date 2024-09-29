@@ -154,8 +154,9 @@ void glCompButtonMouseDown(glCompObj *obj, float x, float y,
 }
 
 void glCompButtonMouseOut(glCompObj *obj, float x, float y) {
-    if (obj->common.callbacks.mouseout)
-	obj->common.callbacks.mouseout(obj, x, y);
+    (void)obj;
+    (void)x;
+    (void)y;
 }
 
 void glCompButtonMouseOver(glCompObj *obj, float x, float y) {
