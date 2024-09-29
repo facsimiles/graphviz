@@ -12,6 +12,7 @@
 #include <glcomp/glcompfont.h>
 #include <glcomp/glcompset.h>
 #include <glcomp/glutils.h>
+#include <stdbool.h>
 
 void glCompMouseInit(glCompMouse * m)
 {
@@ -36,8 +37,7 @@ void glCompMouseInit(glCompMouse * m)
     m->callbacks.mouseup = NULL;
     m->dragX = 0;
     m->dragY = 0;
-    m->down = 0;
-
+    m->down = false;
 }
 
 void glCompClick(glCompObj *o, float x, float y, glMouseButtonType t) {

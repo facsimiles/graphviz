@@ -15,6 +15,7 @@
 #include <glcomp/glcompmouse.h>
 
 #include <glcomp/glutils.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <util/alloc.h>
 
@@ -76,7 +77,7 @@ static void glCompSetMouseDown(void *obj, float x, float y,
 	    if (o->mouse.clickedObj->common.functions.mousedown)
 		o->mouse.clickedObj->common.functions.mousedown(o->mouse.clickedObj, x, y, t);
     }
-    o->mouse.down = 1;
+    o->mouse.down = true;
     startX = x;
     startY = o->base.common.height - y;
     if (o->base.common.callbacks.mousedown)
@@ -88,7 +89,7 @@ static void glCompSetMouseUp(void *obj, float x, float y, glMouseButtonType t) {
     glCompSet *ob = obj;
     float tempY = ob->base.common.height - y;
 
-    ob->mouse.down = 0;
+    ob->mouse.down = false;
     if (t == glMouseLeftButton) {
 	glCompObj *o = NULL;
 	glCompObj *o_clicked = ob->mouse.clickedObj;

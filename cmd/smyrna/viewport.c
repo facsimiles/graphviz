@@ -281,7 +281,7 @@ void init_viewport(ViewInfo *vi) {
 
     vi->zoom = -20;
 
-    vi->mouse.down = 0;
+    vi->mouse.down = false;
     vi->activeGraph = -1;
     vi->Topview = gv_alloc(sizeof(topview));
     vi->Topview->fisheyeParams.fs = 0;

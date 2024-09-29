@@ -246,9 +246,7 @@ struct glCompObj_ {
 	glCompObj *clickedObj;
 	glCompCallBacks callbacks;
 	glCompCallBacks functions;
-	int down;
-
-
+	bool down;
     } glCompMouse;
 
 
