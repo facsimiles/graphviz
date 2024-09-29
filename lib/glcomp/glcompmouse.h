@@ -19,7 +19,6 @@ extern "C" {
 /*events*/
     extern void glCompMouseInit(glCompMouse * m);
 void glCompClick(glCompObj *o, float x, float y, glMouseButtonType t);
-void glCompDoubleClick(glCompObj *obj, float x, float y, glMouseButtonType t);
 void glCompMouseDown(glCompObj *obj, float x, float y, glMouseButtonType t);
 void glCompMouseIn(glCompObj *obj, float x, float y);
 void glCompMouseOut(glCompObj *obj, float x, float y);

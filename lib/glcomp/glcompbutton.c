@@ -42,7 +42,6 @@ glCompButton *glCompButtonNew(void *par, float x, float y, float w, float h,
     p->base.common.functions.draw = (glcompdrawfunc_t)glCompButtonDraw;
 
     p->base.common.functions.click = glCompButtonClick;
-    p->base.common.functions.doubleclick = glCompButtonDoubleClick;
     p->base.common.functions.mousedown = glCompButtonMouseDown;
     p->base.common.functions.mousein = glCompButtonMouseIn;
     p->base.common.functions.mouseout = glCompButtonMouseOut;
@@ -142,15 +141,6 @@ void glCompButtonClick(glCompObj *o, float x, float y, glMouseButtonType t) {
     }
     if (p->base.common.callbacks.click)
 	p->base.common.callbacks.click(&p->base, x, y, t);
-}
-
-void glCompButtonDoubleClick(glCompObj *obj, float x, float y,
-			     glMouseButtonType t)
-{
-    (void)obj;
-    (void)x;
-    (void)y;
-    (void)t;
 }
 
 void glCompButtonMouseDown(glCompObj *obj, float x, float y,

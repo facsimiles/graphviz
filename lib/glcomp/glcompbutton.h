@@ -21,8 +21,6 @@ glCompButton *glCompButtonNew(void *par, float x, float y, float w, float h,
     extern void glCompButtonDraw(glCompButton * p);
 int glCompButtonAddPngGlyph(glCompButton *b, const char *fileName);
 void glCompButtonClick(glCompObj *o, float x, float y, glMouseButtonType t);
-void glCompButtonDoubleClick(glCompObj *o, float x, float y,
-                             glMouseButtonType t);
 void glCompButtonMouseDown(glCompObj *o, float x, float y,
 				      glMouseButtonType t);
 void glCompButtonMouseIn(glCompObj *o, float x, float y);
