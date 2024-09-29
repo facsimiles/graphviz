@@ -139,7 +139,6 @@ static int object_color(void* obj,glCompColor* c)
     gvcolor_t cl;
     Agraph_t* g=view->g[view->activeGraph];
     Agraph_t* objg=agraphof(obj);
-    int return_value = 1;
     int objType;
     float Alpha = 1;
     Agsym_t* vis;
@@ -188,7 +187,7 @@ static int object_color(void* obj,glCompColor* c)
     free(color_scheme);
     free(previous_color_scheme);
 
-    return return_value;
+    return 1;
 }
 
 
