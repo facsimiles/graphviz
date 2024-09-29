@@ -326,7 +326,7 @@ static void renderNodes(Agraph_t * g)
     }
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
-	    if(!object_color(v,&c))
+	    if (!object_color(v, &(glCompColor){0}))
 		continue;
 	    x=parseXdotwithattrs(v);
 	    draw_xdot(x, -0.1);
