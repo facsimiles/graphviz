@@ -125,8 +125,6 @@ void glCompButtonDraw(glCompButton * p)
 	p->label->base.common.functions.draw(p->label);
     if (p->image)
 	p->image->base.common.functions.draw(p->image);
-    if (p->base.common.callbacks.draw)
-	p->base.common.callbacks.draw(p); // user defined drawing routines are called here
 }
 
 void glCompButtonClick(glCompObj *o, float x, float y, glMouseButtonType t) {
