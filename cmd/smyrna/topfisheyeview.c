@@ -354,8 +354,8 @@ static int get_temp_coords(topview * t, int level, int v, double *coord_x,
 	if (gg[v].active_level != level)
 	    return 0;
 
-	*coord_x = (double) gg[v].physical_x_coord;
-	*coord_y = (double) gg[v].physical_y_coord;
+	*coord_x = gg[v].physical_x_coord;
+	*coord_y = gg[v].physical_y_coord;
     } else {
 
 
@@ -375,22 +375,22 @@ static int get_temp_coords(topview * t, int level, int v, double *coord_x,
 	{
 	    if (OAL == level && AL == level)	//draw as is from old coords to new)
 	    {
-		x0 = (double) gg[v].old_physical_x_coord;
-		y0 = (double) gg[v].old_physical_y_coord;
-		x1 = (double) gg[v].physical_x_coord;
-		y1 = (double) gg[v].physical_y_coord;
+		x0 = gg[v].old_physical_x_coord;
+		y0 = gg[v].old_physical_y_coord;
+		x1 = gg[v].physical_x_coord;
+		y1 = gg[v].physical_y_coord;
 	    }
 	    if (OAL > level && AL == level)	//draw as  from ancs  to new)
 	    {
 		find_old_physical_coords(t->fisheyeParams.h, level, v, &x0, &y0);
-		x1 = (double) gg[v].physical_x_coord;
-		y1 = (double) gg[v].physical_y_coord;
+		x1 = gg[v].physical_x_coord;
+		y1 = gg[v].physical_y_coord;
 	    }
 	    if (OAL == level && AL > level)	//draw as  from ancs  to new)
 	    {
 		find_physical_coords(t->fisheyeParams.h, level, v, &x1, &y1);
-		x0 = (double) gg[v].old_physical_x_coord;
-		y0 = (double) gg[v].old_physical_y_coord;
+		x0 = gg[v].old_physical_x_coord;
+		y0 = gg[v].old_physical_y_coord;
 	    }
 	    get_interpolated_coords(x0, y0, x1, y1, view->active_frame,
 				    view->total_frames, coord_x, coord_y);
