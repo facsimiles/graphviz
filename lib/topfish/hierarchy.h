@@ -11,6 +11,7 @@
 #pragma once
 
 #include <neatogen/sparsegraph.h>
+#include <stdbool.h>
 #include <stddef.h>
 
 typedef struct {
@@ -59,7 +60,7 @@ typedef struct {
 
 Hierarchy *create_hierarchy(v_data *graph, int nvtxs, int nedges,
                             ex_vtx_data *geom_graph, int ngeom_edges,
-                            int dist2_limit);
+                            bool dist2_limit);
 	
 void set_active_levels(Hierarchy*, int*, int, levelparms_t*);
 double find_closest_active_node(Hierarchy*, double x, double y, int*);

@@ -223,7 +223,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	    levelparms_t level;
 	    /// if dist2_limit true, don’t contract nodes of distance larger than 2
 	    /// if false then also distance 3 is possible
-	    int dist2_limit;
+	    bool dist2_limit;
 	    Hierarchy *h;
 	    int animate;
 	    glCompColor srcColor;	//fine node colors of topfisheye

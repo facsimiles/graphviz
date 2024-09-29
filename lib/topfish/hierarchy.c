@@ -16,6 +16,7 @@
 //                                   // 
 ///////////////////////////////////////
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -134,7 +135,7 @@ maxmatch(v_data * graph,	/* array of vtx data for graph */
 	ex_vtx_data * geom_graph,	/* array of vtx data for graph */
 	int nvtxs,	/* number of vertices in graph */
 	int *mflag,	/* flag indicating vtx selected or not */
-	int dist2_limit
+	bool dist2_limit
     )
 /* 
     Compute a matching of the nodes set. 
@@ -571,7 +572,7 @@ coarsen_match (
     int *cgeom_nedges,	/* number of edges in coarsened geom_graph */
     int **v2cvp,	/* reference from vertices to coarse vertices */
     int **cv2vp,	/* reference from vertices to coarse vertices */
-    int dist2_limit
+    bool dist2_limit
 )
 
 /*
@@ -664,7 +665,7 @@ static ex_vtx_data *cpExGraph(ex_vtx_data * graph, int n, int nedges)
 
 Hierarchy *create_hierarchy(v_data *graph, int nvtxs, int nedges,
                             ex_vtx_data *geom_graph, int ngeom_edges,
-                            int dist2_limit) {
+                            bool dist2_limit) {
     int cur_level;
     Hierarchy *hierarchy = gv_alloc(sizeof(Hierarchy));
     int cngeom_edges = ngeom_edges;

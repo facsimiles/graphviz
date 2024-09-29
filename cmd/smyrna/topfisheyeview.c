@@ -185,9 +185,11 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
 	   (view->g[view->activeGraph],
 	    "topologicalfisheyecoarseningfactor"), "%lf",
 	   &view->Topview->fisheyeParams.level.coarsening_rate);
+    int dist2_limit = 0;
     sscanf(agget
 	   (view->g[view->activeGraph], "topologicalfisheyedist2limit"),
-	   "%d", &view->Topview->fisheyeParams.dist2_limit);
+	   "%d", &dist2_limit);
+    view->Topview->fisheyeParams.dist2_limit = dist2_limit != 0;
     sscanf(agget(view->g[view->activeGraph], "topologicalfisheyeanimate"),
 	   "%d", &view->Topview->fisheyeParams.animate);
 
@@ -440,9 +442,11 @@ void changetopfishfocus(topview * t, float *x, float *y, int num_foci)
 	   (view->g[view->activeGraph],
 	    "topologicalfisheyecoarseningfactor"), "%lf",
 	   &view->Topview->fisheyeParams.level.coarsening_rate);
+    int dist2_limit = 0;
     sscanf(agget
 	   (view->g[view->activeGraph], "topologicalfisheyedist2limit"),
-	   "%d", &view->Topview->fisheyeParams.dist2_limit);
+	   "%d", &dist2_limit);
+    view->Topview->fisheyeParams.dist2_limit = dist2_limit != 0;
     sscanf(agget(view->g[view->activeGraph], "topologicalfisheyeanimate"),
 	   "%d", &view->Topview->fisheyeParams.animate);
 

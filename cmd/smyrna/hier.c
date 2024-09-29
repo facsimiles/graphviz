@@ -12,6 +12,7 @@
 #include "hier.h"
 #include <math.h>
 #include <neatogen/delaunay.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
 
@@ -97,7 +98,7 @@ static void dumpHier(Hierarchy * hier)
 #endif
 
 Hierarchy *makeHier(int nn, int ne, v_data *graph, double *x_coords,
-                    double *y_coords, int dist2_limit) {
+                    double *y_coords, bool dist2_limit) {
     v_data *delaunay;
     ex_vtx_data *geom_graph;
     int ngeom_edges;

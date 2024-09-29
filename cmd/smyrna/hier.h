@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <topfish/hierarchy.h>
 
     typedef struct {
@@ -29,6 +30,6 @@
     void positionAllItems(Hierarchy * hp, focus_t * fs,
 			  reposition_t * parms);
 Hierarchy *makeHier(int nnodes, int nedges, v_data *, double *, double *,
-                    int dist2_limit);
+                    bool dist2_limit);
 
     focus_t *initFocus(int ncnt);
