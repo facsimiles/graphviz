@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include "frmobjectui.h"
 
-static glCompPanel *sel = NULL;
+static glCompPanel *sel;
 static glCompButton *to3DBtn;
 static glCompButton *to2DBtn;
 static glCompButton *toFisheye;
