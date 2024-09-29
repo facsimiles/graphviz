@@ -80,8 +80,6 @@ static void glCompSetMouseDown(void *obj, float x, float y,
     o->mouse.down = true;
     startX = x;
     startY = o->base.common.height - y;
-    if (o->base.common.callbacks.mousedown)
-	o->base.common.callbacks.mousedown(obj, x, y, t);
 }
 
 static void glCompSetMouseUp(void *obj, float x, float y, glMouseButtonType t) {
@@ -136,7 +134,6 @@ void glCompInitCommon(glCompObj *childObj, glCompObj *parentObj, float x,
     childObj->common.callbacks.click = NULL;
     childObj->common.callbacks.doubleclick = NULL;
     childObj->common.callbacks.draw = NULL;
-    childObj->common.callbacks.mousedown = NULL;
     childObj->common.callbacks.mousein = NULL;
     childObj->common.callbacks.mouseout = NULL;
     childObj->common.callbacks.mouseover = NULL;

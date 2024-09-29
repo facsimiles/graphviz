@@ -29,7 +29,6 @@ void glCompMouseInit(glCompMouse * m)
     m->callbacks.click = NULL;
     m->callbacks.doubleclick = NULL;
     m->callbacks.draw = NULL;
-    m->callbacks.mousedown = NULL;
     m->callbacks.mousedrag = NULL;
     m->callbacks.mousein = NULL;
     m->callbacks.mouseout = NULL;
