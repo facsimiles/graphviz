@@ -57,14 +57,9 @@ typedef struct {
     double coarsening_rate; /* 2.5 */
 } levelparms_t;
 
-typedef struct {
-    // if dist2_limit true, don't contract nodes of distance larger than 2
-    // if false then also distance 3 is possible
-    int dist2_limit; /* TRUE */
-} hierparms_t;
-
-Hierarchy* create_hierarchy(v_data * graph, int nvtxs, int nedges, 
-    ex_vtx_data* geom_graph, int ngeom_edges, hierparms_t*);
+Hierarchy *create_hierarchy(v_data *graph, int nvtxs, int nedges,
+                            ex_vtx_data *geom_graph, int ngeom_edges,
+                            int dist2_limit);
 	
 void set_active_levels(Hierarchy*, int*, int, levelparms_t*);
 double find_closest_active_node(Hierarchy*, double x, double y, int*);

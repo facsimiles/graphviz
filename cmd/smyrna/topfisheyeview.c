@@ -140,7 +140,7 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
     }
     hp = t->fisheyeParams.h =
 	makeHier(agnnodes(g), ne, graph, x_coords, y_coords,
-		 &t->fisheyeParams.hier);
+		 t->fisheyeParams.dist2_limit);
     freeGraph(graph);
     free(x_coords);
     free(y_coords);
@@ -187,7 +187,7 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
 	   &view->Topview->fisheyeParams.level.coarsening_rate);
     sscanf(agget
 	   (view->g[view->activeGraph], "topologicalfisheyedist2limit"),
-	   "%d", &view->Topview->fisheyeParams.hier.dist2_limit);
+	   "%d", &view->Topview->fisheyeParams.dist2_limit);
     sscanf(agget(view->g[view->activeGraph], "topologicalfisheyeanimate"),
 	   "%d", &view->Topview->fisheyeParams.animate);
 
@@ -442,7 +442,7 @@ void changetopfishfocus(topview * t, float *x, float *y, int num_foci)
 	   &view->Topview->fisheyeParams.level.coarsening_rate);
     sscanf(agget
 	   (view->g[view->activeGraph], "topologicalfisheyedist2limit"),
-	   "%d", &view->Topview->fisheyeParams.hier.dist2_limit);
+	   "%d", &view->Topview->fisheyeParams.dist2_limit);
     sscanf(agget(view->g[view->activeGraph], "topologicalfisheyeanimate"),
 	   "%d", &view->Topview->fisheyeParams.animate);
 

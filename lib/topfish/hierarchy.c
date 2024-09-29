@@ -662,10 +662,9 @@ static ex_vtx_data *cpExGraph(ex_vtx_data * graph, int n, int nedges)
     return cpGraph;
 }
 
-Hierarchy *create_hierarchy(v_data * graph, int nvtxs, int nedges,
-			    ex_vtx_data * geom_graph, int ngeom_edges,
-			    hierparms_t* parms)
-{
+Hierarchy *create_hierarchy(v_data *graph, int nvtxs, int nedges,
+                            ex_vtx_data *geom_graph, int ngeom_edges,
+                            int dist2_limit) {
     int cur_level;
     Hierarchy *hierarchy = gv_alloc(sizeof(Hierarchy));
     int cngeom_edges = ngeom_edges;
@@ -712,7 +711,7 @@ Hierarchy *create_hierarchy(v_data * graph, int nvtxs, int nedges,
 	     &hierarchy->nvtxs[cur_level + 1],
 	     &hierarchy->nedges[cur_level + 1], &cngeom_edges,
 	     &hierarchy->v2cv[cur_level], &hierarchy->cv2v[cur_level + 1],
-             parms->dist2_limit);
+	     dist2_limit);
     }
 
     hierarchy->nlevels = cur_level + 1;

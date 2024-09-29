@@ -221,7 +221,9 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	    int active;	//1 draw hierarchy 0 draw regular topview
 	    reposition_t repos;
 	    levelparms_t level;
-	    hierparms_t hier;
+	    /// if dist2_limit true, don’t contract nodes of distance larger than 2
+	    /// if false then also distance 3 is possible
+	    int dist2_limit;
 	    Hierarchy *h;
 	    int animate;
 	    glCompColor srcColor;	//fine node colors of topfisheye
