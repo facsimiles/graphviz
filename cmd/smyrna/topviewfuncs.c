@@ -817,7 +817,6 @@ void updateSmGraph(Agraph_t * g,topview* t)
 
     t->Nodecount=0;
     t->maxedgelen=0;
-    t->minedgelen=-1;
 
     t->global_z=0;
     t->sel.selPoly = (glCompPoly_t){0};
@@ -829,8 +828,6 @@ void updateSmGraph(Agraph_t * g,topview* t)
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
 	    eLength=getEdgeLength(e);
-	    if((t->minedgelen == -1) || (t->minedgelen > eLength))
-		t->minedgelen=eLength;
 	    if(eLength > t->maxedgelen)
 		t->maxedgelen=eLength;
 	    totalELength += eLength;

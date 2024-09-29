@@ -231,7 +231,6 @@ enum {SCHEMACOUNT = 4}; // number of colors
 
 	graph_data Graphdata;
 	float maxedgelen;
-	float minedgelen;
 	float fitin_zoom;
 	xdot* xDot;
 	double global_z;
