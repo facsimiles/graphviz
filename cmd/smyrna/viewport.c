@@ -568,8 +568,7 @@ void getcolorfromschema(const colorschemaset sc, float l, float maxl,
 /* set_color_theme_color:
  * Convert colors as strings to RGB
  */
-static void set_color_theme_color(colorschemaset * sc, char **colorstr)
-{
+static void set_color_theme_color(colorschemaset *sc, const char **colorstr) {
     const size_t colorcnt = sizeof(sc->s) / sizeof(sc->s[0]);
     gvcolor_t cl;
     float av_perc;
@@ -585,22 +584,22 @@ static void set_color_theme_color(colorschemaset * sc, char **colorstr)
     }
 }
 
-static char *deep_blue[SCHEMACOUNT] = {
+static const char *deep_blue[SCHEMACOUNT] = {
     "#C8CBED", "#9297D3", "#0000FF", "#2C2E41"
 };
-static char *pastel[SCHEMACOUNT] = {
+static const char *pastel[SCHEMACOUNT] = {
     "#EBBE29", "#D58C4A", "#74AE09", "#893C49"
 };
-static char *magma[SCHEMACOUNT] = {
+static const char *magma[SCHEMACOUNT] = {
     "#E0061E", "#F0F143", "#95192B", "#EB712F"
 };
-static char *rain_forest[SCHEMACOUNT] = {
+static const char *rain_forest[SCHEMACOUNT] = {
     "#1E6A10", "#2ABE0E", "#AEDD39", "#5EE88B"
 };
 typedef struct {
-    char **colors;
+    const char **colors;
 } colordata;
-static colordata palette[] = {
+static const colordata palette[] = {
     {deep_blue},
     {pastel},
     {magma},
