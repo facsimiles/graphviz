@@ -81,9 +81,6 @@ extern "C" {
 					   float y, glMouseButtonType t);
     typedef void (*glcompmouseupfunc_t) (glCompObj * obj, float x,
 					 float y, glMouseButtonType t);
-    typedef void (*glcompmousedragfunct_t) (glCompObj * obj, float dx,
-					    float dy,
-					    glMouseButtonType t);
 
     typedef struct {
 	int topAnchor;		/*anchor booleans */
@@ -155,8 +152,6 @@ DEFINE_LIST(glCompPoly, glCompPoint)
 	glcompmouseoverfunc_t mouseover;
 	glcompmousedownfunc_t mousedown;
 	glcompmouseupfunc_t mouseup;
-	glcompmousedragfunct_t mousedrag;
-
     } glCompCallBacks;
 
 typedef struct glCompSet_ glCompSet;
