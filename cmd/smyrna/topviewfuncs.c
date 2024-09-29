@@ -387,7 +387,6 @@ static void renderSelectedEdges(Agraph_t * g)
     xdot * x;
     glCompPoint posT;	/*Tail position*/
     glCompPoint posH;	/*Head position*/
-    glCompColor c;
     /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
@@ -396,7 +395,7 @@ static void renderSelectedEdges(Agraph_t * g)
 	{
 	    if(!ED_selected(e))
 		continue;
-	    if(!object_color(e,&c))
+	    if (!object_color(e, &(glCompColor){0}))
 		continue;
 
 	    x=parseXdotwithattrs(e);
@@ -414,7 +413,7 @@ static void renderSelectedEdges(Agraph_t * g)
 	    if(!ED_selected(e))
 		continue;
 
-	    if(!object_color(e,&c))
+	    if (!object_color(e, &(glCompColor){0}))
 		continue;
 	    glColor4f(1,0,0,1);	    
 	    posT = ED_posTail(e);
