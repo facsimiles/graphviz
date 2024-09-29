@@ -183,7 +183,6 @@ static void get_data_dir(void)
 }
 
 static void clear_color_theme(colorschemaset *cs) {
-  free(cs->s);
   *cs = (colorschemaset){0};
 }
 
@@ -552,7 +551,7 @@ void getcolorfromschema(const colorschemaset sc, float l, float maxl,
     float percl = l / maxl;
 
     // For smooth schemas, s[0].perc = 0, so we start with ind=1
-    for (ind = 1; ind + 1 < sc.schemacount; ind++) {
+    for (ind = 1; ind + 1 < sizeof(sc.s) / sizeof(sc.s[0]); ind++) {
 	if (percl < sc.s[ind].perc)
 	    break;
     }
@@ -571,7 +570,7 @@ void getcolorfromschema(const colorschemaset sc, float l, float maxl,
  */
 static void set_color_theme_color(colorschemaset * sc, char **colorstr)
 {
-    const size_t colorcnt = sc->schemacount;
+    const size_t colorcnt = sizeof(sc->s) / sizeof(sc->s[0]);
     gvcolor_t cl;
     float av_perc;
 
@@ -586,28 +585,26 @@ static void set_color_theme_color(colorschemaset * sc, char **colorstr)
     }
 }
 
-static char *deep_blue[] = {
+static char *deep_blue[SCHEMACOUNT] = {
     "#C8CBED", "#9297D3", "#0000FF", "#2C2E41"
 };
-static char *pastel[] = {
+static char *pastel[SCHEMACOUNT] = {
     "#EBBE29", "#D58C4A", "#74AE09", "#893C49"
 };
-static char *magma[] = {
+static char *magma[SCHEMACOUNT] = {
     "#E0061E", "#F0F143", "#95192B", "#EB712F"
 };
-static char *rain_forest[] = {
+static char *rain_forest[SCHEMACOUNT] = {
     "#1E6A10", "#2ABE0E", "#AEDD39", "#5EE88B"
 };
-#define CSZ(x) (sizeof(x)/sizeof(char*))
 typedef struct {
-    size_t cnt;
     char **colors;
 } colordata;
 static colordata palette[] = {
-    {CSZ(deep_blue), deep_blue},
-    {CSZ(pastel), pastel},
-    {CSZ(magma), magma},
-    {CSZ(rain_forest), rain_forest},
+    {deep_blue},
+    {pastel},
+    {magma},
+    {rain_forest},
 };
 #define NUM_SCHEMES (sizeof(palette)/sizeof(colordata))
 
@@ -620,8 +617,6 @@ static colorschemaset create_color_theme(int themeid) {
     colorschemaset s = {0};
     clear_color_theme(&view->colschms);
 
-    s.schemacount = palette[themeid].cnt;
-    s.s = gv_calloc(s.schemacount, sizeof(colorschema));
     set_color_theme_color(&s, palette[themeid].colors);
 
     return s;

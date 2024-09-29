@@ -96,9 +96,10 @@ typedef struct
 
     } colorschema;
 
+enum {SCHEMACOUNT = 4}; // number of colors
+
     typedef struct {
-	size_t schemacount; // number of colors
-	colorschema *s;
+	colorschema s[SCHEMACOUNT];
     } colorschemaset;
 
     typedef enum {
