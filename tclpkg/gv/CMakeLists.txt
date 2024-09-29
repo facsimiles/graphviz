@@ -218,6 +218,46 @@ if(ENABLE_SWIG)
     )
   endif()
 
+  if(ENABLE_PHP)
+    swig_add_library(gv_php
+      LANGUAGE php7
+      SOURCES gv.i gv_php_init.c
+    )
+    set_property(
+      TARGET gv_php
+      PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${PHP_INCLUDE_DIRS}
+    )
+    set_property(
+      TARGET gv_php
+      PROPERTY INCLUDE_DIRECTORIES ${PHP_INCLUDE_DIRS}
+    )
+    set(PHP_FLAGS "")
+    if(HAVE_CXX_WUNUSED_FUNCTION)
+      list(APPEND PHP_FLAGS -Wno-unused-function)
+    endif()
+    if(HAVE_CXX_WUNUSED_LABEL)
+      list(APPEND PHP_FLAGS -Wno-unused-label)
+    endif()
+    if(HAVE_CXX_WUNUSED_PARAMETER)
+      list(APPEND PHP_FLAGS -Wno-unused-parameter)
+    endif()
+    if(HAVE_CXX_WUNUSED_VARIABLE)
+      list(APPEND PHP_FLAGS -Wno-unused-variable)
+    endif()
+    set_property(
+      TARGET gv_php
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS "${PHP_FLAGS}"
+    )
+    swig_link_libraries(gv_php PRIVATE gvc ${PHP_LIBRARIES})
+
+    install(
+      TARGETS gv_php
+      RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
+      LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}/graphviz/php
+      ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+    )
+  endif()
+
   if(ENABLE_TCL)
     swig_add_library(gv_tcl
       LANGUAGE tcl
@@ -383,6 +423,27 @@ if(ENABLE_SWIG)
     else()
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3perl
+        DESTINATION ${MAN_INSTALL_DIR}/man3
+      )
+    endif()
+  endif()
+
+  if(ENABLE_PHP)
+    if(GZIP)
+      add_custom_target(man-gv_php ALL DEPENDS gv.3php.gz
+                        COMMENT "gv_php man page")
+      add_custom_command(
+        OUTPUT gv.3php.gz
+        COMMAND ${GZIP} -9 --no-name --to-stdout gv.3php
+          >"${CMAKE_CURRENT_BINARY_DIR}/gv.3php.gz"
+        MAIN_DEPENDENCY gv.3php
+        COMMENT "compress gv_php man page")
+      install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3php.gz
+        DESTINATION ${MAN_INSTALL_DIR}/man3)
+    else()
+      install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3php
         DESTINATION ${MAN_INSTALL_DIR}/man3
       )
     endif()

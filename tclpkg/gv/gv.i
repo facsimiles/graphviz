@@ -46,14 +46,6 @@
 
 /*  */
 %inline %{
-/* some language headers (e.g. php.h, ruby.h) leave these defined */
-#undef PACKAGE_BUGREPORT
-#undef PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-#undef PACKAGE_NAME
-
-#include "config.h"
 #include <gvc/gvc.h>
 
 /** New graphs */

@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (12.1.3)]
 
+### Added
+
+- Support for building the SWIG-generated PHP language bindings has been
+  integrated into the CMake build system. This is controllable by the
+  `-DENABLE_PHP={AUTO|ON|OFF}` option.
+
 ## [12.1.2] – 2024-09-28
 
 ### Changed
