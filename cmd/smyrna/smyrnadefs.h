@@ -130,7 +130,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	smyrna_view_mode mode;
     }mouse_action_t;
 
-    typedef struct _viewport_camera {
+    typedef struct {
 	float x;
 	float y;
 
