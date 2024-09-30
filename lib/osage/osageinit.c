@@ -15,6 +15,8 @@
  */
 
 #include    <assert.h>
+#include    <common/render.h>
+#include    <common/utils.h>
 #include    <cgraph/list.h>
 #include    <limits.h>
 #include    <osage/osage.h>
@@ -308,7 +310,7 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
         clist = pclist;
 
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-        if (startswith(agnameof(subg), "cluster")) {
+        if (is_a_cluster(subg)) {
 	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
 	    do_graph_label (subg);
             clist_append(clist, subg);

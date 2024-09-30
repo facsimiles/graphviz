@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unresolvable symbols. This was a regression in Graphviz 4.0.0. Though it would
   primarily have affected non-Graphviz applications attempting to load this
   plugin on Linux.
+- The osage layout engine now understands a cluster to be indicated by the
+  common rules, including the “cluster” prefix being case insensitive and the
+  `cluster=true` attribute as an alternative. #2187
 
 ## [12.1.2] – 2024-09-28
 
