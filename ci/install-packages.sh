@@ -28,10 +28,7 @@ if [ "${build_system}" = "cmake" ]; then
 else
     if [ "${ID_LIKE:-}" = "debian" ]; then
         tar xf ${DIR}/graphviz-${GV_VERSION}-debs.tar.xz
-        apt install ./libgraphviz4_${GV_VERSION}-1_amd64.deb
-        apt install ./libgraphviz-dev_${GV_VERSION}-1_amd64.deb
-        apt install ./graphviz_${GV_VERSION}-1_amd64.deb
-        apt install ./libgv-tcl_${GV_VERSION}-1_amd64.deb
+        apt install ./*.deb
     elif [ "${ID}" = "Darwin" ]; then
         tar xf ${DIR}/graphviz-${GV_VERSION}-${ARCH}.tar.gz
         sudo cp -rp build/* /usr/local
