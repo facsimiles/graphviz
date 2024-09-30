@@ -6,7 +6,15 @@ set -u
 set -x
 
 ci/install-packages.sh
+
+cat /etc/os-release
+. /etc/os-release
+if [ "${ID_LIKE:-}" = "debian" ]; then
+  export TCLLIBPATH=/usr/lib/x86_64-linux-gnu/graphviz/tcl
+else
+  export TCLLIBPATH=/usr/lib64/graphviz/tcl
+fi
+
 export GV_VERSION=$( cat GRAPHVIZ_VERSION )
-export TCLLIBPATH=/usr/lib64/graphviz/tcl
 python3 -m pytest --strict-markers --verbose --verbose --junit-xml=report.xml \
   ci/tests.py tests
