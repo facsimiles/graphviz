@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   integrated into the CMake build system. This is controllable by the
   `-DENABLE_PHP={AUTO|ON|OFF}` option.
 
+### Fixed
+
+- In the Autotools build system, the core plugin links against libm, fixing some
+  unresolvable symbols. This was a regression in Graphviz 4.0.0. Though it would
+  primarily have affected non-Graphviz applications attempting to load this
+  plugin on Linux.
+
 ## [12.1.2] – 2024-09-28
 
 ### Changed

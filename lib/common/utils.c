@@ -96,7 +96,6 @@ bool late_bool(void *obj, attrsym_t *attr, bool defaultValue) {
     return mapbool(agxget(obj, attr));
 }
 
-/* union-find */
 node_t *UF_find(node_t * n)
 {
     while (ND_UF_parent(n) && ND_UF_parent(n) != n) {

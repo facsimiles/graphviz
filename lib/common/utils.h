@@ -85,6 +85,8 @@ UTILS_API char *late_string(void *obj, Agsym_t *attr, char *defaultValue);
 UTILS_API bool late_bool(void *obj, Agsym_t *attr, bool defaultValue);
 UTILS_API double get_inputscale(graph_t *g);
 
+// routines for supporting “union-find”, a.k.a. “disjoint-set forest”
+// https://en.wikipedia.org/wiki/Disjoint-set_data_structure
 UTILS_API Agnode_t *UF_find(Agnode_t *);
 UTILS_API Agnode_t *UF_union(Agnode_t *, Agnode_t *);
 UTILS_API void UF_singleton(Agnode_t *);
