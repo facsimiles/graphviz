@@ -31,7 +31,6 @@ import pytest
 
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
-    ROOT,
     dot,
     gvpr,
     is_macos,
@@ -1157,11 +1156,6 @@ def test_1767():
     https://gitlab.com/graphviz/graphviz/-/issues/1767
     """
 
-    # FIXME: Remove skip when
-    # https://gitlab.com/graphviz/graphviz/-/issues/1777 is fixed
-    if os.getenv("build_system") == "msbuild":
-        pytest.skip("Windows MSBuild release does not contain any header files (#1777)")
-
     # find co-located test source
     c_src = (Path(__file__).parent / "1767.c").resolve()
     assert c_src.exists(), "missing test case"
@@ -1402,10 +1396,6 @@ def test_1880():
     dot("png", input)
 
 
-@pytest.mark.skipif(
-    os.getenv("build_system") == "msbuild",
-    reason="Windows MSBuild release does not contain any header files (#1777)",
-)
 @pytest.mark.xfail(
     strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1887"
 )
@@ -1633,11 +1623,6 @@ def test_1910():
     https://gitlab.com/graphviz/graphviz/-/issues/1910
     """
 
-    # FIXME: Remove skip when
-    # https://gitlab.com/graphviz/graphviz/-/issues/1777 is fixed
-    if os.getenv("build_system") == "msbuild":
-        pytest.skip("Windows MSBuild release does not contain any header files (#1777)")
-
     # find co-located test source
     c_src = (Path(__file__).parent / "1910.c").resolve()
     assert c_src.exists(), "missing test case"
@@ -1826,11 +1811,6 @@ def test_2057():
     https://gitlab.com/graphviz/graphviz/-/issues/2057
     """
 
-    # FIXME: Remove skip when
-    # https://gitlab.com/graphviz/graphviz/-/issues/1777 is fixed
-    if os.getenv("build_system") == "msbuild":
-        pytest.skip("Windows MSBuild release does not contain any header files (#1777)")
-
     # find co-located test source
     c_src = (Path(__file__).parent / "2057.c").resolve()
     assert c_src.exists(), "missing test case"
@@ -2011,12 +1991,6 @@ def test_2094():
     assert ret == 1, "dot2gxl did not reject malformed XML"
 
 
-@pytest.mark.skipif(
-    os.environ.get("build_system") == "msbuild"
-    and os.environ.get("configuration") == "Debug",
-    reason="Graphviz built with MSBuild in Debug mode has an "
-    "insufficient stack size for this test",
-)
 def test_2095():
     """
     Exceeding 1000 boxes during computation should not cause a crash
@@ -2502,7 +2476,7 @@ def test_2215():
 
 
 @pytest.mark.xfail(
-    os.getenv("build_system") == "msbuild" or is_rocky(),
+    is_rocky(),
     strict=True,
     reason="https://gitlab.com/graphviz/graphviz/-/issues/2241",
 )
@@ -2594,10 +2568,6 @@ def test_2342():
     dot("svg", input)
 
 
-@pytest.mark.skipif(
-    os.getenv("build_system") == "msbuild",
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1777",
-)
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
@@ -2692,10 +2662,6 @@ def test_2481():
 
 
 @pytest.mark.skipif(
-    os.getenv("build_system") == "msbuild",
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1777",
-)
-@pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
@@ -2725,11 +2691,6 @@ def test_package_version():
     """
     The graphviz_version.h header should define a non-empty PACKAGE_VERSION
     """
-
-    # FIXME: Remove skip when
-    # https://gitlab.com/graphviz/graphviz/-/issues/1777 is fixed
-    if os.getenv("build_system") == "msbuild":
-        pytest.skip("Windows MSBuild release does not contain any header files (#1777)")
 
     # find co-located test source
     c_src = (Path(__file__).parent / "get-package-version.c").resolve()
@@ -2773,23 +2734,8 @@ def test_xdot_json():
     input = "c 9 -#fffffe00 C 7 -#ffffff P 4 0 0 0 36 54 36 54 0"
 
     # ask our C helper to process this
-    try:
-        output, err = run_c(c_src, input=input, link=["xdot"])
-    except subprocess.CalledProcessError:
-        # FIXME: Remove this try-catch when
-        # https://gitlab.com/graphviz/graphviz/-/issues/1777 is fixed
-        if os.getenv("build_system") == "msbuild":
-            pytest.skip(
-                "Windows MSBuild release does not contain any header files (#1777)"
-            )
-        raise
+    output, err = run_c(c_src, input=input, link=["xdot"])
     assert err == ""
-
-    if os.getenv("build_system") == "msbuild":
-        pytest.fail(
-            "Windows MSBuild unexpectedly passed compilation of a "
-            "Graphviz header. Remove the above try-catch? (#1777)"
-        )
 
     # confirm the output was what we expected
     data = json.loads(output)
@@ -2798,81 +2744,6 @@ def test_xdot_json():
         {"C": "#ffffff"},
         {"P": [0.0, 0.0, 0.0, 36.0, 54.0, 36.0, 54.0, 0.0]},
     ]
-
-
-# find all .vcxproj files
-VCXPROJS: List[Path] = []
-for repo_root, _, files in os.walk(ROOT):
-    for stem in files:
-        # skip files generated by MSBuild itself
-        if stem in (
-            "VCTargetsPath.vcxproj",
-            "CompilerIdC.vcxproj",
-            "CompilerIdCXX.vcxproj",
-        ):
-            continue
-        full_path = Path(repo_root) / stem
-        if full_path.suffix != ".vcxproj":
-            continue
-        VCXPROJS.append(full_path)
-
-
-@pytest.mark.parametrize(
-    "vcxproj",
-    (
-        pytest.param(p, id=str(p.relative_to(Path(__file__).parents[1])))
-        for p in VCXPROJS
-    ),
-)
-def test_vcxproj_inclusive(vcxproj: Path):
-    """check .vcxproj files correspond to .vcxproj.filters files"""
-
-    def fix_sep(path: str) -> str:
-        """translate Windows path separators to ease running this on non-Windows"""
-        return path.replace("\\", os.sep)
-
-    # FIXME: files missing a filters file
-    FILTERS_WAIVERS = (Path("lib/version/version.vcxproj"),)
-
-    filters = Path(f"{str(vcxproj)}.filters")
-    if vcxproj.relative_to(ROOT) not in FILTERS_WAIVERS:
-        assert filters.exists(), f"no {str(filters)} corresponding to {str(vcxproj)}"
-
-    # namespace the MSBuild elements live in
-    ns = "http://schemas.microsoft.com/developer/msbuild/2003"
-
-    # parse XML out of the .vcxproj file
-    srcs1 = set()
-    tree = ET.parse(vcxproj)
-    root = tree.getroot()
-    for elem in root:
-        if elem.tag == f"{{{ns}}}ItemGroup":
-            for child in elem:
-                if child.tag in (f"{{{ns}}}ClInclude", f"{{{ns}}}ClCompile"):
-                    filename = fix_sep(child.attrib["Include"])
-                    assert (
-                        filename not in srcs1
-                    ), f"duplicate source {filename} in {str(vcxproj)}"
-                    srcs1.add(filename)
-
-    # parse XML out of the .vcxproj.filters file
-    if filters.exists():
-        srcs2 = set()
-        tree = ET.parse(filters)
-        root = tree.getroot()
-        for elem in root:
-            if elem.tag == f"{{{ns}}}ItemGroup":
-                for child in elem:
-                    if child.tag in (f"{{{ns}}}ClInclude", f"{{{ns}}}ClCompile"):
-                        filename = fix_sep(child.attrib["Include"])
-                        assert (
-                            filename not in srcs2
-                        ), f"duplicate source {filename} in {str(filters)}"
-                        srcs2.add(filename)
-
-        assert (
-            srcs1 == srcs2
-        ), "mismatch between sources in {str(vcxproj)} and {str(filters)}"
 
 
 @pytest.mark.skipif(which("gvmap") is None, reason="gvmap not available")
@@ -3044,11 +2915,6 @@ def test_2272():
     using `agmemread` with an unterminated string should not fail assertions
     https://gitlab.com/graphviz/graphviz/-/issues/2272
     """
-
-    # FIXME: Remove skip when
-    # https://gitlab.com/graphviz/graphviz/-/issues/1777 is fixed
-    if os.getenv("build_system") == "msbuild":
-        pytest.skip("Windows MSBuild release does not contain any header files (#1777)")
 
     # find co-located test source
     c_src = (Path(__file__).parent / "2272.c").resolve()
@@ -3563,10 +3429,6 @@ def test_2413(source: str):
     assert stderr == "", "long edges resulted in a warning"
 
 
-@pytest.mark.skipif(
-    os.getenv("build_system") == "msbuild",
-    reason="vt target is not supported under MS Build",
-)
 def test_2429():
     """
     the vt target should be usable
@@ -4637,10 +4499,6 @@ def test_dot_randomV():
     assert proc.stderr == expected, "unexpected usage info"
 
 
-@pytest.mark.skipif(
-    os.getenv("build_system") == "msbuild",
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1777",
-)
 def test_dot_V():
     """
     test the output from `dot -V`
@@ -4659,10 +4517,6 @@ def test_dot_V():
     ), "unexpected -V info"
 
 
-@pytest.mark.skipif(
-    os.getenv("build_system") == "msbuild",
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1777",
-)
 def test_dot_Vquestionmark():
     """
     test the output from two short options combined
@@ -4681,10 +4535,6 @@ def test_dot_Vquestionmark():
     ), "unexpected -V info"
 
 
-@pytest.mark.skipif(
-    os.getenv("build_system") == "msbuild",
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1777",
-)
 def test_dot_Vrandom():
     """
     test the output from a short option mixed with long

@@ -163,9 +163,16 @@ def gvpr(program: Path) -> str:
     )
 
 
+def build_system() -> str:
+    """get the build system name"""
+    if platform.system() == "Windows":
+        return "cmake"
+    return os.getenv("build_system")
+
+
 def is_cmake() -> bool:
     """was the Graphviz under test built with CMake?"""
-    return os.getenv("build_system") == "cmake"
+    return build_system() == "cmake"
 
 
 def is_macos() -> bool:

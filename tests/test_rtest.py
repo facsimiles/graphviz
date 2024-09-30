@@ -9,7 +9,6 @@ TODO:
 
 import hashlib
 import io
-import os
 import platform
 import re
 import shutil
@@ -409,30 +408,6 @@ def test_graph(name: str, input: Path, algorithm: str, format: str, flags: List[
     OUTDIR.mkdir(exist_ok=True)
     OUTPATH = OUTDIR / OUTFILE
     testcmd = ["dot", f"-K{algorithm}", f"-T{format}"] + flags + ["-o", OUTPATH, INFILE]
-    # FIXME: Remove when https://gitlab.com/graphviz/graphviz/-/issues/1269 is
-    # fixed
-    if (
-        platform.system() == "Windows"
-        and os.environ.get("build_system") == "msbuild"
-        and "-Goverlap=false" in flags
-    ):
-        pytest.skip(
-            f"Skipping test {name}: with flag -Goverlap=false because "
-            "it fails with Windows MSBuild builds which are not built with "
-            "triangulation library (#1269)"
-        )
-    # FIXME: Remove when https://gitlab.com/graphviz/graphviz/-/issues/1787 is
-    # fixed
-    if (
-        platform.system() == "Windows"
-        and os.environ.get("build_system") == "msbuild"
-        and os.environ.get("configuration") == "Debug"
-        and name == "user_shapes"
-    ):
-        pytest.skip(
-            f"Skipping test {name}: using shapefile because it fails "
-            "with Windows MSBuild Debug builds (#1787)"
-        )
     # FIXME: Remove when https://gitlab.com/graphviz/graphviz/-/issues/1790 is
     # fixed
     if platform.system() == "Windows" and name == "ps_user_shapes":

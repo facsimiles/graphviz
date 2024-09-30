@@ -61,7 +61,7 @@ make install
 
 Note that Graphviz’ CMake build system is incomplete. It only builds a subset
 of the binaries and libraries. For most code-related changes, you will probably
-want to test using Autotools or MSBuild instead.
+want to test using Autotools instead.
 
 However, if you do want to use CMake:
 
@@ -80,10 +80,6 @@ cmake --build build
 # install everything to the temporary directory
 cmake --install build
 ```
-
-### Microsoft Build Engine
-
-TODO
 
 ## Testing
 

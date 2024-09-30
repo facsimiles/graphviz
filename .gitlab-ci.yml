@@ -152,7 +152,7 @@ portable-source:
         - Set-ExecutionPolicy Bypass -Force -Scope Process
         - $logfile = New-TemporaryFile
         - windows/bin/setup-build-utilities.ps1 2>&1 | tee $logfile
-        - python ci/windows_build.py --build-system $Env:build_system --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS --logfile $logfile
+        - python ci/windows_build.py --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS --logfile $logfile
         - $warnings_count = (Select-String -Pattern " warning " -Path $logfile).length
         - echo "$CI_JOB_NAME-warnings $warnings_count" | tee metrics.txt
         - python gen_version.py --output GRAPHVIZ_VERSION
@@ -173,40 +173,27 @@ portable-source:
                 Set-Content "env:\$($matches[1])" $matches[2];
               }
             }
-        - >-
-            if($Env:build_system -eq "cmake") {
-              cd build;
-              $FILENAME = & invoke-Expression "Get-ChildItem Graphviz*.exe";
-              mv $FILENAME graphviz-install.exe;
-              # Install using installer and add bin directory to path.
-              # Piping the output of the installer to Out-Null, makes the script wait
-              # for the .exe to exit, instead continuing to the next command (which
-              # will then fail because the install hasn't finished)
-              ./graphviz-install.exe /S /D=$Env:graphviz_install_dir | Out-Null;
-              mv graphviz-install.exe graphviz-install-$Env:GV_VERSION-$API.exe;
-              $Env:Path = $Env:graphviz_install_dir + "\bin" + ";" + $Env:Path
-              cd ..;
-              $Env:INCLUDE += ";C:\Graphviz\include";
-              $Env:LIB += ";C:\Graphviz\lib";
-            }
-            elseif($Env:build_system -eq "msbuild") {
-              # Append build destination to the PATH, configure dot and execute regression tests
-              # The following is per https://gitlab.com/graphviz/graphviz/-/merge_requests/1345
-              $Env:Path = $Env:CI_PROJECT_DIR + "\" + $Env:configuration + "\Graphviz\bin" + ";" + $Env:Path;
-            }
+        - cd build
+        - $FILENAME = & invoke-Expression "Get-ChildItem Graphviz*.exe"
+        - mv $FILENAME graphviz-install.exe
+        # Install using installer and add bin directory to path.
+        # Piping the output of the installer to Out-Null, makes the script wait
+        # for the .exe to exit, instead continuing to the next command (which
+        # will then fail because the install hasn't finished)
+        - ./graphviz-install.exe /S /D=$Env:graphviz_install_dir | Out-Null
+        - mv graphviz-install.exe graphviz-install-$Env:GV_VERSION-$API.exe
+        - $Env:Path = $Env:graphviz_install_dir + "\bin" + ";" + $Env:Path
+        - cd ..
+        - $Env:INCLUDE += ";C:\Graphviz\include"
+        - $Env:LIB += ";C:\Graphviz\lib"
         - python -m pytest --strict-markers --verbose --verbose --junit-xml=report.xml ci/tests.py tests
         # Create artifacts to archive
         - $ID = "windows"
         - $VERSION_ID = "10"
-        - $DIR = "Packages\${ID}\${VERSION_ID}\$Env:build_system\$Env:configuration"
+        - $DIR = "Packages\${ID}\${VERSION_ID}\cmake\$Env:configuration"
         - mkdir -p $DIR
-        - >-
-            if($Env:build_system -eq "cmake") {
-                mv "build\*.exe" $DIR;
-                mv "build\*.zip" $DIR;
-            } else {
-                Compress-Archive -Path "$Env:configuration\*" -DestinationPath "$DIR\graphviz-$Env:GV_VERSION-$API.zip";
-            }
+        - mv "build\*.exe" $DIR
+        - mv "build\*.zip" $DIR
     artifacts:
         when: on_success
         expire_in: 1 week
@@ -758,7 +745,6 @@ windows-cmake-Win32-release-build:
     before_script:
         - $Env:project_platform = "Win32"
         - $Env:configuration = "Release"
-        - $Env:build_system = "cmake"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
 windows-cmake-Win32-debug-build:
@@ -766,7 +752,6 @@ windows-cmake-Win32-debug-build:
     before_script:
         - $Env:project_platform = "Win32"
         - $Env:configuration = "Debug"
-        - $Env:build_system = "cmake"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
 windows-cmake-x64-release-build:
@@ -774,7 +759,6 @@ windows-cmake-x64-release-build:
     before_script:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Release"
-        - $Env:build_system = "cmake"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
 windows-cmake-x64-debug-build:
@@ -782,7 +766,6 @@ windows-cmake-x64-debug-build:
     before_script:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Debug"
-        - $Env:build_system = "cmake"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
 windows-cmake-x64-debug-static-build:
@@ -790,24 +773,7 @@ windows-cmake-x64-debug-static-build:
     before_script:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Debug"
-        - $Env:build_system = "cmake"
         - $Env:BUILD_SHARED_LIBS = "OFF"
-
-windows-msbuild-Win32-release-build:
-    <<: *windows_build_definition
-    before_script:
-        - $Env:project_platform = "Win32"
-        - $Env:configuration = "Release"
-        - $Env:build_system = "msbuild"
-        - $Env:BUILD_SHARED_LIBS = "ON"
-
-windows-msbuild-Win32-debug-build:
-    <<: *windows_build_definition
-    before_script:
-        - $Env:project_platform = "Win32"
-        - $Env:configuration = "Debug"
-        - $Env:build_system = "msbuild"
-        - $Env:BUILD_SHARED_LIBS = "ON"
 
 windows-mingw32-cmake-build:
     stage: build

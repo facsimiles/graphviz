@@ -31,13 +31,7 @@ def main(args: List[str]) -> int:  # pylint: disable=C0116
         "--build-shared-libs",
         choices=("ON", "OFF"),
         default="ON",
-        help="control shared libraries selection (CMake only)",
-    )
-    parser.add_argument(
-        "--build-system",
-        choices=("cmake", "msbuild"),
-        required=True,
-        help="build system to run",
+        help="control shared libraries selection",
     )
     parser.add_argument(
         "--configuration",
@@ -59,62 +53,38 @@ def main(args: List[str]) -> int:  # pylint: disable=C0116
     # find the repository root directory
     root = Path(__file__).resolve().parent.parent
 
-    if options.build_system == "cmake":
-        build = root / "build"
-        if build.exists():
-            shutil.rmtree(build)
-        build.mkdir(parents=True)
-        run(["cmake", "--version"], build, options.logfile)
-        run(
-            [
-                "cmake",
-                "--log-level=VERBOSE",
-                "-G",
-                "Visual Studio 17 2022",
-                "-A",
-                options.platform,
-                f"-DBUILD_SHARED_LIBS={options.build_shared_libs}",
-                "-Dwith_cxx_api=ON",
-                "-DENABLE_LTDL=ON",
-                "-DWITH_EXPAT=ON",
-                "-DWITH_GVEDIT=OFF",
-                "-DWITH_ZLIB=ON",
-                "--warn-uninitialized",
-                "-Werror=dev",
-                "..",
-            ],
-            build,
-            options.logfile,
-        )
-        run(
-            ["cmake", "--build", ".", "--config", options.configuration],
-            build,
-            options.logfile,
-        )
-        run(["cpack", "-C", options.configuration], build, options.logfile)
-
-    else:
-        run(
-            [
-                "msbuild.exe",
-                f"-p:Configuration={options.configuration}",
-                f"-p:Platform={options.platform}",
-                "graphviz.sln",
-            ],
-            root,
-            options.logfile,
-        )
-        if options.configuration == "Release":
-            for src in (root / "Release" / "Graphviz" / "bin").iterdir():
-                if src.suffix in (
-                    ".lastcodeanalysissucceeded",
-                    ".iobj",
-                    ".ipdb",
-                    ".ilk",
-                ):
-                    sys.stderr.write(f"deleting {src}\n")
-                    options.logfile.write(f"deleting {src}\n")
-                    src.unlink()
+    build = root / "build"
+    if build.exists():
+        shutil.rmtree(build)
+    build.mkdir(parents=True)
+    run(["cmake", "--version"], build, options.logfile)
+    run(
+        [
+            "cmake",
+            "--log-level=VERBOSE",
+            "-G",
+            "Visual Studio 17 2022",
+            "-A",
+            options.platform,
+            f"-DBUILD_SHARED_LIBS={options.build_shared_libs}",
+            "-Dwith_cxx_api=ON",
+            "-DENABLE_LTDL=ON",
+            "-DWITH_EXPAT=ON",
+            "-DWITH_GVEDIT=OFF",
+            "-DWITH_ZLIB=ON",
+            "--warn-uninitialized",
+            "-Werror=dev",
+            "..",
+        ],
+        build,
+        options.logfile,
+    )
+    run(
+        ["cmake", "--build", ".", "--config", options.configuration],
+        build,
+        options.logfile,
+    )
+    run(["cpack", "-C", options.configuration], build, options.logfile)
 
     return 0
 

@@ -13,6 +13,7 @@ import pytest
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../tests"))
 from gvtest import (  # pylint: disable=wrong-import-position
+    build_system,
     dot,
     freedesktop_os_release,
     is_cmake,
@@ -73,17 +74,6 @@ def test_existence(binary: str):
     check that a given binary was built and is on $PATH
     """
 
-    tools_not_built_with_msbuild = [
-        "cluster",
-        "dot2gxl",
-        "dot_builtins",
-        "gv2gxl",
-        "gvedit",
-        "gvmap.sh",
-        "gxl2dot",
-        "vimdot",
-    ]
-
     os_id = freedesktop_os_release().get("ID")
 
     # FIXME: Remove skip when
@@ -95,13 +85,6 @@ def test_existence(binary: str):
     if os_id == "rocky" and binary == "mingle":
         check_that_tool_does_not_exist(binary, os_id)
         pytest.skip("mingle is not built for Rocky due to lacking libANN")
-
-    # FIXME: Remove skip when
-    # https://gitlab.com/graphviz/graphviz/-/issues/1837 is fixed
-    if os.getenv("build_system") == "msbuild":
-        if binary in tools_not_built_with_msbuild:
-            check_that_tool_does_not_exist(binary, os_id)
-            pytest.skip(f"{binary} is not built with MSBuild (#1837)")
 
     if binary == "mingle" and is_cmake() and is_mingw():
         check_that_tool_does_not_exist(binary, os_id)
@@ -144,7 +127,7 @@ def check_that_tool_does_not_exist(tool, os_id):
     """
     assert which(tool) is None, (
         f"{tool} has been resurrected in the "
-        f'{os.getenv("build_system")} build on {os_id}. Please remove skip.'
+        f"{build_system()} build on {os_id}. Please remove skip."
     )
 
 

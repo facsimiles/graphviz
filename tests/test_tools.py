@@ -75,13 +75,6 @@ def test_tools(tool):
     if which(tool) is None:
         pytest.skip(f"{tool} not available")
 
-    # FIXME: Remove skip when
-    # https://gitlab.com/graphviz/graphviz/-/issues/1829 is fixed
-    if tool == "smyrna" and os.getenv("build_system") == "msbuild":
-        pytest.skip(
-            "smyrna fails to start because of missing DLLs in Windows MSBuild builds (#1829)"
-        )
-
     # exec-ing a POSIX shell script as-is does not work on Windows
     if tool == "gvmap.sh" and platform.system() == "Windows" and not is_mingw():
         pytest.skip("gvmap.sh cannot be run directly on Windows")

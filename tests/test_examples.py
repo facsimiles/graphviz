@@ -19,12 +19,6 @@ from gvtest import (  # pylint: disable=wrong-import-position
 @pytest.mark.parametrize(
     "src", ["demo.c", "dot.c", "example.c", "neatopack.c", "simple.c"]
 )
-# FIXME: Remove skip when
-# https://gitlab.com/graphviz/graphviz/-/issues/1777 is fixed
-@pytest.mark.skipif(
-    os.getenv("build_system") == "msbuild",
-    reason="Windows MSBuild release does not contain any header files (#1777)",
-)
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
@@ -93,19 +87,8 @@ def test_gvpr_example(src):
     """check GVPR can parse the given example"""
 
     # FIXME: remove when https://gitlab.com/graphviz/graphviz/-/issues/1784 is fixed
-    if (
-        (
-            os.environ.get("build_system") == "msbuild"
-            and os.environ.get("configuration") == "Debug"
-        )
-        or (
-            platform.system() == "Windows" and os.environ.get("build_system") == "cmake"
-        )
-    ) and src in ["bbox", "col"]:
-        pytest.skip(
-            'GVPR tests "bbox" and "col" hangs on Windows MSBuild Debug '
-            "builds and Windows CMake builds (#1784)"
-        )
+    if platform.system() == "Windows" and src in ["bbox", "col"]:
+        pytest.skip('GVPR tests "bbox" and "col" hangs on Windows builds (#1784)')
 
     # construct a relative path to the example because gvpr on Windows does not
     # support absolute paths (#1780)
@@ -120,9 +103,7 @@ def test_gvpr_example(src):
 # FIXME: Remove skip when
 # https://gitlab.com/graphviz/graphviz/-/issues/1882 is fixed
 @pytest.mark.skipif(
-    platform.system() == "Windows"
-    and os.getenv("build_system") == "cmake"
-    and platform.machine() in ("AMD64", "x86_64"),
+    platform.system() == "Windows" and platform.machine() in ("AMD64", "x86_64"),
     reason="test_gvpr_clustg fails with 64-bit gvpr on Windows (#1882)",
 )
 def test_gvpr_clustg():
