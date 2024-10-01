@@ -47,6 +47,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   new RSVG handles.
 - The Pango plugin no longer assumes a little endian environment when loading PS
   images.
+- Deleting a “vgpane” when using the Tclpathplan module no longer frees an
+  invalid pointer. This bug appears to have existed since the first revision of
+  Graphviz. That is, deleting a “vgpane” has always crashed the TCL interpreter
+  or silently corrupted the heap prior to this release.
 
 ## [12.1.1] – 2024-09-09
 
