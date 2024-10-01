@@ -38,6 +38,7 @@
 #include <util/alloc.h>
 #include <util/streq.h>
 #include <util/unreachable.h>
+#include <util/unused.h>
 #include <xdot/xdot.h>
 
 #ifdef _WIN32
@@ -781,14 +782,17 @@ void update_bb_bz(boxf *bb, pointf *cp)
     }
 }
 
-#if defined(DEBUG) && DEBUG == 2
-static void psmapOutput(pointf* ps, size_t n) {
-   fprintf (stdout, "newpath %f %f moveto\n", ps[0].x, ps[0].y);
-   for (size_t i = 1; i < n; i++)
-        fprintf (stdout, "%f %f lineto\n", ps[i].x, ps[i].y);
+DEFINE_LIST(points, pointf)
+
+static UNUSED void psmapOutput(const points_t *ps, size_t start, size_t n) {
+   const pointf first = points_get(ps, start);
+   fprintf(stdout, "newpath %f %f moveto\n", first.x, first.y);
+   for (size_t i = start + 1; i < start + n; ++i) {
+        const pointf pt = points_get(ps, i);
+        fprintf(stdout, "%f %f lineto\n", pt.x, pt.y);
+   }
    fprintf (stdout, "closepath stroke\n");
 }
-#endif
 
 typedef struct segitem_s {
     pointf p;
@@ -807,27 +811,24 @@ static segitem_t* appendSeg (pointf p, segitem_t* lp)
     return s;
 }
 
+DEFINE_LIST(pbs_size, size_t)
+
 /* Output the polygon determined by the n points in p1, followed
  * by the n points in p2 in reverse order. Assumes n <= 50.
  */
-static void map_bspline_poly(pointf **pbs_p, size_t **pbs_n, size_t *pbs_poly_n,
-                             size_t n, pointf *p1, pointf *p2) {
-    size_t i = 0, nump = 0, last = 2 * n - 1;
+static void map_bspline_poly(points_t *pbs_p, pbs_size_t *pbs_n, size_t n,
+                             pointf *p1, pointf *p2) {
+    pbs_size_append(pbs_n, 2 * n);
 
-    for ( ; i < *pbs_poly_n; i++)
-        nump += (*pbs_n)[i];
-
-    (*pbs_poly_n)++;
-    *pbs_n = gv_recalloc(*pbs_n, *pbs_poly_n - 1, *pbs_poly_n, sizeof(size_t));
-    (*pbs_n)[i] = 2*n;
-    *pbs_p = gv_recalloc(*pbs_p, nump, nump + 2 * n, sizeof(pointf));
-
-    for (i = 0; i < n; i++) {
-        (*pbs_p)[nump+i] = p1[i];
-        (*pbs_p)[nump+last-i] = p2[i];
+    const UNUSED size_t nump = points_size(pbs_p);
+    for (size_t i = 0; i < n; i++) {
+        points_append(pbs_p, p1[i]);
+    }
+    for (size_t i = 0; i < n; i++) {
+        points_append(pbs_p, p2[n - i - 1]);
     }
 #if defined(DEBUG) && DEBUG == 2
-    psmapOutput (*pbs_p + nump, last+1);
+    psmapOutput(pbs_p, nump, 2 * n);
 #endif
 }
 
@@ -921,8 +922,8 @@ static void mkSegPts (segitem_t* prv, segitem_t* cur, segitem_t* nxt,
  * In cmapx, polygons are limited to 100 points, so we output polygons
  * in chunks of 100.
  */
-static void map_output_bspline(pointf **pbs, size_t **pbs_n, size_t *pbs_poly_n,
-                               bezier *bp, double w2) {
+static void map_output_bspline(points_t *pbs, pbs_size_t *pbs_n, bezier *bp,
+                               double w2) {
     segitem_t* segl = gv_alloc(sizeof(segitem_t));
     segitem_t* segp = segl;
     segitem_t* segprev;
@@ -946,7 +947,7 @@ static void map_output_bspline(pointf **pbs, size_t **pbs_n, size_t *pbs_poly_n,
         mkSegPts (segprev, segp, segnext, pt1+cnt, pt2+cnt, w2);
         cnt++;
         if (segnext == NULL || cnt == 50) {
-            map_bspline_poly (pbs, pbs_n, pbs_poly_n, cnt, pt1, pt2);
+            map_bspline_poly(pbs, pbs_n, cnt, pt1, pt2);
             pt1[0] = pt1[cnt-1];
             pt2[0] = pt2[cnt-1];
             cnt = 1;
@@ -2405,8 +2406,6 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
   int flags = job->flags;
   char *s;
   textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL;
-  pointf *pbs = NULL;
-  size_t *pbs_n = NULL, pbs_poly_n = 0;
   char *dflt_url = NULL;
   char *dflt_target = NULL;
   double penwidth;
@@ -2553,21 +2552,23 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
 
       spl = ED_spl(e);
       const size_t ns = spl->size; /* number of splines */
+      points_t pbs = {0};
+      pbs_size_t pbs_n = {0};
       for (size_t i = 0; i < ns; i++)
-        map_output_bspline(&pbs, &pbs_n, &pbs_poly_n, spl->list + i, w2);
-      obj->url_bsplinemap_poly_n = pbs_poly_n;
-      obj->url_bsplinemap_n = pbs_n;
+        map_output_bspline(&pbs, &pbs_n, spl->list + i, w2);
       if (!(flags & GVRENDER_DOES_TRANSFORM)) {
         size_t nump = 0;
-        for (size_t i = 0; i < pbs_poly_n; i++) {
-          nump += pbs_n[i];
+        for (size_t i = 0; i < pbs_size_size(&pbs_n); ++i) {
+          nump += pbs_size_get(&pbs_n, i);
         }
-        gvrender_ptf_A(job, pbs, pbs, nump);
+        gvrender_ptf_A(job, points_front(&pbs), points_front(&pbs), nump);
       }
-      obj->url_bsplinemap_p = pbs;
+      obj->url_bsplinemap_p = points_front(&pbs);
       obj->url_map_shape = MAP_POLYGON;
-      obj->url_map_p = pbs;
-      obj->url_map_n = pbs_n[0];
+      obj->url_map_p = points_detach(&pbs);
+      obj->url_map_n = *pbs_size_front(&pbs_n);
+      obj->url_bsplinemap_poly_n = pbs_size_size(&pbs_n);
+      obj->url_bsplinemap_n = pbs_size_detach(&pbs_n);
     }
   }
 
