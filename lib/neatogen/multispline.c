@@ -730,7 +730,6 @@ static int genroute(tripoly_t *trip, int t, edge_t *e, int doPolyline) {
     Ppoly_t poly;
     Ppolyline_t pl, spl;
     Ppolyline_t mmpl;
-    Pedge_t *medges = NULL;
     int mult = ED_count(e);
     node_t* head = aghead(e);
     int rv = 0;
@@ -755,7 +754,7 @@ static int genroute(tripoly_t *trip, int t, edge_t *e, int doPolyline) {
 
     if (mult == 1 || Concentrate) {
 	poly = trip->poly;
-	medges = gv_calloc(poly.pn, sizeof(Pedge_t));
+	Pedge_t *medges = gv_calloc(poly.pn, sizeof(Pedge_t));
 	for (size_t j = 0; j < poly.pn; j++) {
 	    medges[j].a = poly.ps[j];
 	    medges[j].b = poly.ps[(j + 1) % poly.pn];
@@ -808,13 +807,15 @@ static int genroute(tripoly_t *trip, int t, edge_t *e, int doPolyline) {
 	    make_polyline (mmpl, &spl);
 	}
 	else {
-	    medges = gv_calloc(poly.pn, sizeof(Pedge_t));
+	    Pedge_t *medges = gv_calloc(poly.pn, sizeof(Pedge_t));
 	    for (size_t j = 0; j < poly.pn; j++) {
 		medges[j].a = poly.ps[j];
 		medges[j].b = poly.ps[(j + 1) % poly.pn];
 	    }
 	    tweakPath(poly, pl.pn - 1, mmpl);
-	    if (Proutespline(medges, poly.pn, mmpl, evs, &spl) < 0) {
+	    const bool failed_routing = Proutespline(medges, poly.pn, mmpl, evs, &spl) < 0;
+	    free(medges);
+	    if (failed_routing) {
 		agwarningf("Could not create control points for multiple spline for edge (%s,%s)\n", 
 		    agnameof(agtail(e)), agnameof(aghead(e)));
 		rv = 1;
@@ -832,7 +833,6 @@ finish :
 	    free(cpts[i]);
 	free(cpts);
     }
-    free(medges);
     free(poly.ps);
     return rv;
 }

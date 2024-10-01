@@ -578,8 +578,7 @@ void makeSpline(edge_t *e, Ppoly_t **obs, int npoly, bool chkPts) {
   /* True if either head or tail has a port on its boundary */
 #define BOUNDARY_PORT(e) ((ED_tail_port(e).side)||(ED_head_port(e).side))
 
-/* _spline_edges:
- * Basic default routine for creating edges.
+/* Basic default routine for creating edges.
  * If splines are requested, we construct the obstacles.
  * If not, or nodes overlap, the function reverts to line segments.
  * NOTE: intra-cluster edges are not constrained to
@@ -588,8 +587,7 @@ void makeSpline(edge_t *e, Ppoly_t **obs, int npoly, bool chkPts) {
  * If Nop > 1 and the spline exists, it is just copied.
  * NOTE: if edgetype = EDGETYPE_NONE, we shouldn't be here.
  */
-static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
-{
+static int spline_edges_(graph_t *g, expand_t *pmargin, int edgetype) {
     node_t *n;
     edge_t *e;
     edge_t *e0;
@@ -781,7 +779,7 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, expand_t*, int),
  */
 int spline_edges1(graph_t * g, int edgetype)
 {
-    return splineEdges(g, _spline_edges, edgetype);
+  return splineEdges(g, spline_edges_, edgetype);
 }
 
 /* spline_edges0:
