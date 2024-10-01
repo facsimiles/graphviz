@@ -20,7 +20,6 @@
 #include <util/alloc.h>
 
 GladeXML *xml;			//global libglade vars
-GtkWidget *gladewidget;
 
 void Color_Widget_bg(char *colorstring, GtkWidget * widget)
 {
@@ -39,7 +38,7 @@ void load_graph_properties(void) {
 
 void show_gui_warning(char *str)
 {
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
+    GtkMessageDialog *Dlg = (GtkMessageDialog *)gtk_message_dialog_new(NULL,
 						      GTK_DIALOG_MODAL,
 						      GTK_MESSAGE_WARNING,
 						      GTK_BUTTONS_OK, "%s", str);

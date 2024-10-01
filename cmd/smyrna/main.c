@@ -147,7 +147,7 @@ static void windowedMode(int argc, char *argv[]) {
     smyrnaGlade = smyrnaPath("smyrna.glade");
   xml = glade_xml_new(smyrnaGlade, NULL, NULL);
 
-  gladewidget = glade_xml_get_widget(xml, "frmMain");
+  GtkWidget *gladewidget = glade_xml_get_widget(xml, "frmMain");
   gtk_widget_show(gladewidget);
   g_signal_connect(gladewidget, "destroy", G_CALLBACK(mQuitSlot), NULL);
   glade_xml_signal_autoconnect(xml);

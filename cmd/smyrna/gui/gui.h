@@ -19,7 +19,6 @@
 #include <cgraph/cgraph.h>
 
     extern GladeXML *xml;	//global libglade vars
-    extern GtkWidget *gladewidget;
 
     void load_graph_properties(void);	//load from graph to gui
 
