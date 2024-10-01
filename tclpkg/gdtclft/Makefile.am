@@ -6,6 +6,7 @@ pkgtcldir = $(pkglibdir)/tcl
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
+	-I$(top_srcdir)/lib \
 	$(GDLIB_CFLAGS) $(TCL_INCLUDES)
 
 LIBS = @LIBS@ -lc

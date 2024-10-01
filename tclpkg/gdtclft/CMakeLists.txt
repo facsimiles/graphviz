@@ -3,6 +3,8 @@ if(GD_FOUND)
     gdtclft.c
   )
 
+  target_include_directories(gdtclft PRIVATE ../../lib)
+
   target_include_directories(gdtclft SYSTEM PRIVATE
     ${GD_INCLUDE_DIRS}
   )
