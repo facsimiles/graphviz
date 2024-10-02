@@ -8,25 +8,24 @@ set -x
 ci/install-packages.sh
 
 if [ -f /etc/os-release ]; then
-    cat /etc/os-release
-    . /etc/os-release
+  cat /etc/os-release
+  . /etc/os-release
 else
-    ID=$( uname -s )
-    # remove trailing text after actual version
-    VERSION_ID=$( uname -r | sed "s/\([0-9\.]*\).*/\1/")
+  ID=$( uname -s )
+  # remove trailing text after actual version
+  VERSION_ID=$( uname -r | sed "s/\([0-9\.]*\).*/\1/")
 fi
 
 if [ "${build_system}" = "cmake" ]; then
-  if [ "${OSTYPE}" = "linux-gnu" ]; then
-    if [ "${ID_LIKE:-}" = "debian" ]; then
-      export TCLLIBPATH=/usr/lib/graphviz/tcl
-    else
-      # Fedora, Rocky
-      export TCLLIBPATH=/usr/lib64/graphviz/tcl
-    fi
+  if [ "${ID_LIKE:-}" = "debian" ]; then
+    export TCLLIBPATH=/usr/lib/graphviz/tcl
+  elif [ "${ID}" = "Darwin" ]; then
+    export TCLLIBPATH=/usr/local/lib/graphviz/tcl
+  else
+    # Fedora, Rocky
+    export TCLLIBPATH=/usr/lib64/graphviz/tcl
   fi
-else
-  # Autotools
+else # Autotools
   if [ "${ID_LIKE:-}" = "debian" ]; then
     export TCLLIBPATH=/usr/lib/x86_64-linux-gnu/graphviz/tcl
   fi
