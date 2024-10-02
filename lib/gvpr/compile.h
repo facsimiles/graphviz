@@ -18,6 +18,7 @@ extern "C" {
 #include <parse.h>
 #include <gprstate.h>
 #include <expr/expr.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 
@@ -34,35 +35,37 @@ extern "C" {
 	Agedge_t* ine;
     } nval_t;
 
+typedef struct {
+  bool locked: 1; ///< is the lock currently taken?
+  bool zombie: 1; ///< was a deletion request recorded while locked?
+} lock_t;
+
     typedef struct {
 	Agrec_t h;
-	char lock;
+	lock_t lock;
     } gval_t;
 
     typedef struct {
 	Agrec_t h;
-    } uval_t;
+    } edata;
 
 #define OBJ(p) ((Agobj_t*)p)
 
     typedef nval_t ndata;
-    typedef uval_t edata;
     typedef gval_t gdata;
 
 #define nData(n)    ((ndata*)(aggetrec(n,UDATA,0)))
 #define gData(g)    ((gdata*)(aggetrec(g,UDATA,0)))
 
-#define SRCOUT    0x1
-#define INDUCE    0x2
-#define CLONE     0x4
-
-#define WALKSG    0x1
-#define BEGG      0x2
-#define ENDG      0x4
+typedef struct {
+  bool srcout: 1;
+  bool induce: 1;
+  bool clone: 1;
+} compflags_t;
 
     typedef struct {
 	Exnode_t *begg_stmt;
-	int walks;
+	bool does_walk_graph; ///< does this block have a node or edge statement?
 	size_t n_nstmts;
 	size_t n_estmts;
 	case_stmt *node_stmts;
@@ -70,7 +73,7 @@ extern "C" {
     } comp_block; 
 
     typedef struct {
-	int flags;
+	bool uses_graph; ///< does this program use the input graph?
 	Expr_t *prog;
 	Exnode_t *begin_stmt;
 	size_t n_blocks;
@@ -79,10 +82,8 @@ extern "C" {
 	Exnode_t *end_stmt;
     } comp_prog;
 
-    extern comp_prog *compileProg(parse_prog *, Gpr_t *, int);
+comp_prog *compileProg(parse_prog *, Gpr_t *, compflags_t);
     extern void freeCompileProg (comp_prog *p);
-    extern int usesGraph(comp_prog *);
-    extern int walksGraph(comp_block *);
     extern Agraph_t *readG(FILE *fp);
     extern Agraph_t *openG(char *name, Agdesc_t);
     extern Agraph_t *openSubg(Agraph_t * g, char *name);

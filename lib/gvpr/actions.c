@@ -489,21 +489,20 @@ Agedge_t *addEdge(Agraph_t *gp, Agedge_t *ep, int doAdd) {
  */
 int lockGraph(Agraph_t *g, int v) {
   gdata *data;
-  int oldv;
 
   if (g != agroot(g)) {
     error(ERROR_WARNING, "Graph argument to lock() is not a root graph");
     return -1;
   }
   data = gData(g);
-  oldv = data->lock & 1;
+  const int oldv = data->lock.locked;
   if (v > 0)
-    data->lock |= 1;
+    data->lock.locked = true;
   else if (v == 0 && oldv) {
-    if (data->lock & 2)
+    if (data->lock.zombie)
       agclose(g);
     else
-      data->lock = 0;
+      data->lock = (lock_t){0};
   }
   return oldv;
 }
@@ -523,9 +522,9 @@ int deleteObj(Agraph_t *g, Agobj_t *obj) {
     if (g != agroot(g))
       return agclose(g);
     data = gData(g);
-    if (data->lock & 1) {
+    if (data->lock.locked) {
       error(ERROR_WARNING, "Cannot delete locked graph %s", agnameof(g));
-      data->lock |= 2;
+      data->lock.zombie = true;
       return -1;
     } else
       return agclose(g);

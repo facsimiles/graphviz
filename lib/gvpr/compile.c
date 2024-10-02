@@ -2344,9 +2344,10 @@ static case_stmt *mkStmts(Expr_t *prog, char *src, case_infos_t cases,
     return cs;
 }
 
-static int mkBlock(comp_block *bp, Expr_t *prog, char *src, parse_block *inp,
-                   size_t i) {
-    int rv = 0;
+/// @return True if the block uses the input graph
+static bool mkBlock(comp_block *bp, Expr_t *prog, char *src, parse_block *inp,
+                    size_t i) {
+    bool has_begin_g = false; // does this block use a `BEG_G` statement?
 
     codePhase = 1;
     if (inp->begg_stmt) {
@@ -2360,7 +2361,7 @@ static int mkBlock(comp_block *bp, Expr_t *prog, char *src, parse_block *inp,
 	agxbfree(&label);
 	if (getErrorErrors())
 	    goto finishBlk;
-	rv |= BEGG;
+	has_begin_g = true;
     }
 
     codePhase = 2;
@@ -2375,7 +2376,7 @@ static int mkBlock(comp_block *bp, Expr_t *prog, char *src, parse_block *inp,
 	agxbfree(&label);
 	if (getErrorErrors())
 	    goto finishBlk;
-	bp->walks |= WALKSG;
+	bp->does_walk_graph = true;
     }
 
     codePhase = 3;
@@ -2390,7 +2391,7 @@ static int mkBlock(comp_block *bp, Expr_t *prog, char *src, parse_block *inp,
 	agxbfree(&label);
 	if (getErrorErrors())
 	    goto finishBlk;
-	bp->walks |= WALKSG;
+	bp->does_walk_graph = true;
     }
 
     finishBlk:
@@ -2401,20 +2402,20 @@ static int mkBlock(comp_block *bp, Expr_t *prog, char *src, parse_block *inp,
 	bp->edge_stmts = 0;
     }
 
-    return (rv | bp->walks);
+    return has_begin_g || bp->does_walk_graph;
 }
 
 /* doFlags:
  * Convert command line flags to actions in END_G.
  */
-static const char *doFlags(int flags) {
-  if (flags & SRCOUT) {
-    if (flags & INDUCE) {
+static const char *doFlags(compflags_t flags) {
+  if (flags.srcout) {
+    if (flags.induce) {
       return "\n$O = $G;\ninduce($O);\n";
     }
     return "\n$O = $G;\n";
   }
-  if (flags & INDUCE) {
+  if (flags.induce) {
     return "\ninduce($O);\n";
   }
   return "\n";
@@ -2423,10 +2424,9 @@ static const char *doFlags(int flags) {
 /* compileProg:
  * Convert gpr sections in libexpr program.
  */
-comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
-{
+comp_prog *compileProg(parse_prog *inp, Gpr_t *state, compflags_t flags) {
     const char *endg_sfx = NULL;
-    int useflags = 0;
+    bool uses_graph = false;
 
     /* Make sure we have enough bits for types */
     assert(BITS_PER_BYTE * sizeof(tctype) >= (1 << TBITS));
@@ -2438,7 +2438,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	goto finish;
     }
 
-    if (flags) {
+    if (flags.srcout || flags.induce || flags.clone) {
 	endg_sfx = doFlags(flags);
     }
 
@@ -2464,13 +2464,13 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 
 	for (size_t i = 0; i < parse_blocks_size(&inp->blocks); bp++, i++) {
 	    parse_block *ibp = parse_blocks_at(&inp->blocks, i);
-	    useflags |= mkBlock(bp, p->prog, inp->source, ibp, i);
+	    uses_graph |= mkBlock(bp, p->prog, inp->source, ibp, i);
 	    if (getErrorErrors())
 		goto finish;
 	    p->n_blocks++;
 	}
     }
-    p->flags = useflags;
+    p->uses_graph = uses_graph;
 
     codePhase = 4;
     if (inp->endg_stmt || endg_sfx) {
@@ -2493,7 +2493,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
     setErrorLine (0); /* execution errors have no line numbers */
 
     if (p->end_stmt)
-	p->flags |= ENDG;
+	p->uses_graph = true;
 
     finish:
     if (getErrorErrors()) {
@@ -2519,23 +2519,6 @@ freeCompileProg (comp_prog *p)
     }
     free (p->blocks);
     free (p);
-}
-
-/* walksGraph;
- * Returns true if block actually has node or edge statements.
- */
-int walksGraph(comp_block * p)
-{
-    return p->walks;
-}
-
-/* usesGraph;
- * Returns true if program uses the graph, i.e., has
- * N/E/BEG_G/END_G statments
- */
-int usesGraph(comp_prog * p)
-{
-    return p->flags;
 }
 
 /* readG:
