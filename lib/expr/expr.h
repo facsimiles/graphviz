@@ -151,7 +151,6 @@ struct Exnode_s				/* expression tree node		*/
 	long	type; ///< value type
 	long op; ///< operator
 	bool binary; ///< data.operand.{left,right} ok
-	void *local; ///< user defined local stuff
 	union
 	{
 	double	(*floating)(char**);	/* FLOATING return value	*/
