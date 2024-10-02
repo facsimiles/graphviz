@@ -858,19 +858,23 @@ static Agraph_t *ing_read(void *fp)
     return readG(fp);
 }
 
-static jmp_buf jbuf;
+/// collective managed state used in `gvpr_core`
+typedef struct {
+  parse_prog *prog;
+  ingraph_state *ing;
+  comp_prog *xprog;
+  Gpr_t *state;
+  options opts;
+} gvpr_state_t;
 
 /* gvexitf:
  * Only used if GV_USE_EXIT not set during exeval.
  * This implies setjmp/longjmp set up.
  */
-static void 
-gvexitf (Expr_t *handle, Exdisc_t *discipline, int v)
-{
-    (void)handle;
-    (void)discipline;
+static void gvexitf(void *env, int v) {
+    gvpr_state_t *st = env;
 
-    longjmp (jbuf, v);
+    longjmp(st->state->jbuf, v);
 }
 
 static void gverrorf(Expr_t *handle, Exdisc_t *discipline, int level,
@@ -883,22 +887,13 @@ static void gverrorf(Expr_t *handle, Exdisc_t *discipline, int level,
     va_end(ap);
 
     if (level >= ERROR_ERROR) {
-	Gpr_t *state = (Gpr_t*)(discipline->user);
+	Gpr_t *state = discipline->user;
 	if (state->flags & GV_USE_EXIT)
             graphviz_exit(1);
 	else if (state->flags & GV_USE_JUMP)
-	    longjmp (jbuf, 1);
+	    longjmp(state->jbuf, 1);
     }
 }
-
-/// collective managed state used in \p gvpr_core
-typedef struct {
-  parse_prog *prog;
-  ingraph_state *ing;
-  comp_prog *xprog;
-  Gpr_t *state;
-  options opts;
-} gvpr_state_t;
 
 /* gvpr_core:
  * Return 0 on success; non-zero on error.
@@ -960,7 +955,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
 
     if (!(uopts->flags & GV_USE_EXIT)) {
 	gs->state->flags |= GV_USE_JUMP;
-	if ((rv = setjmp (jbuf))) {
+	if ((rv = setjmp(gs->state->jbuf))) {
 	    return rv;
 	}
     }

@@ -87,7 +87,7 @@ typedef struct Expr_s Expr_t;
 typedef struct Exref_s Exref_t;
 
 typedef void (*Exerror_f) (Expr_t *, Exdisc_t *, int, const char *, ...);
-typedef void (*Exexit_f) (Expr_t *, Exdisc_t *, int);
+typedef void (*Exexit_f)(void *, int);
 
 typedef struct Exid_s			/* id symbol table info		*/
 {

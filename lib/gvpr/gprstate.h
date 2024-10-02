@@ -17,6 +17,7 @@ extern "C" {
 #include <sfio/sfio.h>
 #include "cgraph.h"
 #include <ast/ast.h>
+#include <setjmp.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -52,6 +53,7 @@ extern "C" {
 	int flags;
 	gvprbinding* bindings;
 	size_t n_bindings;
+	jmp_buf jbuf;
     } Gpr_t;
 
     typedef struct {

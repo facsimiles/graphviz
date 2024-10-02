@@ -1157,7 +1157,7 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 	case EXIT:
 		v = eval(ex, x, env);
 		if (ex->disc->exitf)
-			ex->disc->exitf(ex, env, (int)v.integer);
+			ex->disc->exitf(env, (int)v.integer);
 		else
 			graphviz_exit((int)v.integer);
 		UNREACHABLE();
