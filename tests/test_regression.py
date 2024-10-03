@@ -41,6 +41,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky_8,
     is_static_build,
     is_ubuntu,
+    is_ubuntu_2004,
     remove_xtype_warnings,
     run_c,
     which,
@@ -4408,6 +4409,11 @@ def test_2591():
 @pytest.mark.xfail(
     not is_cmake() and is_macos(),
     reason="Autotools on macOS does not detect TCL",
+    strict=True,
+)
+@pytest.mark.xfail(
+    is_cmake() and is_ubuntu_2004(),
+    reason="TCL packages are not built on Ubuntu 20.04 with CMake < 3.18",
     strict=True,
 )
 def test_import_tcl_package(package: str):

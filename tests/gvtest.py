@@ -194,6 +194,13 @@ def is_ubuntu() -> bool:
     return freedesktop_os_release().get("ID") == "ubuntu"
 
 
+def is_ubuntu_2004() -> bool:
+    """is the current environment Ubuntu 20.04?"""
+    if not is_ubuntu():
+        return False
+    return freedesktop_os_release().get("VERSION_ID") == "20.04"
+
+
 def remove_xtype_warnings(s: str) -> str:
     """
     Remove macOS XType warnings from a string. These appear to be harmless, but
