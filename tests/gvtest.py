@@ -178,6 +178,18 @@ def is_mingw() -> bool:
     return "mingw" in sysconfig.get_platform()
 
 
+def is_ubuntu() -> bool:
+    """is the current platform Ubuntu?"""
+    return freedesktop_os_release().get("ID") == "ubuntu"
+
+
+def is_ubuntu_2004() -> bool:
+    """is the current platform Ubuntu 20.04?"""
+    if not is_ubuntu():
+        return False
+    return freedesktop_os_release().get("VERSION_ID") == "20.04"
+
+
 def is_static_build() -> bool:
     """was the build we are testing done with static linking?"""
 

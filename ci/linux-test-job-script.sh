@@ -18,7 +18,9 @@ fi
 
 # teach TCL how to find Graphviz packages
 if [ "${build_system}" = "cmake" ]; then
-  if [ "${ID}" = "Darwin" ]; then
+  if [ "${ID_LIKE:-}" = "debian" ]; then
+    export TCLLIBPATH=/usr/lib/graphviz/tcl
+  elif [ "${ID}" = "Darwin" ]; then
     export TCLLIBPATH=/usr/local/lib/graphviz/tcl
   fi
 fi
