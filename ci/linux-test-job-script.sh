@@ -25,6 +25,8 @@ if [ "${build_system}" = "cmake" ]; then
   elif [ "${ID}" = "fedora" -o "${ID}" = "rocky" ]; then
     export TCLLIBPATH=/usr/lib64/graphviz/tcl
   fi
+elif [ "${ID_LIKE:-}" = "debian" ]; then
+  export TCLLIBPATH=/usr/lib/tcltk/graphviz/tcl
 fi
 
 export GV_VERSION=$( cat GRAPHVIZ_VERSION )

@@ -40,7 +40,6 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky,
     is_rocky_8,
     is_static_build,
-    is_ubuntu,
     is_ubuntu_2004,
     remove_xtype_warnings,
     run_c,
@@ -4427,10 +4426,6 @@ def test_2591():
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.xfail(
-    not is_cmake() and is_ubuntu(),
-    reason="TCL packages are unavailable on Ubuntu in CI",
-)
 @pytest.mark.xfail(
     not is_cmake() and is_macos(),
     reason="Autotools on macOS does not detect TCL",
