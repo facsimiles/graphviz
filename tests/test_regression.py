@@ -4400,7 +4400,10 @@ def test_2591():
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.xfail()
+@pytest.mark.xfail(
+    platform.system() == "Linux",
+    reason="TCL packages are unavailable on some Linux platforms in CI",
+)
 @pytest.mark.xfail(
     not is_cmake() and is_macos(),
     reason="Autotools on macOS does not detect TCL",

@@ -20,6 +20,9 @@ DIR_LABS="/c/Graphviz"
 export CFLAGS="-I$DIR_LABS/include"
 export LDFLAGS="-L$DIR_LABS/lib"
 
+# make TCL packages visible for importing
+export TCLLIBPATH="$DIR_LABS/lib/graphviz/tcl"
+
 # needed to find e.g. libgvc.dll at run time. Windows does not use
 # LD_LIBRARY_PATH. Must be the logical directory
 export PATH="${PATH}:$DIR_LABS/bin"
