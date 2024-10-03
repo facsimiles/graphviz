@@ -34,6 +34,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     ROOT,
     dot,
     gvpr,
+    is_cmake,
     is_macos,
     is_mingw,
     is_rocky,
@@ -4400,6 +4401,11 @@ def test_2591():
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail()
+@pytest.mark.xfail(
+    not is_cmake() and is_macos(),
+    reason="Autotools on macOS does not detect TCL",
+    strict=True,
+)
 def test_import_tcl_package(package: str):
     """
     The given TCL package should be loadable
