@@ -45,7 +45,6 @@ Agraph_t	*agopen(char *name, Agdesc_t kind, Agdisc_t *disc);
 int		agclose(Agraph_t *g);
 Agraph_t	*agread(void *channel, Agdisc_t *);
 Agraph_t	*agmemread(char *);
-void		agreadline(int line_no);
 void		agsetfile(char *file_name);
 Agraph_t	*agconcat(Agraph_t *g, void *channel, Agdisc_t *disc)
 int		agwrite(Agraph_t *g, void *channel);
@@ -192,9 +191,9 @@ be overridden, the default is that the channel argument is
 a stdio FILE pointer. In that case, if any of the streams are
 wide-oriented, the behavior is undefined.
 \fBagmemread\fP attempts to read a graph from the input string.
-\fBagsetfile\fP and \fBagreadline\fP
-are helper functions that simply set the current file name
-and input line number for subsequent error reporting.
+\fBagsetfile\fP
+is an helper function that simply sets the current file name
+for subsequent error reporting.
 .PP
 The functions \fBagisdirected\fP, \fBagisundirected\fP, \fBagisstrict\fP, and \fBagissimple\fP
 can be used to query if a graph is directed, undirected, strict (at most one edge with a given tail
