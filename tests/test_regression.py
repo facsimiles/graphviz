@@ -4211,10 +4211,6 @@ def test_2564():
     reason="pexpect.spawn is not available on Windows "
     "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
 )
-@pytest.mark.xfail(
-    is_cmake() and is_ubuntu_2404(),
-    reason="libasan is not loaded by tclsh",
-)
 def test_2568():
     """
     tags used in TCL output should be usable for later lookup
@@ -4225,8 +4221,20 @@ def test_2568():
     prelude = Path(__file__).parent / "2568.tcl"
     assert prelude.exists(), "unexpectedly missing test collateral"
 
+    # if this appears to be an ASan-enabled CI job, teach `tclsh` to load ASan’s
+    # supporting library because it is otherwise unaware that Tcldot depends on this
+    # being loaded first
+    env = os.environ.copy()
+    if re.search(r"\basan\b", os.environ.get("CI_JOB_NAME", "").lower()):
+        cc = os.environ.get("CC", "gcc")
+        libasan = subprocess.check_output(
+            [cc, "-print-file-name=libasan.so"], universal_newlines=True
+        ).strip()
+        print(f"setting LD_PRELOAD={libasan}")
+        env["LD_PRELOAD"] = libasan
+
     # startup TCL and load our graph setup code
-    proc = pexpect.spawn("tclsh", timeout=1)
+    proc = pexpect.spawn("tclsh", timeout=1, env=env)
     proc.expect("% ")
     proc.sendline(f'source "{shlex.quote(str(prelude))}"')
 
