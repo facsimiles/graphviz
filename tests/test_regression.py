@@ -42,6 +42,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_static_build,
     is_ubuntu,
     is_ubuntu_2004,
+    is_ubuntu_2404,
     remove_xtype_warnings,
     run_c,
     which,
@@ -3367,6 +3368,10 @@ def test_2368():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
+@pytest.mark.xfail(
+    is_cmake() and is_ubuntu_2404(),
+    reason="libasan is not loaded by tclsh",
+)
 def test_2370():
     """
     tcldot should have a version number TCL accepts
@@ -4197,6 +4202,10 @@ def test_2564():
     reason="pexpect.spawn is not available on Windows "
     "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
 )
+@pytest.mark.xfail(
+    is_cmake() and is_ubuntu_2404(),
+    reason="libasan is not loaded by tclsh",
+)
 def test_2568():
     """
     tags used in TCL output should be usable for later lookup
@@ -4403,7 +4412,7 @@ def test_2591():
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
-    is_ubuntu(),
+    (not is_cmake() and is_ubuntu()) or is_ubuntu_2404(),
     reason="TCL packages are unavailable on Ubuntu in CI",
 )
 @pytest.mark.xfail(
