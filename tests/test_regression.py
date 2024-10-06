@@ -3368,15 +3368,23 @@ def test_2368():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.xfail(
-    is_cmake() and is_ubuntu_2404(),
-    reason="libasan is not loaded by tclsh",
-)
 def test_2370():
     """
     tcldot should have a version number TCL accepts
     https://gitlab.com/graphviz/graphviz/-/issues/2370
     """
+
+    # if this appears to be an ASan-enabled CI job, teach `tclsh` to load ASan’s
+    # supporting library because it is otherwise unaware that Tcldot depends on this
+    # being loaded first
+    env = os.environ.copy()
+    if re.search(r"\basan\b", os.environ.get("CI_JOB_NAME", "").lower()):
+        cc = os.environ.get("CC", "gcc")
+        libasan = subprocess.check_output(
+            [cc, "-print-file-name=libasan.so"], universal_newlines=True
+        ).strip()
+        print(f"setting LD_PRELOAD={libasan}")
+        env["LD_PRELOAD"] = libasan
 
     # ask TCL to import the Graphviz package
     response = subprocess.check_output(
@@ -3384,6 +3392,7 @@ def test_2370():
         stderr=subprocess.STDOUT,
         input="package require Tcldot;",
         universal_newlines=True,
+        env=env,
     )
 
     assert (
