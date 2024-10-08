@@ -42,7 +42,6 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_static_build,
     is_ubuntu,
     is_ubuntu_2004,
-    is_ubuntu_2404,
     remove_xtype_warnings,
     run_c,
     which,
@@ -4429,7 +4428,7 @@ def test_2591():
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
-    (not is_cmake() and is_ubuntu()) or is_ubuntu_2404(),
+    not is_cmake() and is_ubuntu(),
     reason="TCL packages are unavailable on Ubuntu in CI",
 )
 @pytest.mark.xfail(
@@ -4447,12 +4446,25 @@ def test_import_tcl_package(package: str):
     The given TCL package should be loadable
     """
 
+    # if this appears to be an ASan-enabled CI job, teach `tclsh` to load ASan’s
+    # supporting library because it is otherwise unaware that Tcldot depends on this
+    # being loaded first
+    env = os.environ.copy()
+    if re.search(r"\basan\b", os.environ.get("CI_JOB_NAME", "").lower()):
+        cc = os.environ.get("CC", "gcc")
+        libasan = subprocess.check_output(
+            [cc, "-print-file-name=libasan.so"], universal_newlines=True
+        ).strip()
+        print(f"setting LD_PRELOAD={libasan}")
+        env["LD_PRELOAD"] = libasan
+
     # ask TCL to import the given package
     response = subprocess.check_output(
         ["tclsh"],
         stderr=subprocess.STDOUT,
         input=f"package require {package};",
         universal_newlines=True,
+        env=env,
     )
 
     assert "can't find package" not in response, f"{package} cannot be loaded by TCL"
