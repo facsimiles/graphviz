@@ -414,20 +414,10 @@ void node_set_add(node_set_t *self, Agsubnode_t *item) {
   assert(item != NULL);
 
   // a watermark ratio at which the set capacity should be expanded
-  static const double OCCUPANCY_THRESHOLD = 0.7; // 70%
+  static const size_t OCCUPANCY_THRESHOLD = 70; // %
 
   // do we need to expand the backing store?
-  bool grow = false;
-
-  // we definitely do if it has no room at all
-  if (self->capacity == 0) {
-    grow = true;
-  }
-
-  // we might need to if it has exceeded the watermark
-  if (!grow && self->size / self->capacity > OCCUPANCY_THRESHOLD) {
-    grow = true;
-  }
+  const bool grow = 100 * self->size >= OCCUPANCY_THRESHOLD * self->capacity;
 
   if (grow) {
     const size_t new_c = self->capacity == 0 ? 1024 : self->capacity * 2;
