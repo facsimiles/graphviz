@@ -74,6 +74,11 @@ Agraph_t *agopen1(Agraph_t * g)
     g->e_seq = agdtopen(g, g == agroot(g)? &Ag_mainedge_seq_disc : &Ag_subedge_seq_disc, Dttree);
     g->e_id = agdtopen(g, g == agroot(g)? &Ag_mainedge_id_disc : &Ag_subedge_id_disc, Dttree);
     g->g_seq = agdtopen(g, &Ag_subgraph_seq_disc, Dttree);
+
+    // `agdtopen` has allocated a `Dt_t`, which we now expand to host a
+    // `g_seq_t`. See `g_seq_t` for why we do this odd thing.
+    g->g_seq = gv_realloc(g->g_seq, sizeof(Dt_t), sizeof(g_seq_t));
+
     g->g_id = agdtopen(g, &Ag_subgraph_id_disc, Dttree);
 
     par = agparent(g);
@@ -82,6 +87,7 @@ Agraph_t *agopen1(Agraph_t * g)
 	assert((seq & SEQ_MASK) == seq && "sequence ID overflow");
 	AGSEQ(g) = seq & SEQ_MASK;
 	dtinsert(par->g_seq, g);
+	Agraphs_append(g_seq2(par), g);
 	dtinsert(par->g_id, g);
     }
     if (!par || par->desc.has_attrs)
@@ -122,6 +128,11 @@ int agclose(Agraph_t * g)
     if (agdtclose(g, g->e_id)) return FAILURE;
     assert(dtsize(g->e_seq) == 0);
     if (agdtclose(g, g->e_seq)) return FAILURE;
+
+    // needs to be done before closing `g_seq` because `agdtclose(g, g->g_seq)`
+    // deallocates the memory this is hosted in
+    assert(Agraphs_is_empty(g_seq2(g)));
+    Agraphs_free(g_seq2(g));
 
     assert(dtsize(g->g_seq) == 0);
     if (agdtclose(g, g->g_seq)) return FAILURE;

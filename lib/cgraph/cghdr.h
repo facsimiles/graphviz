@@ -31,6 +31,7 @@
 
 #include <cgraph.h>
 
+#include	 	<cgraph/list.h>
 #include	 	<ctype.h>
 #include		<sys/types.h>
 #include		<stdarg.h>
@@ -140,3 +141,40 @@ void aginitcb(Agraph_t * g, void *obj, Agcbstack_t * disc);
 void agupdcb(Agraph_t * g, void *obj, Agsym_t * sym, Agcbstack_t * disc);
 void agdelcb(Agraph_t * g, void *obj, Agcbstack_t * disc);
 /// @}
+
+DEFINE_LIST(Agraphs, Agraph_t *)
+
+/// two alternative representations of a graph collection
+///
+/// The subgraphs of a graph have traditionally been stored in a `Dt_t`. However
+/// it is much faster to iterate through a C array of the subgraphs instead of a
+/// cdt tree of them. To preserve backwards compatibility, we maintain both:
+///
+///   what the cgraph.h user sees:            what we see internally:
+///
+///      Agraph_t                                Agraph_t
+///     ┌─────────┐                             ┌─────────┐
+///     │ …       │                             │ …       │
+///     ├─────────┤    ┌───────────┐            ├─────────┤    ┌───────────┐
+///     │  g_seq ─┼───►│   Dt_t    │            │  g_seq ─┼───►│   Dt_t    │
+///     ├─────────┤    └───────────┘            ├─────────┤    ├───────────┤
+///     │ …       │                             │ …       │    │ Agraphs_t │
+///                                                            └───────────┘
+///
+/// To facilitate this, `g_seq2` can be used to access the second
+/// representation.
+typedef struct {
+  Dt_t legacy;      ///< the traditional tree of subgraphs
+  Agraphs_t linear; ///< the newer contiguous collection
+} g_seq_t;
+
+/// access the list of subgraphs of a graph
+///
+/// See `g_seq_t` for an extended explanation of this.
+///
+/// @param g The parent graph to inspect
+/// @return A generic list of the subgraphs
+static inline Agraphs_t *g_seq2(Agraph_t *g) {
+  g_seq_t *seq = (g_seq_t *)g->g_seq;
+  return &seq->linear;
+}
