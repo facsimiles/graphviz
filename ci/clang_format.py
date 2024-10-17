@@ -219,7 +219,6 @@ EXCLUDE = (
     "lib/dotgen/dot.h",
     "lib/dotgen/dotinit.c",
     "lib/dotgen/dotprocs.h",
-    "lib/dotgen/dotsplines.c",
     "lib/dotgen/fastgr.c",
     "lib/dotgen/flat.c",
     "lib/dotgen/mincross.c",
