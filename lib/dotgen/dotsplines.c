@@ -1195,7 +1195,6 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   node_t *n;
   node_t *tn, *hn;
   edge_t *e;
-  int ports = 0;
   graph_t *auxg;
   graph_t *subg;
   node_t *auxt, *auxh;
@@ -1217,15 +1216,16 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
     return;
   }
   unsigned labels = 0;
+  bool ports = false;
   for (unsigned i = 0; i < cnt; i++) {
     e = edges[ind + i];
     if (ED_label(e))
       labels++;
     if (ED_tail_port(e).defined || ED_head_port(e).defined)
-      ports = 1;
+      ports = true;
   }
 
-  if (ports == 0) {
+  if (!ports) {
     /* flat edges without ports and labels can go straight left to right */
     if (labels == 0) {
       makeSimpleFlat(tn, hn, edges, ind, cnt, et);
