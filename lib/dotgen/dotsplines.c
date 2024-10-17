@@ -1202,12 +1202,12 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   double midx, midy, leftx, rightx;
   pointf del;
   edge_t *hvye = NULL;
-  static int warned;
+  static bool warned = false;
 
   tn = agtail(e0), hn = aghead(e0);
   if (shapeOf(tn) == SH_RECORD || shapeOf(hn) == SH_RECORD) {
     if (!warned) {
-      warned = 1;
+      warned = true;
       agwarningf("flat edge between adjacent nodes one of which has a record "
                  "shape - replace records with HTML-like labels\n");
       agerr(AGPREV, "  Edge %s %s %s\n", agnameof(tn),
