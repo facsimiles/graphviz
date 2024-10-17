@@ -670,6 +670,7 @@ static int edgecmp(const void *x, const void *y) {
 
 typedef struct {
   attrsym_t *E_constr;
+  attrsym_t *E_dir;
   attrsym_t *E_samehead;
   attrsym_t *E_sametail;
   attrsym_t *E_weight;
@@ -715,6 +716,7 @@ typedef struct {
 static void setState(graph_t *auxg, attr_state_t *attr_state) {
   /* save state */
   attr_state->E_constr = E_constr;
+  attr_state->E_dir = E_dir;
   attr_state->E_samehead = E_samehead;
   attr_state->E_sametail = E_sametail;
   attr_state->E_weight = E_weight;
@@ -755,6 +757,7 @@ static void setState(graph_t *auxg, attr_state_t *attr_state) {
   attr_state->G_ordering = G_ordering;
 
   E_constr = NULL;
+  E_dir = agattr(auxg, AGEDGE, "dir", NULL);
   E_samehead = agattr(auxg, AGEDGE, "samehead", NULL);
   E_sametail = agattr(auxg, AGEDGE, "sametail", NULL);
   E_weight = agattr(auxg, AGEDGE, "weight", NULL);
@@ -847,6 +850,7 @@ static graph_t *cloneGraph(graph_t *g, attr_state_t *attr_state) {
 static void cleanupCloneGraph(graph_t *g, attr_state_t *attr_state) {
   /* restore main graph syms */
   E_constr = attr_state->E_constr;
+  E_dir = attr_state->E_dir;
   E_samehead = attr_state->E_samehead;
   E_sametail = attr_state->E_sametail;
   E_weight = attr_state->E_weight;
