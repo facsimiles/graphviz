@@ -12,8 +12,8 @@ TEST_CASE("Node fillcolor",
           "generated SVG") {
 
   const auto shape = GENERATE(filter(
-      [](std::string_view shape) {
-        return !node_shapes_without_svg_shape.contains(shape);
+      [](std::string_view s) {
+        return !node_shapes_without_svg_shape.contains(s);
       },
       from_range(all_node_shapes)));
   INFO("Shape: " << shape);

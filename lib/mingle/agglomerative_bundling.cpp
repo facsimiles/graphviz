@@ -26,9 +26,9 @@ enum {MINGLE_DEBUG=0};
 
 namespace {
 struct Agglomerative_Ink_Bundling {
-  Agglomerative_Ink_Bundling(int level, int n, SparseMatrix A,
-                             const std::vector<pedge> &edges)
-      : level(level), n(n), A(A), edges(edges) {}
+  Agglomerative_Ink_Bundling(int level_, int n_, SparseMatrix A_,
+                             const std::vector<pedge> &edges_)
+      : level(level_), n(n_), A(A_), edges(edges_) {}
 
   int level; /* 0, 1, ... */
   int n;

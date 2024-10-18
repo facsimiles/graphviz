@@ -35,10 +35,10 @@ public:
 	Constraints in;
 	Constraints out;
 	char *toString();
-	Variable(const int id, const double desiredPos, const double weight)
-		: id(id)
-		, desiredPosition(desiredPos)
-		, weight(weight)
+	Variable(const int id_, const double desiredPos_, const double weight_)
+		: id(id_)
+		, desiredPosition(desiredPos_)
+		, weight(weight_)
 		, offset(0)
 		, visited(false)
 	{

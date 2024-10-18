@@ -44,7 +44,7 @@ extern int errorPipe(char *errMsg);
 
 #ifndef _WIN32
 /// `readlink`-alike but dynamically allocates
-static std::string readln(const std::string &path) {
+static std::string readln(const std::string &pathname) {
 
   std::vector<char> buf(512, '\0');
 
@@ -55,7 +55,7 @@ static std::string readln(const std::string &path) {
 
     // attempt to resolve
     {
-      ssize_t written = readlink(path.c_str(), buf.data(), buf.size());
+      ssize_t written = readlink(pathname.c_str(), buf.data(), buf.size());
       if (written < 0)
         break;
       if (static_cast<size_t>(written) < buf.size()) {
@@ -83,16 +83,16 @@ static std::string find_me(void) {
     assert(rc != 0);
     assert(buf_size > 0);
 
-    std::vector<char> path(buf_size);
+    std::vector<char> pathname(buf_size);
 
     // retrieve the actual path
-    if (_NSGetExecutablePath(path.data(), &buf_size) < 0) {
+    if (_NSGetExecutablePath(pathname.data(), &buf_size) < 0) {
       errout << "failed to get path for executable.\n";
       return "";
     }
 
     // try to resolve any levels of symlinks if possible
-    for (std::string p = path.data();;) {
+    for (std::string p = pathname.data();;) {
       const std::string buf = readln(p);
       if (buf == "")
         return p;
@@ -102,41 +102,41 @@ static std::string find_me(void) {
   }
 #elif defined(_WIN32)
   {
-    std::vector<char> path;
+    std::vector<char> pathname;
     DWORD rc = 0;
 
     do {
       {
-        size_t size = path.empty() ? 1024 : (path.size() * 2);
-        path.resize(size);
+        size_t size = pathname.empty() ? 1024 : (pathname.size() * 2);
+        pathname.resize(size);
       }
 
-      rc = GetModuleFileNameA(NULL, path.data(), path.size());
+      rc = GetModuleFileNameA(NULL, pathname.data(), pathname.size());
       if (rc == 0) {
         errout << "failed to get path for executable.\n";
         return "";
       }
 
-    } while (rc == path.size());
+    } while (rc == pathname.size());
 
-    return path.data();
+    return pathname.data();
   }
 #else
 
   // Linux
-  std::string path = readln("/proc/self/exe");
-  if (path != "")
-    return path;
+  std::string pathname = readln("/proc/self/exe");
+  if (pathname != "")
+    return pathname;
 
   // DragonFly BSD, FreeBSD
-  path = readln("/proc/curproc/file");
-  if (path != "")
-    return path;
+  pathname = readln("/proc/curproc/file");
+  if (pathname != "")
+    return pathname;
 
   // NetBSD
-  path = readln("/proc/curproc/exe");
-  if (path != "")
-    return path;
+  pathname = readln("/proc/curproc/exe");
+  if (pathname != "")
+    return pathname;
 
 // /proc-less FreeBSD
 #ifdef __FreeBSD__
@@ -252,15 +252,15 @@ CFrmSettings::CFrmSettings() {
   tempDia.setupUi(this);
   graph = nullptr;
   activeWindow = nullptr;
-  QString path;
+  QString pathname;
   char *s = nullptr;
 #ifndef _WIN32
   s = getenv("GVEDIT_PATH");
 #endif
   if (s)
-    path = QString::fromUtf8(s);
+    pathname = QString::fromUtf8(s);
   else
-    path = QString::fromStdString(find_share());
+    pathname = QString::fromStdString(find_share());
 
   connect(WIDGET(QPushButton, pbAdd), &QPushButton::clicked, this,
           &CFrmSettings::addSlot);
@@ -284,9 +284,10 @@ CFrmSettings::CFrmSettings() {
           &CFrmSettings::scopeChangedSlot);
   scopeChangedSlot(0);
 
-  if (!path.isEmpty()) {
-    loadAttrs(path + QLatin1String("/attrs.txt"), WIDGET(QComboBox, cbNameG),
-              WIDGET(QComboBox, cbNameN), WIDGET(QComboBox, cbNameE));
+  if (!pathname.isEmpty()) {
+    loadAttrs(pathname + QLatin1String("/attrs.txt"),
+              WIDGET(QComboBox, cbNameG), WIDGET(QComboBox, cbNameN),
+              WIDGET(QComboBox, cbNameE));
   }
   setWindowIcon(QIcon(QStringLiteral(":/images/icon.png")));
 }

@@ -37,15 +37,18 @@ using std::set;
 	#define RECTANGLE_OVERLAP_LOGGING 0
 #endif
 
-IncVPSC::IncVPSC(const unsigned n, Variable *vs[], const unsigned m, Constraint *cs[]) 
-	: VPSC(n,vs,m,cs) {
-	inactive.assign(cs,cs+m);
+IncVPSC::IncVPSC(const unsigned n, Variable *vs[], const unsigned m_,
+                 Constraint *cs_[])
+    : VPSC(n, vs, m_, cs_) {
+	inactive.assign(cs_, cs_ + m_);
 	for(Constraint *c : inactive) {
 		c->active=false;
 	}
 }
-VPSC::VPSC(const unsigned n, Variable *vs[], const unsigned m, Constraint *cs[])
-  : bs(n, vs), cs(cs), m(m) {
+
+VPSC::VPSC(const unsigned n, Variable *vs[], const unsigned m_,
+           Constraint *cs_[])
+  : bs(n, vs), cs(cs_), m(m_) {
 	if (RECTANGLE_OVERLAP_LOGGING) {
 		printBlocks();
 		assert(!constraintGraphIsCyclic(n,vs));

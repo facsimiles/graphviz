@@ -23,7 +23,7 @@ TEST_CASE("SvgAnalyzer",
 
   CHECK(svg_analyzer.graphs().size() == expected_num_graphs);
   for (const auto &graph : svg_analyzer.graphs()) {
-    CHECK(graph.svg_g_element().type == SVG::SVGElementType::Group);
+    CHECK(graph.svg_g_element().elem_type == SVG::SVGElementType::Group);
     CHECK(graph.svg_g_element().attributes.class_ == "graph");
     CHECK(graph.svg_g_element().graphviz_id == "g1");
 
@@ -31,7 +31,7 @@ TEST_CASE("SvgAnalyzer",
     for (const auto &node_it : graph.nodes() | boost::adaptors::indexed(0)) {
       const auto node = node_it.value();
       const auto i = node_it.index();
-      CHECK(node.svg_g_element().type == SVG::SVGElementType::Group);
+      CHECK(node.svg_g_element().elem_type == SVG::SVGElementType::Group);
       CHECK(node.svg_g_element().attributes.class_ == "node");
       const auto node_id = i == 0 ? "a" : "b";
       CHECK(node.svg_g_element().graphviz_id == node_id);
@@ -39,7 +39,7 @@ TEST_CASE("SvgAnalyzer",
 
     CHECK(graph.edges().size() == expected_num_edges);
     for (const auto &edge : graph.edges()) {
-      CHECK(edge.svg_g_element().type == SVG::SVGElementType::Group);
+      CHECK(edge.svg_g_element().elem_type == SVG::SVGElementType::Group);
       CHECK(edge.svg_g_element().attributes.class_ == "edge");
       CHECK(edge.svg_g_element().graphviz_id == "a->b");
     }

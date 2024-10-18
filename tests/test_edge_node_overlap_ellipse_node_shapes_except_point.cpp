@@ -13,7 +13,7 @@ TEST_CASE(
     "node and does not overlap it too much, regardless of the node shape") {
 
   const auto shape = GENERATE_COPY(
-      filter([](const std::string_view shape) { return shape != "point"; },
+      filter([](const std::string_view s) { return s != "point"; },
              from_range(node_shapes_consisting_of_ellipse)));
 
   INFO("Node shape: " << shape);

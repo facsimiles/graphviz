@@ -14,8 +14,8 @@ TEST_CASE("Graph rankdir", "Test that the Graphviz `rankdir` attribute affects "
   INFO("Rankdir: " << rankdir);
 
   const auto shape = GENERATE(filter(
-      [](std::string_view shape) {
-        return !node_shapes_without_svg_shape.contains(shape);
+      [](std::string_view s) {
+        return !node_shapes_without_svg_shape.contains(s);
       },
       from_range(all_node_shapes)));
   INFO("Shape: " << shape);

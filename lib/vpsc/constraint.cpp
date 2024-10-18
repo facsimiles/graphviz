@@ -18,14 +18,9 @@
 
 #include <vpsc/constraint.h>
 #include <cassert>
-Constraint::Constraint(Variable *left, Variable *right, double gap)
-: left(left),
-  right(right),
-  gap(gap),
-  timeStamp(0),
-  active(false),
-  visited(false)
-{
+Constraint::Constraint(Variable *left_, Variable *right_, double gap_)
+    : left(left_), right(right_), gap(gap_), timeStamp(0), active(false),
+      visited(false) {
 	left->out.push_back(this);
 	right->in.push_back(this);
 }

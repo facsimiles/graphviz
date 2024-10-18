@@ -50,7 +50,7 @@ struct Node {
 	double pos;
 	Node *firstAbove, *firstBelow;
 	NodeSet leftNeighbours, rightNeighbours;
-	Node(Variable *v, const Rectangle &r, double p) : v(v),r(r),pos(p) {
+	Node(Variable *v_, const Rectangle &r_, double p_) : v(v_), r(r_), pos(p_) {
 		firstAbove=firstBelow=nullptr;
 		assert(r.width()<1e40);
 	}
@@ -118,8 +118,8 @@ struct Event {
 	EventType type;
 	std::shared_ptr<Node> v;
 	double pos;
-	Event(EventType t, const std::shared_ptr<Node> &v, double p)
-	  : type(t),v(v),pos(p) {};
+	Event(EventType t, const std::shared_ptr<Node> &v_, double p)
+	  : type(t), v(v_), pos(p) {};
 };
 
 static bool compare_events(const Event &ea, const Event &eb) {

@@ -9,7 +9,7 @@
 #include "svg_element.h"
 #include <util/unreachable.h>
 
-SVG::SVGElement::SVGElement(SVGElementType type) : type(type) {}
+SVG::SVGElement::SVGElement(SVGElementType etype) : elem_type(etype) {}
 
 static double px_to_pt(double px) {
   // a `pt` is 0.75 `px`. See e.g.
@@ -18,7 +18,7 @@ static double px_to_pt(double px) {
 }
 
 bool SVG::SVGElement::is_closed_shape_element() const {
-  switch (type) {
+  switch (elem_type) {
   case SVG::SVGElementType::Circle:
   case SVG::SVGElementType::Ellipse:
   case SVG::SVGElementType::Polygon:
@@ -30,7 +30,7 @@ bool SVG::SVGElement::is_closed_shape_element() const {
 }
 
 bool SVG::SVGElement::is_shape_element() const {
-  switch (type) {
+  switch (elem_type) {
   case SVG::SVGElementType::Circle:
   case SVG::SVGElementType::Ellipse:
   case SVG::SVGElementType::Line:
@@ -154,7 +154,7 @@ SVG::SVGRect SVG::SVGElement::bbox(bool throw_if_bbox_not_defined) {
               .y = std::numeric_limits<double>::max() / 2,
               .width = std::numeric_limits<double>::lowest(),
               .height = std::numeric_limits<double>::lowest()};
-    switch (type) {
+    switch (elem_type) {
     case SVG::SVGElementType::Group:
       // SVG group bounding box is detemined solely by its children
       break;
@@ -204,7 +204,7 @@ SVG::SVGRect SVG::SVGElement::bbox(bool throw_if_bbox_not_defined) {
       break;
     default:
       throw std::runtime_error{
-          fmt::format("Unhandled svg element type {}", tag(type))};
+          fmt::format("Unhandled svg element type {}", tag(elem_type))};
     }
 
     const auto throw_if_child_bbox_is_not_defined = false;
@@ -227,7 +227,7 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
             .y = std::numeric_limits<double>::max() / 2,
             .width = std::numeric_limits<double>::lowest(),
             .height = std::numeric_limits<double>::lowest()};
-  switch (type) {
+  switch (elem_type) {
   case SVG::SVGElementType::Group:
     // SVG group bounding box is detemined solely by its children
     break;
@@ -287,8 +287,8 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
                     :
                     // the SVG spec assumes clockwise so we swap the points
               SVGElement::miter_shape(next_point, point, prev_point);
-      for (const auto &point : miter_shape) {
-        m_bbox->extend(point);
+      for (const auto &p : miter_shape) {
+        m_bbox->extend(p);
       }
     }
     break;
@@ -533,8 +533,8 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
             clockwise ? SVGElement::miter_shape(prev_point, point, next_point) :
                       // `miter_point` assumes clockwise so we swap the points
                 SVGElement::miter_shape(next_point, point, prev_point);
-        for (const auto &point : miter_shape) {
-          m_bbox->extend(point);
+        for (const auto &p : miter_shape) {
+          m_bbox->extend(p);
         }
       }
     }
@@ -559,7 +559,7 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
     break;
   default:
     throw std::runtime_error{
-        fmt::format("Unhandled svg element type {}", tag(type))};
+        fmt::format("Unhandled svg element type {}", tag(elem_type))};
   }
 
   const auto throw_if_child_bbox_is_not_defined = false;
@@ -572,11 +572,11 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
   return *m_bbox;
 }
 
-SVG::SVGElement &SVG::SVGElement::find_child(const SVG::SVGElementType type,
+SVG::SVGElement &SVG::SVGElement::find_child(const SVG::SVGElementType etype,
                                              std::size_t index) {
   std::size_t i = 0;
   for (auto &child : children) {
-    if (child.type == type) {
+    if (child.elem_type == etype) {
       if (i == index) {
         return child;
       }
@@ -585,11 +585,11 @@ SVG::SVGElement &SVG::SVGElement::find_child(const SVG::SVGElementType type,
   }
   throw std::runtime_error(
       fmt::format("SVG element only has {} \"{}\" children, index {} not found",
-                  i, tag(type), index));
+                  i, tag(etype), index));
 }
 
 SVG::SVGRect SVG::SVGElement::text_bbox() const {
-  assert(type == SVG::SVGElementType::Text && "Not a 'text' element");
+  assert(elem_type == SVG::SVGElementType::Text && "Not a 'text' element");
 
   if (attributes.font_family != "Courier,monospace") {
     throw std::runtime_error(
@@ -666,8 +666,8 @@ SVG::SVGPoint SVG::SVGElement::cubic_bezier(double t) {
 }
 
 bool SVG::SVGElement::has_all_points_equal() const {
-  assert((type == SVG::SVGElementType::Polygon ||
-          type == SVG::SVGElementType::Polyline) &&
+  assert((elem_type == SVG::SVGElementType::Polygon ||
+          elem_type == SVG::SVGElementType::Polyline) &&
          "not a polygon or polyline");
   const auto points = attributes.points;
   assert(!points.empty() > 0 && "no points");
@@ -675,8 +675,8 @@ bool SVG::SVGElement::has_all_points_equal() const {
 }
 
 bool SVG::SVGElement::has_clockwise_points() const {
-  assert((type == SVG::SVGElementType::Polygon ||
-          type == SVG::SVGElementType::Polyline) &&
+  assert((elem_type == SVG::SVGElementType::Polygon ||
+          elem_type == SVG::SVGElementType::Polyline) &&
          "not a polygon or polyline");
   assert(attributes.points.size() >= 3 && "too few points");
   // Sum over the edges, (x2 − x1)(y2 + y1). If the result is positive, the
@@ -792,22 +792,22 @@ void SVG::SVGElement::to_string_impl(std::string &output,
   const auto indent_str = std::string(current_indent, ' ');
   output += indent_str;
 
-  if (type == SVG::SVGElementType::Svg) {
+  if (elem_type == SVG::SVGElementType::Svg) {
     const auto comment = fmt::format("Title: {} Pages: 1", graphviz_id);
     output += fmt::format("<!-- {} -->\n", xml_encode(comment));
   }
-  if (type == SVG::SVGElementType::Group &&
+  if (elem_type == SVG::SVGElementType::Group &&
       (attributes.class_ == "node" || attributes.class_ == "edge")) {
     const auto comment = graphviz_id;
     output += fmt::format("<!-- {} -->\n", xml_encode(comment));
   }
 
   output += "<";
-  output += tag(type);
+  output += tag(elem_type);
 
   std::string attributes_str{};
   append_attribute(attributes_str, id_attribute_to_string());
-  switch (type) {
+  switch (elem_type) {
   case SVG::SVGElementType::Ellipse:
     append_attribute(attributes_str, fill_attribute_to_string());
     append_attribute(attributes_str, fill_opacity_attribute_to_string());
@@ -898,7 +898,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
     break;
   default:
     throw std::runtime_error{fmt::format(
-        "Attributes on '{}' elements are not yet implemented", tag(type))};
+        "Attributes on '{}' elements are not yet implemented", tag(elem_type))};
   }
   if (!attributes_str.empty()) {
     output += " ";
@@ -920,7 +920,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
       output += indent_str;
     }
     output += "</";
-    output += tag(type);
+    output += tag(elem_type);
     output += ">\n";
   }
 }
@@ -1122,8 +1122,8 @@ void SVG::SVGRect::extend(const SVG::SVGRect &other) {
   height = ymax - ymin;
 }
 
-std::string_view SVG::tag(SVGElementType type) {
-  switch (type) {
+std::string_view SVG::tag(SVGElementType elem_type) {
+  switch (elem_type) {
   case SVG::SVGElementType::Circle:
     return "circle";
   case SVG::SVGElementType::Ellipse:

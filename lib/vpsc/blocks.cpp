@@ -34,7 +34,7 @@ using std::list;
 
 long blockTimeCtr;
 
-Blocks::Blocks(const int n, Variable *vs[]) : vs(vs),nvs(n) {
+Blocks::Blocks(const int n, Variable *vs_[]) : vs(vs_), nvs(n) {
 	blockTimeCtr=0;
 	for(int i=0;i<nvs;i++) {
 		insert(new Block(vs[i]));

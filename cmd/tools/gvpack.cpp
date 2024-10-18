@@ -292,27 +292,27 @@ static void init_graph(Agraph_t *g, bool fill, GVC_t *gvc) {
  * Copy all attributes from old object to new. Assume
  * attributes have been initialized.
  */
-static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new_graph, int kind) {
+static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new_graph, int attr_kind) {
     Agsym_t *a;
 
-    for (a = agnxtattr(old, kind, 0); a; a =  agnxtattr(old, kind, a)) {
+    for (a = agnxtattr(old, attr_kind, 0); a; a =  agnxtattr(old, attr_kind, a)) {
 	if (aghtmlstr(a->defval)) {
 	    char *s = agstrdup_html(new_graph, a->defval);
-	    agattr(new_graph, kind, a->name, s);
+	    agattr(new_graph, attr_kind, a->name, s);
 	    agstrfree(new_graph, s); // drop the extra reference count we bumped for s
 	} else {
-	    agattr(new_graph, kind, a->name, a->defval);
+	    agattr(new_graph, attr_kind, a->name, a->defval);
 	}
     }
 }
 static void cloneAttrs(void *old, void *new_graph) {
-    int kind = AGTYPE(old);
+    int attr_kind = AGTYPE(old);
     Agsym_t *a;
     char* s;
     Agraph_t *g = agroot(old);
     Agraph_t *ng = agroot(new_graph);
 
-    for (a = agnxtattr(g, kind, 0); a; a =  agnxtattr(g, kind, a)) {
+    for (a = agnxtattr(g, attr_kind, 0); a; a =  agnxtattr(g, attr_kind, a)) {
 	s = agxget (old, a);
 	if (aghtmlstr(s)) {
 	    char *scopy = agstrdup_html(ng, s);
@@ -376,9 +376,9 @@ using attr_map_t = std::map<std::string, AttributeValue>;
  * objp. If the attribute has already been defined and
  * has a different default, set default to "".
  */
-static void fillDict(attr_map_t &newdict, Agraph_t *g, int kind) {
+static void fillDict(attr_map_t &newdict, Agraph_t *g, int attr_kind) {
 
-  for (Agsym_t *a = agnxtattr(g, kind, 0); a; a = agnxtattr(g, kind, a)) {
+  for (Agsym_t *a = agnxtattr(g, attr_kind, 0); a; a = agnxtattr(g, attr_kind, a)) {
     char *name = a->name;
     char *value = a->defval;
     auto it = newdict.find(name);

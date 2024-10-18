@@ -65,7 +65,7 @@ enum class SVGElementType {
   Title,
 };
 
-std::string_view tag(SVG::SVGElementType type);
+std::string_view tag(SVG::SVGElementType elem_type);
 
 struct SVGAttributes {
   std::string class_;
@@ -100,7 +100,7 @@ std::string to_dot_color(const std::string &color, double opacity = 1.0);
 class SVGElement {
 public:
   SVGElement() = delete;
-  explicit SVGElement(SVG::SVGElementType type);
+  explicit SVGElement(SVG::SVGElementType etype);
 
   /// Add an SVG `rect` element representing the bounding box of the edge to the
   /// element
@@ -148,7 +148,8 @@ public:
       if (attribute.value() != child_attribute) {
         throw std::runtime_error{fmt::format(
             "Inconsistent value of attribute: current {}: {}, child {}: {}",
-            tag(type), attribute.value(), tag(child.type), child_attribute)};
+            tag(elem_type), attribute.value(), tag(child.elem_type),
+            child_attribute)};
       }
     }
     return attribute.value_or(default_value);
@@ -163,7 +164,7 @@ public:
   /// Return the element of the given type with the specified index found among
   /// the element's children. Throwns an exception if there's no such element
   /// with the specified index.
-  SVG::SVGElement &find_child(SVG::SVGElementType type, std::size_t index = 0);
+  SVG::SVGElement &find_child(SVG::SVGElementType etype, std::size_t index = 0);
   bool is_closed_shape_element() const;
   bool is_shape_element() const;
   /// Return the outline bounding box of the element. The outline bounding box
@@ -190,7 +191,7 @@ public:
   /// element
   std::string text;
   /// The type of SVG element
-  const SVGElementType type;
+  const SVGElementType elem_type;
 
 private:
   /// append a string possibly containing an attribute to another string,
