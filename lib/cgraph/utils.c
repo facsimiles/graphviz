@@ -28,12 +28,7 @@ void agdictobjfree(void *p) {
 
 Dict_t *agdtopen(Agraph_t * g, Dtdisc_t * disc, Dtmethod_t * method)
 {
-    Dict_t *d;
-
-    Ag_dictop_G = g;
-    d = dtopen(disc, method);
-    Ag_dictop_G = NULL;
-    return d;
+    return dtopen(disc, method);
 }
 
 int agdtdelete(Agraph_t * g, Dict_t * dict, void *obj)
