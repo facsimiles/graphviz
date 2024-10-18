@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   causes later out-of-bounds reads during triangulation. Like the previous
   entries, this bug seems to have existed since the first revision of Graphviz.
   #2596
+- Arrowhead missing from tail-end of edge #2437
 
 ## [12.1.2] – 2024-09-28
 

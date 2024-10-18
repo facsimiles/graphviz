@@ -3501,9 +3501,6 @@ def test_2434():
     assert before == after, "agmemread/gvContext ordering affected image output"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2437"
-)
 def test_2437():
     """
     both an arrowhead and an arrowtail shall be created when using dir=both,
