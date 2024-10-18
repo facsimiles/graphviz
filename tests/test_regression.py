@@ -4358,6 +4358,38 @@ def test_2596():
     proc.wait()
 
 
+@pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
+@pytest.mark.skipif(which("mingle") is None, reason="mingle not available")
+@pytest.mark.xfail(
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2599", strict=True
+)
+def test_2599():
+    """
+    mingle should not segfault when processing simple graphs
+    https://gitlab.com/graphviz/graphviz/-/issues/2599
+    """
+
+    # generate a graph
+    gvgen = which("gvgen")
+    graph = subprocess.check_output([gvgen, "-d", "-k", "5"], universal_newlines=True)
+
+    # process it into canonical form
+    processed = subprocess.check_output(["dot"], universal_newlines=True, input=graph)
+
+    # pass it through mingle
+    mingle = which("mingle")
+    proc = subprocess.run(
+        [mingle, "-v", "999"], universal_newlines=True, input=processed
+    )
+
+    # Address Sanitizer catches segfaults and turns them into non-zero exits, so ignore
+    # testing in this scenario
+    if re.search(r"\basan\b", os.environ.get("CI_JOB_NAME", "").lower()):
+        pytest.skip("crashes of mingle are harder to detect under ASan")
+
+    assert proc.returncode in (0, 1), "mingle crashed"
+
+
 @pytest.mark.skipif(which("acyclic") is None, reason="acyclic not available")
 def test_2600():
     """
