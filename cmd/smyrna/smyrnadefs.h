@@ -60,14 +60,6 @@ typedef struct _ArcBall_t ArcBall_t;
 typedef enum {attr_alpha,attr_float,attr_int,attr_bool} attr_data_type;
 typedef enum {smyrna_all,smyrna_2D,smyrna_3D,smyrna_fisheye,smyrna_all_but_fisheye} smyrna_view_mode;
 
-
-typedef struct{
-    int keyVal;
-    int down;
-}keymap_t;
-
-
-
 typedef struct {
 	size_t index;
 	char* name;
@@ -337,7 +329,6 @@ typedef struct
 	void *glutfont;
 	glCompColor nodelabelcolor;
 	glCompColor edgelabelcolor;
-	int labelwithdegree;
 	int labelnumberofnodes;
 	int labelshownodes;
 	int labelshowedges;
@@ -350,7 +341,7 @@ typedef struct
 	char *template_file;
 	GtkComboBox *graphComboBox;	/*pointer to graph combo box at top right */
 	ArcBall_t *arcball;
-	keymap_t keymap;
+	int keyVal; ///< depressed key or 0 if none
 	mouse_action_t* mouse_actions; ///< customizable mouse interaction list
 	size_t mouse_action_count;
 	float nodeScale;

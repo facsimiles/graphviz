@@ -111,12 +111,9 @@ static void cb_mouseclick(int button, int state, int x, int y)
 	                                             (float)x, (float)y,
 	                                             getGlCompMouseType(button));
 
-	if (button ==  GLUT_LEFT_BUTTON)
-	    appmouse_left_click_up(view,x,y);
-	if (button ==  GLUT_LEFT_BUTTON)
-	    appmouse_right_click_up(view,x,y);
-	if (button ==  GLUT_MIDDLE_BUTTON)
-	    appmouse_middle_click_up(view,x,y);
+	if (button == GLUT_LEFT_BUTTON || button == GLUT_RIGHT_BUTTON ||
+	    button == GLUT_MIDDLE_BUTTON)
+	    appmouse_up(view, x, y);
 	dx = 0.0;
 	dy = 0.0;
     }
@@ -140,12 +137,8 @@ static void cb_drag(int X, int Y)
     view->mouse.dragY = dy;
     appmouse_move(view,x,y);
 
-    if((view->mouse.t==glMouseLeftButton) && (view->mouse.down)  )
-	appmouse_left_drag(view,x,y);
-    if((view->mouse.t==glMouseRightButton) && (view->mouse.down))
-	appmouse_right_drag(view,x,y);
-    if((view->mouse.t==glMouseMiddleButton) && (view->mouse.down))
-	appmouse_middle_drag(view,x,y);
+    if (view->mouse.down)
+	appmouse_drag(view, x, y);
     begin_x = x;
     begin_y = y;
     cb_display();

@@ -47,7 +47,6 @@ strict digraph template {
 		edgelabelcolor="#000000"
 		nodelabelattribute="name"
 		edgelabelattribute="name"
-		labelwithdegree="0"
 		labelnumberofnodes="45"
 		colortheme="1"
 		defaultnodecolor="blue"

@@ -26,8 +26,6 @@
 #include "appmouse.h"
 static float begin_x = 0.0;
 static float begin_y = 0.0;
-static float dx = 0.0;
-static float dy = 0.0;
 
 /*mouse mode mapping funvtion from gtk to glcomp*/
 static glMouseButtonType getGlCompMouseType(int n)
@@ -218,16 +216,11 @@ static gboolean button_release_event(GtkWidget *widget, GdkEventButton *event,
                                                  (float)event->y,
                                                  getGlCompMouseType(event->button));
 
-    if (event->button == 1)	//left click release
-	appmouse_left_click_up(view,(int) event->x,(int) event->y);
-    if (event->button == 3)	//right click
-	appmouse_right_click_up(view,(int) event->x,(int) event->y);
-    if (event->button == 2)	//right click
-	appmouse_middle_click_up(view,(int) event->x,(int) event->y);
+    // left/middle/right click release
+    if (event->button == 1 || event->button == 2 || event->button == 3)
+	appmouse_up(view, (int)event->x, (int)event->y);
 
     expose_event(view->drawing_area, NULL, NULL);
-    dx = 0.0;
-    dy = 0.0;
 
     return FALSE;
 }
@@ -289,26 +282,12 @@ static gboolean motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
     if (view->widgets)
 	view->widgets->base.common.functions.mouseover(&view->widgets->base, x, y);
 
-    dx = x - begin_x;
-    dy = y - begin_y;
-    view->mouse.dragX = dx;
-    view->mouse.dragY = dy;
+    view->mouse.dragX = x - begin_x;
+    view->mouse.dragY = y - begin_y;
     appmouse_move(view,(int)event->x,(int)event->y);
 
-    if((view->mouse.t==glMouseLeftButton) && (view->mouse.down)  )
-    {
-	appmouse_left_drag(view,(int)event->x,(int)event->y);
-	redraw = true;
-
-    }
-    if((view->mouse.t==glMouseRightButton) && (view->mouse.down))
-    {
-	appmouse_right_drag(view,(int)event->x,(int)event->y);
-	redraw = true;
-    }
-    if((view->mouse.t==glMouseMiddleButton) && (view->mouse.down))
-    {
-	appmouse_middle_drag(view,(int)event->x,(int)event->y);
+    if (view->mouse.down) {
+	appmouse_drag(view,(int)event->x,(int)event->y);
 	redraw = true;
     }
     if (!glCompPoly_is_empty(&view->Topview->sel.selPoly))

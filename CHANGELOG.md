@@ -51,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   causes later out-of-bounds reads during triangulation. Like the previous
   entries, this bug seems to have existed since the first revision of Graphviz.
   #2596
+- Mouse right-clicks in Smyrna are no longer sticky. In some contexts,
+  right-clicking the mouse would register a mouse down event but no mouse up
+  event, leading Smyrna to believe the user was dragging with the right button
+  held down.
 
 ## [12.1.2] – 2024-09-28
 

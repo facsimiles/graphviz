@@ -153,7 +153,6 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
     vi->edgelabelcolor.B = (float)cl.u.RGBA[2];
     vi->edgelabelcolor.A =
 	(float) atof(get_attribute_value("defaultedgealpha", vi, g));
-    vi->labelwithdegree = atoi(get_attribute_value("labelwithdegree", vi, g));
     vi->labelnumberofnodes =
 	atof(get_attribute_value("labelnumberofnodes", vi, g));
     vi->labelshownodes = atoi(get_attribute_value("labelshownodes", vi, g));
@@ -314,7 +313,6 @@ void init_viewport(ViewInfo *vi) {
     vi->Topview->Graphdata.GraphFileName = NULL;
     clear_color_theme(&vi->colschms);
     vi->arcball = gv_alloc(sizeof(ArcBall_t));
-    vi->keymap.down=0;
     load_mouse_actions(vi);
     if(vi->guiMode!=GUI_FULLSCREEN)
 	vi->guiMode=GUI_WINDOWED;

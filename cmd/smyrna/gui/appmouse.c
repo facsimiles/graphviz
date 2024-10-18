@@ -48,7 +48,6 @@ static void apply_actions(ViewInfo* v,int x,int y)
 	glmotion_pan(v);
 	break;
     case MM_MOVE :
-        /* move_TVnodes(); */
 	break;
     case MM_RECTANGULAR_SELECT :
 	if (!view->mouse.down) {
@@ -83,8 +82,8 @@ static void appmouse_down(ViewInfo* v,int x,int y)
     to3D(x,y,&v->mouse.GLinitPos.x,&v->mouse.GLinitPos.y,&v->mouse.GLinitPos.z);
     to3D( x,y, &v->mouse.GLpos.x,&v->mouse.GLpos.y,&v->mouse.GLpos.z);
 }
-static void appmouse_up(ViewInfo* v,int x,int y)
-{
+
+void appmouse_up(ViewInfo *v, int x, int y) {
     v->mouse.down=0;
     to3D(x,y, &v->mouse.GLfinalPos.x,&v->mouse.GLfinalPos.y,&v->mouse.GLfinalPos.z);
     apply_actions(v,x,y);
@@ -94,8 +93,8 @@ static void appmouse_up(ViewInfo* v,int x,int y)
 
 
 }
-static void appmouse_drag(ViewInfo* v,int x,int y)
-{
+
+void appmouse_drag(ViewInfo *v, int x, int y) {
     v->mouse.x = x;
     v->mouse.y = y;
     to3D( x,y, &v->mouse.GLpos.x,&v->mouse.GLpos.y,&v->mouse.GLpos.z);
@@ -109,17 +108,7 @@ void appmouse_left_click_down(ViewInfo* v,int x,int y)
 
 
 }
-void appmouse_left_click_up(ViewInfo* v,int x,int y)
-{
-    appmouse_up(v,x,y);
-}
-void appmouse_left_drag(ViewInfo* v,int x,int y)
-{
-    appmouse_drag(v,x,y);
 
-
-
-}
 void appmouse_right_click_down(ViewInfo* v,int x,int y)
 {
     v->mouse.t=glMouseRightButton;
@@ -127,18 +116,6 @@ void appmouse_right_click_down(ViewInfo* v,int x,int y)
 
 
 }
-void appmouse_right_click_up(ViewInfo* v,int x,int y)
-{
-    appmouse_up(v,x,y);
- 
-}
-void appmouse_right_drag(ViewInfo* v,int x,int y)
-{
-        
-    appmouse_drag(v,x,y);
-
-}
-
 
 void appmouse_middle_click_down(ViewInfo* v,int x,int y)
 {
@@ -147,17 +124,7 @@ void appmouse_middle_click_down(ViewInfo* v,int x,int y)
 
 
 }
-void appmouse_middle_click_up(ViewInfo* v,int x,int y)
-{
-    appmouse_up(v,x,y);
- 
-}
-void appmouse_middle_drag(ViewInfo* v,int x,int y)
-{
-        
-    appmouse_drag(v,x,y);
 
-}
 void appmouse_move(ViewInfo* v,int x,int y)
 {
     to3D( x,y, &v->mouse.GLpos.x,&v->mouse.GLpos.y,&v->mouse.GLpos.z);
@@ -169,13 +136,11 @@ void appmouse_key_release(ViewInfo* v)
 	glCompPoly_free(&view->Topview->sel.selPoly);
 	glexpose();
     }
-    v->keymap.down=0;
-    v->keymap.keyVal=0;
+    v->keyVal = 0;
 }
 void appmouse_key_press(ViewInfo* v,int key)
 {
-    v->keymap.down=1;
-    v->keymap.keyVal=key;
+    v->keyVal = key;
 }
 
 

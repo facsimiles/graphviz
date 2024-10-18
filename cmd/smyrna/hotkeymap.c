@@ -177,7 +177,7 @@ int get_mode(ViewInfo * v)
 
     for (size_t ind = 0; ind < v->mouse_action_count; ind++) {
 
-	if (v->mouse_actions[ind].hotkey == v->keymap.keyVal
+	if (v->mouse_actions[ind].hotkey == v->keyVal
 	    && v->mouse_actions[ind].type == curMouseType
 	    && v->mouse_actions[ind].drag == curDragging
 	    &&
