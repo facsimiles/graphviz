@@ -4387,7 +4387,7 @@ def test_2599():
     if re.search(r"\basan\b", os.environ.get("CI_JOB_NAME", "").lower()):
         pytest.skip("crashes of mingle are harder to detect under ASan")
 
-    assert proc.returncode in (0, 1, 255), "mingle crashed"
+    assert proc.returncode in (0, 1), "mingle crashed"
 
 
 @pytest.mark.skipif(which("acyclic") is None, reason="acyclic not available")
