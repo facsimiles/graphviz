@@ -52,8 +52,8 @@ typedef enum {
 static void gd_format(GVJ_t * job)
 {
     gdImagePtr im;
-    unsigned int x, y;
-    const char *data = job->imagedata;
+    unsigned int x, y, color, alpha;
+    unsigned int *data = (unsigned int*)job->imagedata;
     unsigned int width = job->width;
     unsigned int height = job->height;
     gd_context_t gd_context;
@@ -71,13 +71,11 @@ static void gd_format(GVJ_t * job)
     case FORMAT_PNG:
         for (y = 0; y < height; y++) {
             for (x = 0; x < width; x++) {
-                const int r = *data++;
-                const int g = *data++;
-                const int b = *data++;
-	        // gd’s alpha is 7-bit, so scale down ÷2 from our 8-bit
-                const int alpha = *data++ >> 1;
-                const int color = r | (g << 8) | (b << 16) | ((0x7f - alpha) << 24);
-	        im->tpixels[y][x] = color;
+                color = *data++;
+	        /* gd's max alpha is 127 */
+	        /*   so right-shift 25 to lose lsb of alpha */
+	        alpha = (color >> 25) & 0x7f;
+	        im->tpixels[y][x] = (color & 0xffffff) | ((0x7f - alpha) << 24);
 	    }
         }
         break;
@@ -90,15 +88,12 @@ static void gd_format(GVJ_t * job)
         gdImageAlphaBlending(im, false);
         for (y = 0; y < height; y++) {
             for (x = 0; x < width; x++) {
-                const int r = *data++;
-                const int g = *data++;
-                const int b = *data++;
-	        // gd’s alpha is 7-bit, so scale down ÷2 from our 8-bit
-                const int alpha = *data++ >> 1;
-                const int color = r | (g << 8) | (b << 16) | ((0x7f - alpha) << 24);
-	        if (alpha >= 0x20)
+                color = *data++;
+	        /* gd's max alpha is 127 */
+	        /*   so right-shift 25 to lose lsb of alpha */
+	        if ((alpha = (color >> 25) & 0x7f) >= 0x20)
 		    /* if not > 75% transparent */
-		    im->tpixels[y][x] = color;
+		    im->tpixels[y][x] = (color & 0xffffff) | ((0x7f - alpha) << 24);
 	        else
 		    im->tpixels[y][x] = TRANSPARENT;
 	    }

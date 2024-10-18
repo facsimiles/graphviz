@@ -55,6 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   right-clicking the mouse would register a mouse down event but no mouse up
   event, leading Smyrna to believe the user was dragging with the right button
   held down.
+- Generated GIFs and JPEGs display the graphed image instead of a single solid
+  color. This was a regression in Graphviz 12.1.1. #2609
 
 ## [12.1.2] – 2024-09-28
 

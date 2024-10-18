@@ -4384,9 +4384,6 @@ def test_2600():
 @pytest.mark.skipif(
     platform.system() == "Windows", reason="`convert` on Windows is not ImageMagick"
 )
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2609"
-)
 def test_2609(tmp_path: Path):
     """
     GIFs should not be blank
