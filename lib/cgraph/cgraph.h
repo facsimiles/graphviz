@@ -455,8 +455,6 @@ CGRAPH_API Agraph_t *agmemread(const char *cp);
 ///< reads a graph from the input string
 
 CGRAPH_API Agraph_t *agmemconcat(Agraph_t *g, const char *cp);
-CGRAPH_API void agreadline(int);
-///< sets input line number for subsequent error reporting
 
 CGRAPH_API void agsetfile(const char *);
 ///< sets the current file name for subsequent error reporting
