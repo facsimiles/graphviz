@@ -76,6 +76,7 @@ tclpkg/gv/META.gv
 *.a
 *.so
 *.so.*
+*.dylib
 *.pdf
 !doc/**/*.pdf
 .libs
