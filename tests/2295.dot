@@ -1,0 +1,7 @@
+digraph {
+        my_node [label= <<TABLE>
+                 <TR><TD TOOLTIP="hi mom" HREF="https://example.com">hover over this area</TD></TR>
+                 </TABLE>>
+                 shape=plain
+                 ];
+}

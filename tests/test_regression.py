@@ -2649,6 +2649,25 @@ def test_2361():
     dot("png", input)
 
 
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2295"
+)
+def test_2295():
+    """
+    tooltips should work in PDFs
+    https://gitlab.com/graphviz/graphviz/-/issues/2295
+    """
+
+    # find our collocated test case
+    input = Path(__file__).parent / "2295.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # translate it to PDF
+    pdf = dot("pdf", input)
+
+    assert re.search(rb"\bhi mom\b", pdf) is not None, "tooltip not propagated to PDF"
+
+
 @pytest.mark.parametrize("arg", ("--filepath", "-Gimagepath"))
 def test_2396(arg: str):
     """
