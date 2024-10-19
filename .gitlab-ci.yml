@@ -1334,11 +1334,16 @@ lint_cmake_format:
     - tags
 
 lint_html:
-  image: "$CI_REGISTRY_IMAGE/ubuntu-24.04:$CI_COMMIT_SHA"
   stage: test
-  needs:
-    - docker_build_ubuntu-24.04
+  needs: [] # no dependencies
   script:
+    - env DEBIAN_FRONTEND=noninteractive apt-get update -y
+    - env DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y libxml2-utils
+    # output some info into the logs for debugging
+    - xmllint --version
+    - cat /etc/os-release
+    - uname -rms
+    # check file formatting
     - git ls-files -z -- '**/*.html' | xargs -0 -- xmllint --nonet --noout --html --valid
   except:
     - tags
