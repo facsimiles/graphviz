@@ -344,6 +344,18 @@ ubuntu-24.04-build:
     variables:
       IMAGE: ubuntu-24.04
 
+ubuntu-24.10-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-24.10
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-24.10
+
 out-of-source-build:
     <<: *deb_build_definition
     script:
@@ -578,6 +590,22 @@ ubuntu-24.04-cmake-build:
         - saas-linux-small-amd64
     variables:
       IMAGE: ubuntu-24.04
+
+ubuntu-24.10-cmake-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-24.10
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror"
+        - export CXXFLAGS="-Werror"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_SMYRNA=ON"
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-24.10
 
 ubuntu-22.04-cmake-minimal-build:
     <<: *deb_build_definition
@@ -919,6 +947,18 @@ ubuntu-24.04-test:
     variables:
       IMAGE: ubuntu-24.04
 
+ubuntu-24.10-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "ubuntu-24.10-build"
+          artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-24.10
+
 rocky8-test:
     <<: *linux_test_definition
     before_script:
@@ -1025,6 +1065,19 @@ ubuntu-24.04-cmake-test:
         - saas-linux-small-amd64
     variables:
       IMAGE: ubuntu-24.04
+
+ubuntu-24.10-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+    needs:
+        - job: "ubuntu-24.10-cmake-build"
+          artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-24.10
 
 rocky8-cmake-test:
     <<: *linux_test_definition
@@ -1243,6 +1296,11 @@ docker_build_ubuntu-24.04:
   variables:
     IMAGE: ubuntu-24.04
 
+docker_build_ubuntu-24.10:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: ubuntu-24.10
+
 docker_push_rocky8:
   <<: *docker_push_definition
   variables:
@@ -1292,6 +1350,13 @@ docker_push_ubuntu-24.04:
   needs:
     - docker_build_ubuntu-24.04
 
+docker_push_ubuntu-24.10:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: ubuntu-24.10
+  needs:
+    - docker_build_ubuntu-24.10
+
 lint_clang_format:
   image: "$CI_REGISTRY_IMAGE/ubuntu-24.04:$CI_COMMIT_SHA"
   stage: test
@@ -1334,11 +1399,16 @@ lint_cmake_format:
     - tags
 
 lint_html:
-  image: "$CI_REGISTRY_IMAGE/ubuntu-24.04:$CI_COMMIT_SHA"
   stage: test
-  needs:
-    - docker_build_ubuntu-24.04
+  needs: [] # no dependencies
   script:
+    - env DEBIAN_FRONTEND=noninteractive apt-get update -y
+    - env DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y libxml2-utils
+    # output some info into the logs for debugging
+    - xmllint --version
+    - cat /etc/os-release
+    - uname -rms
+    # check file formatting
     - git ls-files -z -- '**/*.html' | xargs -0 -- xmllint --nonet --noout --html --valid
   except:
     - tags
