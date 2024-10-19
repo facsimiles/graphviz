@@ -789,6 +789,25 @@ def test_1411():
 
 
 @pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1425"
+)
+def test_1425():
+    """
+    tooltips should propagate to SVG even without an HREF
+    https://gitlab.com/graphviz/graphviz/-/issues/1425
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1425.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # translate this to SVG
+    svg = dot("svg", input)
+
+    assert re.search(r"\btable tip\b", svg) is not None, "tooltip not propagated to SVG"
+
+
+@pytest.mark.xfail(
     strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1435"
 )
 def test_1435():
