@@ -626,7 +626,8 @@ static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     htmlmap_data_t saved;
     boxf pts = cp->data.box;
     pointf pos = env->pos;
-    int inAnchor, doAnchor = (cp->data.href || cp->data.target || cp->data.title);
+    int inAnchor;
+    const bool doAnchor = cp->data.href || cp->data.target || cp->data.title;
     pointf AF[4];
 
     pts.LL.x += pos.x;
