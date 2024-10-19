@@ -523,7 +523,7 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     static textfont_t savef;
     htmlmap_data_t saved;
     int anchor;			/* if true, we need to undo anchor settings. */
-    int doAnchor = (tbl->data.href || tbl->data.target || tbl->data.title);
+    const bool doAnchor = tbl->data.href || tbl->data.target || tbl->data.title;
     pointf AF[4];
 
     if (tbl->font)
