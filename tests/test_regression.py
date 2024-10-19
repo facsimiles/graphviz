@@ -788,9 +788,6 @@ def test_1411():
     ), "error message did not identify correct location"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1425"
-)
 def test_1425():
     """
     tooltips should propagate to SVG even without an HREF
@@ -807,9 +804,6 @@ def test_1425():
     assert re.search(r"\btable tip\b", svg) is not None, "tooltip not propagated to SVG"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1425"
-)
 def test_1425_1():
     """
     tooltips should propagate to SVG even without an HREF

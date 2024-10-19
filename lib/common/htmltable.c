@@ -523,7 +523,7 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     static textfont_t savef;
     htmlmap_data_t saved;
     int anchor;			/* if true, we need to undo anchor settings. */
-    int doAnchor = (tbl->data.href || tbl->data.target);
+    int doAnchor = (tbl->data.href || tbl->data.target || tbl->data.title);
     pointf AF[4];
 
     if (tbl->font)
@@ -626,7 +626,7 @@ static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     htmlmap_data_t saved;
     boxf pts = cp->data.box;
     pointf pos = env->pos;
-    int inAnchor, doAnchor = (cp->data.href || cp->data.target);
+    int inAnchor, doAnchor = (cp->data.href || cp->data.target || cp->data.title);
     pointf AF[4];
 
     pts.LL.x += pos.x;
