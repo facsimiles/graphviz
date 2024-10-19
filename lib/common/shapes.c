@@ -694,6 +694,9 @@ static double mid_y(const pointf line[2]) {
   return (line[0].y + line[1].y) / 2;
 }
 
+static void symbol_draw(GVJ_t *job, pointf *AF, size_t sides,
+                        graphviz_polygon_style_t style, int filled);
+
 /**
  * @brief Handle some special graphical cases, such as rounding the shape,
  * adding diagonals at corners, or drawing certain non-simple figures.
@@ -710,27 +713,33 @@ void round_corners(GVJ_t *job, pointf *AF, size_t sides,
     assert(sides > 0);
     assert(memcmp(&style, &(graphviz_polygon_style_t){0}, sizeof(style)) != 0);
 
-    pointf *B, C[5], *D;
-
-    struct {
-	unsigned shape: 7;
-    } mode = {0};
-
     if (style.diagonals)
 	return diagonals_draw(job, AF, sides, style, filled);
     else if (style.shape != 0)
-	mode.shape = style.shape;
+	return symbol_draw(job, AF, sides, style, filled);
     else if (style.rounded)
 	return rounded_draw(job, AF, sides, style, filled);
     else
 	UNREACHABLE();
+}
 
-    if (mode.shape == CYLINDER) {
+/**
+ * @brief draws symbols from DOGEAR to CYLINDER
+ *
+ * The word "symbol" in the name `symbol_draw` and
+ * graphviz_polygon_style_t.shape are synonyms.
+ *
+ */
+static void symbol_draw(GVJ_t *job, pointf *AF, size_t sides,
+                        graphviz_polygon_style_t style, int filled) {
+    pointf *B, C[5], *D;
+
+    if (style.shape == CYLINDER) {
 	cylinder_draw(job, AF, sides, filled);
 	return;
     }
     B = alloc_interpolation_points(AF, sides, style, false);
-    switch (mode.shape) {
+    switch (style.shape) {
     case DOGEAR:
 	/* Add the cutoff edge. */
 	D = gv_calloc(sides + 1, sizeof(pointf));
