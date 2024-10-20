@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   right-clicking the mouse would register a mouse down event but no mouse up
   event, leading Smyrna to believe the user was dragging with the right button
   held down.
+- Arrowhead missing from tail-end of edge #2437
 
 ## [12.1.2] – 2024-09-28
 
