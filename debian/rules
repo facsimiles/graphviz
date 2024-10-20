@@ -28,7 +28,6 @@ LUA_PACKAGE       = $(CURDIR)/debian/libgv-lua
 PYTHON_VERSION    = $(shell python3 --version 2>&1 | sed 's/.* \(.*\)\..*/python\1/')
 PYTHON_PACKAGE    = $(CURDIR)/debian/libgv-python
 
-RUBY_VERSION      = 1.8
 RUBY_PACKAGE      = $(CURDIR)/debian/libgv-ruby
 
 CONFIG_SCRIPTS=config/config.guess libltdl/config.guess \
@@ -166,9 +165,10 @@ install: build
 	rm -rf $(PYTHON_PACKAGE)/usr/lib/graphviz
 
 	# Some additional work for libgv-ruby
-	install -d $(RUBY_PACKAGE)/usr/lib/ruby/$(RUBY_VERSION)
+	install -d \
+		$(RUBY_PACKAGE)/usr/lib/ruby/`ruby --version | cut -d' ' -f 2 | head -c 5`
 	mv $(RUBY_PACKAGE)/usr/lib/graphviz/ruby/libgv_ruby.so \
-		$(RUBY_PACKAGE)/usr/lib/ruby/$(RUBY_VERSION)/gv.so
+		$(RUBY_PACKAGE)/usr/lib/ruby/`ruby --version | cut -d' ' -f 2 | head -c 5`/gv.so
 	rm -rf $(RUBY_PACKAGE)/usr/lib/graphviz
 
 # Build architecture-independent files here.
