@@ -88,12 +88,12 @@ Description: Python bindings for graphviz
 Package: libgv-ruby
 Architecture: any
 Section: interpreters
-Depends: ${shlibs:Depends}, ruby1.8, ${misc:Depends}
+Depends: ${shlibs:Depends}, ruby, ${misc:Depends}
 Description: Ruby bindings for graphviz
  Graphviz is a set of graph drawing tools. See the description of the graphviz
  package for a full description.
  .
- This package contains the Ruby (1.8) bindings.
+ This package contains the Ruby bindings.
 
 
 Package: libgv-tcl
