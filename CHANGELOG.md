@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   specification is now used for sizing table cells within HTML-like labels. This
   is less scalable than the network simplex algorithm it replaces, but in
   general produces more intuitive results. #2159
+- Tooltips on table elements within HTML-like labels are now propagated to SVGs
+  produced by the core plugin (`-Tsvg`) even when the elements do not have
+  `href` attributes. #1425
 
 ### Fixed
 

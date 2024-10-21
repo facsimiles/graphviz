@@ -788,6 +788,49 @@ def test_1411():
     ), "error message did not identify correct location"
 
 
+def test_1425():
+    """
+    tooltips should propagate to SVG even without an HREF
+    https://gitlab.com/graphviz/graphviz/-/issues/1425
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1425.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # translate this to SVG
+    svg = dot("svg", input)
+
+    assert re.search(r"\btable tip\b", svg) is not None, "tooltip not propagated to SVG"
+
+
+def test_1425_1():
+    """
+    tooltips should propagate to SVG even without an HREF
+    https://gitlab.com/graphviz/graphviz/-/issues/1425
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1425_1.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # translate this to SVG
+    svg = dot("svg", input)
+
+    assert (
+        re.search(r"\bgreek to me\b", svg) is not None
+    ), "tooltip not propagated to SVG"
+    assert re.search(r"\benglish\b", svg) is not None, "tooltip not propagated to SVG"
+    assert (
+        re.search(r"\bleave a tip\b", svg) is not None
+    ), "tooltip not propagated to SVG"
+    assert (
+        re.search(r"\bcell tool tip\b", svg) is not None
+    ), "tooltip not propagated to SVG"
+    assert re.search(r"\btd tip\b", svg) is not None, "tooltip not propagated to SVG"
+    assert re.search(r"\btable tip\b", svg) is not None, "tooltip not propagated to SVG"
+
+
 @pytest.mark.xfail(
     strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1435"
 )
@@ -2598,6 +2641,25 @@ def test_2361():
 
     # run it through Graphviz
     dot("png", input)
+
+
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2295"
+)
+def test_2295():
+    """
+    tooltips should work in PDFs
+    https://gitlab.com/graphviz/graphviz/-/issues/2295
+    """
+
+    # find our collocated test case
+    input = Path(__file__).parent / "2295.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # translate it to PDF
+    pdf = dot("pdf", input)
+
+    assert re.search(rb"\bhi mom\b", pdf) is not None, "tooltip not propagated to PDF"
 
 
 @pytest.mark.parametrize("arg", ("--filepath", "-Gimagepath"))
