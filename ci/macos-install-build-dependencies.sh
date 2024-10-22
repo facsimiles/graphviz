@@ -23,6 +23,7 @@ brew install devil || brew upgrade devil
 brew install gd || brew upgrade gd
 brew install gtk+ || brew upgrade gtk+
 brew install gts || brew upgrade gts
+brew install swig || brew upgrade swig
 
 # quoting Homebrew:
 #
