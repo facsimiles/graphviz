@@ -7,8 +7,9 @@ if(ENABLE_SWIG)
   if(ENABLE_SHARP)
     swig_add_library(gv_sharp
       LANGUAGE csharp
-      SOURCES gv.i gv_dummy_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
+    target_compile_definitions(gv_sharp PRIVATE DEMAND_LOADING=1)
     set_property(TARGET gv_sharp PROPERTY SWIG_COMPILE_OPTIONS -namespace)
     swig_link_libraries(gv_sharp PRIVATE gvc)
 
@@ -31,8 +32,9 @@ if(ENABLE_SWIG)
   if(ENABLE_D)
     swig_add_library(gv_d
       LANGUAGE d
-      SOURCES gv.i gv_dummy_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
+    target_compile_definitions(gv_d PRIVATE DEMAND_LOADING=1)
     swig_link_libraries(gv_d PRIVATE gvc)
 
     install(
@@ -46,8 +48,9 @@ if(ENABLE_SWIG)
   if(ENABLE_GO)
     swig_add_library(gv_go
       LANGUAGE go
-      SOURCES gv.i gv_dummy_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
+    target_compile_definitions(gv_go PRIVATE DEMAND_LOADING=1)
     set_property(
       TARGET gv_go PROPERTY SWIG_COMPILE_OPTIONS -intgosize ${INTGOSIZE}
     )
@@ -90,8 +93,9 @@ if(ENABLE_SWIG)
   if(ENABLE_GUILE)
     swig_add_library(gv_guile
       LANGUAGE guile
-      SOURCES gv.i gv_dummy_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
+    target_compile_definitions(gv_guile PRIVATE DEMAND_LOADING=1)
     set_property(
       TARGET gv_guile
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${GUILE_INCLUDE_DIRS}
@@ -115,8 +119,9 @@ if(ENABLE_SWIG)
   if(ENABLE_JAVA)
     swig_add_library(gv_java
       LANGUAGE java
-      SOURCES gv.i gv_java_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_java_init.c
     )
+    target_compile_definitions(gv_java PRIVATE DEMAND_LOADING=1)
     set_property(
       TARGET gv_java
       PROPERTY SWIG_COMPILE_OPTIONS -package org.graphviz
@@ -139,8 +144,9 @@ if(ENABLE_SWIG)
   if(ENABLE_JAVASCRIPT)
     swig_add_library(gv_javascript
       LANGUAGE javascript
-      SOURCES gv.i gv_dummy_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
+    target_compile_definitions(gv_javascript PRIVATE DEMAND_LOADING=1)
     set_property(TARGET gv_javascript PROPERTY SWIG_COMPILE_OPTIONS -jsc)
     set_property(
       TARGET gv_javascript
@@ -177,8 +183,9 @@ if(ENABLE_SWIG)
   if(ENABLE_LUA)
     swig_add_library(gv_lua
       LANGUAGE lua
-      SOURCES gv.i gv_dummy_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
+    target_compile_definitions(gv_lua PRIVATE DEMAND_LOADING=1)
     set_property(
       TARGET gv_lua
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${LUA_INCLUDE_DIR}
@@ -196,8 +203,9 @@ if(ENABLE_SWIG)
   if(ENABLE_PERL)
     swig_add_library(gv_perl
       LANGUAGE perl5
-      SOURCES gv.i gv_dummy_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
+    target_compile_definitions(gv_perl PRIVATE DEMAND_LOADING=1)
     set_property(
       TARGET gv_perl
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${PERL_INCLUDE_PATH}
@@ -221,8 +229,9 @@ if(ENABLE_SWIG)
   if(ENABLE_PHP)
     swig_add_library(gv_php
       LANGUAGE php7
-      SOURCES gv.i gv_php_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_php_init.c
     )
+    target_compile_definitions(gv_php PRIVATE DEMAND_LOADING=1)
     set_property(
       TARGET gv_php
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${PHP_INCLUDE_DIRS}
@@ -261,8 +270,9 @@ if(ENABLE_SWIG)
   if(ENABLE_TCL)
     swig_add_library(gv_tcl
       LANGUAGE tcl
-      SOURCES gv.i gv_tcl_init.c
+      SOURCES gv.cpp gv.i gv_builtins.c gv_tcl_init.c
     )
+    target_compile_definitions(gv_tcl PRIVATE DEMAND_LOADING=1)
     set_property(TARGET gv_tcl PROPERTY SWIG_COMPILE_OPTIONS -namespace)
     target_include_directories(gv_tcl PRIVATE SYSTEM ${TCL_INCLUDE_PATH})
     if(HAVE_CXX_WSHADOW)
