@@ -54,6 +54,11 @@ add_library(cgraph
   ${FLEX_Scan_OUTPUTS}
 )
 
+if(HAVE_C_WUNUSED_BUT_SET_VARIABLE)
+  set_source_files_properties(${BISON_Grammar_OUTPUTS}
+    PROPERTIES COMPILE_FLAGS -Wno-unused-but-set-variable)
+endif()
+
 target_include_directories(cgraph PRIVATE
   ..
   ../cdt
