@@ -21,5 +21,5 @@ popd
 # memory leak detections. Disable those for now.
 export ASAN_OPTIONS=detect_leaks=0
 export UBSAN_OPTIONS=print_stacktrace=1
-ci/linux-test-job-script.sh
+ci/test-job-script.sh
 ci/test_coverage.py --analyze

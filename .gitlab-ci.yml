@@ -212,7 +212,7 @@ portable-source:
     stage: test
     script:
         - source /opt/virtualenv/bin/activate
-        - ci/linux-test-job-script.sh
+        - ci/test-job-script.sh
     artifacts:
         reports:
             junit: report.xml
