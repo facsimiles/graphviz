@@ -22,17 +22,8 @@ static PangoLayout *get_pango_layout(char *markup_text,
     int pango_width, pango_height;
     char *text;
     PangoAttrList *attr_list;
-    cairo_font_options_t *options;
     fontmap = pango_cairo_font_map_get_default();
     context = pango_font_map_create_context(fontmap);
-    options = cairo_font_options_create();
-
-    cairo_font_options_set_antialias(options, CAIRO_ANTIALIAS_GRAY);
-
-    cairo_font_options_set_hint_style(options, CAIRO_HINT_STYLE_FULL);
-    cairo_font_options_set_hint_metrics(options, CAIRO_HINT_METRICS_ON);
-    cairo_font_options_set_subpixel_order(options,
-					  CAIRO_SUBPIXEL_ORDER_BGR);
 
     desc = pango_font_description_from_string(fontdescription);
     pango_font_description_set_size(desc, (int)(fontsize * PANGO_SCALE));
