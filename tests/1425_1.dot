@@ -1,0 +1,24 @@
+digraph
+{
+  n  [
+    label = <
+      <table tooltip="table tip">
+        <tr> <td tooltip="td tip"> td </td> </tr>
+        <tr> <td > two </td> </tr>
+        <tr> <td tooltip="td tip"> three </td> </tr>
+      </table>
+    >]
+
+flower  [
+    label = <
+      <table >
+        <tr> <td tooltip="cell tool tip"> one </td> </tr>
+        <tr> <td > second </td> </tr>
+        <tr> <td tooltip="leave a tip" href="bogus"> three </td> </tr>
+      </table>
+    >]
+
+abc         [tooltip="english"] 
+alpha_beta  [tooltip="greek to me"]
+alpha_beta -> abc
+}
