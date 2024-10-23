@@ -60,6 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This became uninstallable when Ruby 1.8 was no longer available on Ubuntu, as
   it had a hard coded dependency of Ruby 1.8. This has now been relaxed to
   depend on any Ruby version ≥ 1.8. #2607
+- Generated GIFs and JPEGs display the graphed image instead of a single solid
+  color. This was a regression in Graphviz 12.1.1. #2609
 
 ## [12.1.2] – 2024-09-28
 

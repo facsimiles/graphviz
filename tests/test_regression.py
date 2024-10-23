@@ -4408,6 +4408,60 @@ def test_2600():
     assert ret.stdout.strip() != "", "acyclic produced no output"
 
 
+@pytest.mark.skipif(shutil.which("convert") is None, reason="ImageMagick not available")
+@pytest.mark.skipif(which("neato") is None, reason="neato not available")
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="`convert` on Windows is not ImageMagick"
+)
+def test_2609(tmp_path: Path):
+    """
+    GIFs should not be blank
+    https://gitlab.com/graphviz/graphviz/-/issues/2609
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2609.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Neato and convert to GIF
+    neato = which("neato")
+    gif = tmp_path / "2609.gif"
+    subprocess.check_call([neato, "-Tgif", input, "-o", gif])
+
+    # translate this into the simplest format we can parse to validate
+    ppm = tmp_path / "2609.ppm"
+    subprocess.check_call(["convert", gif, ppm])
+
+    with open(ppm, "rb") as f:
+
+        # we should have the PPM header
+        assert f.read(3) == b"P6\n"
+
+        # skip the dimensions line
+        while True:
+            if f.read(1) in (b"", b"\n"):
+                break
+
+        # skip maximum intensity line
+        while True:
+            if f.read(1) in (b"", b"\n"):
+                break
+
+        # read the first pixel as a reference color
+        reference = f.read(3)
+
+        # the remaining pixels should not all be identical if we have an actual image
+        while True:
+            pixel = f.read(3)
+            if len(pixel) < 3:
+                break
+            if pixel != reference:
+                # found a different pixel
+                return
+
+    pytest.fail("generated GIF was a solid color")
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
