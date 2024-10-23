@@ -66,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generated GIFs and JPEGs display the graphed image instead of a single solid
   color. This was a regression in Graphviz 12.1.1. #2609
 - The CMake build system includes some supporting pieces of the SWIG-generated
-  language bindings that were previously missing.
+  language bindings that were previously missing. It also links further
+  dependencies that were previously missing.
 
 ## [12.1.2] – 2024-09-28
 
