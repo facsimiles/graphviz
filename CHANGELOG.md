@@ -56,6 +56,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   event, leading Smyrna to believe the user was dragging with the right button
   held down.
 - Arrowhead missing from tail-end of edge #2437
+- The Ruby bindings package (libgv-ruby) is once again installable on Ubuntu.
+  This became uninstallable when Ruby 1.8 was no longer available on Ubuntu, as
+  it had a hard coded dependency of Ruby 1.8. This has now been relaxed to
+  depend on any Ruby version ≥ 1.8. #2607
 
 ## [12.1.2] – 2024-09-28
 
