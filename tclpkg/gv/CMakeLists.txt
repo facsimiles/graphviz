@@ -11,7 +11,7 @@ if(ENABLE_SWIG)
     )
     target_compile_definitions(gv_sharp PRIVATE DEMAND_LOADING=1)
     set_property(TARGET gv_sharp PROPERTY SWIG_COMPILE_OPTIONS -namespace)
-    swig_link_libraries(gv_sharp PRIVATE gvc)
+    target_link_libraries(gv_sharp PRIVATE gvc)
 
     get_property(gv_sharp_support
       TARGET gv_sharp
@@ -35,7 +35,7 @@ if(ENABLE_SWIG)
       SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
     target_compile_definitions(gv_d PRIVATE DEMAND_LOADING=1)
-    swig_link_libraries(gv_d PRIVATE gvc)
+    target_link_libraries(gv_d PRIVATE gvc)
 
     install(
       TARGETS gv_d
@@ -60,7 +60,7 @@ if(ENABLE_SWIG)
         PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-unused-function
       )
     endif()
-    swig_link_libraries(gv_go PRIVATE gvc)
+    target_link_libraries(gv_go PRIVATE gvc)
 
     add_custom_target(gv.go
       COMMAND echo "package gv" >gv.go
@@ -106,7 +106,7 @@ if(ENABLE_SWIG)
         PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-unused-parameter
       )
     endif()
-    swig_link_libraries(gv_guile PRIVATE gvc ${GUILE_LIBRARIES})
+    target_link_libraries(gv_guile PRIVATE gvc ${GUILE_LIBRARIES})
 
     install(
       TARGETS gv_guile
@@ -131,7 +131,7 @@ if(ENABLE_SWIG)
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES
         ${JNI_INCLUDE_DIRS}
     )
-    swig_link_libraries(gv_java PRIVATE gvc ${JNI_LIBRARIES})
+    target_link_libraries(gv_java PRIVATE gvc ${JNI_LIBRARIES})
 
     install(
       TARGETS gv_java
@@ -170,7 +170,7 @@ if(ENABLE_SWIG)
         PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-unused-parameter
       )
     endif()
-    swig_link_libraries(gv_javascript PRIVATE gvc ${JAVASCRIPTCORE_LIBRARIES})
+    target_link_libraries(gv_javascript PRIVATE gvc ${JAVASCRIPTCORE_LIBRARIES})
 
     install(
       TARGETS gv_javascript
@@ -190,7 +190,7 @@ if(ENABLE_SWIG)
       TARGET gv_lua
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${LUA_INCLUDE_DIR}
     )
-    swig_link_libraries(gv_lua PRIVATE gvc ${LUA_LIBRARIES})
+    target_link_libraries(gv_lua PRIVATE gvc ${LUA_LIBRARIES})
 
     install(
       TARGETS gv_lua
@@ -216,7 +216,7 @@ if(ENABLE_SWIG)
         PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-unused-parameter
       )
     endif()
-    swig_link_libraries(gv_perl PRIVATE gvc ${PERL_LIBRARY})
+    target_link_libraries(gv_perl PRIVATE gvc ${PERL_LIBRARY})
 
     install(
       TARGETS gv_perl
@@ -257,7 +257,7 @@ if(ENABLE_SWIG)
       TARGET gv_php
       PROPERTY SWIG_GENERATED_COMPILE_OPTIONS "${PHP_FLAGS}"
     )
-    swig_link_libraries(gv_php PRIVATE gvc ${PHP_LIBRARIES})
+    target_link_libraries(gv_php PRIVATE gvc ${PHP_LIBRARIES})
 
     install(
       TARGETS gv_php
@@ -281,7 +281,7 @@ if(ENABLE_SWIG)
         PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-shadow
       )
     endif()
-    swig_link_libraries(gv_tcl PRIVATE gvc tclstubs ${TCL_LIBRARY})
+    target_link_libraries(gv_tcl PRIVATE gvc tclstubs ${TCL_LIBRARY})
 
     install(
       TARGETS gv_tcl
