@@ -29,9 +29,13 @@
 #define C 100 /* Max. avg. polyomino size */
 
 #define MOVEPT(p) ((p).x += dx, (p).y += dy)
-/* Given cell size s, GRID(x:double,s:int) returns how many cells are required
- * by size x */
-#define GRID(x, s) ((int)ceil((x) / (s)))
+
+/// given cell size `s`, how many cells are required by size x?
+static int GRID(double x, int s) {
+  const double required = ceil(x / s);
+  return (int)required;
+}
+
 /* Given grid cell size s, CVAL(v:int,s:int) returns index of cell containing
  * point v */
 #define CVAL(v, s) ((v) >= 0 ? (v) / (s) : (((v) + 1) / (s)) - 1)
