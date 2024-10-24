@@ -578,20 +578,28 @@ static int acmpf(const void *X, const void *Y) {
   return 0;
 }
 
-#define INC(m, c, r)                                                           \
-  if (m) {                                                                     \
-    c++;                                                                       \
-    if (c == nc) {                                                             \
-      c = 0;                                                                   \
-      r++;                                                                     \
-    }                                                                          \
-  } else {                                                                     \
-    r++;                                                                       \
-    if (r == nr) {                                                             \
-      r = 0;                                                                   \
-      c++;                                                                     \
-    }                                                                          \
+/// step to the next iteration of a matrix cell loop
+///
+/// @param m Is the matrix in row-major order?
+/// @param c [inout] Column index
+/// @param r [inout] Row index
+/// @param nc Total column count
+/// @param nr Total row count
+static void INC(bool m, size_t *c, size_t *r, size_t nc, size_t nr) {
+  if (m) {
+    (*c)++;
+    if (*c == nc) {
+      *c = 0;
+      (*r)++;
+    }
+  } else {
+    (*r)++;
+    if (*r == nr) {
+      *r = 0;
+      (*c)++;
+    }
   }
+}
 
 static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
   size_t nr = 0, nc;
@@ -656,7 +664,7 @@ static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
     ip = sinfo[i];
     widths[c] = fmax(widths[c], ip->width);
     heights[r] = fmax(heights[r], ip->height);
-    INC(rowMajor, c, r);
+    INC(rowMajor, &c, &r, nc, nr);
   }
 
   /* convert widths and heights to positions */
@@ -695,7 +703,7 @@ static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
     else
       places[idx].y =
           round((heights[r] + heights[r + 1] - bb.UR.y - bb.LL.y) / 2.0);
-    INC(rowMajor, c, r);
+    INC(rowMajor, &c, &r, nc, nr);
   }
 
   free(info);
