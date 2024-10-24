@@ -56,7 +56,7 @@ typedef struct {
 } ainfo;
 
 /* Compute grid step size. This is a root of the
- * quadratic equation al^2 +bl + c, where a, b and
+ * quadratic equation a×l² + b×l + c, where a, b and
  * c are defined below.
  */
 static int computeStep(size_t ng, boxf *bbs, unsigned int margin) {
