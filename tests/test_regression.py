@@ -2762,6 +2762,25 @@ def test_2484():
     )
 
 
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2592"
+)
+def test_2592():
+    """
+    pack modes should not remove xlabels
+    https://gitlab.com/graphviz/graphviz/-/issues/2592
+    """
+
+    # find our collocated test case
+    input = Path(__file__).parent / "2592.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run it through Graphviz
+    svg = dot("svg", input)
+
+    assert "comment not included" in svg, "missing xlabel in packed graph"
+
+
 def test_package_version():
     """
     The graphviz_version.h header should define a non-empty PACKAGE_VERSION

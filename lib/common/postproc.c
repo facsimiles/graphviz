@@ -299,9 +299,7 @@ static void
 addXLabel (textlabel_t* lp, object_t* objp, xlabel_t* xlp, int initObj, pointf pos)
 {
     if (initObj) {
-	objp->sz.x = 0;
-	objp->sz.y = 0;
-	objp->pos = pos;
+	*objp = (object_t){.pos = pos};
     }
 
     if (Flip) {
@@ -393,15 +391,13 @@ static size_t countClusterLabels(Agraph_t *g) {
     return i;
 }
 
-/* addXLabels:
- * Position xlabels and any unpositioned edge labels using
- * a map placement algorithm to avoid overlap.
- *
- * TODO: interaction with spline=ortho
- */
   /* True if edges geometries were computed and this edge has a geometry */
 #define HAVE_EDGE(ep) ((et != EDGETYPE_NONE) && (ED_spl(ep) != NULL))
 
+/// position xlabels and any unpositioned edge labels using a map placement
+/// algorithm to avoid overlap
+///
+/// TODO: interaction with spline=ortho
 static void addXLabels(Agraph_t * gp)
 {
     Agnode_t *np;
