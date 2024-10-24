@@ -68,8 +68,8 @@ static int computeStep(size_t ng, boxf *bbs, unsigned int margin) {
     boxf bb = bbs[i];
     W = bb.UR.x - bb.LL.x + 2 * margin;
     H = bb.UR.y - bb.LL.y + 2 * margin;
-    b -= (W + H);
-    c -= (W * H);
+    b -= W + H;
+    c -= W * H;
   }
   d = b * b - 4.0 * a * c;
   if (d < 0) {
@@ -1210,7 +1210,7 @@ pack_mode parsePackModeInfo(const char *p, pack_mode dflt, pack_info *pinfo) {
       pinfo->mode = l_array;
       p += strlen("array");
       p = chkFlags(p, pinfo);
-      if ((sscanf(p, "%d", &i) > 0) && (i > 0))
+      if (sscanf(p, "%d", &i) > 0 && i > 0)
         pinfo->sz = i;
     } else if (startswith(p, "aspect")) {
       pinfo->mode = l_aspect;
