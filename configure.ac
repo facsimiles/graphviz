@@ -572,48 +572,25 @@ else
     if test `$SWIG -help 2>&1 | $EGREP -c '\-guile *- Generate'` = 0; then
       use_guile="No (swig does not support -guile option)"
     else
-      AC_CHECK_PROGS(GUILE_CONFIG,guile-config3.0 guile-config2.2 guile-config)
-      if test "$GUILE_CONFIG" = ""; then
-        use_guile="No (guile not available)"
-      else
-        [GUILE_VERSION=`$GUILE_CONFIG --version 2>&1 | sed -n '1 s/^.* \+\([0-9\.]\+\)$/\1/ p'`]
-        GUILE_VERSION_MAJOR=`echo $GUILE_VERSION | cut -d '.' -f 1`
-        GUILE_VERSION_MINOR=`echo $GUILE_VERSION | cut -d '.' -f 2`
-        AC_CHECK_PROGS(GUILE,guile$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR guile$GUILE_VERSION_MAJOR guile)
-        AX_COMPARE_VERSION([0$GUILE_VERSION_MAJOR.0$GUILE_VERSION_MINOR], [lt],
-                           [1.4], [GUILE_CONFIG=])
-        if test "$GUILE_CONFIG" = ""; then
-	  use_guile="No (guile is too old)"
-        else
-	  GUILE_INCLUDES=$($GUILE_CONFIG compile)
-	  GUILE_LIBS=$($GUILE_CONFIG link)
-	  # don't die if PKG_CHECK_MODULES not available - el4, el5
-          PKG_CHECK_MODULES([GUILE],
-		[guile-2.0 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
-		GUILE_INCLUDES="$GUILE_CFLAGS",
-          	[
-			PKG_CHECK_MODULES([GUILE],
-			[guile-1.8 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
-			GUILE_INCLUDES="$GUILE_CFLAGS",
-			false)
-		])
-          ac_save_CFLAGS="$CFLAGS"
-          ac_save_CPPFLAGS="$save_CPPFLAGS"
-          CFLAGS="$CFLAGS $GUILE_INCLUDES"
-          CPPFLAGS="$CPPFLAGS $GUILE_INCLUDES"
-          AC_CHECK_HEADER(libguile.h,,[
-            use_guile="No (guile header missing)"
-            GUILE_CONFIG=
-          ])
-          CFLAGS="$ac_save_CFLAGS"
-          CPPFLAGS="$ac_save_CPPFLAGS"
-          if test "$GUILE" != ""; then
-	    use_guile="Yes"
-            AC_SUBST([GUILE_INCLUDES])
+      PKG_CHECK_MODULES([GUILE], [guile-3.0], [
+        use_guile="Yes"
+        AC_SUBST([GUILE_CFLAGS])
+        AC_SUBST([GUILE_LIBS])
+      ], [
+        PKG_CHECK_MODULES([GUILE], [guile-2.0], [
+          use_guile="Yes"
+          AC_SUBST([GUILE_CFLAGS])
+          AC_SUBST([GUILE_LIBS])
+        ], [
+          PKG_CHECK_MODULES([GUILE], [guile-1.8], [
+            use_guile="Yes"
+            AC_SUBST([GUILE_CFLAGS])
             AC_SUBST([GUILE_LIBS])
-          fi
-        fi
-      fi
+          ], [
+            use_guile="No (Guile not available)"
+          ])
+        ])
+      ])
     fi
   fi
 fi

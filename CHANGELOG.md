@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tooltips on table elements within HTML-like labels are now propagated to SVGs
   produced by the core plugin (`-Tsvg`) even when the elements do not have
   `href` attributes. #1425
+- In the Autotools build system, `pkg-config` is the only supported way for
+  discovering Guile. Previous use of `guile-config*` has been removed. #2606
 
 ### Fixed
 
