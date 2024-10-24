@@ -2311,6 +2311,19 @@ def test_2179_1():
     ), "incorrect warning triggered"
 
 
+def test_2183():
+    """
+    processing `splines=ortho`, `concentrate=true` should not crash
+    https://gitlab.com/graphviz/graphviz/-/issues/2183
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2183.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    subprocess.check_call(["dot", "-Tsvg", "-G8.5,11!", "-o", os.devnull, input])
+
+
 @pytest.mark.skipif(which("nop") is None, reason="nop not available")
 def test_2184_1():
     """

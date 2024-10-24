@@ -1,0 +1,60 @@
+strict digraph Production {
+  concentrate=true
+  splines=ortho
+  stylesheet="bpmn.css"
+  node [shape=rectangle, style=rounded, class="task"]
+  edge [class="sequenceFlow"]
+
+  subgraph cluster_A {
+    label="A"
+    class="swimlane"
+
+    a [xlabel="a", shape=circle, label="", class="event start"]
+    a -> "b" -> "c" -> d
+    d [shape=circle, label="", class="event end escalation"]
+
+    e [xlabel="e", shape=doublecircle, label="",
+       class="event intermediate message catching"]
+    e -> "f" -> g
+    g [label="g"]
+
+    h [class="event message catching", shape=doublecircle]
+  }
+  subgraph cluster_B {
+    label="B"
+    class="swimlane"
+
+    i [xlabel="i", shape=circle, label="", class="event start timer"]
+    i -> "j" -> "k" -> l
+    l [shape=doublecircle, label="",
+       class="event intermediate message throwing"]
+  }
+  "c" -> m -> e [style=dotted, class="association"]
+  m [label="m", shape="note", class="dataObject"]
+  l -> e [style=dashed, class="messageFlow"]
+
+  subgraph cluster_C {
+    label="C"
+    class="swimlane"
+
+    n [class="event intermediate message catching", shape=doublecircle]
+    n -> o
+    o [class="gate exclusive", label="X", shape=diamond]
+    o -> q [label="Z"]
+    q [class="event intermediate message throwing"]
+    o -> "p" [label="Y"]
+    "p" -> q
+  }
+  //Budgeting
+  r [class="dataObject", shape=note]
+  g -> n [class="messageFlow", style=dashed]
+  g -> r -> n [class="association", style=dotted]
+  o -> h [class="messageFlow", style=dashed]
+  o -> r -> h [class="association", style=dotted]
+
+  subgraph cluster_D {
+    class="swimlane"
+    label="D"
+  }
+
+}
