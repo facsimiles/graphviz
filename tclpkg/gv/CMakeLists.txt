@@ -106,7 +106,9 @@ if(ENABLE_SWIG)
         PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-unused-parameter
       )
     endif()
-    target_link_libraries(gv_guile PRIVATE cdt cgraph gvc ${GUILE_LIBRARIES})
+    target_link_libraries(
+      gv_guile PRIVATE cdt cgraph gvc ${GUILE_LINK_LIBRARIES}
+    )
 
     install(
       TARGETS gv_guile
