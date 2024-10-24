@@ -971,7 +971,6 @@ int packRects(size_t ng, boxf *bbs, pack_info *pinfo) {
 
 /// Translate all of the edge components by the given offset.
 static void shiftEdge(Agedge_t *e, double dx, double dy) {
-  bezier bz;
 
   if (ED_label(e))
     MOVEPT(ED_label(e)->pos);
@@ -986,7 +985,7 @@ static void shiftEdge(Agedge_t *e, double dx, double dy) {
     return;
 
   for (size_t j = 0; j < ED_spl(e)->size; j++) {
-    bz = ED_spl(e)->list[j];
+    bezier bz = ED_spl(e)->list[j];
     for (size_t k = 0; k < bz.size; k++)
       MOVEPT(bz.list[k]);
     if (bz.sflag)
