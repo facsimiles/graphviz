@@ -71,8 +71,6 @@ static void json_begin_graph(GVJ_t *job)
     }
 }
 
-#define LOCALNAMEPREFIX		'%'
-
 /** Convert dot string to a valid json string embedded in double quotes and
  *   output
  *

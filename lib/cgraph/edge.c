@@ -354,20 +354,22 @@ int agdeledge(Agraph_t * g, Agedge_t * e)
 
 Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int cflag)
 {
-    Agnode_t *t, *h;
+    Agnode_t *t;
     Agedge_t *rv;
 
     rv = NULL;
     t = agsubnode(g, AGTAIL(e), cflag);
-    h = agsubnode(g, AGHEAD(e), cflag);
-    if (t && h) {
-	rv = agfindedge_by_key(g, t, h, AGTAG(e));
-	if (cflag && rv == NULL) {
-	installedge(g, e);
-	rv = e;
+    if (t != NULL || cflag) {
+	Agnode_t *const h = agsubnode(g, AGHEAD(e), cflag);
+	if (t != NULL && h != NULL) {
+	    rv = agfindedge_by_key(g, t, h, AGTAG(e));
+	    if (cflag && rv == NULL) {
+	        installedge(g, e);
+	        rv = e;
+	    }
+	    if (rv && (AGTYPE(rv) != AGTYPE(e)))
+	        rv = AGOPP(rv);
 	}
-	if (rv && (AGTYPE(rv) != AGTYPE(e)))
-	    rv = AGOPP(rv);
     }
     return rv;
 }

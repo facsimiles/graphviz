@@ -392,16 +392,34 @@ static int write_trl(Agraph_t * g, iochan_t * ofile)
     return 0;
 }
 
+/// is this graph unnamed?
+///
+/// @param g Graph to inspect
+/// @return True if this graph was given no explicit name
+static bool is_anonymous(Agraph_t *g) {
+  assert(g != NULL);
+
+  // handle the common case inline for performance
+  if (AGDISC(g, id) == &AgIdDisc) {
+    // replicate `idprint`
+    const IDTYPE id = AGID(g);
+    if (id % 2 != 0) {
+      return true;
+    }
+    return *(char *)(uintptr_t)id == LOCALNAMEPREFIX;
+  }
+
+  const char *const name = agnameof(g);
+  return name == NULL || name[0] == LOCALNAMEPREFIX;
+}
+
 static bool irrelevant_subgraph(Agraph_t * g)
 {
     int i, n;
     Agattr_t *sdata, *pdata, *rdata;
     Agdatadict_t *dd;
 
-    char *name;
-
-    name = agnameof(g);
-    if (name && name[0] != LOCALNAMEPREFIX)
+    if (!is_anonymous(g))
 	return false;
     if ((sdata = agattrrec(g)) && (pdata = agattrrec(agparent(g)))) {
 	rdata = agattrrec(agroot(g));

@@ -382,32 +382,36 @@ int agnodebefore(Agnode_t *fst, Agnode_t *snd)
 struct graphviz_node_set {
   Agsubnode_t **slots; ///< backing store for elements
   size_t size;         ///< number of elements in the set
-  size_t capacity;     ///< size of `slots`
+  size_t capacity_exp; ///< log₂ size of `slots`
 };
 
 /// a sentinel, marking a set slot from which an element has been deleted
 static Agsubnode_t *const TOMBSTONE = (Agsubnode_t *)-1;
 
+/// get the allocated size of the backing storage of a node set
+///
+/// The capacity of a set is represented as its base-2 exponent, to make clearer
+/// to the compiler that it can implement `% capacity` as a mask, avoiding the
+/// expense of a modulo operation.
+///
+/// @param self Set to inspect
+/// @return Capacity of the given set
+static size_t node_set_get_capacity(const node_set_t *self) {
+  assert(self != NULL);
+  return self->slots == NULL ? 0 : 1ul << self->capacity_exp;
+}
+
 node_set_t *node_set_new(void) { return gv_alloc(sizeof(node_set_t)); }
 
-/// compute initial index to attempt to store/find an item in
-///
-/// This function only returns the first index to be examined. `node_set_t` is
-/// implemented using linear probing, so steps sequentially through indices
-/// following this.
+/// compute a hash of a node
 ///
 /// If the suboptimal choice of using the ID here turns out to be bad for
 /// performance, this could be converted to a more sophisticated hashing
 /// algorithm. None of the callers depend on the exact implementation.
 ///
-/// @param self Set to compute with respect to
-/// @param item Element being sought/added
-/// @return Initial index to examine
-static size_t node_set_index(const node_set_t *self, IDTYPE id) {
-  assert(self != NULL);
-  assert(self->capacity != 0);
-  return (size_t)id % self->capacity;
-}
+/// @param id Identifier of element being sought/added
+/// @return Hash digest of the target node
+static size_t node_set_hash(IDTYPE id) { return (size_t)id; }
 
 void node_set_add(node_set_t *self, Agsubnode_t *item) {
   assert(self != NULL);
@@ -417,18 +421,18 @@ void node_set_add(node_set_t *self, Agsubnode_t *item) {
   static const size_t OCCUPANCY_THRESHOLD_PERCENT = 70;
 
   // do we need to expand the backing store?
-  const bool grow =
-      100 * self->size >= OCCUPANCY_THRESHOLD_PERCENT * self->capacity;
+  size_t capacity = node_set_get_capacity(self);
+  const bool grow = 100 * self->size >= OCCUPANCY_THRESHOLD_PERCENT * capacity;
 
   if (grow) {
-    const size_t new_c = self->capacity == 0 ? 1024 : self->capacity * 2;
-    Agsubnode_t **new_slots = gv_calloc(new_c, sizeof(Agsubnode_t *));
+    const size_t new_c = capacity == 0 ? 10 : self->capacity_exp + 1;
+    Agsubnode_t **new_slots = gv_calloc(1ul << new_c, sizeof(Agsubnode_t *));
 
     // Construct a new set and copy everything into it. Note we need to rehash
     // because capacity (and hence modulo wraparound behavior) has changed. This
     // conveniently flushes out the tombstones too.
-    node_set_t new_self = {.slots = new_slots, .capacity = new_c};
-    for (size_t i = 0; i < self->capacity; ++i) {
+    node_set_t new_self = {.slots = new_slots, .capacity_exp = new_c};
+    for (size_t i = 0; i < capacity; ++i) {
       // skip empty slots
       if (self->slots[i] == NULL) {
         continue;
@@ -445,12 +449,13 @@ void node_set_add(node_set_t *self, Agsubnode_t *item) {
     *self = new_self;
   }
 
-  assert(self->capacity > self->size);
+  capacity = node_set_get_capacity(self);
+  assert(capacity > self->size);
 
-  const size_t index = node_set_index(self, item->node->base.tag.id);
+  const size_t hash = node_set_hash(item->node->base.tag.id);
 
-  for (size_t i = 0; i < self->capacity; ++i) {
-    const size_t candidate = (index + i) % self->capacity;
+  for (size_t i = 0; i < capacity; ++i) {
+    const size_t candidate = (hash + i) % capacity;
 
     // if we found an empty slot or a previously deleted slot, we can insert
     if (self->slots[candidate] == NULL || self->slots[candidate] == TOMBSTONE) {
@@ -466,16 +471,11 @@ void node_set_add(node_set_t *self, Agsubnode_t *item) {
 Agsubnode_t *node_set_find(node_set_t *self, IDTYPE key) {
   assert(self != NULL);
 
-  // early exit to avoid `self->slots == NULL`/`self->capacity == 0`
-  // complications
-  if (self->size == 0) {
-    return NULL;
-  }
+  const size_t hash = node_set_hash(key);
+  const size_t capacity = node_set_get_capacity(self);
 
-  const size_t index = node_set_index(self, key);
-
-  for (size_t i = 0; i < self->capacity; ++i) {
-    const size_t candidate = (index + i) % self->capacity;
+  for (size_t i = 0; i < capacity; ++i) {
+    const size_t candidate = (hash + i) % capacity;
 
     // if we found an empty slot, the sought item does not exist
     if (self->slots[candidate] == NULL) {
@@ -498,16 +498,11 @@ Agsubnode_t *node_set_find(node_set_t *self, IDTYPE key) {
 void node_set_remove(node_set_t *self, IDTYPE item) {
   assert(self != NULL);
 
-  // early exit to avoid `self->slots == NULL`/`self->capacity == 0`
-  // complications
-  if (self->size == 0) {
-    return;
-  }
+  const size_t hash = node_set_hash(item);
+  const size_t capacity = node_set_get_capacity(self);
 
-  const size_t index = node_set_index(self, item);
-
-  for (size_t i = 0; i < self->capacity; ++i) {
-    const size_t candidate = (index + i) % self->capacity;
+  for (size_t i = 0; i < capacity; ++i) {
+    const size_t candidate = (hash + i) % capacity;
 
     // if we found an empty slot, the sought item does not exist
     if (self->slots[candidate] == NULL) {
