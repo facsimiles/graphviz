@@ -299,9 +299,7 @@ static void
 addXLabel (textlabel_t* lp, object_t* objp, xlabel_t* xlp, int initObj, pointf pos)
 {
     if (initObj) {
-	objp->sz.x = 0;
-	objp->sz.y = 0;
-	objp->pos = pos;
+	*objp = (object_t){.pos = pos};
     }
 
     if (Flip) {
