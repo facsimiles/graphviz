@@ -600,12 +600,13 @@ static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
   double v, wd, ht;
   pointf *places = gv_calloc(ng, sizeof(pointf));
   boxf bb;
-  int sz, rowMajor;
+  int sz;
+  bool rowMajor;
 
   /* set up no. of rows and columns */
   sz = pinfo->sz;
   if (pinfo->flags & PK_COL_MAJOR) {
-    rowMajor = 0;
+    rowMajor = false;
     if (sz > 0) {
       nr = (size_t)sz;
       nc = (ng + (nr - 1)) / nr;
@@ -614,7 +615,7 @@ static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
       nc = (ng + (nr - 1)) / nr;
     }
   } else {
-    rowMajor = 1;
+    rowMajor = true;
     if (sz > 0) {
       nc = (size_t)sz;
       nr = (ng + (nc - 1)) / nc;
