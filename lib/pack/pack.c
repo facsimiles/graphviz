@@ -76,10 +76,7 @@ static int computeStep(size_t ng, boxf *bbs, unsigned int margin) {
     c -= W * H;
   }
   d = b * b - 4.0 * a * c;
-  if (d < 0) {
-    agerrorf("libpack: disc = %f ( < 0)\n", d);
-    return -1;
-  }
+  assert(d >= 0);
   r = sqrt(d);
   l1 = (-b + r) / (2 * a);
   l2 = (-b - r) / (2 * a);
