@@ -1334,9 +1334,7 @@ bool overlap_node(node_t *n, boxf b) {
 
 bool overlap_label(textlabel_t *lp, boxf b)
 {
-    pointf s;
-    s.x = lp->dimen.x / 2.;
-    s.y = lp->dimen.y / 2.;
+    const pointf s = {.x = lp->dimen.x / 2.0, .y = lp->dimen.y / 2.0};
     boxf bb = {.LL = sub_pointf(lp->pos, s), .UR = add_pointf(lp->pos, s)};
     return OVERLAP(b, bb);
 }
