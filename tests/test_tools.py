@@ -15,11 +15,7 @@ import sys
 import pytest
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import (  # pylint: disable=wrong-import-position
-    is_mingw,
-    remove_xtype_warnings,
-    which,
-)
+from gvtest import remove_xtype_warnings, which  # pylint: disable=wrong-import-position
 
 
 @pytest.mark.parametrize(
@@ -76,7 +72,7 @@ def test_tools(tool):
         pytest.skip(f"{tool} not available")
 
     # exec-ing a POSIX shell script as-is does not work on Windows
-    if tool == "gvmap.sh" and platform.system() == "Windows" and not is_mingw():
+    if tool == "gvmap.sh" and platform.system() == "Windows":
         pytest.skip("gvmap.sh cannot be run directly on Windows")
 
     # Ensure that X fails to open display
