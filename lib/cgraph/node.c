@@ -383,6 +383,17 @@ struct graphviz_node_set {
   Agsubnode_t **slots; ///< backing store for elements
   size_t size;         ///< number of elements in the set
   size_t capacity_exp; ///< log₂ size of `slots`
+
+  /// the minimum and maximum ID of nodes that have been inserted into the set
+  ///
+  /// These fields are used to optimize existence checks. `node_set_find` can
+  /// quickly return `NULL` if the target node is outside the known range to
+  /// have been inserted into the set. This seems niche, but negative queries
+  /// like this are common enough that this is a measurable performance
+  /// improvement.
+  bool min_initialized;
+  IDTYPE min;
+  IDTYPE max;
 };
 
 /// a sentinel, marking a set slot from which an element has been deleted
@@ -449,6 +460,15 @@ void node_set_add(node_set_t *self, Agsubnode_t *item) {
     *self = new_self;
   }
 
+  // update bounds of what we have seen
+  if (!self->min_initialized || item->node->base.tag.id < self->min) {
+    self->min_initialized = true;
+    self->min = item->node->base.tag.id;
+  }
+  if (item->node->base.tag.id > self->max) {
+    self->max = item->node->base.tag.id;
+  }
+
   capacity = node_set_get_capacity(self);
   assert(capacity > self->size);
 
@@ -470,6 +490,14 @@ void node_set_add(node_set_t *self, Agsubnode_t *item) {
 
 Agsubnode_t *node_set_find(node_set_t *self, IDTYPE key) {
   assert(self != NULL);
+
+  // do we know immediately a node of this key has never been inserted?
+  if (self->min_initialized && key < self->min) {
+    return NULL;
+  }
+  if (key > self->max) {
+    return NULL;
+  }
 
   const size_t hash = node_set_hash(key);
   const size_t capacity = node_set_get_capacity(self);
