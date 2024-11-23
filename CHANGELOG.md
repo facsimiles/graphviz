@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   function RTreeInsert”. It is typically not obvious to users when their input
   falls into this situation, hence why the assertion message is quoted here.
   This was a regression in Graphviz 12.0.0. #2613
+- Strings containing double quote characters preceded by escape sequences (e.g.
+  `\n"`) are once again correctly escaped in dot or canonical output. This was a
+  regression in Graphviz 9.0.0. #2614
 
 ## [12.2.0] – 2024-11-04
 

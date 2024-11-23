@@ -4706,6 +4706,26 @@ def test_2613():
     dot("pdf", input)
 
 
+def test_2614():
+    """
+    quotes in strings should be correctly escaped
+    https://gitlab.com/graphviz/graphviz/-/issues/2614
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2614.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # generate the canonical form of this
+    canonical = dot("canon", input)
+
+    # it should be re-parseable
+    dot("svg", source=canonical)
+
+    # quotes should have been escaped
+    assert canonical.count('\\"') == 2, "quotes in string were not properly escaped"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(

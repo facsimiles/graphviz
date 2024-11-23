@@ -150,6 +150,8 @@ static char *_agstrcanon(char *arg, char *buf)
 	else if (!(gv_isalnum(uc) || uc == '_' || !isascii(uc))) {
 	    needs_quotes = true;
 	    part_of_escape = false;
+	} else {
+	    part_of_escape = false;
 	}
 	*p++ = uc;
 	uc = *s++;
