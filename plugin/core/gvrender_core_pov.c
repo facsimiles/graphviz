@@ -297,8 +297,6 @@
 #define RENDERER_COLOR_TYPE RGBA_BYTE
 typedef enum { FORMAT_POV, } format_type;
 
-//#define DEBUG
-
 //TODO: check why this dot file does not work (90 rotated)
 //   /usr/share/graphviz/graphs/directed/NaN.gv
 //TODO: add Texttures
@@ -743,7 +741,7 @@ gvrender_features_t render_features_pov = {
 	    | GVRENDER_DOES_MAP_BSPLINE
 	    | GVRENDER_NO_WHITE_BG
 	    | GVRENDER_DOES_TRANSFORM
-	    | GVRENDER_DOES_Z | GVRENDER_DOES_MAP_BSPLINE,
+	    | GVRENDER_DOES_Z,
 	4.0,			/* default pad - graph units */
 	pov_knowncolors,	/* knowncolors */
 	sizeof(pov_knowncolors) / sizeof(char *),	/* strings in knowncolors */
