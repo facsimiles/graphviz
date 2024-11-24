@@ -99,6 +99,9 @@ def test_existence(binary: str):
         check_that_tool_does_not_exist(binary, os_id)
         pytest.skip("smyrna is not built on non-Linux due to lacking dependencies")
 
+    if binary == "gvmap.sh" and is_mingw():
+        pytest.skip(f"{binary} detection is unreliable on MinGW")
+
     if binary == "vimdot" and platform.system() == "Windows":
         check_that_tool_does_not_exist(binary, os_id)
         pytest.skip(f"{binary} is not installed on Windows")
