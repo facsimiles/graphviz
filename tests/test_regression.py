@@ -4638,6 +4638,33 @@ def test_2600():
     assert ret.stdout.strip() != "", "acyclic produced no output"
 
 
+@pytest.mark.skipif(which("dot_builtins") is None, reason="dot_builtins not available")
+def test_2604():
+    """
+    dot_builtins should not repeat formats in guidance
+    https://gitlab.com/graphviz/graphviz/-/issues/2604
+    """
+
+    # a simple graph
+    input = "digraph { a -> b; }"
+
+    # run dot_builtins with an incorrect format
+    dot_builtins = which("dot_builtins")
+    proc = subprocess.run(
+        [dot_builtins, "-o", os.devnull, "-Tpng:"],
+        stderr=subprocess.PIPE,
+        input=input,
+        universal_newlines=True,
+        check=False,
+    )
+
+    assert proc.returncode != 0, "dot_builtins accepted malformed format 'png:'"
+
+    assert (
+        len(re.findall(r"\bpng:cairo:cairo\b", proc.stderr)) <= 1
+    ), "duplicate formats listed in guidance"
+
+
 @pytest.mark.skipif(shutil.which("convert") is None, reason="ImageMagick not available")
 @pytest.mark.skipif(which("neato") is None, reason="neato not available")
 @pytest.mark.skipif(

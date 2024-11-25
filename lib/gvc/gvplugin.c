@@ -374,6 +374,16 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
                                           then just list the alternative paths for the plugin */
         for (pnext = plugin; pnext; pnext = pnext->next) {
             const strview_t type = strview(pnext->typestr, ':');
+            // skip duplicates
+            bool already_seen = false;
+            for (const gvplugin_available_t *p = plugin; p != pnext;
+                 p = p->next) {
+                already_seen |= strcasecmp(pnext->typestr, p->typestr) == 0 &&
+                  strcasecmp(pnext->package->name, p->package->name) == 0;
+            }
+            if (already_seen) {
+                continue;
+            }
             // list only the matching type, or all types if str is an empty
             // string or starts with ":"
             if (strv.size == 0 || strview_case_eq(strv, type)) {

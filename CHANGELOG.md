@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Strings containing double quote characters preceded by escape sequences (e.g.
   `\n"`) are once again correctly escaped in dot or canonical output. This was a
   regression in Graphviz 9.0.0. #2614
+- `dot_builtins` no longer lists duplicate format options in its error messages.
+  #2604
 
 ## [12.2.0] – 2024-11-04
 

@@ -307,10 +307,8 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    return dotneato_usage(argv[0], 1);
 		}
 		if (!gvjobs_output_langname(gvc, val)) {
-		    /* TODO: Detect empty results from gvplugin_list() and prompt to configure with '-c' */
-		    char *fmts;
+		    const char *const fmts = gvplugin_list(gvc, API_device, val);
 		    fprintf(stderr, "Format: \"%s\" not recognized.", val);
-		    fmts = gvplugin_list(gvc, API_device, val);
 		    if (strlen(fmts) > 1) {
 			fprintf(stderr, " Use one of:%s\n", fmts);
 		    } else {
@@ -318,7 +316,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 			fprintf(stderr, " No formats found.\nPerhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
 		    }
 		    if (GvExitOnUsage) graphviz_exit(1);
-		    return(2);
+		    return 2;
 		}
 		break;
 	    case 'K':
@@ -334,10 +332,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
                         fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
                     }
 		    else {
-			/* TODO: Detect empty results from gvplugin_list() and prompt to configure with '-c' */
-			/* fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, val)); */
-			char *lyts;
-			lyts = gvplugin_list(gvc, API_layout, val);
+			const char *const lyts = gvplugin_list(gvc, API_layout, val);
 			if (strlen(lyts) > 1) {
 			    fprintf(stderr, " Use one of:%s\n", lyts);
 			} else {
@@ -346,7 +341,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 			}
 		    }
 		    if (GvExitOnUsage) graphviz_exit(1);
-		    return(2);
+		    return 2;
                 }
 		Kflag = 1;
 		break;
