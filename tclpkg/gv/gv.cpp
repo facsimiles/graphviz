@@ -17,8 +17,6 @@
 
 #define agfindattr(x, s) agattrsym(x, s)
 #define agraphattr(g, n, s) agattr(g, AGRAPH, n, s)
-#define agnodeattr(g, n, s) agattr(g, AGNODE, n, s)
-#define agedgeattr(g, n, s) agattr(g, AGEDGE, n, s)
 
 static char emptystring[] = {'\0'};
 
@@ -199,7 +197,7 @@ char *setv(Agnode_t *n, char *attr, char *val) {
   Agraph_t *g = agroot(agraphof(n));
   Agsym_t *a = agattr(g, AGNODE, attr, nullptr);
   if (!a)
-    a = agnodeattr(g, attr, emptystring);
+    a = agattr(g, AGNODE, attr, emptystring);
   myagxset(n, a, val);
   return val;
 }
