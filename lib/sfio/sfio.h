@@ -21,12 +21,9 @@ extern "C" {
 
 #include "config.h"
 
-#ifdef HAVE_SYS_TYPES_H
-#   include <sys/types.h>
-#endif // HAVE_SYS_TYPES_H
-
 #include <limits.h>
 #include <stdio.h>
+#include <sys/types.h>
 
 /* formatting environment */
     typedef struct _sffmt_s Sffmt_t;

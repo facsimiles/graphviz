@@ -1,13 +1,11 @@
 # Header checks
 include(CheckIncludeFile)
 
-check_include_file( search.h            HAVE_SEARCH_H           )
 check_include_file( sys/inotify.h       HAVE_SYS_INOTIFY_H      )
 check_include_file( sys/ioctl.h         HAVE_SYS_IOCTL_H        )
 check_include_file( sys/mman.h          HAVE_SYS_MMAN_H         )
 check_include_file( sys/select.h        HAVE_SYS_SELECT_H       )
 check_include_file( sys/time.h          HAVE_SYS_TIME_H         )
-check_include_file( sys/types.h         HAVE_SYS_TYPES_H        )
 check_include_file( getopt.h            HAVE_GETOPT_H           )
 
 # Function checks

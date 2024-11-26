@@ -216,46 +216,30 @@ static attr_t *binarySearch(attr_list *l, const char *searchKey) {
   return NULL;
 }
 
-static attr_t *pBinarySearch(attr_list *l, const char *searchKey) {
-    size_t low = 0;
-    size_t high = attrs_size(&l->attributes) - 1;
-
-    while (high != SIZE_MAX && low <= high) {
-	size_t middle = (low + high) / 2;
-	int res = strncasecmp(searchKey, attrs_get(&l->attributes, middle)->name, strlen(searchKey));
-	if (res == 0) {
-	    return attrs_get(&l->attributes, middle);
-	}
-	else if (res < 0) {
-	    high = middle - 1;
-	} else {
-	    low = middle + 1;
-	}
-    }
-    return NULL;
+static int cmp(const void *key, const void *candidate) {
+  const attr_t *const a = candidate;
+  return strncasecmp(key, a->name, strlen(key));
 }
 
 static void create_filtered_list(const char *prefix, attr_list *sl,
                                  attr_list *tl) {
-    int res;
-    attr_t *at;
     int objKind = get_object_type();
 
     if (strlen(prefix) == 0)
 	return;
     /*locate first occurrence */
-    at = pBinarySearch(sl, prefix);
+    attrs_sync(&sl->attributes);
+    attr_t *at = bsearch(prefix, attrs_front(&sl->attributes),
+                         attrs_size(&sl->attributes), sizeof(attr_t), cmp);
     if (!at)
 	return;
 
-    res = 0;
     /*go backward to get the first */
-    while (at->index > 0 && res == 0) {
+    for (int res = 0; at->index > 0 && res == 0; ) {
 	at = attrs_get(&sl->attributes, at->index - 1);
 	res = strncasecmp(prefix, at->name, strlen(prefix));
     }
-    res = 0;
-    while (at->index < attrs_size(&sl->attributes) && res == 0) {
+    for (int res = 0; at->index < attrs_size(&sl->attributes) && res == 0; ) {
 	at = attrs_get(&sl->attributes, at->index + 1);
 	res = strncasecmp(prefix, at->name, strlen(prefix));
 	if (res == 0 && at->objType[objKind] == 1)

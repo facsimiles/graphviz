@@ -17,9 +17,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#ifdef HAVE_SEARCH_H
-#include <search.h>
-#endif
 #include <ctype.h>
 #include <util/agxbuf.h>
 typedef struct {

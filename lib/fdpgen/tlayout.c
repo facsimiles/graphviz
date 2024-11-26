@@ -27,9 +27,7 @@
 /* uses PRIVATE interface */
 #define FDP_PRIVATE 1
 
-#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>

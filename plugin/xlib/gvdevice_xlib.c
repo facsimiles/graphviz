@@ -26,9 +26,7 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
@@ -154,7 +152,6 @@ static Visual *find_argb_visual(Display * dpy, int scr)
 
 static void browser_show(GVJ_t *job)
 {
-#ifdef HAVE_SYS_TYPES_H
    char *exec_argv[3] = {BROWSER, NULL, NULL};
    pid_t pid;
 
@@ -168,9 +165,6 @@ static void browser_show(GVJ_t *job)
        execvp(exec_argv[0], exec_argv);
        fprintf(stderr,"error starting %s: %s\n", exec_argv[0], strerror(errno));
    }
-#else
-   fprintf(stdout,"browser_show: %s\n", job->selected_href);
-#endif
 }
 
 static int handle_xlib_events (GVJ_t *firstjob, Display *dpy)
