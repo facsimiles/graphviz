@@ -50,6 +50,8 @@ set(ENABLE_PHP AUTO CACHE STRING "Build PHP language bindings")
 set_property(CACHE ENABLE_PHP PROPERTY STRINGS AUTO ON OFF)
 set(ENABLE_PYTHON AUTO CACHE STRING "Build Python language bindings")
 set_property(CACHE ENABLE_PYTHON PROPERTY STRINGS AUTO ON OFF)
+set(ENABLE_R AUTO CACHE STRING "Build R language bindings")
+set_property(CACHE ENABLE_R PROPERTY STRINGS AUTO ON OFF)
 option(GRAPHVIZ_CLI "Build command line tools" ON)
 
 if(WIN32)
@@ -280,7 +282,7 @@ if(NOT ENABLE_SWIG STREQUAL "OFF")
   endif()
 
   find_package(SWIG
-    COMPONENTS csharp d go guile java javascript lua perl5 php7 python
+    COMPONENTS csharp d go guile java javascript lua perl5 php7 python r
   )
   if(ENABLE_SWIG STREQUAL "AUTO")
     if(SWIG_FOUND)
@@ -471,6 +473,28 @@ if(NOT ENABLE_PYTHON STREQUAL "OFF")
   else()
     message(STATUS "setting -DENABLE_PYTHON=OFF")
     set(ENABLE_PYTHON OFF)
+  endif()
+endif()
+
+if(NOT ENABLE_R STREQUAL "OFF")
+  if(PkgConfig_FOUND)
+    pkg_check_modules(R R)
+  else()
+    set(R_FOUND 0)
+  endif()
+  if(ENABLE_SWIG AND SWIG_r_FOUND AND R_FOUND)
+    if(ENABLE_R STREQUAL "AUTO")
+      message(STATUS "setting -DENABLE_R=ON")
+      set(ENABLE_R ON)
+    endif()
+  elseif(ENABLE_R STREQUAL "ON")
+    message(
+      FATAL_ERROR "-DENABLE_SWIG=ON must be set and R libraries must be \
+                   available to use -DENABLE_R=ON"
+    )
+  else()
+    message(STATUS "setting -DENABLE_R=OFF")
+    set(ENABLE_R OFF)
   endif()
 endif()
 

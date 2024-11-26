@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (12.2.1)]
 
+### Added
+
+- Support for building the SWIG-generated R language bindings has been
+  integrated into the CMake build system. This is controllable by the
+  `-DENABLE_R={AUTO|ON|OFF}` option.
+
 ### Fixed
 
 - The GVPR library program `depath` no longer acts on previously deleted nodes,

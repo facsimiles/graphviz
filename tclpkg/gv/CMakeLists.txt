@@ -291,6 +291,26 @@ if(ENABLE_SWIG)
     )
   endif()
 
+  if(ENABLE_R)
+    swig_add_library(gv_R
+      LANGUAGE r
+      SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
+    )
+    target_compile_definitions(gv_R PRIVATE DEMAND_LOADING=1)
+    set_property(
+      TARGET gv_R
+      PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${R_INCLUDE_DIRS}
+    )
+    target_link_libraries(gv_R PRIVATE cdt cgraph gvc ${R_LIBRARIES})
+
+    install(
+      TARGETS gv_R
+      RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
+      LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}/graphviz/R
+      ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+    )
+  endif()
+
   if(ENABLE_TCL)
     swig_add_library(gv_tcl
       LANGUAGE tcl
@@ -505,6 +525,26 @@ if(ENABLE_SWIG)
     else()
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3python
+        DESTINATION ${MAN_INSTALL_DIR}/man3
+      )
+    endif()
+  endif()
+
+  if(ENABLE_R)
+    if(GZIP)
+      add_custom_target(man-gv_R ALL DEPENDS gv.3r.gz COMMENT "gv_R man page")
+      add_custom_command(
+        OUTPUT gv.3r.gz
+        COMMAND ${GZIP} -9 --no-name --to-stdout gv.3r
+          >"${CMAKE_CURRENT_BINARY_DIR}/gv.3r.gz"
+        MAIN_DEPENDENCY gv.3r
+        COMMENT "compress gv_R man page")
+      install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3r.gz
+        DESTINATION ${MAN_INSTALL_DIR}/man3)
+    else()
+      install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3r
         DESTINATION ${MAN_INSTALL_DIR}/man3
       )
     endif()
