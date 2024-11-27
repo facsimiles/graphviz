@@ -242,6 +242,15 @@ def is_ubuntu_2004() -> bool:
     return freedesktop_os_release().get("VERSION_ID") == "20.04"
 
 
+def remove_asan_summary(s: str) -> str:
+    """
+    Remove the “Suppressions used…” informational text Address Sanitizer prints.
+    This is useful but can interfere with our ability to scan output for expected
+    content.
+    """
+    return re.sub(r"-+\nSuppressions used:[^\-]+-+\n?\n?", "", s)
+
+
 def remove_xtype_warnings(s: str) -> str:
     """
     Remove macOS XType warnings from a string. These appear to be harmless, but
