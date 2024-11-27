@@ -95,7 +95,7 @@ def test_tools(tool):
 
     output = remove_xtype_warnings(output)
     assert (
-        re.match("usage", output, flags=re.IGNORECASE) is not None
+        re.search(r"\busage\b", output, flags=re.IGNORECASE) is not None
     ), f"{tool} -? did not show usage. Output was: {output}"
 
     # Test unsupported option
