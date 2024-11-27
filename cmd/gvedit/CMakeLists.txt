@@ -86,9 +86,8 @@ if(WITH_GVEDIT)
   )
 
   install(
-    FILES ../../doc/infosrc/attrs
+    FILES attrs.txt
     DESTINATION ${DATA_INSTALL_DIR}/graphviz/gvedit
-    RENAME attrs.txt
   )
 
   if(GZIP)

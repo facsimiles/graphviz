@@ -83,7 +83,6 @@ tclpkg/gv/META.gv
 FEATURE/
 cmd/dot/dot_builtins
 cmd/gvedit/gvedit
-cmd/gvedit/attrs.txt
 cmd/gvedit/.qmake.stash
 cmd/gvedit/moc_predefs.h
 cmd/smyrna/gui/.dirstamp

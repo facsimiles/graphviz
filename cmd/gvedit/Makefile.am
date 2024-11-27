@@ -64,19 +64,16 @@ mocables ui_settings.h: qMakefile
 qMakefile: gvedit.pro
 	QT_SELECT=5 $(QMAKE) -o qMakefile gvedit.pro
 
-attrs.txt: $(top_srcdir)/doc/infosrc/attrs
-	cp $(top_srcdir)/doc/infosrc/attrs attrs.txt
-
 .1.1.pdf:
 	rm -f $@; pdffile=$@; psfile=$${pdffile%pdf}ps; \
 	$(GROFF) -Tps -man $< > $$psfile || { rm -f $$psfile; exit 1; }; \
 	$(PS2PDF) $$psfile && rm -f $$psfile || { rm -f $$psfile; exit 1; }
 SUFFIXES = .1 .1.pdf
 
-EXTRA_DIST = gvedit.pro.in mdi.qrc $(mans)
+EXTRA_DIST = attrs.txt gvedit.pro.in mdi.qrc $(mans)
 
 CLEANFILES = $(MOCABLES) ui_settings.h
-DISTCLEANFILES = attrs.txt qMakefile $(pdf_DATA)
+DISTCLEANFILES = qMakefile $(pdf_DATA)
 
 clean-local:
 	-$(MAKE) -f qMakefile clean
