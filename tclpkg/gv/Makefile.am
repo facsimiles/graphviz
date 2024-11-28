@@ -150,6 +150,7 @@ libgv_R_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_R_la_LIBADD = $(BASELIBS) $(R_LIBS)
 libgv_R_la_LDFLAGS = -module -avoid-version
 libgv_R_la_CPPFLAGS = $(BASECPPFLAGS) $(R_CFLAGS)
+libgv_R_la_CXXFLAGS = $(AM_CXXFLAGS) -Wno-cast-function-type
 # $(R_data): gv_R.cpp
 gv_R.cpp: gv.i
 	$(SWIG) -c++ -r -o $@ $(srcdir)/gv.i
