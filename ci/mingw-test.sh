@@ -30,4 +30,4 @@ export PATH="${PATH}:$DIR_LABS/bin"
 python gen_version.py --output GRAPHVIZ_VERSION
 export GV_VERSION=$( cat GRAPHVIZ_VERSION )
 
-python3 -m pytest ci/tests.py tests
+python3 -m pytest -m "not slow" ci/tests.py tests

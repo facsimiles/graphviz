@@ -104,6 +104,10 @@ env PATH=${PREFIX}/bin:${PATH} C_INCLUDE_PATH=${PREFIX}/include \
 On macOS, use the same command except replacing `LD_LIBRARY_PATH` with
 `DYLD_LIBRARY_PATH`.
 
+You may want to exclude test cases that take a very long time (those marked with
+the `@pytest.mark.slow` annotation) if you do not believe your changes affect
+them. To do this, include `-m "not slow"` as a further option to Pytest.
+
 To run a single test, you use its name qualified by the file it lives in. E.g.
 
 ```sh
