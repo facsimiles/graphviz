@@ -585,10 +585,10 @@ static bool left2right(graph_t *g, node_t *v, node_t *w) {
     return ELT(M, flatindex(v), flatindex(w)) != 0;
 }
 
-static int in_cross(node_t * v, node_t * w)
-{
+static int64_t in_cross(node_t *v, node_t *w) {
     edge_t **e1, **e2;
-    int inv, cross = 0, t;
+    int inv, t;
+    int64_t cross = 0;
 
     for (e2 = ND_in(w).list; *e2; e2++) {
 	int cnt = ED_xpenalty(*e2);		
@@ -637,7 +637,7 @@ static void exchange(node_t * v, node_t * w)
 }
 
 static int64_t transpose_step(graph_t *g, int r, bool reverse) {
-    int i, c0, c1;
+    int i;
     node_t *v, *w;
 
     int64_t rv = 0;
@@ -648,7 +648,8 @@ static int64_t transpose_step(graph_t *g, int r, bool reverse) {
 	assert(ND_order(v) < ND_order(w));
 	if (left2right(g, v, w))
 	    continue;
-	c0 = c1 = 0;
+	int64_t c0 = 0;
+	int64_t c1 = 0;
 	if (r > 0) {
 	    c0 += in_cross(v, w);
 	    c1 += in_cross(w, v);

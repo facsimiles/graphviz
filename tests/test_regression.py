@@ -4754,9 +4754,6 @@ def test_2614():
 
 
 @pytest.mark.slow  # ~10min
-@pytest.mark.xfail(
-    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/2621"
-)
 def test_2621():
     """
     this graph should not trigger an integer overflow in crossing calculation
