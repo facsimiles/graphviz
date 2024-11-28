@@ -679,10 +679,11 @@ static int transpose_step(graph_t * g, int r, bool reverse)
 
 static void transpose(graph_t * g, bool reverse)
 {
-    int r, delta;
+    int r;
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++)
 	GD_rank(g)[r].candidate = true;
+    int64_t delta;
     do {
 	delta = 0;
 	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
