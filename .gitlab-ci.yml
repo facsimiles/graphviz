@@ -186,7 +186,7 @@ portable-source:
         - cd ..
         - $Env:INCLUDE += ";C:\Graphviz\include"
         - $Env:LIB += ";C:\Graphviz\lib"
-        - python -m pytest --strict-markers --verbose --verbose --junit-xml=report.xml ci/tests.py tests
+        - python -m pytest --junit-xml=report.xml ci/tests.py tests
         # Create artifacts to archive
         - $ID = "windows"
         - $VERSION_ID = "10"
