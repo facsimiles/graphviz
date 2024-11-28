@@ -636,12 +636,11 @@ static void exchange(node_t * v, node_t * w)
     GD_rank(Root)[r].v[vi] = w;
 }
 
-static int transpose_step(graph_t * g, int r, bool reverse)
-{
-    int i, c0, c1, rv;
+static int64_t transpose_step(graph_t *g, int r, bool reverse) {
+    int i, c0, c1;
     node_t *v, *w;
 
-    rv = 0;
+    int64_t rv = 0;
     GD_rank(g)[r].candidate = false;
     for (i = 0; i < GD_rank(g)[r].n - 1; i++) {
 	v = GD_rank(g)[r].v[i];
