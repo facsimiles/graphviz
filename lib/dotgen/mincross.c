@@ -1521,11 +1521,11 @@ static int local_cross(elist l, int dir)
     return cross;
 }
 
-static int rcross(graph_t *g, int r, ints_t *Count) {
-    int top, bot, cross, max, i, k;
+static int64_t rcross(graph_t *g, int r, ints_t *Count) {
+    int top, bot, max, i, k;
     node_t **rtop, *v;
 
-    cross = 0;
+    int64_t cross = 0;
     max = 0;
     rtop = GD_rank(g)[r].v;
 
@@ -1568,7 +1568,7 @@ static int rcross(graph_t *g, int r, ints_t *Count) {
 
 static int64_t ncross(ints_t *scratch) {
     assert(scratch != NULL);
-    int r, nc;
+    int r;
 
     graph_t *g = Root;
     int64_t count = 0;
@@ -1576,7 +1576,7 @@ static int64_t ncross(ints_t *scratch) {
 	if (GD_rank(g)[r].valid)
 	    count += GD_rank(g)[r].cache_nc;
 	else {
-	    nc = GD_rank(g)[r].cache_nc = rcross(g, r, scratch);
+	    const int64_t nc = GD_rank(g)[r].cache_nc = rcross(g, r, scratch);
 	    count += nc;
 	    GD_rank(g)[r].valid = true;
 	}
