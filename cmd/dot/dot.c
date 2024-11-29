@@ -87,7 +87,7 @@ int main(int argc, char **argv)
  */
 
 /**
- * @mainpage
+ * @mainpage Graphviz APIs and internals reference
  *
  * %Hierarchy:\n
  * -# Applications
@@ -106,4 +106,11 @@ int main(int argc, char **argv)
  * -# Low level utility libraries
  *   - @ref cgraph_utils – low level cgraph utilities
  *   - @ref lib/cdt – Container Data Types library
+ *
+ * [Modules](modules.html)
+ *
+ * [Files](files.html)
+ *
+ * [Source repository](https://gitlab.com/graphviz/graphviz)
+ *
  */
