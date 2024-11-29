@@ -7,6 +7,7 @@ RUN dnf -y --setopt install_weak_deps=false groupinstall 'Development Tools' \
 && dnf -y --setopt install_weak_deps=false install rpm-build \
 bison \
 byacc \
+cmake \
 flex \
 # Centos build utilities
 libtool-ltdl-devel \
@@ -71,13 +72,6 @@ mono-core \
 && python3 -m venv /opt/virtualenv \
 # install Python dependencies within the virtual environment
 && env PATH="/opt/virtualenv/bin:$PATH" python3 -m pip install --requirement requirements.txt \
-# install a newer CMake to deal with RPM 4.19 glob changes
-&& curl --retry 3 --location --no-progress-meter -O \
-  https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1-linux-x86_64.tar.gz \
-&& tar xf cmake-3.28.1-linux-x86_64.tar.gz \
-&& mv cmake-3.28.1-linux-x86_64/bin/* /usr/bin/ \
-&& mv cmake-3.28.1-linux-x86_64/share/cmake-3.28 /usr/share/ \
-&& rm -rf cmake-3.28.1-linux-x86_64.tar.gz cmake-3.28.1-linux-x86_64 \
 # Remove possible old version of Graphviz so that we can detect if
 # individual Graphviz tools are missing in the current release
 && dnf remove -y graphviz \
