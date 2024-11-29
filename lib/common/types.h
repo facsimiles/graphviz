@@ -208,7 +208,7 @@ typedef union inside_t {
 	double pht2;	/* as above, but only primitive nodes   */
 	bool candidate;	/* for transpose () */
 	bool valid;
-	int cache_nc;		/* caches number of crossings */
+	int64_t cache_nc;		/* caches number of crossings */
 	adjmatrix_t *flat;
     } rank_t;
 

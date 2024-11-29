@@ -4,13 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased (12.2.1)]
+## [Unreleased (13.0.0)]
 
 ### Added
 
 - Support for building the SWIG-generated R language bindings has been
   integrated into the CMake build system. This is controllable by the
   `-DENABLE_R={AUTO|ON|OFF}` option.
+
+### Changed
+
+- **Breaking**: `rank_t.cache_nc` is now a `int64_t`.
 
 ### Fixed
 
@@ -28,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   regression in Graphviz 9.0.0. #2614
 - `dot_builtins` no longer lists duplicate format options in its error messages.
   #2604
+- Numeric overflows when computing the total crossings in a graph with a large
+  number of crossings have been avoided. #2621
 
 ## [12.2.0] – 2024-11-04
 
@@ -2976,7 +2982,7 @@ March 13, 2000: Use AM_PROG_LIBTOOL instead of AC_PROG_LIBTOOL
    in configure.in.  John Ellson <ellson@graphviz.org>
 ```
 
-[Unreleased (12.2.1)]: https://gitlab.com/graphviz/graphviz/compare/12.2.0...main
+[Unreleased (13.0.0)]: https://gitlab.com/graphviz/graphviz/compare/12.2.0...main
 [12.2.0]: https://gitlab.com/graphviz/graphviz/compare/12.1.2...12.2.0
 [12.1.2]: https://gitlab.com/graphviz/graphviz/compare/12.1.1...12.1.2
 [12.1.1]: https://gitlab.com/graphviz/graphviz/compare/12.1.0...12.1.1
