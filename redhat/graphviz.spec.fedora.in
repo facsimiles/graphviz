@@ -47,13 +47,8 @@ Source0: https://gitlab.com/graphviz/graphviz/-/archive/@VERSION@/graphviz-@VERS
 %endif
 
 # Overrides for Rocky
-%if 0%{?rhel} >= 8
+%if 0%{?rhel}
 %global ANN        0
-%endif
-
-# Overrides for Fedora ≥ 40
-%if 0%{?fedora} >= 40
-%global PHP        0
 %endif
 
 # Plugins version
@@ -116,11 +111,7 @@ BuildRequires: libwebp-devel
 %define php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
 %global php_apiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
 
-%if "%{php_version}" < "5.6"
-%global ini_name     %{name}.ini
-%else
 %global ini_name     40-%{name}.ini
-%endif
 
 # Fix private-shared-object-provides
 # RPM 4.8
@@ -668,13 +659,13 @@ PHP extension for graphviz.
 %defattr(-,root,root,-)
 %config(noreplace) %{_sysconfdir}/php.d/%{name}.ini
 %{php_extdir}/gv.so
-%if 0%{?fedora} < 38
+%if 0%{?rhel}
 %{_datadir}/php*/*
 %endif
 %{_datadir}/graphviz/demo/*.php*
 %{_mandir}/man3/*.3php.*
 %exclude %{_libdir}/graphviz/php/*.so
-%if 0%{?fedora} < 38
+%if 0%{?rhel}
 %exclude %{_libdir}/graphviz/php/*.php
 %endif
 %endif

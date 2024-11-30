@@ -247,18 +247,6 @@ rocky9-build:
     variables:
       IMAGE: rocky9
 
-fedora39-build:
-    <<: *rpm_build_definition
-    needs:
-        - job: docker_build_fedora39
-          artifacts: false
-        - job: portable-source
-          artifacts: true
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: fedora39
-
 fedora40-build:
     <<: *rpm_build_definition
     needs:
@@ -733,26 +721,6 @@ rocky9-cmake-build:
     variables:
       IMAGE: rocky9
 
-fedora39-cmake-build:
-    <<: *rpm_build_definition
-    needs:
-        - job: docker_build_fedora39
-          artifacts: false
-    before_script:
-        - export build_system="cmake"
-        # fail on any compiler warnings
-        - export CFLAGS="-Werror"
-        - export CXXFLAGS="-Werror"
-        - export CMAKE_OPTIONS="-DWITH_SMYRNA=ON"
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LTDL=ON"
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_EXPAT=ON"
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_GVEDIT=ON"
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=ON"
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: fedora39
-
 fedora40-cmake-build:
     <<: *rpm_build_definition
     needs:
@@ -1027,18 +995,6 @@ rocky9-test:
     variables:
       IMAGE: rocky9
 
-fedora39-test:
-    <<: *linux_test_definition
-    before_script:
-        - export build_system="autotools"
-    needs:
-        - job: "fedora39-build"
-          artifacts: true
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: fedora39
-
 fedora40-test:
     <<: *linux_test_definition
     before_script:
@@ -1160,19 +1116,6 @@ rocky9-cmake-test:
         - saas-linux-small-amd64
     variables:
       IMAGE: rocky9
-
-fedora39-cmake-test:
-    <<: *linux_test_definition
-    before_script:
-        - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
-    needs:
-        - job: "fedora39-cmake-build"
-          artifacts: true
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: fedora39
 
 fedora40-cmake-test:
     <<: *linux_test_definition
@@ -1340,11 +1283,6 @@ docker_build_rocky9:
   variables:
     IMAGE: rocky9
 
-docker_build_fedora39:
-  <<: *docker_build_definition
-  variables:
-    IMAGE: fedora39
-
 docker_build_fedora40:
   <<: *docker_build_definition
   variables:
@@ -1388,13 +1326,6 @@ docker_push_rocky9:
     IMAGE: rocky9
   needs:
     - docker_build_rocky9
-
-docker_push_fedora39:
-  <<: *docker_push_definition
-  variables:
-    IMAGE: fedora39
-  needs:
-    - docker_build_fedora39
 
 docker_push_fedora40:
   <<: *docker_push_definition
