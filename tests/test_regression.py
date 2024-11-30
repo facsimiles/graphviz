@@ -2788,6 +2788,9 @@ def test_2396(arg: str):
     # work around macOS warnings
     stderr = remove_xtype_warnings(proc.stderr).strip()
 
+    # work around ASan informational printing
+    stderr = remove_asan_summary(stderr)
+
     assert stderr == "", "loading an image by relative path produced warnings"
 
     # whether we used `imagepath` or `filepath` should affect whether we get a leading
