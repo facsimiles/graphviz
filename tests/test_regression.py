@@ -42,6 +42,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky_8,
     is_static_build,
     is_ubuntu_2004,
+    remove_asan_summary,
     remove_xtype_warnings,
     run_c,
     which,
@@ -1730,7 +1731,7 @@ def test_1913():
             universal_newlines=True,
         ) as p:
             _, stderr = p.communicate(input)
-            return p.returncode, remove_xtype_warnings(stderr)
+            return p.returncode, remove_asan_summary(remove_xtype_warnings(stderr))
 
     # Graphviz should accept all legal values for this attribute
     for align in ("left", "right", "center"):
