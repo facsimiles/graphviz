@@ -455,13 +455,12 @@ static bool initialized;
 
 static void xlib_initialize(GVJ_t *firstjob)
 {
-    Display *dpy;
     KeySym keysym;
     KeyCode *keycodes;
     const char *display_name = NULL;
     int scr;
 
-    dpy = XOpenDisplay(display_name);
+    Display *dpy = XOpenDisplay(display_name);
     if (dpy == NULL) {
 	fprintf(stderr, "Failed to open XLIB display: %s\n",
 		XDisplayName(NULL));
