@@ -475,6 +475,7 @@ static void xlib_initialize(GVJ_t *firstjob)
     if (firstjob->numkeys > 0 && keycodes == NULL) {
         fprintf(stderr, "Failed to malloc %" PRISIZE_T "*KeyCode\n",
                 firstjob->numkeys);
+        XCloseDisplay(dpy);
         return;
     }
     for (size_t i = 0; i < firstjob->numkeys; i++) {
