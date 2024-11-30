@@ -4753,6 +4753,19 @@ def test_2614():
     assert canonical.count('\\"') == 2, "quotes in string were not properly escaped"
 
 
+def test_2619():
+    """
+    loading a JPEG with initial EXIF stream should be possible
+    https://gitlab.com/graphviz/graphviz/-/issues/2619
+    """
+
+    # we need to run in our own directory so relative path references work
+    cwd = Path(__file__).parent
+
+    # our test case should be translatable to PDF
+    subprocess.check_call(["dot", "-Tpdf", "-o", os.devnull, "2619.dot"], cwd=cwd)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(

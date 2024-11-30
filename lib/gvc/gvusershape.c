@@ -58,7 +58,7 @@ typedef struct {
 #define PS_MAGIC   "%!PS-Adobe-"
 #define BMP_MAGIC  "BM"
 #define GIF_MAGIC  "GIF8"
-#define JPEG_MAGIC "\xFF\xD8\xFF\xE0"
+#define JPEG_MAGIC "\xFF\xD8\xFF"
 #define PDF_MAGIC  "%PDF-"
 #define EPS_MAGIC  "\xC5\xD0\xD3\xC6"
 #define XML_MAGIC  "<?xml"

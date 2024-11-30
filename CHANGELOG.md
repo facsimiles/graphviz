@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   integrated into the CMake build system. This is controllable by the
   `-DENABLE_R={AUTO|ON|OFF}` option.
 
+### Changed
+
+- JPEG images without an `APP0` leading segment are supported for use in `src`
+  fields and friends. Previously Graphviz was overly strict with the types of
+  JPEGs it would recognize. #2619
+
 ### Fixed
 
 - The GVPR library program `depath` no longer acts on previously deleted nodes,
