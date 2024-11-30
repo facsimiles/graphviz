@@ -3620,6 +3620,9 @@ def test_2413(source: str):
     # work around macOS warnings
     stderr = remove_xtype_warnings(proc.stderr).strip()
 
+    # work around ASan informational printing
+    stderr = remove_asan_summary(stderr)
+
     # no warnings should have been generated
     assert stderr == "", "long edges resulted in a warning"
 
