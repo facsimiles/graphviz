@@ -30,7 +30,7 @@ proc mouse_anyleave {c} {
 		-fill [lindex $saveFill 1] -stipple {}
 }
 
-# if b1 is pressed over the brackground then start a node,
+# if b1 is pressed over the background then start a node,
 # if b1 is pressed over a node then start an edge
 proc mouse_b1_press {c x y} {
 	global startObj graphtype
@@ -481,7 +481,7 @@ proc zoom {c fact} {
         set data(idle) [after idle "zoomupdate $c"]
 }
 
-# update all text strings after zom operation is complete
+# update all text strings after zoom operation is complete
 proc zoomupdate {c} {
         upvar #0 $c data
         # adjust fonts
