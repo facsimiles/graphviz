@@ -42,6 +42,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky_8,
     is_static_build,
     is_ubuntu_2004,
+    remove_asan_summary,
     remove_xtype_warnings,
     run_c,
     which,
@@ -1774,7 +1775,7 @@ def test_1913():
             universal_newlines=True,
         ) as p:
             _, stderr = p.communicate(input)
-            return p.returncode, remove_xtype_warnings(stderr)
+            return p.returncode, remove_asan_summary(remove_xtype_warnings(stderr))
 
     # Graphviz should accept all legal values for this attribute
     for align in ("left", "right", "center"):
@@ -2069,6 +2070,9 @@ def test_2087():
 
     # work around macOS warnings
     warnings = remove_xtype_warnings(warnings).strip()
+
+    # work around ASan informational printing
+    warnings = remove_asan_summary(warnings)
 
     # no warnings should have been printed
     assert (
@@ -2827,6 +2831,9 @@ def test_2396(arg: str):
 
     # work around macOS warnings
     stderr = remove_xtype_warnings(proc.stderr).strip()
+
+    # work around ASan informational printing
+    stderr = remove_asan_summary(stderr)
 
     assert stderr == "", "loading an image by relative path produced warnings"
 
@@ -3656,6 +3663,9 @@ def test_2413(source: str):
 
     # work around macOS warnings
     stderr = remove_xtype_warnings(proc.stderr).strip()
+
+    # work around ASan informational printing
+    stderr = remove_asan_summary(stderr)
 
     # no warnings should have been generated
     assert stderr == "", "long edges resulted in a warning"
