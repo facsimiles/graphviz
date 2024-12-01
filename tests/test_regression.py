@@ -994,6 +994,28 @@ def test_1474():
     ), "malformed input caused a buffer overflow"
 
 
+def test_1489():
+    """
+    processing this input found by fuzzing should not trigger an invalid read
+    https://gitlab.com/graphviz/graphviz/-/issues/1489
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1489.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    proc = subprocess.run(
+        ["dot", "-o", os.devnull, input], stderr=subprocess.PIPE, check=False
+    )
+
+    assert proc.returncode != 0, "invalid input was not rejected"
+
+    assert (
+        re.search(rb"\bAddressSanitizer: SEGV\b", proc.stderr) is None
+    ), "malformed input caused an invalid memory access"
+
+
 def test_1554():
     """
     small distances between nodes should not cause a crash in majorization
