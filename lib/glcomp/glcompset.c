@@ -189,6 +189,7 @@ glCompSet *glCompSetNew(int w, int h)
     s->obj = NULL;
     s->textureCount = 0;
     s->textures = NULL;
+    glDeleteFont(&s->base.common.font);
     s->base.common.font = glNewFontFromParent(&s->base, NULL);
     s->base.common.compset = s;
     s->base.common.functions.mouseover = (glcompmouseoverfunc_t)glCompMouseMove;
