@@ -4810,6 +4810,46 @@ def test_2619():
     subprocess.check_call(["dot", "-Tpdf", "-o", os.devnull, "2619.dot"], cwd=cwd)
 
 
+def test_2620():
+    """
+    arrows in this graph should not be truncated
+    https://gitlab.com/graphviz/graphviz/-/issues/2620
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2620.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # render to SVG
+    svg = dot("svg", input)
+
+    # parse the SVG
+    root = ET.fromstring(svg)
+
+    # most of the differences between the “good” and “bad” rendering are small
+    # (~1pt diff), so discriminate using one that has been observed to be much larger
+    edge = root.findall(
+        ".//{http://www.w3.org/2000/svg}g[@id='edge101']/{http://www.w3.org/2000/svg}path"
+    )
+    assert len(edge) == 1, "could not find expected edge"
+
+    # parse the expected drawing instructions out of this
+    m = re.match("M(?P<move>.*)C(?P<curve>.*)", edge[0].attrib["d"])
+    assert m is not None, "drawing command in unexpected format"
+
+    # the curve is expected to be composed of two Béziers
+    points = m.group("curve").split()
+    assert len(points) == 6, "unexpected number of Bézier curve components"
+
+    bezier2 = [pt.split(",") for pt in points[3:]]
+    assert all(len(pt) == 2 for pt in bezier2), "unexpected Bézier composition"
+
+    # compare the end point of the last command against what we expect with a large
+    # margin of error
+    expected = -7286.11
+    assert abs(float(bezier2[2][1]) - expected) < 1000, "incorrect edge construction"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(

@@ -1114,7 +1114,7 @@ static double htrack(segment *seg, maze *m) {
   double f = 1.0 - (double)seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
   double lo = chp->cp->bb.LL.y;
   double hi = chp->cp->bb.UR.y;
-  return lo + f*(hi-lo);
+  return round(lo + f * (hi - lo));
 }
 
 static pointf
