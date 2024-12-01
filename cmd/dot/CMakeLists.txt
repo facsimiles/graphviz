@@ -197,6 +197,13 @@ foreach(cmd_alias IN LISTS dot_aliases)
   endif()
 endforeach()
 
+install(
+  FILES dot_sandbox
+  DESTINATION ${BINARY_INSTALL_DIR}
+  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
+    WORLD_READ WORLD_EXECUTE
+)
+
 # Specify man pages to be installed
 if(GZIP)
   add_custom_target(man-dot ALL DEPENDS dot.1.gz
@@ -210,6 +217,18 @@ if(GZIP)
     COMMENT "compress dot man page")
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/dot.1.gz
+    DESTINATION ${MAN_INSTALL_DIR}/man1)
+  add_custom_target(man-dot_sandbox ALL DEPENDS dot_sandbox.1.gz
+                    COMMENT "dot_sandbox man page")
+  add_custom_command(
+    OUTPUT dot_sandbox.1.gz
+    COMMAND ${GZIP} -9 --no-name --to-stdout dot_sandbox.1
+      >"${CMAKE_CURRENT_BINARY_DIR}/dot_sandbox.1.gz"
+    MAIN_DEPENDENCY dot_sandbox.1
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "compress dot_sandbox man page")
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/dot_sandbox.1.gz
     DESTINATION ${MAN_INSTALL_DIR}/man1)
   add_custom_target(man-osage ALL DEPENDS osage.1.gz
                     COMMENT "osage man page")
@@ -237,7 +256,7 @@ if(GZIP)
     DESTINATION ${MAN_INSTALL_DIR}/man1)
 else()
   install(
-    FILES dot.1 osage.1 patchwork.1
+    FILES dot.1 dot_sandbox.1 osage.1 patchwork.1
     DESTINATION ${MAN_INSTALL_DIR}/man1
   )
 endif()

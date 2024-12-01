@@ -171,6 +171,7 @@ LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 %endif
 %doc COPYING AUTHORS CHANGELOG.md NEWS README
 %{_bindir}/dot_builtins
+%{_bindir}/dot_sandbox
 %{_bindir}/acyclic
 %{_bindir}/bcomps
 %{_bindir}/ccomps
@@ -215,6 +216,7 @@ LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 %{_mandir}/man1/cluster.1*
 %{_mandir}/man1/dijkstra.1*
 %{_mandir}/man1/dot.1*
+%{_mandir}/man1/dot_sandbox.1*
 %{_mandir}/man1/dot2gxl.1*
 %{_mandir}/man1/fdp.1*
 %{_mandir}/man1/gc.1*

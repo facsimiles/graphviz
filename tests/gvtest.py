@@ -276,6 +276,18 @@ def is_rocky_8() -> bool:
     return is_rocky("8")
 
 
+def has_sandbox() -> bool:
+    """
+    do we have an available sandbox mechanism?
+
+    The logic here should correspond to available `Sandbox` back ends in
+    ../cmd/dot/dot_sandbox.
+    """
+    if shutil.which("bwrap"):
+        return True
+    return False
+
+
 def run_c(
     src: Path,
     args: List[str] = None,

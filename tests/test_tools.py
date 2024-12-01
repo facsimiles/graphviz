@@ -11,11 +11,17 @@ import platform
 import re
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import pytest
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import remove_xtype_warnings, which  # pylint: disable=wrong-import-position
+from gvtest import (  # pylint: disable=wrong-import-position
+    has_sandbox,
+    remove_xtype_warnings,
+    which,
+)
 
 
 @pytest.mark.parametrize(
@@ -148,3 +154,71 @@ def test_edgepaint_options(arg: str):
         subprocess.run(args, input=input, check=True, universal_newlines=True)
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"edgepaint rejected command line option '{arg}'") from e
+
+
+@pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
+def test_sandbox_noop():
+    """check trivial functionality works when sandboxed"""
+    sandbox = which("dot_sandbox")
+    subprocess.check_call([sandbox, "-V"])
+
+
+@pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
+def test_sandbox_basic():
+    """check processing a simple graph when sandboxed"""
+    sandbox = which("dot_sandbox")
+    subprocess.run(
+        [sandbox], input="graph { a -- b; }", universal_newlines=True, check=True
+    )
+
+
+@pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
+def test_sandbox_render():
+    """check rendering works when sandboxed"""
+    sandbox = which("dot_sandbox")
+    proc = subprocess.run(
+        [sandbox, "-Tsvg"],
+        stdout=subprocess.PIPE,
+        input="graph { a -- b; }",
+        universal_newlines=True,
+        check=True,
+    )
+    ET.fromstring(proc.stdout)
+
+
+@pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
+def test_sandbox_write(tmp_path: Path):
+    """check file writing is prevented when sandboxed"""
+    sandbox = which("dot_sandbox")
+    proc = subprocess.run(
+        [sandbox, "-o", "probe.dot"],
+        input="graph { a -- b; }",
+        universal_newlines=True,
+        cwd=tmp_path,
+        check=False,
+    )
+    assert not (
+        tmp_path / "probe.dot"
+    ).exists(), "file writing within sandbox was not prevented"
+    assert (
+        proc.returncode != 0
+    ), "failed file writing did not cause a non-zero exit status"
+
+
+@pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
+def test_sandbox_write_2(tmp_path: Path):
+    """check file writing via `-O` is prevented when sandboxed"""
+    sandbox = which("dot_sandbox")
+    proc = subprocess.run(
+        [sandbox, "-Tsvg", "-O"],
+        input="graph { a -- b; }",
+        universal_newlines=True,
+        cwd=tmp_path,
+        check=False,
+    )
+    assert not (
+        tmp_path / "noname.gv.svg"
+    ).exists(), "file writing within sandbox was not prevented"
+    assert (
+        proc.returncode != 0
+    ), "failed file writing did not cause a non-zero exit status"

@@ -32,6 +32,7 @@ bin_PROGRAMS = dot dot_static
 else
 bin_PROGRAMS = dot dot_builtins
 endif
+dist_bin_SCRIPTS = dot_sandbox
 else
 if ENABLE_STATIC
 bin_PROGRAMS = dot_static dot_builtins
@@ -45,7 +46,7 @@ bin_PROGRAMS = dot_static
 endif
 endif
 
-dist_man_MANS = dot.1 osage.1 patchwork.1
+dist_man_MANS = dot.1 dot_sandbox.1 osage.1 patchwork.1
 if ENABLE_MAN_PDFS
 pdf_DATA = dot.1.pdf osage.1.pdf patchwork.1.pdf
 endif

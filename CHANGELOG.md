@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for building the SWIG-generated R language bindings has been
   integrated into the CMake build system. This is controllable by the
   `-DENABLE_R={AUTO|ON|OFF}` option.
+- A sandboxing wrapper, `dot_sandbox`, is now included with Graphviz. Users
+  should prefer their platform’s native security solutions, but if nothing
+  better is available this wrapper offers safe processing of untrusted inputs in
+  some scenarios.
 
 ### Changed
 
