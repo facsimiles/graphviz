@@ -21,12 +21,6 @@ set -x
 /cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages python3
 /cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages zlib-devel
 
-# setup Ccache to accelerate compilation
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages ccache
-export CC="ccache ${CC:-cc}"
-export CXX="ccache ${CXX:-c++}"
-export CCACHE_DIR=ccache-cache
-
 # Use the libs installed with cygwinsetup instead of those in
 # https://gitlab.com/graphviz/graphviz-windows-dependencies. Also disable GVEdit
 # because we do not have Qt installed.
