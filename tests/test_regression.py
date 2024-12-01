@@ -972,6 +972,28 @@ def test_1472():
     dot("svg", input)
 
 
+def test_1474():
+    """
+    processing this input found by fuzzing should not trigger a buffer overflow
+    https://gitlab.com/graphviz/graphviz/-/issues/1474
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1474.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    proc = subprocess.run(
+        ["dot", "-o", os.devnull, input], stderr=subprocess.PIPE, check=False
+    )
+
+    assert proc.returncode != 0, "invalid input was not rejected"
+
+    assert (
+        re.search(rb"\bAddressSanitizer: heap-buffer-overflow\b", proc.stderr) is None
+    ), "malformed input caused a buffer overflow"
+
+
 def test_1554():
     """
     small distances between nodes should not cause a crash in majorization
