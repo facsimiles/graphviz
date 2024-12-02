@@ -1138,7 +1138,7 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
       break;
     case F_rename:
       objp = int2ptr(args[0].integer);
-      if (!(objp)) {
+      if (!objp) {
         error(ERROR_WARNING, "NULL object passed to rename()");
         v.integer = 0;
       } else
