@@ -1136,6 +1136,14 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
       } else
         v.integer = copyAttr(objp, objp1);
       break;
+    case F_rename:
+      objp = int2ptr(args[0].integer);
+      if (!(objp)) {
+        error(ERROR_WARNING, "NULL object passed to rename()");
+        v.integer = 0;
+      } else
+        v.integer = agrelabel_node((Agnode_t *)objp, args[1].string);
+      break;
     case F_induce:
       gp = int2ptr(args[0].integer);
       if (!gp) {
