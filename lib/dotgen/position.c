@@ -870,8 +870,8 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	    UR.x = MAX(UR.x, x);
 	}
     } else {
-	LL.x = (double)ND_rank(GD_ln(g));
-	UR.x = (double)ND_rank(GD_rn(g));
+	LL.x = ND_rank(GD_ln(g));
+	UR.x = ND_rank(GD_rn(g));
     }
     LL.y = ND_coord(GD_rank(root)[GD_maxrank(g)].v[0]).y - GD_ht1(g);
     UR.y = ND_coord(GD_rank(root)[GD_minrank(g)].v[0]).y + GD_ht2(g);
