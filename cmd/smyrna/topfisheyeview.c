@@ -76,7 +76,7 @@ static v_data *makeGraph(Agraph_t* gg, int *nedges)
 	    Agnode_t *hp = aghead(ep);
 	    assert(hp != tp);
 	    /* FIX: handle multiedges */
-	    vp = (tp == np ? hp : tp);
+	    vp = tp == np ? hp : tp;
 	    ne++;
 	    i_nedges++;
 	    *edges++ = ND_TVref(vp);
@@ -143,7 +143,7 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
     }
     hp = t->fisheyeParams.h =
 	makeHier(agnnodes(g), ne, graph, x_coords, y_coords,
-		 &(t->fisheyeParams.hier));
+		 &t->fisheyeParams.hier);
     freeGraph(graph);
     free(x_coords);
     free(y_coords);
@@ -194,8 +194,8 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
     sscanf(agget(view->g[view->activeGraph], "topologicalfisheyeanimate"),
 	   "%d", &view->Topview->fisheyeParams.animate);
 
-    set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->fisheyeParams.level));
-    positionAllItems(hp, fs, &(t->fisheyeParams.repos));
+    set_active_levels(hp, fs->foci_nodes, fs->num_foci, &t->fisheyeParams.level);
+    positionAllItems(hp, fs, &t->fisheyeParams.repos);
     refresh_old_values(t);
 }
 
@@ -223,10 +223,8 @@ static void drawtopfishnodes(topview * t)
 	    double x0, y0;
 	    if (get_temp_coords(t, level, v, &x0, &y0)) {
 
-		if (!(((-x0 / view->zoom > view->clipX1)
-		       && (-x0 / view->zoom < view->clipX2)
-		       && (-y0 / view->zoom > view->clipY1)
-		       && (-y0 / view->zoom < view->clipY2))))
+		if (!(-x0 / view->zoom > view->clipX1 && -x0 / view->zoom < view->clipX2 &&
+		      -y0 / view->zoom > view->clipY1 && -y0 / view->zoom < view->clipY2))
 		    continue;
 
 		if (max_visible_level < level)
@@ -371,24 +369,24 @@ static int get_temp_coords(topview * t, int level, int v, double *coord_x,
 	AL = gg[v].active_level;
 	OAL = gg[v].old_active_level;
 
-	if ((OAL < level) || (AL < level))	//no draw
+	if (OAL < level || AL < level)	//no draw
 	    return 0;
-	if ((OAL >= level) || (AL >= level))	//draw the node
+	if (OAL >= level || AL >= level)	//draw the node
 	{
-	    if ((OAL == level) && (AL == level))	//draw as is from old coords to new)
+	    if (OAL == level && AL == level)	//draw as is from old coords to new)
 	    {
 		x0 = (double) gg[v].old_physical_x_coord;
 		y0 = (double) gg[v].old_physical_y_coord;
 		x1 = (double) gg[v].physical_x_coord;
 		y1 = (double) gg[v].physical_y_coord;
 	    }
-	    if ((OAL > level) && (AL == level))	//draw as  from ancs  to new)
+	    if (OAL > level && AL == level)	//draw as  from ancs  to new)
 	    {
 		find_old_physical_coords(t->fisheyeParams.h, level, v, &x0, &y0);
 		x1 = (double) gg[v].physical_x_coord;
 		y1 = (double) gg[v].physical_y_coord;
 	    }
-	    if ((OAL == level) && (AL > level))	//draw as  from ancs  to new)
+	    if (OAL == level && AL > level)	//draw as  from ancs  to new)
 	    {
 		find_physical_coords(t->fisheyeParams.h, level, v, &x1, &y1);
 		x0 = (double) gg[v].old_physical_x_coord;
@@ -396,7 +394,7 @@ static int get_temp_coords(topview * t, int level, int v, double *coord_x,
 	    }
 	    get_interpolated_coords(x0, y0, x1, y1, view->active_frame,
 				    view->total_frames, coord_x, coord_y);
-	    if ((x0 == 0) || (x1 == 0))
+	    if (x0 == 0 || x1 == 0)
 		return 0;
 
 	}
@@ -463,13 +461,9 @@ void changetopfishfocus(topview * t, float *x, float *y, int num_foci)
     sscanf(agget(view->g[view->activeGraph], "topologicalfisheyeanimate"),
 	   "%d", &view->Topview->fisheyeParams.animate);
 
+    set_active_levels(hp, fs->foci_nodes, fs->num_foci, &t->fisheyeParams.level);
 
-
-
-    set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->fisheyeParams.level));
-
-
-    positionAllItems(hp, fs, &(t->fisheyeParams.repos));
+    positionAllItems(hp, fs, &t->fisheyeParams.repos);
 
     view->Topview->fisheyeParams.animate = 1;
 
