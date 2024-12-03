@@ -92,7 +92,6 @@ static void mergevirtual(graph_t * g, int r, int lpos, int rpos, int dir)
 		    f = virtual_edge(left, aghead(e), e);
 		while ((e0 = ND_in(right).list[0])) {
 		    merge_oneway(e0, f);
-		    /*ED_weight(f) += ED_weight(e0); */
 		    delete_fast_edge(e0);
 		}
 		delete_fast_edge(e);
