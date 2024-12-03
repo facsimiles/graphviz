@@ -178,10 +178,10 @@ edge_t *make_aux_edge(node_t * u, node_t * v, double len, int wt)
     edge_t *e;
 
     Agedgepair_t* e2 = gv_alloc(sizeof(Agedgepair_t));
-    AGTYPE(&(e2->in)) = AGINEDGE;
-    AGTYPE(&(e2->out)) = AGOUTEDGE;
+    AGTYPE(&e2->in) = AGINEDGE;
+    AGTYPE(&e2->out) = AGOUTEDGE;
     e2->out.base.data = gv_alloc(sizeof(Agedgeinfo_t));
-    e = &(e2->out);
+    e = &e2->out;
 
     agtail(e) = u;
     aghead(e) = v;
@@ -778,13 +778,13 @@ static void set_ycoords(graph_t * g)
     /* make the initial assignment of ycoords to leftmost nodes by ranks */
     maxht = 0;
     r = GD_maxrank(g);
-    (ND_coord(rank[r].v[0])).y = rank[r].ht1;
+    ND_coord(rank[r].v[0]).y = rank[r].ht1;
     while (--r >= GD_minrank(g)) {
 	d0 = rank[r + 1].pht2 + rank[r].pht1 + GD_ranksep(g);	/* prim node sep */
 	d1 = rank[r + 1].ht2 + rank[r].ht1 + CL_OFFSET;	/* cluster sep */
 	delta = fmax(d0, d1);
 	if (rank[r].n > 0)	/* this may reflect some problem */
-		(ND_coord(rank[r].v[0])).y = (ND_coord(rank[r + 1].v[0])).y + delta;
+		ND_coord(rank[r].v[0]).y = ND_coord(rank[r + 1].v[0]).y + delta;
 #ifdef DEBUG
 	else
 	    fprintf(stderr, "dot set_ycoords: rank %d is empty\n",
@@ -803,9 +803,9 @@ static void set_ycoords(graph_t * g)
 	if (GD_exact_ranksep(g)) {  /* recompute maxht */
 	    maxht = 0;
 	    r = GD_maxrank(g);
-	    d0 = (ND_coord(rank[r].v[0])).y;
+	    d0 = ND_coord(rank[r].v[0]).y;
 	    while (--r >= GD_minrank(g)) {
-		d1 = (ND_coord(rank[r].v[0])).y;
+		d1 = ND_coord(rank[r].v[0]).y;
 		delta = d1 - d0;
 		maxht = fmax(maxht, delta);
 		d0 = d1;
@@ -817,13 +817,12 @@ static void set_ycoords(graph_t * g)
     if (GD_exact_ranksep(g)) {
 	for (r = GD_maxrank(g) - 1; r >= GD_minrank(g); r--)
 	    if (rank[r].n > 0)	/* this may reflect the same problem :-() */
-			(ND_coord(rank[r].v[0])).y=
-		    (ND_coord(rank[r + 1].v[0])).y + maxht;
+			ND_coord(rank[r].v[0]).y = ND_coord(rank[r + 1].v[0]).y + maxht;
     }
 
     /* copy ycoord assignment from leftmost nodes to others */
     for (n = GD_nlist(g); n; n = ND_next(n))
-	ND_coord(n).y = (ND_coord(rank[ND_rank(n)].v[0])).y;
+	ND_coord(n).y = ND_coord(rank[ND_rank(n)].v[0]).y;
 }
 
 /* Compute bounding box of g.
@@ -849,7 +848,7 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 		continue;
 	    if ((v = GD_rank(g)[r].v[0]) == NULL)
 		continue;
-	    for (c = 1; (ND_node_type(v) != NORMAL) && c < rnkn; c++)
+	    for (c = 1; ND_node_type(v) != NORMAL && c < rnkn; c++)
 		v = GD_rank(g)[r].v[c];
 	    if (ND_node_type(v) == NORMAL) {
 		x = ND_coord(v).x - ND_lw(v);
@@ -871,8 +870,8 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	    UR.x = MAX(UR.x, x);
 	}
     } else {
-	LL.x = (double)(ND_rank(GD_ln(g)));
-	UR.x = (double)(ND_rank(GD_rn(g)));
+	LL.x = (double)ND_rank(GD_ln(g));
+	UR.x = (double)ND_rank(GD_rn(g));
     }
     LL.y = ND_coord(GD_rank(root)[GD_maxrank(g)].v[0]).y - GD_ht1(g);
     UR.y = ND_coord(GD_rank(root)[GD_minrank(g)].v[0]).y + GD_ht2(g);
