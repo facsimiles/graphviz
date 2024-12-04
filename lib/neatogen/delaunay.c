@@ -88,13 +88,9 @@ static GtsFaceClass *g_face_class(void) {
 
     if (klass == NULL) {
 	GtsObjectClassInfo face_info = {
-	    "GFace",
-	    sizeof(GFace),
-	    sizeof(GFaceClass),
-	    (GtsObjectClassInitFunc) NULL,
-	    (GtsObjectInitFunc) NULL,
-	    (GtsArgSetFunc) NULL,
-	    (GtsArgGetFunc) NULL
+	    .name = "GFace",
+	    .object_size = sizeof(GFace),
+	    .class_size = sizeof(GFaceClass),
 	};
 	klass = gts_object_class_new(GTS_OBJECT_CLASS(gts_face_class()),
 				     &face_info);
