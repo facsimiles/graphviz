@@ -58,8 +58,7 @@ typedef struct {
     GtsVertexClass parent_class;
 } GVertexClass;
 
-static GVertexClass *g_vertex_class(void)
-{
+static GtsVertexClass *g_vertex_class(void) {
     static GVertexClass *klass = NULL;
 
     if (klass == NULL) {
@@ -76,7 +75,7 @@ static GVertexClass *g_vertex_class(void)
 				     &vertex_info);
     }
 
-    return klass;
+    return &klass->parent_class;
 }
 
 typedef struct {
@@ -148,7 +147,7 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
     GSList *list = NULL;
     GtsVertex *v1, *v2, *v3;
     GtsTriangle *t;
-    GtsVertexClass *vcl = (GtsVertexClass *) g_vertex_class();
+    GtsVertexClass *vcl = g_vertex_class();
     GtsEdgeClass *ecl = GTS_EDGE_CLASS (gts_constraint_class ());
 
     if (sepArr) {
