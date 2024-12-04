@@ -87,8 +87,7 @@ typedef struct {
     GtsFaceClass parent_class;
 } GFaceClass;
 
-static GFaceClass *g_face_class(void)
-{
+static GtsFaceClass *g_face_class(void) {
     static GFaceClass *klass = NULL;
 
     if (klass == NULL) {
@@ -105,7 +104,7 @@ static GFaceClass *g_face_class(void)
 				     &face_info);
     }
 
-    return klass;
+    return &klass->parent_class;
 }
 
 /* destroy:
@@ -182,10 +181,8 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
 
     gts_triangle_vertices(t, &v1, &v2, &v3);
 
-    surface = gts_surface_new(gts_surface_class(),
-				  (GtsFaceClass *) g_face_class(),
-				  gts_edge_class(),
-				  gts_vertex_class());
+    surface = gts_surface_new(gts_surface_class(), g_face_class(),
+                              gts_edge_class(), gts_vertex_class());
     gts_surface_add_face(surface, gts_face_new(gts_face_class(),
 					       t->e1, t->e2, t->e3));
 
