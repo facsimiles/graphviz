@@ -63,13 +63,9 @@ static GtsVertexClass *g_vertex_class(void) {
 
     if (klass == NULL) {
 	GtsObjectClassInfo vertex_info = {
-	    "GVertex",
-	    sizeof(GVertex),
-	    sizeof(GVertexClass),
-	    (GtsObjectClassInitFunc) NULL,
-	    (GtsObjectInitFunc) NULL,
-	    (GtsArgSetFunc) NULL,
-	    (GtsArgGetFunc) NULL
+	    .name = "GVertex",
+	    .object_size = sizeof(GVertex),
+	    .class_size = sizeof(GVertexClass),
 	};
 	klass = gts_object_class_new(GTS_OBJECT_CLASS(gts_vertex_class()),
 				     &vertex_info);
