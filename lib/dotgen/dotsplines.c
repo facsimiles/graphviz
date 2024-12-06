@@ -1541,7 +1541,7 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
   Agedgeinfo_t fwdedgei;
   Agedgepair_t fwdedge;
   edge_t *e;
-  int j, r;
+  int j;
   double stepx, stepy, vspace;
   int tside, hside;
   pathend_t tend, hend;
@@ -1585,7 +1585,7 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
 
   tn = agtail(e);
   hn = aghead(e);
-  r = ND_rank(tn);
+  const int r = ND_rank(tn);
   if (r > 0) {
     rank_t *prevr;
     if (GD_has_labels(g->root) & EDGE_LABEL)
