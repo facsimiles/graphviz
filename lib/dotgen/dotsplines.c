@@ -1542,7 +1542,7 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
   edge_t *e;
   int j;
   double stepx, stepy, vspace;
-  int tside, hside;
+  int hside;
   pathend_t tend, hend;
 
   fwdedge.out.base.data = &fwdedgei.hdr;
@@ -1575,7 +1575,7 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
     return 0;
   }
 
-  tside = ED_tail_port(e).side;
+  const int tside = ED_tail_port(e).side;
   hside = ED_head_port(e).side;
   if ((tside == BOTTOM && hside != TOP) || (hside == BOTTOM && tside != TOP)) {
     make_flat_bottom_edges(g, sp, P, edges, cnt, e, et == EDGETYPE_SPLINE);
