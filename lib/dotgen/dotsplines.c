@@ -228,7 +228,7 @@ static int dot_splines_(graph_t *g, int normalize) {
   node_t *n;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
-  edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1;
+  edge_t *e, *e0, *e1, *ea, *eb, *le1;
   path P = {0};
   int et = EDGE_TYPE(g);
   fwdedgea.out.base.data = &fwdedgeai.hdr;
@@ -340,7 +340,7 @@ static int dot_splines_(graph_t *g, int normalize) {
 
   for (unsigned l = 0; l < LIST_SIZE(&edges);) {
     const unsigned ind = l;
-    le0 = getmainedge((e0 = LIST_GET(&edges, l++)));
+    edge_t *le0 = getmainedge((e0 = LIST_GET(&edges, l++)));
     if (ED_tail_port(e0).defined || ED_head_port(e0).defined) {
       ea = e0;
     } else {
