@@ -480,13 +480,12 @@ int dot_splines(graph_t *g) { return dot_splines_(g, 1); }
  * This is for regular edges only.
  */
 static void place_vnlabel(node_t *n) {
-  pointf dimen;
   edge_t *e;
   if (ND_in(n).size == 0)
     return; /* skip flat edge labels here */
   for (e = ND_out(n).list[0]; ED_edge_type(e) != NORMAL; e = ED_to_orig(e))
     ;
-  dimen = ED_label(e)->dimen;
+  const pointf dimen = ED_label(e)->dimen;
   const double width = GD_flip(agraphof(n)) ? dimen.y : dimen.x;
   ED_label(e)->pos.x = ND_coord(n).x + width / 2.0;
   ED_label(e)->pos.y = ND_coord(n).y;
