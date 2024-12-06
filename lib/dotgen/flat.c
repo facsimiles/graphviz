@@ -32,7 +32,7 @@ static node_t *make_vn_slot(graph_t * g, int r, int pos)
     n = v[pos] = virtual_node(g);
     ND_order(n) = pos;
     ND_rank(n) = r;
-    v[++(GD_rank(g)[r].n)] = NULL;
+    v[++GD_rank(g)[r].n] = NULL;
     return v[pos];
 }
 
