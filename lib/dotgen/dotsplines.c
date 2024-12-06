@@ -170,9 +170,8 @@ static void swap_spline(splines *s) {
  */
 static void edge_normalize(graph_t *g) {
   edge_t *e;
-  node_t *n;
 
-  for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+  for (node_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
     for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
       if (sinfo.swapEnds(e) && ED_spl(e))
         swap_spline(ED_spl(e));
