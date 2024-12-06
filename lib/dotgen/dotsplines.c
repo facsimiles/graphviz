@@ -195,11 +195,10 @@ static void resetRW(graph_t *g) {
  * used when routing orthogonal edges.
  */
 static void setEdgeLabelPos(graph_t *g) {
-  node_t *n;
   textlabel_t *l;
 
   /* place regular edge labels */
-  for (n = GD_nlist(g); n; n = ND_next(n)) {
+  for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
     if (ND_node_type(n) == VIRTUAL) {
       if (ND_alg(n)) { // label of non-adjacent flat edge
         edge_t *fe = ND_alg(n);
