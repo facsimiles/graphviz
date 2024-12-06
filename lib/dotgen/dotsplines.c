@@ -1537,7 +1537,6 @@ static void make_flat_bottom_edges(graph_t *g, const spline_info_t sp, path *P,
  */
 static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
                           edge_t **edges, unsigned cnt, int et) {
-  node_t *hn;
   Agedgeinfo_t fwdedgei;
   Agedgepair_t fwdedge;
   edge_t *e;
@@ -1584,7 +1583,7 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
   }
 
   node_t *tn = agtail(e);
-  hn = aghead(e);
+  node_t *hn = aghead(e);
   const int r = ND_rank(tn);
   if (r > 0) {
     rank_t *prevr;
