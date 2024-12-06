@@ -1708,7 +1708,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
   edge_t *e, *fe, *le, *segfirst;
   pathend_t tend, hend;
   boxf b;
-  int sl, si;
+  int sl;
   points_t pointfs = {0};
   points_t pointfs2 = {0};
 
@@ -1772,16 +1772,17 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
     if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
       tend.boxes[tend.boxn++] = b;
     bool smode = false;
-    si = -1;
+    bool si = false;
     while (ND_node_type(hn) == VIRTUAL && !sinfo.splineMerge(hn)) {
       LIST_APPEND(&boxes, rank_box(sp, g, ND_rank(tn)));
       if (!smode && ((sl = straight_len(hn)) >=
                      ((GD_has_labels(g->root) & EDGE_LABEL) ? 4 + 1 : 2 + 1))) {
         smode = true;
-        si = 1, sl -= 2;
+        si = true;
+        sl -= 2;
       }
-      if (!smode || si > 0) {
-        si--;
+      if (!smode || si) {
+        si = false;
         LIST_APPEND(&boxes, maximal_bbox(g, *sp, hn, e, ND_out(hn).list[0]));
         e = ND_out(hn).list[0];
         tn = agtail(e);
