@@ -958,10 +958,9 @@ static int edgelblcmpfn(const void *x, const void *y) {
  * records because of their weird nature.
  */
 static void makeSimpleFlatLabels(node_t *tn, node_t *hn, edge_t **edges,
-                                 unsigned ind, unsigned cnt, int et,
-                                 unsigned n_lbls) {
+                                 unsigned cnt, int et, unsigned n_lbls) {
   Ppoly_t poly;
-  edge_t *e = edges[ind];
+  edge_t *e = *edges;
   pointf points[10], tp, hp;
   double leftend, rightend, ctrx, ctry, miny, maxy;
   double uminx, umaxx;
@@ -970,7 +969,7 @@ static void makeSimpleFlatLabels(node_t *tn, node_t *hn, edge_t **edges,
   edge_t **earray = gv_calloc(cnt, sizeof(edge_t *));
 
   for (unsigned i = 0; i < cnt; i++) {
-    earray[i] = edges[ind + i];
+    earray[i] = edges[i];
   }
 
   qsort(earray, cnt, sizeof(edge_t *), edgelblcmpfn);
@@ -1203,7 +1202,7 @@ static int make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
     }
     /* flat edges without ports but with labels take more work */
     else {
-      makeSimpleFlatLabels(tn, hn, edges, ind, cnt, et, labels);
+      makeSimpleFlatLabels(tn, hn, &edges[ind], cnt, et, labels);
     }
     return 0;
   }
