@@ -1024,8 +1024,7 @@ static void makeSimpleFlatLabels(node_t *tn, node_t *hn, edge_t **edges,
       points[3].y = maxy;
       points[4].x = umaxx;
       points[4].y = hp.y;
-      points[5].x = hp.x;
-      points[5].y = hp.y;
+      points[5] = hp;
       points[6].x = hp.x;
       points[6].y = maxy + LBL_SPACE;
       points[7].x = tp.x;
@@ -1082,8 +1081,7 @@ static void makeSimpleFlatLabels(node_t *tn, node_t *hn, edge_t **edges,
       points[3].y = maxy;
       points[4].x = umaxx;
       points[4].y = hp.y;
-      points[5].x = hp.x;
-      points[5].y = hp.y;
+      points[5] = hp;
       points[6].x = hp.x;
       points[6].y = maxy + LBL_SPACE;
       points[7].x = tp.x;
