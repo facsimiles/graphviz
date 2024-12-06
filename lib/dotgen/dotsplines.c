@@ -535,7 +535,7 @@ static int edgecmp(const void *p0, const void *p1) {
   edge_t *const *ptr1 = p1;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
-  edge_t *eb, *le0, *le1;
+  edge_t *le0, *le1;
   int et0, et1, rv;
 
   fwdedgea.out.base.data = &fwdedgeai.hdr;
@@ -594,7 +594,8 @@ static int edgecmp(const void *p0, const void *p1) {
     makefwdedge(&fwdedgea.out, ea);
     ea = &fwdedgea.out;
   }
-  eb = (ED_tail_port(e1).defined || ED_head_port(e1).defined) ? e1 : le1;
+  edge_t *eb =
+      (ED_tail_port(e1).defined || ED_head_port(e1).defined) ? e1 : le1;
   if (ED_tree_index(eb) & BWDEDGE) {
     makefwdedge(&fwdedgeb.out, eb);
     eb = &fwdedgeb.out;
