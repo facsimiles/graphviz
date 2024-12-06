@@ -535,7 +535,7 @@ static int edgecmp(const void *p0, const void *p1) {
   edge_t *const *ptr1 = p1;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
-  edge_t *le0, *le1;
+  edge_t *le1;
   int et0, et1, rv;
 
   fwdedgea.out.base.data = &fwdedgeai.hdr;
@@ -551,7 +551,7 @@ static int edgecmp(const void *p0, const void *p1) {
     return -1;
   }
 
-  le0 = getmainedge(e0);
+  edge_t *le0 = getmainedge(e0);
   le1 = getmainedge(e1);
 
   {
