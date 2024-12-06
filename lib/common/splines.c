@@ -874,15 +874,15 @@ static void selfBottom(edge_t *edges[], size_t ind, size_t cnt, double sizex,
     }
 }
 
-static void selfTop(edge_t *edges[], size_t ind, size_t cnt, double sizex,
-                    double stepy, splineInfo *sinfo) {
+static void selfTop(edge_t *edges[], size_t cnt, double sizex, double stepy,
+                    splineInfo *sinfo) {
     int sgn, point_pair;
     double hy, ty,  stepx, dx, dy, height;
     pointf tp, hp, np;
     node_t *n;
     edge_t *e;
 
-    e = edges[ind];
+    e = *edges;
     n = agtail(e);
 
     stepx = fmax(sizex / 2.0 / (double)cnt, 2.0);
@@ -946,7 +946,7 @@ static void selfTop(edge_t *edges[], size_t ind, size_t cnt, double sizex,
     ty = fmin(dy, 3 * (np.y + dy - tp.y));
     hy = fmin(dy, 3 * (np.y + dy - hp.y));
     for (size_t i = 0; i < cnt; i++) {
-        e = edges[ind++];
+        e = edges[i];
         dy += stepy;
         ty += stepy;
         hy += stepy;
@@ -1181,7 +1181,7 @@ void makeSelfEdge(edge_t *edges[], size_t ind, size_t cnt, double sizex,
 
 	/* handle L-R specially */
 	if ((ED_tail_port(e).side & RIGHT) || (ED_head_port(e).side & RIGHT)) {
-	    selfTop(edges, ind, cnt, sizex, sizey, sinfo);
+	    selfTop(&edges[ind], cnt, sizex, sizey, sinfo);
 	}
 	else {
 	    selfLeft(edges, ind, cnt, sizex, sizey, sinfo);
@@ -1190,7 +1190,7 @@ void makeSelfEdge(edge_t *edges[], size_t ind, size_t cnt, double sizex,
 
     /* self edge with both ports on top side */
     else if (ED_tail_port(e).side & TOP) {
-	selfTop(edges, ind, cnt, sizex, sizey, sinfo);
+	selfTop(&edges[ind], cnt, sizex, sizey, sinfo);
     }
     else if (ED_tail_port(e).side & BOTTOM) {
 	selfBottom(edges, ind, cnt, sizex, sizey, sinfo);
