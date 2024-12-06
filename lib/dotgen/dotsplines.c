@@ -403,7 +403,7 @@ static int dot_splines_(graph_t *g, int normalize) {
       } else {
         double upy = ND_coord(GD_rank(g)[r - 1].v[0]).y - ND_coord(n).y;
         double dwny = ND_coord(n).y - ND_coord(GD_rank(g)[r + 1].v[0]).y;
-        sizey = MIN(upy, dwny);
+        sizey = fmin(upy, dwny);
       }
       makeSelfEdge(LIST_AT(&edges, ind), cnt, sd.Multisep, sizey / 2, &sinfo);
       for (unsigned b = 0; b < cnt; b++) {
