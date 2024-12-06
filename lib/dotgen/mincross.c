@@ -529,8 +529,7 @@ static void do_ordering_node(graph_t *g, node_t *n, bool outflag) {
     }
     if (ne <= 1)
 	return;
-    /* write null terminator at end of list.
-       requires +1 in TE_list alloccation */
+    // Write null terminator at end of list. Requires +1 in TE_list allocation.
     sortlist[ne] = 0;
     qsort(sortlist, ne, sizeof(sortlist[0]), edgeidcmpf);
     for (ne = 1; (f = sortlist[ne]); ne++) {
