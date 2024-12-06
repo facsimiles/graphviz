@@ -1539,7 +1539,6 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
                           edge_t **edges, unsigned cnt, int et) {
   Agedgeinfo_t fwdedgei;
   Agedgepair_t fwdedge;
-  edge_t *e;
   int j;
   double stepx, stepy, vspace;
   pathend_t tend, hend;
@@ -1547,7 +1546,7 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
   fwdedge.out.base.data = &fwdedgei.hdr;
 
   /* Get sample edge; normalize to go from left to right */
-  e = *edges;
+  edge_t *e = *edges;
   bool isAdjacent = ED_adjacent(e) != 0;
   if (ED_tree_index(e) & BWDEDGE) {
     makefwdedge(&fwdedge.out, e);
