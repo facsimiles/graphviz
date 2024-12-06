@@ -1949,10 +1949,10 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
 static void completeregularpath(path *P, edge_t *first, edge_t *last,
                                 pathend_t *tendp, pathend_t *hendp,
                                 const boxes_t *boxes) {
-  edge_t *uleft, *uright, *lleft, *lright;
+  edge_t *lleft, *lright;
 
-  uleft = uright = NULL;
-  uleft = top_bound(first, -1), uright = top_bound(first, 1);
+  edge_t *uleft = top_bound(first, -1);
+  edge_t *uright = top_bound(first, 1);
   if (uleft) {
     if (getsplinepoints(uleft) == NULL)
       return;
