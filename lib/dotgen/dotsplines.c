@@ -535,13 +535,13 @@ static int edgecmp(const void *p0, const void *p1) {
   edge_t *const *ptr1 = p1;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
-  int et0, et1, rv;
+  int et1, rv;
 
   fwdedgea.out.base.data = &fwdedgeai.hdr;
   fwdedgeb.out.base.data = &fwdedgebi.hdr;
   edge_t *const e0 = *ptr0;
   edge_t *const e1 = *ptr1;
-  et0 = ED_tree_index(e0) & EDGETYPEMASK;
+  int et0 = ED_tree_index(e0) & EDGETYPEMASK;
   et1 = ED_tree_index(e1) & EDGETYPEMASK;
   if (et0 < et1) {
     return 1;
