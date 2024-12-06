@@ -183,9 +183,7 @@ static void edge_normalize(graph_t *g) {
  * the original value here.
  */
 static void resetRW(graph_t *g) {
-  node_t *n;
-
-  for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+  for (node_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
     if (ND_other(n).list) {
       SWAP(&ND_rw(n), &ND_mval(n));
     }
