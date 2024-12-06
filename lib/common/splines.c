@@ -1052,15 +1052,15 @@ static void selfRight(edge_t *edges[], size_t cnt, double stepx, double sizey,
     }
 }
 
-static void selfLeft(edge_t *edges[], size_t ind, size_t cnt, double stepx,
-                     double sizey, splineInfo *sinfo) {
+static void selfLeft(edge_t *edges[], size_t cnt, double stepx, double sizey,
+                     splineInfo *sinfo) {
     int sgn,point_pair;
     double hx, tx, stepy, dx, dy, width;
     pointf tp, hp, np;
     node_t *n;
     edge_t *e;
 
-    e = edges[ind];
+    e = *edges;
     n = agtail(e);
 
     stepy = fmax(sizey / 2.0 / (double)cnt, 2.0);
@@ -1091,7 +1091,7 @@ static void selfLeft(edge_t *edges[], size_t ind, size_t cnt, double stepx,
     tx = fmin(dx, 3 * (tp.x + dx - np.x));
     hx = fmin(dx, 3 * (hp.x + dx - np.x));
     for (size_t i = 0; i < cnt; i++) {
-        e = edges[ind++];
+        e = edges[i];
         dx += stepx;
         tx += stepx;
         hx += stepx;
@@ -1184,7 +1184,7 @@ void makeSelfEdge(edge_t *edges[], size_t ind, size_t cnt, double sizex,
 	    selfTop(&edges[ind], cnt, sizex, sizey, sinfo);
 	}
 	else {
-	    selfLeft(edges, ind, cnt, sizex, sizey, sinfo);
+	    selfLeft(&edges[ind], cnt, sizex, sizey, sinfo);
 	}
     }
 
