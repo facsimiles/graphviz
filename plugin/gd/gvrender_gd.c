@@ -76,11 +76,11 @@ static int transparent, basecolor;
 
 static void gdgen_begin_page(GVJ_t * job)
 {
-    char *bgcolor_str = NULL, *truecolor_str = NULL;
+    char *bgcolor_str = NULL;
     bool truecolor_p = false;	/* try to use cheaper paletted mode */
     gdImagePtr im = NULL;
 
-    truecolor_str = agget(job->gvc->g, "truecolor");	/* allow user to force truecolor */
+    const char *const truecolor_str = agget(job->gvc->g, "truecolor"); // allow user to force truecolor
     bgcolor_str = agget(job->gvc->g, "bgcolor");
 
     if (truecolor_str && truecolor_str[0])
