@@ -393,7 +393,7 @@ static void gdgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
     obj_state_t *obj = job->obj;
     gdImagePtr im = job->context;
     pointf V[4];
-    int step, pen;
+    int pen;
     bool pen_ok, fill_ok;
     gdImagePtr brush = NULL;
     gdPoint F[4];
@@ -414,7 +414,7 @@ static void gdgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
 	    for (size_t j = 1; j <= 3; j++)
 	        V[j] = A[i + j];
 	    pointf p0 = V[0];
-	    for (step = 1; step <= BEZIERSUBDIVISION; step++) {
+	    for (int step = 1; step <= BEZIERSUBDIVISION; step++) {
 	        const pointf p1 = Bezier(V, (double)step / BEZIERSUBDIVISION, NULL, NULL);
 	        PF2P(p0, F[1]);
 	        PF2P(p1, F[2]);
