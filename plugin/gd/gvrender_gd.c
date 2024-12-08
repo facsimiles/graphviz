@@ -392,7 +392,7 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 static void gdgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
     obj_state_t *obj = job->obj;
     gdImagePtr im = job->context;
-    pointf p1, V[4];
+    pointf V[4];
     int step, pen;
     bool pen_ok, fill_ok;
     gdImagePtr brush = NULL;
@@ -415,7 +415,7 @@ static void gdgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
 	        V[j] = A[i + j];
 	    pointf p0 = V[0];
 	    for (step = 1; step <= BEZIERSUBDIVISION; step++) {
-	        p1 = Bezier(V, (double)step / BEZIERSUBDIVISION, NULL, NULL);
+	        const pointf p1 = Bezier(V, (double)step / BEZIERSUBDIVISION, NULL, NULL);
 	        PF2P(p0, F[1]);
 	        PF2P(p1, F[2]);
 	        if (pen_ok)
