@@ -255,7 +255,6 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
         gdImageLine(im, sp.x, sp.y, ep.x, ep.y, fontcolor);
     } else {
 #ifdef HAVE_GD_FREETYPE
-        char *err;
         int brect[8];
 #ifdef HAVE_GD_FONTCONFIG
         char* fontlist = fontname;
@@ -263,7 +262,7 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
         extern char *gd_alternate_fontlist(const char *font);
         char* fontlist = gd_alternate_fontlist(fontname);
 #endif
-        err = gdImageStringFTEx(im, brect, fontcolor,
+        const char *const err = gdImageStringFTEx(im, brect, fontcolor,
                 fontlist, fontsize, fontangle, sp.x, sp.y, str, &strex);
 #ifndef HAVE_GD_FONTCONFIG
         free(fontlist);
