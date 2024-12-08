@@ -393,7 +393,6 @@ static void gdgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
     obj_state_t *obj = job->obj;
     gdImagePtr im = job->context;
     pointf V[4];
-    bool fill_ok;
     gdImagePtr brush = NULL;
     gdPoint F[4];
 
@@ -402,7 +401,7 @@ static void gdgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
 
     const int pen = gdgen_set_penstyle(job, im, &brush);
     const bool pen_ok = pen != gdImageGetTransparent(im);
-    fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
+    const bool fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
 
     if (pen_ok || fill_ok) {
         V[3] = A[0];
