@@ -344,7 +344,7 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 {
     obj_state_t *obj = job->obj;
-    int i, pen, width, dashstyle[20];
+    int i, pen, dashstyle[20];
 
     if (obj->pen == PEN_DASHED) {
 	for (i = 0; i < 10; i++)
@@ -364,7 +364,7 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 	pen = obj->pencolor.u.index;
     }
 
-    width = d2i(obj->penwidth * job->zoom);
+    int width = d2i(obj->penwidth * job->zoom);
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
