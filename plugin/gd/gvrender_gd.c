@@ -492,14 +492,13 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 
 static void gdgen_polyline(GVJ_t *job, pointf *A, size_t n) {
     gdImagePtr im = job->context;
-    bool pen_ok;
     gdImagePtr brush = NULL;
 
     if (!im)
 	return;
 
     const int pen = gdgen_set_penstyle(job, im, &brush);
-    pen_ok = pen != gdImageGetTransparent(im);
+    const bool pen_ok = pen != gdImageGetTransparent(im);
 
     if (pen_ok) {
         pointf p = A[0];
