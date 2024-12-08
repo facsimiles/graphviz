@@ -435,14 +435,13 @@ static void gdgen_polygon(GVJ_t *job, pointf *A, size_t n, int filled) {
     obj_state_t *obj = job->obj;
     gdImagePtr im = job->context;
     gdImagePtr brush = NULL;
-    bool fill_ok;
 
     if (!im)
 	return;
 
     const int pen = gdgen_set_penstyle(job, im, &brush);
     const bool pen_ok = pen != gdImageGetTransparent(im);
-    fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
+    const bool fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
 
     if (pen_ok || fill_ok) {
         if (n > points_allocated) {
