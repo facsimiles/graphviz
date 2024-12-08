@@ -467,14 +467,14 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     obj_state_t *obj = job->obj;
     gdImagePtr im = job->context;
-    bool pen_ok, fill_ok;
+    bool fill_ok;
     gdImagePtr brush = NULL;
 
     if (!im)
 	return;
 
     const int pen = gdgen_set_penstyle(job, im, &brush);
-    pen_ok = pen != gdImageGetTransparent(im);
+    const bool pen_ok = pen != gdImageGetTransparent(im);
     fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
 
     const double dx = 2 * (A[1].x - A[0].x);
