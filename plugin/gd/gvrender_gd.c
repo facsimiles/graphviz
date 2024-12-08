@@ -232,14 +232,16 @@ static void gdgen_end_page(GVJ_t * job)
 
 void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, char *str)
 {
-    gdFTStringExtra strex;
     point sp, ep; /* start point, end point, in pixels */
 
     PF2P(spf, sp);
     PF2P(epf, ep);
 
-    strex.flags = gdFTEX_RESOLUTION;
-    strex.hdpi = strex.vdpi = fontdpi;
+    gdFTStringExtra strex = {
+        .flags = gdFTEX_RESOLUTION,
+        .hdpi = fontdpi,
+        .vdpi = fontdpi,
+    };
 
     if (strchr(fontname, '/'))
         strex.flags |= gdFTEX_FONTPATHNAME;
