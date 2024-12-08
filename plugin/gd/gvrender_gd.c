@@ -295,9 +295,6 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     pointf spf, epf;
     double spanwidth = span->size.x * job->zoom * job->dpi.x / POINTS_PER_INCH;
     char* fontname;
-#ifdef HAVE_GD_FONTCONFIG
-    PostscriptAlias *pA;
-#endif
 
     if (!im)
 	return;
@@ -328,7 +325,7 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     }
 
 #ifdef HAVE_GD_FONTCONFIG
-    pA = span->font->postscript_alias;
+    PostscriptAlias *const pA = span->font->postscript_alias;
     if (pA)
 	fontname = gd_psfontResolve (pA);
     else
