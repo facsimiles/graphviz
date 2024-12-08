@@ -164,9 +164,6 @@ static void gdgen_end_page(GVJ_t * job)
 	return;
     if (job->external_context) {
 	/* leave image in memory to be handled by Gdtclft output routines */
-#ifdef MYTRACE
-	fprintf(stderr, "gdgen_end_graph (to memory)\n");
-#endif
     } else {
 	/* Only save the alpha channel in outputs that support it if
 	   the base color was transparent.   Otherwise everything
@@ -224,9 +221,6 @@ static void gdgen_end_page(GVJ_t * job)
 	    UNREACHABLE();
 	}
 	gdImageDestroy(im);
-#ifdef MYTRACE
-	fprintf(stderr, "gdgen_end_graph (to file)\n");
-#endif
 	job->context = NULL;
     }
 }
