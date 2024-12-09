@@ -76,12 +76,10 @@ static void RTreeClose2(RTree_t *rtp, Node_t *n) {
 }
 
 
-int RTreeClose(RTree_t * rtp)
-{
+void RTreeClose(RTree_t *rtp) {
     RTreeClose2(rtp, rtp->root);
     free(rtp->root);
     free(rtp);
-    return 0;
 }
 
 #ifdef RTDEBUG
