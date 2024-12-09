@@ -83,6 +83,7 @@ void vector_float_take(int n, float *v, int m, int *p, float **u){
 
   for (i = 0; i < m; i++) {
     assert(p[i] < n && p[i] >= 0);
+    (void)n;
     (*u)[i] = v[p[i]];
   }
   
