@@ -69,14 +69,14 @@ Agraph_t *agopen1(Agraph_t * g)
 {
     Agraph_t *par;
 
-    g->n_seq = agdtopen(g, &Ag_subnode_seq_disc, Dttree);
+    g->n_seq = agdtopen(&Ag_subnode_seq_disc, Dttree);
     g->n_id = node_set_new();
-    g->e_seq = agdtopen(g, g == agroot(g)? &Ag_mainedge_seq_disc : &Ag_subedge_seq_disc, Dttree);
-    g->e_id = agdtopen(g, g == agroot(g)? &Ag_mainedge_id_disc : &Ag_subedge_id_disc, Dttree);
-    g->g_seq = agdtopen(g, &Ag_subgraph_seq_disc, Dttree);
+    g->e_seq = agdtopen(g == agroot(g)? &Ag_mainedge_seq_disc : &Ag_subedge_seq_disc, Dttree);
+    g->e_id = agdtopen(g == agroot(g)? &Ag_mainedge_id_disc : &Ag_subedge_id_disc, Dttree);
+    g->g_seq = agdtopen(&Ag_subgraph_seq_disc, Dttree);
     g->g_seq2 = gv_alloc(sizeof(Agraphs_t));
 
-    g->g_id = agdtopen(g, &Ag_subgraph_id_disc, Dttree);
+    g->g_id = agdtopen(&Ag_subgraph_id_disc, Dttree);
 
     par = agparent(g);
     if (par) {

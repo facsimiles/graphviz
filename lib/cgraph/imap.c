@@ -113,10 +113,10 @@ void aginternalmapinsert(Agraph_t * g, int objtype, char *str,
 	objtype = AGEDGE;
     if ((d_name_to_id = g->clos->lookup_by_name[objtype]) == NULL)
 	d_name_to_id = g->clos->lookup_by_name[objtype] =
-	    agdtopen(g, &LookupByName, Dttree);
+	    agdtopen(&LookupByName, Dttree);
     if ((d_id_to_name = g->clos->lookup_by_id[objtype]) == NULL)
 	d_id_to_name = g->clos->lookup_by_id[objtype] =
-	    agdtopen(g, &LookupById, Dttree);
+	    agdtopen(&LookupById, Dttree);
     dtinsert(d_name_to_id, ent);
     dtinsert(d_id_to_name, ent);
 }

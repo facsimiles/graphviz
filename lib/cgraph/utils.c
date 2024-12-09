@@ -18,8 +18,7 @@
 
 static Agraph_t *Ag_dictop_G;
 
-Dict_t *agdtopen(Agraph_t * g, Dtdisc_t * disc, Dtmethod_t * method)
-{
+Dict_t *agdtopen(Dtdisc_t *disc, Dtmethod_t *method) {
     return dtopen(disc, method);
 }
 
