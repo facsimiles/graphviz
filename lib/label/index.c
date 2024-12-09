@@ -16,8 +16,7 @@
 #include <assert.h>
 #include <stdbool.h>
 
-LeafList_t *RTreeNewLeafList(Leaf_t * lp)
-{
+static LeafList_t *RTreeNewLeafList(Leaf_t *lp) {
     LeafList_t *llp;
 
     if ((llp = calloc(1, sizeof(LeafList_t)))) {

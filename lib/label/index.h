@@ -74,7 +74,6 @@ Node_t *RTreeNewIndex(void);
 LeafList_t *RTreeSearch(RTree_t *, Node_t *, Rect_t);
 int RTreeInsert(RTree_t *, Rect_t, void *, Node_t **);
 
-LeafList_t *RTreeNewLeafList(Leaf_t * lp);
 void RTreeLeafListFree(LeafList_t * llp);
 
 #ifdef RTDEBUG
