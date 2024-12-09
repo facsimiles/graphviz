@@ -57,16 +57,14 @@ Node_t *RTreeNewIndex(void ) {
     return x;
 }
 
-static int RTreeClose2(RTree_t * rtp, Node_t * n)
-{
+static void RTreeClose2(RTree_t *rtp, Node_t *n) {
     if (n->level > 0) {
 	for (int i = 0; i < NODECARD; i++) {
 	    if (!n->branch[i].child)
 		continue;
-	    if (!RTreeClose2(rtp, n->branch[i].child)) {
-		free(n->branch[i].child);
-		DisconBranch(n, i);
-	    }
+	    RTreeClose2(rtp, n->branch[i].child);
+	    free(n->branch[i].child);
+	    DisconBranch(n, i);
 	}
     } else {
 	for (int i = 0; i < NODECARD; i++) {
@@ -75,7 +73,6 @@ static int RTreeClose2(RTree_t * rtp, Node_t * n)
 	    DisconBranch(n, i);
 	}
     }
-    return 0;
 }
 
 
