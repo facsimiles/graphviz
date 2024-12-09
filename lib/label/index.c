@@ -45,10 +45,8 @@ void RTreeLeafListFree(LeafList_t * llp)
 
 RTree_t *RTreeOpen(void)
 {
-    RTree_t *rtp;
-
-    if ((rtp = calloc(1, sizeof(RTree_t))))
-	rtp->root = RTreeNewIndex();
+    RTree_t *rtp = gv_alloc(sizeof(RTree_t));
+    rtp->root = RTreeNewIndex();
     return rtp;
 }
 

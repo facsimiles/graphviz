@@ -48,10 +48,7 @@ static XLabels_t *xlnew(object_t *objs, size_t n_objs, xlabel_t *lbls,
   }
 
   /* for querying intersection candidates */
-  if (!(xlp->spdx = RTreeOpen())) {
-    fprintf(stderr, "out of memory\n");
-    graphviz_exit(EXIT_FAILURE);
-  }
+  xlp->spdx = RTreeOpen();
   /* save arg pointers in the handle */
   xlp->objs = objs;
   xlp->n_objs = n_objs;
