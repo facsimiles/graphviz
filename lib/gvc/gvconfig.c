@@ -644,6 +644,9 @@ DEFINE_LIST_WITH_DTOR(strs, char *, free)
 static int
 glob (GVC_t* gvc, char* pattern, int flags, int (*errfunc)(const char *, int), glob_t *pglob)
 {
+    (void)flags;
+    (void)errfunc;
+
     char* libdir;
     WIN32_FIND_DATA wfd;
     HANDLE h;
