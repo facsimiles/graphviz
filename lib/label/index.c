@@ -27,8 +27,7 @@ LeafList_t *RTreeNewLeafList(Leaf_t * lp)
     return llp;
 }
 
-LeafList_t *RTreeLeafListAdd(LeafList_t * llp, Leaf_t * lp)
-{
+static LeafList_t *RTreeLeafListAdd(LeafList_t *llp, Leaf_t *lp) {
     if (!lp)
 	return llp;
 
