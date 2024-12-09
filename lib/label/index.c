@@ -15,14 +15,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <util/alloc.h>
 
 static LeafList_t *RTreeNewLeafList(Leaf_t *lp) {
-    LeafList_t *llp;
-
-    if ((llp = calloc(1, sizeof(LeafList_t)))) {
-	llp->leaf = lp;
-	llp->next = 0;
-    }
+    LeafList_t *llp = gv_alloc(sizeof(LeafList_t));
+    llp->leaf = lp;
+    llp->next = 0;
     return llp;
 }
 
