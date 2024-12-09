@@ -19,8 +19,7 @@
 
 static LeafList_t *RTreeNewLeafList(Leaf_t *lp) {
     LeafList_t *llp = gv_alloc(sizeof(LeafList_t));
-    llp->leaf = lp;
-    llp->next = 0;
+    *llp = (LeafList_t){.leaf = lp};
     return llp;
 }
 
