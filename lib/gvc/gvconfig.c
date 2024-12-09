@@ -624,6 +624,8 @@ void gvconfig(GVC_t * gvc, bool rescan)
         }
     }
 done:
+#else
+    (void)rescan;
 #endif
     gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */
     textfont_dict_open(gvc);    /* initialize font dict */
