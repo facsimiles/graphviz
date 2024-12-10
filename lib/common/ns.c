@@ -41,10 +41,13 @@ static void check_cycles(graph_t * g);
 #define SEQ(a,b,c)		((a) <= (b) && (b) <= (c))
 #define TREE_EDGE(e)	(ED_tree_index(e) >= 0)
 
+typedef struct {
+    int Search_size;
+} network_simplex_ctx_t;
+
 static graph_t *G;
 static size_t N_nodes, N_edges;
 static size_t S_i;			/* search index for enter_edge */
-static int Search_size;
 #define SEARCHSIZE 30
 static nlist_t Tree_node;
 static elist Tree_edge;
@@ -181,7 +184,7 @@ void init_rank(void)
     node_queue_free(&Q);
 }
 
-static edge_t *leave_edge(void)
+static edge_t *leave_edge(network_simplex_ctx_t *ctx)
 {
     edge_t *f, *rv = NULL;
     int cnt = 0;
@@ -194,7 +197,7 @@ static edge_t *leave_edge(void)
 		    rv = f;
 	    } else
 		rv = Tree_edge.list[S_i];
-	    if (++cnt >= Search_size)
+	    if (++cnt >= ctx->Search_size)
 		return rv;
 	}
 	S_i++;
@@ -208,7 +211,7 @@ static edge_t *leave_edge(void)
 			rv = f;
 		} else
 		    rv = Tree_edge.list[S_i];
-		if (++cnt >= Search_size)
+		if (++cnt >= ctx->Search_size)
 		    return rv;
 	    }
 	    S_i++;
@@ -981,6 +984,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
     int iter = 0;
     char *ns = "network simplex: ";
     edge_t *e, *f;
+    network_simplex_ctx_t ctx = {0};
 
 #ifdef DEBUG
     check_cycles(g);
@@ -997,9 +1001,9 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
 	init_rank();
 
     if (search_size >= 0)
-	Search_size = search_size;
+	ctx.Search_size = search_size;
     else
-	Search_size = SEARCHSIZE;
+	ctx.Search_size = SEARCHSIZE;
 
     {
 	int err = feasible_tree();
@@ -1013,7 +1017,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
 	return 0;
     }
 
-    while ((e = leave_edge())) {
+    while ((e = leave_edge(&ctx))) {
 	int err;
 	f = enter_edge(e);
 	err = update(e, f);
