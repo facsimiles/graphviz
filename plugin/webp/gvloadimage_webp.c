@@ -103,7 +103,7 @@ end:
     return surface;
 }
 
-/* get image either from cached surface, or from freskly loaded surface */
+// get image either from cached surface, or from freshly loaded surface
 static cairo_surface_t *webp_loadimage(usershape_t *us) {
     cairo_surface_t *surface = NULL; /* source surface */
 
