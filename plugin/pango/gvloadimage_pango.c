@@ -106,7 +106,7 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled
 {
     cairo_surface_t *surface; 	/* source surface */
     cairo_format_t format;
-    int Y, x, y, stride;
+    int x, y, stride;
 
     // suppress unused parameter warning
     (void)filled;
@@ -118,7 +118,7 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled
 	    return;
 
 	const int X = cairo_image_surface_get_width(surface);
-	Y = cairo_image_surface_get_height(surface);
+	const int Y = cairo_image_surface_get_height(surface);
 	stride = cairo_image_surface_get_stride(surface);
 	const unsigned char *data = cairo_image_surface_get_data(surface);
 
