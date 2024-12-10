@@ -42,12 +42,12 @@ static void check_cycles(graph_t * g);
 #define TREE_EDGE(e)	(ED_tree_index(e) >= 0)
 
 typedef struct {
+    size_t S_i;			/* search index for enter_edge */
     int Search_size;
 } network_simplex_ctx_t;
 
 static graph_t *G;
 static size_t N_nodes, N_edges;
-static size_t S_i;			/* search index for enter_edge */
 #define SEARCHSIZE 30
 static nlist_t Tree_node;
 static elist Tree_edge;
@@ -189,32 +189,32 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
     edge_t *f, *rv = NULL;
     int cnt = 0;
 
-    size_t j = S_i;
-    while (S_i < Tree_edge.size) {
-	if (ED_cutvalue(f = Tree_edge.list[S_i]) < 0) {
+    size_t j = ctx->S_i;
+    while (ctx->S_i < Tree_edge.size) {
+	if (ED_cutvalue(f = Tree_edge.list[ctx->S_i]) < 0) {
 	    if (rv) {
 		if (ED_cutvalue(rv) > ED_cutvalue(f))
 		    rv = f;
 	    } else
-		rv = Tree_edge.list[S_i];
+		rv = Tree_edge.list[ctx->S_i];
 	    if (++cnt >= ctx->Search_size)
 		return rv;
 	}
-	S_i++;
+	ctx->S_i++;
     }
     if (j > 0) {
-	S_i = 0;
-	while (S_i < j) {
-	    if (ED_cutvalue(f = Tree_edge.list[S_i]) < 0) {
+	ctx->S_i = 0;
+	while (ctx->S_i < j) {
+	    if (ED_cutvalue(f = Tree_edge.list[ctx->S_i]) < 0) {
 		if (rv) {
 		    if (ED_cutvalue(rv) > ED_cutvalue(f))
 			rv = f;
 		} else
-		    rv = Tree_edge.list[S_i];
+		    rv = Tree_edge.list[ctx->S_i];
 		if (++cnt >= ctx->Search_size)
 		    return rv;
 	    }
-	    S_i++;
+	    ctx->S_i++;
 	}
     }
     return rv;
@@ -910,12 +910,12 @@ static void TB_balance(void)
     free(nrank);
 }
 
-static bool init_graph(graph_t *g) {
+static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
     node_t *n;
     edge_t *e;
 
     G = g;
-    N_nodes = N_edges = S_i = 0;
+    N_nodes = N_edges = ctx->S_i = 0;
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
 	N_nodes++;
@@ -996,7 +996,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
 	    nn, ne, maxiter, balance);
 	start_timer();
     }
-    bool feasible = init_graph(g);
+    bool feasible = init_graph(&ctx, g);
     if (!feasible)
 	init_rank();
 
