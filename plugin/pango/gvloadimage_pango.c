@@ -106,7 +106,7 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled
 {
     cairo_surface_t *surface; 	/* source surface */
     cairo_format_t format;
-    int y, stride;
+    int stride;
 
     // suppress unused parameter warning
     (void)filled;
@@ -128,7 +128,7 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled
 	/* see parallel code in gd_loadimage_ps().  FIXME: refactor... */
         gvputs(job, "/myctr 0 def\n");
         gvputs(job, "/myarray [\n");
-        for (y = 0; y < Y; y++) {
+        for (int y = 0; y < Y; y++) {
 	    gvputs(job, "<");
 	    const unsigned char *ix = data + y * stride;
             for (int x = 0; x < X; x++) {
