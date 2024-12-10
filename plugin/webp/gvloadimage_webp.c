@@ -104,11 +104,9 @@ end:
 }
 
 /* get image either from cached surface, or from freskly loaded surface */
-static cairo_surface_t* webp_loadimage(GVJ_t * job, usershape_t *us)
-{
+static cairo_surface_t *webp_loadimage(usershape_t *us) {
     cairo_surface_t *surface = NULL; /* source surface */
 
-    assert(job);
     assert(us);
     assert(us->name);
 
@@ -149,7 +147,7 @@ static void webp_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fill
     cairo_t *cr = job->context; /* target context */
     cairo_surface_t *surface;	 /* source surface */
 
-    surface = webp_loadimage(job, us);
+    surface = webp_loadimage(us);
     if (surface) {
         cairo_save(cr);
 	cairo_translate(cr, b.LL.x, -b.UR.y);
