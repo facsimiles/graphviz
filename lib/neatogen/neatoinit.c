@@ -1113,6 +1113,11 @@ void dumpOpts (ipsep_options* opp, int nv)
 static void
 majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, adjust_data* am)
 {
+#if !defined(DIGCOLA) || !defined(IPSEPCOLA)
+    (void)mg;
+    (void)am;
+#endif
+
     int ne;
     int rv = 0;
     node_t *v;
