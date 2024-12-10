@@ -46,12 +46,14 @@ static int Level;
 static int Max_outputline = MAX_OUTPUTLINE;
 static Agsym_t *Tailport, *Headport;
 
-static uint64_t *Preorder_number;	// of a graph or subgraph
-static uint64_t *Node_last_written;	// Postorder number of subg when node was last written
-static uint64_t *Edge_last_written;	// Postorder number of subg when edge was last written
+struct graphviz_write_info {
+	uint64_t *preorder_number;	// of a graph or subgraph
+	uint64_t *node_last_written;	// postorder number of subg when node was last written
+	uint64_t *edge_last_written;	// postorder number of subg when edge was last written
+};
 
 static void before_write(Agraph_t*);
-static void after_write(void);
+static void after_write(Agraph_t *);
 
 static int indent(Agraph_t * g, iochan_t * ofile)
 {
@@ -581,7 +583,8 @@ static int write_node(Agraph_t *subg, Agnode_t * n, iochan_t * ofile, Dict_t * d
     CHKRV(write_nodename(n, ofile));
     if (!attrs_written(n))
 	CHKRV(write_nondefault_attrs(n, ofile, d));
-    Node_last_written[AGSEQ(n)] = Preorder_number[AGSEQ(subg)];
+    subg->clos->wr_info->node_last_written[AGSEQ(n)] =
+	subg->clos->wr_info->preorder_number[AGSEQ(subg)];
     return ioput(g, ofile, ";\n");
 }
 
@@ -592,7 +595,8 @@ static int write_node(Agraph_t *subg, Agnode_t * n, iochan_t * ofile, Dict_t * d
 static bool write_node_test(Agraph_t * g, Agnode_t * n)
 {
     /* test if node was already written in g or a subgraph of g */
-    if (Node_last_written[AGSEQ(n)] >= Preorder_number[AGSEQ(g)]) return false;
+    if (g->clos->wr_info->node_last_written[AGSEQ(n)] >=
+	g->clos->wr_info->preorder_number[AGSEQ(g)]) return false;
 
     if (has_no_edges(g, n) || not_default_attrs(g, n))
 	return true;
@@ -629,9 +633,9 @@ static int write_port(Agedge_t * e, iochan_t * ofile, Agsym_t * port)
     return 0;
 }
 
-static bool write_edge_test(Agraph_t *g, Agedge_t *e) {
-
-    if (Edge_last_written[AGSEQ(e)] >= Preorder_number[AGSEQ(g)]) return false;
+static bool write_edge_test(Agraph_t *g, Agedge_t *e)
+{
+    if (g->clos->wr_info->edge_last_written[AGSEQ(e)] >= g->clos->wr_info->preorder_number[AGSEQ(g)]) return false;
     return true;
 }
 
@@ -654,7 +658,7 @@ static int write_edge(Agraph_t *subg, Agedge_t * e, iochan_t * ofile, Dict_t * d
     } else {
 	CHKRV(write_edge_name(e, ofile, true));
     }
-    Edge_last_written[AGSEQ(e)] = Preorder_number[AGSEQ(subg)];
+    subg->clos->wr_info->edge_last_written[AGSEQ(e)] = subg->clos->wr_info->preorder_number[AGSEQ(subg)];
     return ioput(g, ofile, ";\n");
 }
 
@@ -717,7 +721,7 @@ int agwrite(Agraph_t * g, void *ofile)
     CHKRV(write_hdr(g, ofile, true));
     CHKRV(write_body(g, ofile));
     CHKRV(write_trl(g, ofile));
-    after_write();
+    after_write(g);
     Max_outputline = MAX_OUTPUTLINE;
     return AGDISC(g, io)->flush(ofile);
 }
@@ -727,7 +731,7 @@ static uint64_t subgdfs(Agraph_t *g, uint64_t ix)
     uint64_t ix0 = ix;
     Agraph_t *subg;
 
-    Preorder_number[AGSEQ(g)] = ix0;
+    g->clos->wr_info->preorder_number[AGSEQ(g)] = ix0;
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	ix0 = subgdfs(subg,ix0);
     }
@@ -736,16 +740,22 @@ static uint64_t subgdfs(Agraph_t *g, uint64_t ix)
 
 static void before_write(Agraph_t *g)
 {
+    struct graphviz_write_info *wptr = 0;
     set_attrwf(g, true, false);
     
-    Preorder_number = gv_calloc(g->clos->seq[AGRAPH] + 1, sizeof(uint64_t));
-    Node_last_written = gv_calloc(g->clos->seq[AGNODE] + 1, sizeof(uint64_t));
-    Edge_last_written = gv_calloc(g->clos->seq[AGEDGE] + 1, sizeof(uint64_t));
+    assert(g->clos->wr_info == NULL);
+    wptr = g->clos->wr_info = gv_alloc(sizeof(struct graphviz_write_info));
+    wptr->preorder_number = gv_calloc(g->clos->seq[AGRAPH] + 1, sizeof(uint64_t));
+    wptr->node_last_written = gv_calloc(g->clos->seq[AGNODE] + 1, sizeof(uint64_t));
+    wptr->edge_last_written = gv_calloc(g->clos->seq[AGEDGE] + 1, sizeof(uint64_t));
     subgdfs(g,1);
 }
 
-static void after_write(void) {
-  free(Preorder_number);
-  free(Node_last_written);
-  free(Edge_last_written);
+static void after_write(Agraph_t *g) {
+  struct graphviz_write_info *wptr = g->clos->wr_info;
+  g->clos->wr_info = NULL;
+  free(wptr->preorder_number);
+  free(wptr->node_last_written);
+  free(wptr->edge_last_written);
+  free(wptr);
 }
