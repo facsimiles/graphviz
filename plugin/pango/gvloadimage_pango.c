@@ -39,11 +39,9 @@ static void cairo_freeimage(usershape_t *us)
     cairo_surface_destroy(us->data);
 }
 
-static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
-{
+static cairo_surface_t *cairo_loadimage(usershape_t *us) {
     cairo_surface_t *surface = NULL; /* source surface */
 
-    assert(job);
     assert(us);
     assert(us->name);
     assert(us->name[0]);
@@ -93,7 +91,7 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fil
     // suppress unused parameter warning
     (void)filled;
 
-    surface = cairo_loadimage(job, us);
+    surface = cairo_loadimage(us);
     if (surface) {
         cairo_save(cr);
 	cairo_translate(cr, b.LL.x, -b.UR.y);
@@ -113,7 +111,7 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled
     // suppress unused parameter warning
     (void)filled;
 
-    surface = cairo_loadimage(job, us);
+    surface = cairo_loadimage(us);
     if (surface) {
        	format = cairo_image_surface_get_format(surface);
         if ((format != CAIRO_FORMAT_ARGB32) && (format != CAIRO_FORMAT_RGB24))
