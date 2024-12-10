@@ -104,13 +104,12 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fil
 
 static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    cairo_surface_t *surface; 	/* source surface */
     cairo_format_t format;
 
     // suppress unused parameter warning
     (void)filled;
 
-    surface = cairo_loadimage(us);
+    cairo_surface_t *const surface = cairo_loadimage(us); // source surface
     if (surface) {
        	format = cairo_image_surface_get_format(surface);
         if ((format != CAIRO_FORMAT_ARGB32) && (format != CAIRO_FORMAT_RGB24))
