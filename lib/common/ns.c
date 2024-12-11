@@ -43,6 +43,7 @@ static void check_cycles(graph_t * g);
 
 typedef struct {
     nlist_t Tree_node;
+    elist Tree_edge;
     size_t S_i;			/* search index for enter_edge */
     int Search_size;
 } network_simplex_ctx_t;
@@ -50,7 +51,6 @@ typedef struct {
 static graph_t *G;
 static size_t N_nodes, N_edges;
 #define SEARCHSIZE 30
-static elist Tree_edge;
 
 static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
 {
@@ -59,9 +59,9 @@ static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
 	agerrorf("add_tree_edge: missing tree edge\n");
 	return -1;
     }
-    assert(Tree_edge.size <= INT_MAX);
-    ED_tree_index(e) = (int)Tree_edge.size;
-    Tree_edge.list[Tree_edge.size++] = e;
+    assert(ctx->Tree_edge.size <= INT_MAX);
+    ED_tree_index(e) = (int)ctx->Tree_edge.size;
+    ctx->Tree_edge.list[ctx->Tree_edge.size++] = e;
     if (!ND_mark(agtail(e)))
 	ctx->Tree_node.list[ctx->Tree_node.size++] = agtail(e);
     if (!ND_mark(aghead(e)))
@@ -114,12 +114,12 @@ static void invalidate_path(node_t *lca, node_t *to_node) {
     }
 }
 
-static void exchange_tree_edges(edge_t * e, edge_t * f)
+static void exchange_tree_edges(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 {
     node_t *n;
 
     ED_tree_index(f) = ED_tree_index(e);
-    Tree_edge.list[ED_tree_index(e)] = f;
+    ctx->Tree_edge.list[ED_tree_index(e)] = f;
     ED_tree_index(e) = -1;
 
     n = agtail(e);
@@ -190,13 +190,13 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
     int cnt = 0;
 
     size_t j = ctx->S_i;
-    while (ctx->S_i < Tree_edge.size) {
-	if (ED_cutvalue(f = Tree_edge.list[ctx->S_i]) < 0) {
+    while (ctx->S_i < ctx->Tree_edge.size) {
+	if (ED_cutvalue(f = ctx->Tree_edge.list[ctx->S_i]) < 0) {
 	    if (rv) {
 		if (ED_cutvalue(rv) > ED_cutvalue(f))
 		    rv = f;
 	    } else
-		rv = Tree_edge.list[ctx->S_i];
+		rv = ctx->Tree_edge.list[ctx->S_i];
 	    if (++cnt >= ctx->Search_size)
 		return rv;
 	}
@@ -205,12 +205,12 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
     if (j > 0) {
 	ctx->S_i = 0;
 	while (ctx->S_i < j) {
-	    if (ED_cutvalue(f = Tree_edge.list[ctx->S_i]) < 0) {
+	    if (ED_cutvalue(f = ctx->Tree_edge.list[ctx->S_i]) < 0) {
 		if (rv) {
 		    if (ED_cutvalue(rv) > ED_cutvalue(f))
 			rv = f;
 		} else
-		    rv = Tree_edge.list[ctx->S_i];
+		    rv = ctx->Tree_edge.list[ctx->S_i];
 		if (++cnt >= ctx->Search_size)
 		    return rv;
 	    }
@@ -637,7 +637,7 @@ end:
   for (size_t i = 0; i < subtree_count; i++) free(tree[i]);
   free(tree);
   if (error) return error;
-  assert(Tree_edge.size == N_nodes - 1);
+  assert(ctx->Tree_edge.size == N_nodes - 1);
   init_cutvalues();
   return 0;
 }
@@ -684,7 +684,7 @@ static void rerank(Agnode_t * v, int delta)
  * is entering.  compute new cut values, ranks, and exchange e and f.
  */
 static int
-update(edge_t * e, edge_t * f)
+update(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 {
     int cutvalue, delta;
     Agnode_t *lca;
@@ -722,7 +722,7 @@ update(edge_t * e, edge_t * f)
 
     ED_cutvalue(f) = -cutvalue;
     ED_cutvalue(e) = 0;
-    exchange_tree_edges(e, f);
+    exchange_tree_edges(ctx, e, f);
     dfs_range(lca, ND_par(lca), lca_low);
     return 0;
 }
@@ -749,8 +749,8 @@ static void reset_lists(network_simplex_ctx_t *ctx) {
   free(ctx->Tree_node.list);
   ctx->Tree_node = (nlist_t){0};
 
-  free(Tree_edge.list);
-  Tree_edge = (elist){0};
+  free(ctx->Tree_edge.list);
+  ctx->Tree_edge = (elist){0};
 }
 
 static void
@@ -770,8 +770,8 @@ static void LR_balance(network_simplex_ctx_t *ctx)
     int delta;
     edge_t *e, *f;
 
-    for (size_t i = 0; i < Tree_edge.size; i++) {
-	e = Tree_edge.list[i];
+    for (size_t i = 0; i < ctx->Tree_edge.size; i++) {
+	e = ctx->Tree_edge.list[i];
 	if (ED_cutvalue(e) == 0) {
 	    f = enter_edge(e);
 	    if (f == NULL)
@@ -924,7 +924,7 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
     }
 
     ctx->Tree_node.list = gv_calloc(N_nodes, sizeof(node_t *));
-    Tree_edge.list = gv_calloc(N_nodes, sizeof(edge_t *));
+    ctx->Tree_edge.list = gv_calloc(N_nodes, sizeof(edge_t *));
 
     bool feasible = true;
     for (n = GD_nlist(g); n; n = ND_next(n)) {
@@ -1020,7 +1020,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
     while ((e = leave_edge(&ctx))) {
 	int err;
 	f = enter_edge(e);
-	err = update(e, f);
+	err = update(&ctx, e, f);
 	if (err != 0) {
 	    freeTreeList(&ctx, g);
 	    return err;
@@ -1330,7 +1330,7 @@ void tchk(network_simplex_ctx_t *ctx)
 		fprintf(stderr, "not a tight tree %p", e);
 	}
     }
-    if (n_cnt != ctx->Tree_node.size || e_cnt != Tree_edge.size)
+    if (n_cnt != ctx->Tree_node.size || e_cnt != ctx->Tree_edge.size)
 	fprintf(stderr, "something missing\n");
 }
 
