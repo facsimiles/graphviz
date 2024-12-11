@@ -45,11 +45,12 @@ typedef struct {
     nlist_t Tree_node;
     elist Tree_edge;
     size_t S_i;			/* search index for enter_edge */
+    size_t N_nodes;
     int Search_size;
 } network_simplex_ctx_t;
 
 static graph_t *G;
-static size_t N_nodes, N_edges;
+static size_t N_edges;
 #define SEARCHSIZE 30
 
 static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
@@ -149,14 +150,14 @@ static void exchange_tree_edges(network_simplex_ctx_t *ctx, edge_t * e, edge_t *
 DEFINE_LIST(node_queue, node_t *)
 
 static
-void init_rank(void)
+void init_rank(network_simplex_ctx_t *ctx)
 {
     int i;
     node_t *v;
     edge_t *e;
 
     node_queue_t Q = {0};
-    node_queue_reserve(&Q, N_nodes);
+    node_queue_reserve(&Q, ctx->N_nodes);
     size_t ctr = 0;
 
     for (v = GD_nlist(G); v; v = ND_next(v)) {
@@ -175,7 +176,7 @@ void init_rank(void)
 		node_queue_push_back(&Q, aghead(e));
 	}
     }
-    if (ctr != N_nodes) {
+    if (ctr != ctx->N_nodes) {
 	agerrorf("trouble in init_rank\n");
 	for (v = GD_nlist(G); v; v = ND_next(v))
 	    if (ND_priority(v))
@@ -603,7 +604,7 @@ int feasible_tree(network_simplex_ctx_t *ctx)
       ND_subtree_set(n,0);
   }
 
-  subtree_t **tree = gv_calloc(N_nodes, sizeof(subtree_t *));
+  subtree_t **tree = gv_calloc(ctx->N_nodes, sizeof(subtree_t *));
   /* given init_rank, find all tight subtrees */
   for (Agnode_t *n = GD_nlist(G); n != NULL; n = ND_next(n)) {
         if (ND_subtree(n) == 0) {
@@ -637,7 +638,7 @@ end:
   for (size_t i = 0; i < subtree_count; i++) free(tree[i]);
   free(tree);
   if (error) return error;
-  assert(ctx->Tree_edge.size == N_nodes - 1);
+  assert(ctx->Tree_edge.size == ctx->N_nodes - 1);
   init_cutvalues();
   return 0;
 }
@@ -915,16 +916,16 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
     edge_t *e;
 
     G = g;
-    N_nodes = N_edges = ctx->S_i = 0;
+    ctx->N_nodes = N_edges = ctx->S_i = 0;
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
-	N_nodes++;
+	ctx->N_nodes++;
 	for (size_t i = 0; (e = ND_out(n).list[i]); i++)
 	    N_edges++;
     }
 
-    ctx->Tree_node.list = gv_calloc(N_nodes, sizeof(node_t *));
-    ctx->Tree_edge.list = gv_calloc(N_nodes, sizeof(edge_t *));
+    ctx->Tree_node.list = gv_calloc(ctx->N_nodes, sizeof(node_t *));
+    ctx->Tree_edge.list = gv_calloc(ctx->N_nodes, sizeof(edge_t *));
 
     bool feasible = true;
     for (n = GD_nlist(g); n; n = ND_next(n)) {
@@ -998,7 +999,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
     }
     bool feasible = init_graph(&ctx, g);
     if (!feasible)
-	init_rank();
+	init_rank(&ctx);
 
     if (search_size >= 0)
 	ctx.Search_size = search_size;
@@ -1053,7 +1054,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
 	if (iter >= 100)
 	    fputc('\n', stderr);
 	fprintf(stderr, "%s%" PRISIZE_T " nodes %" PRISIZE_T " edges %d iter %.2f sec\n",
-		ns, N_nodes, N_edges, iter, elapsed_sec());
+		ns, ctx.N_nodes, N_edges, iter, elapsed_sec());
     }
     return 0;
 }
