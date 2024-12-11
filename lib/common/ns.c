@@ -50,7 +50,7 @@ typedef struct {
     int Search_size;
 
     edge_t *Enter;
-    int Low, Lim;
+    int Low, Lim, Slack;
 } network_simplex_ctx_t;
 
 #define SEARCHSIZE 30
@@ -223,8 +223,6 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
     return rv;
 }
 
-static int Slack;
-
 static void dfs_enter_outedge(network_simplex_ctx_t *ctx, node_t * v)
 {
     int i, slack;
@@ -234,15 +232,15 @@ static void dfs_enter_outedge(network_simplex_ctx_t *ctx, node_t * v)
 	if (!TREE_EDGE(e)) {
 	    if (!SEQ(ctx->Low, ND_lim(aghead(e)), ctx->Lim)) {
 		slack = SLACK(e);
-		if (slack < Slack || ctx->Enter == NULL) {
+		if (slack < ctx->Slack || ctx->Enter == NULL) {
 		    ctx->Enter = e;
-		    Slack = slack;
+		    ctx->Slack = slack;
 		}
 	    }
 	} else if (ND_lim(aghead(e)) < ND_lim(v))
 	    dfs_enter_outedge(ctx, aghead(e));
     }
-    for (i = 0; (e = ND_tree_in(v).list[i]) && (Slack > 0); i++)
+    for (i = 0; (e = ND_tree_in(v).list[i]) && (ctx->Slack > 0); i++)
 	if (ND_lim(agtail(e)) < ND_lim(v))
 	    dfs_enter_outedge(ctx, agtail(e));
 }
@@ -256,15 +254,15 @@ static void dfs_enter_inedge(network_simplex_ctx_t *ctx, node_t * v)
 	if (!TREE_EDGE(e)) {
 	    if (!SEQ(ctx->Low, ND_lim(agtail(e)), ctx->Lim)) {
 		slack = SLACK(e);
-		if (slack < Slack || ctx->Enter == NULL) {
+		if (slack < ctx->Slack || ctx->Enter == NULL) {
 		    ctx->Enter = e;
-		    Slack = slack;
+		    ctx->Slack = slack;
 		}
 	    }
 	} else if (ND_lim(agtail(e)) < ND_lim(v))
 	    dfs_enter_inedge(ctx, agtail(e));
     }
-    for (i = 0; (e = ND_tree_out(v).list[i]) && Slack > 0; i++)
+    for (i = 0; (e = ND_tree_out(v).list[i]) && ctx->Slack > 0; i++)
 	if (ND_lim(aghead(e)) < ND_lim(v))
 	    dfs_enter_inedge(ctx, aghead(e));
 }
@@ -283,7 +281,7 @@ static edge_t *enter_edge(network_simplex_ctx_t *ctx, edge_t * e)
 	outsearch = true;
     }
     ctx->Enter = NULL;
-    Slack = INT_MAX;
+    ctx->Slack = INT_MAX;
     ctx->Low = ND_low(v);
     ctx->Lim = ND_lim(v);
     if (outsearch)
