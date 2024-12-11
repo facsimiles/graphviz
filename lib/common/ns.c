@@ -50,6 +50,7 @@ typedef struct {
     int Search_size;
 
     edge_t *Enter;
+    int Low;
 } network_simplex_ctx_t;
 
 #define SEARCHSIZE 30
@@ -222,7 +223,7 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
     return rv;
 }
 
-static int Low, Lim, Slack;
+static int Lim, Slack;
 
 static void dfs_enter_outedge(network_simplex_ctx_t *ctx, node_t * v)
 {
@@ -231,7 +232,7 @@ static void dfs_enter_outedge(network_simplex_ctx_t *ctx, node_t * v)
 
     for (i = 0; (e = ND_out(v).list[i]); i++) {
 	if (!TREE_EDGE(e)) {
-	    if (!SEQ(Low, ND_lim(aghead(e)), Lim)) {
+	    if (!SEQ(ctx->Low, ND_lim(aghead(e)), Lim)) {
 		slack = SLACK(e);
 		if (slack < Slack || ctx->Enter == NULL) {
 		    ctx->Enter = e;
@@ -253,7 +254,7 @@ static void dfs_enter_inedge(network_simplex_ctx_t *ctx, node_t * v)
 
     for (i = 0; (e = ND_in(v).list[i]); i++) {
 	if (!TREE_EDGE(e)) {
-	    if (!SEQ(Low, ND_lim(agtail(e)), Lim)) {
+	    if (!SEQ(ctx->Low, ND_lim(agtail(e)), Lim)) {
 		slack = SLACK(e);
 		if (slack < Slack || ctx->Enter == NULL) {
 		    ctx->Enter = e;
@@ -283,7 +284,7 @@ static edge_t *enter_edge(network_simplex_ctx_t *ctx, edge_t * e)
     }
     ctx->Enter = NULL;
     Slack = INT_MAX;
-    Low = ND_low(v);
+    ctx->Low = ND_low(v);
     Lim = ND_lim(v);
     if (outsearch)
 	dfs_enter_outedge(ctx, v);
