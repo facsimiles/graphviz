@@ -45,12 +45,11 @@ typedef struct {
     nlist_t Tree_node;
     elist Tree_edge;
     size_t S_i;			/* search index for enter_edge */
-    size_t N_nodes;
+    size_t N_edges, N_nodes;
     int Search_size;
 } network_simplex_ctx_t;
 
 static graph_t *G;
-static size_t N_edges;
 #define SEARCHSIZE 30
 
 static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
@@ -916,12 +915,12 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
     edge_t *e;
 
     G = g;
-    ctx->N_nodes = N_edges = ctx->S_i = 0;
+    ctx->N_nodes = ctx->N_edges = ctx->S_i = 0;
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
 	ctx->N_nodes++;
 	for (size_t i = 0; (e = ND_out(n).list[i]); i++)
-	    N_edges++;
+	    ctx->N_edges++;
     }
 
     ctx->Tree_node.list = gv_calloc(ctx->N_nodes, sizeof(node_t *));
@@ -1054,7 +1053,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
 	if (iter >= 100)
 	    fputc('\n', stderr);
 	fprintf(stderr, "%s%" PRISIZE_T " nodes %" PRISIZE_T " edges %d iter %.2f sec\n",
-		ns, ctx.N_nodes, N_edges, iter, elapsed_sec());
+		ns, ctx.N_nodes, ctx.N_edges, iter, elapsed_sec());
     }
     return 0;
 }
