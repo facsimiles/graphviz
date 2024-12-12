@@ -41,7 +41,6 @@ static int ioput(Agraph_t * g, iochan_t * ofile, char *str)
 
 #define MAX_OUTPUTLINE		128
 #define MIN_OUTPUTLINE		 60
-static int write_body(Agraph_t * g, iochan_t * ofile);
 static int Level;
 static int Max_outputline = MAX_OUTPUTLINE;
 static Agsym_t *Tailport, *Headport;
@@ -51,6 +50,8 @@ struct graphviz_write_info {
 	uint64_t *node_last_written;	// postorder number of subg when node was last written
 	uint64_t *edge_last_written;	// postorder number of subg when edge was last written
 };
+
+static int write_body(Agraph_t *g, iochan_t *ofile);
 
 static void before_write(Agraph_t*);
 static void after_write(Agraph_t *);
