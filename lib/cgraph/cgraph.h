@@ -413,7 +413,6 @@ struct Agclos_s {
   Agcbstack_t *cb;  /* user and system callback function stacks */
   Dict_t *lookup_by_name[3];
   Dict_t *lookup_by_id[3];
-  struct graphviz_write_info *wr_info; /* opaque, defined in write.c */
 };
 
 /// opaque type; the definition of this is internal to Graphviz
