@@ -4703,6 +4703,25 @@ def test_2591():
     assert gray_svg != rgb_svg, "edgepaint --color_scheme had no effect"
 
 
+@pytest.mark.skipif(which("ccomps") is None, reason="ccomps not available")
+def test_2593():
+    """
+    ccomps should be able to handle this graph in reasonable time
+    https://gitlab.com/graphviz/graphviz/-/issues/2593
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2593.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # this typically takes 30-45s to run, so give a wide margin of error and require
+    # that ccomps finishes within that
+    ccomps = which("ccomps")
+    proc = subprocess.run([ccomps, "-o", os.devnull, input], timeout=60 * 5)
+
+    assert proc.returncode == 1, "ccomps did not detect graphs have multiple components"
+
+
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.skipif(
     platform.system() == "Windows",
