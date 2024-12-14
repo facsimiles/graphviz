@@ -1,0 +1,5 @@
+digraph G {
+ node[shape=box]
+ bonn:s -> berlin
+ berlin -> bonn:s
+}

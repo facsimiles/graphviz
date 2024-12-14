@@ -5069,6 +5069,35 @@ def test_2621():
     subprocess.check_call(["dot", "-Gnslimit=50", "-Tsvg", "-o", os.devnull, input])
 
 
+@pytest.mark.parametrize("testcase", ("structs", "badDir5", "ABX", "multiEdges0"))
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2623"
+)
+def test_2623(testcase: str):
+    """ "
+    `checkpath` should not complain about non-issues in verbose mode
+    https://gitlab.com/graphviz/graphviz/-/issues/2623
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / f"2623_{testcase}.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    stderr = subprocess.check_output(
+        ["dot", "-v", "-Tsvg", "-o", os.devnull, input],
+        stderr=subprocess.STDOUT,
+        universal_newlines=True,
+    )
+
+    assert (
+        re.search(r"\bin checkpath, start port not in first box\b", stderr) is None
+    ), "checkpath complained about start port violation"
+    assert (
+        re.search(r"\bin checkpath, end port not in last box\b", stderr) is None
+    ), "checkpath complained about end port violation"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(

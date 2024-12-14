@@ -1,0 +1,7 @@
+digraph ab {
+  rankdir=LR
+  node[shape=circle]
+  b [label="" shape=rect]
+  X->b:nw
+  Y->b:sw
+}
