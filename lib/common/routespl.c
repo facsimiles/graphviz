@@ -706,10 +706,6 @@ static int checkpath(size_t boxn, boxf *boxes, path *thepath) {
 	|| thepath->start.p.x > boxes[0].UR.x
 	|| thepath->start.p.y < boxes[0].LL.y
 	|| thepath->start.p.y > boxes[0].UR.y) {
-	if (Verbose) {
-	    fprintf(stderr, "in checkpath, start port not in first box\n");
-	    printpath(thepath);
-	}
 	thepath->start.p.x = fmax(thepath->start.p.x, boxes[0].LL.x);
 	thepath->start.p.x = fmin(thepath->start.p.x, boxes[0].UR.x);
 	thepath->start.p.y = fmax(thepath->start.p.y, boxes[0].LL.y);
@@ -719,10 +715,6 @@ static int checkpath(size_t boxn, boxf *boxes, path *thepath) {
 	|| thepath->end.p.x > boxes[boxn - 1].UR.x
 	|| thepath->end.p.y < boxes[boxn - 1].LL.y
 	|| thepath->end.p.y > boxes[boxn - 1].UR.y) {
-	if (Verbose) {
-	    fprintf(stderr, "in checkpath, end port not in last box\n");
-	    printpath(thepath);
-	}
 	thepath->end.p.x = fmax(thepath->end.p.x, boxes[boxn - 1].LL.x);
 	thepath->end.p.x = fmin(thepath->end.p.x, boxes[boxn - 1].UR.x);
 	thepath->end.p.y = fmax(thepath->end.p.y, boxes[boxn - 1].LL.y);

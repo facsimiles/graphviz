@@ -5070,9 +5070,6 @@ def test_2621():
 
 
 @pytest.mark.parametrize("testcase", ("structs", "badDir5", "ABX", "multiEdges0"))
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2623"
-)
 def test_2623(testcase: str):
     """ "
     `checkpath` should not complain about non-issues in verbose mode
