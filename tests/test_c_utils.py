@@ -11,12 +11,11 @@ sys.path.append(os.path.dirname(__file__))
 from gvtest import run_c  # pylint: disable=wrong-import-position
 
 
-@pytest.mark.parametrize("utility", ("list", "tokenize"))
-def test_utility(utility: str):
-    """run the given utility’s unit tests"""
+def test_list():
+    """run ../lib/cgraph/list.h’s unit tests"""
 
     # locate the unit tests
-    src = Path(__file__).parent.resolve() / f"../lib/cgraph/test_{utility}.c"
+    src = Path(__file__).parent.resolve() / "../lib/cgraph/test_list.c"
     assert src.exists()
 
     # locate lib directory that needs to be in the include path
@@ -30,11 +29,12 @@ def test_utility(utility: str):
     _, _ = run_c(src, cflags=cflags)
 
 
-def test_bitarray():
-    """run bitarray’s unit tests"""
+@pytest.mark.parametrize("utility", ("bitarray", "tokenize"))
+def test_utility(utility: str):
+    """run the given utility’s unit tests"""
 
     # locate the unit tests
-    src = Path(__file__).parent.resolve() / "../lib/util/test_bitarray.c"
+    src = Path(__file__).parent.resolve() / f"../lib/util/test_{utility}.c"
     assert src.exists()
 
     # locate lib directory that needs to be in the include path
