@@ -47,3 +47,10 @@ if(with_cxx_api)
   add_subdirectory(cgraph++)
   add_subdirectory(gvc++)
 endif()
+
+if(BUILD_SHARED_LIBS)
+  install(
+    FILES graphvizConfig.cmake
+    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
+  )
+endif()

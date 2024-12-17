@@ -25,11 +25,7 @@ export TCLLIBPATH="$DIR_LABS/lib/graphviz/tcl"
 
 # needed for CMake discovery of Graphviz installation (see
 # ../tests/test_regression.py::test_2598)
-export cdt_DIR="$DIR_LABS/lib/cmake/graphviz"
-export cgraph_DIR="$DIR_LABS/lib/cmake/graphviz"
-export gvc_DIR="$DIR_LABS/lib/cmake/graphviz"
-export pathplan_DIR="$DIR_LABS/lib/cmake/graphviz"
-export xdot_DIR="$DIR_LABS/lib/cmake/graphviz"
+export graphviz_ROOT="$DIR_LABS"
 
 # needed to find e.g. libgvc.dll at run time. Windows does not use
 # LD_LIBRARY_PATH. Must be the logical directory

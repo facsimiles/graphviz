@@ -46,6 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GVPR programs are now able to print `char` and `unsigned` variables. #2587
 - CMake projects using Graphviz as a subproject (`add_subdirectory`) can now
   link against and use `cgraph`, `pathplan`, and `xdot`.
+- CMake projects using Graphviz as an installed third-party dependency can now
+  discover its libraries with `find_package(graphviz)` and then use them as e.g.
+  `target_link_libraries(myapp PRIVATE graphviz::cgraph)`. #2598
 
 ### Fixed
 

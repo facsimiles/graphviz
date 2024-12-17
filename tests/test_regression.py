@@ -4803,8 +4803,9 @@ def test_2598(tmp_path: Path):
 
 @pytest.mark.skipif(not is_cmake(), reason="only relevant in CMake builds")
 @pytest.mark.skipif(shutil.which("cmake") is None, reason="cmake not available")
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2598"
+@pytest.mark.skipif(
+    re.search(r"\bstatic\b", os.environ.get("CI_JOB_NAME", "")) is not None,
+    reason="CMake support files are not installed in static builds",
 )
 def test_2598_1(tmp_path: Path):
     """

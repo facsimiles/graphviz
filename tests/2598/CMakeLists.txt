@@ -1,12 +1,11 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(test_2598 C)
 
+# listen to `graphviz_ROOT` environment variable during `find_package(graphviz)`
+cmake_policy(SET CMP0074 NEW)
+
 # find Graphviz libraries
-find_package(cdt REQUIRED)
-find_package(cgraph REQUIRED)
-find_package(gvc REQUIRED)
-find_package(pathplan REQUIRED)
-find_package(xdot REQUIRED)
+find_package(graphviz REQUIRED)
 
 # define an application that uses libcgraph
 add_executable(cgraph_app cgraph_app.c)
