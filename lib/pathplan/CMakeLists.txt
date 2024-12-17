@@ -33,6 +33,7 @@ target_include_directories(pathplan
 # Installation location of library files
 install(
   TARGETS pathplan
+  EXPORT pathplanConfig
   RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
   LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
@@ -70,3 +71,12 @@ set_target_properties(pathplan PROPERTIES
   VERSION 4.0.0
   SOVERSION 4
 )
+
+if(BUILD_SHARED_LIBS)
+  install(
+    EXPORT pathplanConfig
+    FILE pathplanConfig.cmake
+    NAMESPACE graphviz::
+    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
+  )
+endif()

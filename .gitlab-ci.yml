@@ -186,6 +186,11 @@ portable-source:
         - cd ..
         - $Env:INCLUDE += ";C:\Graphviz\include"
         - $Env:LIB += ";C:\Graphviz\lib"
+        - $Env:cdt_DIR="C:\Graphviz\lib\cmake\graphviz"
+        - $Env:cgraph_DIR="C:\Graphviz\lib\cmake\graphviz"
+        - $Env:gvc_DIR="C:\Graphviz\lib\cmake\graphviz"
+        - $Env:pathplan_DIR="C:\Graphviz\lib\cmake\graphviz"
+        - $Env:xdot_DIR="C:\Graphviz\lib\cmake\graphviz"
         - python -m pytest -m "not slow" --junit-xml=report.xml ci/tests.py tests
         # Create artifacts to archive
         - $ID = "windows"

@@ -98,6 +98,11 @@ env PATH=${PREFIX}/bin:${PATH} C_INCLUDE_PATH=${PREFIX}/include \
   PYTHONPATH=${PREFIX}/lib/graphviz/python3 \
   TCLLIBPATH=${PREFIX}/lib/graphviz/tcl \
   PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig \
+  cdt_DIR=${PREFIX}/lib/cmake/graphviz \
+  cgraph_DIR=${PREFIX}/lib/cmake/graphviz \
+  gvc_DIR=${PREFIX}/lib/cmake/graphviz \
+  pathplan_DIR=${PREFIX}/lib/cmake/graphviz \
+  xdot_DIR=${PREFIX}/lib/cmake/graphviz \
   python3 -m pytest tests
 ```
 
@@ -116,6 +121,11 @@ env PATH=${PREFIX}/bin:${PATH} C_INCLUDE_PATH=${PREFIX}/include \
   PYTHONPATH=${PREFIX}/lib/graphviz/python3 \
   TCLLIBPATH=${PREFIX}/lib/graphviz/tcl \
   PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig \
+  cdt_DIR=${PREFIX}/lib/cmake/graphviz \
+  cgraph_DIR=${PREFIX}/lib/cmake/graphviz \
+  gvc_DIR=${PREFIX}/lib/cmake/graphviz \
+  pathplan_DIR=${PREFIX}/lib/cmake/graphviz \
+  xdot_DIR=${PREFIX}/lib/cmake/graphviz \
   python3 -m pytest tests/test_regression::test_2225
 ```
 

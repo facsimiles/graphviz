@@ -22,8 +22,18 @@ if [ "${build_system}" = "cmake" ]; then
     export TCLLIBPATH=/usr/local/lib/graphviz/tcl
   elif [ "${ID_LIKE:-}" = "debian" ]; then
     export TCLLIBPATH=/usr/lib/graphviz/tcl
+    export cdt_DIR=/usr/lib/cmake/graphviz
+    export cgraph_DIR=/usr/lib/cmake/graphviz
+    export gvc_DIR=/usr/lib/cmake/graphviz
+    export pathplan_DIR=/usr/lib/cmake/graphviz
+    export xdot_DIR=/usr/lib/cmake/graphviz
   elif [ "${ID}" = "fedora" -o "${ID}" = "rocky" ]; then
     export TCLLIBPATH=/usr/lib64/graphviz/tcl
+    export cdt_DIR=/usr/lib64/cmake/graphviz
+    export cgraph_DIR=/usr/lib64/cmake/graphviz
+    export gvc_DIR=/usr/lib64/cmake/graphviz
+    export pathplan_DIR=/usr/lib64/cmake/graphviz
+    export xdot_DIR=/usr/lib64/cmake/graphviz
   fi
 elif [ "${ID_LIKE:-}" = "debian" ]; then
   export TCLLIBPATH=/usr/lib/tcltk/graphviz/tcl

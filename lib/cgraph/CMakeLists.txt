@@ -65,6 +65,7 @@ target_link_libraries(cgraph PUBLIC cdt)
 # Installation location of library files
 install(
   TARGETS cgraph
+  EXPORT cgraphConfig
   RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
   LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
@@ -102,3 +103,12 @@ set_target_properties(cgraph PROPERTIES
   VERSION 6.0.0
   SOVERSION 6
 )
+
+if(BUILD_SHARED_LIBS)
+  install(
+    EXPORT cgraphConfig
+    FILE cgraphConfig.cmake
+    NAMESPACE graphviz::
+    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
+  )
+endif()
