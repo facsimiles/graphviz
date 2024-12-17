@@ -22,9 +22,12 @@ add_library(pathplan
   visibility.c
 )
 
-target_include_directories(pathplan PRIVATE
-  ..
-  ${CMAKE_CURRENT_SOURCE_DIR}
+target_include_directories(pathplan
+  PUBLIC
+    $<INSTALL_INTERFACE:include/graphviz>
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
 # Installation location of library files
