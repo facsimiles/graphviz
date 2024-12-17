@@ -4777,6 +4777,29 @@ def test_2596():
     proc.wait()
 
 
+@pytest.mark.skipif(not is_cmake(), reason="only relevant in CMake builds")
+@pytest.mark.skipif(shutil.which("cmake") is None, reason="cmake not available")
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2598"
+)
+def test_2598(tmp_path: Path):
+    """
+    Graphviz, as installed by the CMake build system, should be usable with standard
+    CMake idioms
+    https://gitlab.com/graphviz/graphviz/-/issues/2598
+    """
+
+    # configure a build directory for our sample applications
+    src = Path(__file__).parent / "2598"
+    args = ["cmake", "--debug-find", "-B", tmp_path, "-S", src]
+    if os.environ.get("CI_JOB_NAME", "").startswith("windows-cmake-Win32"):
+        args += ["-A", "Win32"]
+    subprocess.check_call(args)
+
+    # run compilation
+    subprocess.check_call(["cmake", "--build", tmp_path])
+
+
 @pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
 @pytest.mark.skipif(which("mingle") is None, reason="mingle not available")
 @pytest.mark.xfail(
