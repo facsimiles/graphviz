@@ -8,9 +8,12 @@ add_library(xdot
   xdot.c
 )
 
-target_include_directories(xdot PRIVATE
-  ..
-  ${CMAKE_CURRENT_SOURCE_DIR}
+target_include_directories(xdot
+  PUBLIC
+    $<INSTALL_INTERFACE:include/graphviz>
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
 # Installation location of library files
