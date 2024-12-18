@@ -20,6 +20,11 @@ fi
 if [ "${build_system}" = "cmake" ]; then
   if [ "${ID}" = "Darwin" ]; then
     export TCLLIBPATH=/usr/local/lib/graphviz/tcl
+    export cdt_DIR=/usr/local/lib/cmake/graphviz
+    export cgraph_DIR=/usr/local/lib/cmake/graphviz
+    export gvc_DIR=/usr/local/lib/cmake/graphviz
+    export pathplan_DIR=/usr/local/lib/cmake/graphviz
+    export xdot_DIR=/usr/local/lib/cmake/graphviz
   elif [ "${ID_LIKE:-}" = "debian" ]; then
     export TCLLIBPATH=/usr/lib/graphviz/tcl
     export cdt_DIR=/usr/lib/cmake/graphviz

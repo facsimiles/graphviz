@@ -15,6 +15,7 @@ bison --version | head -1
 
 brew tap --repair
 brew update
+brew install cmake || brew upgrade cmake
 brew install pango || brew upgrade pango
 brew install qt5 || brew upgrade qt5
 brew install devil || brew upgrade devil
