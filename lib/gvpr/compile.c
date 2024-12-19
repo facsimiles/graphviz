@@ -1662,7 +1662,6 @@ static tctype typeChk(tctype intype, Exid_t *sym) {
     switch (sym->type) {
     case T_obj:
       rng = YALL;
-      ;
       break;
     case T_node:
       rng = Y(V);
