@@ -4612,6 +4612,46 @@ def test_2586():
     ), "labels not preserved in GML→GV translation"
 
 
+@pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2587"
+)
+def test_2587():
+    """
+    gvpr should have a usable `unsigned` type
+    https://gitlab.com/graphviz/graphviz/-/issues/2587
+    """
+
+    gvpr_bin = which("gvpr")
+    output = subprocess.check_output(
+        [gvpr_bin, "BEGIN { unsigned x = 281; print(x); }"],
+        stdin=subprocess.DEVNULL,
+        universal_newlines=True,
+    )
+
+    assert output == "281\n", "gvpr did not correctly interpret an `unsigned`"
+
+
+@pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2587"
+)
+def test_2587_1():
+    """
+    gvpr should have a usable `unsigned` type
+    https://gitlab.com/graphviz/graphviz/-/issues/2587
+    """
+
+    gvpr_bin = which("gvpr")
+    output = subprocess.check_output(
+        [gvpr_bin, 'BEGIN { unsigned x; sscanf("139", "%u", &x); print(x); }'],
+        stdin=subprocess.DEVNULL,
+        universal_newlines=True,
+    )
+
+    assert output == "139\n", "gvpr did not correctly interpret an `unsigned`"
+
+
 @pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
 def test_2588():
     """
