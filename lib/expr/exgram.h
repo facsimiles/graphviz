@@ -334,15 +334,9 @@ static Exnode_t *exstringOf(Expr_t * p, Exnode_t * x) {
 			    extypename(p, type));
 		}
 		cvt = XPRINT;
-	    } else
-		switch (type) {
-		case FLOATING:
-		    cvt = F2S;
-		    break;
-		case INTEGER:
-		    cvt = I2S;
-		    break;
-		}
+	    } else if (TYPEINDEX(type) != 0) {
+		cvt = TYPECAST(type, STRING);
+	    }
 	    x = exnewnode(p, cvt, false, STRING, x, 0);
 	} else if (!BUILTIN(type)) {
 	    if (p->disc->stringof(p, x, 0) < 0)

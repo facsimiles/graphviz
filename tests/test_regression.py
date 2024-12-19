@@ -4613,9 +4613,6 @@ def test_2586():
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2587"
-)
 def test_2587():
     """
     gvpr should have a usable `unsigned` type
@@ -4633,9 +4630,6 @@ def test_2587():
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2587"
-)
 def test_2587_1():
     """
     gvpr should have a usable `unsigned` type
