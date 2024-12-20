@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a regression in Graphviz 12.2.0. #2624
 - Legacy information about memory disciplines has been removed from the cgraph
   man page.
+- Some information in the gvc.3 man page that contradicted the gvc.h public
+  header has been corrected.
 
 ## [12.2.1] – 2024-12-07
 
