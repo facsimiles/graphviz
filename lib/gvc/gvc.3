@@ -9,7 +9,7 @@
 #include <graphviz/gvc.h>
 
 /* set up a graphviz context */
-extern GVC_t *gvNEWcontext(char **info, char *user);
+extern GVC_t *gvNEWcontext(const lt_symlist_t *builtins, int demand_loading);
 
 /*  set up a graphviz context \(hy alternative */
 /*     (wraps the above two functions using info built into libgvc) */
