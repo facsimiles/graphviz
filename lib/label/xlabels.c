@@ -28,7 +28,8 @@ Dtdisc_t Hdisc = { offsetof(HDict_t, key), sizeof(int), -1, 0, 0,
 };
 
 static int icompare(void *v1, void *v2) {
-    int k1 = *((int *) v1), k2 = *((int *) v2);
+    const int k1 = *(int *)v1;
+    const int k2 = *(int *)v2;
     if (k1 < k2) {
       return -1;
     }
