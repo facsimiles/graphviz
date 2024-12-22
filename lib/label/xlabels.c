@@ -196,9 +196,8 @@ static Rect_t objplp2rect(const object_t *objp) {
 static Rect_t objplpmks(object_t * objp)
 {
     Rect_t rect;
-    pointf p;
+    pointf p = {0};
 
-    p.x = p.y = 0.0;
     if (objp->lbl)
 	p = objp->lbl->sz;
 
