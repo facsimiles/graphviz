@@ -513,9 +513,7 @@ static int xlhdxload(XLabels_t * xlp)
     int order = xlhorder(xlp);
 
     for (size_t i = 0; i < xlp->n_objs; i++) {
-	HDict_t *hp;
-
-	hp = gv_alloc(sizeof(HDict_t));
+	HDict_t *hp = gv_alloc(sizeof(HDict_t));
 
 	hp->d.data = &xlp->objs[i];
 	hp->d.rect = objplpmks(&xlp->objs[i]);
