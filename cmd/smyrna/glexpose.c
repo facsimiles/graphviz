@@ -16,6 +16,7 @@
 #include "arcball.h"
 #include "hotkeymap.h"
 #include "polytess.h"
+#include <stdbool.h>
 #include <stdint.h>
 
 static void drawRotatingAxis(void)
@@ -144,21 +145,15 @@ static int glexpose_drawgraph(ViewInfo * vi)
     return 0;
 }
 
-/*
-	main gl expose ,any time sreen needs to be redrawn, this function is called by gltemplate
-	,all drawings are initialized in this function
-	params:ViewInfo	, global view variable defined in viewport.c
-	return value:0 if something goes wrong with GL 1 , otherwise
-*/
 int glexpose_main(ViewInfo * vi)
 {
-    static int doonce = 0;
+    static bool doonce;
     if (!glupdatecamera(vi))
 	return 0;
 
     if (vi->activeGraph >= 0) {
 	if (!doonce) {
-	    doonce = 1;
+	    doonce = true;
 	    btnToolZoomFit_clicked(NULL, NULL);
 	    btnToolZoomFit_clicked(NULL, NULL);
 	}

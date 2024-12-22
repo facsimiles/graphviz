@@ -10,6 +10,7 @@
 
 #include "config.h"
 #include <neatogen/overlap.h>
+#include <stdatomic.h>
 #include <util/alloc.h>
 
 #if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
@@ -584,7 +585,7 @@ void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes, int
 void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes, int ntry, double initial_scaling,
 		    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, bool do_shrinking)
 {
-    static int once;
+    static atomic_flag once;
 
     (void)dim;
     (void)A;
@@ -598,8 +599,7 @@ void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes, int
     (void)A_constr;
     (void)do_shrinking;
 
-    if (once == 0) {
-	once = 1;
+    if (!atomic_flag_test_and_set(&once)) {
 	agerrorf("remove_overlap: Graphviz not built with triangulation library\n");
     }
 }

@@ -40,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Dtdata_t *`.
 - **Breaking**: `GVJ_t.imagedata` is now an `unsigned char *`.
 - The sandboxer implemented in Graphviz 12.2.1, `dot_sandbox`, supports macOS.
+- The baseline version of Autoconf required to build Graphviz from source has
+  been upgraded 2.61 → 2.69.
+- Building Graphviz from source now requires a C compiler with ISO C11 support.
 
 ### Fixed
 

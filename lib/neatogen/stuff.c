@@ -13,6 +13,7 @@
 #include	<math.h>
 #include	<neatogen/neato.h>
 #include	<neatogen/stress.h>
+#include	<stdatomic.h>
 #include	<stdlib.h>
 #include	<time.h>
 #include	<util/alloc.h>
@@ -334,7 +335,7 @@ void initial_positions(graph_t * G, int nG)
 {
     int init, i;
     node_t *np;
-    static int once = 0;
+    static atomic_flag once;
 
     if (Verbose)
 	fprintf(stderr, "Setting initial positions\n");
@@ -342,9 +343,8 @@ void initial_positions(graph_t * G, int nG)
     init = checkStart(G, nG, INIT_RANDOM);
     if (init == INIT_REGULAR)
 	return;
-    if (init == INIT_SELF && once == 0) {
+    if (init == INIT_SELF && !atomic_flag_test_and_set(&once)) {
 	agwarningf("start=0 not supported with mode=self - ignored\n");
-	once = 1;
     }
 
     for (i = 0; (np = GD_neato_nlist(G)[i]); i++) {

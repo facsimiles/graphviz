@@ -36,7 +36,6 @@ EXCLUDE = (
     "cmd/smyrna/draw.c",
     "cmd/smyrna/draw.h",
     "cmd/smyrna/glexpose.c",
-    "cmd/smyrna/glexpose.h",
     "cmd/smyrna/glmotion.c",
     "cmd/smyrna/glmotion.h",
     "cmd/smyrna/gltemplate.c",

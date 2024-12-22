@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <common/render.h>
 #include <gvc/gvio.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <util/alloc.h>
@@ -255,7 +256,7 @@ char *ps_string(char *ins, int chset)
 {
     char *base;
     static agxbuf  xb;
-    static int warned;
+    static atomic_flag warned;
 
     switch (chset) {
     case CHAR_UTF8 :
@@ -273,9 +274,8 @@ char *ps_string(char *ins, int chset)
 	    base = utf8ToLatin1 (ins);
 	    break;
 	case NONLATIN :
-	    if (!warned) {
+	    if (!atomic_flag_test_and_set(&warned)) {
 		agwarningf("UTF-8 input uses non-Latin1 characters which cannot be handled by this PostScript driver\n");
-		warned = 1;
 	    }
 	    base = ins;
 	    break;

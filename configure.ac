@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script
-AC_PREREQ(2.61)
+AC_PREREQ(2.69)
 
 dnl ===========================================================================
 dnl Set Graphviz version information
@@ -265,10 +265,24 @@ fi
 dnl -----------------------------------
 dnl checks for compilers
 
-AM_PROG_CC_C_O
-AC_PROG_CC_C99
-if test "$ac_cv_prog_cc_c99" = "no"; then
-  AC_MSG_ERROR([C compiler does not support C99])
+AC_PROG_CC
+m4_version_prereq([2.70],[],[
+  AX_CHECK_COMPILE_FLAG([-std=gnu11],[
+    CFLAGS+=" -std=gnu11"
+  ],[
+    AX_CHECK_COMPILE_FLAG([-std=c11],[
+      CFLAGS+=" -std=c11"
+    ],[
+      AX_CHECK_COMPILE_FLAG([-std:c11],[
+        CFLAGS+=" -std:c11"
+      ],[
+        ac_cv_prog_cc_c11="no"
+      ])
+    ])
+  ])
+])
+if test "$ac_cv_prog_cc_c11" = "no"; then
+  AC_MSG_ERROR([C compiler does not support C11])
 fi
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17(noext,mandatory)
@@ -290,7 +304,7 @@ then
   # Enable specific warning flags not included by -Wall or -Wextra
   CFLAGS="${CFLAGS} -Wmissing-include-dirs -Wswitch-default -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wconversion -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs"
 
-  # Enable additional C99 warnings
+  # Enable additional C warnings
   save_CFLAGS="${CFLAGS}"
   CFLAGS=""
   AX_CHECK_COMPILE_FLAG([-Wtrampolines],

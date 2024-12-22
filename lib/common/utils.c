@@ -17,6 +17,7 @@
 #include <limits.h>
 #include <math.h>
 #include <gvc/gvc.h>
+#include <stdatomic.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -1192,7 +1193,7 @@ cvtAndAppend (unsigned char c, agxbuf* xb)
 char* htmlEntityUTF8 (char* s, graph_t* g)
 {
     static graph_t* lastg;
-    static bool warned;
+    static atomic_flag warned;
     unsigned char c;
     unsigned int v;
 
@@ -1201,7 +1202,7 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
 
     if (lastg != g) {
 	lastg = g;
-	warned = false;
+	atomic_flag_clear(&warned);
     }
 
     agxbuf xb = {0};
@@ -1223,9 +1224,8 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
             uc = 3;
         else {
             uc = -1;
-            if (!warned) {
+            if (!atomic_flag_test_and_set(&warned)) {
                 agwarningf("UTF8 codes > 4 bytes are not currently supported (graph %s) - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
-                warned = true;
             }
             c = cvtAndAppend (c, &xb);
         }
@@ -1255,9 +1255,8 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
                     c = *(unsigned char*)s++;
                 }
                 else {
-		            if (!warned) {
+		            if (!atomic_flag_test_and_set(&warned)) {
 		                agwarningf("Invalid %d-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", uc + 1, agnameof(g));
-		                warned = true;
 		            }
 		            c = cvtAndAppend (c, &xb);
                     break;

@@ -35,6 +35,7 @@
 #include <neatogen/sgd.h>
 #include <cgraph/cgraph.h>
 #include <float.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/agxbuf.h>
@@ -272,7 +273,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     pointf sp = { 0, 0 }, ep = { 0, 0};
     bezier *newspl;
     int more = 1;
-    static bool warned;
+    static atomic_flag warned;
 
     pos = agxget(e, E_pos);
     if (*pos == '\0')
@@ -303,8 +304,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	n = npts;
 	if (n < 4 || n % 3 != 1) {
 	    gv_free_splines(e);
-	    if (!warned) {
-		warned = true;
+	    if (!atomic_flag_test_and_set(&warned)) {
 		agwarningf("pos attribute for edge (%s,%s) doesn't have 3n+1 points\n", agnameof(agtail(e)), agnameof(aghead(e)));
 	    }
 	    return 0;
@@ -314,8 +314,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	while (n) {
 	    i = sscanf(pos, "%lf,%lf%n", &x, &y, &nc);
 	    if (i < 2) {
-		if (!warned) {
-		    warned = true;
+		if (!atomic_flag_test_and_set(&warned)) {
 		    agwarningf("syntax error in pos attribute for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
 		}
 		free(ps);

@@ -17,6 +17,7 @@
 #include <common/boxes.h>
 #include <dotgen/dot.h>
 #include <math.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -1202,12 +1203,11 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   double midx, midy, leftx, rightx;
   pointf del;
   edge_t *hvye = NULL;
-  static bool warned = false;
+  static atomic_flag warned;
 
   tn = agtail(e0), hn = aghead(e0);
   if (shapeOf(tn) == SH_RECORD || shapeOf(hn) == SH_RECORD) {
-    if (!warned) {
-      warned = true;
+    if (!atomic_flag_test_and_set(&warned)) {
       agwarningf("flat edge between adjacent nodes one of which has a record "
                  "shape - replace records with HTML-like labels\n");
       agerr(AGPREV, "  Edge %s %s %s\n", agnameof(tn),
