@@ -375,7 +375,7 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     double xincr = (2 * lp->sz.x + objp->sz.x) / XLXDENOM;
     double yincr = (2 * lp->sz.y + objp->sz.y) / XLYDENOM;
     object_t *intrsx[XLNBR] = {0};
-    BestPos_t bp, nbp;
+    BestPos_t nbp;
 
     assert(objp->lbl);
 
@@ -383,7 +383,7 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     lp->pos.x = objp->pos.x - lp->sz.x;
     /*top */
     lp->pos.y = objp->pos.y + objp->sz.y;
-    bp = xlintersections(xlp, objp, intrsx);
+    BestPos_t bp = xlintersections(xlp, objp, intrsx);
     if (bp.n == 0)
 	return bp;
     /*mid */
