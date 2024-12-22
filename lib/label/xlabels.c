@@ -600,12 +600,10 @@ int placeLabels(object_t *objs, size_t n_objs, xlabel_t *lbls, size_t n_lbls,
 	if (bp.n == 0) {
 	    objs[i].lbl->set = 1;
 	} else if(bp.area == 0) {
-	    objs[i].lbl->pos.x = bp.pos.x;
-	    objs[i].lbl->pos.y = bp.pos.y;
+	    objs[i].lbl->pos = bp.pos;
 	    objs[i].lbl->set = 1;
 	} else if (params->force == 1) {
-	    objs[i].lbl->pos.x = bp.pos.x;
-	    objs[i].lbl->pos.y = bp.pos.y;
+	    objs[i].lbl->pos = bp.pos;
 	    objs[i].lbl->set = 1;
 	} else {
 	    r = 1;
