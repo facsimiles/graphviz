@@ -312,13 +312,9 @@ recordlintrsx(object_t * op, object_t * cp, Rect_t * rp,
 static BestPos_t
 xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 {
-    BestPos_t bp;
-
     assert(objp->lbl);
 
-    bp.n = 0;
-    bp.area = 0.0;
-    bp.pos = objp->lbl->pos;
+    BestPos_t bp = {.pos = objp->lbl->pos};
 
     for (size_t i = 0; i < xlp->n_objs; i++) {
       if(objp == &xlp->objs[i]) continue;
