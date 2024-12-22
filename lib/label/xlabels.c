@@ -166,9 +166,9 @@ static bool lblenclosing(object_t *objp, object_t *objp1) {
   if(! xlp) return false;
 
   return objp1->pos.x > xlp->pos.x &&
-	 objp1->pos.x < (xlp->pos.x + xlp->sz.x) &&
+	 objp1->pos.x < xlp->pos.x + xlp->sz.x &&
 	 objp1->pos.y > xlp->pos.y &&
-	 objp1->pos.y < (xlp->pos.y + xlp->sz.y);
+	 objp1->pos.y < xlp->pos.y + xlp->sz.y;
 }
 
 /*fill in rectangle from the object */
