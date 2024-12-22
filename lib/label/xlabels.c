@@ -572,7 +572,6 @@ static int xlinitialize(XLabels_t * xlp)
 int placeLabels(object_t *objs, size_t n_objs, xlabel_t *lbls, size_t n_lbls,
                 label_params_t *params) {
     int r;
-    BestPos_t bp;
     XLabels_t *xlp = xlnew(objs, n_objs, lbls, n_lbls, params);
     if ((r = xlinitialize(xlp)) < 0)
 	return r;
@@ -596,7 +595,7 @@ int placeLabels(object_t *objs, size_t n_objs, xlabel_t *lbls, size_t n_lbls,
     for (size_t i = 0; i < n_objs; i++) {
 	if (objs[i].lbl == 0)
 	    continue;
-	bp = xladjust(xlp, &objs[i]);
+	const BestPos_t bp = xladjust(xlp, &objs[i]);
 	if (bp.n == 0) {
 	    objs[i].lbl->set = 1;
 	} else if(bp.area == 0) {
