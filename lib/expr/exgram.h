@@ -282,6 +282,37 @@ static Exnode_t *exnewsubstr(Expr_t * p, Exnode_t * args) {
 	return ss;
 }
 
+/*
+ * cast x to type
+ */
+
+static char*	typename[] =
+{
+	"external", "integer", "unsigned", "char", "float", "string"
+};
+
+static int	typecast[6][6] =
+{
+	{X2X,	X2I,	X2I,	X2I,	X2F,	X2S},
+	{I2X,	0,	0,	0,	I2F,	I2S},
+	{I2X,	0,	0,	0,	I2F,	I2S},
+	{I2X,	0,	0,	0,	I2F,	I2S},
+	{F2X,	F2I,	F2I,	F2I,	0,	F2S},
+	{S2X,	S2I,	S2I,	S2I,	S2F,	0},
+};
+
+#define TYPEINDEX(t)	(((t)>=INTEGER&&(t)<=STRING)?((t)-INTEGER+1):0)
+#define TYPENAME(t)	typename[TYPEINDEX(t)]
+#define TYPECAST(f,t)	typecast[TYPEINDEX(f)][TYPEINDEX(t)]
+
+#define EXTERNAL(t)	((t)>=F2X)
+
+char *extypename(Expr_t *p, long type) {
+	if (BUILTIN(type))
+	    return TYPENAME(type);
+	return p->disc->typename(type);
+}
+
 /* exstringOf:
  * Cast x to type STRING
  * Assume x->type != STRING
@@ -303,15 +334,9 @@ static Exnode_t *exstringOf(Expr_t * p, Exnode_t * x) {
 			    extypename(p, type));
 		}
 		cvt = XPRINT;
-	    } else
-		switch (type) {
-		case FLOATING:
-		    cvt = F2S;
-		    break;
-		case INTEGER:
-		    cvt = I2S;
-		    break;
-		}
+	    } else if (TYPEINDEX(type) != 0) {
+		cvt = TYPECAST(type, STRING);
+	    }
 	    x = exnewnode(p, cvt, false, STRING, x, 0);
 	} else if (!BUILTIN(type)) {
 	    if (p->disc->stringof(p, x, 0) < 0)
@@ -390,37 +415,6 @@ static Exnode_t *makeVar(Expr_t * prog, Exid_t * s, Exnode_t * idx,
 	    expr.program->disc->reff(prog, nn, nn->data.variable.symbol, refs);
 
 	return nn;
-}
-
-/*
- * cast x to type
- */
-
-static char*	typename[] =
-{
-	"external", "integer", "unsigned", "char", "float", "string"
-};
-
-static int	typecast[6][6] =
-{
-	{X2X,	X2I,	X2I,	X2I,	X2F,	X2S},
-	{I2X,	0,	0,	0,	I2F,	I2S},
-	{I2X,	0,	0,	0,	I2F,	I2S},
-	{I2X,	0,	0,	0,	I2F,	I2S},
-	{F2X,	F2I,	F2I,	F2I,	0,	F2S},
-	{S2X,	S2I,	S2I,	S2I,	S2F,	0},
-};
-
-#define TYPEINDEX(t)	(((t)>=INTEGER&&(t)<=STRING)?((t)-INTEGER+1):0)
-#define TYPENAME(t)	typename[TYPEINDEX(t)]
-#define TYPECAST(f,t)	typecast[TYPEINDEX(f)][TYPEINDEX(t)]
-
-#define EXTERNAL(t)	((t)>=F2X)
-
-char *extypename(Expr_t *p, long type) {
-	if (BUILTIN(type))
-	    return TYPENAME(type);
-	return p->disc->typename(type);
 }
 
 /* exnoncast:

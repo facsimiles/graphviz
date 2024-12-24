@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The baseline version of Autoconf required to build Graphviz from source has
   been upgraded 2.61 → 2.69.
 - Building Graphviz from source now requires a C compiler with ISO C11 support.
+- GVPR programs are now able to print `char` and `unsigned` variables. #2587
 
 ### Fixed
 
