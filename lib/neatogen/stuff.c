@@ -263,7 +263,7 @@ int scan_graph_mode(graph_t * G, int mode)
     } else if (mode == MODE_SGD) {
 	Epsilon = .01;
 	getdouble(G, "epsilon", &Epsilon);
-	GD_neato_nlist(G) = gv_calloc(nV + 1, sizeof(node_t*)); // not sure why but sometimes needs the + 1
+	GD_neato_nlist(G) = gv_calloc(nV + 1, sizeof(node_t *));
 	for (i = 0, np = agfstnode(G); np; np = agnxtnode(G, np)) {
 	    GD_neato_nlist(G)[i] = np;
 	    ND_id(np) = i++;
