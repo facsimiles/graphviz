@@ -25,6 +25,9 @@ extern int gvLayout(GVC_t *gvc, graph_t *g, char *engine);
 /* Compute a layout using layout engine from command line args */
 extern int gvLayoutJobs(GVC_t *gvc, graph_t *g);
 
+/* Check if a layout has been done */
+extern bool gvLayoutDone(graph_t *g);
+
 /* Render layout into string attributes of the graph */
 extern void attach_attrs(graph_t *g);
 
