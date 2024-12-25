@@ -8,14 +8,18 @@ add_library(xdot
   xdot.c
 )
 
-target_include_directories(xdot PRIVATE
-  ..
-  ${CMAKE_CURRENT_SOURCE_DIR}
+target_include_directories(xdot
+  PUBLIC
+    $<INSTALL_INTERFACE:include/graphviz>
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
 # Installation location of library files
 install(
   TARGETS xdot
+  EXPORT xdotConfig
   RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
   LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
@@ -53,3 +57,12 @@ set_target_properties(xdot PROPERTIES
   VERSION 4.0.0
   SOVERSION 4
 )
+
+if(BUILD_SHARED_LIBS)
+  install(
+    EXPORT xdotConfig
+    FILE xdotConfig.cmake
+    NAMESPACE graphviz::
+    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
+  )
+endif()

@@ -398,7 +398,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3tcl.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3tcl
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3tcl.gz"
-        MAIN_DEPENDENCY gv.3tcl
+        DEPENDS gv.3tcl man-bindings
         COMMENT "compress gv_tcl man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3tcl.gz
@@ -419,7 +419,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3sharp.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3sharp
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3sharp.gz"
-        MAIN_DEPENDENCY gv.3sharp
+        DEPENDS gv.3sharp man-bindings
         COMMENT "compress gv_sharp man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3sharp.gz
@@ -440,7 +440,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3go.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3go
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3go.gz"
-        MAIN_DEPENDENCY gv.3go
+        DEPENDS gv.3go man-bindings
         COMMENT "compress gv_go man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3go.gz
@@ -461,7 +461,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3guile.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3guile
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3guile.gz"
-        MAIN_DEPENDENCY gv.3guile
+        DEPENDS gv.3guile man-bindings
         COMMENT "compress gv_guile man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3guile.gz
@@ -482,7 +482,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3java.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3java
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3java.gz"
-        MAIN_DEPENDENCY gv.3java
+        DEPENDS gv.3java man-bindings
         COMMENT "compress gv_java man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3java.gz
@@ -503,7 +503,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3perl.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3perl
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3perl.gz"
-        MAIN_DEPENDENCY gv.3perl
+        DEPENDS gv.3perl man-bindings
         COMMENT "compress gv_perl man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3perl.gz
@@ -524,7 +524,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3php.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3php
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3php.gz"
-        MAIN_DEPENDENCY gv.3php
+        DEPENDS gv.3php man-bindings
         COMMENT "compress gv_php man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3php.gz
@@ -545,7 +545,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3python.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3python
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3python.gz"
-        MAIN_DEPENDENCY gv.3python
+        DEPENDS gv.3python man-bindings
         COMMENT "compress gv_python man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3python.gz
@@ -565,7 +565,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3r.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3r
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3r.gz"
-        MAIN_DEPENDENCY gv.3r
+        DEPENDS gv.3r man-bindings
         COMMENT "compress gv_R man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3r.gz
@@ -587,7 +587,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3ruby.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3ruby
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3ruby.gz"
-        MAIN_DEPENDENCY gv.3ruby
+        DEPENDS gv.3ruby man-bindings
         COMMENT "compress gv_ruby man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3ruby.gz
@@ -608,7 +608,7 @@ if(ENABLE_SWIG)
         OUTPUT gv.3lua.gz
         COMMAND ${GZIP} -9 --no-name --to-stdout gv.3lua
           >"${CMAKE_CURRENT_BINARY_DIR}/gv.3lua.gz"
-        MAIN_DEPENDENCY gv.3lua
+        DEPENDS gv.3lua man-bindings
         COMMENT "compress gv_lua man page")
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/gv.3lua.gz
