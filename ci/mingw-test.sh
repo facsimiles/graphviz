@@ -23,6 +23,10 @@ export LDFLAGS="-L$DIR_LABS/lib"
 # make TCL packages visible for importing
 export TCLLIBPATH="$DIR_LABS/lib/graphviz/tcl"
 
+# needed for CMake discovery of Graphviz installation (see
+# ../tests/test_regression.py::test_2598)
+export graphviz_ROOT="$DIR_LABS"
+
 # needed to find e.g. libgvc.dll at run time. Windows does not use
 # LD_LIBRARY_PATH. Must be the logical directory
 export PATH="${PATH}:$DIR_LABS/bin"

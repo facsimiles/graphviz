@@ -98,6 +98,7 @@ env PATH=${PREFIX}/bin:${PATH} C_INCLUDE_PATH=${PREFIX}/include \
   PYTHONPATH=${PREFIX}/lib/graphviz/python3 \
   TCLLIBPATH=${PREFIX}/lib/graphviz/tcl \
   PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig \
+  graphviz_ROOT=${PREFIX} \
   python3 -m pytest tests
 ```
 
@@ -116,6 +117,7 @@ env PATH=${PREFIX}/bin:${PATH} C_INCLUDE_PATH=${PREFIX}/include \
   PYTHONPATH=${PREFIX}/lib/graphviz/python3 \
   TCLLIBPATH=${PREFIX}/lib/graphviz/tcl \
   PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig \
+  graphviz_ROOT=${PREFIX} \
   python3 -m pytest tests/test_regression::test_2225
 ```
 
