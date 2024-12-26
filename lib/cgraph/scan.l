@@ -21,6 +21,15 @@
    */
 %option prefix="aag"
 
+   /* Generate a reentrant parser with no global variables.
+    * All state will be contained in an opaque structure.
+    */
+%option reentrant bison-bridge
+
+   /* The generated structure will have space for user data.
+    */
+%option extra-type="struct aagextra_s *"
+
   /* Avoid generating an unused input function. See
      https://westes.github.io/flex/manual/Scanner-Options.html
    */
@@ -45,6 +54,8 @@ static const char* InputFile;
 static Agdisc_t	*Disc;
 static void 	*Ifile;
 static int graphType;
+
+#define YYSTYPE AAGSTYPE
 
 /* By default, Flex calls isatty() to determine whether the input it is
  * scanning is coming from the user typing or from a file. However, our input
@@ -88,10 +99,6 @@ static bool twoDots(aagscan_t yyscanner);
  */
 static int chkNum(aagscan_t yyscanner);
 
-#define yyscanner NULL
-#define aagget_lval(scanner) ((void)scanner, &aaglval)
-
-
 /* The LETTER class below consists of ascii letters, underscore, all non-ascii
  * characters. This allows identifiers to have characters from any
  * character set independent of locale. The downside is that, for certain
@@ -129,35 +136,35 @@ ID		({NAME}|{NUMBER})
 "subgraph"				return(T_subgraph);
 "->"				if (graphType == T_digraph) return(T_edgeop); else return('-');
 "--"				if (graphType == T_graph) return(T_edgeop); else return('-');
-{NAME}					{ aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
-{NUMBER}				{ if (chkNum(yyscanner)) yyless(aagget_leng()-1); aaglval.str = agstrdup(Ag_G_global,aagget_text()); return(T_atom); }
+{NAME}					{ yylval->str = agstrdup(Ag_G_global,aagget_text(yyscanner)); return(T_atom); }
+{NUMBER}				{ if (chkNum(yyscanner)) yyless(aagget_leng(yyscanner)-1); yylval->str = agstrdup(Ag_G_global,aagget_text(yyscanner)); return(T_atom); }
 ["]						BEGIN(qstring); beginstr(yyscanner);
 <qstring>["]			BEGIN(INITIAL); endstr(yyscanner); return (T_qatom);
 <qstring>[\\]["]		addstr (yyscanner,"\"");
 <qstring>[\\][\\]		addstr (yyscanner,"\\\\");
 <qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
 <qstring>[\n]			addstr (yyscanner,"\n"); line_num++;
-<qstring>([^"\\\n]*|[\\])		addstr(yyscanner,aagget_text());
+<qstring>([^"\\\n]*|[\\])		addstr(yyscanner,aagget_text(yyscanner));
 [<]						BEGIN(hstring); html_nest = 1; beginstr(yyscanner);
-<hstring>[>]			html_nest--; if (html_nest) addstr(yyscanner,aagget_text()); else {BEGIN(INITIAL); endstr_html(yyscanner); return (T_qatom);}
-<hstring>[<]			html_nest++; addstr(yyscanner,aagget_text());
-<hstring>[\n]			addstr(yyscanner,aagget_text()); line_num++; /* add newlines */
-<hstring>([^><\n]*)		addstr(yyscanner,aagget_text());
-.						return aagget_text()[0];
+<hstring>[>]			html_nest--; if (html_nest) addstr(yyscanner,aagget_text(yyscanner)); else {BEGIN(INITIAL); endstr_html(yyscanner); return (T_qatom);}
+<hstring>[<]			html_nest++; addstr(yyscanner,aagget_text(yyscanner));
+<hstring>[\n]			addstr(yyscanner,aagget_text(yyscanner)); line_num++; /* add newlines */
+<hstring>([^><\n]*)		addstr(yyscanner,aagget_text(yyscanner));
+.						return aagget_text(yyscanner)[0];
 %%
 
-#undef yyscanner
-
-void aagerror(const char *str);
-void aagerror(const char *str)
+void aagerror(aagscan_t yyscanner, const char *str)
 {
+	/* for YYSTATE macro */
+	struct yyguts_t *yyg = yyscanner;
+
 	agxbuf xb = {0};
 	if (InputFile) {
 		agxbprint (&xb, "%s: ", InputFile);
 	}
 	agxbprint (&xb, "%s in line %d", str, line_num);
-	if (*aagget_text()) {
-		agxbprint(&xb, " near '%s'", aagget_text());
+	if (*aagget_text(yyscanner)) {
+		agxbprint(&xb, " near '%s'", aagget_text(yyscanner));
 	}
 	else switch (YYSTATE) {
 	case qstring: {
@@ -186,16 +193,23 @@ void aagerror(const char *str)
     BEGIN(INITIAL);
 }
 /* must be here to see flex's macro defns */
-void aglexeof(void) { unput(GRAPH_EOF_TOKEN); }
+void aglexeof(aagscan_t yyscanner) {
+  struct yyguts_t *yyg = yyscanner;
+  unput(GRAPH_EOF_TOKEN);
+}
 
-void aglexbad(void) { YY_FLUSH_BUFFER; }
+void aglexbad(aagscan_t yyscanner) {
+  struct yyguts_t *yyg = yyscanner;
+  YY_FLUSH_BUFFER;
+}
 
 #ifndef YY_CALL_ONLY_ARG
-# define YY_CALL_ONLY_ARG void
+# define YY_CALL_ONLY_ARG aagscan_t yyscanner
 #endif
 
 int aagwrap(YY_CALL_ONLY_ARG)
 {
+	(void)yyscanner;
 	return 1;
 }
 
@@ -252,7 +266,7 @@ static void ppDirective (aagscan_t yyscanner)
 {
     int r, cnt, lineno;
     char buf[2];
-    char* s = aagget_text() + 1;  /* skip initial # */
+    char* s = aagget_text(yyscanner) + 1;  /* skip initial # */
 
     if (startswith(s, "line")) s += strlen("line");
     r = sscanf(s, "%d %1[\"]%n", &lineno, buf, &cnt);
@@ -279,10 +293,9 @@ static void ppDirective (aagscan_t yyscanner)
  * we know the last character is a '.'.
  */
 static bool twoDots(aagscan_t yyscanner) {
-  (void)yyscanner;
-  const char *dot = strchr(aagget_text(), '.');
+  const char *dot = strchr(aagget_text(yyscanner), '.');
   // was there a dot and was it not the last character?
-  return dot != NULL && dot != &aagget_text()[aagget_leng() - 1];
+  return dot != NULL && dot != &aagget_text(yyscanner)[aagget_leng(yyscanner) - 1];
 }
 
 /* chkNum:
@@ -291,7 +304,7 @@ static bool twoDots(aagscan_t yyscanner) {
  * or something like 123.456.78, and report this to the user.
  */
 static int chkNum(aagscan_t yyscanner) {
-    char c = aagget_text()[aagget_leng() - 1]; // last character
+    char c = aagget_text(yyscanner)[aagget_leng(yyscanner) - 1]; // last character
     if ((!gv_isdigit(c) && c != '.') || (c == '.' && twoDots(yyscanner))) { // c is letter
 	const char* fname;
 
@@ -301,7 +314,7 @@ static int chkNum(aagscan_t yyscanner) {
 	    fname = "input";
 
 	agwarningf("syntax ambiguity - badly delimited number '%s' in line %d of "
-	  "%s splits into two tokens\n", aagget_text(), line_num, fname);
+	  "%s splits into two tokens\n", aagget_text(yyscanner), line_num, fname);
 
 	return 1;
     }
