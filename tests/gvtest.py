@@ -65,7 +65,7 @@ def compile_c(
     else:
         # construct an invocation of the default C compiler
         cc = os.environ.get("CC", "cc")
-        args = [cc, "-std=c99", src, "-o", dst] + cflags + ldflags
+        args = [cc, "-std=c11", src, "-o", dst] + cflags + ldflags
 
     # dump the command being run for the user to observe if the test fails
     print(f"+ {shlex.join(str(x) for x in args)}")

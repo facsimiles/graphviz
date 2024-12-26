@@ -25,7 +25,7 @@ def test_list():
     # extra C flags this compilation needs
     cflags = ["-I", lib]
     if platform.system() != "Windows":
-        cflags += ["-std=gnu99", "-Wall", "-Wextra", "-Werror"]
+        cflags += ["-std=gnu11", "-Wall", "-Wextra", "-Werror"]
 
     _, _ = run_c(src, cflags=cflags)
 
@@ -44,7 +44,7 @@ def test_utility(utility: str):
     # extra C flags this compilation needs
     cflags = ["-I", lib]
     if platform.system() != "Windows":
-        cflags += ["-std=gnu99", "-Wall", "-Wextra", "-Werror"]
+        cflags += ["-std=gnu11", "-Wall", "-Wextra", "-Werror"]
 
     _, _ = run_c(src, cflags=cflags)
 
@@ -65,7 +65,7 @@ def test_overflow_h(builtins: bool):
     if not builtins:
         cflags += ["-DSUPPRESS_BUILTINS"]
     if platform.system() != "Windows":
-        cflags += ["-std=gnu99", "-Wall", "-Wextra", "-Werror"]
+        cflags += ["-std=gnu11", "-Wall", "-Wextra", "-Werror"]
 
     run_c(src, cflags=cflags)
 
