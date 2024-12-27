@@ -652,7 +652,7 @@ static int processClusters(Agraph_t * g, char* graphName)
 
     agclose(dg);
 
-    return (c_cnt ? 1 : 0);
+    return c_cnt ? 1 : 0;
 }
 
 static void
