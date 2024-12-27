@@ -19,6 +19,7 @@
  * Updated by Emden Gansner
  */
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -356,7 +357,7 @@ subGInduce(Agraph_t* g, Agraph_t * out)
 }
 
 #define PFX1 "%s_cc"
-#define PFX2 "%s_cc_%ld"
+#define PFX2 "%s_cc_%" PRISIZE_T
 
 /* deriveClusters:
  * Construct nodes in derived graph corresponding top-level clusters.
@@ -473,12 +474,10 @@ static int cmp(const void *x, const void *y) {
   return 0;
 }
 
-static void
-printSorted (Agraph_t* root, int c_cnt)
-{
+static void printSorted(Agraph_t *root, size_t c_cnt) {
     Agraph_t** ccs = gv_calloc(c_cnt, sizeof(Agraph_t*));
     Agraph_t* subg;
-    int i = 0, endi;
+    size_t i = 0;
 
     for (subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
 	if (GD_cc_subg(subg))
@@ -489,20 +488,24 @@ printSorted (Agraph_t* root, int c_cnt)
 
     if (sortIndex >= 0) {
 	if (x_mode == BY_INDEX) {
-	    if (sortIndex >= c_cnt) {
+	    if ((size_t)sortIndex >= c_cnt) {
 		fprintf(stderr,
 		    "ccomps: component %d not found in graph %s - ignored\n",
 		    sortIndex, agnameof(root));
 		free(ccs);
 		return;
 	    }
+	    size_t endi;
 	    if (sortFinal >= sortIndex) {
-		endi = sortFinal;
-		if (endi >= c_cnt) endi = c_cnt-1;
+		endi = (size_t)sortFinal;
+		if (endi >= c_cnt) {
+		    assert(c_cnt > 0);
+		    endi = c_cnt - 1;
+		}
 	    }
 	    else
 		endi = c_cnt-1;
-            for (i = sortIndex; i <= endi ; i++) {
+            for (i = (size_t)sortIndex; i <= endi; i++) {
 		subg = ccs[i];
 		if (doAll)
 		    subGInduce(root, subg);
@@ -538,7 +541,7 @@ printSorted (Agraph_t* root, int c_cnt)
 static int processClusters(Agraph_t * g, char* graphName)
 {
     Agraph_t *dg;
-    long n_cnt, c_cnt;
+    long n_cnt;
     Agraph_t *out;
     Agnode_t *n;
     Agraph_t *dout;
@@ -579,7 +582,7 @@ static int processClusters(Agraph_t * g, char* graphName)
 	return 0;
     }
 
-    c_cnt = 0;
+    size_t c_cnt = 0;
     for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
 	if (Node_mark(dn))
 	    continue;
@@ -604,12 +607,12 @@ static int processClusters(Agraph_t * g, char* graphName)
 	    gwrite(out);
 	} else if (printMode == EXTRACT) {
 	    if (x_mode == BY_INDEX) {
-		if (x_index <= c_cnt) {
+		if (x_index < 0 || (size_t)x_index <= c_cnt) {
 		    extracted = true;
 		    if (doAll)
 			subGInduce(g, out);
 		    gwrite(out);
-		    if (c_cnt == x_final)
+		    if (x_final >= 0 && c_cnt == (size_t)x_final)
 			return 0;
 	        }
 	    }
@@ -627,7 +630,7 @@ static int processClusters(Agraph_t * g, char* graphName)
 	    agdelete(g, out);
 	agdelete(dg, dout);
 	if (verbose)
-	    fprintf(stderr, "(%4ld) %7ld nodes %7" PRISIZE_T " edges\n",
+	    fprintf(stderr, "(%4" PRISIZE_T ") %7ld nodes %7" PRISIZE_T " edges\n",
 		    c_cnt, n_cnt, e_cnt);
 	c_cnt++;
     }
@@ -644,7 +647,7 @@ static int processClusters(Agraph_t * g, char* graphName)
 	gwrite(g);
 
     if (verbose)
-	fprintf(stderr, "       %7d nodes %7d edges %7ld components %s\n",
+	fprintf(stderr, "       %7d nodes %7d edges %7" PRISIZE_T " components %s\n",
 		agnnodes(g), agnedges(g), c_cnt, agnameof(g));
 
     agclose(dg);
@@ -668,7 +671,7 @@ bindGraphinfo (Agraph_t * g)
  */
 static int process(Agraph_t * g, char* graphName)
 {
-    long n_cnt, c_cnt;
+    long n_cnt;
     Agraph_t *out;
     Agnode_t *n;
     bool extracted = false;
@@ -708,7 +711,7 @@ static int process(Agraph_t * g, char* graphName)
 	return 0;
     }
 
-    c_cnt = 0;
+    size_t c_cnt = 0;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (Node_mark(n))
 	    continue;
@@ -730,12 +733,12 @@ static int process(Agraph_t * g, char* graphName)
 	    gwrite(out);
 	} else if (printMode == EXTRACT) {
 	    if (x_mode == BY_INDEX) {
-		if (x_index <= c_cnt) {
+		if (x_index < 0 || (size_t)x_index <= c_cnt) {
 		    extracted = true;
 		    if (doAll)
 			subGInduce(g, out);
 		    gwrite(out);
-		    if (c_cnt == x_final)
+		    if (x_final >= 0 && c_cnt == (size_t)x_final)
 			return 0;
 	        }
 	    }
@@ -752,7 +755,7 @@ static int process(Agraph_t * g, char* graphName)
 	if (printMode != INTERNAL)
 	    agdelete(g, out);
 	if (verbose)
-	    fprintf(stderr, "(%4ld) %7ld nodes %7" PRISIZE_T " edges\n",
+	    fprintf(stderr, "(%4" PRISIZE_T ") %7ld nodes %7" PRISIZE_T " edges\n",
 		    c_cnt, n_cnt, e_cnt);
 	c_cnt++;
     }
@@ -769,7 +772,7 @@ static int process(Agraph_t * g, char* graphName)
 	gwrite(g);
 
     if (verbose)
-	fprintf(stderr, "       %7d nodes %7d edges %7ld components %s\n",
+	fprintf(stderr, "       %7d nodes %7d edges %7" PRISIZE_T " components %s\n",
 		agnnodes(g), agnedges(g), c_cnt, agnameof(g));
     return c_cnt > 1;
 }
