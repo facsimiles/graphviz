@@ -78,7 +78,6 @@ EXCLUDE = (
     "cmd/smyrna/viewportcamera.h",
     "cmd/tools/acyclic.c",
     "cmd/tools/bcomps.c",
-    "cmd/tools/ccomps.c",
     "cmd/tools/colortbl.h",
     "cmd/tools/colxlate.c",
     "cmd/tools/convert.h",
