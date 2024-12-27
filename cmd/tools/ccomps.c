@@ -99,9 +99,7 @@ static void usage(int v)
 }
 
 static void split(void) {
-    char *sfx = 0;
-
-    sfx = strrchr(outfile, '.');
+    char *sfx = strrchr(outfile, '.');
     if (sfx) {
 	suffix = sfx + 1;
 	size_t size = (size_t)(sfx - outfile);
@@ -237,7 +235,6 @@ static Agnode_t *pop(void)
 
 static int dfs(Agraph_t * g, Agnode_t * n, Agraph_t * out)
 {
-    Agedge_t *e;
     Agnode_t *other;
     int cnt = 0;
 
@@ -246,7 +243,7 @@ static int dfs(Agraph_t * g, Agnode_t * n, Agraph_t * out)
 	Node_mark(n) = 1;
 	cnt++;
 	agsubnode(out, n, 1);
-	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	for (Agedge_t *e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	    if ((other = agtail(e)) == n)
 		other = aghead(e);
 	    if (Node_mark(other) == 0)
@@ -275,15 +272,12 @@ static char *getName(void)
 
 static void gwrite(Agraph_t * g)
 {
-    FILE *outf;
-    char *name;
-
     if (!outfile) {
 	agwrite(g, stdout);
 	fflush(stdout);
     } else {
-	name = getName();
-	outf = fopen(name, "w");
+	char *const name = getName();
+	FILE *const outf = fopen(name, "w");
 	if (!outf) {
 	    fprintf(stderr, "Could not open %s for writing\n", name);
 	    perror("ccomps");
@@ -304,10 +298,9 @@ static void gwrite(Agraph_t * g)
 static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, int inCluster)
 {
     Agraph_t *proj = 0;
-    Agnode_t *n;
     Agnode_t *m;
 
-    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
+    for (Agnode_t *n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 	if ((m = agfindnode(g, agnameof(n)))) {
 	    if (proj == 0) {
 		proj = agsubg(g, agnameof(subg), 1);
@@ -332,15 +325,13 @@ static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, int inCluster)
 static void
 subgInduce(Agraph_t * root, Agraph_t * g, int inCluster)
 {
-    Agraph_t *subg;
     Agraph_t *proj;
-    int in_cluster;
 
-    for (subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
+    for (Agraph_t *subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
 	if (GD_cc_subg(subg))
 	    continue;
 	if ((proj = projectG(subg, g, inCluster))) {
-	    in_cluster = inCluster || (useClusters && is_a_cluster(subg));
+	    const int in_cluster = inCluster || (useClusters && is_a_cluster(subg));
 	    subgInduce(subg, proj, in_cluster);
 	}
     }
@@ -361,16 +352,12 @@ subGInduce(Agraph_t* g, Agraph_t * out)
  */
 static void deriveClusters(Agraph_t* dg, Agraph_t * g)
 {
-    Agraph_t *subg;
-    Agnode_t *dn;
-    Agnode_t *n;
-
-    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+    for (Agraph_t *subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	if (is_a_cluster(subg)) {
-	    dn = agnode(dg, agnameof(subg), 1);
+	    Agnode_t *const dn = agnode(dg, agnameof(subg), 1);
 	    agbindrec (dn, "nodeinfo", sizeof(nodeinfo_t), true);
 	    ND_ptr(dn) = (Agobj_t*)subg;
-	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
+	    for (Agnode_t *n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 		if (ND_ptr(n)) {
 		   fprintf (stderr, "Error: node \"%s\" belongs to two non-nested clusters \"%s\" and \"%s\"\n",
 			agnameof (n), agnameof(subg), agnameof(ND_dn(n)));  
@@ -390,28 +377,23 @@ static void deriveClusters(Agraph_t* dg, Agraph_t * g)
  */
 static Agraph_t *deriveGraph(Agraph_t * g)
 {
-    Agnode_t *dn;
-    Agnode_t *n;
-
     Agraph_t *dg = agopen("dg", Agstrictundirected, NULL);
 
     deriveClusters (dg, g);
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (ND_dn(n))
 	    continue;
-	dn = agnode(dg, agnameof(n), 1);
+	Agnode_t *const dn = agnode(dg, agnameof(n), 1);
 	agbindrec (dn, "nodeinfo", sizeof(nodeinfo_t), true);
 	ND_ptr(dn) = (Agobj_t*)n;
 	ND_ptr(n) = (Agobj_t*)dn;
     }
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	Agedge_t *e;
-	Agnode_t *hd;
+    for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	Agnode_t *tl = ND_dn(n);
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    hd = ND_dn(aghead(e));
+	for (Agedge_t *e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    Agnode_t *const hd = ND_dn(aghead(e));
 	    if (hd == tl)
 		continue;
 	    if (hd > tl)
@@ -427,16 +409,12 @@ static Agraph_t *deriveGraph(Agraph_t * g)
 /// add all nodes in cluster nodes of `dg` to `g`
 static void unionNodes(Agraph_t * dg, Agraph_t * g)
 {
-    Agnode_t *n;
-    Agnode_t *dn;
-    Agraph_t *clust;
-
-    for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
+    for (Agnode_t *dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
 	if (AGTYPE(ND_ptr(dn)) == AGNODE) {
 	    agsubnode(g, ND_dn(dn), 1);
 	} else {
-	    clust = Node_clust(dn);
-	    for (n = agfstnode(clust); n; n = agnxtnode(clust, n))
+	    Agraph_t *const clust = Node_clust(dn);
+	    for (Agnode_t *n = agfstnode(clust); n; n = agnxtnode(clust, n))
 		agsubnode(g, n, 1);
 	}
     }
@@ -468,10 +446,9 @@ static int cmp(const void *x, const void *y) {
 
 static void printSorted(Agraph_t *root, size_t c_cnt) {
     Agraph_t** ccs = gv_calloc(c_cnt, sizeof(Agraph_t*));
-    Agraph_t* subg;
     size_t i = 0;
 
-    for (subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
+    for (Agraph_t *subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
 	if (GD_cc_subg(subg))
 	    ccs[i++] = subg;
     }
@@ -498,7 +475,7 @@ static void printSorted(Agraph_t *root, size_t c_cnt) {
 	    else
 		endi = c_cnt-1;
             for (i = (size_t)sortIndex; i <= endi; i++) {
-		subg = ccs[i];
+		Agraph_t *const subg = ccs[i];
 		if (doAll)
 		    subGInduce(root, subg);
 		gwrite(subg);
@@ -508,7 +485,7 @@ static void printSorted(Agraph_t *root, size_t c_cnt) {
 	    if (sortFinal == -1)
 		sortFinal = agnnodes(ccs[0]);
             for (i = 0; i < c_cnt ; i++) {
-		subg = ccs[i];
+		Agraph_t *const subg = ccs[i];
 		int sz = agnnodes(subg);
 		if (sz > sortFinal) continue;
 		if (sz < sortIndex) break;
@@ -519,7 +496,7 @@ static void printSorted(Agraph_t *root, size_t c_cnt) {
 	}
     }
     else for (i = 0; i < c_cnt; i++) {
-	subg = ccs[i];
+	Agraph_t *const subg = ccs[i];
 	if (doAll)
 	    subGInduce(root, subg);
 	gwrite(subg);
@@ -530,18 +507,14 @@ static void printSorted(Agraph_t *root, size_t c_cnt) {
 /// return 0 if graph is connected
 static int processClusters(Agraph_t * g, char* graphName)
 {
-    Agraph_t *dg;
-    long n_cnt;
     Agraph_t *out;
-    Agnode_t *n;
     Agraph_t *dout;
-    Agnode_t *dn;
     bool extracted = false;
 
-    dg = deriveGraph(g);
+    Agraph_t *const dg = deriveGraph(g);
 
     if (x_node) {
-	n = agfindnode(g, x_node);
+	Agnode_t *const n = agfindnode(g, x_node);
 	if (!n) {
 	    fprintf(stderr, "ccomps: node %s not found in graph %s\n",
 		    x_node, agnameof(g));
@@ -557,8 +530,8 @@ static int processClusters(Agraph_t * g, char* graphName)
 	}
 	aginit(out, AGRAPH, "graphinfo", sizeof(graphinfo_t), true);
 	GD_cc_subg(out) = true;
-	dn = ND_dn(n);
-	n_cnt = dfs(dg, dn, dout);
+	Agnode_t *const dn = ND_dn(n);
+	const long n_cnt = dfs(dg, dn, dout);
 	unionNodes(dout, out);
 	size_t e_cnt = 0;
 	if (doEdges)
@@ -573,7 +546,7 @@ static int processClusters(Agraph_t * g, char* graphName)
     }
 
     size_t c_cnt = 0;
-    for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
+    for (Agnode_t *dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
 	if (Node_mark(dn))
 	    continue;
 	{
@@ -586,7 +559,7 @@ static int processClusters(Agraph_t * g, char* graphName)
 	}
 	aginit(out, AGRAPH, "graphinfo", sizeof(graphinfo_t), true);
 	GD_cc_subg(out) = true;
-	n_cnt = dfs(dg, dn, dout);
+	const long n_cnt = dfs(dg, dn, dout);
 	unionNodes(dout, out);
 	size_t e_cnt = 0;
 	if (doEdges)
@@ -648,10 +621,8 @@ static int processClusters(Agraph_t * g, char* graphName)
 static void
 bindGraphinfo (Agraph_t * g)
 {
-    Agraph_t *subg;
-
     aginit(g, AGRAPH, "graphinfo", sizeof(graphinfo_t), true);
-    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+    for (Agraph_t *subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	bindGraphinfo (subg);
     }
 }
@@ -659,9 +630,7 @@ bindGraphinfo (Agraph_t * g)
 /// return 0 if graph is connected
 static int process(Agraph_t * g, char* graphName)
 {
-    long n_cnt;
     Agraph_t *out;
-    Agnode_t *n;
     bool extracted = false;
 
     aginit(g, AGNODE, "nodeinfo", sizeof(nodeinfo_t), true);
@@ -671,7 +640,7 @@ static int process(Agraph_t * g, char* graphName)
 	return processClusters(g, graphName);
 
     if (x_node) {
-	n = agfindnode(g, x_node);
+	Agnode_t *const n = agfindnode(g, x_node);
 	if (!n) {
 	    fprintf(stderr,
 		    "ccomps: node %s not found in graph %s - ignored\n",
@@ -686,7 +655,7 @@ static int process(Agraph_t * g, char* graphName)
 	}
 	aginit(out, AGRAPH, "graphinfo", sizeof(graphinfo_t), true);
 	GD_cc_subg(out) = true;
-	n_cnt = dfs(g, n, out);
+	const long n_cnt = dfs(g, n, out);
 	size_t e_cnt = 0;
 	if (doEdges)
 	    e_cnt = graphviz_node_induce(out, out->root);
@@ -700,7 +669,7 @@ static int process(Agraph_t * g, char* graphName)
     }
 
     size_t c_cnt = 0;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (Node_mark(n))
 	    continue;
 	{
@@ -711,7 +680,7 @@ static int process(Agraph_t * g, char* graphName)
 	}
 	aginit(out, AGRAPH, "graphinfo", sizeof(graphinfo_t), true);
 	GD_cc_subg(out) = true;
-	n_cnt = dfs(g, n, out);
+	const long n_cnt = dfs(g, n, out);
 	size_t e_cnt = 0;
 	if (doEdges)
 	    e_cnt = graphviz_node_induce(out, out->root);
