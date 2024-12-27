@@ -296,8 +296,7 @@ static void gwrite(Agraph_t * g)
     }
 }
 
-/* projectG:
- * If any nodes of subg are in g, create a subgraph of g
+/* If any nodes of subg are in g, create a subgraph of g
  * and fill it with all nodes of subg in g and their induced
  * edges in subg. Copy the attributes of subg to g. Return the subgraph.
  * If not, return null.
@@ -327,8 +326,7 @@ static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, int inCluster)
     return proj;
 }
 
-/* subgInduce:
- * Project subgraphs of root graph on subgraph.
+/* Project subgraphs of root graph on subgraph.
  * If non-empty, add to subgraph.
  */
 static void
@@ -357,8 +355,7 @@ subGInduce(Agraph_t* g, Agraph_t * out)
 #define PFX1 "%s_cc"
 #define PFX2 "%s_cc_%" PRISIZE_T
 
-/* deriveClusters:
- * Construct nodes in derived graph corresponding top-level clusters.
+/* Construct nodes in derived graph corresponding top-level clusters.
  * Since a cluster might be wrapped in a subgraph, we need to traverse
  * down into the tree of subgraphs
  */
@@ -387,8 +384,7 @@ static void deriveClusters(Agraph_t* dg, Agraph_t * g)
     }
 }
 
-/* deriveGraph:
- * Create derived graph dg of g where nodes correspond to top-level nodes 
+/* Create derived graph dg of g where nodes correspond to top-level nodes 
  * or clusters, and there is an edge in dg if there is an edge in g
  * between any nodes in the respective clusters.
  */
@@ -428,9 +424,7 @@ static Agraph_t *deriveGraph(Agraph_t * g)
     return dg;
 }
 
-/* unionNodes:
- * Add all nodes in cluster nodes of dg to g
- */
+/// add all nodes in cluster nodes of `dg` to `g`
 static void unionNodes(Agraph_t * dg, Agraph_t * g)
 {
     Agnode_t *n;
@@ -533,9 +527,7 @@ static void printSorted(Agraph_t *root, size_t c_cnt) {
     free (ccs);
 }
 
-/* processClusters:
- * Return 0 if graph is connected.
- */
+/// return 0 if graph is connected
 static int processClusters(Agraph_t * g, char* graphName)
 {
     Agraph_t *dg;
@@ -664,9 +656,7 @@ bindGraphinfo (Agraph_t * g)
     }
 }
 
-/* process:
- * Return 0 if graph is connected.
- */
+/// return 0 if graph is connected
 static int process(Agraph_t * g, char* graphName)
 {
     long n_cnt;
@@ -775,8 +765,7 @@ static int process(Agraph_t * g, char* graphName)
     return c_cnt > 1;
 }
 
-/* chkGraphName:
- * If the graph is anonymous, its name starts with '%'.
+/* If the graph is anonymous, its name starts with '%'.
  * If we use this as the prefix for subgraphs, they will not be
  * emitted in agwrite() because cgraph assumes these were anonymous
  * structural subgraphs all of whose properties are attached directly
