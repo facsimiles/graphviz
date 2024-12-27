@@ -20,9 +20,11 @@
  */
 
 #include <assert.h>
+#include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>
 #include <common/render.h>
@@ -52,10 +54,6 @@ typedef struct {
 #define ND_ptr(n)  (((nodeinfo_t*)(n->base.data))->ptr)
 #define ND_dn(n)  ((Agnode_t*)ND_ptr(n))
 #define Node_clust(n)  ((Agraph_t*)ND_ptr(n))
-
-#include <getopt.h>
-
-#include <string.h>
 
 static char **Inputs;
 static bool verbose = false;
