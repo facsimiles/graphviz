@@ -807,8 +807,8 @@ point gvusershape_size_dpi(usershape_t *us, pointf dpi) {
     if (us->dpi != 0) {
       dpi.x = dpi.y = us->dpi;
     }
-    rv.x = us->w * POINTS_PER_INCH / dpi.x;
-    rv.y = us->h * POINTS_PER_INCH / dpi.y;
+    rv.x = (int)(us->w * POINTS_PER_INCH / dpi.x);
+    rv.y = (int)(us->h * POINTS_PER_INCH / dpi.y);
   }
   return rv;
 }
