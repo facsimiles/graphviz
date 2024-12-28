@@ -463,8 +463,10 @@ static void jpeg_size(usershape_t *us) {
      * If that is not the case, or if we're at EOF, then there's
      * a parsing error.
      */
-    if (!get_int_msb_first(us->f, 1, &marker))
+    if (!get_int_msb_first(us->f, 1, &marker)) {
+      agwarningf("Parsing of \"%s\" failed\n", us->name);
       return;
+    }
 
     if (marker == 0xff)
       continue;
