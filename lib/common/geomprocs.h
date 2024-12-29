@@ -49,7 +49,20 @@ static inline void expandbp(boxf *b, pointf p) {
 }
 
 /// expand box b0 as needed to enclose box b1
-#define EXPANDBB(b0, b1) ((b0).LL.x = MIN((b0).LL.x, (b1).LL.x), (b0).LL.y = MIN((b0).LL.y, (b1).LL.y), (b0).UR.x = MAX((b0).UR.x, (b1).UR.x), (b0).UR.y = MAX((b0).UR.y, (b1).UR.y))
+static inline void expandbb(box *b0, box b1) {
+  b0->LL.x = MIN(b0->LL.x, b1.LL.x);
+  b0->LL.y = MIN(b0->LL.y, b1.LL.y);
+  b0->UR.x = MAX(b0->UR.x, b1.UR.x);
+  b0->UR.y = MAX(b0->UR.y, b1.UR.y);
+}
+static inline void expandbbf(boxf *b0, boxf b1) {
+  b0->LL.x = fmin(b0->LL.x, b1.LL.x);
+  b0->LL.y = fmin(b0->LL.y, b1.LL.y);
+  b0->UR.x = fmax(b0->UR.x, b1.UR.x);
+  b0->UR.y = fmax(b0->UR.y, b1.UR.y);
+}
+#define EXPANDBB(b0, b1) \
+  (_Generic((b0), box *: expandbb, boxf *: expandbbf)((b0), (b1)))
 
 GEOMPROCS_API boxf flip_rec_boxf(boxf b, pointf p);
 

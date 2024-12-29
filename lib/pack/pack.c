@@ -1116,7 +1116,7 @@ int packSubgraphs(size_t ng, Agraph_t **gs, Agraph_t *root, pack_info *info) {
     for (size_t i = 0; i < ng; i++) {
       g = gs[i];
       for (j = 1; j <= GD_n_cluster(g); j++) {
-        EXPANDBB(bb, GD_bb(GD_clust(g)[j]));
+        EXPANDBB(&bb, GD_bb(GD_clust(g)[j]));
       }
     }
     GD_bb(root) = bb;

@@ -1598,7 +1598,7 @@ static void setup_page(GVJ_t * job)
     if (job->common->viewNum == 0)
         job->boundingBox = job->pageBoundingBox;
     else
-        EXPANDBB(job->boundingBox, job->pageBoundingBox);
+        EXPANDBB(&job->boundingBox, job->pageBoundingBox);
 
     if (job->flags & GVDEVICE_EVENTS) {
         job->clip.LL.x = job->focus.x - job->view.x / 2.;
@@ -3802,15 +3802,15 @@ static void init_splines_bb(splines *spl)
         if (i > 0) {
             bz = spl->list[i];
             b = bezier_bb(bz);
-            EXPANDBB(bb, b);
+            EXPANDBB(&bb, b);
         }
         if (bz.sflag) {
             b = arrow_bb(bz.sp, bz.list[0], 1);
-            EXPANDBB(bb, b);
+            EXPANDBB(&bb, b);
         }
         if (bz.eflag) {
             b = arrow_bb(bz.ep, bz.list[bz.size - 1], 1);
-            EXPANDBB(bb, b);
+            EXPANDBB(&bb, b);
         }
     }
     spl->bb = bb;

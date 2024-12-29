@@ -650,7 +650,7 @@ void compute_bb(graph_t * g)
 	b.LL = sub_pointf(ptf, s2);
 	b.UR = add_pointf(ptf, s2);
 
-	EXPANDBB(bb,b);
+	EXPANDBB(&bb, b);
 	if (ND_xlabel(n) && ND_xlabel(n)->set) {
 	    bb = addLabelBB(bb, ND_xlabel(n), GD_flip(g));
 	}
@@ -680,7 +680,7 @@ void compute_bb(graph_t * g)
 
     for (int i = 1; i <= GD_n_cluster(g); i++) {
 	B2BF(GD_bb(GD_clust(g)[i]), BF);
-	EXPANDBB(bb,BF);
+	EXPANDBB(&bb, BF);
     }
     if (GD_label(g) && GD_label(g)->set) {
 	bb = addLabelBB(bb, GD_label(g), GD_flip(g));
