@@ -22,6 +22,7 @@
  * Tim Dwyer, 2006
  **********************************************************/
 
+#include <common/geomprocs.h>
 #include <neatogen/digcola.h>
 #include <stdbool.h>
 #include <util/alloc.h>

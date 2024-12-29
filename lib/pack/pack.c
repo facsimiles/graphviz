@@ -14,6 +14,7 @@
  */
 
 #include <assert.h>
+#include <common/geomprocs.h>
 #include <common/pointset.h>
 #include <common/render.h>
 #include <math.h>

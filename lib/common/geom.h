@@ -50,9 +50,6 @@ typedef struct { pointf LL, UR; } boxf;
 /* true if box b0 completely contains b1*/
 #define CONTAINS(b0,b1)	(((b0).UR.x >= (b1).UR.x) && ((b0).UR.y >= (b1).UR.y) && ((b0).LL.x <= (b1).LL.x) && ((b0).LL.y <= (b1).LL.y))
 
-/* expand box b0 as needed to enclose box b1 */
-#define EXPANDBB(b0, b1) ((b0).LL.x = MIN((b0).LL.x, (b1).LL.x), (b0).LL.y = MIN((b0).LL.y, (b1).LL.y), (b0).UR.x = MAX((b0).UR.x, (b1).UR.x), (b0).UR.y = MAX((b0).UR.y, (b1).UR.y))
-
 #define LEN2(a,b)		(SQR(a) + SQR(b))
 
 #define DIST2(p,q)		(LEN2(((p).x - (q).x),((p).y - (q).y)))

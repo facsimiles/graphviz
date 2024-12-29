@@ -48,6 +48,9 @@ static inline void expandbp(boxf *b, pointf p) {
   b->UR.y = fmax(b->UR.y, p.y);
 }
 
+/// expand box b0 as needed to enclose box b1
+#define EXPANDBB(b0, b1) ((b0).LL.x = MIN((b0).LL.x, (b1).LL.x), (b0).LL.y = MIN((b0).LL.y, (b1).LL.y), (b0).UR.x = MAX((b0).UR.x, (b1).UR.x), (b0).UR.y = MAX((b0).UR.y, (b1).UR.y))
+
 GEOMPROCS_API boxf flip_rec_boxf(boxf b, pointf p);
 
 GEOMPROCS_API double ptToLine2 (pointf l1, pointf l2, pointf p);

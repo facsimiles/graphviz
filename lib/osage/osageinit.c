@@ -15,6 +15,7 @@
  */
 
 #include    <assert.h>
+#include    <common/geomprocs.h>
 #include    <common/render.h>
 #include    <common/utils.h>
 #include    <cgraph/list.h>
