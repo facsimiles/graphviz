@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <math.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -40,7 +41,7 @@ extern "C" {
 #endif
 
 /// expand box b as needed to enclose point p
-#define EXPANDBP(b, p)	((b).LL.x = MIN((b).LL.x, (p).x), (b).LL.y = MIN((b).LL.y, (p).y), (b).UR.x = MAX((b).UR.x, (p).x), (b).UR.y = MAX((b).UR.y, (p).y))
+#define EXPANDBP(b, p)	((b).LL.x = fmin((b).LL.x, (p).x), (b).LL.y = fmin((b).LL.y, (p).y), (b).UR.x = fmax((b).UR.x, (p).x), (b).UR.y = fmax((b).UR.y, (p).y))
 
 GEOMPROCS_API boxf flip_rec_boxf(boxf b, pointf p);
 
