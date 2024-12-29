@@ -39,6 +39,9 @@ extern "C" {
 #define GEOMPROCS_API /* nothing */
 #endif
 
+/// expand box b as needed to enclose point p
+#define EXPANDBP(b, p)	((b).LL.x = MIN((b).LL.x, (p).x), (b).LL.y = MIN((b).LL.y, (p).y), (b).UR.x = MAX((b).UR.x, (p).x), (b).UR.y = MAX((b).UR.y, (p).y))
+
 GEOMPROCS_API boxf flip_rec_boxf(boxf b, pointf p);
 
 GEOMPROCS_API double ptToLine2 (pointf l1, pointf l2, pointf p);

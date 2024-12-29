@@ -11,6 +11,7 @@
  *************************************************************************/
 
 #include <common/render.h>
+#include <common/geomprocs.h>
 #include <common/htmltable.h>
 #include <common/entities.h>
 #include <limits.h>
