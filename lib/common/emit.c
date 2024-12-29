@@ -3781,10 +3781,10 @@ static boxf bezier_bb(bezier bz)
 	i++;
 	p.x = ( p1.x + p2.x ) / 2;
 	p.y = ( p1.y + p2.y ) / 2;
-        EXPANDBP(bb,p);
+        expandbp(&bb, p);
 
 	p=bz.list[i];
-        EXPANDBP(bb,p);
+        expandbp(&bb, p);
 	i++;
     }
     return bb;

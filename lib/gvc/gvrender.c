@@ -696,7 +696,7 @@ void gvrender_usershape(GVJ_t *job, char *name, pointf *a, size_t n,
     /* compute bb of polygon */
     b.LL = b.UR = a[0];
     for (size_t i = 1; i < n; i++) {
-	EXPANDBP(b, a[i]);
+	expandbp(&b, a[i]);
     }
 
     pw = b.UR.x - b.LL.x;

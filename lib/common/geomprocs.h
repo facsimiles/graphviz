@@ -41,7 +41,12 @@ extern "C" {
 #endif
 
 /// expand box b as needed to enclose point p
-#define EXPANDBP(b, p)	((b).LL.x = fmin((b).LL.x, (p).x), (b).LL.y = fmin((b).LL.y, (p).y), (b).UR.x = fmax((b).UR.x, (p).x), (b).UR.y = fmax((b).UR.y, (p).y))
+static inline void expandbp(boxf *b, pointf p) {
+  b->LL.x = fmin(b->LL.x, p.x);
+  b->LL.y = fmin(b->LL.y, p.y);
+  b->UR.x = fmax(b->UR.x, p.x);
+  b->UR.y = fmax(b->UR.y, p.y);
+}
 
 GEOMPROCS_API boxf flip_rec_boxf(boxf b, pointf p);
 

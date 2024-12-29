@@ -660,7 +660,7 @@ void compute_bb(graph_t * g)
 	    for (size_t i = 0; i < ED_spl(e)->size; i++) {
 		for (size_t j = 0; j < (((Agedgeinfo_t*)AGDATA(e))->spl)->list[i].size; j++) {
 		    ptf = ED_spl(e)->list[i].list[j];
-		    EXPANDBP(bb,ptf);
+		    expandbp(&bb, ptf);
 		}
 	    }
 	    if (ED_label(e) && ED_label(e)->set) {
