@@ -178,7 +178,7 @@ static void windowedMode(int argc, char *argv[]) {
     gtk_main();
 }
 
-#if !defined(__APPLE__) && !defined(_WIN32)
+#ifndef _WIN32
 /// `readlink`-alike but dynamically allocates
 static char *readln(const char *path) {
 

@@ -66,6 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   man page.
 - Some information in the gvc.3 man page that contradicted the gvc.h public
   header has been corrected.
+- Smyrna is once again compilable on macOS. This was a regression in Graphviz
+  10.0.1. #2631
 
 ## [12.2.1] – 2024-12-07
 
