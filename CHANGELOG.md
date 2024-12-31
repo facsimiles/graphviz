@@ -49,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CMake projects using Graphviz as an installed third-party dependency can now
   discover its libraries with `find_package(graphviz)` and then use them as e.g.
   `target_link_libraries(myapp PRIVATE graphviz::cgraph)`. #2598
+- Verbose `checkpath` warnings about ports not lying in their expected boxes
+  have been removed.
 
 ### Fixed
 
