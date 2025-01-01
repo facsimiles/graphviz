@@ -9,9 +9,12 @@
  *************************************************************************/
 
 #include "config.h"
+
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <util/alloc.h>
 #include <util/agxbuf.h>
 
 #include <gvc/gvplugin_loadimage.h>
@@ -86,9 +89,22 @@ static void gdk_set_mimedata(cairo_surface_t *image, usershape_t *us)
     }
 }
 
+/// resources allocated for loaded images
+typedef struct {
+  cairo_surface_t *surface;
+  GdkPixbuf *origin;
+} data_t;
+
 static void gdk_freeimage(usershape_t *us)
 {
-    cairo_surface_destroy(us->data);
+    assert(us->data != NULL);
+    data_t *const data = us->data;
+    const bool is_last = cairo_surface_get_reference_count(data->surface) == 1;
+    cairo_surface_destroy(data->surface);
+    if (is_last) {
+        free(data->origin);
+        free(data);
+    }
 }
 
 static cairo_surface_t* gdk_loadimage(GVJ_t * job, usershape_t *us)
@@ -104,7 +120,9 @@ static cairo_surface_t* gdk_loadimage(GVJ_t * job, usershape_t *us)
 
     if (us->data) {
         if (us->datafree == gdk_freeimage) {
-	    cairo_image = cairo_surface_reference(us->data); /* use cached data */
+	    // use cached data
+	    data_t *const data = us->data;
+	    cairo_image = cairo_surface_reference(data->surface);
 	} else {
 	    us->datafree(us);        /* free incompatible cache data */
 	    us->datafree = NULL;
@@ -135,7 +153,10 @@ static cairo_surface_t* gdk_loadimage(GVJ_t * job, usershape_t *us)
             cairo_image = cairo_surface_reference (cairo_image);
             cairo_restore (cr);
             gdk_set_mimedata (cairo_image, us);
-            us->data = cairo_surface_reference(cairo_image);
+            data_t *const data = gv_alloc(sizeof(data_t));
+            *data = (data_t){.surface = cairo_surface_reference(cairo_image),
+                             .origin = image};
+            us->data = data;
             us->datafree = gdk_freeimage;
         }
         gvusershape_file_release(us);
