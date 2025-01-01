@@ -33,25 +33,11 @@
 #include <assert.h>
 
 #include <getopt.h>
-#include <stdbool.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <util/alloc.h>
 #include <util/exit.h>
-
-#ifdef __APPLE__
-#include <mach-o/dyld.h>
-#endif
-
-#ifdef __FreeBSD__
-#include <sys/sysctl.h>
-#include <sys/types.h>
-#endif
-
-#if !defined(_WIN32)
-#include <unistd.h>
-#endif
+#include <util/gv_find_me.h>
 
 static char *smyrnaDir; ///< path to directory containing smyrna data files
 static char *smyrnaGlade;
@@ -178,138 +164,6 @@ static void windowedMode(int argc, char *argv[]) {
     gtk_main();
 }
 
-#ifndef _WIN32
-/// `readlink`-alike but dynamically allocates
-static char *readln(const char *path) {
-
-  char *resolved = NULL;
-  size_t size = 0;
-
-  while (true) {
-
-    // expand target buffer
-    resolved = gv_realloc(resolved, size, size == 0 ? 1024 : (size * 2));
-    size = size == 0 ? 1024 : (size * 2);
-
-    // attempt to resolve
-    {
-      ssize_t written = readlink(path, resolved, size);
-      if (written < 0) {
-        break;
-      }
-      if ((size_t)written < size) {
-        // success
-        resolved[written] = '\0';
-        return resolved;
-      }
-    }
-  }
-
-  // failed
-  free(resolved);
-  return NULL;
-}
-#endif
-
-/// find an absolute path to the current executable
-static char *find_me(void) {
-
-  // macOS
-#ifdef __APPLE__
-  {
-    // determine how many bytes we will need to allocate
-    uint32_t buf_size = 0;
-    int rc = _NSGetExecutablePath(NULL, &buf_size);
-    assert(rc != 0);
-    assert(buf_size > 0);
-
-    char *path = gv_alloc(buf_size);
-
-    // retrieve the actual path
-    if (_NSGetExecutablePath(path, &buf_size) < 0) {
-      fprintf(stderr, "failed to get path for executable.\n");
-      graphviz_exit(EXIT_FAILURE);
-    }
-
-    // try to resolve any levels of symlinks if possible
-    while (true) {
-      char *buf = readln(path);
-      if (buf == NULL)
-        return path;
-
-      free(path);
-      path = buf;
-    }
-  }
-#elif defined(_WIN32)
-  {
-    char *path = NULL;
-    size_t path_size = 0;
-    int rc = 0;
-
-    do {
-      size_t size = path_size == 0 ? 1024 : (path_size * 2);
-      path = gv_realloc(path, path_size, size);
-      path_size = size;
-
-      rc = GetModuleFileName(NULL, path, path_size);
-      if (rc == 0) {
-        fprintf(stderr, "failed to get path for executable.\n");
-        graphviz_exit(EXIT_FAILURE);
-      }
-
-    } while (rc == path_size);
-
-    return path;
-  }
-#else
-
-  // Linux
-  char *path = readln("/proc/self/exe");
-  if (path != NULL)
-    return path;
-
-  // DragonFly BSD, FreeBSD
-  path = readln("/proc/curproc/file");
-  if (path != NULL)
-    return path;
-
-  // NetBSD
-  path = readln("/proc/curproc/exe");
-  if (path != NULL)
-    return path;
-
-// /proc-less FreeBSD
-#ifdef __FreeBSD__
-  {
-    int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1};
-    static const size_t MIB_LENGTH = sizeof(mib) / sizeof(mib[0]);
-
-    do {
-      // determine how long the path is
-      size_t buf_size = 0;
-      if (sysctl(mib, MIB_LENGTH, NULL, &buf_size, NULL, 0) < 0) {
-        break;
-      }
-      assert(buf_size > 0);
-
-      // make enough space for the target path
-      char *buf = gv_alloc(buf_size);
-
-      // resolve it
-      if (sysctl(mib, MIB_LENGTH, buf, &buf_size, NULL, 0) == 0) {
-        return buf;
-      }
-      free(buf);
-    } while (0);
-  }
-#endif
-#endif
-
-  fprintf(stderr, "failed to get path for executable.\n");
-  graphviz_exit(EXIT_FAILURE);
-}
-
 /// find an absolute path to where Smyrna auxiliary files are stored
 static char *find_share(void) {
 
@@ -320,7 +174,11 @@ static char *find_share(void) {
 #endif
 
   // find the path to the `smyrna` binary
-  char *smyrna_exe = find_me();
+  char *smyrna_exe = gv_find_me();
+  if (smyrna_exe == NULL) {
+    fputs("failed to find path to self\n", stderr);
+    graphviz_exit(EXIT_FAILURE);
+  }
 
   // assume it is of the form …/bin/smyrna[.exe] and construct
   // …/share/graphviz/smyrna

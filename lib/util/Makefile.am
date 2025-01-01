@@ -6,6 +6,7 @@ noinst_HEADERS = \
   bitarray.h \
   exit.h \
   gv_ctype.h \
+  gv_find_me.h \
   gv_fopen.h \
   gv_math.h \
   overflow.h \
@@ -20,7 +21,7 @@ noinst_HEADERS = \
   unused.h
 noinst_LTLIBRARIES = libutil_C.la
 
-libutil_C_la_SOURCES = gv_fopen.c
+libutil_C_la_SOURCES = gv_find_me.c gv_fopen.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 EXTRA_DIST = README

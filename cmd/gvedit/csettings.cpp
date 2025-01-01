@@ -18,152 +18,22 @@
 #include "string.h"
 #include <QTemporaryFile>
 #include <QtWidgets>
-#include <cassert>
 #include <cgraph/rdr.h>
-#include <cstdint>
+#include <cstdlib>
 #include <qfile.h>
 #include <string>
-#include <vector>
-
-#ifdef __APPLE__
-#include <mach-o/dyld.h>
-#endif
-
-#ifdef __FreeBSD__
-#include <sys/sysctl.h>
-#include <sys/types.h>
-#endif
-
-#if !defined(_WIN32)
-#include <unistd.h>
-#endif
+#include <util/gv_find_me.h>
 
 extern int errorPipe(char *errMsg);
 
 #define WIDGET(t, f) (findChild<t *>(QStringLiteral(#f)))
 
-#ifndef _WIN32
-/// `readlink`-alike but dynamically allocates
-static std::string readln(const std::string &pathname) {
-
-  std::vector<char> buf(512, '\0');
-
-  while (true) {
-
-    // expand target buffer
-    buf.resize(buf.size() * 2);
-
-    // attempt to resolve
-    {
-      ssize_t written = readlink(pathname.c_str(), buf.data(), buf.size());
-      if (written < 0)
-        break;
-      if (static_cast<size_t>(written) < buf.size()) {
-        // success
-        buf[written] = '\0';
-        return buf.data();
-      }
-    }
-  }
-
-  // failed
-  return "";
-}
-#endif
-
-/// find an absolute path to the current executable
-static std::string find_me(void) {
-
-  // macOS
-#ifdef __APPLE__
-  {
-    // determine how many bytes we will need to allocate
-    uint32_t buf_size = 0;
-    int rc = _NSGetExecutablePath(NULL, &buf_size);
-    assert(rc != 0);
-    assert(buf_size > 0);
-
-    std::vector<char> pathname(buf_size);
-
-    // retrieve the actual path
-    if (_NSGetExecutablePath(pathname.data(), &buf_size) < 0) {
-      errout << "failed to get path for executable.\n";
-      return "";
-    }
-
-    // try to resolve any levels of symlinks if possible
-    for (std::string p = pathname.data();;) {
-      const std::string buf = readln(p);
-      if (buf == "")
-        return p;
-
-      p = buf;
-    }
-  }
-#elif defined(_WIN32)
-  {
-    std::vector<char> pathname;
-    DWORD rc = 0;
-
-    do {
-      {
-        size_t size = pathname.empty() ? 1024 : (pathname.size() * 2);
-        pathname.resize(size);
-      }
-
-      rc = GetModuleFileNameA(NULL, pathname.data(), pathname.size());
-      if (rc == 0) {
-        errout << "failed to get path for executable.\n";
-        return "";
-      }
-
-    } while (rc == pathname.size());
-
-    return pathname.data();
-  }
-#else
-
-  // Linux
-  std::string pathname = readln("/proc/self/exe");
-  if (pathname != "")
-    return pathname;
-
-  // DragonFly BSD, FreeBSD
-  pathname = readln("/proc/curproc/file");
-  if (pathname != "")
-    return pathname;
-
-  // NetBSD
-  pathname = readln("/proc/curproc/exe");
-  if (pathname != "")
-    return pathname;
-
-// /proc-less FreeBSD
-#ifdef __FreeBSD__
-  {
-    int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1};
-    static const size_t MIB_LENGTH = sizeof(mib) / sizeof(mib[0]);
-
-    do {
-      // determine how long the path is
-      size_t buf_size = 0;
-      if (sysctl(mib, MIB_LENGTH, NULL, &buf_size, NULL, 0) < 0)
-        break;
-      assert(buf_size > 0);
-
-      // make enough space for the target path
-      std::vector<char> buf(buf_size, '\0');
-
-      // resolve it
-      if (sysctl(mib, MIB_LENGTH, buf.data(), &buf_size, NULL, 0) == 0)
-        return buf.data();
-    } while (0);
-  }
-#endif
-#endif
-
-  errout << "failed to get path for executable.\n";
-  return "";
+/// wrapper around `gv_find_me` to convert to a C++ type
+static std::string find_me() {
+  char *const me = gv_find_me();
+  const std::string me_s = me == NULL ? "" : me;
+  free(me);
+  return me_s;
 }
 
 /// find an absolute path to where Smyrna auxiliary files are stored

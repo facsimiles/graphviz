@@ -1,4 +1,5 @@
 add_library(util STATIC
+  gv_find_me.c
   gv_fopen.c
 )
 
