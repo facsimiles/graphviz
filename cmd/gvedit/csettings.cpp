@@ -36,7 +36,7 @@ static std::string find_me() {
   return me_s;
 }
 
-/// find an absolute path to where Smyrna auxiliary files are stored
+/// find an absolute path to where Gvedit auxiliary files are stored
 static std::string find_share(void) {
 
 #ifdef _WIN32
