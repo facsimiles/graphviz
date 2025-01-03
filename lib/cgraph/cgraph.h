@@ -428,8 +428,13 @@ struct Agraph_s {
   struct graphviz_node_set *n_id; ///< the node set indexed by ID
   Dict_t *e_seq, *e_id;           ///< holders for edge sets
   Dict_t *g_seq, *g_id;           ///< subgraphs - descendants
-  Agraph_t *parent, *root;        ///< subgraphs - ancestors
-  Agclos_t *clos;                 ///< shared resources
+  /// alternative subgraphs representation
+  ///
+  /// A C array of the subgraphs for faster iteration. This is only expected to
+  /// be accessed by libcgraph internally.
+  void *g_seq2;
+  Agraph_t *parent, *root; ///< subgraphs - ancestors
+  Agclos_t *clos;          ///< shared resources
 };
 
 /* graphs */

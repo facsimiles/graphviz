@@ -441,7 +441,7 @@ static bool irrelevant_subgraph(Agraph_t * g)
 
 static bool node_in_subg(Agraph_t * g, Agnode_t * n)
 {
-    Agraphs_t *subgs = g_seq2(g);
+    Agraphs_t *subgs = g->g_seq2;
 
     for (size_t i = 0; i < Agraphs_size(subgs); ++i) {
 	Agraph_t *subg = Agraphs_get(subgs, i);
@@ -647,7 +647,7 @@ static int write_port(Agedge_t * e, iochan_t * ofile, Agsym_t * port)
 }
 
 static bool write_edge_test(Agraph_t *g, Agedge_t *e) {
-    Agraphs_t *subgs = g_seq2(g);
+    Agraphs_t *subgs = g->g_seq2;
 
     /* can use agedge() because we subverted the dict compar_f */
     for (size_t i = 0; i < Agraphs_size(subgs); ++i) {
