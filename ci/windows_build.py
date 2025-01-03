@@ -12,7 +12,7 @@ from typing import List, TextIO
 
 
 def run(args: List[str], cwd: Path, out: TextIO):  # pylint: disable=C0116
-    print(f"+ {' '.join(shlex.quote(str(x)) for x in args)}")
+    print(f"+ {shlex.join(str(x) for x in args)}")
     p = subprocess.run(
         args,
         stdout=subprocess.PIPE,
