@@ -8,10 +8,10 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, TextIO
+from typing import List, TextIO, Union
 
 
-def run(args: List[str], cwd: Path, out: TextIO):  # pylint: disable=C0116
+def run(args: List[Union[str, Path]], cwd: Path, out: TextIO):  # pylint: disable=C0116
     print(f"+ {shlex.join(str(x) for x in args)}")
     p = subprocess.run(
         args,
