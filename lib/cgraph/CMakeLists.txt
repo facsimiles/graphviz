@@ -20,7 +20,6 @@ add_library(cgraph
   list.h
   node_set.h
   rdr.h
-  tokenize.h
 
   # Source files
   acyclic.c

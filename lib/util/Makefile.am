@@ -15,6 +15,7 @@ noinst_HEADERS = \
   strcasecmp.h \
   streq.h \
   strview.h \
+  tokenize.h \
   unreachable.h \
   unused.h
 noinst_LTLIBRARIES = libutil_C.la

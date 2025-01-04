@@ -6,10 +6,10 @@
 #endif
 
 #include <assert.h>
-#include <cgraph/tokenize.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/strview.h>
+#include <util/tokenize.h>
 
 /// basic lifecycle
 static void test_basic(void) {

@@ -16,7 +16,6 @@
 #include "htmlparse.h"
 #include <common/htmllex.h>
 #include <cdt/cdt.h>
-#include <cgraph/tokenize.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -26,6 +25,7 @@
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
 #include <util/strview.h>
+#include <util/tokenize.h>
 #include <util/unused.h>
 
 #ifdef HAVE_EXPAT
