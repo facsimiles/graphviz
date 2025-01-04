@@ -11,7 +11,6 @@
  *************************************************************************/
 
 #include <common/render.h>
-#include <cgraph/tokenize.h>
 #include <common/htmltable.h>
 #include <common/entities.h>
 #include <limits.h>
@@ -30,6 +29,7 @@
 #include <util/strcasecmp.h>
 #include <util/streq.h>
 #include <util/strview.h>
+#include <util/tokenize.h>
 
 int late_int(void *obj, attrsym_t *attr, int defaultValue, int minimum) {
     if (attr == NULL)
