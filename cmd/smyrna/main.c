@@ -53,7 +53,7 @@
 #include <unistd.h>
 #endif
 
-static char *smyrnaDir; /* path to directory containin smyrna data files */
+static char *smyrnaDir; ///< path to directory containing smyrna data files
 static char *smyrnaGlade;
 
 /* smyrnaPath:
