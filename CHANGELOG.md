@@ -51,6 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `target_link_libraries(myapp PRIVATE graphviz::cgraph)`. #2598
 - Verbose `checkpath` warnings about ports not lying in their expected boxes
   have been removed.
+- In verbose mode (`-v`) the dot layout algorithm now notes when it is entering
+  each layout phase. #2540
 
 ### Fixed
 
