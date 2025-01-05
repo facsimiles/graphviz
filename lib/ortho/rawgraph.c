@@ -8,11 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <cgraph/list.h>
 #include <ortho/rawgraph.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 #define UNSCANNED 0
 #define SCANNING  1

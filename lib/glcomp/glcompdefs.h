@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <cgraph/list.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -24,6 +23,7 @@
 #include <tchar.h>
 #endif
 #include <glcomp/opengl.h>
+#include <util/list.h>
 
 #ifdef __cplusplus
 extern "C" {

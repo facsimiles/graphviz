@@ -21,13 +21,13 @@
  */
 
 #include <cgraph/cghdr.h>
-#include <cgraph/list.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 typedef struct {
   bool on_stack : 1;

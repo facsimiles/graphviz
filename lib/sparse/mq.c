@@ -56,7 +56,6 @@
 */
 
 #define STANDALONE
-#include <cgraph/list.h>
 #include <limits.h>
 #include <sparse/general.h>
 #include <sparse/SparseMatrix.h>
@@ -64,6 +63,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 static double get_mq(SparseMatrix A, int *assignment, int *ncluster0, double *mq_in0, double *mq_out0, double **dout0){
   /* given a symmetric matrix representation of a graph and an assignment of nodes into clusters, calculate the modularity quality.

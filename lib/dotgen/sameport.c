@@ -13,11 +13,11 @@
  *	merge edges with specified samehead/sametail onto the same port
  */
 
-#include <cgraph/list.h>
 #include <math.h>
 #include	<dotgen/dot.h>
 #include	<stdbool.h>
 #include	<stddef.h>
+#include	<util/list.h>
 #include	<util/streq.h>
 
 DEFINE_LIST(edge_list, edge_t*)

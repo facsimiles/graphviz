@@ -49,13 +49,13 @@
  */
 
 #include <assert.h>
-#include <cgraph/list.h>
 #include <limits.h>
 #include <math.h>
 #include <stdbool.h>
 #include <common/render.h>
 #include <pathplan/pathplan.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 #define TWOPI (2*M_PI)
 

@@ -31,11 +31,11 @@
 #include <stdlib.h>
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>
-#include <cgraph/list.h>
 
 #include <getopt.h>
 #include "openFile.h"
 #include <util/exit.h>
+#include <util/list.h>
 #include <util/unreachable.h>
 
 #define INF UINT_MAX
