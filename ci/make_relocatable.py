@@ -31,7 +31,7 @@ def run(args: list[Union[str, Path]]) -> str:
     Returns:
         the stdout of the process.
     """
-    print(f"+ {' '.join(shlex.quote(str(a)) for a in args)}")
+    print(f"+ {shlex.join(str(a) for a in args)}")
     output = subprocess.check_output(args, universal_newlines=True).strip()
     if output != "":
         print(output)
