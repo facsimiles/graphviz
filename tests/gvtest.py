@@ -68,7 +68,7 @@ def compile_c(
         args = [cc, "-std=c99", src, "-o", dst] + cflags + ldflags
 
     # dump the command being run for the user to observe if the test fails
-    print(f'+ {" ".join(shlex.quote(str(x)) for x in args)}')
+    print(f"+ {shlex.join(str(x) for x in args)}")
 
     # compile the program
     try:
@@ -327,7 +327,7 @@ def run_c(
 
         # dump the command being run for the user to observe if the test fails
         argv = [exe] + args
-        print(f'+ {" ".join(shlex.quote(str(x)) for x in argv)}')
+        print(f"+ {shlex.join(str(x) for x in argv)}")
 
         input_bytes = None
         if input is not None:
