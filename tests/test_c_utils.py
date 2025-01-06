@@ -2,13 +2,14 @@
 
 import os
 import platform
+import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import run_c  # pylint: disable=wrong-import-position
+from gvtest import compile_c, run_c  # pylint: disable=wrong-import-position
 
 
 def test_list():
@@ -67,3 +68,31 @@ def test_overflow_h(builtins: bool):
         cflags += ["-std=gnu99", "-Wall", "-Wextra", "-Werror"]
 
     run_c(src, cflags=cflags)
+
+
+def test_gv_find_me(tmp_path: Path):
+    """test ../lib/util/gv_find_me.c::gv_find_me works correctly"""
+
+    # locate our support test file
+    src = Path(__file__).parent.resolve() / "test_gv_find_me.c"
+    assert src.exists()
+
+    # locate lib directory that needs to be in the include path
+    lib = Path(__file__).resolve().parents[1] / "lib"
+
+    # extra C flags this compilation needs
+    cflags = ["-I", lib]
+    if platform.system() != "Windows":
+        cflags += ["-std=gnu11", "-Wall", "-Wextra", "-Werror"]
+
+    # pick a path to compile to
+    exe = tmp_path / "test_gv_find_me.exe"
+
+    _ = compile_c(src, cflags, dst=exe)
+
+    # run this
+    output = subprocess.check_output([exe], universal_newlines=True)
+
+    assert os.path.normpath(output) == os.path.normpath(
+        f"{exe}\n"
+    ), "gv_find_me did not determine executable absolute path"

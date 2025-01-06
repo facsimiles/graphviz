@@ -40,6 +40,7 @@ gvedit_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/util/libutil_C.la \
 	$(QTGUI_LIBS) \
 	$(QTCORE_LIBS) \
 	$(EXPAT_LIBS) $(Z_LIBS)
