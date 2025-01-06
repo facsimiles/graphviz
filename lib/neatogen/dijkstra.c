@@ -324,7 +324,7 @@ int dijkstra_sgd(graph_sgd *graph, int source, term_sgd *terms) {
              i++) {
             size_t target = graph->targets[i];
             float weight = graph->weights[i];
-            assert(target <= (size_t)INT_MAX);
+            assert(target <= INT_MAX);
             increaseKey_f(&h, (int)target, d+weight, indices, dists);
         }
     }

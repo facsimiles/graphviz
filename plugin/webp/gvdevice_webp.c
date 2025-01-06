@@ -56,8 +56,7 @@ static void webp_format(GVJ_t * job)
     }
 
     // if either dimension exceeds the WebP API, map this to one of its errors
-    if ((unsigned)INT_MAX / BYTES_PER_PIXEL < job->width ||
-        job->height > (unsigned)INT_MAX) {
+    if (INT_MAX / BYTES_PER_PIXEL < job->width || job->height > INT_MAX) {
 	int error = VP8_ENC_ERROR_BAD_DIMENSION;
 	fprintf(stderr, "Error! Cannot encode picture as WebP\n");
 	fprintf(stderr, "Error code: %d (%s)\n", error, kErrorMessages[error]);

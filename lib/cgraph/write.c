@@ -734,7 +734,7 @@ int agwrite(Agraph_t * g, void *ofile)
     s = agget(g, "linelength");
     if (s != NULL && gv_isdigit(*s)) {
 	unsigned long len = strtoul(s, NULL, 10);
-	if ((len == 0 || len >= MIN_OUTPUTLINE) && len <= (unsigned long)INT_MAX)
+	if ((len == 0 || len >= MIN_OUTPUTLINE) && len <= INT_MAX)
 	    Max_outputline = (int)len;
     }
     set_attrwf(g, true, false);
