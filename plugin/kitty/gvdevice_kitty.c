@@ -19,19 +19,11 @@
 #include <gvc/gvio.h>
 #include <gvc/gvplugin_device.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 
 #ifdef HAVE_LIBZ
 #include <zlib.h>
 #endif
-
-static void fix_colors(unsigned char *imagedata, size_t imagedata_size) {
-  for (size_t i = 0; i < imagedata_size; i += 4) {
-    const unsigned char blue = imagedata[i];
-    const unsigned char red = imagedata[i + 2];
-    imagedata[i] = red;
-    imagedata[i + 2] = blue;
-  }
-}
 
 static size_t div_up(size_t dividend, size_t divisor) {
   return dividend / divisor + (dividend % divisor != 0);
@@ -115,7 +107,7 @@ static void kitty_write(unsigned char *data, size_t data_size, unsigned width,
 static void kitty_format(GVJ_t *job) {
   unsigned char *imagedata = job->imagedata;
   size_t imagedata_size = job->width * job->height * 4;
-  fix_colors(imagedata, imagedata_size);
+  argb2rgba(job->width, job->height, imagedata);
 
   kitty_write(imagedata, imagedata_size, job->width, job->height, false);
 }
@@ -143,7 +135,7 @@ static int zlib_compress(unsigned char *source, uLong source_len,
 static void zkitty_format(GVJ_t *job) {
   unsigned char *imagedata = job->imagedata;
   const uLong imagedata_size = job->width * job->height * 4;
-  fix_colors(imagedata, imagedata_size);
+  argb2rgba(job->width, job->height, imagedata);
 
   unsigned char *zbuf;
   size_t zsize;
