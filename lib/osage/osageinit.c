@@ -15,6 +15,7 @@
  */
 
 #include    <assert.h>
+#include    <common/geomprocs.h>
 #include    <common/render.h>
 #include    <common/utils.h>
 #include    <cgraph/list.h>
@@ -155,7 +156,7 @@ layout (Agraph_t* g, int depth)
 	bb.UR.x += p.x;
 	bb.LL.y += p.y;
 	bb.UR.y += p.y;
-	EXPANDBB(rootbb, bb);
+	EXPANDBB(&rootbb, bb);
 	if (j < GD_n_cluster(g)) {
 	    subg = children[j];
 	    GD_bb(subg) = bb;
