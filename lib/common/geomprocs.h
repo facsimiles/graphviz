@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <math.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -38,6 +39,30 @@ extern "C" {
 #ifndef GEOMPROCS_API
 #define GEOMPROCS_API /* nothing */
 #endif
+
+/// expand box b as needed to enclose point p
+static inline void expandbp(boxf *b, pointf p) {
+  b->LL.x = fmin(b->LL.x, p.x);
+  b->LL.y = fmin(b->LL.y, p.y);
+  b->UR.x = fmax(b->UR.x, p.x);
+  b->UR.y = fmax(b->UR.y, p.y);
+}
+
+/// expand box b0 as needed to enclose box b1
+static inline void expandbb(box *b0, box b1) {
+  b0->LL.x = MIN(b0->LL.x, b1.LL.x);
+  b0->LL.y = MIN(b0->LL.y, b1.LL.y);
+  b0->UR.x = MAX(b0->UR.x, b1.UR.x);
+  b0->UR.y = MAX(b0->UR.y, b1.UR.y);
+}
+static inline void expandbbf(boxf *b0, boxf b1) {
+  b0->LL.x = fmin(b0->LL.x, b1.LL.x);
+  b0->LL.y = fmin(b0->LL.y, b1.LL.y);
+  b0->UR.x = fmax(b0->UR.x, b1.UR.x);
+  b0->UR.y = fmax(b0->UR.y, b1.UR.y);
+}
+#define EXPANDBB(b0, b1) \
+  (_Generic((b0), box *: expandbb, boxf *: expandbbf)((b0), (b1)))
 
 GEOMPROCS_API boxf flip_rec_boxf(boxf b, pointf p);
 

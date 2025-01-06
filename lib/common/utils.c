@@ -11,6 +11,7 @@
  *************************************************************************/
 
 #include <common/render.h>
+#include <common/geomprocs.h>
 #include <common/htmltable.h>
 #include <common/entities.h>
 #include <limits.h>
@@ -649,7 +650,7 @@ void compute_bb(graph_t * g)
 	b.LL = sub_pointf(ptf, s2);
 	b.UR = add_pointf(ptf, s2);
 
-	EXPANDBB(bb,b);
+	EXPANDBB(&bb, b);
 	if (ND_xlabel(n) && ND_xlabel(n)->set) {
 	    bb = addLabelBB(bb, ND_xlabel(n), GD_flip(g));
 	}
@@ -659,7 +660,7 @@ void compute_bb(graph_t * g)
 	    for (size_t i = 0; i < ED_spl(e)->size; i++) {
 		for (size_t j = 0; j < (((Agedgeinfo_t*)AGDATA(e))->spl)->list[i].size; j++) {
 		    ptf = ED_spl(e)->list[i].list[j];
-		    EXPANDBP(bb,ptf);
+		    expandbp(&bb, ptf);
 		}
 	    }
 	    if (ED_label(e) && ED_label(e)->set) {
@@ -679,7 +680,7 @@ void compute_bb(graph_t * g)
 
     for (int i = 1; i <= GD_n_cluster(g); i++) {
 	B2BF(GD_bb(GD_clust(g)[i]), BF);
-	EXPANDBB(bb,BF);
+	EXPANDBB(&bb, BF);
     }
     if (GD_label(g) && GD_label(g)->set) {
 	bb = addLabelBB(bb, GD_label(g), GD_flip(g));
