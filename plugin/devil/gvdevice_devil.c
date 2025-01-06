@@ -15,6 +15,7 @@
 #include <IL/ilu.h>
 #include <stdint.h>
 #include <string.h>
+#include <util/gv_math.h>
 
 /// flip the row ordering of image data
 ///
@@ -64,7 +65,7 @@ static void devil_format(GVJ_t * job)
     // let the DevIL do its thing
     (void)ilTexImage(job->width, job->height,
     		1,		// Depth
-    		4,		// Bpp
+    		BYTES_PER_PIXEL,
     		IL_BGRA,	// Format
     		IL_UNSIGNED_BYTE,// Type
     		job->imagedata);

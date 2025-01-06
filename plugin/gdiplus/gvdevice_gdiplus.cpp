@@ -15,6 +15,7 @@
 #include <gvc/gvplugin_render.h>
 #include <gvc/gvio.h>
 #include "gvplugin_gdiplus.h"
+#include <util/gv_math.h>
 
 using namespace Gdiplus;
 

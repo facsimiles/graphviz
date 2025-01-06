@@ -6,6 +6,7 @@
 #include <gvc/gvplugin_device.h>
 #include <limits.h>
 #include <stddef.h>
+#include <util/gv_math.h>
 
 #include <gvc/gvio.h>
 
@@ -54,9 +55,6 @@ static unsigned get_color(unsigned red, unsigned green, unsigned blue) {
   return winner;
 }
 
-// number of bytes per pixel
-static const unsigned BPP = 4;
-
 static void process(GVJ_t *job, int color_depth) {
 
   unsigned char *data = job->imagedata;
@@ -68,7 +66,8 @@ static void process(GVJ_t *job, int color_depth) {
 
       {
         // extract the upper pixel
-        unsigned offset = y * job->width * BPP + x * BPP;
+        unsigned offset =
+            y * job->width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
         unsigned red = data[offset + 2];
         unsigned green = data[offset + 1];
         unsigned blue = data[offset];
@@ -89,7 +88,8 @@ static void process(GVJ_t *job, int color_depth) {
         unsigned green = 0;
         unsigned blue = 0;
         if (y + 1 < job->height) {
-          unsigned offset = (y + 1) * job->width * BPP + x * BPP;
+          unsigned offset =
+              (y + 1) * job->width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
           red = data[offset + 2];
           green = data[offset + 1];
           blue = data[offset];
@@ -162,7 +162,8 @@ static void processNup(GVJ_t *job, unsigned y_stride, unsigned x_stride,
              x + x_offset < job->width && x_offset < x_stride; ++x_offset) {
 
           const unsigned offset =
-              (y + y_offset) * job->width * BPP + (x + x_offset) * BPP;
+              (y + y_offset) * job->width * BYTES_PER_PIXEL +
+              (x + x_offset) * BYTES_PER_PIXEL;
           const unsigned red = data[offset + 2];
           const unsigned green = data[offset + 1];
           const unsigned blue = data[offset];

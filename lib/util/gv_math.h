@@ -83,6 +83,9 @@ static inline int scale_clamp(int original, double scale) {
   return (int)(original * scale);
 }
 
+/// byte length of data per pixel in image data buffers
+enum { BYTES_PER_PIXEL = 4 };
+
 /// in-place conversion of ARGB32 big endian to RGBA32 little endian
 ///
 /// Image data originating from sources like Cairo comes in a 4-byte-per-pixel
@@ -112,7 +115,7 @@ static inline void argb2rgba(size_t width, size_t height, unsigned char *data) {
       const unsigned char blue = data[Ba];
       data[Rb] = red;
       data[Bb] = blue;
-      data += 4;
+      data += BYTES_PER_PIXEL;
     }
   }
 }

@@ -59,7 +59,8 @@ static void gdk_format(GVJ_t * job)
 
     argb2rgba(job->width, job->height, job->imagedata);
 
-    assert(job->width <= (unsigned)INT_MAX / 4 && "width out of range");
+    assert(job->width <= (unsigned)INT_MAX / BYTES_PER_PIXEL &&
+           "width out of range");
     assert(job->height <= (unsigned)INT_MAX && "height out of range");
 
     pixbuf = gdk_pixbuf_new_from_data(
@@ -69,7 +70,7 @@ static void gdk_format(GVJ_t * job)
                 8,                      // bits_per_sample
                 (int)job->width,        // width
                 (int)job->height,       // height
-                4 * (int)job->width,    // rowstride
+                BYTES_PER_PIXEL * (int)job->width, // rowstride
                 NULL,                   // destroy_fn
                 NULL                    // destroy_fn_data
                );

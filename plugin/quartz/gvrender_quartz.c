@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <util/gv_math.h>
 
 #ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
 #if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
