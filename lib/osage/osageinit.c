@@ -18,6 +18,7 @@
 #include    <common/geomprocs.h>
 #include    <common/render.h>
 #include    <common/utils.h>
+#include    <float.h>
 #include    <limits.h>
 #include    <osage/osage.h>
 #include    <neatogen/neatoprocs.h>
@@ -145,8 +146,8 @@ layout (Agraph_t* g, int depth)
     pts = putRects((size_t)total, gs, &pinfo);
     free (pinfo.vals);
 
-    rootbb.LL = (pointf){INT_MAX, INT_MAX};
-    rootbb.UR = (pointf){-INT_MAX, -INT_MAX};
+    rootbb.LL = (pointf){DBL_MAX, DBL_MAX};
+    rootbb.UR = (pointf){-DBL_MAX, -DBL_MAX};
 
     /* reposition children relative to GD_bb(g) */
     for (j = 0; j < total; j++) {
