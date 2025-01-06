@@ -13,19 +13,24 @@
 #include <gvc/gvplugin_device.h>
 #include <IL/il.h>
 #include <IL/ilu.h>
+#include <stdint.h>
+#include <string.h>
 
 static void Y_inv(unsigned width, unsigned height, unsigned char *data) {
-        unsigned int x, y, *a, *b, t;
+        unsigned int x, y;
 
-	a = (unsigned int*)data;
-        b = a + (height-1) * width;
+        unsigned char *a = data;
+        unsigned char *b = a + (height - 1) * width * sizeof(uint32_t);
         for (y = 0; y < height/2; y++) {
                 for (x = 0; x < width; x++) {
-			t = *a;
-			*a++ = *b;
-			*b++ = t;
+			uint32_t t;
+			memcpy(&t, a, sizeof(t));
+			memcpy(a, b, sizeof(t));
+			a += sizeof(uint32_t);
+			memcpy(b, &t, sizeof(t));
+			b += sizeof(uint32_t);
                 }
-                b -= 2*width;
+                b -= 2 * width * sizeof(uint32_t);
         }
 }
 
