@@ -5872,8 +5872,8 @@ def test_agxbuf_print_nul():
     if platform.system() == "Windows" and not is_mingw():
         cflags = [f"/I{lib}"]
     else:
-        # GNU99 needed for `strndup`
-        cflags = ["-std=gnu99", f"-I{lib}"]
+        # gnu11 needed for `strndup`
+        cflags = ["-std=gnu11", f"-I{lib}"]
 
     run_c(c_src, cflags=cflags)
 
@@ -5891,8 +5891,8 @@ def test_agxbuf_use_implicit_nul():
     if platform.system() == "Windows" and not is_mingw():
         cflags = [f"/I{lib}"]
     else:
-        # GNU99 needed for `strndup`
-        cflags = ["-std=gnu99", f"-I{lib}"]
+        # gnu11 needed for `strndup`
+        cflags = ["-std=gnu11", f"-I{lib}"]
 
     run_c(c_src, cflags=cflags)
 
