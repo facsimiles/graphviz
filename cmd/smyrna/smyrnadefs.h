@@ -254,7 +254,6 @@ typedef struct
 	/*view variables */
 	float panx;
 	float pany;
-	float panz;
 	float zoom;
 
 	/*clipping coordinates, to avoid unnecesarry rendering */
