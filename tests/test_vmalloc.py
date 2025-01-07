@@ -22,6 +22,6 @@ def test_vmalloc():
     # extra C flags this compilation needs
     cflags = ["-I", lib]
     if platform.system() != "Windows":
-        cflags += ["-std=gnu99", "-Wall", "-Wextra", "-Werror"]
+        cflags += ["-std=gnu11", "-Wall", "-Wextra", "-Werror"]
 
     _, _ = run_c(src, cflags=cflags)
