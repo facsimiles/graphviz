@@ -132,7 +132,6 @@ typedef struct
     typedef struct _viewport_camera {
 	float x;
 	float y;
-	float z;
 
 	float targetx;
 	float targety;
