@@ -136,7 +136,6 @@ typedef struct
 
 	float targetx;
 	float targety;
-	float targetz;
 
 	float r;
     } viewport_camera;
