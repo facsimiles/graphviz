@@ -102,6 +102,7 @@ if(WITH_SMYRNA)
     neatogen
     pathplan
     topfish
+    util
     xdot
     ${EXPAT_LIBRARIES}
     ${Fontconfig_LIBRARIES}

@@ -69,6 +69,7 @@ if(WITH_GVEDIT)
     cdt
     cgraph
     gvc
+    util
   )
 
   target_link_libraries(gvedit PRIVATE ${QT_LIBS})
