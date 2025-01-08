@@ -309,7 +309,11 @@ static void applyattrs(void *obj)
 	for (aptr = S->attrlist.first; aptr; aptr = aptr->next) {
 		if (aptr->tag == T_attr) {
 			if (aptr->u.asym) {
-				agxset(obj,aptr->u.asym,aptr->str);
+				if (aghtmlstr(aptr->str)) {
+				  agxset_html(obj, aptr->u.asym, aptr->str);
+				} else {
+				  agxset(obj, aptr->u.asym, aptr->str);
+				}
 			}
 		}
 		else {
