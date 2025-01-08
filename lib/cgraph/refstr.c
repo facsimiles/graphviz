@@ -198,12 +198,15 @@ static void strdict_add(strdict_t *dict, refstr_t *r) {
 }
 
 /// lookup a reference-counted string in a dictionary
-static refstr_t *strdict_find(strdict_t *dict, refstr_t *key) {
+///
+/// @param dict String dictionary to search
+/// @param s String content to search for
+/// @return Found reference-counted string, or null if not found
+static refstr_t *strdict_find(strdict_t *dict, const char *s) {
   assert(dict != NULL);
-  assert(key != NULL);
-  assert(key != TOMBSTONE);
+  assert(s != NULL);
 
-  const size_t h = strdict_hash(key->s);
+  const size_t h = strdict_hash(s);
   const size_t capacity = dict->buckets == NULL ? 0 : 1ul << dict->capacity_exp;
 
   for (size_t i = 0; i < capacity; ++i) {
@@ -220,7 +223,7 @@ static refstr_t *strdict_find(strdict_t *dict, refstr_t *key) {
     }
 
     // is this the string we are searching for?
-    if (refstr_eq(key->s, dict->buckets[candidate])) {
+    if (refstr_eq(s, dict->buckets[candidate])) {
       return dict->buckets[candidate];
     }
   }
@@ -303,18 +306,8 @@ int agstrclose(Agraph_t * g)
 }
 
 static refstr_t *refsymbind(strdict_t *strdict, const char *s) {
-    refstr_t key, *r;
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as dtsearch does not modify its input key.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-    key.s = (char*)s;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
-    r = strdict_find(strdict, &key);
+    refstr_t *r;
+    r = strdict_find(strdict, s);
     return r;
 }
 
