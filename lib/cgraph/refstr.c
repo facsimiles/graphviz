@@ -30,8 +30,7 @@
 typedef struct {
     uint64_t refcnt: sizeof(uint64_t) * 8 - 1;
     uint64_t is_html: 1;
-    char *s;
-    char store[1];		/* this is actually a dynamic array */
+    char s[];
 } refstr_t;
 
 /// compare a string to a reference-counted string for equality
@@ -330,7 +329,7 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
     if (r)
 	r->refcnt++;
     else {
-	sz = sizeof(refstr_t) + strlen(s);
+	sz = sizeof(refstr_t) + strlen(s) + 1;
 	if (g)
 	    r = gv_calloc(sz, sizeof(char));
 	else {
@@ -341,8 +340,7 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
 	}
 	r->refcnt = 1;
 	r->is_html = is_html;
-	strcpy(r->store, s);
-	r->s = r->store;
+	strcpy(r->s, s);
 	strdict_add(strdict, r);
     }
     return r->s;
@@ -378,7 +376,7 @@ int agstrfree(Agraph_t * g, const char *s)
 
 /* aghtmlstr:
  * Return true if s is an HTML string.
- * We assume s points to the datafield store[0] of a refstr.
+ * We assume s is within a refstr.
  */
 int aghtmlstr(const char *s)
 {
@@ -386,7 +384,7 @@ int aghtmlstr(const char *s)
 
     if (s == NULL)
 	return 0;
-    key = (const refstr_t *) (s - offsetof(refstr_t, store[0]));
+    key = (const refstr_t *)(s - offsetof(refstr_t, s));
     return key->is_html;
 }
 
