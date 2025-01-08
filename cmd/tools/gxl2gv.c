@@ -240,9 +240,7 @@ setNodeAttr(Agnode_t * np, char *name, char *value, userdata_t * ud,
 	if (!ap)
 	    ap = agattr(root, AGNODE, name, defval);
 	if (is_html) {
-	    char *val = agstrdup_html(root, value);
-	    agxset(np, ap, val);
-	    agstrfree(root, val); // drop the extra reference count we bumped for val
+	    agxset_html(np, ap, value);
 	} else {
 	    agxset(np, ap, value);
 	}
