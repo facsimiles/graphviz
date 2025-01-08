@@ -45,7 +45,6 @@ static Dict_t *Refdict_default;
 /* refdict:
  * Return the string dictionary associated with g.
  * If necessary, create it.
- * As a side-effect, set html masks. This assumes 8-bit bytes.
  */
 static Dict_t *refdict(Agraph_t * g)
 {
