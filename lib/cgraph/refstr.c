@@ -305,15 +305,9 @@ int agstrclose(Agraph_t * g)
     return 0;
 }
 
-static refstr_t *refsymbind(strdict_t *strdict, const char *s) {
-    refstr_t *r;
-    r = strdict_find(strdict, s);
-    return r;
-}
-
 static char *refstrbind(strdict_t *strdict, const char *s) {
     refstr_t *r;
-    r = refsymbind(strdict, s);
+    r = strdict_find(strdict, s);
     if (r)
 	return r->s;
     else
@@ -332,7 +326,7 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
     if (s == NULL)
 	 return NULL;
     strdict_t *strdict = *refdict(g);
-    r = refsymbind(strdict, s);
+    r = strdict_find(strdict, s);
     if (r)
 	r->refcnt++;
     else {
@@ -370,7 +364,7 @@ int agstrfree(Agraph_t * g, const char *s)
 	 return FAILURE;
 
     strdict_t *strdict = *refdict(g);
-    r = refsymbind(strdict, s);
+    r = strdict_find(strdict, s);
     if (r && r->s == s) {
 	r->refcnt--;
 	if (r->refcnt == 0) {
