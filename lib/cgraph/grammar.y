@@ -355,9 +355,13 @@ static void attrstmt(int tkind, char *macroname)
 	for (aptr = S->attrlist.first; aptr; aptr = aptr->next) {
 		/* If the tag is still T_atom, aptr->u.asym has not been set */
 		if (aptr->tag == T_atom) continue;
-		if (!aptr->u.asym->fixed || S->g != G)
-			sym = agattr(S->g,kind,aptr->u.asym->name,aptr->str);
-		else
+		if (!aptr->u.asym->fixed || S->g != G) {
+			if (aghtmlstr(aptr->str)) {
+			  sym = agattr_html(S->g, kind, aptr->u.asym->name, aptr->str);
+			} else {
+			  sym = agattr(S->g, kind, aptr->u.asym->name, aptr->str);
+			}
+		} else
 			sym = aptr->u.asym;
 		if (S->g == G)
 			sym->print = true;
