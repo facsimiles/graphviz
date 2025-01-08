@@ -411,8 +411,7 @@ void agmarkhtmlstr(char *s)
 }
 
 #ifdef DEBUG
-static int refstrprint(void *ptr) {
-    refstr_t *r = ptr;
+static int refstrprint(refstr_t *r) {
     fprintf(stderr, "%s\n", r->s);
     return 0;
 }
