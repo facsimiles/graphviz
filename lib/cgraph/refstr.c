@@ -33,6 +33,10 @@ typedef struct {
     char s[];
 } refstr_t;
 
+_Static_assert(
+    offsetof(refstr_t, s) % 2 == 0,
+    "refstr_t.s is not at an even offset, breaking lib/cgraph/id.c code");
+
 /// compare a string to a reference-counted string for equality
 static bool refstr_eq(const char *a, const refstr_t *b) {
   return strcmp(a, b->s) == 0;
