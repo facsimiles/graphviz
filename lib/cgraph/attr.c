@@ -82,12 +82,13 @@ static Dict_t *agdictof(Agraph_t * g, int kind)
     return dict;
 }
 
+/// @param is_html Is `value` an HTML-like string?
 static Agsym_t *agnewsym(Agraph_t * g, const char *name, const char *value,
-                         int id, int kind) {
+                         bool is_html, int id, int kind) {
     Agsym_t *sym = gv_alloc(sizeof(Agsym_t));
     sym->kind = (unsigned char) kind;
     sym->name = agstrdup(g, name);
-    sym->defval = agstrdup(g, value);
+    sym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     sym->id = id;
     return sym;
 }
@@ -98,7 +99,8 @@ static void agcopydict(Dict_t * src, Dict_t * dest, Agraph_t * g, int kind)
 
     assert(dtsize(dest) == 0);
     for (sym = dtfirst(src); sym; sym = dtnext(src, sym)) {
-	newsym = agnewsym(g, sym->name, sym->defval, sym->id, kind);
+	const bool is_html = aghtmlstr(sym->defval);
+	newsym = agnewsym(g, sym->name, sym->defval, is_html, sym->id, kind);
 	newsym->print = sym->print;
 	newsym->fixed = sym->fixed;
 	dtinsert(dest, newsym);
@@ -267,7 +269,9 @@ static void unviewsubgraphsattr(Agraph_t *parent, char *name) {
     if (lsym) {
       continue;
     }
-    lsym = agnewsym(agroot(subg), name, agxget(subg, psym), psym->id, AGRAPH);
+    char *const value = agxget(subg, psym);
+    const bool is_html = aghtmlstr(value);
+    lsym = agnewsym(agroot(subg), name, value, is_html, psym->id, AGRAPH);
     dtinsert(ldict, lsym);
   }
 }
@@ -296,12 +300,12 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value) {
     } else {
 	psym = agdictsym(ldict, name);	/* search with viewpath up to root */
 	if (psym) {		/* new local definition */
-	    lsym = agnewsym(g, name, value, psym->id, kind);
+	    lsym = agnewsym(g, name, value, false, psym->id, kind);
 	    dtinsert(ldict, lsym);
 	    rv = lsym;
 	} else {		/* new global definition */
 	    rdict = agdictof(root, kind);
-	    rsym = agnewsym(g, name, value, dtsize(rdict), kind);
+	    rsym = agnewsym(g, name, value, false, dtsize(rdict), kind);
 	    dtinsert(rdict, rsym);
 	    switch (kind) {
 	    case AGRAPH:
@@ -495,7 +499,7 @@ static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
 	    agstrfree(g, lsym->defval);
 	    lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
 	} else {
-	    lsym = agnewsym(g, sym->name, value, sym->id, AGTYPE(hdr));
+	    lsym = agnewsym(g, sym->name, value, is_html, sym->id, AGTYPE(hdr));
 	    dtinsert(dict, lsym);
 	}
     }
