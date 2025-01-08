@@ -408,7 +408,7 @@ CGRAPH_API int agpopdisc(Agraph_t *g, Agcbdisc_t *disc);
 struct Agclos_s {
   Agdisc_t disc;    /* resource discipline functions */
   Agdstate_t state; /* resource closures */
-  Dict_t *strdict;  /* shared string dict */
+  void *strdict;    ///< shared string dict
   uint64_t seq[3];  /* local object sequence number counter */
   Agcbstack_t *cb;  /* user and system callback function stacks */
   Dict_t *lookup_by_name[3];
