@@ -2184,7 +2184,6 @@ def test_2087():
     ), "warnings were printed when processing concentrated duplicate edges"
 
 
-@pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize("html_like_first", (False, True))
 def test_2089(html_like_first: bool):  # FIXME
     """
@@ -2205,7 +2204,11 @@ def test_2089(html_like_first: bool):  # FIXME
     assert "label=<foo>" in canonical, "HTML-like label not found"
 
 
-@pytest.mark.xfail(strict=True)  # FIXME
+@pytest.mark.xfail(
+    platform.system() == "Windows" and not is_mingw(),
+    reason="cannot link Agdirected on Windows (https://gitlab.com/graphviz/graphviz/-/issues/2634)",
+    strict=True,
+)
 def test_2089_2():
     """
     HTML-like and non-HTML-like strings should peacefully coexist

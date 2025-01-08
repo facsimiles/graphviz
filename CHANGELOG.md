@@ -82,6 +82,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   header has been corrected.
 - Smyrna is once again compilable on macOS. This was a regression in Graphviz
   10.0.1. #2631
+- non-HTML (regular) strings and HTML-like strings are no longer considered
+  equivalent internally. This allows you to have a non-HTML string and an
+  HTML-like string with the same textual content. #2089
 
 ## [12.2.1] – 2024-12-07
 

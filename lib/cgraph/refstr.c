@@ -38,7 +38,15 @@ _Static_assert(
     "refstr_t.s is not at an even offset, breaking lib/cgraph/id.c code");
 
 /// compare a string to a reference-counted string for equality
-static bool refstr_eq(const char *a, const refstr_t *b) {
+///
+/// @param a Content of the first string
+/// @param is_html Whether the first string was an HTML-like string
+/// @param b The second reference-counted string
+/// @return True if the two were equal
+static bool refstr_eq(const char *a, bool is_html, const refstr_t *b) {
+  if (is_html != b->is_html) {
+    return false;
+  }
   return strcmp(a, b->s) == 0;
 }
 
@@ -55,8 +63,9 @@ static strdict_t *Refdict_default;
 ///
 /// @param key Start of data to read
 /// @param len Number of bytes to read
+/// @param extra An extra byte to include in the hash
 /// @return A hash digest suitable for dictionary indexing
-static uint64_t hash(const void *key, size_t len) {
+static uint64_t hash(const void *key, size_t len, uint8_t extra) {
   assert(key != NULL || len == 0);
 
   // The following implementation is based on the `MurmurHash64A` variant of the
@@ -69,6 +78,9 @@ static uint64_t hash(const void *key, size_t len) {
   //     Behavior when the input pointer originated from a non-`uint64_t`
   //     object. This is written in a style that allows contemporary compilers
   //     to optimize code back into wider 8-byte accesses where possible.
+  //   • Our implementation supports an extra byte to be considered to have
+  //     followed the main data. See calls to this function for why this `extra`
+  //     parameter exists.
 
   static const uint64_t seed = 0;
 
@@ -96,6 +108,9 @@ static uint64_t hash(const void *key, size_t len) {
 
   const unsigned char *data2 = data;
 
+  // accumulate extra byte
+  h ^= (uint64_t)extra << 56;
+
   switch (len & 7) {
   case 7:
     h ^= (uint64_t)data2[6] << 48; // fall through
@@ -111,12 +126,12 @@ static uint64_t hash(const void *key, size_t len) {
     h ^= (uint64_t)data2[1] << 8; // fall through
   case 1:
     h ^= (uint64_t)data2[0];
-    h *= m;
     break;
   default:
     // nothing required
     break;
   }
+  h *= m;
 
   h ^= h >> r;
   h *= m;
@@ -131,10 +146,11 @@ static strdict_t *strdict_new(void) { return gv_alloc(sizeof(strdict_t)); }
 /// derive hash for a given reference-counted string
 ///
 /// @param s The reference-counted string’s `s` member
+/// @param is_html Is this an HTML-like string?
 /// @return A hash digest suitable for dictionary indexing
-static size_t strdict_hash(const char *s) {
+static size_t strdict_hash(const char *s, bool is_html) {
   assert(s != NULL);
-  return (size_t)hash(s, strlen(s));
+  return (size_t)hash(s, strlen(s), is_html);
 }
 
 /// a sentinel, marking a dictionary bucket from which an element has been
@@ -183,7 +199,7 @@ static void strdict_add(strdict_t *dict, refstr_t *r) {
   capacity = 1ul << dict->capacity_exp;
   assert(capacity > dict->size);
 
-  const size_t h = strdict_hash(r->s);
+  const size_t h = strdict_hash(r->s, r->is_html);
 
   for (size_t i = 0; i < capacity; ++i) {
     const size_t candidate = (h + i) % capacity;
@@ -204,12 +220,13 @@ static void strdict_add(strdict_t *dict, refstr_t *r) {
 ///
 /// @param dict String dictionary to search
 /// @param s String content to search for
+/// @param is_html Is this an HTML-like string?
 /// @return Found reference-counted string, or null if not found
-static refstr_t *strdict_find(strdict_t *dict, const char *s) {
+static refstr_t *strdict_find(strdict_t *dict, const char *s, bool is_html) {
   assert(dict != NULL);
   assert(s != NULL);
 
-  const size_t h = strdict_hash(s);
+  const size_t h = strdict_hash(s, is_html);
   const size_t capacity = dict->buckets == NULL ? 0 : 1ul << dict->capacity_exp;
 
   for (size_t i = 0; i < capacity; ++i) {
@@ -226,7 +243,7 @@ static refstr_t *strdict_find(strdict_t *dict, const char *s) {
     }
 
     // is this the string we are searching for?
-    if (refstr_eq(s, dict->buckets[candidate])) {
+    if (refstr_eq(s, is_html, dict->buckets[candidate])) {
       return dict->buckets[candidate];
     }
   }
@@ -241,7 +258,7 @@ static void strdict_remove(strdict_t *dict, const refstr_t *key) {
   assert(key != NULL);
   assert(key != TOMBSTONE);
 
-  const size_t h = strdict_hash(key->s);
+  const size_t h = strdict_hash(key->s, key->is_html);
   const size_t capacity = dict->buckets == NULL ? 0 : 1ul << dict->capacity_exp;
 
   for (size_t i = 0; i < capacity; ++i) {
@@ -258,7 +275,7 @@ static void strdict_remove(strdict_t *dict, const refstr_t *key) {
     }
 
     // is this the string we are searching for?
-    if (refstr_eq(key->s, dict->buckets[candidate])) {
+    if (refstr_eq(key->s, key->is_html, dict->buckets[candidate])) {
       assert(dict->size > 0);
       free(dict->buckets[candidate]);
       dict->buckets[candidate] = TOMBSTONE;
@@ -310,7 +327,7 @@ int agstrclose(Agraph_t * g)
 
 static char *refstrbind(strdict_t *strdict, const char *s) {
     refstr_t *r;
-    r = strdict_find(strdict, s);
+    r = strdict_find(strdict, s, false);
     if (r)
 	return r->s;
     else
@@ -329,7 +346,7 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
     if (s == NULL)
 	 return NULL;
     strdict_t *strdict = *refdict(g);
-    r = strdict_find(strdict, s);
+    r = strdict_find(strdict, s, is_html);
     if (r)
 	r->refcnt++;
     else {
@@ -359,14 +376,13 @@ char *agstrdup_html(Agraph_t *g, const char *s) {
 }
 
 int agstrfree(Agraph_t *g, const char *s, bool is_html) {
-    (void)is_html;
     refstr_t *r;
 
     if (s == NULL)
 	 return FAILURE;
 
     strdict_t *strdict = *refdict(g);
-    r = strdict_find(strdict, s);
+    r = strdict_find(strdict, s, is_html);
     if (r && r->s == s) {
 	r->refcnt--;
 	if (r->refcnt == 0) {
