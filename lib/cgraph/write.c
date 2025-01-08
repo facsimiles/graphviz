@@ -272,18 +272,20 @@ static int _write_canonstr(Agraph_t *g, iochan_t *ofile, char *str, bool chk) {
     return ioput(g, ofile, str);
 }
 
-static int write_canonstr(Agraph_t * g, iochan_t * ofile, char *str)
-{
+/// @param known Is `str` already known to be a reference-counted string?
+static int write_canonstr(Agraph_t *g, iochan_t *ofile, char *str, bool known) {
     char *s;
 
     /* str may not have been allocated by agstrdup, so we first need to turn it
      * into a valid refstr
      */
-    s = agstrdup(g, str);
+    s = known ? str : agstrdup(g, str);
 
     int r = _write_canonstr(g, ofile, s, true);
 
-    agstrfree(g, s, false);
+    if (!known) {
+	agstrfree(g, s, false);
+    }
     return r;
 }
 
@@ -315,9 +317,9 @@ static int write_dict(Agraph_t * g, iochan_t * ofile, char *name,
 	    CHKRV(ioput(g, ofile, ",\n"));
 	    CHKRV(indent(g, ofile));
 	}
-	CHKRV(write_canonstr(g, ofile, sym->name));
+	CHKRV(write_canonstr(g, ofile, sym->name, true));
 	CHKRV(ioput(g, ofile, "="));
-	CHKRV(write_canonstr(g, ofile, sym->defval));
+	CHKRV(write_canonstr(g, ofile, sym->defval, true));
     }
     if (cnt > 0) {
 	Level--;
@@ -376,7 +378,7 @@ static int write_hdr(Agraph_t *g, iochan_t *ofile, bool top) {
 	CHKRV(ioput(g, ofile, "graph "));
     }
     if (hasName)
-	CHKRV(write_canonstr(g, ofile, name));
+	CHKRV(write_canonstr(g, ofile, name, false));
     CHKRV(ioput(g, ofile, sep));
     CHKRV(ioput(g, ofile, "{\n"));
     Level++;
@@ -514,7 +516,7 @@ static int write_edge_name(Agedge_t *e, iochan_t *ofile, bool terminate) {
 	    Level++;
 	}
 	CHKRV(ioput(g, ofile, "\t[key="));
-	CHKRV(write_canonstr(g, ofile, p));
+	CHKRV(write_canonstr(g, ofile, p, false));
 	if (terminate)
 	    CHKRV(ioput(g, ofile, "]"));
 	return 1;
@@ -555,9 +557,9 @@ static int write_nondefault_attrs(void *obj, iochan_t * ofile,
 		    CHKRV(ioput(g, ofile, ",\n"));
 		    CHKRV(indent(g, ofile));
 		}
-		CHKRV(write_canonstr(g, ofile, sym->name));
+		CHKRV(write_canonstr(g, ofile, sym->name, true));
 		CHKRV(ioput(g, ofile, "="));
-		CHKRV(write_canonstr(g, ofile, data->str[sym->id]));
+		CHKRV(write_canonstr(g, ofile, data->str[sym->id], true));
 	    }
 	}
     if (cnt > 0) {
@@ -576,7 +578,7 @@ static int write_nodename(Agnode_t * n, iochan_t * ofile)
     name = agnameof(n);
     g = agraphof(n);
     if (name) {
-	CHKRV(write_canonstr(g, ofile, name));
+	CHKRV(write_canonstr(g, ofile, name, false));
     } else {
 	char buf[sizeof("__SUSPECT") + 20];
 	snprintf(buf, sizeof(buf), "_%" PRIu64 "_SUSPECT", AGID(n));	/* could be deadly wrong */
@@ -630,7 +632,7 @@ static int write_port(Agedge_t * e, iochan_t * ofile, Agsym_t * port)
 
     CHKRV(ioput(g, ofile, ":"));
     if (aghtmlstr(val)) {
-	CHKRV(write_canonstr(g, ofile, val));
+	CHKRV(write_canonstr(g, ofile, val, true));
     } else {
 	char *s = strchr(val, ':');
 	if (s) {
