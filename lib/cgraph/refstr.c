@@ -126,9 +126,12 @@ static uint64_t hash(const void *key, size_t len) {
 static strdict_t *strdict_new(void) { return gv_alloc(sizeof(strdict_t)); }
 
 /// derive hash for a given reference-counted string
-static size_t strdict_hash(const refstr_t *key) {
-  assert(key != NULL);
-  return (size_t)hash(key->s, strlen(key->s));
+///
+/// @param s The reference-counted string’s `s` member
+/// @return A hash digest suitable for dictionary indexing
+static size_t strdict_hash(const char *s) {
+  assert(s != NULL);
+  return (size_t)hash(s, strlen(s));
 }
 
 /// a sentinel, marking a dictionary bucket from which an element has been
@@ -177,7 +180,7 @@ static void strdict_add(strdict_t *dict, refstr_t *r) {
   capacity = 1ul << dict->capacity_exp;
   assert(capacity > dict->size);
 
-  const size_t h = strdict_hash(r);
+  const size_t h = strdict_hash(r->s);
 
   for (size_t i = 0; i < capacity; ++i) {
     const size_t candidate = (h + i) % capacity;
@@ -200,7 +203,7 @@ static refstr_t *strdict_find(strdict_t *dict, refstr_t *key) {
   assert(key != NULL);
   assert(key != TOMBSTONE);
 
-  const size_t h = strdict_hash(key);
+  const size_t h = strdict_hash(key->s);
   const size_t capacity = dict->buckets == NULL ? 0 : 1ul << dict->capacity_exp;
 
   for (size_t i = 0; i < capacity; ++i) {
@@ -232,7 +235,7 @@ static void strdict_remove(strdict_t *dict, const refstr_t *key) {
   assert(key != NULL);
   assert(key != TOMBSTONE);
 
-  const size_t h = strdict_hash(key);
+  const size_t h = strdict_hash(key->s);
   const size_t capacity = dict->buckets == NULL ? 0 : 1ul << dict->capacity_exp;
 
   for (size_t i = 0; i < capacity; ++i) {
