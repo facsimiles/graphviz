@@ -199,8 +199,13 @@ static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
 	    sz = MINATTR;
 	rec->str = gv_calloc((size_t)sz, sizeof(char *));
 	/* doesn't call agxset() so no obj-modified callbacks occur */
-	for (sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym))
-	    rec->str[sym->id] = agstrdup(agraphof(obj), sym->defval);
+	for (sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym)) {
+	    if (aghtmlstr(sym->defval)) {
+	        rec->str[sym->id] = agstrdup_html(agraphof(obj), sym->defval);
+	    } else {
+	        rec->str[sym->id] = agstrdup(agraphof(obj), sym->defval);
+	    }
+	}
     } else {
 	assert(rec->dict == datadict);
     }
@@ -241,7 +246,11 @@ static void addattr(Agraph_t * g, Agobj_t * obj, Agsym_t * sym)
     if (sym->id >= MINATTR)
 	attr->str = gv_recalloc(attr->str, (size_t)sym->id, (size_t)sym->id + 1,
 	                        sizeof(char *));
-    attr->str[sym->id] = agstrdup(g, sym->defval);
+    if (aghtmlstr(sym->defval)) {
+	attr->str[sym->id] = agstrdup_html(g, sym->defval);
+    } else {
+	attr->str[sym->id] = agstrdup(g, sym->defval);
+    }
 }
 
 static Agsym_t *getattr(Agraph_t *g, int kind, char *name) {
