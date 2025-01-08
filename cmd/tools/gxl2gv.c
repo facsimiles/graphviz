@@ -300,9 +300,7 @@ setEdgeAttr(Agedge_t * ep, char *name, char *value, userdata_t * ud,
     }
 
     if (is_html) {
-	char *val = agstrdup_html(root, value);
-	agxset(ep, ap, val);
-	agstrfree(root, val); // drop the extra reference count we bumped for val
+	agxset_html(ep, ap, value);
     } else {
 	agxset(ep, ap, value);
     }
