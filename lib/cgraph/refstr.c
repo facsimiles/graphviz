@@ -34,9 +34,9 @@ typedef struct {
     char store[1];		/* this is actually a dynamic array */
 } refstr_t;
 
-/// compare reference-counted strings for equality
-static bool refstr_eq(const refstr_t *a, const refstr_t *b) {
-  return strcmp(a->s, b->s) == 0;
+/// compare a string to a reference-counted string for equality
+static bool refstr_eq(const char *a, const refstr_t *b) {
+  return strcmp(a, b->s) == 0;
 }
 
 /// a string dictionary
@@ -217,7 +217,7 @@ static refstr_t *strdict_find(strdict_t *dict, refstr_t *key) {
     }
 
     // is this the string we are searching for?
-    if (refstr_eq(key, dict->buckets[candidate])) {
+    if (refstr_eq(key->s, dict->buckets[candidate])) {
       return dict->buckets[candidate];
     }
   }
@@ -249,7 +249,7 @@ static void strdict_remove(strdict_t *dict, const refstr_t *key) {
     }
 
     // is this the string we are searching for?
-    if (refstr_eq(key, dict->buckets[candidate])) {
+    if (refstr_eq(key->s, dict->buckets[candidate])) {
       assert(dict->size > 0);
       free(dict->buckets[candidate]);
       dict->buckets[candidate] = TOMBSTONE;
