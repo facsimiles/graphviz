@@ -276,7 +276,11 @@ static void unviewsubgraphsattr(Agraph_t *parent, char *name) {
   }
 }
 
-static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value) {
+static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html);
+
+/// @param is_html Is `value` an HTML-like string?
+static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
+                        bool is_html) {
     Dict_t *ldict, *rdict;
     Agsym_t *lsym, *psym, *rsym, *rv;
     Agraph_t *root;
@@ -295,17 +299,17 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value) {
 	    unviewsubgraphsattr(g,name);
         }
 	agstrfree(g, lsym->defval);
-	lsym->defval = agstrdup(g, value);
+	lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
 	rv = lsym;
     } else {
 	psym = agdictsym(ldict, name);	/* search with viewpath up to root */
 	if (psym) {		/* new local definition */
-	    lsym = agnewsym(g, name, value, false, psym->id, kind);
+	    lsym = agnewsym(g, name, value, is_html, psym->id, kind);
 	    dtinsert(ldict, lsym);
 	    rv = lsym;
 	} else {		/* new global definition */
 	    rdict = agdictof(root, kind);
-	    rsym = agnewsym(g, name, value, false, dtsize(rdict), kind);
+	    rsym = agnewsym(g, name, value, is_html, dtsize(rdict), kind);
 	    dtinsert(rdict, rsym);
 	    switch (kind) {
 	    case AGRAPH:
@@ -328,7 +332,7 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value) {
 	}
     }
     if (rv && kind == AGRAPH)
-	agxset(g, rv, value);
+	agxset_(g, rv, value, is_html);
     agmethod_upd(g, g, rv);
     return rv;
 }
@@ -348,7 +352,7 @@ Agsym_t *agattr(Agraph_t * g, int kind, char *name, const char *value) {
 	g = ProtoGraph;
     }
     if (value)
-	rv = setattr(g, kind, name, value);
+	rv = setattr(g, kind, name, value, false);
     else
 	rv = getattr(g, kind, name);
     return rv;
