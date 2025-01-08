@@ -411,9 +411,8 @@ void agmarkhtmlstr(char *s)
 }
 
 #ifdef DEBUG
-static int refstrprint(void *ptr, void *user) {
+static int refstrprint(void *ptr) {
     refstr_t *r = ptr;
-    (void)user;
     fprintf(stderr, "%s\n", r->s);
     return 0;
 }
@@ -423,7 +422,7 @@ void agrefstrdump(Agraph_t * g)
     const strdict_t *d = *refdict(g);
     for (size_t i = 0;
          d != NULL && d->buckets != NULL && i < 1ul << d->capacity_exp; ++i) {
-	refstrprint(d->buckets[i], NULL);
+	refstrprint(d->buckets[i]);
     }
 }
 #endif
