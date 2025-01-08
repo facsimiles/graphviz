@@ -669,6 +669,10 @@ CGRAPH_API Agsym_t *agattr(Agraph_t *g, int kind, char *name,
  * objects of the given **kind**
  */
 
+CGRAPH_API Agsym_t *agattr_html(Agraph_t *g, int kind, char *name,
+                                const char *value);
+///< @brief `agattr`, but creates HTML-like values
+
 CGRAPH_API Agsym_t *agattrsym(void *obj, char *name);
 ///< looks up a string attribute for a graph object given as an argument
 

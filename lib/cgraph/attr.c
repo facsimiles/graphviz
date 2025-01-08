@@ -343,7 +343,8 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
  * when a new attribute is created, existing graphs/nodes/edges
  * receive its default value.
  */
-Agsym_t *agattr(Agraph_t * g, int kind, char *name, const char *value) {
+static Agsym_t *agattr_(Agraph_t *g, int kind, char *name, const char *value,
+                 bool is_html) {
     Agsym_t *rv;
 
     if (g == 0) {
@@ -352,10 +353,18 @@ Agsym_t *agattr(Agraph_t * g, int kind, char *name, const char *value) {
 	g = ProtoGraph;
     }
     if (value)
-	rv = setattr(g, kind, name, value, false);
+	rv = setattr(g, kind, name, value, is_html);
     else
 	rv = getattr(g, kind, name);
     return rv;
+}
+
+Agsym_t *agattr(Agraph_t *g, int kind, char *name, const char *value) {
+  return agattr_(g, kind, name, value, false);
+}
+
+Agsym_t *agattr_html(Agraph_t *g, int kind, char *name, const char *value) {
+  return agattr_(g, kind, name, value, true);
 }
 
 Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr)
