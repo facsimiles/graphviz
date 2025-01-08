@@ -315,7 +315,7 @@ static void cloneAttrs(void *old, void *new_graph) {
 	if (aghtmlstr(s)) {
 	    char *scopy = agstrdup_html(ng, s);
 	    agset(new_graph, a->name, scopy);
-	    agstrfree(ng, scopy); // drop the extra reference count we bumped for scopy
+	    agstrfree(ng, scopy, true); // drop the extra reference count we bumped for scopy
 	} else {
 	    agset(new_graph, a->name, s);
 	}

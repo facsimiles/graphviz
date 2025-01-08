@@ -358,8 +358,8 @@ char *agstrdup_html(Agraph_t *g, const char *s) {
   return agstrdup_internal(g, s, true);
 }
 
-int agstrfree(Agraph_t * g, const char *s)
-{
+int agstrfree(Agraph_t *g, const char *s, bool is_html) {
+    (void)is_html;
     refstr_t *r;
 
     if (s == NULL)

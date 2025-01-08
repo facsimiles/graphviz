@@ -283,7 +283,7 @@ static int write_canonstr(Agraph_t * g, iochan_t * ofile, char *str)
 
     int r = _write_canonstr(g, ofile, s, true);
 
-    agstrfree(g, s);
+    agstrfree(g, s, false);
     return r;
 }
 

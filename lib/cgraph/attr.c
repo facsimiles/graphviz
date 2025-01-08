@@ -215,7 +215,7 @@ static void freeattr(Agobj_t * obj, Agattr_t * attr)
     g = agraphof(obj);
     sz = topdictsize(obj);
     for (i = 0; i < sz; i++)
-	agstrfree(g, attr->str[i]);
+	agstrfree(g, attr->str[i], aghtmlstr(attr->str[i]));
     free(attr->str);
 }
 
@@ -223,8 +223,8 @@ static void freesym(void *obj) {
     Agsym_t *sym;
 
     sym = obj;
-    agstrfree(Ag_G_global, sym->name);
-    agstrfree(Ag_G_global, sym->defval);
+    agstrfree(Ag_G_global, sym->name, false);
+    agstrfree(Ag_G_global, sym->defval, aghtmlstr(sym->defval));
     free(sym);
 }
 
@@ -298,7 +298,7 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
         if (kind == AGRAPH) {
 	    unviewsubgraphsattr(g,name);
         }
-	agstrfree(g, lsym->defval);
+	agstrfree(g, lsym->defval, aghtmlstr(lsym->defval));
 	lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
 	rv = lsym;
     } else {
@@ -502,14 +502,14 @@ static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
     hdr = obj;
     data = agattrrec(hdr);
     assert(sym->id >= 0 && sym->id < topdictsize(obj));
-    agstrfree(g, data->str[sym->id]);
+    agstrfree(g, data->str[sym->id], aghtmlstr(data->str[sym->id]));
     data->str[sym->id] = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     if (hdr->tag.objtype == AGRAPH) {
 	/* also update dict default */
 	Dict_t *dict;
 	dict = agdatadict(g, false)->dict.g;
 	if ((lsym = aglocaldictsym(dict, sym->name))) {
-	    agstrfree(g, lsym->defval);
+	    agstrfree(g, lsym->defval, aghtmlstr(lsym->defval));
 	    lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
 	} else {
 	    lsym = agnewsym(g, sym->name, value, is_html, sym->id, AGTYPE(hdr));

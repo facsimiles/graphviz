@@ -597,7 +597,8 @@ CGRAPH_API char *agstrbind(Agraph_t *g, const char *);
 ///< returns a pointer to a reference-counted string if it exists, or NULL if
 ///< not
 
-CGRAPH_API int agstrfree(Agraph_t *, const char *);
+CGRAPH_API int agstrfree(Agraph_t *, const char *, bool is_html);
+///< @param is_html Is the string being freed an HTML-like string?
 CGRAPH_API char *agcanon(char *str, int html);
 CGRAPH_API char *agstrcanon(char *, char *);
 CGRAPH_API char *agcanonStr(char *str); /* manages its own buf */

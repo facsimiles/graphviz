@@ -256,7 +256,7 @@ static void delete_items(item *ilist)
 	for (p = ilist; p; p = pn) {
 		pn = p->next;
 		if (p->tag == T_list) delete_items(p->u.list);
-		if (p->tag == T_atom) agstrfree(G,p->str);
+		if (p->tag == T_atom) agstrfree(G, p->str, aghtmlstr(p->str));
 		free(p);
 	}
 }
@@ -297,7 +297,7 @@ static void bindattrs(int kind)
 		if ((aptr->u.asym = agattr(S->g,kind,name,NULL)) == NULL)
 			aptr->u.asym = agattr(S->g,kind,name,"");
 		aptr->tag = T_attr;				/* signifies bound attr */
-		agstrfree(G,name);
+		agstrfree(G, name, false);
 	}
 }
 
@@ -372,7 +372,7 @@ static void appendnode(char *name, char *port, char *sport)
 	}
 	elt = cons_node(agnode(S->g, name, 1), port);
 	listapp(&S->nodelist, elt);
-	agstrfree(G,name);
+	agstrfree(G, name, false);
 }
 
 /* apply current optional attrs to nodelist and clean up lists */
@@ -458,8 +458,8 @@ concat (char* s1, char* s2)
   strcpy(sym,s1);
   strcat(sym,s2);
   s = agstrdup (G,sym);
-  agstrfree (G,s1);
-  agstrfree (G,s2);
+  agstrfree(G, s1, false);
+  agstrfree(G, s2, false);
   if (sym != buf) free (sym);
   return s;
 }
@@ -471,8 +471,8 @@ concatPort (char* s1, char* s2)
 
   agxbprint(&buf, "%s:%s", s1, s2);
   char *s = agstrdup(G, agxbuse(&buf));
-  agstrfree (G,s1);
-  agstrfree (G,s2);
+  agstrfree(G, s1, false);
+  agstrfree(G, s2, false);
   agxbfree(&buf);
   return s;
 }
@@ -538,7 +538,7 @@ static void startgraph(char *name, bool directed, bool strict)
 		Ag_G_global = G;
 	}
 	S = push(S,G);
-	agstrfree(NULL,name);
+	agstrfree(NULL, name, false);
 }
 
 static void endgraph(void)
@@ -553,7 +553,7 @@ static void opensubg(char *name)
     agerrorf("subgraphs nested more than %d deep", YYMAXDEPTH);
   }
 	S = push(S, agsubg(S->g, name, 1));
-	agstrfree(G,name);
+	agstrfree(G, name, false);
 }
 
 static void closesubg(void)
