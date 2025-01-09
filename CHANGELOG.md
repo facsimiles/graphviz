@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   HTML-like values. For this, use `agattr_html` instead.
 - **Breaking**: `agstrfree` takes an extra parameter indicating whether the
   string being freed is an HTML-like string.
+- **Breaking**: The `agcanon` function has been removed.
 
 ### Fixed
 
