@@ -2132,7 +2132,7 @@ def test_2078():
     ) as p:
         stdout, stderr = p.communicate(input)
 
-        assert p.returncode == 0, "correct layout use was rejected"
+        assert p.returncode == 0, f"correct layout use was rejected: {stdout}{stderr}"
 
     assert stdout.strip() == "", "unexpected output"
     assert (
