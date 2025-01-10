@@ -8,7 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include	<cgraph/list.h>
 #include	<circogen/blockpath.h>
 #include	<circogen/circular.h>
 #include	<circogen/edgelist.h>
@@ -16,6 +15,7 @@
 #include	<stdbool.h>
 #include	<util/agxbuf.h>
 #include	<util/alloc.h>
+#include	<util/list.h>
 
 /* The code below lays out a single block on a circle.
  */

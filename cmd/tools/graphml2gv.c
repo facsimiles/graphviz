@@ -16,7 +16,6 @@
 
 #include    "convert.h"
 #include    <assert.h>
-#include    <cgraph/list.h>
 #include    <getopt.h>
 #include    <limits.h>
 #include    <stdbool.h>
@@ -28,6 +27,7 @@
 #include    <util/alloc.h>
 #include    <util/exit.h>
 #include    <util/gv_ctype.h>
+#include    <util/list.h>
 #include    <util/unreachable.h>
 #ifdef HAVE_EXPAT
 #include    <expat.h>

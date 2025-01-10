@@ -17,11 +17,11 @@
  * component.
  */
 
-#include <cgraph/list.h>
 #include <dotgen/dot.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 static node_t *Last_node;
 static size_t Cmark;

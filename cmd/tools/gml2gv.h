@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <cgraph/cgraph.h>
-#include <cgraph/list.h>
+#include <util/list.h>
 
 typedef struct {
     unsigned short kind;

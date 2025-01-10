@@ -12,10 +12,10 @@
 
 #include "types.h"
 #include "cgraph.h"
-#include <cgraph/list.h>
 #include <ortho/rawgraph.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <util/list.h>
 
 typedef struct {
     double p1, p2;

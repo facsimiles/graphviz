@@ -17,9 +17,9 @@
 #include <getopt.h>
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>
-#include <cgraph/list.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/list.h>
 
 /* structure to hold an attribute specified on the commandline */
 typedef struct {

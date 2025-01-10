@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include <cgraph/list.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <util/list.h>
 
 DEFINE_LIST(adj_list, size_t)
 

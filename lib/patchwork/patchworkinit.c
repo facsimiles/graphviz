@@ -9,7 +9,6 @@
  *************************************************************************/
 
 #include    <assert.h>
-#include    <cgraph/list.h>
 #include    <common/render.h>
 #include    <common/utils.h>
 #include    <patchwork/patchwork.h>
@@ -18,6 +17,7 @@
 #include    <pack/pack.h>
 #include    <neatogen/neatoprocs.h>
 #include    <stdbool.h>
+#include    <util/list.h>
 
 /* the following code shamelessly copied from lib/fdpgen/layout.c
 and should be extracted and made into a common function */

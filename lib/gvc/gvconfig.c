@@ -15,7 +15,6 @@
 #endif
 
 #include <assert.h>
-#include <cgraph/list.h>
 #include <gvc/gvconfig.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -27,6 +26,7 @@
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
+#include <util/list.h>
 #include <util/startswith.h>
 
 #ifdef ENABLE_LTDL

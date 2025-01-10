@@ -9,7 +9,6 @@
  *************************************************************************/
 
 #include <assert.h>
-#include <cgraph/list.h>
 #include <limits.h>
 #include <neatogen/kkutils.h>
 #include <neatogen/closest.h>
@@ -17,6 +16,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/list.h>
 #include <util/sort.h>
 
 /*****************************************

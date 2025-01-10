@@ -22,10 +22,10 @@
 #include <arith.h>
 #include <gml2gv.h>
 #include <assert.h>
-#include <cgraph/list.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/list.h>
 
 static gmlgraph* G;
 static gmlnode* N;

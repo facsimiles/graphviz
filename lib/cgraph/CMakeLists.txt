@@ -17,7 +17,6 @@ add_library(cgraph
   cghdr.h
   cgraph.h
   ingraphs.h
-  list.h
   node_set.h
   rdr.h
 
