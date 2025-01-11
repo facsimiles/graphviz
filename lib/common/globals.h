@@ -15,9 +15,9 @@
 
 #pragma once
 
-#include <cgraph/list.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <util/list.h>
 
 #ifdef __cplusplus
 extern "C" {

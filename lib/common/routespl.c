@@ -12,7 +12,6 @@
 
 #include "config.h"
 #include <assert.h>
-#include <cgraph/list.h>
 #include <common/geomprocs.h>
 #include <common/render.h>
 #include <float.h>
@@ -26,6 +25,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 static int nedges; ///< total no. of edges used in routing

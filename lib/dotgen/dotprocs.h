@@ -14,9 +14,9 @@
 extern "C" {
 #endif
 
-#include <cgraph/list.h>
 #include <dotgen/aspect.h>
 #include <stdbool.h>
+#include <util/list.h>
 
 DEFINE_LIST(ints, int)
 DEFINE_LIST(node_queue, Agnode_t *)

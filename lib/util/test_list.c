@@ -5,10 +5,10 @@
 #endif
 
 #include <assert.h>
-#include <cgraph/list.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/list.h>
 
 DEFINE_LIST(ints, int)
 

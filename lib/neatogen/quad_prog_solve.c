@@ -8,10 +8,10 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <cgraph/list.h>
 #include <neatogen/digcola.h>
 #include <stdint.h>
 #include <util/alloc.h>
+#include <util/list.h>
 #ifdef DIGCOLA
 #include <math.h>
 #include <stdbool.h>

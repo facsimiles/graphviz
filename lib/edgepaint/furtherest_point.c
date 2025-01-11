@@ -8,7 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <cgraph/list.h>
 #include <sparse/general.h>
 #include <sparse/QuadTree.h>
 #include <edgepaint/furtherest_point.h>
@@ -16,6 +15,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 static double dist(int dim, double *x, double *y){

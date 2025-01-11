@@ -24,7 +24,6 @@
 #include                <string.h>
 
 #include <assert.h>
-#include <cgraph/list.h>
 #include <limits.h>
 #include "makecw.h"
 #include <math.h>
@@ -35,6 +34,7 @@
 #include <tcl.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #if ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION >= 6)) || ( TCL_MAJOR_VERSION > 8)

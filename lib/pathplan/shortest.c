@@ -8,7 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <cgraph/list.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -16,6 +15,7 @@
 #include <math.h>
 #include <pathplan/pathutil.h>
 #include <pathplan/tri.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #define DQ_FRONT 1

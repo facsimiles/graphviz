@@ -29,9 +29,9 @@
 #include        <gvc/gvio.h>
 
 #include	<common/const.h>
-#include <cgraph/list.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/list.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
 #include <util/strview.h>

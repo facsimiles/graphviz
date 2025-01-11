@@ -17,7 +17,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
-#include <cgraph/list.h>
 #include <cgraph/cgraph.h>
 #include "make_map.h"
 #include <sfdpgen/stress_model.h>
@@ -26,6 +25,7 @@
 #include <neatogen/delaunay.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #include <edgepaint/lab.h>

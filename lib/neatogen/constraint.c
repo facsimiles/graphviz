@@ -10,7 +10,6 @@
 
 
 #include "config.h"
-#include <cgraph/list.h>
 #include <common/geom.h>
 #include <math.h>
 #include <neatogen/neato.h>
@@ -18,6 +17,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 /* For precision, scale up before algorithms, then scale down */
 #define SCALE 10   

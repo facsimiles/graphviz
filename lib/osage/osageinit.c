@@ -18,7 +18,6 @@
 #include    <common/geomprocs.h>
 #include    <common/render.h>
 #include    <common/utils.h>
-#include    <cgraph/list.h>
 #include    <limits.h>
 #include    <osage/osage.h>
 #include    <neatogen/neatoprocs.h>
@@ -26,6 +25,7 @@
 #include    <stdbool.h>
 #include    <stddef.h>
 #include    <util/alloc.h>
+#include    <util/list.h>
 #include    <util/startswith.h>
 
 #define DFLT_SZ  18

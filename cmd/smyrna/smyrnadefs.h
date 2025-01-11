@@ -23,10 +23,10 @@
 #include <glcomp/opengl.h>
 #include <gtk/gtkgl.h>
 #include <cgraph/cgraph.h>
-#include <cgraph/list.h>
 #include <glcomp/glcompset.h>
 #include "hier.h"
 #include <glcomp/glutils.h>
+#include <util/list.h>
 
 #ifdef _MSC_VER // this is needed on MSVC to get libglade see the callback
 #define _BB  __declspec(dllexport)

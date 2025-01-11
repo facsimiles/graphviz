@@ -26,10 +26,10 @@
 #include <cgraph/cgraph.h>
 #include <cgraph/cghdr.h>
 #include <cgraph/ingraphs.h>
-#include <cgraph/list.h>
 #include <common/render.h>
 #include <common/utils.h>
 #include <util/exit.h>
+#include <util/list.h>
 
 typedef struct {
     Agrec_t h;

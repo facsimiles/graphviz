@@ -9,8 +9,7 @@ AM_CFLAGS = -DEXPORT_CGRAPH -DEXPORT_CGHDR
 endif
 
 pkginclude_HEADERS = cgraph.h
-noinst_HEADERS = cghdr.h \
-	ingraphs.h list.h node_set.h rdr.h
+noinst_HEADERS = cghdr.h ingraphs.h node_set.h rdr.h
 noinst_LTLIBRARIES = libcgraph_C.la
 lib_LTLIBRARIES = libcgraph.la
 pkgconfig_DATA = libcgraph.pc

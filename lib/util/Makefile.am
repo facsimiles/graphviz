@@ -9,6 +9,7 @@ noinst_HEADERS = \
   gv_find_me.h \
   gv_fopen.h \
   gv_math.h \
+  list.h \
   overflow.h \
   prisize_t.h \
   sort.h \

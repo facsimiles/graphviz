@@ -31,7 +31,6 @@
 
 #include <cgraph.h>
 
-#include	 	<cgraph/list.h>
 #include	 	<ctype.h>
 #include		<sys/types.h>
 #include		<stdarg.h>
@@ -40,6 +39,7 @@
 #include		<string.h>
 #include <assert.h>
 #include <stdint.h>
+#include <util/list.h>
 
 #define	SUCCESS				0
 #define FAILURE				-1
