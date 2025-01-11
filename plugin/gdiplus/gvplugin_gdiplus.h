@@ -56,8 +56,6 @@ struct Layout
 	Layout(char *fontname, double fontsize, char* string);
 };
 
-static const int BYTES_PER_PIXEL = 4;		/* bytes per pixel */
-
 void gdiplus_free_layout(void *layout);
 
 void UseGdiplus();

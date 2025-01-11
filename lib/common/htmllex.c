@@ -1088,10 +1088,10 @@ int htmllex(union HTMLSTYPE *htmllval, htmlscan_t *scanner)
 	ctx->prevtok = ctx->currtok;
 	ctx->currtok = (strview_t){.data = s, .size = len};
 	if ((llen = agxblen(&ctx->lb))) {
-	    assert(llen <= (size_t)INT_MAX && "XML token too long for expat API");
+	    assert(llen <= INT_MAX && "XML token too long for expat API");
 	    rv = XML_Parse(ctx->parser, agxbuse(&ctx->lb), (int)llen, 0);
 	} else {
-	    assert(len <= (size_t)INT_MAX && "XML token too long for expat API");
+	    assert(len <= INT_MAX && "XML token too long for expat API");
 	    rv = XML_Parse(ctx->parser, s, (int)len, len ? 0 : 1);
 	}
 	if (rv == XML_STATUS_ERROR) {

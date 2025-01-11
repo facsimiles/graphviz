@@ -28,7 +28,7 @@
 #ifdef DEBUG
 static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
 {
-  if (nbyte > (size_t)INT_MAX) {
+  if (nbyte > INT_MAX) {
     return -1;
   }
   return printf("<stdout>%.*s", (int)nbyte, buf);
@@ -36,7 +36,7 @@ static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
 
 static ssize_t errfn (void* sp, const char *buf, size_t nbyte, void* dp)
 {
-  if (nbyte > (size_t)INT_MAX) {
+  if (nbyte > INT_MAX) {
     return -1;
   }
   return fprintf(stderr, "<stderr>%.*s", (int)nbyte, buf);

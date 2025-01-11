@@ -65,7 +65,7 @@ largeMinlen (double l)
         "Edge length %f larger than maximum %d allowed.\nCheck for overwide "
         "node(s).\n",
         l, INT_MAX);
-  return (double)INT_MAX;
+  return INT_MAX;
 }
 
 /* When source and/or sink nodes are defined, it is possible that
@@ -841,8 +841,8 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
     pointf LL, UR;
 
     if (g == dot_root(g)) {
-	LL.x = (double)INT_MAX;
-	UR.x = (double)-INT_MAX;
+	LL.x = INT_MAX;
+	UR.x = -INT_MAX;
 	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	    int rnkn = GD_rank(g)[r].n;
 	    if (rnkn == 0)

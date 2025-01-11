@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 
 /// comparator for doubles
@@ -80,4 +81,41 @@ static inline int scale_clamp(int original, double scale) {
   }
 
   return (int)(original * scale);
+}
+
+/// byte length of data per pixel in image data buffers
+enum { BYTES_PER_PIXEL = 4 };
+
+/// in-place conversion of ARGB32 big endian to RGBA32 little endian
+///
+/// Image data originating from sources like Cairo comes in a 4-byte-per-pixel
+/// format ordered {blue, green, red, alpha}. Some output libraries/devices
+/// instead consume a 4-byte-per-pixel format ordered {red, green, blue, alpha}.
+/// This function converts the former to the latter.
+///
+/// It is confusing to refer to these formats as ARGB32 and RGBA32 when the
+/// first is big endian and the second is little endian, and thus the mappings
+/// of letters in the acronym to bytes in memory are opposites. Nevertheless
+/// that appears to be what is in common usage.
+///
+/// @param width Width of the image in pixels
+/// @param height Height of the image in pixels
+/// @param data [inout] Image data in ARGB32 format on entry and RGBA32 format
+///   on exit
+static inline void argb2rgba(size_t width, size_t height, unsigned char *data) {
+  assert(data != NULL || (width == 0 && height == 0));
+
+  // indices to color bytes in each format
+  enum { Ba = 0, Ga = 1, Ra = 2, Aa = 3 };
+  enum { Rb = 0, Gb = 1, Bb = 2, Ab = 3 };
+
+  for (size_t y = 0; y < height; ++y) {
+    for (size_t x = 0; x < width; ++x) {
+      const unsigned char red = data[Ra];
+      const unsigned char blue = data[Ba];
+      data[Rb] = red;
+      data[Bb] = blue;
+      data += BYTES_PER_PIXEL;
+    }
+  }
 }

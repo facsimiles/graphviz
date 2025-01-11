@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <util/gv_math.h>
 
 /// convert an RGB color to grayscale
 static int rgb_to_grayscale(unsigned red, unsigned green, unsigned blue) {
@@ -68,11 +69,9 @@ static void process(GVJ_t *job) {
   for (unsigned y = 0; y < job->height; ++y) {
     for (unsigned x = 0; x < job->width; ++x) {
 
-      // bytes-per-pixel
-      enum { BPP = 4 };
-
       // extract the pixel data
-      const unsigned offset = y * job->width * BPP + x * BPP;
+      const unsigned offset =
+          y * job->width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
       const unsigned red = data[offset + 2];
       const unsigned green = data[offset + 1];
       const unsigned blue = data[offset];

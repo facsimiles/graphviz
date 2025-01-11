@@ -13,6 +13,7 @@
 #include <gvc/gvplugin_device.h>
 #include <gvc/gvio.h>
 #include <limits.h>
+#include <util/gv_math.h>
 #include <util/unreachable.h>
 #ifdef HAVE_PANGOCAIRO
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -24,34 +25,6 @@ typedef enum {
 	FORMAT_PNG,
 	FORMAT_TIFF,
     } format_type;
-
-/* 
- * Does an in-place conversion of a CAIRO ARGB32 image to GDK RGBA
- */
-static void argb2rgba(unsigned width, unsigned height, unsigned char *data) {
-/* define indexes to color bytes in each format */
-#define Ba 0
-#define Ga 1
-#define Ra 2
-#define Aa 3
-
-#define Rb 0
-#define Gb 1
-#define Bb 2
-#define Ab 3
-
-    unsigned int x, y;
-
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
-            /* swap red and blue */
-            unsigned char r = data[Ra];
-            data[Bb] = data[Ba];
-	    data[Rb] = r;
-            data += 4;
-        }
-    }
-}
 
 static gboolean writer(const char *buf, gsize count, GError **error,
                        void *data) {
@@ -86,8 +59,8 @@ static void gdk_format(GVJ_t * job)
 
     argb2rgba(job->width, job->height, job->imagedata);
 
-    assert(job->width <= (unsigned)INT_MAX / 4 && "width out of range");
-    assert(job->height <= (unsigned)INT_MAX && "height out of range");
+    assert(job->width <= INT_MAX / BYTES_PER_PIXEL && "width out of range");
+    assert(job->height <= INT_MAX && "height out of range");
 
     pixbuf = gdk_pixbuf_new_from_data(
                 job->imagedata,         // data
@@ -96,7 +69,7 @@ static void gdk_format(GVJ_t * job)
                 8,                      // bits_per_sample
                 (int)job->width,        // width
                 (int)job->height,       // height
-                4 * (int)job->width,    // rowstride
+                BYTES_PER_PIXEL * (int)job->width, // rowstride
                 NULL,                   // destroy_fn
                 NULL                    // destroy_fn_data
                );

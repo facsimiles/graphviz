@@ -24,6 +24,7 @@
 #include <gvc/gvio.h>
 #include <math.h>
 #include <util/agxbuf.h>
+#include <util/gv_math.h>
 
 #include "gvplugin_pango.h"
 
@@ -192,7 +193,7 @@ static void cairogen_begin_page(GVJ_t * job)
                 fprintf(stderr,
                         "%s: allocating a %.0fK cairo image surface (%d x %d pixels)\n",
                         job->common->cmdname,
-			round(job->width * job->height * 4 / 1024.),
+			round(job->width * job->height * BYTES_PER_PIXEL / 1024.),
 			job->width, job->height);
 	    break;
         }
