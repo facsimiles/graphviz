@@ -47,6 +47,8 @@ def compile_c(
             ).split()
     elif platform.system() == "Windows" and not is_mingw():
         if len(link) > 0:
+            if not is_static_build():
+                cflags += ["-DGVDLL=1"]
             ldflags += ["-link"] + [f"{l}.lib" for l in link]
     else:
         ldflags += [f"-l{l}" for l in link]

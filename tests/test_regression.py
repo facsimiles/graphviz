@@ -2205,7 +2205,7 @@ def test_2089(html_like_first: bool):  # FIXME
 
 
 @pytest.mark.xfail(
-    platform.system() == "Windows" and not is_mingw(),
+    platform.system() == "Windows" and not is_mingw() and is_static_build(),
     reason="cannot link Agdirected on Windows (https://gitlab.com/graphviz/graphviz/-/issues/2634)",
     strict=True,
 )
@@ -3686,7 +3686,7 @@ def test_2391_1():
 
 
 @pytest.mark.xfail(
-    platform.system() == "Windows" and not is_mingw(),
+    platform.system() == "Windows" and not is_mingw() and is_static_build(),
     reason="cannot link Agdirected on Windows",
     strict=True,
 )  # FIXME
