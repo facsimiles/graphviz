@@ -33,6 +33,12 @@ pages:
     # repo's main branch.
     only:
         - main
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 portable-source:
     # Doesn't have to wait for all the previous stages, only a docker image of
@@ -57,6 +63,12 @@ portable-source:
             - graphviz-*.tar.xz
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 .build_template: &rpm_build_definition
     stage: build
@@ -75,6 +87,12 @@ portable-source:
     except:
         - tags
     image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 .build_template: &deb_build_definition
     stage: build
@@ -94,6 +112,12 @@ portable-source:
     except:
         - tags
     image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 .build_template: &macos_build_definition
     stage: build
@@ -123,6 +147,12 @@ portable-source:
     only:
         variables:
           - $ENABLE_GRAPHVIZ_MACOS_CI
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 
 .build_template: &windows_build_definition
@@ -208,6 +238,12 @@ portable-source:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 .test_template: &test_definition
     stage: test
@@ -219,6 +255,12 @@ portable-source:
             junit: report.xml
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 .linux_test_template: &linux_test_definition
     <<: *test_definition
@@ -407,6 +449,12 @@ windows-mingw32-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-mingw64-build:
     stage: build
@@ -429,6 +477,12 @@ windows-mingw64-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-mingw64-static-build:
     stage: build
@@ -452,6 +506,12 @@ windows-mingw64-static-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-mingw32-static-build:
     stage: build
@@ -475,6 +535,12 @@ windows-mingw32-static-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-cygwin-build:
     stage: build
@@ -505,6 +571,12 @@ windows-cygwin-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-cygwin-build-using-autogen:
     stage: build
@@ -532,6 +604,12 @@ windows-cygwin-build-using-autogen:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 ubuntu-20.04-cmake-build:
     <<: *deb_build_definition
@@ -675,6 +753,12 @@ ubuntu-24.10-cmake-ASan-build-and-test-including-ctest:
     tags:
         - saas-linux-small-amd64
     image: "$CI_REGISTRY_IMAGE/ubuntu-24.10:$CI_COMMIT_SHA"
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 rocky8-cmake-build:
     <<: *rpm_build_definition
@@ -829,6 +913,12 @@ windows-mingw32-cmake-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-mingw64-cmake-build:
     stage: build
@@ -852,6 +942,12 @@ windows-mingw64-cmake-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-mingw64-cmake-release-build:
     stage: build
@@ -870,6 +966,12 @@ windows-mingw64-cmake-release-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-cygwin-cmake-build:
     stage: build
@@ -900,6 +1002,12 @@ windows-cygwin-cmake-build:
         - saas-windows-medium-amd64
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 meta-data:
     stage: test
@@ -914,6 +1022,12 @@ meta-data:
             - configuration-*.html
     except:
         - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 ubuntu-20.04-test:
     <<: *linux_test_definition
@@ -1178,6 +1292,12 @@ windows-mingw32-cmake-test:
     artifacts:
         reports:
             junit: report.xml
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-mingw64-cmake-test:
     script:
@@ -1201,6 +1321,12 @@ windows-mingw64-cmake-test:
     artifacts:
         reports:
             junit: report.xml
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 deployment:
     stage: deploy
@@ -1221,6 +1347,12 @@ deployment:
         expire_in: 1 week
         paths:
             - graphviz-*.json
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 .docker_template: &docker_definition
   image: docker:stable
@@ -1235,6 +1367,12 @@ deployment:
   # do not re-run this job for new Git tags of previously seen commits
   except:
     - tags
+  retry:
+    max: 1
+    when:
+      - stuck_or_timeout_failure
+      - runner_system_failure
+      - job_execution_timeout
 
 .docker_build_template: &docker_build_definition
   <<: *docker_definition
@@ -1375,6 +1513,12 @@ lint_clang_format:
     - python3 ci/clang_format.py
   except:
     - tags
+  retry:
+    max: 1
+    when:
+      - stuck_or_timeout_failure
+      - runner_system_failure
+      - job_execution_timeout
 
 lint_cpplint:
   stage: test
@@ -1390,6 +1534,12 @@ lint_cpplint:
     - git ls-files -z -- lib/cgraph++ lib/gvc++ | xargs -0 -- cpplint
   except:
     - tags
+  retry:
+    max: 1
+    when:
+      - stuck_or_timeout_failure
+      - runner_system_failure
+      - job_execution_timeout
 
 lint_cmake_format:
   stage: test
@@ -1408,6 +1558,12 @@ lint_cmake_format:
     - git ls-files -z -- ':(glob)**/CMakeLists.txt' ':(glob)**/*.cmake' ':(glob)**/*.cmake.in' | xargs -0 -- python3 -m cmakelang.lint
   except:
     - tags
+  retry:
+    max: 1
+    when:
+      - stuck_or_timeout_failure
+      - runner_system_failure
+      - job_execution_timeout
 
 lint_html:
   stage: test
@@ -1423,6 +1579,12 @@ lint_html:
     - git ls-files -z -- '**/*.html' | xargs -0 -- xmllint --nonet --noout --html --valid
   except:
     - tags
+  retry:
+    max: 1
+    when:
+      - stuck_or_timeout_failure
+      - runner_system_failure
+      - job_execution_timeout
 
 lint_python:
   stage: test
@@ -1443,3 +1605,9 @@ lint_python:
     - git ls-files -z -- cmd/dot/dot_sandbox '**.py' | xargs -0 -- python3 -m isort --profile=black --check
   except:
     - tags
+  retry:
+    max: 1
+    when:
+      - stuck_or_timeout_failure
+      - runner_system_failure
+      - job_execution_timeout
