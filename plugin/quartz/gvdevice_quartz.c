@@ -14,6 +14,7 @@
 
 #include "gvplugin_quartz.h"
 #include <stdbool.h>
+#include <util/gv_math.h>
 
 #if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 && defined(HAVE_PANGOCAIRO)
 

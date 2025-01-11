@@ -11,6 +11,7 @@
  *************************************************************************/
 
 #include <common/render.h>
+#include <float.h>
 #include <label/xlabels.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -468,8 +469,8 @@ static void addXLabels(Agraph_t * gp)
     size_t n_objs = (size_t)agnnodes(gp) + n_set_lbls + n_clbls + n_elbls;
     object_t* objp = objs = gv_calloc(n_objs, sizeof(object_t));
     xlabel_t* xlp = lbls = gv_calloc(n_lbls, sizeof(xlabel_t));
-    bb.LL = (pointf){INT_MAX, INT_MAX};
-    bb.UR = (pointf){-INT_MAX, -INT_MAX};
+    bb.LL = (pointf){DBL_MAX, DBL_MAX};
+    bb.UR = (pointf){-DBL_MAX, -DBL_MAX};
 
     for (np = agfstnode(gp); np; np = agnxtnode(gp, np)) {
 

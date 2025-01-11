@@ -171,7 +171,7 @@ static int handle_xlib_events(GVJ_t *firstjob, Display *dpy) {
         case ButtonPress:
           pointer.x = xev.xbutton.x;
           pointer.y = xev.xbutton.y;
-          assert(xev.xbutton.button <= (unsigned)INT_MAX &&
+          assert(xev.xbutton.button <= INT_MAX &&
                  "Xlib returned invalid button event");
           job->callbacks->button_press(job, (int)xev.xbutton.button, pointer);
           rc++;
@@ -187,7 +187,7 @@ static int handle_xlib_events(GVJ_t *firstjob, Display *dpy) {
         case ButtonRelease:
           pointer.x = xev.xbutton.x;
           pointer.y = xev.xbutton.y;
-          assert(xev.xbutton.button <= (unsigned)INT_MAX &&
+          assert(xev.xbutton.button <= INT_MAX &&
                  "Xlib returned invalid button event");
           job->callbacks->button_release(job, (int)xev.xbutton.button, pointer);
           if (job->selected_href && job->selected_href[0] &&
@@ -229,8 +229,8 @@ static void update_display(GVJ_t *job, Display *dpy) {
   window = job->window;
 
   // window geometry is set to fixed values
-  assert(job->width <= (unsigned)INT_MAX && "out of range width");
-  assert(job->height <= (unsigned)INT_MAX && "out of range height");
+  assert(job->width <= INT_MAX && "out of range width");
+  assert(job->height <= INT_MAX && "out of range height");
 
   if (job->has_grown) {
     XFreePixmap(dpy, window->pix);
@@ -317,9 +317,9 @@ static void init_window(GVJ_t *job, Display *dpy, int scr) {
   normalhints->flags = 0;
   normalhints->x = 0;
   normalhints->y = 0;
-  assert(job->width <= (unsigned)INT_MAX && "out of range width");
+  assert(job->width <= INT_MAX && "out of range width");
   normalhints->width = (int)job->width;
-  assert(job->height <= (unsigned)INT_MAX && "out of range height");
+  assert(job->height <= INT_MAX && "out of range height");
   normalhints->height = (int)job->height;
 
   classhint = XAllocClassHint();

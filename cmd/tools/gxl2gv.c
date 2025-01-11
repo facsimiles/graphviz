@@ -647,7 +647,7 @@ Agraph_t *gxl_to_gv(FILE * gxlFile)
 	if (len == 0)
 	    break;
 	done = len < sizeof(buf);
-	assert(len <= (size_t)INT_MAX && "too large data for Expat API");
+	assert(len <= INT_MAX && "too large data for Expat API");
 	if (XML_Parse(parser, buf, (int)len, done) == XML_STATUS_ERROR) {
 	    fprintf(stderr,
 		    "%s at line %lu\n",

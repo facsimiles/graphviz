@@ -11,7 +11,7 @@
 #include <pathplan/vis.h>
 #include <util/alloc.h>
 
-static COORD unseen = (double) INT_MAX;
+static COORD unseen = INT_MAX;
 
 /* shortestPath:
  * Given a VxV weighted adjacency matrix, compute the shortest

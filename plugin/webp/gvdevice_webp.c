@@ -12,6 +12,7 @@
 
 #include <gvc/gvplugin_device.h>
 #include <gvc/gvio.h>
+#include <util/gv_math.h>
 
 #ifdef HAVE_WEBP
 #include "webp/encode.h"
@@ -48,7 +49,6 @@ static void webp_format(GVJ_t * job)
     WebPPicture picture;
     WebPPreset preset;
     WebPConfig config;
-    int stride;
 
     if (!WebPPictureInit(&picture) || !WebPConfigInit(&config)) {
 	fprintf(stderr, "Error! Version mismatch!\n");
@@ -56,7 +56,7 @@ static void webp_format(GVJ_t * job)
     }
 
     // if either dimension exceeds the WebP API, map this to one of its errors
-    if ((unsigned)INT_MAX / 4 < job->width || job->height > (unsigned)INT_MAX) {
+    if (INT_MAX / BYTES_PER_PIXEL < job->width || job->height > INT_MAX) {
 	int error = VP8_ENC_ERROR_BAD_DIMENSION;
 	fprintf(stderr, "Error! Cannot encode picture as WebP\n");
 	fprintf(stderr, "Error code: %d (%s)\n", error, kErrorMessages[error]);
@@ -65,7 +65,7 @@ static void webp_format(GVJ_t * job)
 
     picture.width = (int)job->width;
     picture.height = (int)job->height;
-    stride = 4 * (int)job->width;
+    const int stride = BYTES_PER_PIXEL * (int)job->width;
 
     picture.writer = writer;
     picture.custom_ptr = job;
