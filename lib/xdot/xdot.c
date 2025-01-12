@@ -96,14 +96,16 @@ static char *parsePolyline(char *s, xdot_polyline *pp) {
     if (s == endp) {
       free(pts);
       return NULL;
-    } else
+    } else {
       s = endp;
+    }
     ps->y = strtod(s, &endp);
     if (s == endp) {
       free(pts);
       return NULL;
-    } else
+    } else {
       s = endp;
+    }
     ps->z = 0;
     ps++;
   }
@@ -118,9 +120,9 @@ static char *parseString(char *s, char **sp) {
     return 0;
   while (*s && *s != '-')
     s++;
-  if (*s)
+  if (*s) {
     s++;
-  else {
+  } else {
     return 0;
   }
 
@@ -940,8 +942,8 @@ char *parseXDotColor(char *cp, xdot_color *clr) {
       clr->type = xd_none;
       clr->u.clr = cp;
       return cp;
-    } else
-      return NULL;
+    }
+    return NULL;
   }
 }
 
