@@ -11,12 +11,7 @@
 #include <string.h>
 #include <util/alloc.h>
 #include <util/exit.h>
-
-#ifdef __GNUC__
-#define LIST_UNUSED __attribute__((unused))
-#else
-#define LIST_UNUSED /* nothing */
-#endif
+#include <util/unused.h>
 
 /** create a new list type and its associated member functions
  *
@@ -49,16 +44,16 @@
   } name##_t;                                                                  \
                                                                                \
   /* default “do nothing” destructor */                                        \
-  static inline LIST_UNUSED void name##_noop_(type item) { (void)item; }       \
+  static inline UNUSED void name##_noop_(type item) { (void)item; }            \
                                                                                \
   /** get the number of elements in a list */                                  \
-  static inline LIST_UNUSED size_t name##_size(const name##_t *list) {         \
+  static inline UNUSED size_t name##_size(const name##_t *list) {              \
     assert(list != NULL);                                                      \
     return list->size;                                                         \
   }                                                                            \
                                                                                \
   /** does this list contain no elements? */                                   \
-  static inline LIST_UNUSED bool name##_is_empty(const name##_t *list) {       \
+  static inline UNUSED bool name##_is_empty(const name##_t *list) {            \
     assert(list != NULL);                                                      \
     return name##_size(list) == 0;                                             \
   }                                                                            \
@@ -151,14 +146,14 @@
   }                                                                            \
                                                                                \
   /** get a handle to the first element */                                     \
-  static inline LIST_UNUSED type *name##_front(name##_t *list) {               \
+  static inline UNUSED type *name##_front(name##_t *list) {                    \
     assert(list != NULL);                                                      \
     assert(!name##_is_empty(list));                                            \
     return name##_at(list, 0);                                                 \
   }                                                                            \
                                                                                \
   /** get a handle to the last element */                                      \
-  static inline LIST_UNUSED type *name##_back(name##_t *list) {                \
+  static inline UNUSED type *name##_back(name##_t *list) {                     \
     assert(list != NULL);                                                      \
     assert(!name##_is_empty(list));                                            \
     return name##_at(list, name##_size(list) - 1);                             \
@@ -183,8 +178,7 @@
    * \param list List to operate on                                            \
    * \param item Value of element to remove                                    \
    */                                                                          \
-  static inline LIST_UNUSED void name##_remove(name##_t *list,                 \
-                                               const type item) {              \
+  static inline UNUSED void name##_remove(name##_t *list, const type item) {   \
     assert(list != NULL);                                                      \
                                                                                \
     for (size_t i = 0; i < list->size; ++i) {                                  \
@@ -208,7 +202,7 @@
   }                                                                            \
                                                                                \
   /** remove all elements from a list */                                       \
-  static inline LIST_UNUSED void name##_clear(name##_t *list) {                \
+  static inline UNUSED void name##_clear(name##_t *list) {                     \
     assert(list != NULL);                                                      \
                                                                                \
     for (size_t i = 0; i < list->size; ++i) {                                  \
@@ -226,8 +220,7 @@
    * \param list List to operate on                                            \
    * \param capacity Number of items the list should be able to contain        \
    */                                                                          \
-  static inline LIST_UNUSED void name##_reserve(name##_t *list,                \
-                                                size_t capacity) {             \
+  static inline UNUSED void name##_reserve(name##_t *list, size_t capacity) {  \
     assert(list != NULL);                                                      \
                                                                                \
     /* if we can already fit enough items, nothing to do */                    \
@@ -266,8 +259,8 @@
    * \param size New size of the list                                          \
    * \param value Default to assign to any new elements                        \
    */                                                                          \
-  static inline LIST_UNUSED void name##_resize(name##_t *list, size_t size,    \
-                                               type value) {                   \
+  static inline UNUSED void name##_resize(name##_t *list, size_t size,         \
+                                          type value) {                        \
     assert(list != NULL);                                                      \
                                                                                \
     if (list->size < size) {                                                   \
@@ -285,7 +278,7 @@
   }                                                                            \
                                                                                \
   /** is the given element in the list? */                                     \
-  static inline LIST_UNUSED bool name##_contains(                              \
+  static inline UNUSED bool name##_contains(                                   \
       const name##_t *haystack, const type needle,                             \
       bool (*eq)(const type a, const type b)) {                                \
     assert(haystack != NULL);                                                  \
@@ -300,7 +293,7 @@
   }                                                                            \
                                                                                \
   /** replicate a list */                                                      \
-  static inline LIST_UNUSED name##_t name##_copy(const name##_t *source) {     \
+  static inline UNUSED name##_t name##_copy(const name##_t *source) {          \
     assert(source != NULL);                                                    \
                                                                                \
     name##_t destination = {(type *)gv_calloc(source->capacity, sizeof(type)), \
@@ -325,7 +318,7 @@
   /**   a discontiguous list: │ y │ z │   │   │   │   │ x │ y │         */     \
   /**                         └───┴───┴───┴───┴───┴───┴───┴───┘         */     \
   /**                           2   3                   0   1           */     \
-  static inline LIST_UNUSED bool name##_is_contiguous(const name##_t *list) {  \
+  static inline UNUSED bool name##_is_contiguous(const name##_t *list) {       \
     assert(list != NULL);                                                      \
     return list->head + list->size <= list->capacity;                          \
   }                                                                            \
@@ -353,7 +346,7 @@
   }                                                                            \
                                                                                \
   /** sort the list using the given comparator */                              \
-  static inline LIST_UNUSED void name##_sort(                                  \
+  static inline UNUSED void name##_sort(                                       \
       name##_t *list, int (*cmp)(const type *a, const type *b)) {              \
     assert(list != NULL);                                                      \
     assert(cmp != NULL);                                                       \
@@ -368,7 +361,7 @@
   }                                                                            \
                                                                                \
   /** flip the order of elements in the list */                                \
-  static inline LIST_UNUSED void name##_reverse(name##_t *list) {              \
+  static inline UNUSED void name##_reverse(name##_t *list) {                   \
     assert(list != NULL);                                                      \
                                                                                \
     for (size_t i = 0; i < name##_size(list) / 2; ++i) {                       \
@@ -380,7 +373,7 @@
   }                                                                            \
                                                                                \
   /** deallocate unused backing storage, shrinking capacity to size */         \
-  static inline LIST_UNUSED void name##_shrink_to_fit(name##_t *list) {        \
+  static inline UNUSED void name##_shrink_to_fit(name##_t *list) {             \
     assert(list != NULL);                                                      \
                                                                                \
     name##_sync(list);                                                         \
@@ -393,7 +386,7 @@
   }                                                                            \
                                                                                \
   /** free resources associated with a list */                                 \
-  static inline LIST_UNUSED void name##_free(name##_t *list) {                 \
+  static inline UNUSED void name##_free(name##_t *list) {                      \
     assert(list != NULL);                                                      \
     name##_clear(list);                                                        \
     free(list->base);                                                          \
@@ -401,13 +394,12 @@
   }                                                                            \
                                                                                \
   /** alias for append */                                                      \
-  static inline LIST_UNUSED void name##_push_back(name##_t *list,              \
-                                                  type value) {                \
+  static inline UNUSED void name##_push_back(name##_t *list, type value) {     \
     name##_append(list, value);                                                \
   }                                                                            \
                                                                                \
   /** remove and return first element */                                       \
-  static inline LIST_UNUSED type name##_pop_front(name##_t *list) {            \
+  static inline UNUSED type name##_pop_front(name##_t *list) {                 \
     assert(list != NULL);                                                      \
     assert(list->size > 0);                                                    \
                                                                                \
@@ -423,7 +415,7 @@
   }                                                                            \
                                                                                \
   /** remove and return last element */                                        \
-  static inline LIST_UNUSED type name##_pop_back(name##_t *list) {             \
+  static inline UNUSED type name##_pop_back(name##_t *list) {                  \
     assert(list != NULL);                                                      \
     assert(list->size > 0);                                                    \
                                                                                \
@@ -447,7 +439,7 @@
    * \param size Number of elements pointed to by `data`                       \
    * \return A managed list containing the provided elements                   \
    */                                                                          \
-  static inline LIST_UNUSED name##_t name##_attach(type *data, size_t size) {  \
+  static inline UNUSED name##_t name##_attach(type *data, size_t size) {       \
     assert(data != NULL || size == 0);                                         \
     name##_t list = {data, 0, size, size};                                     \
     return list;                                                               \
@@ -462,7 +454,7 @@
    * \param list List to operate on                                            \
    * \return A pointer to an array of the `list->size` elements                \
    */                                                                          \
-  static inline LIST_UNUSED type *name##_detach(name##_t *list) {              \
+  static inline UNUSED type *name##_detach(name##_t *list) {                   \
     assert(list != NULL);                                                      \
     name##_sync(list);                                                         \
     type *data = list->base;                                                   \
