@@ -495,7 +495,6 @@ EXCLUDE = (
     "lib/vpsc/solve_VPSC.h",
     "lib/vpsc/variable.cpp",
     "lib/vpsc/variable.h",
-    "lib/xdot/xdot.c",
     "lib/xdot/xdot.h",
     "macosx/GVApplicationDelegate.h",
     "macosx/GVAttributeInspectorController.h",
