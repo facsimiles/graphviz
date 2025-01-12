@@ -202,7 +202,7 @@
   }                                                                            \
                                                                                \
   /** remove all elements from a list */                                       \
-  static inline UNUSED void name##_clear(name##_t *list) {                     \
+  static inline void name##_clear(name##_t *list) {                            \
     assert(list != NULL);                                                      \
                                                                                \
     for (size_t i = 0; i < list->size; ++i) {                                  \
