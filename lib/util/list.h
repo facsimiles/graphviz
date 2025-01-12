@@ -47,7 +47,7 @@
   static inline UNUSED void name##_noop_(type item) { (void)item; }            \
                                                                                \
   /** get the number of elements in a list */                                  \
-  static inline UNUSED size_t name##_size(const name##_t *list) {              \
+  static inline size_t name##_size(const name##_t *list) {                     \
     assert(list != NULL);                                                      \
     return list->size;                                                         \
   }                                                                            \
