@@ -63,15 +63,6 @@ static long idmap(void *state, int objtype, char *str, IDTYPE *id,
     return 1;
 }
 
-	/* we don't allow users to explicitly set IDs, either */
-static long idalloc(void *state, int objtype, IDTYPE request)
-{
-    (void)state;
-    (void)objtype;
-    (void)request;
-    return 0;
-}
-
 static void idfree(void *state, int objtype, IDTYPE id)
 {
     (void)objtype;
@@ -100,7 +91,6 @@ static void idregister(void *state, int objtype, void *obj)
 Agiddisc_t AgIdDisc = {
     idopen,
     idmap,
-    idalloc,
     idfree,
     idprint,
     free,
@@ -136,11 +126,6 @@ int agmapnametoid(Agraph_t * g, int objtype, char *str,
 	    aginternalmapinsert(g, objtype, str, *result);
     }
     return rv;
-}
-
-int agallocid(Agraph_t * g, int objtype, IDTYPE request)
-{
-    return (int) AGDISC(g, id)->alloc(AGCLOS(g, id), objtype, request);
 }
 
 void agfreeid(Agraph_t * g, int objtype, IDTYPE id)

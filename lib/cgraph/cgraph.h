@@ -313,7 +313,6 @@ struct Agdesc_s {         /* graph descriptor */
 struct Agiddisc_s {
   void *(*open)(Agraph_t *g, Agdisc_t *); /* associated with a graph */
   long (*map)(void *state, int objtype, char *str, IDTYPE *id, int createflag);
-  long (*alloc)(void *state, int objtype, IDTYPE id);
   void (*free)(void *state, int objtype, IDTYPE id);
   char *(*print)(void *state, int objtype, IDTYPE id);
   void (*close)(void *state);

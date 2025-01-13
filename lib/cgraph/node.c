@@ -130,12 +130,7 @@ Agnode_t *agidnode(Agraph_t * g, IDTYPE id, int cflag)
 	if ((g != root) && ((n = agfindnode_by_id(root, id))))	/*old */
 	    agsubnode(g, n, 1);	/* insert locally */
 	else {
-	    if (agallocid(g, AGNODE, id)) {	/* new */
-		n = newnode(g, id, agnextseq(g, AGNODE));
-		installnodetoroot(g, n);
-		initnode(g, n);
-	    } else
-		n = NULL;	/* allocid for new node failed */
+	    n = NULL;
 	}
     }
     /* else return probe result */

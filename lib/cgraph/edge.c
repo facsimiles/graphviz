@@ -248,10 +248,6 @@ Agedge_t *agidedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
 	root = agroot(g);
 	if (g != root && ((e = agfindedge_by_id(root, t, h, id)))) {
 	    subedge(g, e);	/* old */
-	} else {
-	    if (agallocid(g, AGEDGE, id)) {
-		e = newedge(g, t, h, id);	/* new */
-	    }
 	}
     }
     return e;

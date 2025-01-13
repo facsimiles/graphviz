@@ -50,8 +50,6 @@ Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag)
 {
     Agraph_t *subg;
     subg = agfindsubg_by_id(g, id);
-    if (subg == NULL && cflag && agallocid(g, AGRAPH, id))
-	subg = localsubg(g, id);
     return subg;
 }
 

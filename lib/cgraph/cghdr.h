@@ -116,7 +116,6 @@ void aglexbad(void);
 	/* ID management */
 int agmapnametoid(Agraph_t *g, int objtype, char *str, IDTYPE *result,
                   bool createflag);
-int agallocid(Agraph_t * g, int objtype, IDTYPE request);
 void agfreeid(Agraph_t * g, int objtype, IDTYPE id);
 char *agprintid(Agobj_t * obj);
 bool aginternalmaplookup(Agraph_t *g, int objtype, char *str, IDTYPE *result);
