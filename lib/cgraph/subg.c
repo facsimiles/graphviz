@@ -46,8 +46,7 @@ static Agraph_t *localsubg(Agraph_t * g, IDTYPE id)
     return agopen1(subg);
 }
 
-Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag)
-{
+Agraph_t *agidsubg(Agraph_t *g, IDTYPE id) {
     Agraph_t *subg;
     subg = agfindsubg_by_id(g, id);
     return subg;

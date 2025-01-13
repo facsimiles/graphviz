@@ -756,9 +756,8 @@ CGRAPH_API int agsafeset(void *obj, char *name, const char *value,
  */
 
 CGRAPH_API Agraph_t *agsubg(Agraph_t *g, char *name,
-                            int cflag); /* constructor */
-CGRAPH_API Agraph_t *agidsubg(Agraph_t *g, IDTYPE id,
-                              int cflag); /* constructor */
+                            int cflag);                /* constructor */
+CGRAPH_API Agraph_t *agidsubg(Agraph_t *g, IDTYPE id); ///< constructor
 CGRAPH_API Agraph_t *agfstsubg(Agraph_t *g);
 CGRAPH_API Agraph_t *agnxtsubg(Agraph_t *subg);
 CGRAPH_API Agraph_t *agparent(Agraph_t *g);
