@@ -132,11 +132,9 @@ typedef struct
     typedef struct _viewport_camera {
 	float x;
 	float y;
-	float z;
 
 	float targetx;
 	float targety;
-	float targetz;
 
 	float r;
     } viewport_camera;
@@ -254,7 +252,6 @@ typedef struct
 	/*view variables */
 	float panx;
 	float pany;
-	float panz;
 	float zoom;
 
 	/*clipping coordinates, to avoid unnecesarry rendering */

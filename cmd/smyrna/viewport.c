@@ -279,7 +279,6 @@ void init_viewport(ViewInfo *vi) {
     //default view settings, camera is not active
     vi->panx = 0;
     vi->pany = 0;
-    vi->panz = 0;
 
     vi->zoom = -20;
 
