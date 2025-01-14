@@ -29,3 +29,11 @@
       unlockfile(stderr);                                                      \
     }                                                                          \
   } while (0)
+
+/// print a debug message
+///
+/// The distinction between this and `GV_INFO` is purely semantic; this is
+/// intended for messages for Graphviz developers while `GV_INFO` is intended
+/// for messages for Graphviz users. In future, `GV_DEBUG` may use something
+/// other than `Verbose` to guard its output.
+#define GV_DEBUG(...) GV_INFO(__VA_ARGS__)
