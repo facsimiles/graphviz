@@ -20,6 +20,7 @@
 #include <getopt.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <util/startswith.h>
 #include <util/unreachable.h>
@@ -277,9 +278,7 @@ int main(int argc, char *argv[])
 		    agclose(prev);
 		prev = g;
 		fname = fileName(&ig);
-		if (Verbose)
-		    fprintf(stderr, "Process graph %s in file %s\n", agnameof(g),
-			    fname);
+		GV_INFO("Process graph %s in file %s", agnameof(g), fname);
 		if (clarify(g, angle, accuracy, check_edges_with_same_endpoint, seed,
 		            color_scheme, lightness) != 0) {
 		    rv = EXIT_FAILURE;
