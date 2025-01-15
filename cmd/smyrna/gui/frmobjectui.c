@@ -555,15 +555,12 @@ static void set_header_text(void)
     int nodeCnt = 0;
     int edgeCnt = 0;
     char buf[512];
-    Agedge_t* ep;
-    Agnode_t* v;
-    Agraph_t* g;
 
-    g = view->g[view->activeGraph];
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+    Agraph_t *g = view->g[view->activeGraph];
+    for (Agnode_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	if (ND_selected(v))
 	    nodeCnt++;
-	for (ep = agfstout(g, v); ep; ep = agnxtout(g, ep)) {
+	for (Agedge_t *ep = agfstout(g, v); ep; ep = agnxtout(g, ep)) {
 	    if (ND_selected(v))
 		edgeCnt++;
 	}
