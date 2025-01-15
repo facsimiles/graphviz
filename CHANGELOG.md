@@ -90,6 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - non-HTML (regular) strings and HTML-like strings are no longer considered
   equivalent internally. This allows you to have a non-HTML string and an
   HTML-like string with the same textual content. #2089
+- Smyrna no longer crashes when selecting `Edit→Attributes` with no open graph.
+  #2635
 
 ## [12.2.1] – 2024-12-07
 

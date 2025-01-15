@@ -582,6 +582,15 @@ static void set_header_text(void)
 }
 
 void showAttrsWidget(void) {
+    if (view->activeGraph < 0) {
+	void *const dlg = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
+	                                         GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK,
+	                                         "No active graph");
+	(void)gtk_dialog_run(dlg);
+	gtk_widget_destroy(dlg);
+	return;
+    }
+
     gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
     gtk_widget_show(glade_xml_get_widget(xml, "dlgSettings"));
     gtk_notebook_set_current_page((GtkNotebook *)
