@@ -138,7 +138,7 @@ int copyAttr(Agobj_t *src, Agobj_t *tgt) {
     if (aghtmlstr(val)) {
       val = agstrdup_html(tgtg, val);
       agxset(tgt, tsym, val);
-      agstrfree(tgtg, val);
+      agstrfree(tgtg, val, true);
     } else
       agxset(tgt, tsym, val);
   }

@@ -82,12 +82,13 @@ static Dict_t *agdictof(Agraph_t * g, int kind)
     return dict;
 }
 
+/// @param is_html Is `value` an HTML-like string?
 static Agsym_t *agnewsym(Agraph_t * g, const char *name, const char *value,
-                         int id, int kind) {
+                         bool is_html, int id, int kind) {
     Agsym_t *sym = gv_alloc(sizeof(Agsym_t));
     sym->kind = (unsigned char) kind;
     sym->name = agstrdup(g, name);
-    sym->defval = agstrdup(g, value);
+    sym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     sym->id = id;
     return sym;
 }
@@ -98,7 +99,8 @@ static void agcopydict(Dict_t * src, Dict_t * dest, Agraph_t * g, int kind)
 
     assert(dtsize(dest) == 0);
     for (sym = dtfirst(src); sym; sym = dtnext(src, sym)) {
-	newsym = agnewsym(g, sym->name, sym->defval, sym->id, kind);
+	const bool is_html = aghtmlstr(sym->defval);
+	newsym = agnewsym(g, sym->name, sym->defval, is_html, sym->id, kind);
 	newsym->print = sym->print;
 	newsym->fixed = sym->fixed;
 	dtinsert(dest, newsym);
@@ -197,8 +199,13 @@ static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
 	    sz = MINATTR;
 	rec->str = gv_calloc((size_t)sz, sizeof(char *));
 	/* doesn't call agxset() so no obj-modified callbacks occur */
-	for (sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym))
-	    rec->str[sym->id] = agstrdup(agraphof(obj), sym->defval);
+	for (sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym)) {
+	    if (aghtmlstr(sym->defval)) {
+	        rec->str[sym->id] = agstrdup_html(agraphof(obj), sym->defval);
+	    } else {
+	        rec->str[sym->id] = agstrdup(agraphof(obj), sym->defval);
+	    }
+	}
     } else {
 	assert(rec->dict == datadict);
     }
@@ -213,7 +220,7 @@ static void freeattr(Agobj_t * obj, Agattr_t * attr)
     g = agraphof(obj);
     sz = topdictsize(obj);
     for (i = 0; i < sz; i++)
-	agstrfree(g, attr->str[i]);
+	agstrfree(g, attr->str[i], aghtmlstr(attr->str[i]));
     free(attr->str);
 }
 
@@ -221,8 +228,8 @@ static void freesym(void *obj) {
     Agsym_t *sym;
 
     sym = obj;
-    agstrfree(Ag_G_global, sym->name);
-    agstrfree(Ag_G_global, sym->defval);
+    agstrfree(Ag_G_global, sym->name, false);
+    agstrfree(Ag_G_global, sym->defval, aghtmlstr(sym->defval));
     free(sym);
 }
 
@@ -239,7 +246,11 @@ static void addattr(Agraph_t * g, Agobj_t * obj, Agsym_t * sym)
     if (sym->id >= MINATTR)
 	attr->str = gv_recalloc(attr->str, (size_t)sym->id, (size_t)sym->id + 1,
 	                        sizeof(char *));
-    attr->str[sym->id] = agstrdup(g, sym->defval);
+    if (aghtmlstr(sym->defval)) {
+	attr->str[sym->id] = agstrdup_html(g, sym->defval);
+    } else {
+	attr->str[sym->id] = agstrdup(g, sym->defval);
+    }
 }
 
 static Agsym_t *getattr(Agraph_t *g, int kind, char *name) {
@@ -267,12 +278,18 @@ static void unviewsubgraphsattr(Agraph_t *parent, char *name) {
     if (lsym) {
       continue;
     }
-    lsym = agnewsym(agroot(subg), name, agxget(subg, psym), psym->id, AGRAPH);
+    char *const value = agxget(subg, psym);
+    const bool is_html = aghtmlstr(value);
+    lsym = agnewsym(agroot(subg), name, value, is_html, psym->id, AGRAPH);
     dtinsert(ldict, lsym);
   }
 }
 
-static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value) {
+static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html);
+
+/// @param is_html Is `value` an HTML-like string?
+static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
+                        bool is_html) {
     Dict_t *ldict, *rdict;
     Agsym_t *lsym, *psym, *rsym, *rv;
     Agraph_t *root;
@@ -290,18 +307,18 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value) {
         if (kind == AGRAPH) {
 	    unviewsubgraphsattr(g,name);
         }
-	agstrfree(g, lsym->defval);
-	lsym->defval = agstrdup(g, value);
+	agstrfree(g, lsym->defval, aghtmlstr(lsym->defval));
+	lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
 	rv = lsym;
     } else {
 	psym = agdictsym(ldict, name);	/* search with viewpath up to root */
 	if (psym) {		/* new local definition */
-	    lsym = agnewsym(g, name, value, psym->id, kind);
+	    lsym = agnewsym(g, name, value, is_html, psym->id, kind);
 	    dtinsert(ldict, lsym);
 	    rv = lsym;
 	} else {		/* new global definition */
 	    rdict = agdictof(root, kind);
-	    rsym = agnewsym(g, name, value, dtsize(rdict), kind);
+	    rsym = agnewsym(g, name, value, is_html, dtsize(rdict), kind);
 	    dtinsert(rdict, rsym);
 	    switch (kind) {
 	    case AGRAPH:
@@ -324,7 +341,7 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value) {
 	}
     }
     if (rv && kind == AGRAPH)
-	agxset(g, rv, value);
+	agxset_(g, rv, value, is_html);
     agmethod_upd(g, g, rv);
     return rv;
 }
@@ -335,7 +352,8 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value) {
  * when a new attribute is created, existing graphs/nodes/edges
  * receive its default value.
  */
-Agsym_t *agattr(Agraph_t * g, int kind, char *name, const char *value) {
+static Agsym_t *agattr_(Agraph_t *g, int kind, char *name, const char *value,
+                 bool is_html) {
     Agsym_t *rv;
 
     if (g == 0) {
@@ -344,10 +362,18 @@ Agsym_t *agattr(Agraph_t * g, int kind, char *name, const char *value) {
 	g = ProtoGraph;
     }
     if (value)
-	rv = setattr(g, kind, name, value);
+	rv = setattr(g, kind, name, value, is_html);
     else
 	rv = getattr(g, kind, name);
     return rv;
+}
+
+Agsym_t *agattr(Agraph_t *g, int kind, char *name, const char *value) {
+  return agattr_(g, kind, name, value, false);
+}
+
+Agsym_t *agattr_html(Agraph_t *g, int kind, char *name, const char *value) {
+  return agattr_(g, kind, name, value, true);
 }
 
 Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr)
@@ -475,8 +501,7 @@ int agset(void *obj, char *name, const char *value) {
     return rv;
 }
 
-int agxset(void *obj, Agsym_t * sym, const char *value)
-{
+static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
     Agraph_t *g;
     Agobj_t *hdr;
     Agattr_t *data;
@@ -486,22 +511,30 @@ int agxset(void *obj, Agsym_t * sym, const char *value)
     hdr = obj;
     data = agattrrec(hdr);
     assert(sym->id >= 0 && sym->id < topdictsize(obj));
-    agstrfree(g, data->str[sym->id]);
-    data->str[sym->id] = agstrdup(g, value);
+    agstrfree(g, data->str[sym->id], aghtmlstr(data->str[sym->id]));
+    data->str[sym->id] = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     if (hdr->tag.objtype == AGRAPH) {
 	/* also update dict default */
 	Dict_t *dict;
 	dict = agdatadict(g, false)->dict.g;
 	if ((lsym = aglocaldictsym(dict, sym->name))) {
-	    agstrfree(g, lsym->defval);
-	    lsym->defval = agstrdup(g, value);
+	    agstrfree(g, lsym->defval, aghtmlstr(lsym->defval));
+	    lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
 	} else {
-	    lsym = agnewsym(g, sym->name, value, sym->id, AGTYPE(hdr));
+	    lsym = agnewsym(g, sym->name, value, is_html, sym->id, AGTYPE(hdr));
 	    dtinsert(dict, lsym);
 	}
     }
     agmethod_upd(g, obj, sym);
     return SUCCESS;
+}
+
+int agxset(void *obj, Agsym_t *sym, const char *value) {
+  return agxset_(obj, sym, value, false);
+}
+
+int agxset_html(void *obj, Agsym_t *sym, const char *value) {
+  return agxset_(obj, sym, value, true);
 }
 
 int agsafeset(void *obj, char *name, const char *value, const char *def) {
@@ -552,7 +585,6 @@ int agcopyattr(void *oldobj, void *newobj)
     Agsym_t *sym;
     Agsym_t *newsym;
     char* val;
-    char* nval;
     int r = 1;
 
     g = agraphof(oldobj);
@@ -564,14 +596,10 @@ int agcopyattr(void *oldobj, void *newobj)
 	if (!newsym)
 	    return 1;
 	val = agxget(oldobj, sym);
-	r = agxset(newobj, newsym, val);
-	/* FIX(?): Each graph has its own string cache, so a whole new refstr is possibly
-	 * allocated. If the original was an html string, make sure the new one is as well.
-	 * If cgraph goes to single string table, this can be removed.
-	 */
-	if (aghtmlstr (val)) {
-	    nval = agxget (newobj, newsym);
-	    agmarkhtmlstr (nval);
+	if (aghtmlstr(val)) {
+	    r = agxset_html(newobj, newsym, val);
+	} else {
+	    r = agxset(newobj, newsym, val);
 	}
     }
     return r;

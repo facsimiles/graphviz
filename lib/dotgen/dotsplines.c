@@ -830,13 +830,19 @@ static graph_t *cloneGraph(graph_t *g, attr_state_t *attr_state) {
 
   // copy node attrs to auxg
   sym = agnxtattr(agroot(g), AGNODE, NULL); // get the first attr.
-  for (; sym; sym = agnxtattr(agroot(g), AGNODE, sym))
-    agattr(auxg, AGNODE, sym->name, sym->defval);
+  for (; sym; sym = agnxtattr(agroot(g), AGNODE, sym)) {
+    const bool is_html = aghtmlstr(sym->defval);
+    is_html ? agattr_html(auxg, AGNODE, sym->name, sym->defval)
+            : agattr(auxg, AGNODE, sym->name, sym->defval);
+  }
 
   // copy edge attributes
   sym = agnxtattr(agroot(g), AGEDGE, NULL); // get the first attr.
-  for (; sym; sym = agnxtattr(agroot(g), AGEDGE, sym))
-    agattr(auxg, AGEDGE, sym->name, sym->defval);
+  for (; sym; sym = agnxtattr(agroot(g), AGEDGE, sym)) {
+    const bool is_html = aghtmlstr(sym->defval);
+    is_html ? agattr_html(auxg, AGEDGE, sym->name, sym->defval)
+            : agattr(auxg, AGEDGE, sym->name, sym->defval);
+  }
 
   if (!agattr(auxg, AGEDGE, "headport", NULL))
     agattr(auxg, AGEDGE, "headport", "");

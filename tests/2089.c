@@ -7,10 +7,10 @@ int main(void) {
 
   int ret = EXIT_SUCCESS;
 
-#define ERR(args...)                                                           \
+#define ERR(...)                                                               \
   do {                                                                         \
     fprintf(stderr, "%s:%d: ", __FILE__, __LINE__);                            \
-    fprintf(stderr, args);                                                     \
+    fprintf(stderr, __VA_ARGS__);                                              \
     ret = EXIT_FAILURE;                                                        \
   } while (0)
 

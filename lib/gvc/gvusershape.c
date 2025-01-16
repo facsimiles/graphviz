@@ -663,7 +663,7 @@ void gvusershape_file_release(usershape_t *us)
 
 static void freeUsershape (usershape_t* us)
 {
-    if (us->name) agstrfree(0, us->name);
+    if (us->name) agstrfree(0, us->name, false);
     free (us);
 }
 

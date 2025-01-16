@@ -8,6 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <util/alloc.h>
 #include <util/unreachable.h>
@@ -68,7 +69,7 @@ static void myiddisc_free(void *state, int objtype, uint64_t id) {
     Tcl_DeleteCommand(ictx->interp, buf);
 */
     if (id % 2 == 0)
-        agstrfree(gctx->g, (char *)(uintptr_t)id);
+        agstrfree(gctx->g, (char *)(uintptr_t)id, false);
 }
 static char *myiddisc_print(void *state, int objtype, uint64_t id) {
     (void)state;

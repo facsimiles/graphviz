@@ -98,7 +98,7 @@ static char* canon (graph_t *g, char* s)
 {
     char* ns = agstrdup (g, s);
     char* cs = agcanonStr (ns);
-    agstrfree (g, ns);
+    agstrfree(g, ns, false);
     return cs;
 }
 
