@@ -155,7 +155,7 @@ int agdelrec(void *arg_obj, const char *name)
     default:
 	UNREACHABLE();
     }
-    agstrfree(g, rec->name);
+    agstrfree(g, rec->name, false);
     free(rec);
 
     return SUCCESS;
@@ -233,7 +233,7 @@ void agrecclose(Agobj_t * obj)
     if ((rec = obj->data)) {
 	do {
 	    nrec = rec->next;
-	    agstrfree(g, rec->name);
+	    agstrfree(g, rec->name, false);
 	    free(rec);
 	    rec = nrec;
 	} while (rec != obj->data);

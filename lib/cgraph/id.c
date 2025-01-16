@@ -77,7 +77,7 @@ static void idfree(void *state, int objtype, IDTYPE id)
     (void)objtype;
     state_t *st = state;
     if (id % 2 == 0)
-	agstrfree(st->g, (char *)(uintptr_t)id);
+	agstrfree(st->g, (char *)(uintptr_t)id, false);
 }
 
 static char *idprint(void *state, int objtype, IDTYPE id)

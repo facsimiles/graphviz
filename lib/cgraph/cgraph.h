@@ -408,7 +408,7 @@ CGRAPH_API int agpopdisc(Agraph_t *g, Agcbdisc_t *disc);
 struct Agclos_s {
   Agdisc_t disc;    /* resource discipline functions */
   Agdstate_t state; /* resource closures */
-  Dict_t *strdict;  /* shared string dict */
+  void *strdict;    ///< shared string dict
   uint64_t seq[3];  /* local object sequence number counter */
   Agcbstack_t *cb;  /* user and system callback function stacks */
   Dict_t *lookup_by_name[3];
@@ -597,7 +597,8 @@ CGRAPH_API char *agstrbind(Agraph_t *g, const char *);
 ///< returns a pointer to a reference-counted string if it exists, or NULL if
 ///< not
 
-CGRAPH_API int agstrfree(Agraph_t *, const char *);
+CGRAPH_API int agstrfree(Agraph_t *, const char *, bool is_html);
+///< @param is_html Is the string being freed an HTML-like string?
 CGRAPH_API char *agcanon(char *str, int html);
 CGRAPH_API char *agstrcanon(char *, char *);
 CGRAPH_API char *agcanonStr(char *str); /* manages its own buf */
@@ -669,6 +670,10 @@ CGRAPH_API Agsym_t *agattr(Agraph_t *g, int kind, char *name,
  * objects of the given **kind**
  */
 
+CGRAPH_API Agsym_t *agattr_html(Agraph_t *g, int kind, char *name,
+                                const char *value);
+///< @brief `agattr`, but creates HTML-like values
+
 CGRAPH_API Agsym_t *agattrsym(void *obj, char *name);
 ///< looks up a string attribute for a graph object given as an argument
 
@@ -717,6 +722,7 @@ CGRAPH_API char *agget(void *obj, char *name);
 CGRAPH_API char *agxget(void *obj, Agsym_t *sym);
 CGRAPH_API int agset(void *obj, char *name, const char *value);
 CGRAPH_API int agxset(void *obj, Agsym_t *sym, const char *value);
+CGRAPH_API int agxset_html(void *obj, Agsym_t *sym, const char *value);
 CGRAPH_API int agsafeset(void *obj, char *name, const char *value,
                          const char *def);
 ///< @brief ensures the given attribute is declared

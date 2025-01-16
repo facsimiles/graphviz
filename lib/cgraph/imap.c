@@ -155,7 +155,7 @@ int aginternalmapdelete(Agraph_t * g, int objtype, IDTYPE id)
     if ((isym = find_isym(g, objtype, id))) {
 	dtdelete(g->clos->lookup_by_name[objtype], isym);
 	dtdelete(g->clos->lookup_by_id[objtype], isym);
-	agstrfree(g, isym->str);
+	agstrfree(g, isym->str, false);
 	free(isym);
 	return true;
     }

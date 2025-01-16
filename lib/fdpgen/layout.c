@@ -372,8 +372,11 @@ copyAttr (graph_t* g, graph_t* dg, char* attr)
 	ov = agattr(dg,AGRAPH, attr, NULL);
 	if (ov)
 	    agxset (dg, ov, ov_val);
-	else
-	    agattr(dg, AGRAPH, attr, ov_val);
+	else {
+	    const bool is_html = aghtmlstr(ov_val);
+	    is_html ? agattr_html(dg, AGRAPH, attr, ov_val)
+	            : agattr(dg, AGRAPH, attr, ov_val);
+	}
     }
 }
 

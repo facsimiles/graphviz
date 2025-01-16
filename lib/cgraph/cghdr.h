@@ -70,9 +70,6 @@ extern Dtdisc_t Ag_subgraph_seq_disc;
 Agraph_t *agopen1(Agraph_t * g);
 int agstrclose(Agraph_t * g);
 
-	/* ref string management */
-void agmarkhtmlstr(char *s);
-
 /// Mask of `Agtag_s.seq` width
 enum { SEQ_MASK = (1 << (sizeof(unsigned) * 8 - 4)) - 1 };
 
