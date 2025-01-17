@@ -2204,11 +2204,6 @@ def test_2089(html_like_first: bool):  # FIXME
     assert "label=<foo>" in canonical, "HTML-like label not found"
 
 
-@pytest.mark.xfail(
-    platform.system() == "Windows" and not is_mingw(),
-    reason="cannot link Agdirected on Windows (https://gitlab.com/graphviz/graphviz/-/issues/2634)",
-    strict=True,
-)
 def test_2089_2():
     """
     HTML-like and non-HTML-like strings should peacefully coexist
@@ -2220,7 +2215,11 @@ def test_2089_2():
     assert c_src.exists(), "missing test case"
 
     # run it
-    _, _ = run_c(c_src, link=["cgraph"])
+    link = ["cgraph"]
+    if is_static_build():
+        # in static builds, we also need transitive dependencies
+        link += ["cdt"]
+    _, _ = run_c(c_src, link=link)
 
 
 @pytest.mark.skipif(which("dot2gxl") is None, reason="dot2gxl not available")
@@ -3685,11 +3684,6 @@ def test_2391_1():
     dot("svg", input)
 
 
-@pytest.mark.xfail(
-    platform.system() == "Windows" and not is_mingw(),
-    reason="cannot link Agdirected on Windows",
-    strict=True,
-)  # FIXME
 def test_2397():
     """
     escapes in strings should be handled correctly
@@ -3701,7 +3695,11 @@ def test_2397():
     assert c_src.exists(), "missing test case"
 
     # run this to generate a graph
-    source, _ = run_c(c_src, link=["cgraph", "gvc"])
+    link = ["cgraph", "gvc"]
+    if is_static_build():
+        # in static builds, we also need transitive dependencies
+        link += ["cdt"]
+    source, _ = run_c(c_src, link=link)
 
     # this should have produced a valid graph
     dot("svg", source=source)
