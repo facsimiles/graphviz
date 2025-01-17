@@ -3,6 +3,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib
 noinst_HEADERS = \
   agxbuf.h \
   alloc.h \
+  asan.h \
   bitarray.h \
   exit.h \
   gv_ctype.h \

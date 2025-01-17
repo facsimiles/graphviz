@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/asan.h>
 #include <util/exit.h>
 #include <util/unused.h>
 
@@ -78,6 +79,9 @@
       /* zero the new memory */                                                \
       memset(&base[list->capacity], 0, (c - list->capacity) * sizeof(type));   \
                                                                                \
+      /* poison the new (conceptually unallocated) memory */                   \
+      ASAN_POISON(&base[list->capacity], (c - list->capacity) * sizeof(type)); \
+                                                                               \
       /* Do we need to shuffle the prefix upwards? E.g. */                     \
       /*                                                */                     \
       /*        ┌───┬───┬───┬───┐                       */                     \
@@ -89,10 +93,16 @@
       /*        ┌───┬───┬───┬───┬───┬───┬───┬───┐       */                     \
       /*   new: │ 3 │ 4 │   │   │   │   │ 1 │ 2 │       */                     \
       /*        └───┴───┴───┴───┴───┴───┴───┴───┘       */                     \
+      /*          a   b   c   d   e   f   g   h         */                     \
       if (list->head + list->size > list->capacity) {                          \
         const size_t prefix = list->capacity - list->head;                     \
         const size_t new_head = c - prefix;                                    \
+        /* unpoison target range, slots [g, h] in example */                   \
+        ASAN_UNPOISON(&base[new_head], prefix * sizeof(type));                 \
         memmove(&base[new_head], &base[list->head], prefix * sizeof(type));    \
+        /* (re-)poison new gap, slots [c, f] in example */                     \
+        ASAN_POISON(&base[list->size - prefix],                                \
+                    (list->capacity - list->size) * sizeof(type));             \
         list->head = new_head;                                                 \
       }                                                                        \
                                                                                \
@@ -100,7 +110,9 @@
       list->capacity = c;                                                      \
     }                                                                          \
                                                                                \
-    list->base[(list->head + list->size) % list->capacity] = item;             \
+    const size_t new_slot = (list->head + list->size) % list->capacity;        \
+    ASAN_UNPOISON(&list->base[new_slot], sizeof(type));                        \
+    list->base[new_slot] = item;                                               \
     ++list->size;                                                              \
                                                                                \
     return 0;                                                                  \
@@ -194,6 +206,7 @@
           *candidate = *replacement;                                           \
           candidate = replacement;                                             \
         }                                                                      \
+        ASAN_POISON(name##_at(list, list->size - 1), sizeof(type));            \
         --list->size;                                                          \
         return;                                                                \
       }                                                                        \
@@ -206,6 +219,7 @@
                                                                                \
     for (size_t i = 0; i < list->size; ++i) {                                  \
       dtor(name##_get(list, i));                                               \
+      ASAN_POISON(name##_at(list, i), sizeof(type));                           \
     }                                                                          \
                                                                                \
     list->size = 0;                                                            \
@@ -241,11 +255,17 @@
     /*        ┌───┬───┬───┬───┬───┬───┬───┬───┐       */                       \
     /*   new: │ 3 │ 4 │   │   │   │   │ 1 │ 2 │       */                       \
     /*        └───┴───┴───┴───┴───┴───┴───┴───┘       */                       \
+    /*          a   b   c   d   e   f   g   h         */                       \
     if (list->head + list->size > list->capacity) {                            \
       const size_t prefix = list->capacity - list->head;                       \
       const size_t new_head = capacity - prefix;                               \
+      /* unpoison target range, slots [g, h] in example */                     \
+      ASAN_UNPOISON(&list->base[new_head], prefix * sizeof(type));             \
       memmove(&list->base[new_head], &list->base[list->head],                  \
               prefix * sizeof(type));                                          \
+      /* (re-)poison new gap, slots [c, f] in example */                       \
+      ASAN_POISON(&list->base[list->size - prefix],                            \
+                  (list->capacity - list->size) * sizeof(type));               \
       list->head = new_head;                                                   \
     }                                                                          \
                                                                                \
@@ -271,6 +291,7 @@
       /* we are shrinking the list */                                          \
       while (list->size > size) {                                              \
         dtor(name##_get(list, list->size - 1));                                \
+        ASAN_POISON(name##_at(list, list->size - 1), sizeof(type));            \
         --list->size;                                                          \
       }                                                                        \
     }                                                                          \
@@ -326,6 +347,11 @@
   static inline void name##_sync(name##_t *list) {                             \
     assert(list != NULL);                                                      \
                                                                                \
+    /* Allow unrestricted access. The shuffle below accesses both allocated    \
+     * and unallocated elements, so just let it read and write everything.     \
+     */                                                                        \
+    ASAN_UNPOISON(list->base, list->capacity * sizeof(type));                  \
+                                                                               \
     /* Shuffle the list 1-1 until it is aligned. This is not efficient, but */ \
     /* we assume this is a relatively rare operation. */                       \
     while (list->head != 0) {                                                  \
@@ -342,6 +368,10 @@
                                                                                \
     /* synchronization should have ensured the list no longer wraps */         \
     assert(name##_is_contiguous(list));                                        \
+                                                                               \
+    /* re-establish access restrictions */                                     \
+    ASAN_POISON(&list->base[list->size],                                       \
+                (list->capacity - list->size) * sizeof(type));                 \
   }                                                                            \
                                                                                \
   /** sort the list using the given comparator */                              \
@@ -407,6 +437,7 @@
     /* do not call `dtor` because we are transferring ownership of the removed \
      * element to the caller                                                   \
      */                                                                        \
+    ASAN_POISON(name##_at(list, 0), sizeof(type));                             \
     list->head = (list->head + 1) % list->capacity;                            \
     --list->size;                                                              \
                                                                                \
@@ -423,6 +454,7 @@
     /* do not call `dtor` because we are transferring ownership of the removed \
      * element to the caller                                                   \
      */                                                                        \
+    ASAN_POISON(name##_at(list, list->size - 1), sizeof(type));                \
     --list->size;                                                              \
                                                                                \
     return value;                                                              \
