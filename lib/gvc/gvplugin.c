@@ -229,6 +229,9 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, const char *pathname) {
     agxbfree(&fullpath);
     return (gvplugin_library_t *)ptr;
 #else
+    (void)gvc;
+    (void)pathname;
+
     agerrorf("dynamic loading not available\n");
     return NULL;
 #endif

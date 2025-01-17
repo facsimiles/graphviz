@@ -20,8 +20,7 @@
 /* Forward declarations */
 static void MethodZero(RTree_t * rtp);
 static void InitPVars(RTree_t * rtp);
-static void LoadNodes(RTree_t * rtp, Node_t * n, Node_t * q,
-		      struct PartitionVars *p);
+static void LoadNodes(RTree_t *rtp, Node_t *n, Node_t *q);
 static void Classify(RTree_t * rtp, int i, int group);
 static void PickSeeds(RTree_t * rtp);
 static void GetBranches(RTree_t * rtp, Node_t * n, Branch_t * b);
@@ -59,13 +58,15 @@ void SplitNode(RTree_t * rtp, Node_t * n, Branch_t * b, Node_t ** nn)
 #endif
 
     /* find partition */
+#ifdef RTDEBUG
     struct PartitionVars *p = &rtp->split.Partitions[0];
+#endif
     MethodZero(rtp);
 
     /* put branches from buffer into 2 nodes according to chosen partition */
     *nn = RTreeNewNode();
     (*nn)->level = n->level = level;
-    LoadNodes(rtp, n, *nn, p);
+    LoadNodes(rtp, n, *nn);
     assert(n->count + (*nn)->count == NODECARD + 1);
 
 #ifdef RTDEBUG
@@ -252,12 +253,9 @@ static void Classify(RTree_t * rtp, int i, int group)
 /*-----------------------------------------------------------------------------
 | Copy branches from the buffer into two nodes according to the partition.
 -----------------------------------------------------------------------------*/
-static void LoadNodes(RTree_t * rtp, Node_t * n, Node_t * q,
-		      struct PartitionVars *p)
-{
+static void LoadNodes(RTree_t *rtp, Node_t *n, Node_t *q) {
     assert(n);
     assert(q);
-    assert(p);
 
     for (size_t i = 0; i < NODECARD + 1; i++) {
 	assert(rtp->split.Partitions[0].partition[i] == 0 ||

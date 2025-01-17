@@ -624,6 +624,8 @@ void gvconfig(GVC_t * gvc, bool rescan)
         }
     }
 done:
+#else
+    (void)rescan;
 #endif
     gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */
     textfont_dict_open(gvc);    /* initialize font dict */
@@ -644,6 +646,9 @@ DEFINE_LIST_WITH_DTOR(strs, char *, free)
 static int
 glob (GVC_t* gvc, char* pattern, int flags, int (*errfunc)(const char *, int), glob_t *pglob)
 {
+    (void)flags;
+    (void)errfunc;
+
     char* libdir;
     WIN32_FIND_DATA wfd;
     HANDLE h;

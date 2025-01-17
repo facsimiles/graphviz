@@ -1316,6 +1316,10 @@ int Gdtclft_SafeInit(Tcl_Interp *interp) {
  */
 BOOL APIENTRY DllEntryPoint(HINSTANCE hInst, DWORD reason, LPVOID reserved);
 BOOL APIENTRY DllEntryPoint(HINSTANCE hInst, DWORD reason, LPVOID reserved) {
+  (void)hInst;
+  (void)reason;
+  (void)reserved;
+
   return TRUE;
 }
 #endif
