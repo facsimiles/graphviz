@@ -76,8 +76,7 @@
       }                                                                        \
                                                                                \
       /* zero the new memory */                                                \
-      memset((char *)base + list->capacity * sizeof(type), 0,                  \
-             (c - list->capacity) * sizeof(type));                             \
+      memset(&base[list->capacity], 0, (c - list->capacity) * sizeof(type));   \
                                                                                \
       /* Do we need to shuffle the prefix upwards? E.g. */                     \
       /*                                                */                     \
