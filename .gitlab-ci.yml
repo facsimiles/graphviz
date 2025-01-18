@@ -1532,6 +1532,7 @@ lint_cpplint:
     - uname -rms
     # check file formatting
     - git ls-files -z -- lib/cgraph++ lib/gvc++ | xargs -0 -- cpplint
+    - git ls-files -z -- lib/xdot | xargs -0 -- cpplint --filter=-readability/casting
   except:
     - tags
   retry:
