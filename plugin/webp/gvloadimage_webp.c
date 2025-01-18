@@ -10,10 +10,12 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/gv_math.h>
 #include <util/prisize_t.h>
 
 #include <gvc/gvplugin_loadimage.h>
@@ -80,18 +82,10 @@ static cairo_surface_t* webp_really_loadimage(const char *in_file, FILE* const i
 
     /* FIXME - this is ugly */
     if (! bitstream->has_alpha) {
-	int x, y;
-	unsigned char *p, t;
-
-	for (y = 0; y < output_buffer->height; y++) {
-	    p = output_buffer->u.RGBA.rgba + output_buffer->u.RGBA.stride * y;
-	    for (x = 0; x < output_buffer->width; x++) {
-		t = p[0];     /* swap red/blue */
-		p[0] = p[2];
-		p[2] = t;
-		p += 4;
-	    }
-	}
+	assert(output_buffer->width >= 0);
+	assert(output_buffer->height >= 0);
+	argb2rgba((size_t)output_buffer->width, (size_t)output_buffer->height,
+	          output_buffer->u.RGBA.rgba);
     }
 
 end:
