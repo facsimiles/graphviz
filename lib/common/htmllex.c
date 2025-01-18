@@ -765,6 +765,11 @@ int initHTMLlexer(htmlscan_t *scanner, char *src, agxbuf * xb, htmlenv_t *env)
     XML_SetCharacterDataHandler(ctx->parser, characterData);
     return 0;
 #else
+    (void)scanner;
+    (void)src;
+    (void)xb;
+    (void)env;
+
     static int first;
     if (!first) {
 	agwarningf(
@@ -784,6 +789,8 @@ int clearHTMLlexer(htmlscan_t *scanner)
     agxbfree (&ctx->lb);
     return rv;
 #else
+    (void)scanner;
+
     return 1;
 #endif
 }
@@ -912,6 +919,8 @@ static unsigned long htmllineno_ctx(htmllexstate_t *ctx) {
 #ifdef HAVE_EXPAT
     return XML_GetCurrentLineNumber(ctx->parser);
 #else
+    (void)ctx;
+
     return 0;
 #endif
 }
@@ -1111,6 +1120,9 @@ int htmllex(union HTMLSTYPE *htmllval, htmlscan_t *scanner)
 #endif
     return ctx->tok;
 #else
+    (void)htmllval;
+    (void)scanner;
+
     return EOF;
 #endif
 }

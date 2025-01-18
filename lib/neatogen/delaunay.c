@@ -708,27 +708,48 @@ freeSurface (surface_t* s)
 static char* err = "Graphviz built without any triangulation library\n";
 int* get_triangles (double *x, int n, int* tris)
 {
+    (void)x;
+    (void)n;
+    (void)tris;
+
     agerrorf("get_triangles: %s\n", err);
     return 0;
 }
 static v_data *delaunay_triangulation(double *x, double *y, int n) {
+    (void)x;
+    (void)y;
+    (void)n;
+
     agerrorf("delaunay_triangulation: %s\n", err);
     return 0;
 }
 int *delaunay_tri(double *x, double *y, int n, int* nedges)
 {
+    (void)x;
+    (void)y;
+    (void)n;
+    (void)nedges;
+
     agerrorf("delaunay_tri: %s\n", err);
     return 0;
 }
 surface_t* 
 mkSurface (double *x, double *y, int n, int* segs, int nsegs)
 {
+    (void)x;
+    (void)y;
+    (void)n;
+    (void)segs;
+    (void)nsegs;
+
     agerrorf("mkSurface: %s\n", err);
     return 0;
 }
 void 
 freeSurface (surface_t* s)
 {
+    (void)s;
+
     agerrorf("freeSurface: %s\n", err);
 }
 #endif

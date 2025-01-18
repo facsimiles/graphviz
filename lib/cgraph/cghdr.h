@@ -78,7 +78,7 @@ Agnode_t *agfindnode_by_id(Agraph_t * g, IDTYPE id);
 uint64_t agnextseq(Agraph_t * g, int objtype);
 
 /* dict helper functions */
-Dict_t *agdtopen(Agraph_t * g, Dtdisc_t * disc, Dtmethod_t * method);
+Dict_t *agdtopen(Dtdisc_t *disc, Dtmethod_t *method);
 void agdtdisc(Agraph_t * g, Dict_t * dict, Dtdisc_t * disc);
 int agdtdelete(Agraph_t * g, Dict_t * dict, void *obj);
 int agdtclose(Agraph_t * g, Dict_t * dict);
