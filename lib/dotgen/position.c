@@ -964,9 +964,7 @@ static void set_aspect(graph_t *g) {
 	    scale_it = false;
 	if (scale_it) {
 	    if (GD_flip(g)) {
-		double t = xf;
-		xf = yf;
-		yf = t;
+		SWAP(&xf, &yf);
 	    }
 	    for (n = GD_nlist(g); n; n = ND_next(n)) {
 		ND_coord(n).x = round(ND_coord(n).x * xf);

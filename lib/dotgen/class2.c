@@ -15,6 +15,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 
 static node_t*
 label_vnode(graph_t * g, edge_t * orig)
@@ -107,9 +108,7 @@ interclrep(graph_t * g, edge_t * e)
     t = leader_of(agtail(e));
     h = leader_of(aghead(e));
     if (ND_rank(t) > ND_rank(h)) {
-	node_t *t0 = t;
-	t = h;
-	h = t0;
+	SWAP(&t, &h);
     }
     if (ND_clust(t) != ND_clust(h)) {
 	if ((ve = find_fast_edge(t, h))) {
