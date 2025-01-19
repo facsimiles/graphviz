@@ -23,7 +23,7 @@ static edge_t *ffe(node_t * u, elist uL, node_t * v, elist vL)
     int i;
     edge_t *e;
 
-    if ((uL.size > 0) && (vL.size > 0)) {
+    if (uL.size > 0 && vL.size > 0) {
 	if (uL.size < vL.size) {
 	    for (i = 0; (e = uL.list[i]); i++)
 		if (aghead(e) == v)
@@ -119,7 +119,7 @@ void other_edge(edge_t * e)
 
 void safe_other_edge(edge_t * e)
 {
-    safe_list_append(e, &(ND_other(agtail(e))));
+    safe_list_append(e, &ND_other(agtail(e)));
 }
 
 /* new_virtual_edge:
@@ -130,13 +130,11 @@ void safe_other_edge(edge_t * e)
  */
 edge_t *new_virtual_edge(node_t * u, node_t * v, edge_t * orig)
 {
-    edge_t *e;
-
     Agedgepair_t* e2 = gv_alloc(sizeof(Agedgepair_t));
-    AGTYPE(&(e2->in)) = AGINEDGE;
-    AGTYPE(&(e2->out)) = AGOUTEDGE;
+    AGTYPE(&e2->in) = AGINEDGE;
+    AGTYPE(&e2->out) = AGOUTEDGE;
     e2->out.base.data = gv_alloc(sizeof(Agedgeinfo_t));
-    e = &(e2->out);
+    edge_t *e = &e2->out;
     agtail(e) = u;
     aghead(e) = v;
     ED_edge_type(e) = VIRTUAL;
@@ -226,8 +224,8 @@ void delete_flat_edge(edge_t * e)
     assert(e != NULL);
     if (ED_to_orig(e) && ED_to_virt(ED_to_orig(e)) == e)
 	ED_to_virt(ED_to_orig(e)) = NULL;
-    zapinlist(&(ND_flat_out(agtail(e))), e);
-    zapinlist(&(ND_flat_in(aghead(e))), e);
+    zapinlist(&ND_flat_out(agtail(e)), e);
+    zapinlist(&ND_flat_in(aghead(e)), e);
 }
 
 #ifdef DEBUG
