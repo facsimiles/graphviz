@@ -92,7 +92,6 @@ static void mergevirtual(graph_t * g, int r, int lpos, int rpos, int dir)
 		    f = virtual_edge(left, aghead(e), e);
 		while ((e0 = ND_in(right).list[0])) {
 		    merge_oneway(e0, f);
-		    /*ED_weight(f) += ED_weight(e0); */
 		    delete_fast_edge(e0);
 		}
 		delete_fast_edge(e);
@@ -167,8 +166,7 @@ static int rebuild_vlists(graph_t * g)
 		agnameof(lead), ND_order(lead), r);
 	    return -1;
 	}
-	GD_rank(g)[r].v =
-	    GD_rank(dot_root(g))[r].v + ND_order((GD_rankleader(g)[r]));
+	GD_rank(g)[r].v = GD_rank(dot_root(g))[r].v + ND_order(GD_rankleader(g)[r]);
 	maxi = -1;
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
 	    if ((n = GD_rank(g)[r].v[i]) == NULL)

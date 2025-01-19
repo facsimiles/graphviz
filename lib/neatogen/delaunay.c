@@ -58,25 +58,20 @@ typedef struct {
     GtsVertexClass parent_class;
 } GVertexClass;
 
-static GVertexClass *g_vertex_class(void)
-{
+static GtsVertexClass *g_vertex_class(void) {
     static GVertexClass *klass = NULL;
 
     if (klass == NULL) {
 	GtsObjectClassInfo vertex_info = {
-	    "GVertex",
-	    sizeof(GVertex),
-	    sizeof(GVertexClass),
-	    (GtsObjectClassInitFunc) NULL,
-	    (GtsObjectInitFunc) NULL,
-	    (GtsArgSetFunc) NULL,
-	    (GtsArgGetFunc) NULL
+	    .name = "GVertex",
+	    .object_size = sizeof(GVertex),
+	    .class_size = sizeof(GVertexClass),
 	};
 	klass = gts_object_class_new(GTS_OBJECT_CLASS(gts_vertex_class()),
 				     &vertex_info);
     }
 
-    return klass;
+    return &klass->parent_class;
 }
 
 typedef struct {
@@ -88,25 +83,20 @@ typedef struct {
     GtsFaceClass parent_class;
 } GFaceClass;
 
-static GFaceClass *g_face_class(void)
-{
+static GtsFaceClass *g_face_class(void) {
     static GFaceClass *klass = NULL;
 
     if (klass == NULL) {
 	GtsObjectClassInfo face_info = {
-	    "GFace",
-	    sizeof(GFace),
-	    sizeof(GFaceClass),
-	    (GtsObjectClassInitFunc) NULL,
-	    (GtsObjectInitFunc) NULL,
-	    (GtsArgSetFunc) NULL,
-	    (GtsArgGetFunc) NULL
+	    .name = "GFace",
+	    .object_size = sizeof(GFace),
+	    .class_size = sizeof(GFaceClass),
 	};
 	klass = gts_object_class_new(GTS_OBJECT_CLASS(gts_face_class()),
 				     &face_info);
     }
 
-    return klass;
+    return &klass->parent_class;
 }
 
 /* destroy:
@@ -148,7 +138,7 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
     GSList *list = NULL;
     GtsVertex *v1, *v2, *v3;
     GtsTriangle *t;
-    GtsVertexClass *vcl = (GtsVertexClass *) g_vertex_class();
+    GtsVertexClass *vcl = g_vertex_class();
     GtsEdgeClass *ecl = GTS_EDGE_CLASS (gts_constraint_class ());
 
     if (sepArr) {
@@ -183,10 +173,8 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
 
     gts_triangle_vertices(t, &v1, &v2, &v3);
 
-    surface = gts_surface_new(gts_surface_class(),
-				  (GtsFaceClass *) g_face_class(),
-				  gts_edge_class(),
-				  gts_vertex_class());
+    surface = gts_surface_new(gts_surface_class(), g_face_class(),
+                              gts_edge_class(), gts_vertex_class());
     gts_surface_add_face(surface, gts_face_new(gts_face_class(),
 					       t->e1, t->e2, t->e3));
 
