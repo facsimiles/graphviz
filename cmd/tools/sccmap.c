@@ -231,7 +231,7 @@ static void process(Agraph_t * G)
     if (Verbose)
 	nc = countComponents(G, &Maxdegree, &nontree_frac);
 
-    map = agopen("scc_map", Agdirected, (Agdisc_t *) 0);
+    map = agopen("scc_map", Agdirected, NULL);
     for (n = agfstnode(G); n; n = agnxtnode(G, n))
 	if (getval(n) == 0)
 	    visit(n, map, &stack, &state);

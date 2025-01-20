@@ -46,12 +46,9 @@ static Agraph_t *localsubg(Agraph_t * g, IDTYPE id)
     return agopen1(subg);
 }
 
-Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag)
-{
+Agraph_t *agidsubg(Agraph_t *g, IDTYPE id) {
     Agraph_t *subg;
     subg = agfindsubg_by_id(g, id);
-    if (subg == NULL && cflag && agallocid(g, AGRAPH, id))
-	subg = localsubg(g, id);
     return subg;
 }
 
@@ -99,6 +96,5 @@ Agraph_t *agparent(Agraph_t * g)
 int agdelsubg(Agraph_t * g, Agraph_t * subg)
 {
     Agraphs_remove(g->g_seq2, subg);
-    return ( (dtdelete(g->g_seq, subg) != NULL)  &&
-        (dtdelete(g->g_id, subg) != NULL) );
+    return dtdelete(g->g_seq, subg) != NULL  && dtdelete(g->g_id, subg) != NULL;
 }
