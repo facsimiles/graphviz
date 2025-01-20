@@ -200,8 +200,8 @@ static Agedge_t *newedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
     (void)agsubnode(g, t, 1);
     (void)agsubnode(g, h, 1);
     Agedgepair_t *e2 = gv_alloc(sizeof(Agedgepair_t));
-    in = &(e2->in);
-    out = &(e2->out);
+    in = &e2->in;
+    out = &e2->out;
     uint64_t seq = agnextseq(g, AGEDGE);
     assert((seq & SEQ_MASK) == seq && "sequence ID overflow");
     AGTYPE(in) = AGINEDGE;
@@ -246,12 +246,8 @@ Agedge_t *agidedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
 	e = agfindedge_by_id(g, h, t, id);
     if (e == NULL && cflag && ok_to_make_edge(g, t, h)) {
 	root = agroot(g);
-	if (g != root && ((e = agfindedge_by_id(root, t, h, id)))) {
+	if (g != root && (e = agfindedge_by_id(root, t, h, id))) {
 	    subedge(g, e);	/* old */
-	} else {
-	    if (agallocid(g, AGEDGE, id)) {
-		e = newedge(g, t, h, id);	/* new */
-	    }
 	}
     }
     return e;
@@ -367,7 +363,7 @@ Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int cflag)
 	        installedge(g, e);
 	        rv = e;
 	    }
-	    if (rv && (AGTYPE(rv) != AGTYPE(e)))
+	    if (rv && AGTYPE(rv) != AGTYPE(e))
 	        rv = AGOPP(rv);
 	}
     }

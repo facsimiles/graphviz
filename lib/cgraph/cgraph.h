@@ -313,7 +313,6 @@ struct Agdesc_s {         /* graph descriptor */
 struct Agiddisc_s {
   void *(*open)(Agraph_t *g, Agdisc_t *); /* associated with a graph */
   long (*map)(void *state, int objtype, char *str, IDTYPE *id, int createflag);
-  long (*alloc)(void *state, int objtype, IDTYPE id);
   void (*free)(void *state, int objtype, IDTYPE id);
   char *(*print)(void *state, int objtype, IDTYPE id);
   void (*close)(void *state);
@@ -757,9 +756,8 @@ CGRAPH_API int agsafeset(void *obj, char *name, const char *value,
  */
 
 CGRAPH_API Agraph_t *agsubg(Agraph_t *g, char *name,
-                            int cflag); /* constructor */
-CGRAPH_API Agraph_t *agidsubg(Agraph_t *g, IDTYPE id,
-                              int cflag); /* constructor */
+                            int cflag);                /* constructor */
+CGRAPH_API Agraph_t *agidsubg(Agraph_t *g, IDTYPE id); ///< constructor
 CGRAPH_API Agraph_t *agfstsubg(Agraph_t *g);
 CGRAPH_API Agraph_t *agnxtsubg(Agraph_t *subg);
 CGRAPH_API Agraph_t *agparent(Agraph_t *g);
