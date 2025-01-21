@@ -315,6 +315,6 @@ void show_settings_form(void) {
 							  GTK_BUTTONS_OK,
 							  "No active graph");
 	gtk_dialog_run(dlg);
-	gtk_widget_hide(dlg);
+	gtk_widget_destroy(dlg);
     }
 }
