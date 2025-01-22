@@ -38,10 +38,6 @@
 #include <util/list.h>
 #include <util/unreachable.h>
 
-#ifndef DFLT_GVPRPATH
-#define DFLT_GVPRPATH "."
-#endif
-
 static char *Info[] = {
     "gvpr",          /* Program */
     PACKAGE_VERSION, /* Version */
