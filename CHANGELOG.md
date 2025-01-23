@@ -59,7 +59,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   have been removed.
 - In verbose mode (`-v`) the dot layout algorithm now notes when it is entering
   each layout phase. #2540
-- **Breaking**: The `Agraph_t` structure has gained a new opaque field `g_seq2`.
 - **Breaking**: The `EXPANDBP` macro has been removed.
 - **Breaking**: The `EXPANDBB` macro has been removed.
 - **Breaking**: `Agclos_t.strdict` is now an opaque pointer.

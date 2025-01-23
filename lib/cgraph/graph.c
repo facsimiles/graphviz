@@ -74,7 +74,6 @@ Agraph_t *agopen1(Agraph_t * g)
     g->e_seq = agdtopen(g == agroot(g)? &Ag_mainedge_seq_disc : &Ag_subedge_seq_disc, Dttree);
     g->e_id = agdtopen(g == agroot(g)? &Ag_mainedge_id_disc : &Ag_subedge_id_disc, Dttree);
     g->g_seq = agdtopen(&Ag_subgraph_seq_disc, Dttree);
-    g->g_seq2 = gv_alloc(sizeof(Agraphs_t));
 
     g->g_id = agdtopen(&Ag_subgraph_id_disc, Dttree);
 
@@ -84,7 +83,6 @@ Agraph_t *agopen1(Agraph_t * g)
 	assert((seq & SEQ_MASK) == seq && "sequence ID overflow");
 	AGSEQ(g) = seq & SEQ_MASK;
 	dtinsert(par->g_seq, g);
-	Agraphs_append(par->g_seq2, g);
 	dtinsert(par->g_id, g);
     }
     if (!par || par->desc.has_attrs)
@@ -125,10 +123,6 @@ int agclose(Agraph_t * g)
     if (agdtclose(g, g->e_id)) return FAILURE;
     assert(dtsize(g->e_seq) == 0);
     if (agdtclose(g, g->e_seq)) return FAILURE;
-
-    assert(Agraphs_is_empty(g->g_seq2));
-    Agraphs_free(g->g_seq2);
-    free(g->g_seq2);
 
     assert(dtsize(g->g_seq) == 0);
     if (agdtclose(g, g->g_seq)) return FAILURE;

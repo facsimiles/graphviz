@@ -148,5 +148,3 @@ void aginitcb(Agraph_t * g, void *obj, Agcbstack_t * disc);
 void agupdcb(Agraph_t * g, void *obj, Agsym_t * sym, Agcbstack_t * disc);
 void agdelcb(Agraph_t * g, void *obj, Agcbstack_t * disc);
 /// @}
-
-DEFINE_LIST(Agraphs, Agraph_t *)
