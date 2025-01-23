@@ -95,6 +95,5 @@ Agraph_t *agparent(Agraph_t * g)
  */
 int agdelsubg(Agraph_t * g, Agraph_t * subg)
 {
-    Agraphs_remove(g->g_seq2, subg);
     return dtdelete(g->g_seq, subg) != NULL  && dtdelete(g->g_id, subg) != NULL;
 }
