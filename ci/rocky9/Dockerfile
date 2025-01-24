@@ -26,7 +26,6 @@ swig \
 libglade2-devel \
 # Command gvedit
 qt5-devel \
-ncurses-devel \
 # Plugin library devil
 # Plugin library gd
 gd-devel \
