@@ -805,6 +805,21 @@ def test_1332():
     ), "warnings were printed when processing graph involving triangulation"
 
 
+def test_1367():
+    """
+    this graph should not generate a null pointer dereference
+    https://gitlab.com/graphviz/graphviz/-/issues/1367
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1367.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # Pass it through Graphviz. Do not use `dot(…)` because input and output contain
+    # invalid UTF-8.
+    subprocess.check_call(["dot", "-Txdot:xdot:core", "-o", os.devnull, input])
+
+
 def test_1408():
     """
     parsing particular ortho layouts should not cause an assertion failure

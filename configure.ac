@@ -2077,7 +2077,6 @@ AM_CONDITIONAL(WITH_CGRAPH, [true])
 # -----------------------------------------------------------------------
 
 # Generate Makefiles
-#	tests/regression_tests/vuln/Makefile was removed
 AC_CONFIG_FILES(Makefile
 	debian/changelog
 	debian/libgv-php5.install
@@ -2182,9 +2181,6 @@ AC_CONFIG_FILES(Makefile
 	tests/regression_tests/Makefile
 	tests/regression_tests/shapes/Makefile
 	tests/regression_tests/shapes/reference/Makefile
-	tests/regression_tests/vuln/Makefile
-	tests/regression_tests/vuln/input/Makefile
-	tests/regression_tests/vuln/reference/Makefile
 	share/Makefile
 	share/examples/Makefile
 	share/gui/Makefile
