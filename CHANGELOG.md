@@ -69,6 +69,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The `agcanon` function has been removed.
 - **Breaking**: The `Agiddisc_t.alloc` member has been removed.
 - **Breaking**: The `cflag` parameter to `agidsubg` has been removed.
+- The CMake build system now installs libgvpr.
+- The CMake build system now sets `DFLT_GVPRPATH` when compiling libgvpr.
+- The CMake build system now installs the included library of gvpr programs.
 
 ### Fixed
 

@@ -52,3 +52,44 @@ else()
     DESTINATION ${MAN_INSTALL_DIR}/man1
   )
 endif()
+
+install(
+  FILES
+    lib/addedges
+    lib/addranks
+    lib/addrings
+    lib/anon
+    lib/attr
+    lib/bb
+    lib/bbox
+    lib/bipart
+    lib/binduce
+    lib/chkclusters
+    lib/chkedges
+    lib/cliptree
+    lib/col
+    lib/collapse
+    lib/color
+    lib/cycle
+    lib/dechain
+    lib/deghist
+    lib/deledges
+    lib/delmulti
+    lib/delnodes
+    lib/depath
+    lib/dijkstra
+    lib/flatten
+    lib/get-layers-list
+    lib/histogram
+    lib/group
+    lib/indent
+    lib/knbhd
+    lib/maxdeg
+    lib/path
+    lib/rotate
+    lib/scale
+    lib/scalexy
+    lib/span
+    lib/topon
+    lib/treetoclust
+  DESTINATION ${DATA_INSTALL_DIR}/graphviz/gvpr)
