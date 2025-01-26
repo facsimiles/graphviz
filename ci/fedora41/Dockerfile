@@ -28,7 +28,6 @@ swig \
 # Command smyra
 # Command gvedit
 qt5-qtbase-devel \
-ncurses-devel \
 # Plugin library devil
 DevIL-devel \
 # Plugin library gd
