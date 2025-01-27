@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_ctype.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
@@ -467,10 +468,8 @@ static int vAdjust(state_t *st) {
 	voronoi(nextOne, st);
     }
 
-    if (Verbose) {
-	fprintf(stderr, "Number of iterations = %u\n", iterCnt);
-	fprintf(stderr, "Number of increases = %u\n", increaseCnt);
-    }
+    GV_DEBUG("Number of iterations = %u", iterCnt);
+    GV_DEBUG("Number of increases = %u", increaseCnt);
 
     cleanup();
     return 1;

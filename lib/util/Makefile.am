@@ -5,12 +5,14 @@ noinst_HEADERS = \
   alloc.h \
   asan.h \
   bitarray.h \
+  debug.h \
   exit.h \
   gv_ctype.h \
   gv_find_me.h \
   gv_fopen.h \
   gv_math.h \
   list.h \
+  lockfile.h \
   overflow.h \
   prisize_t.h \
   sort.h \
