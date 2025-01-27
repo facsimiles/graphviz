@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/unreachable.h>
 
 #ifdef DEBUG
@@ -256,10 +257,7 @@ clip_and_install(edge_t *fe, node_t *hn, pointf *ps, size_t pn,
 
     /* may be a reversed flat edge */
     if (!info->ignoreSwap && ND_rank(tn) == ND_rank(hn) && ND_order(tn) > ND_order(hn)) {
-	node_t *tmp;
-	tmp = hn;
-	hn = tn;
-	tn = tmp;
+	SWAP(&hn, &tn);
     }
     if (tn == agtail(orig)) {
 	clipTail = ED_tail_port(orig).clip;

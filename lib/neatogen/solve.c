@@ -16,12 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/alloc.h>
-
-static void swap(double *x, double *y) {
-  const double temp = *x;
-  *x = *y;
-  *y = temp;
-}
+#include <util/gv_math.h>
 
 void solve(double *a, double *b, double *c, size_t n) { // a[n][n],b[n],c[n]
 
@@ -54,9 +49,9 @@ void solve(double *a, double *b, double *c, size_t n) { // a[n][n],b[n],c[n]
     /* switch rows */
     for (size_t j = i; j < n; j++) {
       const size_t t = istar * n + j;
-      swap(&a[t], &a[i * n + j]);
+      SWAP(&a[t], &a[i * n + j]);
     }
-    swap(&c[istar], &c[i]);
+    SWAP(&c[istar], &c[i]);
     /*pivot */
     const size_t ip = i + 1;
     for (size_t ii = ip; ii < n; ii++) {

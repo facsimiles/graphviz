@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 
 static bool spline_merge(node_t * n)
 {
@@ -95,11 +96,8 @@ static Dtdisc_t itemdisc = {
 static void addMap(Dt_t * map, int a, int b, int t)
 {
     item it;
-    int tmp;
     if (a > b) {
-	tmp = a;
-	a = b;
-	b = tmp;
+	SWAP(&a, &b);
     }
     it.a[0] = a;
     it.a[1] = b;
@@ -133,9 +131,7 @@ static int findMap(Dt_t * map, int a, int b)
     item it;
     item *ip;
     if (a > b) {
-	int tmp = a;
-	a = b;
-	b = tmp;
+	SWAP(&a, &b);
     }
     it.a[0] = a;
     it.a[1] = b;
@@ -469,7 +465,7 @@ static int *mkTriIndices(surface_t * sf)
 static ipair sharedEdge(int *p, int *q)
 {
     ipair pt;
-    int tmp, p1, p2;
+    int p1, p2;
     p1 = *p;
     p2 = *(p + 1);
     if (p1 == *q) {
@@ -489,9 +485,7 @@ static ipair sharedEdge(int *p, int *q)
     }
 
     if (p1 > p2) {
-	tmp = p1;
-	p1 = p2;
-	p2 = tmp;
+	SWAP(&p1, &p2);
     }
     pt.i = p1;
     pt.j = p2;
@@ -664,9 +658,7 @@ router_t *mkRouter(Ppoly_t** obsp, int npoly)
 static void finishEdge(edge_t* e, Ppoly_t spl, int flip) {
     if (flip) {
 	for (size_t j = 0; j < spl.pn / 2; j++) {
-	    pointf tmp = spl.ps[spl.pn - 1 - j];
-	    spl.ps[spl.pn - 1 - j] = spl.ps[j];
-	    spl.ps[j] = tmp;
+	    SWAP(&spl.ps[spl.pn - 1 - j], &spl.ps[j]);
 	}
     }
     if (Verbose > 1)

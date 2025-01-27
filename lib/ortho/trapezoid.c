@@ -27,6 +27,7 @@
 #include <common/types.h>
 #include <ortho/trap.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 
 /* Node types */
 
@@ -488,7 +489,6 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
   int tu, tl, sk, tfirst, tlast;
   int tfirstr = 0, tlastr = 0, tfirstl = 0, tlastl = 0;
   int i1, i2, t, tn;
-  pointf tpt;
   int tribot = 0;
   bool is_swapped;
   int tmptriseg;
@@ -496,13 +496,8 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
   s = seg[segnum];
   if (_greater_than(&s.v1, &s.v0)) /* Get higher vertex in v0 */
     {
-      int tmp;
-      tpt = s.v0;
-      s.v0 = s.v1;
-      s.v1 = tpt;
-      tmp = s.root0;
-      s.root0 = s.root1;
-      s.root1 = tmp;
+      SWAP(&s.v0, &s.v1);
+      SWAP(&s.root0, &s.root1);
       is_swapped = true;
     }
   else is_swapped = false;

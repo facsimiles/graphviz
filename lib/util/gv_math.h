@@ -119,3 +119,24 @@ static inline void argb2rgba(size_t width, size_t height, unsigned char *data) {
     }
   }
 }
+
+/// swap data referenced by two pointers
+///
+/// You can think of this macro as having the following C type:
+///
+///   void SWAP(<t1> *a, <t1> *b);
+///
+/// Both `a` and `b` are expected to be pure expressions.
+#define SWAP(a, b)                                                             \
+  do {                                                                         \
+    /* trigger a compiler error if `a` and `b` have differing types */         \
+    (void)((a) == (b));                                                        \
+                                                                               \
+    /* Swap their targets. Contemporary compilers will optimize the `memcpy`s  \
+     * into direct writes for primitive types.                                 \
+     */                                                                        \
+    char tmp_[sizeof(*(a))];                                                   \
+    memcpy(tmp_, (a), sizeof(*(a)));                                           \
+    *(a) = *(b);                                                               \
+    memcpy((b), tmp_, sizeof(*(b)));                                           \
+  } while (0)

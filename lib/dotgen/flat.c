@@ -12,6 +12,7 @@
 #include	<stdbool.h>
 #include	<stddef.h>
 #include	<util/alloc.h>
+#include	<util/gv_math.h>
 
 static node_t *make_vn_slot(graph_t * g, int r, int pos)
 {
@@ -42,9 +43,7 @@ static void findlr(node_t * u, node_t * v, int *lp, int *rp)
     l = ND_order(u);
     r = ND_order(v);
     if (l > r) {
-	int t = l;
-	l = r;
-	r = t;
+	SWAP(&l, &r);
     }
     *lp = l;
     *rp = r;
