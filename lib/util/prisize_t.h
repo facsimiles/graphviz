@@ -2,7 +2,7 @@
 /// @ingroup cgraph_utils
 #pragma once
 
-/// \brief \p PRIu64 alike for printing \p size_t
+/// `PRIu64` alike for printing `size_t`
 ///
 /// Use this as:
 ///
@@ -12,7 +12,7 @@
 ///   // prints “value is 42.”
 /// \endcode
 ///
-/// Note that leaving a space on either side of \p PRISIZE_T does not seem
+/// Note that leaving a space on either side of `PRISIZE_T` does not seem
 /// relevant in C, but if you omit this in C++ it will be interpreted as a
 /// user-defined string literal indicator. So it is best to always use a space
 /// on either side.
