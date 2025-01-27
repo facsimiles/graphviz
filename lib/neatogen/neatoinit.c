@@ -42,6 +42,7 @@
 #include <util/alloc.h>
 #include <util/bitarray.h>
 #include <util/gv_ctype.h>
+#include <util/gv_math.h>
 #include <util/prisize_t.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
@@ -443,9 +444,7 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb, boxf* bbp)
          * we assume the input was produced using -y, so we normalize
 	 * the bb.
 	 */
-	    double tmp = bb.LL.y;
-	    bb.LL.y = bb.UR.y;
-	    bb.UR.y = tmp;
+	    SWAP(&bb.LL.y, &bb.UR.y);
 	}
 	*bbp = bb;
 	return 1;
@@ -693,12 +692,9 @@ static int checkEdge(PointMap * pm, edge_t * ep, int idx)
 {
     int i = ND_id(agtail(ep));
     int j = ND_id(aghead(ep));
-    int tmp;
 
     if (i > j) {
-	tmp = i;
-	i = j;
-	j = tmp;
+	SWAP(&i, &j);
     }
     return insertPM(pm, i, j, idx);
 }

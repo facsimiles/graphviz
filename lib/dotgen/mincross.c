@@ -324,10 +324,7 @@ checkLabelOrder (graph_t* g)
 		lo = ND_order(aghead(ND_out(u).list[0]));
 		hi = ND_order(aghead(ND_out(u).list[1]));
 		if (lo > hi) {
-		    int tmp;
-		    tmp = lo;
-		    lo = hi;
-		    hi = tmp;
+		    SWAP(&lo, &hi);
 		}
 		ND_lo(n) = lo;
 		ND_hi(n) = hi;
@@ -578,9 +575,7 @@ static bool left2right(graph_t *g, node_t *v, node_t *w) {
     if (M == NULL)
 	return false;
     if (GD_flip(g)) {
-	node_t *t = v;
-	v = w;
-	w = t;
+	SWAP(&v, &w);
     }
     return ELT(M, flatindex(v), flatindex(w)) != 0;
 }
@@ -1163,9 +1158,7 @@ void allocate_ranks(graph_t * g)
 	    low = ND_rank(agtail(e));
 	    high = ND_rank(aghead(e));
 	    if (low > high) {
-		int t = low;
-		low = high;
-		high = t;
+		SWAP(&low, &high);
 	    }
 	    for (r = low + 1; r < high; r++)
 		cn[r]++;

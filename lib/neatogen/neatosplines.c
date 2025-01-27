@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/unreachable.h>
 
 #ifdef ORTHO
@@ -1079,9 +1080,7 @@ static bool _neato_set_aspect(graph_t * g)
 	} else
 	    return translated;
 	if (GD_flip(g)) {
-	    double t = xf;
-	    xf = yf;
-	    yf = t;
+	    SWAP(&xf, &yf);
 	}
 
 	if (Nop > 1) {

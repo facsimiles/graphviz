@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
+#include <util/gv_math.h>
 #include <util/prisize_t.h>
 
 #ifndef DEBUG
@@ -154,15 +155,13 @@ genSegments (cell* cells, int ncells, boxf bb, segment_t* seg, int flip)
 static void 
 generateRandomOrdering(int n, int* permute)
 {
-    int i, j, tmp;
+    int i, j;
     for (i = 0; i <= n; i++) permute[i] = i;
 
     for (i = 1; i <= n; i++) {
 	j = i + drand48() * (n + 1 - i);
 	if (j != i) {
-	    tmp = permute[i];
-	    permute [i] = permute[j];
-            permute [j] = tmp;
+	    SWAP(&permute[i], &permute[j]);
 	}
     }
 }

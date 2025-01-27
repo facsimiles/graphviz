@@ -23,6 +23,7 @@
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/list.h>
 
 #ifdef ORTHO
@@ -147,21 +148,11 @@ int portcmp(port p0, port p1) {
 static void swap_bezier(bezier *b) {
   const size_t sz = b->size;
   for (size_t i = 0; i < sz / 2; ++i) { // reverse list of points
-    pointf tmp = b->list[i];
-    b->list[i] = b->list[sz - 1 - i];
-    b->list[sz - 1 - i] = tmp;
+    SWAP(&b->list[i], &b->list[sz - 1 - i]);
   }
 
-  {
-    uint32_t tmp = b->sflag;
-    b->sflag = b->eflag;
-    b->eflag = tmp;
-  }
-  {
-    pointf tmp = b->sp;
-    b->sp = b->ep;
-    b->ep = tmp;
-  }
+  SWAP(&b->sflag, &b->eflag);
+  SWAP(&b->sp, &b->ep);
 }
 
 static void swap_spline(splines *s) {
@@ -169,9 +160,7 @@ static void swap_spline(splines *s) {
 
   // reverse list
   for (size_t i = 0; i < sz / 2; ++i) {
-    bezier tmp = s->list[i];
-    s->list[i] = s->list[sz - 1 - i];
-    s->list[sz - 1 - i] = tmp;
+    SWAP(&s->list[i], &s->list[sz - 1 - i]);
   }
 
   // swap beziers
@@ -209,9 +198,7 @@ static void resetRW(graph_t *g) {
 
   for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
     if (ND_other(n).list) {
-      double tmp = ND_rw(n);
-      ND_rw(n) = ND_mval(n);
-      ND_mval(n) = tmp;
+      SWAP(&ND_rw(n), &ND_mval(n));
     }
   }
 }
@@ -337,9 +324,7 @@ static void dot_splines_(graph_t *g, int normalize) {
          * the original value here.
          */
         if (ND_node_type(n) == NORMAL) {
-          double tmp = ND_rw(n);
-          ND_rw(n) = ND_mval(n);
-          ND_mval(n) = tmp;
+          SWAP(&ND_rw(n), &ND_mval(n));
         }
         for (k = 0; (e = ND_other(n).list[k]); k++) {
           setflags(e, 0, 0, AUXGRAPH);
@@ -1251,9 +1236,7 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   rightx = ND_coord(hn).x;
   leftx = ND_coord(tn).x;
   if (GD_flip(g)) {
-    node_t *tmp = tn;
-    tn = hn;
-    hn = tmp;
+    SWAP(&tn, &hn);
   }
   auxt = cloneNode(subg, tn);
   auxh = cloneNode(auxg, hn);
