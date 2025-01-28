@@ -890,12 +890,12 @@ void exclose(Expr_t *p) {
 		for (i = 3; i < elementsof(p->file); i++)
 			if (p->file[i])
 				fclose(p->file[i]);
+		if (p->symbols)
+			dtclose(p->symbols);
 		if (p->vm)
 			vmclose(p->vm);
 		if (p->ve)
 			vmclose(p->ve);
-		if (p->symbols)
-			dtclose(p->symbols);
 		agxbfree(&p->tmp);
 		while ((in = p->input))
 		{
