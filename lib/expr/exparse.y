@@ -183,9 +183,7 @@ program		:	statement_list action_list
 					exfreenode(expr.program, expr.program->main.value);
 				if ($1->op == S2B)
 				{
-					Exnode_t*	x;
-
-					x = $1;
+					Exnode_t *x = $1;
 					$1 = x->data.operand.left;
 					x->data.operand.left = 0;
 					exfreenode(expr.program, x);
@@ -225,9 +223,7 @@ action		:	LABEL ':' {
 			}
 			if ($4 && $4->op == S2B)
 			{
-				Exnode_t*	x;
-
-				x = $4;
+				Exnode_t *x = $4;
 				$4 = x->data.operand.left;
 				x->data.operand.left = 0;
 				exfreenode(expr.program, x);
