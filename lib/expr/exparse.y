@@ -949,7 +949,7 @@ expr		:	'(' expr ')'
 		{
 			if ($3->local == NULL)
               			exerror("cannot apply IN to non-array %s", $3->name);
-			if (($3->index_type > 0) && ($1->type != $3->index_type))
+			if ($3->index_type > 0 && $1->type != $3->index_type)
             		    exerror("%s indices must have type %s, not %s", 
 				$3->name, extypename(expr.program, $3->index_type),extypename(expr.program, $1->type));
 			$$ = exnewnode(expr.program, IN_OP, false, INTEGER, NULL, NULL);
@@ -1020,7 +1020,7 @@ variable	:	ID members
 			n->data.variable.reference = 0;
 			if (((n->data.variable.index = $2) == 0) != ($1->local == NULL))
 				exerror("%s: is%s an array", $1->name, $1->local != NULL ? "" : " not");
-			if ($1->local != NULL && ($1->index_type > 0)) {
+			if ($1->local != NULL && $1->index_type > 0) {
 				if ($2->type != $1->index_type)
 					exerror("%s: indices must have type %s, not %s", 
 						$1->name, extypename(expr.program, $1->index_type),extypename(expr.program, $2->type));
