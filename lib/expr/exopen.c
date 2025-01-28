@@ -32,8 +32,8 @@ exopen(Exdisc_t* disc)
 
 	if (!(program = calloc(1, sizeof(Expr_t))))
 		return 0;
-	program->symdisc.key = offsetof(Exid_t, name);
-	if (!(program->symbols = dtopen(&program->symdisc, Dtset)) ||
+	static Dtdisc_t symdisc = {.key = offsetof(Exid_t, name)};
+	if (!(program->symbols = dtopen(&symdisc, Dtset)) ||
 	    !(program->vm = vmopen()) ||
 	    !(program->ve = vmopen()))
 	{
