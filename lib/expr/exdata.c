@@ -64,7 +64,6 @@ Exid_t		exbuiltin[] =
 	EX_ID("unsigned",DECLARE,	UNSIGNED,	UNSIGNED),
 	EX_ID("void",	DECLARE,	VOIDTYPE,	0),
 	EX_ID("while",	WHILE,		WHILE,		0),
-	EX_ID("while",	WHILE,		WHILE,		0),
 	EX_ID({0},		0,		0,		0)
 
 };
