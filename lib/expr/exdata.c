@@ -28,7 +28,7 @@ Exid_t		exbuiltin[] =
 
 	EX_ID("string",	DECLARE,	STRING,		STRING),
 
-	/* order not important after this point (but sorted anyway) */
+	// order not important after this point
 
 	EX_ID("break",	BREAK,		BREAK,		0),
 	EX_ID("case",	CASE,		CASE,		0),
