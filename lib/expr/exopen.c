@@ -37,7 +37,7 @@ exopen(Exdisc_t* disc)
 	    !(program->vm = vmopen()) ||
 	    !(program->ve = vmopen()))
 	{
-		exclose(program, 1);
+		exclose(program);
 		return 0;
 	}
 	program->id = "libexpr:expr";

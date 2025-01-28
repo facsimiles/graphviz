@@ -211,7 +211,7 @@ struct Expr_s				/* ex program state		*/
 
 extern Exnode_t *excast(Expr_t *, Exnode_t *, long, Exnode_t *, int);
 extern Exnode_t*	exnoncast(Exnode_t *);
-extern void		exclose(Expr_t*, int);
+extern void exclose(Expr_t *);
 
 /** Compile an expression
  *
