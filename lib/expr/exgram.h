@@ -935,8 +935,7 @@ checkBinary(Expr_t * p, Exnode_t * l, Exnode_t * ex, Exnode_t * r)
  * order to check that the name is undeclared and give a better
  * error message if it isn't.
  */
-static void checkName(Exid_t * id) 
-{
+static void checkName(const Exid_t *id) {
 	switch (id->lex) {
 	case DYNAMIC:
 	    exerror("Variable \"%s\" already declared", id->name);
