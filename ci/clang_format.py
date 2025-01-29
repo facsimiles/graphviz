@@ -390,7 +390,6 @@ EXCLUDE = (
     "lib/neatogen/quad_prog_vpsc.h",
     "lib/neatogen/randomkit.c",
     "lib/neatogen/randomkit.h",
-    "lib/neatogen/sgd.c",
     "lib/neatogen/sgd.h",
     "lib/neatogen/site.c",
     "lib/neatogen/site.h",
