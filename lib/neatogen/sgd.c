@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
+#include <util/unreachable.h>
 
 static double calculate_stress(double *pos, term_sgd *terms, int n_terms) {
     double stress = 0;
@@ -123,7 +124,7 @@ static graph_sgd * extract_adjacency(graph_t *G, int model) {
         bitarray_reset(&neighbours_j);
     } else {
         // TODO: model == MODEL_MDS and MODEL_CIRCUIT
-        assert(false); // mds and circuit model not supported
+        UNREACHABLE(); // mds and circuit model not supported
     }
     return graph;
 }
