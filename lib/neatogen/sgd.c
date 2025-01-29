@@ -218,9 +218,7 @@ void sgd(graph_t *G, /* input graph */
         const double eta = eta_max * exp(-lambda * t);
         for (ij=0; ij<n_terms; ij++) {
             // cap step size
-            double mu = eta * terms[ij].w;
-            if (mu > 1)
-                mu = 1;
+            const double mu = fmin(eta * terms[ij].w, 1);
 
             const double dx = pos[2 * terms[ij].i] - pos[2 * terms[ij].j];
             const double dy = pos[2 * terms[ij].i + 1] - pos[2 * terms[ij].j + 1];
