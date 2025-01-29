@@ -12,8 +12,7 @@
 
 static double calculate_stress(double *pos, term_sgd *terms, int n_terms) {
     double stress = 0;
-    int ij;
-    for (ij=0; ij<n_terms; ij++) {
+    for (int ij = 0; ij < n_terms; ij++) {
         const double dx = pos[2 * terms[ij].i] - pos[2 * terms[ij].j];
         const double dy = pos[2 * terms[ij].i + 1] - pos[2 * terms[ij].j + 1];
         const double r = hypot(dx, dy) - terms[ij].d;
