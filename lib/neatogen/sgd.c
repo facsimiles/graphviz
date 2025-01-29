@@ -33,13 +33,11 @@ static void fisheryates_shuffle(term_sgd *terms, int n_terms, rk_state *rstate) 
 
 // graph_sgd data structure exists only to make dijkstras faster
 static graph_sgd * extract_adjacency(graph_t *G, int model) {
-    node_t *np;
-    edge_t *ep;
     size_t n_nodes = 0, n_edges = 0;
-    for (np = agfstnode(G); np; np = agnxtnode(G,np)) {
+    for (node_t *np = agfstnode(G); np; np = agnxtnode(G, np)) {
         assert(ND_id(np) == n_nodes);
         n_nodes++;
-        for (ep = agfstedge(G, np); ep; ep = agnxtedge(G, ep, np)) {
+        for (edge_t *ep = agfstedge(G, np); ep; ep = agnxtedge(G, ep, np)) {
             if (agtail(ep) != aghead(ep)) { // ignore self-loops and double edges
                 n_edges++;
             }
@@ -56,11 +54,11 @@ static graph_sgd * extract_adjacency(graph_t *G, int model) {
     graph->sources[graph->n] = n_edges; // to make looping nice
 
     n_nodes = 0, n_edges = 0;
-    for (np = agfstnode(G); np; np = agnxtnode(G,np)) {
+    for (node_t *np = agfstnode(G); np; np = agnxtnode(G, np)) {
         assert(n_edges <= INT_MAX);
         graph->sources[n_nodes] = n_edges;
         bitarray_set(&graph->pinneds, n_nodes, isFixed(np));
-        for (ep = agfstedge(G, np); ep; ep = agnxtedge(G, ep, np)) {
+        for (edge_t *ep = agfstedge(G, np); ep; ep = agnxtedge(G, ep, np)) {
             if (agtail(ep) == aghead(ep)) { // ignore self-loops and double edges
                 continue;
             }
