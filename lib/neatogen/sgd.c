@@ -22,8 +22,7 @@ static double calculate_stress(double *pos, term_sgd *terms, int n_terms) {
 }
 // it is much faster to shuffle term rather than pointers to term, even though the swap is more expensive
 static void fisheryates_shuffle(term_sgd *terms, int n_terms, rk_state *rstate) {
-    int i;
-    for (i=n_terms-1; i>=1; i--) {
+    for (int i = n_terms - 1; i >= 1; i--) {
         int j = rk_interval(i, rstate);
 
         term_sgd temp = terms[i];
