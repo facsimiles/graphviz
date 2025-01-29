@@ -10,13 +10,13 @@
 #include <util/alloc.h>
 #include <util/bitarray.h>
 
-static float calculate_stress(float *pos, term_sgd *terms, int n_terms) {
-    float stress = 0;
+static double calculate_stress(double *pos, term_sgd *terms, int n_terms) {
+    double stress = 0;
     int ij;
     for (ij=0; ij<n_terms; ij++) {
-        float dx = pos[2*terms[ij].i] - pos[2*terms[ij].j];
-        float dy = pos[2*terms[ij].i+1] - pos[2*terms[ij].j+1];
-        float r = hypotf(dx, dy) - terms[ij].d;
+        const double dx = pos[2 * terms[ij].i] - pos[2 * terms[ij].j];
+        const double dy = pos[2 * terms[ij].i + 1] - pos[2 * terms[ij].j + 1];
+        const double r = hypot(dx, dy) - terms[ij].d;
         stress += terms[ij].w * (r * r);
     }
     return stress;
@@ -189,14 +189,14 @@ void sgd(graph_t *G, /* input graph */
     }
     // note: Epsilon is different from MODE_KK and MODE_MAJOR as it is a minimum step size rather than energy threshold
     //       MaxIter is also different as it is a fixed number of iterations rather than a maximum
-    float eta_max = 1 / w_min;
-    float eta_min = Epsilon / w_max;
-    float lambda = log(eta_max/eta_min) / (MaxIter-1);
+    const double eta_max = 1.0 / w_min;
+    const double eta_min = Epsilon / w_max;
+    const double lambda = log(eta_max/eta_min) / (MaxIter-1);
 
     // initialise starting positions (from neatoprocs)
     initial_positions(G, n);
     // copy initial positions and state into temporary space for speed
-    float *pos = gv_calloc(2 * n, sizeof(float));
+    double *const pos = gv_calloc(2 * n, sizeof(double));
     bool *unfixed = gv_calloc(n, sizeof(bool));
     for (i=0; i<n; i++) {
         node_t *node = GD_neato_nlist(G)[i];
@@ -215,20 +215,20 @@ void sgd(graph_t *G, /* input graph */
     rk_seed(0, &rstate); // TODO: get seed from graph
     for (t=0; t<MaxIter; t++) {
         fisheryates_shuffle(terms, n_terms, &rstate);
-        float eta = eta_max * exp(-lambda * t);
+        const double eta = eta_max * exp(-lambda * t);
         for (ij=0; ij<n_terms; ij++) {
             // cap step size
-            float mu = eta * terms[ij].w;
+            double mu = eta * terms[ij].w;
             if (mu > 1)
                 mu = 1;
 
-            float dx = pos[2*terms[ij].i] - pos[2*terms[ij].j];
-            float dy = pos[2*terms[ij].i+1] - pos[2*terms[ij].j+1];
-            float mag = hypotf(dx, dy);
+            const double dx = pos[2 * terms[ij].i] - pos[2 * terms[ij].j];
+            const double dy = pos[2 * terms[ij].i + 1] - pos[2 * terms[ij].j + 1];
+            const double mag = hypot(dx, dy);
 
-            float r = (mu * (mag-terms[ij].d)) / (2*mag);
-            float r_x = r * dx;
-            float r_y = r * dy;
+            const double r = (mu * (mag - terms[ij].d)) / (2 * mag);
+            const double r_x = r * dx;
+            const double r_y = r * dy;
 
             if (unfixed[terms[ij].i]) {
                 pos[2*terms[ij].i] -= r_x;
