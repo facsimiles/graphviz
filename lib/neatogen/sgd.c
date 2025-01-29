@@ -155,8 +155,8 @@ void sgd(graph_t *G, /* input graph */
         start_timer();
     }
     // calculate how many terms will be needed as fixed nodes can be ignored
-    int i, n_fixed = 0, n_terms = 0;
-    for (i=0; i<n; i++) {
+    int n_fixed = 0, n_terms = 0;
+    for (int i = 0; i < n; i++) {
         if (!isFixed(GD_neato_nlist(G)[i])) {
             n_fixed++;
             n_terms += n-n_fixed;
@@ -166,7 +166,7 @@ void sgd(graph_t *G, /* input graph */
     // calculate term values through shortest paths
     int offset = 0;
     graph_sgd *graph = extract_adjacency(G, model);
-    for (i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
         if (!isFixed(GD_neato_nlist(G)[i])) {
             offset += dijkstra_sgd(graph, i, terms+offset);
         }
@@ -179,8 +179,7 @@ void sgd(graph_t *G, /* input graph */
 
     // initialise annealing schedule
     float w_min = terms[0].w, w_max = terms[0].w;
-    int ij;
-    for (ij=1; ij<n_terms; ij++) {
+    for (int ij = 1; ij < n_terms; ij++) {
         w_min = fminf(w_min, terms[ij].w);
         w_max = fmaxf(w_max, terms[ij].w);
     }
@@ -195,7 +194,7 @@ void sgd(graph_t *G, /* input graph */
     // copy initial positions and state into temporary space for speed
     double *const pos = gv_calloc(2 * n, sizeof(double));
     bool *unfixed = gv_calloc(n, sizeof(bool));
-    for (i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
         node_t *node = GD_neato_nlist(G)[i];
         pos[2*i] = ND_pos(node)[0];
         pos[2*i+1] = ND_pos(node)[1];
@@ -207,13 +206,12 @@ void sgd(graph_t *G, /* input graph */
         fprintf(stderr, "solving model:");
         start_timer();
     }
-    int t;
     rk_state rstate;
     rk_seed(0, &rstate); // TODO: get seed from graph
-    for (t=0; t<MaxIter; t++) {
+    for (int t = 0; t < MaxIter; t++) {
         fisheryates_shuffle(terms, n_terms, &rstate);
         const double eta = eta_max * exp(-lambda * t);
-        for (ij=0; ij<n_terms; ij++) {
+        for (int ij = 0; ij < n_terms; ij++) {
             // cap step size
             const double mu = fmin(eta * terms[ij].w, 1);
 
@@ -244,7 +242,7 @@ void sgd(graph_t *G, /* input graph */
     free(terms);
 
     // copy temporary positions back into graph_t
-    for (i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
         node_t *node = GD_neato_nlist(G)[i];
         ND_pos(node)[0] = pos[2*i];
         ND_pos(node)[1] = pos[2*i+1];
