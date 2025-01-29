@@ -643,6 +643,13 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # we suppress this warning.
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4996")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
+  if(DEFINED ENV{CFLAGS})
+    if("$ENV{CFLAGS}" MATCHES "-fsanitize=[^ ]*address")
+      # Avoid "warning LNK4300: ignoring '/INCREMENTAL' because input module
+      # contains ASAN metadata"
+      add_link_options("/INCREMENTAL:NO")
+    endif()
+  endif()
 else()
   # Enable common warnings flags
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
