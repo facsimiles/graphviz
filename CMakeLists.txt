@@ -148,9 +148,6 @@ if(WIN32)
   endif()
 endif()
 
-# FIXME: workaround for uninitialized variable in `freetype-targets.cmake`
-set(_cmake_import_check_xcframework_for_freetype /dev/null)
-
 find_package(ANN)
 find_package(CAIRO)
 
