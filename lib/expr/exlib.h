@@ -99,7 +99,6 @@ typedef struct Print_s			/* compiled printf arg node	*/
 #define _EX_PROG_PRIVATE_ \
 	Vmalloc_t*	ve;		/* eval tmp region		*/ \
 	Dt_t*		frame;		/* frame symbol table		*/ \
-	Dtdisc_t	symdisc;	/* Expr_t.symbols discipline	*/ \
 	Exdisc_t*	disc;		/* user discipline		*/ \
 	Exinput_t*	input;		/* input stack			*/ \
 	Expr_t*		program;	/* previous program on stack	*/ \

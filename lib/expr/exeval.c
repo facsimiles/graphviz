@@ -1383,8 +1383,7 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 		else
 			i.integer = EX_SCALAR;
 		if (exnode->data.variable.dyna) {
-			Extype_t locv;
-			locv = getdyn(ex, exnode->data.variable.dyna, env, &assoc);
+			Extype_t locv = getdyn(ex, exnode->data.variable.dyna, env, &assoc);
 			exnode->data.variable.dyna->data.variable.dyna->data.constant.value = locv;
 		}
 		return ex->disc->getf(ex, exnode, exnode->data.variable.symbol,

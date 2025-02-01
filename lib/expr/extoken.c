@@ -314,7 +314,6 @@ extoken_fn(Expr_t* ex)
 	char*	s;
 	int	q;
 	char*		e;
-	Dt_t*		v;
 
 	if (ex->eof || ex->errors)
 		return 0;
@@ -611,11 +610,7 @@ extoken_fn(Expr_t* ex)
 					agxbputc(&ex->tmp, (char)c);
 				exunlex(ex, c);
 				s = agxbuse(&ex->tmp);
-				/* v = expr.declare ? dtview(ex->symbols, NULL) : (Dt_t*)0; FIX */
-				v = (Dt_t*)0;
 				ex_lval.id = dtmatch(ex->symbols, s);
-				if (v)
-					dtview(ex->symbols, v);
 				if (!ex_lval.id)
 				{
 					const size_t size = sizeof(Exid_t) + strlen(s) - EX_NAMELEN + 1;

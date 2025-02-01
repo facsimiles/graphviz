@@ -20,6 +20,16 @@
 #include <stdio.h>
 #include <string.h>
 
+/// destructor for `Exid_t`
+static void free_exid(void *p) {
+  Exid_t *const exid = p;
+
+  // the `Exid_t` itself was allocated through the program’s `vm` allocator, so
+  // will be automatically deallocated, but we need to manually clean up the
+  // `local` set that is used for arrays
+  dtclose(exid->local);
+}
+
 /*
  * allocate a new expression program environment
  */
@@ -32,12 +42,12 @@ exopen(Exdisc_t* disc)
 
 	if (!(program = calloc(1, sizeof(Expr_t))))
 		return 0;
-	program->symdisc.key = offsetof(Exid_t, name);
-	if (!(program->symbols = dtopen(&program->symdisc, Dtset)) ||
+	static Dtdisc_t symdisc = {.key = offsetof(Exid_t, name), .freef = free_exid};
+	if (!(program->symbols = dtopen(&symdisc, Dtset)) ||
 	    !(program->vm = vmopen()) ||
 	    !(program->ve = vmopen()))
 	{
-		exclose(program, 1);
+		exclose(program);
 		return 0;
 	}
 	program->id = "libexpr:expr";
