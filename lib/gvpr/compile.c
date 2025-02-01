@@ -2451,7 +2451,7 @@ void freeCompileProg(comp_prog *p) {
   if (!p)
     return;
 
-  exclose(p->prog, 1);
+  exclose(p->prog);
   for (size_t i = 0; i < p->n_blocks; i++) {
     bp = p->blocks + i;
     free(bp->node_stmts);

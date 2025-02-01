@@ -881,41 +881,31 @@ int excomp(Expr_t *p, const char *name, int line, FILE *fp, char *prefix) {
  * free the program p
  */
 
-void
-exclose(Expr_t* p, int all)
-{
+void exclose(Expr_t *p) {
 	Exinput_t*	in;
 
 	if (p)
 	{
-		if (all)
+		size_t i;
+		for (i = 3; i < elementsof(p->file); i++)
+			if (p->file[i])
+				fclose(p->file[i]);
+		if (p->symbols)
+			dtclose(p->symbols);
+		if (p->vm)
+			vmclose(p->vm);
+		if (p->ve)
+			vmclose(p->ve);
+		agxbfree(&p->tmp);
+		while ((in = p->input))
 		{
-			size_t i;
-			for (i = 3; i < elementsof(p->file); i++)
-				if (p->file[i])
-					fclose(p->file[i]);
-			if (p->vm)
-				vmclose(p->vm);
-			if (p->ve)
-				vmclose(p->ve);
-			if (p->symbols)
-				dtclose(p->symbols);
-			agxbfree(&p->tmp);
-			while ((in = p->input))
-			{
-				free(in->pushback);
-				if (in->fp && in->close)
-					fclose(in->fp);
-				if ((p->input = in->next))
-					free(in);
-			}
-			free(p);
+			free(in->pushback);
+			if (in->fp && in->close)
+				fclose(in->fp);
+			if ((p->input = in->next))
+				free(in);
 		}
-		else
-		{
-			vmclear(p->ve);
-			p->main.value = 0;
-		}
+		free(p);
 	}
 }
 
@@ -945,8 +935,7 @@ checkBinary(Expr_t * p, Exnode_t * l, Exnode_t * ex, Exnode_t * r)
  * order to check that the name is undeclared and give a better
  * error message if it isn't.
  */
-static void checkName(Exid_t * id) 
-{
+static void checkName(const Exid_t *id) {
 	switch (id->lex) {
 	case DYNAMIC:
 	    exerror("Variable \"%s\" already declared", id->name);

@@ -28,7 +28,7 @@ Exid_t		exbuiltin[] =
 
 	EX_ID("string",	DECLARE,	STRING,		STRING),
 
-	/* order not important after this point (but sorted anyway) */
+	// order not important after this point
 
 	EX_ID("break",	BREAK,		BREAK,		0),
 	EX_ID("case",	CASE,		CASE,		0),
@@ -63,7 +63,6 @@ Exid_t		exbuiltin[] =
 	EX_ID("unset",	UNSET,		UNSET,		0),
 	EX_ID("unsigned",DECLARE,	UNSIGNED,	UNSIGNED),
 	EX_ID("void",	DECLARE,	VOIDTYPE,	0),
-	EX_ID("while",	WHILE,		WHILE,		0),
 	EX_ID("while",	WHILE,		WHILE,		0),
 	EX_ID({0},		0,		0,		0)
 
