@@ -95,6 +95,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   HTML-like string with the same textual content. #2089
 - Smyrna no longer crashes when selecting `Edit→Attributes` with no open graph.
   #2635
+- A bug in point map handling, where comparison of integer points were accessed
+  as doubles, has been corrected. The user facing consequences of this is
+  unknown, but could potentially lead to crashes, at least on 32-bit platforms.
+  Point maps are used by the neato layout engine. This was a regression in
+  Graphviz 12.0.0.
 
 ## [12.2.1] – 2024-12-07
 
