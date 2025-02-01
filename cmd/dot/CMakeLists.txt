@@ -27,7 +27,7 @@ if(BUILD_SHARED_LIBS)
   elseif(MINGW)
     set_target_properties(dot PROPERTIES LINK_FLAGS -Wl,--stack,0x2000000)
   elseif(WIN32)
-    set_target_properties(dot PROPERTIES LINK_FLAGS /STACK:"33554432")
+    set_target_properties(dot PROPERTIES LINK_FLAGS /STACK:0x2000000)
   endif()
 
   # Installation location of executables
@@ -64,7 +64,7 @@ if(BUILD_SHARED_LIBS)
     set_target_properties(dot_builtins PROPERTIES
       LINK_FLAGS -Wl,--stack,0x2000000)
   elseif(WIN32)
-    set_target_properties(dot_builtins PROPERTIES LINK_FLAGS /STACK:"33554432")
+    set_target_properties(dot_builtins PROPERTIES LINK_FLAGS /STACK:0x2000000)
   endif()
 
   if(EXPAT_FOUND)
@@ -127,7 +127,7 @@ else()
   elseif(MINGW)
     set_target_properties(dot PROPERTIES LINK_FLAGS -Wl,--stack,0x2000000)
   elseif(WIN32)
-    set_target_properties(dot PROPERTIES LINK_FLAGS /STACK:"33554432")
+    set_target_properties(dot PROPERTIES LINK_FLAGS /STACK:0x2000000)
   endif()
 
   if(GD_FOUND)
