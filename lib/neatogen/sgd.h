@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-typedef struct term_sgd {
+typedef struct {
     int i, j;
     float d, w;
 } term_sgd;
