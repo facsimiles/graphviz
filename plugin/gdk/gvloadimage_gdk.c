@@ -25,15 +25,6 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk/gdk.h>
 
-#ifdef _MSC_VER //*dependencies
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "glib-2.0.lib" )
-    #pragma comment( lib, "cairo.lib" )
-    #pragma comment( lib, "gobject-2.0.lib" )
-    #pragma comment( lib, "graph.lib" )
-    #pragma comment( lib, "gdk-pixbuf.lib" )
-#endif
-
 typedef enum {
     FORMAT_BMP_CAIRO,
     FORMAT_JPEG_CAIRO,
