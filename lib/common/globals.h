@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <cgraph/cgraph.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <util/list.h>
