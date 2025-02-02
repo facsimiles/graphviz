@@ -385,7 +385,7 @@ AC_SUBST([MATH_LIBS])
 # -----------------------------------
 
 # Checks for library functions
-AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv memrchr select dl_iterate_phdr inotify_init1])
+AC_CHECK_FUNCS([drand48 srand48 setmode setenv memrchr select dl_iterate_phdr inotify_init1])
 
 AC_REPLACE_FUNCS([strcasestr])
 
