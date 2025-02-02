@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <float.h>
 #include <limits.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -635,9 +636,8 @@ static void vrml_polygon(GVJ_t *job, pointf *A, size_t np, int filled) {
     case EDGE_OBJTYPE:
 	e = obj->u.e;
 	if (np != 3) {
-	    static int flag;
-	    if (!flag) {
-		flag++;
+	    static atomic_flag flag;
+	    if (!atomic_flag_test_and_set(&flag)) {
 		agwarningf(
 		  "vrml_polygon: non-triangle arrowheads not supported - ignoring\n");
 	    }
