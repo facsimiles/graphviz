@@ -946,7 +946,7 @@ windows-cmake-x64-asan-debug-build:
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x64"
 
 windows-cmake-x64-debug-static-build:
-    <<: *windows_build_definition
+    <<: *windows_build_without_artifacts_definition
     before_script:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Debug"

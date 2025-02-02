@@ -100,6 +100,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unknown, but could potentially lead to crashes, at least on 32-bit platforms.
   Point maps are used by the neato layout engine. This was a regression in
   Graphviz 12.0.0.
+- The executables in the Windows 64-bit Debug release artifacts were statically
+  linked, not dynamically linked like the 64-bit Release and all the 32-bit
+  executables. This has now been corrected. This was a regression in Graphviz
+  12.0.0. #2630
 
 ## [12.2.1] – 2024-12-07
 
