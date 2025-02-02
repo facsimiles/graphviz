@@ -288,8 +288,6 @@ AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17(noext,mandatory)
 AC_PROG_OBJC
 
-AC_C_INLINE
-
 dnl ===========================================================================
 dnl Set GCC compiler flags
 
