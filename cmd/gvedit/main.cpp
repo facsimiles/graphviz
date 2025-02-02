@@ -28,11 +28,6 @@
 
 #include <common/globals.h>
 
-#ifdef _MSC_VER
-#pragma comment(lib, "cgraph.lib")
-#pragma comment(lib, "gvc.lib")
-#endif
-
 QTextStream errout(stderr, QIODevice::WriteOnly);
 
 int main(int argc, char *argv[]) {
