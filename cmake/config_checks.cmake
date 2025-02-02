@@ -14,7 +14,6 @@ include(CheckFunctionExists)
 check_function_exists( dl_iterate_phdr  HAVE_DL_ITERATE_PHDR )
 check_function_exists( drand48          HAVE_DRAND48         )
 check_function_exists( inotify_init1    HAVE_INOTIFY_INIT1   )
-check_function_exists( lrand48          HAVE_LRAND48         )
 check_function_exists( memrchr          HAVE_MEMRCHR         )
 if(PANGOCAIRO_FOUND AND
    ${PANGOCAIRO_VERSION} VERSION_GREATER_EQUAL 1.4 AND

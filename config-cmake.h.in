@@ -10,7 +10,6 @@
 #cmakedefine HAVE_DL_ITERATE_PHDR
 #cmakedefine HAVE_DRAND48
 #cmakedefine HAVE_INOTIFY_INIT1
-#cmakedefine HAVE_LRAND48
 #cmakedefine HAVE_MEMRCHR
 #cmakedefine HAVE_PANGO_FC_FONT_LOCK_FACE
 #cmakedefine HAVE_SETENV
