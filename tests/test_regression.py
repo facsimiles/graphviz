@@ -5179,6 +5179,30 @@ def test_2621():
     subprocess.check_call(["dot", "-Gnslimit=50", "-Tsvg", "-o", os.devnull, input])
 
 
+@pytest.mark.xfail(strict=True)
+def test_2636():
+    """
+    `-Tsvg_inline` should not reference external files in its output
+    https://gitlab.com/graphviz/graphviz/-/issues/2636#note_2326527219
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2636.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # we need to run in our current directory in order to reference the co-located
+    # 2636.svg
+    cwd = Path(__file__).parent
+
+    svg = subprocess.check_output(
+        ["dot", "-Tsvg_inline", input], cwd=cwd, universal_newlines=True
+    )
+
+    assert (
+        re.search(r"\b2636\.svg\b", svg) is None
+    ), "`-Tsvg_inline` output contained references to external images"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
