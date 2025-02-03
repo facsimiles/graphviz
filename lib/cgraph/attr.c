@@ -464,18 +464,12 @@ void agedgeattr_delete(Agedge_t * e)
 
 char *agget(void *obj, char *name)
 {
-    Agsym_t *sym;
-    Agattr_t *data;
-    char *rv;
-
-    sym = agattrsym(obj, name);
-    if (sym == NULL)
-	rv = 0;			/* note was "", but this provides more info */
-    else {
-	data = agattrrec(obj);
-	rv = data->str[sym->id];
+    Agsym_t *const sym = agattrsym(obj, name);
+    if (sym == NULL) {
+	return NULL; // note was "", but this provides more info
     }
-    return rv;
+    Agattr_t *const data = agattrrec(obj);
+    return data->str[sym->id];
 }
 
 char *agxget(void *obj, Agsym_t * sym)
