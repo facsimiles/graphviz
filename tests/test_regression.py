@@ -5179,7 +5179,6 @@ def test_2621():
     subprocess.check_call(["dot", "-Gnslimit=50", "-Tsvg", "-o", os.devnull, input])
 
 
-@pytest.mark.xfail(strict=True)
 def test_2636():
     """
     `-Tsvg_inline` should not reference external files in its output
