@@ -41,9 +41,9 @@
 #define e_invalidid gs_error_invalidid
 #endif
 
-typedef enum {
+enum {
     FORMAT_PS_CAIRO, FORMAT_EPS_CAIRO,
-} format_type;
+};
 
 typedef struct gs_s {
     cairo_t* cr;

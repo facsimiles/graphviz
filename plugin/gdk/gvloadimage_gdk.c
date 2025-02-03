@@ -25,12 +25,12 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk/gdk.h>
 
-typedef enum {
+enum {
     FORMAT_BMP_CAIRO,
     FORMAT_JPEG_CAIRO,
     FORMAT_PNG_CAIRO,
     FORMAT_ICO_CAIRO,
-} format_type;
+};
 
 static void gdk_set_mimedata_from_file (cairo_surface_t *image, const char *mime_type, const char *file)
 {

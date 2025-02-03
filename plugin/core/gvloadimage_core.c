@@ -26,7 +26,7 @@
 
 extern shape_desc *find_user_shape(char *name);
 
-typedef enum {
+enum {
     FORMAT_PNG_XDOT, FORMAT_GIF_XDOT, FORMAT_JPEG_XDOT, FORMAT_SVG_XDOT, FORMAT_PS_XDOT,
     FORMAT_PNG_DOT,  FORMAT_GIF_DOT,  FORMAT_JPEG_DOT,  FORMAT_SVG_DOT,  FORMAT_PS_DOT,
     FORMAT_PNG_MAP,  FORMAT_GIF_MAP,  FORMAT_JPEG_MAP,  FORMAT_SVG_MAP,  FORMAT_PS_MAP,
@@ -35,7 +35,7 @@ typedef enum {
     FORMAT_PNG_VRML, FORMAT_GIF_VRML, FORMAT_JPEG_VRML,
     FORMAT_PS_PS, FORMAT_PSLIB_PS, 
     FORMAT_GIF_TK,
-} format_type;
+};
 
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {

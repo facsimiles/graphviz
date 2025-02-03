@@ -45,7 +45,7 @@
   #define EDGEALIGN 0
 #endif
 
-typedef enum { FORMAT_SVG, FORMAT_SVGZ, FORMAT_SVG_INLINE } format_type;
+enum { FORMAT_SVG, FORMAT_SVGZ, FORMAT_SVG_INLINE };
 
 /* SVG dash array */
 static const char sdasharray[] = "5,2";

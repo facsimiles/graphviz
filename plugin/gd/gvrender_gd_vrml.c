@@ -39,7 +39,7 @@
 /* for wind() */
 #include <pathplan/pathutil.h>
 
-typedef enum { FORMAT_VRML, } format_type;
+enum { FORMAT_VRML, };
 
 #define BEZIERSUBDIVISION 10
 
