@@ -41,7 +41,6 @@ libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la \
 
 if WITH_WIN32
 libgvplugin_core_la_LDFLAGS += -no-undefined
-libgvplugin_core_la_LIBADD += $(top_builddir)/lib/cgraph/libcgraph.la
 endif
 
 EXTRA_DIST = ps.h
