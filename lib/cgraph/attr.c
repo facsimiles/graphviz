@@ -480,13 +480,9 @@ char *agget(void *obj, char *name)
 
 char *agxget(void *obj, Agsym_t * sym)
 {
-    Agattr_t *data;
-    char *rv;
-
-    data = agattrrec(obj);
+    Agattr_t *const data = agattrrec(obj);
     assert(sym->id >= 0 && sym->id < topdictsize(obj));
-    rv = data->str[sym->id];
-    return rv;
+    return data->str[sym->id];
 }
 
 int agset(void *obj, char *name, const char *value) {
