@@ -13,7 +13,7 @@ size_t gv_base64_size(size_t source_size) { return div_up(source_size, 3) * 4; }
 
 char *gv_base64(const unsigned char *source, size_t size) {
   size_t buf_i = 0;
-  char *buf = gv_alloc(gv_base64_size(size));
+  char *buf = gv_alloc(gv_base64_size(size) + 1);
 
   for (size_t data_i = 0; data_i < size; data_i += 3) {
     unsigned char d0 = source[data_i];
@@ -44,6 +44,11 @@ end:
   while (buf_i % 4 != 0) {
     buf[buf_i++] = base64_alphabet[64];
   }
+
+  // Write a string terminator. This is not strictly necessary, but is a
+  // backstop against callers who do not use `gv_base64_size` and assume they
+  // can e.g. `fputs` the returned data.
+  buf[buf_i++] = '\0';
 
   return buf;
 }
