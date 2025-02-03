@@ -10,6 +10,8 @@ if(PANGOCAIRO_FOUND)
     ../../lib/pathplan
   )
 
+  target_link_libraries(gvplugin_kitty PRIVATE util)
+
   if(ZLIB_FOUND)
     target_include_directories(gvplugin_kitty SYSTEM PRIVATE
       ${ZLIB_INCLUDE_DIRS}

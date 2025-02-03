@@ -4,6 +4,7 @@ noinst_HEADERS = \
   agxbuf.h \
   alloc.h \
   asan.h \
+  base64.h \
   bitarray.h \
   debug.h \
   exit.h \
@@ -25,7 +26,7 @@ noinst_HEADERS = \
   unused.h
 noinst_LTLIBRARIES = libutil_C.la
 
-libutil_C_la_SOURCES = gv_find_me.c gv_fopen.c
+libutil_C_la_SOURCES = base64.c gv_find_me.c gv_fopen.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 EXTRA_DIST = README

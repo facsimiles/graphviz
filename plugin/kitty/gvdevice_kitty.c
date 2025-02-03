@@ -19,66 +19,19 @@
 #include <gvc/gvio.h>
 #include <gvc/gvplugin_device.h>
 #include <util/alloc.h>
+#include <util/base64.h>
 #include <util/gv_math.h>
 
 #ifdef HAVE_LIBZ
 #include <zlib.h>
 #endif
 
-static size_t div_up(size_t dividend, size_t divisor) {
-  return dividend / divisor + (dividend % divisor != 0);
-}
-
-static const char base64_alphabet[] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-
-static size_t base64_encoded_size(size_t original_size) {
-  return div_up(original_size, 3) * 4;
-}
-
-static char *base64_encode(const unsigned char *data, size_t size) {
-  size_t buf_i = 0;
-  char *buf = gv_alloc(base64_encoded_size(size));
-
-  for (size_t data_i = 0; data_i < size; data_i += 3) {
-    unsigned char d0 = data[data_i];
-    int v = (d0 & 0xFC) >> 2; // 1111_1100
-    buf[buf_i++] = base64_alphabet[v];
-
-    unsigned char d1 = data_i + 1 < size ? data[data_i + 1] : 0;
-    v = (d0 & 0x03) << 4    // 0000_0011
-        | (d1 & 0xF0) >> 4; // 1111_0000
-    buf[buf_i++] = base64_alphabet[v];
-    if (size <= data_i + 1) {
-      goto end;
-    }
-
-    unsigned char d2 = data_i + 2 < size ? data[data_i + 2] : 0;
-    v = (d1 & 0x0F) << 2    // 0000_1111
-        | (d2 & 0xC0) >> 6; // 1100_0000
-    buf[buf_i++] = base64_alphabet[v];
-    if (size <= data_i + 2) {
-      goto end;
-    }
-
-    v = d2 & 0x3F; // 0011_1111
-    buf[buf_i++] = base64_alphabet[v];
-  }
-
-end:
-  while (buf_i % 4 != 0) {
-    buf[buf_i++] = base64_alphabet[64];
-  }
-
-  return buf;
-}
-
 static void kitty_write(unsigned char *data, size_t data_size, unsigned width,
                         unsigned height, bool is_compressed) {
   const size_t chunk_size = 4096;
-  char *output = base64_encode(data, data_size);
+  char *output = gv_base64(data, data_size);
   size_t offset = 0;
-  size_t size = base64_encoded_size(data_size);
+  size_t size = gv_base64_size(data_size);
 
   while (offset < size) {
     int has_next_chunk = offset + chunk_size <= size;
