@@ -191,7 +191,11 @@ def is_asan_instrumented(binary: Path) -> bool:
     elif llvm_objdump := shutil.which("llvm-objdump"):
         symbols = subprocess.check_output([llvm_objdump, "--syms", binary])
     elif dumpbin := shutil.which("dumpbin"):
-        symbols = subprocess.check_output([dumpbin, "/SYMBOLS", binary])
+        dependencies = subprocess.check_output([dumpbin, "/DEPENDENTS", binary])
+        # Look for the ASan DLL dependency
+        return (
+            re.search(rb"\bclang_rt\.asan_dynamic-.*\.dll\b", dependencies) is not None
+        )
     else:
         # if we cannot examine the symbol table, assume ASan is not in use
         return False

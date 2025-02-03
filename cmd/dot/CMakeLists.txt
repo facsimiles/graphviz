@@ -27,7 +27,15 @@ if(BUILD_SHARED_LIBS)
   elseif(MINGW)
     set_target_properties(dot PROPERTIES LINK_FLAGS -Wl,--stack,0x2000000)
   elseif(WIN32)
-    set_target_properties(dot PROPERTIES LINK_FLAGS /STACK:"33554432")
+    set(STACK_SIZE 0x2000000)
+    if(DEFINED ENV{CFLAGS})
+      if("$ENV{CFLAGS}" MATCHES "-fsanitize=[^ ]*address")
+        # The `test_long_chain` test case requires `dot` to be linked with a
+        # larger than normal stack when using ASan
+        set(STACK_SIZE 0x4000000)
+      endif()
+    endif()
+    set_target_properties(dot PROPERTIES LINK_FLAGS /STACK:${STACK_SIZE})
   endif()
 
   # Installation location of executables
@@ -64,7 +72,7 @@ if(BUILD_SHARED_LIBS)
     set_target_properties(dot_builtins PROPERTIES
       LINK_FLAGS -Wl,--stack,0x2000000)
   elseif(WIN32)
-    set_target_properties(dot_builtins PROPERTIES LINK_FLAGS /STACK:"33554432")
+    set_target_properties(dot_builtins PROPERTIES LINK_FLAGS /STACK:0x2000000)
   endif()
 
   if(EXPAT_FOUND)
@@ -127,7 +135,7 @@ else()
   elseif(MINGW)
     set_target_properties(dot PROPERTIES LINK_FLAGS -Wl,--stack,0x2000000)
   elseif(WIN32)
-    set_target_properties(dot PROPERTIES LINK_FLAGS /STACK:"33554432")
+    set_target_properties(dot PROPERTIES LINK_FLAGS /STACK:0x2000000)
   endif()
 
   if(GD_FOUND)

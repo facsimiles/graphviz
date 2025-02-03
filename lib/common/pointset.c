@@ -41,6 +41,21 @@ static int cmppair(void *k1, void *k2) {
 	return 0;
 }
 
+static int cmpmpair(void *k1, void *k2) {
+    const point *key1 = k1;
+    const point *key2 = k2;
+    if (key1->x > key2->x)
+	return 1;
+    else if (key1->x < key2->x)
+	return -1;
+    else if (key1->y > key2->y)
+	return 1;
+    else if (key1->y < key2->y)
+	return -1;
+    else
+	return 0;
+}
+
 static Dtdisc_t intPairDisc = {
     offsetof(pair, id),
     sizeof(pointf),
@@ -125,7 +140,7 @@ static Dtdisc_t intMPairDisc = {
     offsetof(mpair, link),
     mkMPair,
     free,
-    cmppair,
+    cmpmpair,
 };
 
 PointMap *newPM(void)
