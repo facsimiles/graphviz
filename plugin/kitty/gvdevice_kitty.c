@@ -38,10 +38,9 @@ static size_t base64_encoded_size(size_t original_size) {
 
 static char *base64_encode(const unsigned char *data, size_t size) {
   size_t buf_i = 0;
-  size_t data_i = 0;
   char *buf = gv_alloc(base64_encoded_size(size));
 
-  while (data_i < size) {
+  for (size_t data_i = 0; data_i < size; data_i += 3) {
     int v;
 
     unsigned char d0 = data[data_i];
@@ -66,8 +65,6 @@ static char *base64_encode(const unsigned char *data, size_t size) {
 
     v = d2 & 0x3F; // 0011_1111
     buf[buf_i++] = base64_alphabet[v];
-
-    data_i += 3;
   }
 
 end:
