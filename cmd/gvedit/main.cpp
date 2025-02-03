@@ -22,11 +22,9 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QFile>
-#include <stdio.h>
-
-#include <gvc/gvc.h>
-
 #include <common/globals.h>
+#include <gvc/gvc.h>
+#include <stdio.h>
 
 QTextStream errout(stderr, QIODevice::WriteOnly);
 
