@@ -241,12 +241,16 @@ static void svg_size (usershape_t *us)
     } while (0)
 #define VALUE_OR(me, val) ((me).has_value ? (me).value : (val))
 
-    // constraints we learned
-    optional_double_t height = {0};
-    optional_double_t width = {0};
+    // authoritative constraints we learned from `height` and `width`
+    optional_double_t hard_height = {0};
+    optional_double_t hard_width = {0};
+
+    // fallback constraints we learned from `viewBox`
+    optional_double_t soft_height = {0};
+    optional_double_t soft_width = {0};
 
     rewind(us->f);
-    while (!eof && (!width.has_value || !height.has_value)) {
+    while (!eof && (!hard_width.has_value || !hard_height.has_value)) {
 	// read next line
 	while (true) {
 	    int c = fgetc(us->f);
@@ -267,42 +271,52 @@ static void svg_size (usershape_t *us)
 	    if (strview_str_eq(match.key, "width")) {
 	        char *value = strview_str(match.value);
 	        if (sscanf(value, "%lf%2s", &n, u) == 2) {
-	            SET(&width, svg_units_convert(n, u));
+	            SET(&hard_width, svg_units_convert(n, u));
 		}
 		else if (sscanf(value, "%lf", &n) == 1) {
-	            SET(&width, svg_units_convert(n, "pt"));
+	            SET(&hard_width, svg_units_convert(n, "pt"));
 		}
 		free(value);
-		if (height.has_value)
+		if (hard_height.has_value)
 		    break;
 	    }
 	    else if (strview_str_eq(match.key, "height")) {
 	        char *value = strview_str(match.value);
 	        if (sscanf(value, "%lf%2s", &n, u) == 2) {
-	            SET(&height, svg_units_convert(n, u));
+	            SET(&hard_height, svg_units_convert(n, u));
 		}
 	        else if (sscanf(value, "%lf", &n) == 1) {
-	            SET(&height, svg_units_convert(n, "pt"));
+	            SET(&hard_height, svg_units_convert(n, "pt"));
 		}
 		free(value);
-                if (width.has_value)
+                if (hard_width.has_value)
 		    break;
 	    }
 	    else if (strview_str_eq(match.key, "viewBox")) {
 	        char *value = strview_str(match.value);
 	        if (sscanf(value, "%lf %lf %lf %lf", &x0, &y0, &x1, &y1) == 4) {
-	            SET(&width, x1 - x0 + 1);
-	            SET(&height, y1 - y0 + 1);
-	            free(value);
-	            break;
+	            SET(&soft_width, x1 - x0 + 1);
+	            SET(&soft_height, y1 - y0 + 1);
 	        }
 		free(value);
 	    }
 	}
+
+	// if we have reached the end of a line and have seen `viewBox` but not
+	// `height` and/or `width`, let `viewBox` determine the dimensions
+	if (soft_height.has_value && soft_width.has_value) {
+	    if (!hard_height.has_value) {
+		SET(&hard_height, soft_height.value);
+	    }
+	    if (!hard_width.has_value) {
+		SET(&hard_width, soft_width.value);
+	    }
+	    break;
+	}
     }
     us->dpi = 0;
-    const double h = VALUE_OR(height, 0);
-    const double w = VALUE_OR(width, 0);
+    const double h = VALUE_OR(hard_height, 0);
+    const double w = VALUE_OR(hard_width, 0);
     assert(w >= 0 && w <= INT_MAX);
     us->w = (int)w;
     assert(h >= 0 && h <= INT_MAX);

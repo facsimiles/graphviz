@@ -5202,7 +5202,6 @@ def test_2636():
     ), "`-Tsvg_inline` output contained references to external images"
 
 
-@pytest.mark.xfail(strict=True)
 def test_2636_1():
     """
     `viewBox` in an SVG image should not override `width` and `height`
