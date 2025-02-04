@@ -229,7 +229,7 @@ static int find_attribute(const char *s, match_t *result) {
 static void svg_size (usershape_t *us)
 {
     double n;
-    char u[10];
+    char u[3];
     agxbuf line = {0};
     bool eof = false;
 
