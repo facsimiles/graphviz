@@ -5232,7 +5232,6 @@ def test_2636_1():
     assert img.attrib["width"] == "100px", "image width set incorrectly"
 
 
-@pytest.mark.xfail(strict=True)
 def test_2636_2():
     """
     `viewBox` parameters in an SVG image should be interpreted correctly

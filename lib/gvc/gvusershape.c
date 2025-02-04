@@ -228,7 +228,7 @@ static int find_attribute(const char *s, match_t *result) {
 
 static void svg_size (usershape_t *us)
 {
-    double n, x0, y0, x1, y1;
+    double n;
     char u[10];
     agxbuf line = {0};
     bool eof = false;
@@ -294,9 +294,10 @@ static void svg_size (usershape_t *us)
 	    }
 	    else if (strview_str_eq(match.key, "viewBox")) {
 	        char *value = strview_str(match.value);
-	        if (sscanf(value, "%lf %lf %lf %lf", &x0, &y0, &x1, &y1) == 4) {
-	            SET(&soft_width, x1 - x0 + 1);
-	            SET(&soft_height, y1 - y0 + 1);
+	        double w, h;
+	        if (sscanf(value, "%*f %*f %lf %lf", &w, &h) == 2) {
+	            SET(&soft_width, w);
+	            SET(&soft_height, h);
 	        }
 		free(value);
 	    }

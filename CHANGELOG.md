@@ -109,6 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `viewBox` attribute of an included SVG image no longer overrides the
   `height` and `width` attributes, even when it precedes them. This was a
   regression in Graphviz 2.30. #2636
+- The interpretation of `viewBox` attributes in included SVG images has been
+  corrected. #2636
 
 ## [12.2.1] – 2024-12-07
 
