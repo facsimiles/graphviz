@@ -12,6 +12,7 @@ set -x
 /cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages flex
 /cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages gcc-core
 /cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages gcc-g++
+/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages git
 /cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages libcairo-devel
 /cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages libexpat-devel
 /cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages libpango1.0-devel
@@ -28,5 +29,8 @@ export CMAKE_OPTIONS="-Duse_win_pre_inst_libs=OFF -DWITH_GVEDIT=OFF"
 export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LTDL=ON"
 export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_EXPAT=ON"
 export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=ON"
+
+# make Git running under the Cygwin user trust files owned by the Windows user
+git config --global --add safe.directory $(pwd)
 
 ci/build.sh
