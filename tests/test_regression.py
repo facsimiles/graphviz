@@ -1020,7 +1020,7 @@ def test_1453():
 
 
 @pytest.mark.xfail(
-    strict=is_asan_instrumented(which("dot")),
+    strict=which("dot") is None or is_asan_instrumented(which("dot")),
     reason="https://gitlab.com/graphviz/graphviz/-/issues/1472",
 )
 def test_1472():
@@ -1091,7 +1091,7 @@ def test_1489():
 
 
 @pytest.mark.xfail(
-    strict=is_asan_instrumented(which("dot")),
+    strict=which("dot") is None or is_asan_instrumented(which("dot")),
     reason="https://gitlab.com/graphviz/graphviz/-/issues/1494",
 )
 def test_1494():
