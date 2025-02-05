@@ -50,7 +50,7 @@ extern "C" {
 
 #define EX_NAMELEN	32		/* default Exid_t.name length	*/
 
-#define EX_ID(n, l, i, t) {{0}, (l), (i), (t), 0, 0, 0, 0, n}
+#define EX_ID(n, l, i, t) {{0}, (l), (i), (t), 0, 0, 0, n}
 
 #define DELETE_T		MINTOKEN		/* exexpr() delete `type'	*/
 
@@ -96,7 +96,6 @@ typedef struct Exid_s			/* id symbol table info		*/
 	long		index;		/* user defined index		*/
 	long		type;		/* symbol and arg types		*/
 	long		index_type;	/* index type for arrays        */
-	long		flags;		/* user defined flags		*/
 	Exnode_t*	value;		/* value			*/
 	void *local; ///< user defined local stuff
 	char		name[EX_NAMELEN];/* symbol name			*/
