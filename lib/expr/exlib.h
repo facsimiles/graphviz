@@ -137,7 +137,7 @@ typedef struct Switch_s			/* switch parse state		*/
 	long type; ///< switch test type
 } Switch_t;
 
-typedef struct Exassoc_s		/* associative array bucket	*/
+typedef struct // associative array bucket
 {
 	Dtlink_t	link;		/* table link			*/
 	Extype_t	key;		/* key				*/
