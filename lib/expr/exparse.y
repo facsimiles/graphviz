@@ -228,7 +228,7 @@ action		:	LABEL ':' {
 				x->data.operand.left = 0;
 				exfreenode(expr.program, x);
 			}
-			$1->value->data.operand.right = excast(expr.program, $4, $1->type, NULL, 0);
+			$1->value->data.procedure.body = excast(expr.program, $4, $1->type, NULL, 0);
 		}
 		;
 
@@ -1223,8 +1223,8 @@ initialize	:	assign
 				dtview(expr.program->frame, NULL);
 				expr.program->frame = NULL;
 			}
-			$$->data.operand.left = $3;
-			$$->data.operand.right = excast(expr.program, $7, $$->type, NULL, 0);
+			$$->data.procedure.args = $3;
+			$$->data.procedure.body = excast(expr.program, $7, $$->type, NULL, 0);
 
 			/*
 			 * NOTE: procedure definition was slipped into the
