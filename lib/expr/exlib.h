@@ -145,7 +145,7 @@ typedef struct // associative array bucket
 	char		name[1];	/* index name			*/
 } Exassoc_t;
 
-typedef struct Exstate_s		/* ex global state		*/
+typedef struct // ex global state
 {
 	Exid_t*		id;		/* current declaration id	*/
 	long declare; ///< current declaration type
