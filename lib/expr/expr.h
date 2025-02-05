@@ -122,7 +122,6 @@ union Exdata_u
 	{
 	Exnode_t*	left;		/* left operand			*/
 	Exnode_t*	right;		/* right operand		*/
-	Exnode_t*	last;		/* for cons			*/
 	}		operand;	/* operands			*/
 
 	struct
