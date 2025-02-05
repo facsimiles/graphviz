@@ -391,10 +391,6 @@ switch_list	:	/* empty */
 			} else {
 				expr.swstate = sw;
 				sw->type = expr.declare;
-				sw->firstcase = 0;
-				sw->lastcase = 0;
-				sw->defcase = 0;
-				sw->def = 0;
 				size_t n = 8;
 				if (!(sw->base = calloc(n, sizeof(Extype_t*)))) {
 					exnospace();
