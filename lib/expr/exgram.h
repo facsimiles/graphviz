@@ -34,7 +34,6 @@ extern "C" {
 #define ALLOCATE(p,x)	exalloc(p,sizeof(x))
 
 static int		a2t[] = { 0, FLOATING, INTEGER, STRING };
-static Switch_t		swstate;
 
 Exstate_t		expr;
 

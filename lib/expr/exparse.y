@@ -351,8 +351,7 @@ statement	:	'{' statement_list '}'
 			$$ = exnewnode(expr.program, $1->index, true, INTEGER, $3, exnewnode(expr.program, DEFAULT, true, 0, sw->defcase, sw->firstcase));
 			expr.swstate = expr.swstate->prev;
 			free(sw->base);
-			if (sw != &swstate)
-				free(sw);
+			free(sw);
 			expr.declare = 0;
 		}
 		|	BREAK expr_opt ';'
@@ -387,31 +386,23 @@ switch_list	:	/* empty */
 		{
 			Switch_t*		sw;
 
-			if (expr.swstate)
-			{
-				if (!(sw = calloc(1, sizeof(Switch_t))))
-				{
-					exnospace();
-					sw = &swstate;
-				}
-				sw->prev = expr.swstate;
-			}
-			else
-				sw = &swstate;
-			expr.swstate = sw;
-			sw->type = expr.declare;
-			sw->firstcase = 0;
-			sw->lastcase = 0;
-			sw->defcase = 0;
-			sw->def = 0;
-			size_t n = 8;
-			if (!(sw->base = calloc(n, sizeof(Extype_t*))))
-			{
+			if (!(sw = calloc(1, sizeof(Switch_t)))) {
 				exnospace();
-				n = 0;
+			} else {
+				expr.swstate = sw;
+				sw->type = expr.declare;
+				sw->firstcase = 0;
+				sw->lastcase = 0;
+				sw->defcase = 0;
+				sw->def = 0;
+				size_t n = 8;
+				if (!(sw->base = calloc(n, sizeof(Extype_t*)))) {
+					exnospace();
+					n = 0;
+				}
+				sw->cur = sw->base;
+				sw->last = sw->base + n;
 			}
-			sw->cur = sw->base;
-			sw->last = sw->base + n;
 		}
 		|	switch_list switch_item
 		;
