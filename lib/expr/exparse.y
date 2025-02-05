@@ -214,7 +214,7 @@ action		:	LABEL ':' {
 				}
 			} statement_list
 		{
-			expr.procedure = 0;
+			expr.procedure = NULL;
 			if (expr.program->frame)
 			{
 				expr.program->symbols = expr.program->frame->view;
@@ -1216,7 +1216,7 @@ initialize	:	assign
 			} ')' '{' statement_list '}'
 		{
 			$$ = expr.procedure;
-			expr.procedure = 0;
+			expr.procedure = NULL;
 			if (expr.program->frame)
 			{
 				expr.program->symbols = expr.program->frame->view;
