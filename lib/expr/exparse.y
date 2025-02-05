@@ -219,7 +219,7 @@ action		:	LABEL ':' {
 			{
 				expr.program->symbols = expr.program->frame->view;
 				dtview(expr.program->frame, NULL);
-				expr.program->frame = 0;
+				expr.program->frame = NULL;
 			}
 			if ($4 && $4->op == S2B)
 			{
@@ -1221,7 +1221,7 @@ initialize	:	assign
 			{
 				expr.program->symbols = expr.program->frame->view;
 				dtview(expr.program->frame, NULL);
-				expr.program->frame = 0;
+				expr.program->frame = NULL;
 			}
 			$$->data.operand.left = $3;
 			$$->data.operand.right = excast(expr.program, $7, $$->type, NULL, 0);
