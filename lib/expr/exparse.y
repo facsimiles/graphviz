@@ -396,8 +396,7 @@ switch_list	:	/* empty */
 					exnospace();
 					n = 0;
 				}
-				sw->cur = sw->base;
-				sw->last = sw->base + n;
+				sw->cap = n;
 			}
 		}
 		|	switch_list switch_item
@@ -408,15 +407,15 @@ switch_item	:	case_list statement_list
 			Switch_t*	sw = expr.swstate;
 
 			$$ = exnewnode(expr.program, CASE, true, 0, $2, NULL);
-			if (sw->cur > sw->base)
+			if (sw->cur > 0)
 			{
 				if (sw->lastcase)
 					sw->lastcase->data.select.next = $$;
 				else
 					sw->firstcase = $$;
 				sw->lastcase = $$;
-				size_t n = (size_t)(sw->cur - sw->base);
-				sw->cur = sw->base;
+				const size_t n = sw->cap;
+				sw->cur = 0;
 				$$->data.select.constant = exalloc(expr.program, (n + 1) * sizeof(Extype_t*));
 				memcpy($$->data.select.constant, sw->base, n * sizeof(Extype_t*));
 				$$->data.select.constant[n] = 0;
@@ -440,21 +439,20 @@ case_list	:	case_item
 
 case_item	:	CASE constant ':'
 		{
-			if (expr.swstate->cur >= expr.swstate->last)
+			if (expr.swstate->cur >= expr.swstate->cap)
 			{
-				size_t n = (size_t)(expr.swstate->cur - expr.swstate->base);
+				size_t n = expr.swstate->cap;
 				if (!(expr.swstate->base = realloc(expr.swstate->base, sizeof(Extype_t*) * 2 * n)))
 				{
 					exerror("too many case labels for switch");
 					n = 0;
 				}
-				expr.swstate->cur = expr.swstate->base + n;
-				expr.swstate->last = expr.swstate->base + 2 * n;
+				expr.swstate->cap = 2 * n;
 			}
-			if (expr.swstate->cur)
+			if (expr.swstate->base != NULL)
 			{
 				$2 = excast(expr.program, $2, expr.swstate->type, NULL, 0);
-				*expr.swstate->cur++ = &($2->data.constant.value);
+				expr.swstate->base[expr.swstate->cur++] = &$2->data.constant.value;
 			}
 		}
 		|	DEFAULT ':'

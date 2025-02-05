@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -131,8 +133,8 @@ typedef struct Switch_s			/* switch parse state		*/
 	Exnode_t*	lastcase;	/* last case block		*/
 	Exnode_t*	defcase;	/* default case block		*/
 	Extype_t**	base;		/* label base pointer		*/
-	Extype_t**	cur;		/* current label pointer	*/
-	Extype_t**	last;		/* last label pointer		*/
+	size_t		cur;		/* current label offset         */
+	size_t		cap;		/* total labels allocated       */
 	int		def;		/* default label hit		*/
 	long type; ///< switch test type
 } Switch_t;
