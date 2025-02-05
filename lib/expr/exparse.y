@@ -1208,6 +1208,9 @@ initialize	:	assign
 				dtview(expr.program->frame, NULL);
 				expr.program->frame = NULL;
 			}
+			// dictionary of locals no longer required, now that we have parsed the body
+			(void)dtclose($$->data.procedure.frame);
+			$$->data.procedure.frame = NULL;
 			$$->data.procedure.args = $3;
 			$$->data.procedure.body = excast(expr.program, $7, $$->type, NULL, 0);
 
