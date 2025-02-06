@@ -36,9 +36,9 @@ static const char* const kErrorMessages[] = {
     "USER_ABORT: encoding abort requested by user"
 };
 
-typedef enum {
+enum {
     FORMAT_WEBP,
-} format_type;
+};
 
 static int writer(const uint8_t* data, size_t data_size, const WebPPicture* const pic) {
     return gvwrite(pic->custom_ptr, (const char *)data, data_size) == data_size ? 1 : 0;

@@ -31,7 +31,7 @@
 /* Number of points to split splines into */
 #define BEZIERSUBDIVISION 6
 
-typedef enum { FORMAT_FIG, } format_type;
+enum { FORMAT_FIG, };
 
 static int Depth;
 

@@ -16,7 +16,7 @@
 #include <windows.h>
 #include <gdiplus.h>
 
-typedef enum {
+enum {
 	FORMAT_NONE,
 	FORMAT_METAFILE,
 	FORMAT_BMP,
@@ -26,7 +26,7 @@ typedef enum {
 	FORMAT_JPEG,
 	FORMAT_PNG,
 	FORMAT_TIFF
-} format_type;
+};
 
 /* RAII for GetDC/ReleaseDC */
 

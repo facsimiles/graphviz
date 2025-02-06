@@ -31,9 +31,9 @@ static const char* const kStatusMessages[] = {
     "UNSUPPORTED_FEATURE", "SUSPENDED", "USER_ABORT", "NOT_ENOUGH_DATA"
 };
 
-typedef enum {
+enum {
     FORMAT_WEBP_CAIRO,
-} format_type;
+};
 
 static void webp_freeimage(usershape_t *us)
 {

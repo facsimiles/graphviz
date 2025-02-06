@@ -22,10 +22,9 @@
 #endif
 #include <cairo-svg.h>
 
-typedef enum {
+enum {
     FORMAT_SVG_CAIRO,
-} format_type;
-
+};
 
 static void gvloadimage_rsvg_free(usershape_t *us)
 {

@@ -35,7 +35,7 @@
  */
 #define PDFMAX  14400           /*  Maximum size of PDF page  */
 
-typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
+enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS };
 
 static int isLatin1;
 static bool setupLatin1;

@@ -22,7 +22,9 @@ libgvplugin_kitty_C_la_SOURCES = \
 
 libgvplugin_kitty_la_LDFLAGS = -version-info $(GVPLUGIN_VERSION_INFO)
 libgvplugin_kitty_la_SOURCES = $(libgvplugin_kitty_C_la_SOURCES)
-libgvplugin_kitty_la_LIBADD = $(Z_LIBS)
+libgvplugin_kitty_la_LIBADD = \
+	$(top_builddir)/lib/util/libutil_C.la \
+	$(Z_LIBS)
 
 if WITH_WIN32
 libgvplugin_kitty_la_LDFLAGS += -no-undefined

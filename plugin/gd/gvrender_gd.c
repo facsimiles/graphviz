@@ -32,7 +32,7 @@
 #include <util/alloc.h>
 #include <util/unreachable.h>
 
-typedef enum {
+enum {
 	FORMAT_GIF,
 	FORMAT_JPEG,
 	FORMAT_PNG,
@@ -40,7 +40,7 @@ typedef enum {
 	FORMAT_GD,
 	FORMAT_GD2,
 	FORMAT_XBM,
-} format_type;
+};
 
 extern bool mapbool(const char *);
 extern pointf Bezier(pointf *V, double t, pointf *Left, pointf *Right);

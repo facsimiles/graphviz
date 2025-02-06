@@ -36,7 +36,7 @@ using namespace std;
 //     from Adobe's Distiller.
 #define PDFMAX  14400 ///< Maximum size of PDF page
 
-typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
+enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS };
 
 struct Context {
   using write_fn = size_t(*)(GVJ_t*, const char*, size_t);

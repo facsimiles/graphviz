@@ -24,7 +24,7 @@
 #include <util/unreachable.h>
 #include "tcl_context.h"
 
-typedef enum { FORMAT_TK, } format_type;
+enum { FORMAT_TK, };
 
 static void tkgen_print_color(GVJ_t * job, gvcolor_t color)
 {
