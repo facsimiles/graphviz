@@ -124,8 +124,9 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 		if (exnode->data.variable.symbol->index_type == INTEGER) {
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, &v)))
 			{
-				if (!(b = calloc(1, sizeof(Exassoc_t))))
+				if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t))))
 					exnospace();
+				*b = (Exassoc_t){0};
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
 			}
@@ -142,8 +143,9 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 				keyname = v.string;
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, keyname)))
 			{
-				if (!(b = calloc(1, sizeof(Exassoc_t) + strlen(keyname))))
+				if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t) + strlen(keyname))))
 					exnospace();
+				*b = (Exassoc_t){0};
 				strcpy(b->name, keyname);
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
