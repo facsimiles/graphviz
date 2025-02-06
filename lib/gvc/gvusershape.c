@@ -228,15 +228,29 @@ static int find_attribute(const char *s, match_t *result) {
 
 static void svg_size (usershape_t *us)
 {
-    double w = 0, h = 0;
-    double n, x0, y0, x1, y1;
-    char u[10];
+    double n;
+    char u[3];
     agxbuf line = {0};
     bool eof = false;
-    bool wFlag = false, hFlag = false;
+
+    // an analog of C++’s `std::optional<double>`
+    typedef struct { bool has_value; double value; } optional_double_t;
+#define SET(me, val)                                                           \
+    do {                                                                       \
+	*(me) = (optional_double_t){.has_value = true, .value = (val)};        \
+    } while (0)
+#define VALUE_OR(me, val) ((me).has_value ? (me).value : (val))
+
+    // authoritative constraints we learned from `height` and `width`
+    optional_double_t hard_height = {0};
+    optional_double_t hard_width = {0};
+
+    // fallback constraints we learned from `viewBox`
+    optional_double_t soft_height = {0};
+    optional_double_t soft_width = {0};
 
     rewind(us->f);
-    while (!eof && (!wFlag || !hFlag)) {
+    while (!eof && (!hard_width.has_value || !hard_height.has_value)) {
 	// read next line
 	while (true) {
 	    int c = fgetc(us->f);
@@ -257,51 +271,61 @@ static void svg_size (usershape_t *us)
 	    if (strview_str_eq(match.key, "width")) {
 	        char *value = strview_str(match.value);
 	        if (sscanf(value, "%lf%2s", &n, u) == 2) {
-	            w = svg_units_convert(n, u);
-	            wFlag = true;
+	            SET(&hard_width, svg_units_convert(n, u));
 		}
 		else if (sscanf(value, "%lf", &n) == 1) {
-	            w = svg_units_convert(n, "pt");
-	            wFlag = true;
+	            SET(&hard_width, svg_units_convert(n, "pt"));
 		}
 		free(value);
-		if (hFlag)
+		if (hard_height.has_value)
 		    break;
 	    }
 	    else if (strview_str_eq(match.key, "height")) {
 	        char *value = strview_str(match.value);
 	        if (sscanf(value, "%lf%2s", &n, u) == 2) {
-	            h = svg_units_convert(n, u);
-	            hFlag = true;
+	            SET(&hard_height, svg_units_convert(n, u));
 		}
 	        else if (sscanf(value, "%lf", &n) == 1) {
-	            h = svg_units_convert(n, "pt");
-	            hFlag = true;
+	            SET(&hard_height, svg_units_convert(n, "pt"));
 		}
 		free(value);
-                if (wFlag)
+                if (hard_width.has_value)
 		    break;
 	    }
 	    else if (strview_str_eq(match.key, "viewBox")) {
 	        char *value = strview_str(match.value);
-	        if (sscanf(value, "%lf %lf %lf %lf", &x0, &y0, &x1, &y1) == 4) {
-	            w = x1 - x0 + 1;
-	            h = y1 - y0 + 1;
-	            wFlag = true;
-	            hFlag = true;
-	            free(value);
-	            break;
+	        double w, h;
+	        if (sscanf(value, "%*f %*f %lf %lf", &w, &h) == 2) {
+	            SET(&soft_width, w);
+	            SET(&soft_height, h);
 	        }
 		free(value);
 	    }
 	}
+
+	// if we have reached the end of a line and have seen `viewBox` but not
+	// `height` and/or `width`, let `viewBox` determine the dimensions
+	if (soft_height.has_value && soft_width.has_value) {
+	    if (!hard_height.has_value) {
+		SET(&hard_height, soft_height.value);
+	    }
+	    if (!hard_width.has_value) {
+		SET(&hard_width, soft_width.value);
+	    }
+	    break;
+	}
     }
     us->dpi = 0;
+    const double h = VALUE_OR(hard_height, 0);
+    const double w = VALUE_OR(hard_width, 0);
     assert(w >= 0 && w <= INT_MAX);
     us->w = (int)w;
     assert(h >= 0 && h <= INT_MAX);
     us->h = (int)h;
     agxbfree(&line);
+
+#undef VALUE_OR
+#undef SET
 }
 
 static void png_size (usershape_t *us)
