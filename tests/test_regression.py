@@ -5202,6 +5202,66 @@ def test_2636():
     ), "`-Tsvg_inline` output contained references to external images"
 
 
+def test_2636_1():
+    """
+    `viewBox` in an SVG image should not override `width` and `height`
+    https://gitlab.com/graphviz/graphviz/-/issues/2636
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2636_1.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # we need to run in our current directory in order to reference the co-located
+    # 2636_1.svg
+    cwd = Path(__file__).parent
+
+    svg = subprocess.check_output(
+        ["dot", "-Tsvg", input], cwd=cwd, universal_newlines=True
+    )
+
+    # parse the generated SVG
+    root = ET.fromstring(svg)
+
+    # find the included image
+    imgs = root.findall(".//{http://www.w3.org/2000/svg}image")
+    assert len(imgs) == 1, "could not find included SVG"
+    img = imgs[0]
+
+    assert img.attrib["height"] == "100px", "image height set incorrectly"
+    assert img.attrib["width"] == "100px", "image width set incorrectly"
+
+
+def test_2636_2():
+    """
+    `viewBox` parameters in an SVG image should be interpreted correctly
+    https://gitlab.com/graphviz/graphviz/-/issues/2636
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2636_2.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # we need to run in our current directory in order to reference the co-located
+    # 2636_2.svg
+    cwd = Path(__file__).parent
+
+    svg = subprocess.check_output(
+        ["dot", "-Tsvg", input], cwd=cwd, universal_newlines=True
+    )
+
+    # parse the generated SVG
+    root = ET.fromstring(svg)
+
+    # find the included image
+    imgs = root.findall(".//{http://www.w3.org/2000/svg}image")
+    assert len(imgs) == 1, "could not find included SVG"
+    img = imgs[0]
+
+    assert img.attrib["height"] == "10px", "image height set incorrectly"
+    assert img.attrib["width"] == "10px", "image width set incorrectly"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
