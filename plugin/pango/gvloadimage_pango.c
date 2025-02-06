@@ -20,9 +20,9 @@
 
 #include <cairo.h>
 
-typedef enum {
+enum {
     FORMAT_PNG_CAIRO, FORMAT_PNG_PS,
-} format_type;
+};
 
 static cairo_status_t
 reader (void *closure, unsigned char *data, unsigned int length)

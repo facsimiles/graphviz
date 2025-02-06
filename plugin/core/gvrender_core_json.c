@@ -31,12 +31,12 @@
 #include <util/streq.h>
 #include <util/unreachable.h>
 
-typedef enum {
+enum {
 	FORMAT_JSON,
 	FORMAT_JSON0,
 	FORMAT_DOT_JSON,
 	FORMAT_XDOT_JSON,
-} format_type;
+};
 
 typedef struct {
     int Level;

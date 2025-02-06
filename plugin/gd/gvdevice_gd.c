@@ -39,7 +39,7 @@ void gvdevice_gd_putC (gdIOCtx *context, int C)
 }
 
 #ifdef HAVE_PANGOCAIRO
-typedef enum {
+enum {
 	FORMAT_GIF,
 	FORMAT_JPEG,
 	FORMAT_PNG,
@@ -47,7 +47,7 @@ typedef enum {
 	FORMAT_GD,
 	FORMAT_GD2,
 	FORMAT_XBM,
-} format_type;
+};
 
 static void gd_format(GVJ_t * job)
 {

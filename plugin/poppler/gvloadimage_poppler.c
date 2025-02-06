@@ -21,10 +21,9 @@
 #include <poppler.h>
 #include <cairo.h>
 
-typedef enum {
+enum {
     FORMAT_PDF_CAIRO,
-} format_type;
-
+};
 
 static void gvloadimage_poppler_free(usershape_t *us)
 {

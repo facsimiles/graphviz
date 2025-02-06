@@ -18,13 +18,13 @@
 #ifdef HAVE_PANGOCAIRO
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-typedef enum {
+enum {
 	FORMAT_BMP,
 	FORMAT_ICO,
 	FORMAT_JPEG,
 	FORMAT_PNG,
 	FORMAT_TIFF,
-    } format_type;
+};
 
 static gboolean writer(const char *buf, gsize count, GError **error,
                        void *data) {

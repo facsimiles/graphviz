@@ -19,7 +19,7 @@
 #include <gvc/gvio.h>
 #include <util/unreachable.h>
 
-typedef enum { FORMAT_IMAP, FORMAT_ISMAP, FORMAT_CMAP, FORMAT_CMAPX, } format_type;
+enum { FORMAT_IMAP, FORMAT_ISMAP, FORMAT_CMAP, FORMAT_CMAPX, };
 
 // wrapper around `xml_escape` to set flags for URL escaping
 static void xml_url_puts(GVJ_t *job, const char *s) {

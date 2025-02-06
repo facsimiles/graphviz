@@ -24,9 +24,9 @@
 #include <gvc/gvplugin_loadimage.h>
 #include <util/agxbuf.h>
 
-typedef enum {
+enum {
   FORMAT_PS_PS,
-} format_type;
+};
 
 static void ps_freeimage(usershape_t *us) {
 #ifdef HAVE_SYS_MMAN_H

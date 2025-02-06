@@ -30,14 +30,14 @@
 
 #include <pango/pangocairo.h>
 
-typedef enum {
+enum {
 		FORMAT_CAIRO,
 		FORMAT_PNG,
 		FORMAT_PS,
 		FORMAT_PDF,
 		FORMAT_SVG,
 		FORMAT_EPS,
-    } format_type;
+};
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
