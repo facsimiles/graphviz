@@ -19,7 +19,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <inttypes.h>
 
 #include <getopt.h>
@@ -432,14 +431,13 @@ static void emitNode(Agraph_t *G, Agnode_t *n) {
 static void emitEdgeAttrs(Agraph_t *G, Agedge_t *ep, int ix) {
     Agsym_t*  s;
     char* v;
-    edge_attrs attrs;
+    edge_attrs attrs = {0};
     int doGraphics = 0;
     int doLabelGraphics = 0;
     char* label = 0;
     int style;
 
     /* First, process the attributes, saving the graphics attributes */
-    memset(&attrs,0, sizeof(attrs));
     for (s = agnxtattr (G, AGEDGE, NULL); s; s = agnxtattr (G, AGEDGE, s)) {
 	if (streq(s->name, "style")) { /* hasFill outlineStyle invis */
 	    if (*(v = agxget (ep, s))) {
