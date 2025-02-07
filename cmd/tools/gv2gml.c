@@ -236,7 +236,7 @@ static void emitAttr(char *name, char *value, int ix) {
 static void  emitNodeAttrs(Agraph_t *G, Agnode_t *np, int ix) {
     Agsym_t*  s;
     char* v;
-    node_attrs attrs;
+    node_attrs attrs = {0};
     int doGraphics = 0;
     int doLabelGraphics = 0;
     char* label = 0;
@@ -244,7 +244,6 @@ static void  emitNodeAttrs(Agraph_t *G, Agnode_t *np, int ix) {
     double x, y;
 
     /* First, process the attributes, saving the graphics attributes */
-    memset(&attrs,0, sizeof(attrs));
     for (s = agnxtattr (G, AGNODE, NULL); s; s = agnxtattr (G, AGNODE, s)) {
 	if (streq(s->name, "style")) { /* hasFill outlineStyle invis */
 	    if (*(v = agxget (np, s))) {
