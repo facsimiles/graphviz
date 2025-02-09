@@ -214,12 +214,12 @@ action		:	LABEL ':' {
 				}
 			} statement_list
 		{
-			expr.procedure = 0;
+			expr.procedure = NULL;
 			if (expr.program->frame)
 			{
 				expr.program->symbols = expr.program->frame->view;
 				dtview(expr.program->frame, NULL);
-				expr.program->frame = 0;
+				expr.program->frame = NULL;
 			}
 			if ($4 && $4->op == S2B)
 			{
@@ -228,7 +228,7 @@ action		:	LABEL ':' {
 				x->data.operand.left = 0;
 				exfreenode(expr.program, x);
 			}
-			$1->value->data.operand.right = excast(expr.program, $4, $1->type, NULL, 0);
+			$1->value->data.procedure.body = excast(expr.program, $4, $1->type, NULL, 0);
 		}
 		;
 
@@ -351,8 +351,7 @@ statement	:	'{' statement_list '}'
 			$$ = exnewnode(expr.program, $1->index, true, INTEGER, $3, exnewnode(expr.program, DEFAULT, true, 0, sw->defcase, sw->firstcase));
 			expr.swstate = expr.swstate->prev;
 			free(sw->base);
-			if (sw != &swstate)
-				free(sw);
+			free(sw);
 			expr.declare = 0;
 		}
 		|	BREAK expr_opt ';'
@@ -387,31 +386,18 @@ switch_list	:	/* empty */
 		{
 			Switch_t*		sw;
 
-			if (expr.swstate)
-			{
-				if (!(sw = calloc(1, sizeof(Switch_t))))
-				{
-					exnospace();
-					sw = &swstate;
-				}
-				sw->prev = expr.swstate;
-			}
-			else
-				sw = &swstate;
-			expr.swstate = sw;
-			sw->type = expr.declare;
-			sw->firstcase = 0;
-			sw->lastcase = 0;
-			sw->defcase = 0;
-			sw->def = 0;
-			size_t n = 8;
-			if (!(sw->base = calloc(n, sizeof(Extype_t*))))
-			{
+			if (!(sw = calloc(1, sizeof(Switch_t)))) {
 				exnospace();
-				n = 0;
+			} else {
+				expr.swstate = sw;
+				sw->type = expr.declare;
+				size_t n = 8;
+				if (!(sw->base = calloc(n, sizeof(Extype_t*)))) {
+					exnospace();
+					n = 0;
+				}
+				sw->cap = n;
 			}
-			sw->cur = sw->base;
-			sw->last = sw->base + n;
 		}
 		|	switch_list switch_item
 		;
@@ -421,15 +407,15 @@ switch_item	:	case_list statement_list
 			Switch_t*	sw = expr.swstate;
 
 			$$ = exnewnode(expr.program, CASE, true, 0, $2, NULL);
-			if (sw->cur > sw->base)
+			if (sw->cur > 0)
 			{
 				if (sw->lastcase)
 					sw->lastcase->data.select.next = $$;
 				else
 					sw->firstcase = $$;
 				sw->lastcase = $$;
-				size_t n = (size_t)(sw->cur - sw->base);
-				sw->cur = sw->base;
+				const size_t n = sw->cap;
+				sw->cur = 0;
 				$$->data.select.constant = exalloc(expr.program, (n + 1) * sizeof(Extype_t*));
 				memcpy($$->data.select.constant, sw->base, n * sizeof(Extype_t*));
 				$$->data.select.constant[n] = 0;
@@ -453,21 +439,20 @@ case_list	:	case_item
 
 case_item	:	CASE constant ':'
 		{
-			if (expr.swstate->cur >= expr.swstate->last)
+			if (expr.swstate->cur >= expr.swstate->cap)
 			{
-				size_t n = (size_t)(expr.swstate->cur - expr.swstate->base);
+				size_t n = expr.swstate->cap;
 				if (!(expr.swstate->base = realloc(expr.swstate->base, sizeof(Extype_t*) * 2 * n)))
 				{
 					exerror("too many case labels for switch");
 					n = 0;
 				}
-				expr.swstate->cur = expr.swstate->base + n;
-				expr.swstate->last = expr.swstate->base + 2 * n;
+				expr.swstate->cap = 2 * n;
 			}
-			if (expr.swstate->cur)
+			if (expr.swstate->base != NULL)
 			{
 				$2 = excast(expr.program, $2, expr.swstate->type, NULL, 0);
-				*expr.swstate->cur++ = &($2->data.constant.value);
+				expr.swstate->base[expr.swstate->cur++] = &$2->data.constant.value;
 			}
 		}
 		|	DEFAULT ':'
@@ -1216,15 +1201,18 @@ initialize	:	assign
 			} ')' '{' statement_list '}'
 		{
 			$$ = expr.procedure;
-			expr.procedure = 0;
+			expr.procedure = NULL;
 			if (expr.program->frame)
 			{
 				expr.program->symbols = expr.program->frame->view;
 				dtview(expr.program->frame, NULL);
-				expr.program->frame = 0;
+				expr.program->frame = NULL;
 			}
-			$$->data.operand.left = $3;
-			$$->data.operand.right = excast(expr.program, $7, $$->type, NULL, 0);
+			// dictionary of locals no longer required, now that we have parsed the body
+			(void)dtclose($$->data.procedure.frame);
+			$$->data.procedure.frame = NULL;
+			$$->data.procedure.args = $3;
+			$$->data.procedure.body = excast(expr.program, $7, $$->type, NULL, 0);
 
 			/*
 			 * NOTE: procedure definition was slipped into the

@@ -34,7 +34,6 @@ extern "C" {
 #define ALLOCATE(p,x)	exalloc(p,sizeof(x))
 
 static int		a2t[] = { 0, FLOATING, INTEGER, STRING };
-static Switch_t		swstate;
 
 Exstate_t		expr;
 
@@ -162,6 +161,12 @@ exfreenode(Expr_t* p, Exnode_t* x)
 			pn = pr->next;
 			vmfree(p->vm, pr);
 		}
+		break;
+	case PROCEDURE:
+		if (x->data.procedure.args)
+			exfreenode(p, x->data.procedure.args);
+		if (x->data.procedure.body)
+			exfreenode(p, x->data.procedure.body);
 		break;
 	default:
 		if (x->data.operand.left)
