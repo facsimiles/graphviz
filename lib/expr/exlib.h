@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -131,13 +133,13 @@ typedef struct Switch_s			/* switch parse state		*/
 	Exnode_t*	lastcase;	/* last case block		*/
 	Exnode_t*	defcase;	/* default case block		*/
 	Extype_t**	base;		/* label base pointer		*/
-	Extype_t**	cur;		/* current label pointer	*/
-	Extype_t**	last;		/* last label pointer		*/
+	size_t		cur;		/* current label offset         */
+	size_t		cap;		/* total labels allocated       */
 	int		def;		/* default label hit		*/
 	long type; ///< switch test type
 } Switch_t;
 
-typedef struct Exassoc_s		/* associative array bucket	*/
+typedef struct // associative array bucket
 {
 	Dtlink_t	link;		/* table link			*/
 	Extype_t	key;		/* key				*/
@@ -145,7 +147,7 @@ typedef struct Exassoc_s		/* associative array bucket	*/
 	char		name[1];	/* index name			*/
 } Exassoc_t;
 
-typedef struct Exstate_s		/* ex global state		*/
+typedef struct // ex global state
 {
 	Exid_t*		id;		/* current declaration id	*/
 	long declare; ///< current declaration type
