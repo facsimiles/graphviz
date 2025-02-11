@@ -417,7 +417,8 @@ who will be affected by a new Graphviz release.
 * [NetBSD](https://cdn.netbsd.org/pub/pkgsrc/current/pkgsrc/graphics/graphviz/index.html),
   Michael Bäuerle micha at NetBSD.org
 * [PyGraphviz](https://github.com/pygraphviz/pygraphviz),
-  [@jarrodmillman on Gitlab](https://gitlab.com/jarrodmillman)
+  [@jarrodmillman on Gitlab](https://gitlab.com/jarrodmillman) or
+  [@rossbar on Gitlab](https://gitlab.com/rossbar)
 * [Spack](https://spack.readthedocs.io/en/latest/package_list.html#graphviz),
   [@alecbcs on Github](https://github.com/alecbcs)
 * [SUSE](https://software.opensuse.org/package/graphviz),
