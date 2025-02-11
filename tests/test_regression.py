@@ -5145,6 +5145,32 @@ def test_2619_3():
     subprocess.run(["dot", "-Tpdf", "-o", os.devnull], check=True, cwd=cwd, input=src)
 
 
+@pytest.mark.xfail(
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
+    strict=True,
+)
+def test_2619_4():
+    """
+    processing a node with the 'image' attribute set to a JPEG file shall not yield warnings
+    https://gitlab.com/graphviz/graphviz/-/issues/2619
+    """
+
+    # we need to run in our own directory so relative path references work
+    cwd = Path(__file__).parent
+
+    src = 'digraph {a [image="2619.jpg"]}'
+
+    output = subprocess.check_output(
+        ["dot", "-Tsvg", "-o", os.devnull],
+        cwd=cwd,
+        input=src,
+        stderr=subprocess.STDOUT,
+        universal_newlines=True,
+    )
+
+    assert "Warning:" not in output, f"Warnings issued: {output}"
+
+
 def test_2620():
     """
     arrows in this graph should not be truncated
