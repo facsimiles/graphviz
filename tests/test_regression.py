@@ -5046,6 +5046,11 @@ def test_2615():
     assert edge_count == 1, "incorrect number of inter-cluster edges"
 
 
+@pytest.mark.xfail(
+    platform.system() == "Windows" and not is_mingw() and not is_ndebug_defined(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
+)
 def test_2619():
     """
     loading a JPEG with initial EXIF stream should be possible
@@ -5059,22 +5064,12 @@ def test_2619():
     subprocess.check_call(["dot", "-Tpdf", "-o", os.devnull, "2619.dot"], cwd=cwd)
 
 
-@pytest.mark.parametrize(
-    "images",
-    (
-        pytest.param(
-            "2619_1",
-            marks=pytest.mark.xfail(
-                platform.system() == "Windows"
-                and not is_mingw()
-                and not is_ndebug_defined(),
-                strict=True,
-                reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
-            ),
-        ),
-        "2619_2",
-    ),
+@pytest.mark.xfail(
+    platform.system() == "Windows" and not is_mingw() and not is_ndebug_defined(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
 )
+@pytest.mark.parametrize("images", ("2619_1", "2619_2"))
 @pytest.mark.parametrize("output", ("pdf", "png"))
 @pytest.mark.parametrize("source", ("2619_1.dot", "2619_2.dot"))
 def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
@@ -5146,10 +5141,6 @@ def test_2619_3():
     subprocess.run(["dot", "-Tpdf", "-o", os.devnull], check=True, cwd=cwd, input=src)
 
 
-@pytest.mark.xfail(
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
-    strict=True,
-)
 def test_2619_4():
     """
     processing a node with the 'image' attribute set to a JPEG file shall not yield warnings
@@ -5172,10 +5163,6 @@ def test_2619_4():
     assert "Warning:" not in output, f"Warnings issued: {output}"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
-)
 @pytest.mark.parametrize(
     "image",
     (
