@@ -46,6 +46,7 @@ static char *sortToStr(unsigned short sort);
 void free_node(gmlnode *p) {
     if (!p) return;
     attrs_free(&p->attrlist);
+    free(p->id);
     free (p);
 }
 
