@@ -134,8 +134,7 @@ pushG (void)
 static gmlnode*
 mkNode (void)
 {
-    gmlnode* np = gv_alloc(sizeof(gmlnode));
-    return np;
+    return gv_alloc(sizeof(gmlnode));
 }
 
 static gmledge*
