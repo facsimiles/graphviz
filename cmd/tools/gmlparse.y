@@ -135,7 +135,6 @@ static gmlnode*
 mkNode (void)
 {
     gmlnode* np = gv_alloc(sizeof(gmlnode));
-    np->id = NULL;
     return np;
 }
 
