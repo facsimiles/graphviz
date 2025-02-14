@@ -108,6 +108,11 @@ dot_builtins_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
+if WITH_QUARTZ
+dot_static_LDADD += $(top_builddir)/plugin/quartz/.libs/libgvplugin_quartz_C.a $(QUARTZ_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/quartz/libgvplugin_quartz.la $(QUARTZ_LIBS)
+endif
+
 if WITH_LIBGD
 dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(GDLIB_LIBS)
 dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(GDLIB_LIBS)

@@ -1713,6 +1713,7 @@ else
     QUARTZ_LIBS='-framework ApplicationServices'
     AC_SUBST([QUARTZ_CFLAGS])
     AC_SUBST([QUARTZ_LIBS])
+    AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the Quartz framework for macOS])
   else
     use_quartz="No (missing ApplicationServices.framework)"
   fi
