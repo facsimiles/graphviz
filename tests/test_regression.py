@@ -28,6 +28,7 @@ from typing import Iterator, List, Set
 
 import pexpect
 import pytest
+from PIL import Image
 
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
@@ -5169,6 +5170,56 @@ def test_2619_4():
     )
 
     assert "Warning:" not in output, f"Warnings issued: {output}"
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
+)
+@pytest.mark.parametrize(
+    "image",
+    (
+        "2619.jpg",
+        "2619_1_1.jpg",
+        "2619_1_2.jpg",
+        "2619_1_3.jpg",
+        "2619_2_1.jpg",
+        "2619_2_2.jpg",
+        "2619_2_3.jpg",
+    ),
+)
+def test_2619_5(image: str):
+    """
+    a node with the 'image' attribute set to a JPEG file shall render an SVG
+    containing an 'image' element with the correct width and height
+    https://gitlab.com/graphviz/graphviz/-/issues/2619
+    """
+
+    # we need to run in our own directory so relative path references work
+    cwd = Path(__file__).parent
+
+    file = cwd / image
+    width, height = Image.open(file).size
+
+    src = f'digraph {{a [image="{image}"]}}'
+
+    svg = subprocess.check_output(
+        ["dot", "-Tsvg"],
+        cwd=cwd,
+        input=src,
+        universal_newlines=True,
+    )
+
+    # load it as XML
+    root = ET.fromstring(svg)
+
+    # find the `image` element
+    image_element = root.findall(".//{http://www.w3.org/2000/svg}image")
+
+    assert len(image_element) == 1, "could not find an 'image' element in the SVG"
+
+    assert image_element[0].get("width") == f"{width}px"
+    assert image_element[0].get("height") == f"{height}px"
 
 
 def test_2620():
