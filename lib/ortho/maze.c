@@ -23,7 +23,7 @@
 #include <common/arith.h>
 #include <util/alloc.h>
 
-#define MARGIN 36;
+#define MARGIN 36
 
 #ifdef DEBUG
 char* pre = "%!PS-Adobe-2.0\n\
