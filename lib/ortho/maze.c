@@ -13,7 +13,9 @@
 
 #define DEBUG
 
+#include <assert.h>
 #include <float.h>
+#include <limits.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -22,6 +24,7 @@
 #include <ortho/trap.h>
 #include <common/arith.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 #define MARGIN 36
 
@@ -318,6 +321,8 @@ chkSgraph (sgraph* g)
     
 }
 
+DEFINE_LIST(snodes, snode *)
+
 /**
  * @brief creates and fills @ref sgraph for @ref maze
  *
@@ -328,7 +333,7 @@ chkSgraph (sgraph* g)
 static sgraph*
 mkMazeGraph (maze* mp, boxf bb)
 {
-    int nsides, i, maxdeg;
+    int i, maxdeg;
     int bound = 4*mp->ncells;
     sgraph* g = createSGraph (bound + 2);
     Dt_t* vdict = dtopen(&vdictDisc,Dtoset);
@@ -378,39 +383,39 @@ mkMazeGraph (maze* mp, boxf bb)
      * connect it to its corresponding search nodes.
      */
     maxdeg = 0;
-    sides = gv_calloc(g->nnodes, sizeof(snode*));
-    nsides = 0;
     for (i = 0; i < mp->ngcells; i++) {
 	cell* cp = mp->gcells+i;
         pointf pt; 
 	snodeitem* np;
 
-	cp->sides = sides+nsides;
+	snodes_t cp_sides = {0};
         pt = cp->bb.LL;
 	np = dtmatch (hdict, &pt);
 	for (; np && np->p.x < cp->bb.UR.x; np = dtnext (hdict, np)) {
-	    cp->sides[cp->nsides++] = np->np;
+	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[1] = cp;
 	}
 	np = dtmatch (vdict, &pt);
 	for (; np && np->p.y < cp->bb.UR.y; np = dtnext (vdict, np)) {
-	    cp->sides[cp->nsides++] = np->np;
+	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[1] = cp;
 	}
 	pt.y = cp->bb.UR.y;
 	np = dtmatch (hdict, &pt);
 	for (; np && np->p.x < cp->bb.UR.x; np = dtnext (hdict, np)) {
-	    cp->sides[cp->nsides++] = np->np;
+	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[0] = cp;
 	}
 	pt.x = cp->bb.UR.x;
 	pt.y = cp->bb.LL.y;
 	np = dtmatch (vdict, &pt);
 	for (; np && np->p.y < cp->bb.UR.y; np = dtnext (vdict, np)) {
-	    cp->sides[cp->nsides++] = np->np;
+	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[0] = cp;
 	}
-	nsides += cp->nsides;
+	assert(snodes_size(&cp_sides) <= INT_MAX);
+	cp->nsides = (int)snodes_size(&cp_sides);
+	cp->sides = snodes_detach(&cp_sides);
         if (cp->nsides > maxdeg) maxdeg = cp->nsides;
     }
 
@@ -504,8 +509,10 @@ maze *mkMaze(graph_t *g) {
 void freeMaze (maze* mp)
 {
     free (mp->cells[0].sides);
-    free (mp->gcells[0].sides);
     free (mp->cells);
+    for (int i = 0; i < mp->ngcells; ++i) {
+	free(mp->gcells[i].sides);
+    }
     free (mp->gcells);
     freeSGraph (mp->sg);
     dtclose (mp->hchans);
