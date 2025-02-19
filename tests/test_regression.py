@@ -5346,6 +5346,25 @@ def test_2636_2():
     assert img.attrib["width"] == "10px", "image width set incorrectly"
 
 
+@pytest.mark.skipif(which("twopi") is None, reason="twopi not available")
+@pytest.mark.xfail(
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2643", strict=False
+)
+def test_2643():
+    """
+    twopi should not read/write out of bounds when processing this case’s graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2643
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2643.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through twopi
+    twopi = which("twopi")
+    subprocess.run([twopi, "-o", os.devnull, input], check=True)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
