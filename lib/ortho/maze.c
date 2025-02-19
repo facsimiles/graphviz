@@ -59,8 +59,8 @@ char* post = "showpage\n";
 
 /// @brief dumps @ref maze::gcells and @ref maze::cells via rects to PostScript
 
-static void
-psdump(cell *gcells, int n_gcells, boxf BB, boxf *rects, size_t nrect) {
+static void psdump(cell *gcells, size_t n_gcells, boxf BB, boxf *rects,
+                   size_t nrect) {
     boxf bb;
     boxf absbb = {.LL = {.y = 10.0, .x = 10.0}};
 
@@ -73,7 +73,7 @@ psdump(cell *gcells, int n_gcells, boxf BB, boxf *rects, size_t nrect) {
 
     fprintf (stderr, "%f %f translate\n", 10-BB.LL.x, 10-BB.LL.y);
     fputs ("0 0 1 setrgbcolor\n", stderr);
-    for (int i = 0; i < n_gcells; i++) {
+    for (size_t i = 0; i < n_gcells; i++) {
       bb = gcells[i].bb;
       fprintf (stderr, "%f %f %f %f node\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
     }
@@ -383,8 +383,8 @@ mkMazeGraph (maze* mp, boxf bb)
      * connect it to its corresponding search nodes.
      */
     maxdeg = 0;
-    for (int i = 0; i < mp->ngcells; i++) {
-	cell* cp = mp->gcells+i;
+    for (size_t i = 0; i < mp->ngcells; i++) {
+	cell *cp = &mp->gcells[i];
         pointf pt; 
 	snodeitem* np;
 
@@ -422,8 +422,8 @@ mkMazeGraph (maze* mp, boxf bb)
     /* Mark cells that are small because of a small node, not because of the close
      * alignment of two rectangles.
      */
-    for (int i = 0; i < mp->ngcells; i++) {
-	cell* cp = mp->gcells+i;
+    for (size_t i = 0; i < mp->ngcells; i++) {
+	cell *cp = &mp->gcells[i];
 	markSmall (cp);
     }
 
@@ -463,7 +463,8 @@ maze *mkMaze(graph_t *g) {
     double w2, h2;
     boxf bb;
 
-    mp->ngcells = agnnodes(g);
+    assert(agnnodes(g) >= 0);
+    mp->ngcells = (size_t)agnnodes(g);
     cp = mp->gcells = gv_calloc(mp->ngcells, sizeof(cell));
 
     boxf BB = {.LL = {.x = DBL_MAX, .y = DBL_MAX},
@@ -490,7 +491,8 @@ maze *mkMaze(graph_t *g) {
     BB.UR.x += MARGIN;
     BB.UR.y += MARGIN;
     size_t nrect;
-    rects = partition (mp->gcells, mp->ngcells, &nrect, BB);
+    assert(mp->ngcells <= INT_MAX);
+    rects = partition (mp->gcells, (int)mp->ngcells, &nrect, BB);
 
 #ifdef DEBUG
     if (odb_flags & ODB_MAZE) psdump (mp->gcells, mp->ngcells, BB, rects, nrect);
@@ -510,7 +512,7 @@ void freeMaze (maze* mp)
 {
     free (mp->cells[0].sides);
     free (mp->cells);
-    for (int i = 0; i < mp->ngcells; ++i) {
+    for (size_t i = 0; i < mp->ngcells; ++i) {
 	free(mp->gcells[i].sides);
     }
     free (mp->gcells);
