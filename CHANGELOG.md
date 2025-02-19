@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- If Quartz is enabled on macOS, the autotools build will include support for it
+  as a built-in plugin for static builds, for dependency free i.e. PDF support.
 - Improved `agwrite` so it is much faster (linear not quadratic) when there are
   many small subgraphs. #2593
 - **Breaking**: `rank_t.cache_nc` is now a `int64_t`.
