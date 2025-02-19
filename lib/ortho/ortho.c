@@ -1152,6 +1152,9 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 	}
 	    
 	seg = rte.segs;
+	if (seg == NULL) {
+		continue;
+	}
 	if (seg->isVert) {
 		p.x = vtrack(seg, mp);
 		p.y = p1.y;

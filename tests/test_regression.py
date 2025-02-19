@@ -62,9 +62,6 @@ def is_ndebug_defined() -> bool:
     return False
 
 
-@pytest.mark.xfail(
-    platform.system() == "Windows", reason="#56", strict=not is_ndebug_defined()
-)  # FIXME
 def test_14():
     """
     using ortho and twopi in combination should not cause an assertion failure
@@ -5347,9 +5344,6 @@ def test_2636_2():
 
 
 @pytest.mark.skipif(which("twopi") is None, reason="twopi not available")
-@pytest.mark.xfail(
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2643", strict=False
-)
 def test_2643():
     """
     twopi should not read/write out of bounds when processing this case’s graph
