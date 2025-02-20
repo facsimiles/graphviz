@@ -301,15 +301,12 @@ locate_endpoint (pointf *v, pointf *vo, int r, segment_t* seg, qnodes_t* qs)
     case T_Y:
       if (_greater_than(v, &rptr->yval)) /* above */
 	return locate_endpoint(v, vo, rptr->right, seg, qs);
-      else if (_equal_to(v, &rptr->yval)) /* the point is already */
-	{			          /* inserted. */
+      if (_equal_to(v, &rptr->yval)) { // the point is already inserted
 	  if (_greater_than(vo, &rptr->yval)) /* above */
 	    return locate_endpoint(v, vo, rptr->right, seg, qs);
-	  else
-	    return locate_endpoint(v, vo, rptr->left, seg, qs); /* below */
+	  return locate_endpoint(v, vo, rptr->left, seg, qs); // below
 	}
-      else
-	return locate_endpoint(v, vo, rptr->left, seg, qs); /* below */
+      return locate_endpoint(v, vo, rptr->left, seg, qs); // below
 
     case T_X:
       if (_equal_to(v, &seg[rptr->segnum].v0) ||
@@ -319,19 +316,16 @@ locate_endpoint (pointf *v, pointf *vo, int r, segment_t* seg, qnodes_t* qs)
 	    {
 	      if (vo->x < v->x)
 		return locate_endpoint(v, vo, rptr->left, seg, qs); /* left */
-	      else
-		return locate_endpoint(v, vo, rptr->right, seg, qs); /* right */
+	      return locate_endpoint(v, vo, rptr->right, seg, qs); // right
 	    }
 
-	  else if (is_left_of(rptr->segnum, seg, vo))
+	  if (is_left_of(rptr->segnum, seg, vo))
 	    return locate_endpoint(v, vo, rptr->left, seg, qs); /* left */
-	  else
-	    return locate_endpoint(v, vo, rptr->right, seg, qs); /* right */
+	  return locate_endpoint(v, vo, rptr->right, seg, qs); // right
 	}
-      else if (is_left_of(rptr->segnum, seg, v))
+      if (is_left_of(rptr->segnum, seg, v))
 	return locate_endpoint(v, vo, rptr->left, seg, qs); /* left */
-      else
-	return locate_endpoint(v, vo, rptr->right, seg, qs); /* right */
+      return locate_endpoint(v, vo, rptr->right, seg, qs); // right
 
     default:
       fprintf(stderr, "unexpected case in locate_endpoint\n");
