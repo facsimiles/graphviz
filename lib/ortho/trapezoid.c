@@ -28,6 +28,7 @@
 #include <ortho/trap.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
+#include <util/unreachable.h>
 
 /* Node types */
 
@@ -328,11 +329,9 @@ locate_endpoint (pointf *v, pointf *vo, int r, segment_t* seg, qnodes_t* qs)
       return locate_endpoint(v, vo, rptr->right, seg, qs); // right
 
     default:
-      fprintf(stderr, "unexpected case in locate_endpoint\n");
-      assert (0);
       break;
     }
-    return 1; /* stop warning */
+    UNREACHABLE();
 }
 
 /* Thread in the segment into the existing trapezoidation. The
