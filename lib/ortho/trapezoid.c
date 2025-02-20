@@ -502,7 +502,6 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
       tu = locate_endpoint(&s.v0, &s.v1, s.root0, seg, qs);
       tl = newtrap(tr);		/* tl is the new lower trapezoid */
-      tr->data[tl].state = ST_VALID;
       tr->data[tl] = tr->data[tu];
       tr->data[tu].lo.y = s.v0.y;
       tr->data[tl].hi.y = s.v0.y;
@@ -562,7 +561,6 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       tu = locate_endpoint(&s.v1, &s.v0, s.root1, seg, qs);
 
       tl = newtrap(tr);		/* tl is the new lower trapezoid */
-      tr->data[tl].state = ST_VALID;
       tr->data[tl] = tr->data[tu];
       tr->data[tu].lo.y = tr->data[tl].hi.y = s.v1.y;
       tr->data[tu].lo.x = tr->data[tl].hi.x = s.v1.x;
