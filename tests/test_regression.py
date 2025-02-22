@@ -5376,6 +5376,28 @@ def test_2646():
     dot("pdf", input)
 
 
+@pytest.mark.slow  # ~10min
+def test_MR_2854():
+    """
+    this graph should be handled in a reasonable amount of time
+
+    The graph used by this test was accelerated by commit
+    4b736d297bb1599451e89c2fde911d966a1db3cf landing in Merge Request !2857. This test
+    case checks if performance on this workload has regressed since then.
+
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/2854
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/2857
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2854.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # this typically takes ~10m to run, so give a wide margin of error and require that
+    # Graphviz finishes within that
+    subprocess.check_call(["dot", "-Tsvg", "-o", os.devnull, input], timeout=60 * 20)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
