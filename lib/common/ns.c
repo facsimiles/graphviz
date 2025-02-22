@@ -29,7 +29,7 @@
 #include <util/streq.h>
 
 static void dfs_cutval(node_t * v, edge_t * par);
-static int dfs_range_init(node_t * v, edge_t * par, int low);
+static int dfs_range_init(node_t *v);
 static int dfs_range(node_t * v, edge_t * par, int low);
 static int x_val(edge_t * e, node_t * v, int dir);
 #ifdef DEBUG
@@ -290,7 +290,7 @@ static edge_t *enter_edge(edge_t * e)
 
 static void init_cutvalues(void)
 {
-    dfs_range_init(GD_nlist(G), NULL, 1);
+    dfs_range_init(GD_nlist(G));
     dfs_cutval(GD_nlist(G), NULL);
 }
 
@@ -1111,14 +1111,14 @@ DEFINE_LIST(dfs_stack, dfs_state_t)
 * ND_low(n) - min DFS index for nodes in sub-tree (>= 1)
 * ND_lim(n) - max DFS index for nodes in sub-tree
 */
-static int dfs_range_init(node_t *v, edge_t *par, int low) {
+static int dfs_range_init(node_t *v) {
     int lim = 0;
 
     dfs_stack_t todo = {0};
 
-    ND_par(v) = par;
-    ND_low(v) = low;
-    const dfs_state_t root = {.v = v, .par = par, .lim = low};
+    ND_par(v) = NULL;
+    ND_low(v) = 1;
+    const dfs_state_t root = {.v = v, .par = NULL, .lim = 1};
     dfs_stack_push_back(&todo, root);
 
     while (!dfs_stack_is_empty(&todo)) {
