@@ -5359,6 +5359,23 @@ def test_2643():
     subprocess.run([twopi, "-o", os.devnull, input], check=True)
 
 
+@pytest.mark.xfail(
+    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/2646"
+)
+def test_2646():
+    """
+    Graphviz should not crash when processing this large graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2646
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2646.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    dot("pdf", input)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
