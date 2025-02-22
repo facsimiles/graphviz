@@ -2292,6 +2292,29 @@ def test_2095():
     dot("pdf", input)
 
 
+def test_2095_1():
+    """
+    more than 1000 boxes should still be processed in reasonable time
+    https://gitlab.com/graphviz/graphviz/-/issues/2095
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/2854
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/2857
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2095.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    if platform.system() == "Windows":
+        # this is significantly slower on Windows
+        timeout = 60  # seconds
+    else:
+        timeout = 5  # seconds
+
+    # this typically takes ~1s to run, so give a wide margin of error and require that
+    # that Graphviz finishes within that
+    subprocess.check_call(["dot", "-Tpdf", "-o", os.devnull, input], timeout=timeout)
+
+
 @pytest.mark.skipif(which("gv2gml") is None, reason="gv2gml not available")
 def test_2131():
     """
