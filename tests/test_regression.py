@@ -5382,9 +5382,7 @@ def test_2643():
     subprocess.run([twopi, "-o", os.devnull, input], check=True)
 
 
-@pytest.mark.xfail(
-    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/2646"
-)
+@pytest.mark.slow  # ~13min
 def test_2646():
     """
     Graphviz should not crash when processing this large graph

@@ -1094,7 +1094,7 @@ static void dfs_cutval(node_t * v, edge_t * par)
 	x_cutval(par);
 }
 
-/// local state used by `dfs_range_init`
+/// local state used by `dfs_range*`
 typedef struct {
   node_t *v;
   edge_t *par;
@@ -1179,23 +1179,77 @@ static int dfs_range_init(node_t *v) {
  */
 static int dfs_range(node_t * v, edge_t * par, int low)
 {
-    edge_t *e;
-    int i, lim;
+    int lim = 0;
 
     if (ND_par(v) == par && ND_low(v) == low) {
 	return ND_lim(v) + 1;
     }
 
-    lim = low;
+    dfs_stack_t todo = {0};
+
     ND_par(v) = par;
     ND_low(v) = low;
-    for (i = 0; (e = ND_tree_out(v).list[i]); i++)
-	if (e != par)
-	    lim = dfs_range(aghead(e), e, lim);
-    for (i = 0; (e = ND_tree_in(v).list[i]); i++)
-	if (e != par)
-	    lim = dfs_range(agtail(e), e, lim);
-    ND_lim(v) = lim;
+    const dfs_state_t root = {.v = v, .par = par, .lim = low};
+    dfs_stack_push_back(&todo, root);
+
+    while (!dfs_stack_is_empty(&todo)) {
+	bool processed_child = false;
+	dfs_state_t *const s = dfs_stack_back(&todo);
+
+	while (ND_tree_out(s->v).list[s->tree_out_i]) {
+	    edge_t *const e = ND_tree_out(s->v).list[s->tree_out_i];
+	    ++s->tree_out_i;
+	    if (e != s->par) {
+		node_t *const n = aghead(e);
+		if (ND_par(n) == e && ND_low(n) == s->lim) {
+		    s->lim = ND_lim(n) + 1;
+		} else {
+		    ND_par(n) = e;
+		    ND_low(n) = s->lim;
+		    const dfs_state_t next = {.v = n, .par = e, .lim = s->lim};
+		    dfs_stack_push_back(&todo, next);
+		}
+		processed_child = true;
+		break;
+	    }
+	}
+	if (processed_child) {
+	    continue;
+	}
+
+	while (ND_tree_in(s->v).list[s->tree_in_i]) {
+	    edge_t *const e = ND_tree_in(s->v).list[s->tree_in_i];
+	    ++s->tree_in_i;
+	    if (e != s->par) {
+		node_t *const n = agtail(e);
+		if (ND_par(n) == e && ND_low(n) == s->lim) {
+		    s->lim = ND_lim(n) + 1;
+		} else {
+		    ND_par(n) = e;
+		    ND_low(n) = s->lim;
+		    const dfs_state_t next = {.v = n, .par = e, .lim = s->lim};
+		    dfs_stack_push_back(&todo, next);
+		}
+		processed_child = true;
+		break;
+	    }
+	}
+	if (processed_child) {
+	    continue;
+	}
+
+	ND_lim(s->v) = s->lim;
+
+	lim = s->lim;
+	(void)dfs_stack_pop_back(&todo);
+
+	if (!dfs_stack_is_empty(&todo)) {
+	    dfs_stack_back(&todo)->lim = lim + 1;
+	}
+    }
+
+    dfs_stack_free(&todo);
+
     return lim + 1;
 }
 
