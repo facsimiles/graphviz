@@ -5125,6 +5125,26 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
     assert neato_result.stdout.strip() != b"", "an empty file was rendered"
 
 
+@pytest.mark.xfail(
+    platform.system() == "Windows" and not is_mingw() and not is_ndebug_defined(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
+)
+def test_2619_3():
+    """
+    loading a JPEG image shall not cause a crash in the GD plugin when the ouput format is PDF
+    https://gitlab.com/graphviz/graphviz/-/issues/2619
+    """
+
+    # we need to run in our own directory so relative path references work
+    cwd = Path(__file__).parent
+
+    src = 'digraph {a [image="2619_1_2.jpg"]}'.encode("utf-8")
+
+    # our test case shall not cause a crash
+    subprocess.run(["dot", "-Tpdf", "-o", os.devnull], check=True, cwd=cwd, input=src)
+
+
 def test_2620():
     """
     arrows in this graph should not be truncated
