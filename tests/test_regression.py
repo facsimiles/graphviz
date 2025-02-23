@@ -5419,6 +5419,23 @@ def test_MR_2854():
     subprocess.check_call(["dot", "-Tsvg", "-o", os.devnull, input], timeout=60 * 20)
 
 
+@pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
+@pytest.mark.xfail(
+    platform.system() == "Windows",
+    strict=not is_mingw(),
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2640",
+)
+def test_2640():
+    """
+    gvgen should not access values out of bounds
+    https://gitlab.com/graphviz/graphviz/-/issues/2640
+    """
+
+    # the seed 1967 was observed previously to cause crashes on Windows
+    gvgen = which("gvgen")
+    subprocess.check_call([gvgen, "-R", "20", "-u1967"], stdout=subprocess.DEVNULL)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
