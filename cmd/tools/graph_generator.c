@@ -14,7 +14,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
-#include <time.h>
 #include <graph_generator.h>
 #include <util/alloc.h>
 #include <util/exit.h>
@@ -383,7 +382,6 @@ void makeBall(unsigned w, unsigned h, edgefn ef) {
  * No. of nodes is largest 2^n - 1 less than or equal to h.
  */
 void makeRandom(unsigned h, unsigned w, edgefn ef) {
-    srand((unsigned)time(0));
     const int type = rand() % 2;
 
     unsigned size = 0;
@@ -637,7 +635,6 @@ treegen_t *makeTreeGen(unsigned N) {
     tg->T = genCnt(N);
     tg->sp = (int_stack_t){0};
     tg->tp = mkTree(N+1);
-    srand((unsigned)time(0));
 
     return tg;
 }
