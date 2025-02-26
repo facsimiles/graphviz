@@ -19,6 +19,7 @@ extern "C" {
 #include "cdt.h"
 #include "gvcommon.h"
 #include "gvcjob.h"
+#include "gvplugin.h"
 #include "color.h"
 #include <stdbool.h>
 

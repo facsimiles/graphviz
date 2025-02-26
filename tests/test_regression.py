@@ -28,6 +28,7 @@ from typing import Iterator, List, Set
 
 import pexpect
 import pytest
+from PIL import Image
 
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
@@ -5045,6 +5046,11 @@ def test_2615():
     assert edge_count == 1, "incorrect number of inter-cluster edges"
 
 
+@pytest.mark.xfail(
+    platform.system() == "Windows" and not is_mingw() and not is_ndebug_defined(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
+)
 def test_2619():
     """
     loading a JPEG with initial EXIF stream should be possible
@@ -5058,22 +5064,12 @@ def test_2619():
     subprocess.check_call(["dot", "-Tpdf", "-o", os.devnull, "2619.dot"], cwd=cwd)
 
 
-@pytest.mark.parametrize(
-    "images",
-    (
-        pytest.param(
-            "2619_1",
-            marks=pytest.mark.xfail(
-                platform.system() == "Windows"
-                and not is_mingw()
-                and not is_ndebug_defined(),
-                strict=True,
-                reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
-            ),
-        ),
-        "2619_2",
-    ),
+@pytest.mark.xfail(
+    platform.system() == "Windows" and not is_mingw() and not is_ndebug_defined(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
 )
+@pytest.mark.parametrize("images", ("2619_1", "2619_2"))
 @pytest.mark.parametrize("output", ("pdf", "png"))
 @pytest.mark.parametrize("source", ("2619_1.dot", "2619_2.dot"))
 def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
@@ -5123,6 +5119,94 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
     )
 
     assert neato_result.stdout.strip() != b"", "an empty file was rendered"
+
+
+@pytest.mark.xfail(
+    platform.system() == "Windows" and not is_mingw() and not is_ndebug_defined(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2619",
+)
+def test_2619_3():
+    """
+    loading a JPEG image shall not cause a crash in the GD plugin when the ouput format is PDF
+    https://gitlab.com/graphviz/graphviz/-/issues/2619
+    """
+
+    # we need to run in our own directory so relative path references work
+    cwd = Path(__file__).parent
+
+    src = 'digraph {a [image="2619_1_2.jpg"]}'.encode("utf-8")
+
+    # our test case shall not cause a crash
+    subprocess.run(["dot", "-Tpdf", "-o", os.devnull], check=True, cwd=cwd, input=src)
+
+
+def test_2619_4():
+    """
+    processing a node with the 'image' attribute set to a JPEG file shall not yield warnings
+    https://gitlab.com/graphviz/graphviz/-/issues/2619
+    """
+
+    # we need to run in our own directory so relative path references work
+    cwd = Path(__file__).parent
+
+    src = 'digraph {a [image="2619.jpg"]}'
+
+    output = subprocess.check_output(
+        ["dot", "-Tsvg", "-o", os.devnull],
+        cwd=cwd,
+        input=src,
+        stderr=subprocess.STDOUT,
+        universal_newlines=True,
+    )
+
+    assert "Warning:" not in output, f"Warnings issued: {output}"
+
+
+@pytest.mark.parametrize(
+    "image",
+    (
+        "2619.jpg",
+        "2619_1_1.jpg",
+        "2619_1_2.jpg",
+        "2619_1_3.jpg",
+        "2619_2_1.jpg",
+        "2619_2_2.jpg",
+        "2619_2_3.jpg",
+    ),
+)
+def test_2619_5(image: str):
+    """
+    a node with the 'image' attribute set to a JPEG file shall render an SVG
+    containing an 'image' element with the correct width and height
+    https://gitlab.com/graphviz/graphviz/-/issues/2619
+    """
+
+    # we need to run in our own directory so relative path references work
+    cwd = Path(__file__).parent
+
+    file = cwd / image
+    width, height = Image.open(file).size
+
+    src = f'digraph {{a [image="{image}"]}}'
+
+    svg = subprocess.check_output(
+        ["dot", "-Tsvg"],
+        cwd=cwd,
+        input=src,
+        universal_newlines=True,
+    )
+
+    # load it as XML
+    root = ET.fromstring(svg)
+
+    # find the `image` element
+    image_element = root.findall(".//{http://www.w3.org/2000/svg}image")
+
+    assert len(image_element) == 1, "could not find an 'image' element in the SVG"
+
+    assert image_element[0].get("width") == f"{width}px"
+    assert image_element[0].get("height") == f"{height}px"
 
 
 def test_2620():

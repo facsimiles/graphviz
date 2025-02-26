@@ -302,7 +302,6 @@ EXCLUDE = (
     "lib/gvc/gvrender.c",
     "lib/gvc/gvtextlayout.c",
     "lib/gvc/gvtool_tred.c",
-    "lib/gvc/gvusershape.c",
     "lib/gvpr/actions.h",
     "lib/gvpr/compile.h",
     "lib/gvpr/gdefs.h",
