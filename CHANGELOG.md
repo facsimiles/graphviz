@@ -113,6 +113,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   regression in Graphviz 2.30. #2636
 - The interpretation of `viewBox` attributes in included SVG images has been
   corrected. #2636
+- Parsing of JPEG images used as node shapes has been corrected. This fixes a
+  problem where no or incorrectly sized images appeared in the output. Please
+  note that a bug in the GD plugin, which causes Graphviz to crash in Windows
+  Debug builds, now unfortunately seems to always occur when using the GD
+  plugin and JPEG images as node shapes. See
+  https://graphviz.org/docs/outputs/#image-formats for details. #2619
 
 ## [12.2.1] – 2024-12-07
 
