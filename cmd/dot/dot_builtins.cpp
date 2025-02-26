@@ -22,6 +22,9 @@ extern "C" {
 
 IMPORT extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
 IMPORT extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
+#ifdef HAVE_QUARTZ
+IMPORT extern gvplugin_library_t gvplugin_quartz_LTX_library;
+#endif
 #ifdef HAVE_LIBGD
 IMPORT extern gvplugin_library_t gvplugin_gd_LTX_library;
 #endif
@@ -38,6 +41,9 @@ IMPORT extern gvplugin_library_t gvplugin_vt_LTX_library;
 lt_symlist_t lt_preloaded_symbols[] = {
 	{ "gvplugin_dot_layout_LTX_library", &gvplugin_dot_layout_LTX_library },
 	{ "gvplugin_neato_layout_LTX_library", &gvplugin_neato_layout_LTX_library },
+#ifdef HAVE_QUARTZ
+	{ "gvplugin_quartz_LTX_library", &gvplugin_quartz_LTX_library},
+#endif
 #ifdef HAVE_PANGOCAIRO
 	{ "gvplugin_pango_LTX_library", &gvplugin_pango_LTX_library },
 #ifdef HAVE_WEBP
