@@ -3049,7 +3049,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
     pointf LL, UR, size, sz;
-    double X, Y, Z;
+    double Z;
     int rv;
     Agnode_t *n;
     char *str, *nodename = NULL;
@@ -3080,13 +3080,12 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 
     /* rotate and scale bb to give default absolute size in points*/
     job->rotation = job->gvc->rotation;
-    X = sz.x * Z;
-    Y = sz.y * Z;
+    pointf XY = scale(Z, sz);
 
     /* user can override */
     if ((str = agget(g, "viewport"))) {
         nodename = gv_alloc(strlen(str) + 1);
-	rv = sscanf(str, "%lf,%lf,%lf,\'%[^\']\'", &X, &Y, &Z, nodename);
+	rv = sscanf(str, "%lf,%lf,%lf,\'%[^\']\'", &XY.x, &XY.y, &Z, nodename);
 	if (rv == 4) {
 	    n = agfindnode(g->root, nodename);
 	    if (n) {
@@ -3095,7 +3094,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	}
 	else {
 	    char junk;
-	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%c", &X, &Y, &Z, nodename, &junk);
+	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%c", &XY.x, &XY.y, &Z, nodename, &junk);
 	    if (rv == 4) {
                 n = agfindnode(g->root, nodename);
                 if (n) {
@@ -3103,7 +3102,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 		}
 	    }
 	    else {
-	        sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &xy.x, &xy.y);
+	        sscanf(str, "%lf,%lf,%lf,%lf,%lf", &XY.x, &XY.y, &Z, &xy.x, &xy.y);
 	    }
         }
 	free (nodename);
@@ -3114,8 +3113,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
      * job->zoom gives scaling factor.
      * job->focus gives the position in the graph of the center of the port
      */
-    job->view.x = X;
-    job->view.y = Y;
+    job->view = XY;
     job->zoom = Z;              /* scaling factor */
     job->focus = xy;
 }
