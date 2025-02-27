@@ -77,6 +77,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The `all` parameter to `exclose` has been removed.
 - Using external images in combination with the `-Tsvg_inline` output format now
   embeds the content of the external images within the output data. #2636
+- MinGW on 32-bit x86 (“mingw32”) is no longer supported as a platform.
+  Installers and release archives for this platform are no longer provided.
+  #2649
 
 ### Fixed
 
