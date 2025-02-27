@@ -3049,7 +3049,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
     pointf LL, UR, size, sz;
-    double X, Y, Z, x, y;
+    double X, Y, Z;
     int rv;
     Agnode_t *n;
     char *str, *nodename = NULL;
@@ -3076,8 +3076,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     }
     
     /* default focus, in graph units = center of bb */
-    x = (LL.x + UR.x) / 2.;
-    y = (LL.y + UR.y) / 2.;
+    pointf xy = scale(0.5, add_pointf(LL, UR));
 
     /* rotate and scale bb to give default absolute size in points*/
     job->rotation = job->gvc->rotation;
@@ -3091,8 +3090,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	if (rv == 4) {
 	    n = agfindnode(g->root, nodename);
 	    if (n) {
-		x = ND_coord(n).x;
-		y = ND_coord(n).y;
+		xy = ND_coord(n);
 	    }
 	}
 	else {
@@ -3101,12 +3099,11 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	    if (rv == 4) {
                 n = agfindnode(g->root, nodename);
                 if (n) {
-                    x = ND_coord(n).x;
-                    y = ND_coord(n).y;
+                    xy = ND_coord(n);
 		}
 	    }
 	    else {
-	        rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+	        rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &xy.x, &xy.y);
 	    }
         }
 	free (nodename);
@@ -3120,8 +3117,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->view.x = X;
     job->view.y = Y;
     job->zoom = Z;              /* scaling factor */
-    job->focus.x = x;
-    job->focus.y = y;
+    job->focus = xy;
 }
 
 static void emit_cluster_colors(GVJ_t * job, graph_t * g)
