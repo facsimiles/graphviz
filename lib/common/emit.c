@@ -3103,7 +3103,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 		}
 	    }
 	    else {
-	        rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &xy.x, &xy.y);
+	        sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &xy.x, &xy.y);
 	    }
         }
 	free (nodename);
