@@ -3093,8 +3093,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	    }
 	}
 	else {
-	    char junk;
-	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%c", &XY.x, &XY.y, &Z, nodename, &junk);
+	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%c", &XY.x, &XY.y, &Z, nodename,
+	                &(char){0});
 	    if (rv == 4) {
                 n = agfindnode(g->root, nodename);
                 if (n) {
