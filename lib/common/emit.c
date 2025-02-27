@@ -3056,12 +3056,9 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 
     UR = gvc->bb.UR;
     LL = gvc->bb.LL;
-    job->bb.LL.x = LL.x - job->pad.x;           /* job->bb is bb of graph and padding - graph units */
-    job->bb.LL.y = LL.y - job->pad.y;
-    job->bb.UR.x = UR.x + job->pad.x;
-    job->bb.UR.y = UR.y + job->pad.y;
-    sz.x = job->bb.UR.x - job->bb.LL.x;   /* size, including padding - graph units */
-    sz.y = job->bb.UR.y - job->bb.LL.y;
+    job->bb.LL = sub_pointf(LL, job->pad); // job->bb is bb of graph and padding - graph units
+    job->bb.UR = add_pointf(UR, job->pad);
+    sz = sub_pointf(job->bb.UR, job->bb.LL); // size, including padding - graph units
 
     /* determine final drawing size and scale to apply. */
     /* N.B. size given by user is not rotated by landscape mode */
