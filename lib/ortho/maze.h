@@ -16,6 +16,7 @@
 #pragma once
 
 #include <ortho/sgraph.h>
+#include <stddef.h>
 
 enum {M_RIGHT=0, M_TOP, M_LEFT, M_BOTTOM};
 
@@ -63,7 +64,8 @@ typedef struct cell {
  */
 
 typedef struct {
-  int ncells, ngcells;
+  int ncells;
+  size_t ngcells;
   cell* cells;     ///< @brief cells not corresponding to graph nodes
   cell* gcells;    ///< @brief cells corresponding to graph nodes
   sgraph* sg;      ///< @brief search graph

@@ -13,7 +13,9 @@
 
 #define DEBUG
 
+#include <assert.h>
 #include <float.h>
+#include <limits.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -22,8 +24,9 @@
 #include <ortho/trap.h>
 #include <common/arith.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
-#define MARGIN 36;
+#define MARGIN 36
 
 #ifdef DEBUG
 char* pre = "%!PS-Adobe-2.0\n\
@@ -56,8 +59,8 @@ char* post = "showpage\n";
 
 /// @brief dumps @ref maze::gcells and @ref maze::cells via rects to PostScript
 
-static void
-psdump(cell *gcells, int n_gcells, boxf BB, boxf *rects, size_t nrect) {
+static void psdump(cell *gcells, size_t n_gcells, boxf BB, boxf *rects,
+                   size_t nrect) {
     boxf bb;
     boxf absbb = {.LL = {.y = 10.0, .x = 10.0}};
 
@@ -70,7 +73,7 @@ psdump(cell *gcells, int n_gcells, boxf BB, boxf *rects, size_t nrect) {
 
     fprintf (stderr, "%f %f translate\n", 10-BB.LL.x, 10-BB.LL.y);
     fputs ("0 0 1 setrgbcolor\n", stderr);
-    for (int i = 0; i < n_gcells; i++) {
+    for (size_t i = 0; i < n_gcells; i++) {
       bb = gcells[i].bb;
       fprintf (stderr, "%f %f %f %f node\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
     }
@@ -318,6 +321,8 @@ chkSgraph (sgraph* g)
     
 }
 
+DEFINE_LIST(snodes, snode *)
+
 /**
  * @brief creates and fills @ref sgraph for @ref maze
  *
@@ -328,7 +333,7 @@ chkSgraph (sgraph* g)
 static sgraph*
 mkMazeGraph (maze* mp, boxf bb)
 {
-    int nsides, i, maxdeg;
+    int maxdeg;
     int bound = 4*mp->ncells;
     sgraph* g = createSGraph (bound + 2);
     Dt_t* vdict = dtopen(&vdictDisc,Dtoset);
@@ -341,7 +346,7 @@ mkMazeGraph (maze* mp, boxf bb)
      * a pointer to the cell.
      */
     sides = gv_calloc(4 * mp->ncells, sizeof(snode*));
-    for (i = 0; i < mp->ncells; i++) {
+    for (int i = 0; i < mp->ncells; i++) {
 	cell* cp = mp->cells+i;
         snode* np;
 	pointf pt;
@@ -378,47 +383,47 @@ mkMazeGraph (maze* mp, boxf bb)
      * connect it to its corresponding search nodes.
      */
     maxdeg = 0;
-    sides = gv_calloc(g->nnodes, sizeof(snode*));
-    nsides = 0;
-    for (i = 0; i < mp->ngcells; i++) {
-	cell* cp = mp->gcells+i;
+    for (size_t i = 0; i < mp->ngcells; i++) {
+	cell *cp = &mp->gcells[i];
         pointf pt; 
 	snodeitem* np;
 
-	cp->sides = sides+nsides;
+	snodes_t cp_sides = {0};
         pt = cp->bb.LL;
 	np = dtmatch (hdict, &pt);
 	for (; np && np->p.x < cp->bb.UR.x; np = dtnext (hdict, np)) {
-	    cp->sides[cp->nsides++] = np->np;
+	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[1] = cp;
 	}
 	np = dtmatch (vdict, &pt);
 	for (; np && np->p.y < cp->bb.UR.y; np = dtnext (vdict, np)) {
-	    cp->sides[cp->nsides++] = np->np;
+	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[1] = cp;
 	}
 	pt.y = cp->bb.UR.y;
 	np = dtmatch (hdict, &pt);
 	for (; np && np->p.x < cp->bb.UR.x; np = dtnext (hdict, np)) {
-	    cp->sides[cp->nsides++] = np->np;
+	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[0] = cp;
 	}
 	pt.x = cp->bb.UR.x;
 	pt.y = cp->bb.LL.y;
 	np = dtmatch (vdict, &pt);
 	for (; np && np->p.y < cp->bb.UR.y; np = dtnext (vdict, np)) {
-	    cp->sides[cp->nsides++] = np->np;
+	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[0] = cp;
 	}
-	nsides += cp->nsides;
+	assert(snodes_size(&cp_sides) <= INT_MAX);
+	cp->nsides = (int)snodes_size(&cp_sides);
+	cp->sides = snodes_detach(&cp_sides);
         if (cp->nsides > maxdeg) maxdeg = cp->nsides;
     }
 
     /* Mark cells that are small because of a small node, not because of the close
      * alignment of two rectangles.
      */
-    for (i = 0; i < mp->ngcells; i++) {
-	cell* cp = mp->gcells+i;
+    for (size_t i = 0; i < mp->ngcells; i++) {
+	cell *cp = &mp->gcells[i];
 	markSmall (cp);
     }
 
@@ -432,7 +437,7 @@ mkMazeGraph (maze* mp, boxf bb)
      * can have at most degree maxdeg.
      */
     initSEdges (g, maxdeg);
-    for (i = 0; i < mp->ncells; i++) {
+    for (int i = 0; i < mp->ncells; i++) {
 	cell* cp = mp->cells+i;
 	createSEdges (cp, g);
     }
@@ -458,7 +463,8 @@ maze *mkMaze(graph_t *g) {
     double w2, h2;
     boxf bb;
 
-    mp->ngcells = agnnodes(g);
+    assert(agnnodes(g) >= 0);
+    mp->ngcells = (size_t)agnnodes(g);
     cp = mp->gcells = gv_calloc(mp->ngcells, sizeof(cell));
 
     boxf BB = {.LL = {.x = DBL_MAX, .y = DBL_MAX},
@@ -485,7 +491,8 @@ maze *mkMaze(graph_t *g) {
     BB.UR.x += MARGIN;
     BB.UR.y += MARGIN;
     size_t nrect;
-    rects = partition (mp->gcells, mp->ngcells, &nrect, BB);
+    assert(mp->ngcells <= INT_MAX);
+    rects = partition (mp->gcells, (int)mp->ngcells, &nrect, BB);
 
 #ifdef DEBUG
     if (odb_flags & ODB_MAZE) psdump (mp->gcells, mp->ngcells, BB, rects, nrect);
@@ -504,8 +511,10 @@ maze *mkMaze(graph_t *g) {
 void freeMaze (maze* mp)
 {
     free (mp->cells[0].sides);
-    free (mp->gcells[0].sides);
     free (mp->cells);
+    for (size_t i = 0; i < mp->ngcells; ++i) {
+	free(mp->gcells[i].sides);
+    }
     free (mp->gcells);
     freeSGraph (mp->sg);
     dtclose (mp->hchans);

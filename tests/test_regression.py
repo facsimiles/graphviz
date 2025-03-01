@@ -62,9 +62,6 @@ def is_ndebug_defined() -> bool:
     return False
 
 
-@pytest.mark.xfail(
-    platform.system() == "Windows", reason="#56", strict=not is_ndebug_defined()
-)  # FIXME
 def test_14():
     """
     using ortho and twopi in combination should not cause an assertion failure
@@ -5344,6 +5341,22 @@ def test_2636_2():
 
     assert img.attrib["height"] == "10px", "image height set incorrectly"
     assert img.attrib["width"] == "10px", "image width set incorrectly"
+
+
+@pytest.mark.skipif(which("twopi") is None, reason="twopi not available")
+def test_2643():
+    """
+    twopi should not read/write out of bounds when processing this case’s graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2643
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2643.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through twopi
+    twopi = which("twopi")
+    subprocess.run([twopi, "-o", os.devnull, input], check=True)
 
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
