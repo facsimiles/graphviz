@@ -328,7 +328,9 @@ addChan (Dt_t* chdict, channel* cp, double j)
 	subd->chans = dtopen (&chanDisc, Dtoset);
 	dtinsert (chdict, subd);
     }
-    dtinsert (subd->chans, cp);
+    if (dtinsert(subd->chans, cp) != cp) {
+	free(cp);
+    }
 }
 
 static Dt_t*
