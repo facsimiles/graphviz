@@ -77,6 +77,7 @@ static bool pango_textlayout(textspan_t * span, char **fontpath)
     GError *error = NULL;
     int flags;
 #endif
+    bool text_needs_free = false;
     char *text;
 
     if (!context) {
@@ -220,6 +221,8 @@ static bool pango_textlayout(textspan_t * span, char **fontpath)
 	    fprintf (stderr, "Error - pango_parse_markup: %s\n", error->message);
 	    text = span->str;
 	    attrs = NULL;
+	} else {
+	    text_needs_free = true;
 	}
 	agxbfree (&xb);
     }
@@ -259,7 +262,11 @@ static bool pango_textlayout(textspan_t * span, char **fontpath)
     /* The distance below midline for y centering of text strings */
     span->yoffset_centerline = 0.05 * span->font->size;
 
-    return logical_rect.width != 0 || strcmp(text, "") == 0;
+    const bool rc = logical_rect.width != 0 || strcmp(text, "") == 0;
+    if (text_needs_free) {
+	g_free(text);
+    }
+    return rc;
 }
 
 static gvtextlayout_engine_t pango_textlayout_engine = {
