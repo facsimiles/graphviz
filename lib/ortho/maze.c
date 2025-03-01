@@ -333,7 +333,7 @@ DEFINE_LIST(snodes, snode *)
 static sgraph*
 mkMazeGraph (maze* mp, boxf bb)
 {
-    int i, maxdeg;
+    int maxdeg;
     int bound = 4*mp->ncells;
     sgraph* g = createSGraph (bound + 2);
     Dt_t* vdict = dtopen(&vdictDisc,Dtoset);
@@ -346,7 +346,7 @@ mkMazeGraph (maze* mp, boxf bb)
      * a pointer to the cell.
      */
     sides = gv_calloc(4 * mp->ncells, sizeof(snode*));
-    for (i = 0; i < mp->ncells; i++) {
+    for (int i = 0; i < mp->ncells; i++) {
 	cell* cp = mp->cells+i;
         snode* np;
 	pointf pt;
@@ -383,7 +383,7 @@ mkMazeGraph (maze* mp, boxf bb)
      * connect it to its corresponding search nodes.
      */
     maxdeg = 0;
-    for (i = 0; i < mp->ngcells; i++) {
+    for (int i = 0; i < mp->ngcells; i++) {
 	cell* cp = mp->gcells+i;
         pointf pt; 
 	snodeitem* np;
@@ -422,7 +422,7 @@ mkMazeGraph (maze* mp, boxf bb)
     /* Mark cells that are small because of a small node, not because of the close
      * alignment of two rectangles.
      */
-    for (i = 0; i < mp->ngcells; i++) {
+    for (int i = 0; i < mp->ngcells; i++) {
 	cell* cp = mp->gcells+i;
 	markSmall (cp);
     }
@@ -437,7 +437,7 @@ mkMazeGraph (maze* mp, boxf bb)
      * can have at most degree maxdeg.
      */
     initSEdges (g, maxdeg);
-    for (i = 0; i < mp->ncells; i++) {
+    for (int i = 0; i < mp->ncells; i++) {
 	cell* cp = mp->cells+i;
 	createSEdges (cp, g);
     }
