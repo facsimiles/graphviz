@@ -123,6 +123,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   plugin and JPEG images as node shapes. See
   https://graphviz.org/docs/outputs/#image-formats for details. #2619
 - `twopi` no longer crashes when processing graphs with `splines="ortho"`. #2643
+- Network simplex functions have been refactored to avoid recursion. Now graphs
+  with deep node chains that previously caused stack overflows can be processed.
+  #2646
 
 ## [12.2.1] – 2024-12-07
 
