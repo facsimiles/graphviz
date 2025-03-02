@@ -2292,6 +2292,29 @@ def test_2095():
     dot("pdf", input)
 
 
+def test_2095_1():
+    """
+    more than 1000 boxes should still be processed in reasonable time
+    https://gitlab.com/graphviz/graphviz/-/issues/2095
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/2854
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/2857
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2095.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    if platform.system() == "Windows":
+        # this is significantly slower on Windows
+        timeout = 60  # seconds
+    else:
+        timeout = 5  # seconds
+
+    # this typically takes ~1s to run, so give a wide margin of error and require that
+    # that Graphviz finishes within that
+    subprocess.check_call(["dot", "-Tpdf", "-o", os.devnull, input], timeout=timeout)
+
+
 @pytest.mark.skipif(which("gv2gml") is None, reason="gv2gml not available")
 def test_2131():
     """
@@ -5357,6 +5380,43 @@ def test_2643():
     # run this through twopi
     twopi = which("twopi")
     subprocess.run([twopi, "-o", os.devnull, input], check=True)
+
+
+@pytest.mark.slow  # ~13min
+def test_2646():
+    """
+    Graphviz should not crash when processing this large graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2646
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2646.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    dot("pdf", input)
+
+
+@pytest.mark.slow  # ~10min
+def test_MR_2854():
+    """
+    this graph should be handled in a reasonable amount of time
+
+    The graph used by this test was accelerated by commit
+    4b736d297bb1599451e89c2fde911d966a1db3cf landing in Merge Request !2857. This test
+    case checks if performance on this workload has regressed since then.
+
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/2854
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/2857
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2854.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # this typically takes ~10m to run, so give a wide margin of error and require that
+    # Graphviz finishes within that
+    subprocess.check_call(["dot", "-Tsvg", "-o", os.devnull, input], timeout=60 * 20)
 
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
