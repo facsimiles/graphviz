@@ -15,9 +15,6 @@ $GRAPHVIZ_WINDOWS_BIN = $PSScriptRoot
 $GRAPHVIZ_WINDOWS = Split-Path $GRAPHVIZ_WINDOWS_BIN -Parent
 $GRAPHVIZ_ROOT = Split-Path $GRAPHVIZ_WINDOWS -Parent
 
-$VS_BUILD_TOOLS = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools"
-$MSBUILD_BIN = "$VS_BUILD_TOOLS\MSBuild\Current\Bin"
-
 $exit_status = 0
 
 function find_or_fallback($programs, $fallback_path) {
@@ -50,7 +47,6 @@ $build_utilities_path = "$GRAPHVIZ_ROOT\windows\dependencies\graphviz-build-util
 
 find_or_fallback "win_bison win_flex" "$build_utilities_path\winflexbison"
 find_or_fallback "makensis" "$build_utilities_path\NSIS\Bin"
-find_or_fallback "msbuild" "$MSBUILD_BIN"
 
 echo "Final check where all utilites are found:"
 
