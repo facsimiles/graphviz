@@ -14,6 +14,7 @@ noinst_HEADERS = \
   gv_math.h \
   list.h \
   lockfile.h \
+  optional.h \
   overflow.h \
   prisize_t.h \
   sort.h \
