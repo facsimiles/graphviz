@@ -139,7 +139,6 @@ static int object_color(void* obj,glCompColor* c)
     gvcolor_t cl;
     Agraph_t* g=view->g[view->activeGraph];
     Agraph_t* objg=agraphof(obj);
-    int return_value = 1;
     int objType;
     float Alpha = 1;
     Agsym_t* vis;
@@ -188,7 +187,7 @@ static int object_color(void* obj,glCompColor* c)
     free(color_scheme);
     free(previous_color_scheme);
 
-    return return_value;
+    return 1;
 }
 
 
@@ -327,7 +326,7 @@ static void renderNodes(Agraph_t * g)
     }
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
-	    if(!object_color(v,&c))
+	    if (!object_color(v, &(glCompColor){0}))
 		continue;
 	    x=parseXdotwithattrs(v);
 	    draw_xdot(x, -0.1);
@@ -388,7 +387,6 @@ static void renderSelectedEdges(Agraph_t * g)
     xdot * x;
     glCompPoint posT;	/*Tail position*/
     glCompPoint posH;	/*Head position*/
-    glCompColor c;
     /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
@@ -397,7 +395,7 @@ static void renderSelectedEdges(Agraph_t * g)
 	{
 	    if(!ED_selected(e))
 		continue;
-	    if(!object_color(e,&c))
+	    if (!object_color(e, &(glCompColor){0}))
 		continue;
 
 	    x=parseXdotwithattrs(e);
@@ -415,7 +413,7 @@ static void renderSelectedEdges(Agraph_t * g)
 	    if(!ED_selected(e))
 		continue;
 
-	    if(!object_color(e,&c))
+	    if (!object_color(e, &(glCompColor){0}))
 		continue;
 	    glColor4f(1,0,0,1);	    
 	    posT = ED_posTail(e);
@@ -818,7 +816,6 @@ void updateSmGraph(Agraph_t * g,topview* t)
 
     t->Nodecount=0;
     t->maxedgelen=0;
-    t->minedgelen=-1;
 
     t->global_z=0;
     t->sel.selPoly = (glCompPoly_t){0};
@@ -830,8 +827,6 @@ void updateSmGraph(Agraph_t * g,topview* t)
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
 	    eLength=getEdgeLength(e);
-	    if((t->minedgelen == -1) || (t->minedgelen > eLength))
-		t->minedgelen=eLength;
 	    if(eLength > t->maxedgelen)
 		t->maxedgelen=eLength;
 	    totalELength += eLength;

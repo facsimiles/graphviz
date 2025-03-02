@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include "frmobjectui.h"
 
-static glCompPanel *sel = NULL;
+static glCompPanel *sel;
 static glCompButton *to3DBtn;
 static glCompButton *to2DBtn;
 static glCompButton *toFisheye;
@@ -183,8 +183,7 @@ static void glCompMouseMove(glCompObj *obj, float x, float y) {
 
     sel->base.common.visible = 1;
 
-    if ((m->down) && (m->t == glMouseRightButton)) 
-    {
+    if (m->down && m->t == glMouseRightButton) {
 	sel->base.common.pos.x = m->x - m->dragX;
 	sel->base.common.pos.y = m->y - m->dragY;
 	sel->base.common.width = m->dragX;
@@ -219,7 +218,6 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompPanel *p = NULL;
     glCompButton *b = NULL;
     glCompImage *i = NULL;
-    glCompColor c;
     s->base.common.callbacks.click = CBglCompMouseRightClick;
 
     p = glCompPanelNew(s, 25, 25, 45, 47);
@@ -297,10 +295,7 @@ glCompSet *glcreate_gl_topview_menu(void)
     p->base.common.borderWidth = 1;
     p->shadowwidth = 0;
 
-    c.R = 0.80f;
-    c.G = 0.6f;
-    c.B = 0.6f;
-    c.A = 1.6f;
+    const glCompColor c = {.R = 0.80f, .G = 0.6f, .B = 0.6f, .A = 1.6f};
 
     y = 1;
 

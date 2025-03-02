@@ -62,9 +62,6 @@ static v_data *makeGraph(Agraph_t* gg, int *nedges)
     {
 	graph[i].edges = edges++;	/* reserve space for the self loop */
 	graph[i].ewgts = ewgts++;
-#ifdef STYLES
-	graph[i].styles = NULL;
-#endif
 	i_nedges = 1;		/* one for the self */
 
 	if (!g)
@@ -143,7 +140,7 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
     }
     hp = t->fisheyeParams.h =
 	makeHier(agnnodes(g), ne, graph, x_coords, y_coords,
-		 &t->fisheyeParams.hier);
+		 t->fisheyeParams.dist2_limit);
     freeGraph(graph);
     free(x_coords);
     free(y_coords);
@@ -188,9 +185,11 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
 	   (view->g[view->activeGraph],
 	    "topologicalfisheyecoarseningfactor"), "%lf",
 	   &view->Topview->fisheyeParams.level.coarsening_rate);
+    int dist2_limit = 0;
     sscanf(agget
 	   (view->g[view->activeGraph], "topologicalfisheyedist2limit"),
-	   "%d", &view->Topview->fisheyeParams.hier.dist2_limit);
+	   "%d", &dist2_limit);
+    view->Topview->fisheyeParams.dist2_limit = dist2_limit != 0;
     sscanf(agget(view->g[view->activeGraph], "topologicalfisheyeanimate"),
 	   "%d", &view->Topview->fisheyeParams.animate);
 
@@ -201,18 +200,12 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
 
 static void drawtopfishnodes(topview * t)
 {
-    glCompColor srcColor;
-    glCompColor tarColor;
     glCompColor color;
     int level, v;
     Hierarchy *hp = t->fisheyeParams.h;
     static int max_visible_level = 0;
-    srcColor.R = view->Topview->fisheyeParams.srcColor.R;
-    srcColor.G = view->Topview->fisheyeParams.srcColor.G;
-    srcColor.B = view->Topview->fisheyeParams.srcColor.B;
-    tarColor.R = view->Topview->fisheyeParams.tarColor.R;
-    tarColor.G = view->Topview->fisheyeParams.tarColor.G;
-    tarColor.B = view->Topview->fisheyeParams.tarColor.B;
+    const glCompColor srcColor = view->Topview->fisheyeParams.srcColor;
+    const glCompColor tarColor = view->Topview->fisheyeParams.tarColor;
 
     //drawing nodes
     glPointSize(7);
@@ -243,19 +236,13 @@ static void drawtopfishnodes(topview * t)
 
 static void drawtopfishedges(topview * t)
 {
-    glCompColor srcColor;
-    glCompColor tarColor;
     glCompColor color;
 
     int level, v, i, n;
     Hierarchy *hp = t->fisheyeParams.h;
     static int max_visible_level = 0;
-    srcColor.R = view->Topview->fisheyeParams.srcColor.R;
-    srcColor.G = view->Topview->fisheyeParams.srcColor.G;
-    srcColor.B = view->Topview->fisheyeParams.srcColor.B;
-    tarColor.R = view->Topview->fisheyeParams.tarColor.R;
-    tarColor.G = view->Topview->fisheyeParams.tarColor.G;
-    tarColor.B = view->Topview->fisheyeParams.tarColor.B;
+    const glCompColor srcColor = view->Topview->fisheyeParams.srcColor;
+    const glCompColor tarColor = view->Topview->fisheyeParams.tarColor;
 
     //and edges
     glBegin(GL_LINES);
@@ -354,8 +341,8 @@ static int get_temp_coords(topview * t, int level, int v, double *coord_x,
 	if (gg[v].active_level != level)
 	    return 0;
 
-	*coord_x = (double) gg[v].physical_x_coord;
-	*coord_y = (double) gg[v].physical_y_coord;
+	*coord_x = gg[v].physical_x_coord;
+	*coord_y = gg[v].physical_y_coord;
     } else {
 
 
@@ -375,22 +362,22 @@ static int get_temp_coords(topview * t, int level, int v, double *coord_x,
 	{
 	    if (OAL == level && AL == level)	//draw as is from old coords to new)
 	    {
-		x0 = (double) gg[v].old_physical_x_coord;
-		y0 = (double) gg[v].old_physical_y_coord;
-		x1 = (double) gg[v].physical_x_coord;
-		y1 = (double) gg[v].physical_y_coord;
+		x0 = gg[v].old_physical_x_coord;
+		y0 = gg[v].old_physical_y_coord;
+		x1 = gg[v].physical_x_coord;
+		y1 = gg[v].physical_y_coord;
 	    }
 	    if (OAL > level && AL == level)	//draw as  from ancs  to new)
 	    {
 		find_old_physical_coords(t->fisheyeParams.h, level, v, &x0, &y0);
-		x1 = (double) gg[v].physical_x_coord;
-		y1 = (double) gg[v].physical_y_coord;
+		x1 = gg[v].physical_x_coord;
+		y1 = gg[v].physical_y_coord;
 	    }
 	    if (OAL == level && AL > level)	//draw as  from ancs  to new)
 	    {
 		find_physical_coords(t->fisheyeParams.h, level, v, &x1, &y1);
-		x0 = (double) gg[v].old_physical_x_coord;
-		y0 = (double) gg[v].old_physical_y_coord;
+		x0 = gg[v].old_physical_x_coord;
+		y0 = gg[v].old_physical_y_coord;
 	    }
 	    get_interpolated_coords(x0, y0, x1, y1, view->active_frame,
 				    view->total_frames, coord_x, coord_y);
@@ -455,9 +442,11 @@ void changetopfishfocus(topview * t, float *x, float *y, int num_foci)
 	   (view->g[view->activeGraph],
 	    "topologicalfisheyecoarseningfactor"), "%lf",
 	   &view->Topview->fisheyeParams.level.coarsening_rate);
+    int dist2_limit = 0;
     sscanf(agget
 	   (view->g[view->activeGraph], "topologicalfisheyedist2limit"),
-	   "%d", &view->Topview->fisheyeParams.hier.dist2_limit);
+	   "%d", &dist2_limit);
+    view->Topview->fisheyeParams.dist2_limit = dist2_limit != 0;
     sscanf(agget(view->g[view->activeGraph], "topologicalfisheyeanimate"),
 	   "%d", &view->Topview->fisheyeParams.animate);
 

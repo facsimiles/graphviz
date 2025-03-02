@@ -42,10 +42,7 @@ glCompButton *glCompButtonNew(void *par, float x, float y, float w, float h,
     p->base.common.functions.draw = (glcompdrawfunc_t)glCompButtonDraw;
 
     p->base.common.functions.click = glCompButtonClick;
-    p->base.common.functions.doubleclick = glCompButtonDoubleClick;
     p->base.common.functions.mousedown = glCompButtonMouseDown;
-    p->base.common.functions.mousein = glCompButtonMouseIn;
-    p->base.common.functions.mouseout = glCompButtonMouseOut;
     p->base.common.functions.mouseover = glCompButtonMouseOver;
     p->base.common.functions.mouseup = glCompButtonMouseUp;
 
@@ -128,8 +125,6 @@ void glCompButtonDraw(glCompButton * p)
 	p->label->base.common.functions.draw(p->label);
     if (p->image)
 	p->image->base.common.functions.draw(p->image);
-    if (p->base.common.callbacks.draw)
-	p->base.common.callbacks.draw(p); // user defined drawing routines are called here
 }
 
 void glCompButtonClick(glCompObj *o, float x, float y, glMouseButtonType t) {
@@ -144,33 +139,15 @@ void glCompButtonClick(glCompObj *o, float x, float y, glMouseButtonType t) {
 	p->base.common.callbacks.click(&p->base, x, y, t);
 }
 
-void glCompButtonDoubleClick(glCompObj *obj, float x, float y,
-			     glMouseButtonType t)
-{
-    if (obj->common.callbacks.doubleclick)
-	obj->common.callbacks.doubleclick(obj, x, y, t);
-}
-
 void glCompButtonMouseDown(glCompObj *obj, float x, float y,
 			   glMouseButtonType t)
 {
-    /*Put your internal code here */
-
+    (void)x;
+    (void)y;
+    (void)t;
     
     ((glCompButton *) obj)->refStatus = ((glCompButton *) obj)->status;
     ((glCompButton *) obj)->status = true;
-    if (obj->common.callbacks.mousedown)
-	obj->common.callbacks.mousedown(obj, x, y, t);
-}
-
-void glCompButtonMouseIn(glCompObj *obj, float x, float y) {
-    if (obj->common.callbacks.mousein)
-	obj->common.callbacks.mousein(obj, x, y);
-}
-
-void glCompButtonMouseOut(glCompObj *obj, float x, float y) {
-    if (obj->common.callbacks.mouseout)
-	obj->common.callbacks.mouseout(obj, x, y);
 }
 
 void glCompButtonMouseOver(glCompObj *obj, float x, float y) {

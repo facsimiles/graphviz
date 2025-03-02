@@ -109,7 +109,7 @@ static void set_options(int param)
 {
 
     int a=get_mode(view);
-    if ((param == 1) && (a == 10) && (view->mouse.down == 1))	//selected, if there is move, move it
+    if (param == 1 && a == 10 && view->mouse.down) // selected, if there is move, move it
     {
 	dx = view->mouse.GLinitPos.x-view->mouse.GLfinalPos.x;
 	dy = view->mouse.GLinitPos.y-view->mouse.GLfinalPos.y;

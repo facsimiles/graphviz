@@ -15,6 +15,7 @@
 #include "hotkeymap.h"
 
 #include "selectionfuncs.h"
+#include <stdbool.h>
 #include <stdint.h>
 #include "topviewfuncs.h"
 
@@ -75,7 +76,7 @@ static void appmouse_down(ViewInfo* v,int x,int y)
 {
     view->mouse.dragX = 0;
     view->mouse.dragY = 0;
-    v->mouse.down=1;
+    v->mouse.down = true;
     v->mouse.x = x;
     v->mouse.y = y;
     
@@ -84,7 +85,7 @@ static void appmouse_down(ViewInfo* v,int x,int y)
 }
 
 void appmouse_up(ViewInfo *v, int x, int y) {
-    v->mouse.down=0;
+    v->mouse.down = false;
     to3D(x,y, &v->mouse.GLfinalPos.x,&v->mouse.GLfinalPos.y,&v->mouse.GLfinalPos.z);
     apply_actions(v,x,y);
     view->mouse.dragX = 0;

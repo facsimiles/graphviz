@@ -45,10 +45,6 @@ static void glCompPanelDraw(void *o) {
   /*draw panel */
   glCompDrawRectPrism(&ref.pos, ref.width, ref.height,
                       p->base.common.borderWidth, 0.01f, &ref.color, true);
-  /*draw image if there is */
-  if (p->image) {
-    p->image->base.common.callbacks.draw(p->image);
-  }
 }
 
 glCompPanel *glCompPanelNew(void *parentObj, float x, float y, float w,
@@ -66,6 +62,5 @@ glCompPanel *glCompPanelNew(void *parentObj, float x, float y, float w,
     p->base.common.font = glNewFontFromParent(&p->base, NULL);
     p->text = NULL;
     p->base.common.functions.draw = glCompPanelDraw;
-    p->image = NULL;
     return p;
 }

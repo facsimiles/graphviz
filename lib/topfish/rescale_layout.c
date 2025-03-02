@@ -116,7 +116,6 @@ static void rescale_layout_polarFocus(v_data *graph, size_t n, double *x_coords,
     double *densities = NULL;
     double *distances = gv_calloc(n, sizeof(double));
     double *orig_distances = gv_calloc(n, sizeof(double));
-    double ratio;
 
     for (size_t i = 0; i < n; i++)
 	{
@@ -147,16 +146,8 @@ static void rescale_layout_polarFocus(v_data *graph, size_t n, double *x_coords,
 		}
     } else 
 	{
-		double factor;
 		// just to make milder behavior:
-		if (distortion >= 0) 
-		{
-			factor = sqrt(distortion);
-		} 
-		else 
-		{
-			factor = -sqrt(-distortion);
-		}
+		const double factor = (signbit(distortion) ? -1 : 1) * sqrt(fabs(distortion));
 		for (size_t i = 1; i < n; i++)
 		{
 			distances[ordering[i]] =
@@ -171,14 +162,8 @@ static void rescale_layout_polarFocus(v_data *graph, size_t n, double *x_coords,
     // compute new coordinate:
     for (size_t i = 0; i < n; i++)
 	{
-		if (orig_distances[i] == 0) 
-		{
-			ratio = 0;
-		} 
-		else 
-		{
-			ratio = distances[i] / orig_distances[i];
-		}
+		const double ratio =
+		  orig_distances[i] > 0 ? distances[i] / orig_distances[i] : 0;
 		x_coords[i] = x_focus + (x_coords[i] - x_focus) * ratio;
 		y_coords[i] = y_focus + (y_coords[i] - y_focus) * ratio;
     }
