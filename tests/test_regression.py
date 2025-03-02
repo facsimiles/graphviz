@@ -1210,14 +1210,10 @@ def test_1618(long: str, short: str):
     """
 
     # run Graphviz with the short form of the argument
-    p1 = subprocess.run(
-        ["dot", short], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True
-    )
+    p1 = subprocess.run(["dot", short], capture_output=True, check=True)
 
     # run it with the long form of the argument
-    p2 = subprocess.run(
-        ["dot", long], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True
-    )
+    p2 = subprocess.run(["dot", long], capture_output=True, check=True)
 
     # output from both should match
     assert (
@@ -2925,8 +2921,7 @@ def test_2396(arg: str):
     # run this through Graphviz
     proc = subprocess.run(
         ["dot", "-Tsvg", f"{arg}={image.parent}"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         input=source,
         cwd=Path(__file__).parent,
         universal_newlines=True,
@@ -3294,8 +3289,7 @@ def test_2283():
     # translate this to SVG
     p = subprocess.run(
         ["dot", "-Tsvg", input],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         universal_newlines=True,
     )
 
@@ -4327,8 +4321,7 @@ def test_2563():
         fdp = which("fdp")
         p = subprocess.run(
             [fdp, f"-Goverlap={overlap}", input],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             universal_newlines=True,
         )
 

@@ -388,12 +388,7 @@ def run_c(
             input_bytes = input.encode("utf-8")
 
         # run it
-        p = subprocess.run(
-            argv,
-            input=input_bytes,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        p = subprocess.run(argv, input=input_bytes, capture_output=True)
 
         # decode output manually rather than using `universal_newlines=True`
         # above to avoid exceptions from non-UTF-8 bytes in the output
