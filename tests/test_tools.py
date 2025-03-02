@@ -21,6 +21,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     has_sandbox,
     remove_asan_summary,
     remove_xtype_warnings,
+    run,
     run_raw,
     which,
 )
@@ -154,7 +155,7 @@ def test_edgepaint_options(arg: str):
     # run edgepaint on this
     args = ["edgepaint"] + arg.split(" ")
     try:
-        subprocess.run(args, input=input, check=True, universal_newlines=True)
+        run(args, input=input)
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"edgepaint rejected command line option '{arg}'") from e
 
@@ -170,23 +171,15 @@ def test_sandbox_noop():
 def test_sandbox_basic():
     """check processing a simple graph when sandboxed"""
     sandbox = which("dot_sandbox")
-    subprocess.run(
-        [sandbox], input="graph { a -- b; }", universal_newlines=True, check=True
-    )
+    run([sandbox], input="graph { a -- b; }")
 
 
 @pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
 def test_sandbox_render():
     """check rendering works when sandboxed"""
     sandbox = which("dot_sandbox")
-    proc = subprocess.run(
-        [sandbox, "-Tsvg"],
-        stdout=subprocess.PIPE,
-        input="graph { a -- b; }",
-        universal_newlines=True,
-        check=True,
-    )
-    ET.fromstring(proc.stdout)
+    stdout = run([sandbox, "-Tsvg"], input="graph { a -- b; }")
+    ET.fromstring(stdout)
 
 
 @pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")

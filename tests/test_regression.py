@@ -138,13 +138,7 @@ def test_131():
         pytest.skip("GNU PIC not available")
 
     # ask GNU PIC to process the Graphviz output
-    subprocess.run(
-        ["gpic"],
-        input=pic,
-        stdout=subprocess.DEVNULL,
-        check=True,
-        universal_newlines=True,
-    )
+    run(["gpic"], input=pic, stdout=subprocess.DEVNULL)
 
 
 @pytest.mark.parametrize(
@@ -1583,9 +1577,7 @@ def test_1877():
     input = "graph {subgraph cluster_a {}; cluster_a -- b}"
 
     # fdp should be able to process this
-    subprocess.run(
-        ["fdp", "-o", os.devnull], input=input, check=True, universal_newlines=True
-    )
+    run(["fdp", "-o", os.devnull], input=input)
 
 
 def test_1880():
@@ -2307,7 +2299,7 @@ def test_2131():
 
     # ask gv2gml what it thinks of this
     try:
-        subprocess.run(["gv2gml"], input=input, check=True, universal_newlines=True)
+        run(["gv2gml"], input=input)
     except subprocess.CalledProcessError as e:
         raise RuntimeError("gv2gml rejected a basic graph") from e
 
@@ -2764,11 +2756,11 @@ def test_2215():
 
     # try it on a simple graph
     input = "graph g { a -- b; }"
-    subprocess.run(["dot", "-v"], input=input, check=True, universal_newlines=True)
+    run(["dot", "-v"], input=input)
 
     # try the same on a labelled version of this graph
     input = 'graph g { node[label=""] a -- b; }'
-    subprocess.run(["dot", "-v"], input=input, check=True, universal_newlines=True)
+    run(["dot", "-v"], input=input)
 
 
 @pytest.mark.xfail(
@@ -4051,13 +4043,11 @@ def test_2473_2():
 
     # confirm Graphviz rejects this
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.run(
+        run(
             ["dot", "-Tpdf", "-o", os.devnull],
             input="graph { a -- b }",
             env=env,
-            check=True,
             encoding="utf-8",
-            universal_newlines=True,
         )
 
 
@@ -5065,15 +5055,13 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
     positioned = run(["dot", "-Tdot", destination], cwd=tmp_path)
 
     # use this to render with neato
-    neato_result = subprocess.run(
+    neato_result = run_raw(
         ["neato", "-n2", f"-T{output}"],
-        stdout=subprocess.PIPE,
         input=positioned.encode("utf-8"),
         cwd=tmp_path,
-        check=True,
     )
 
-    assert neato_result.stdout.strip() != b"", "an empty file was rendered"
+    assert neato_result.strip() != b"", "an empty file was rendered"
 
 
 @pytest.mark.xfail(
@@ -5093,7 +5081,7 @@ def test_2619_3():
     src = 'digraph {a [image="2619_1_2.jpg"]}'.encode("utf-8")
 
     # our test case shall not cause a crash
-    subprocess.run(["dot", "-Tpdf", "-o", os.devnull], check=True, cwd=cwd, input=src)
+    run_raw(["dot", "-Tpdf", "-o", os.devnull], cwd=cwd, input=src)
 
 
 def test_2619_4():
@@ -5302,7 +5290,7 @@ def test_2643():
 
     # run this through twopi
     twopi = which("twopi")
-    subprocess.run([twopi, "-o", os.devnull, input], check=True)
+    run_raw([twopi, "-o", os.devnull, input])
 
 
 @pytest.mark.slow  # ~13min
