@@ -54,11 +54,6 @@ find_or_fallback "makensis" "$build_utilities_path\NSIS\Bin"
 find_or_fallback "cmake cpack" "$CMAKE_BIN"
 find_or_fallback "msbuild" "$MSBUILD_BIN"
 
-if (-NOT (cpack.exe --help | Select-String 'CPACK_GENERATOR')) {
-    echo "Moving $CMAKE_BIN to front of PATH in order to find CMake's cpack"
-    $Env:Path="$CMAKE_BIN;$path"
-}
-
 echo "Final check where all utilites are found:"
 
 $script:all_programs.Trim().Split(" ") | ForEach {
@@ -69,14 +64,6 @@ $script:all_programs.Trim().Split(" ") | ForEach {
         Write-Error -EA Continue "Fatal error: $program still not found"
         $exit_status=1
     }
-}
-
-# Special checks
-
-if (-NOT (cpack.exe --help | Select-String 'CPACK_GENERATOR')) {
-    $exe = (Get-Command cpack.exe 2>$null).Source
-    Write-Error -EA Continue "Found an unknown cpack at $exe"
-    $exit_status = 1
 }
 
 if ($exit_status -eq 0) {
