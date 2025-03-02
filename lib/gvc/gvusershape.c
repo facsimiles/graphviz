@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <util/gv_fopen.h>
+#include <util/optional.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -283,17 +284,6 @@ static void svg_size(usershape_t *us) {
   agxbuf line = {0};
   bool eof = false;
 
-  // an analog of C++’s `std::optional<double>`
-  typedef struct {
-    bool has_value;
-    double value;
-  } optional_double_t;
-#define SET(me, val)                                                           \
-  do {                                                                         \
-    *(me) = (optional_double_t){.has_value = true, .value = (val)};            \
-  } while (0)
-#define VALUE_OR(me, val) ((me).has_value ? (me).value : (val))
-
   // authoritative constraints we learned from `height` and `width`
   optional_double_t hard_height = {0};
   optional_double_t hard_width = {0};
@@ -324,9 +314,9 @@ static void svg_size(usershape_t *us) {
       if (strview_str_eq(match.key, "width")) {
         char *value = strview_str(match.value);
         if (sscanf(value, "%lf%2s", &n, u) == 2) {
-          SET(&hard_width, svg_units_convert(n, u));
+          optional_double_set(&hard_width, svg_units_convert(n, u));
         } else if (sscanf(value, "%lf", &n) == 1) {
-          SET(&hard_width, svg_units_convert(n, "pt"));
+          optional_double_set(&hard_width, svg_units_convert(n, "pt"));
         }
         free(value);
         if (hard_height.has_value)
@@ -334,9 +324,9 @@ static void svg_size(usershape_t *us) {
       } else if (strview_str_eq(match.key, "height")) {
         char *value = strview_str(match.value);
         if (sscanf(value, "%lf%2s", &n, u) == 2) {
-          SET(&hard_height, svg_units_convert(n, u));
+          optional_double_set(&hard_height, svg_units_convert(n, u));
         } else if (sscanf(value, "%lf", &n) == 1) {
-          SET(&hard_height, svg_units_convert(n, "pt"));
+          optional_double_set(&hard_height, svg_units_convert(n, "pt"));
         }
         free(value);
         if (hard_width.has_value)
@@ -345,8 +335,8 @@ static void svg_size(usershape_t *us) {
         char *value = strview_str(match.value);
         double w, h;
         if (sscanf(value, "%*f %*f %lf %lf", &w, &h) == 2) {
-          SET(&soft_width, w);
-          SET(&soft_height, h);
+          optional_double_set(&soft_width, w);
+          optional_double_set(&soft_height, h);
         }
         free(value);
       }
@@ -356,25 +346,22 @@ static void svg_size(usershape_t *us) {
     // `height` and/or `width`, let `viewBox` determine the dimensions
     if (soft_height.has_value && soft_width.has_value) {
       if (!hard_height.has_value) {
-        SET(&hard_height, soft_height.value);
+        optional_double_set(&hard_height, soft_height.value);
       }
       if (!hard_width.has_value) {
-        SET(&hard_width, soft_width.value);
+        optional_double_set(&hard_width, soft_width.value);
       }
       break;
     }
   }
   us->dpi = 0;
-  const double h = VALUE_OR(hard_height, 0);
-  const double w = VALUE_OR(hard_width, 0);
+  const double h = optional_double_value_or(hard_height, 0);
+  const double w = optional_double_value_or(hard_width, 0);
   assert(w >= 0 && w <= INT_MAX);
   us->w = (int)w;
   assert(h >= 0 && h <= INT_MAX);
   us->h = (int)h;
   agxbfree(&line);
-
-#undef VALUE_OR
-#undef SET
 }
 
 static void png_size(usershape_t *us) {

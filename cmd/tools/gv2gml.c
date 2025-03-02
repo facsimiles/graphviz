@@ -19,7 +19,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <inttypes.h>
 
 #include <getopt.h>
@@ -236,7 +235,7 @@ static void emitAttr(char *name, char *value, int ix) {
 static void  emitNodeAttrs(Agraph_t *G, Agnode_t *np, int ix) {
     Agsym_t*  s;
     char* v;
-    node_attrs attrs;
+    node_attrs attrs = {0};
     int doGraphics = 0;
     int doLabelGraphics = 0;
     char* label = 0;
@@ -244,7 +243,6 @@ static void  emitNodeAttrs(Agraph_t *G, Agnode_t *np, int ix) {
     double x, y;
 
     /* First, process the attributes, saving the graphics attributes */
-    memset(&attrs,0, sizeof(attrs));
     for (s = agnxtattr (G, AGNODE, NULL); s; s = agnxtattr (G, AGNODE, s)) {
 	if (streq(s->name, "style")) { /* hasFill outlineStyle invis */
 	    if (*(v = agxget (np, s))) {
@@ -433,14 +431,13 @@ static void emitNode(Agraph_t *G, Agnode_t *n) {
 static void emitEdgeAttrs(Agraph_t *G, Agedge_t *ep, int ix) {
     Agsym_t*  s;
     char* v;
-    edge_attrs attrs;
+    edge_attrs attrs = {0};
     int doGraphics = 0;
     int doLabelGraphics = 0;
     char* label = 0;
     int style;
 
     /* First, process the attributes, saving the graphics attributes */
-    memset(&attrs,0, sizeof(attrs));
     for (s = agnxtattr (G, AGEDGE, NULL); s; s = agnxtattr (G, AGEDGE, s)) {
 	if (streq(s->name, "style")) { /* hasFill outlineStyle invis */
 	    if (*(v = agxget (ep, s))) {

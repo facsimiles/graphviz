@@ -40,14 +40,13 @@ static ssize_t outfn(void *sp, const char *buf, size_t nbyte, void *dp)
 
 int run_gvpr(Agraph_t * srcGraph, size_t argc, char *argv[]) {
     int rv = 1;
-    gvpropts opts;
+    gvpropts opts = {0};
     Agraph_t *gs[2];
     static int count;
     agxbuf buf = {0};
 
     gs[0] = srcGraph;
     gs[1] = 0;
-    memset (&opts, 0, sizeof(opts));
     opts.ingraphs = gs;
     opts.out = outfn;
     opts.err = outfn;
