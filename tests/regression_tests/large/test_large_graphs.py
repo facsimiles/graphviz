@@ -3,12 +3,11 @@ Tests of large and/or expensive graphs.
 """
 
 import os
-import subprocess
 import sys
 from pathlib import Path
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../tests"))
-from gvtest import dot  # pylint: disable=wrong-import-position
+from gvtest import dot, run_raw  # pylint: disable=wrong-import-position
 
 
 def test_long_chain():
@@ -32,9 +31,7 @@ def test_long_chain():
 
       graph.render("long_chain")
     """
-    subprocess.check_call(
-        ["dot", "-Tsvg", "-o", os.devnull, Path(__file__).parent / "long_chain"]
-    )
+    run_raw(["dot", "-Tsvg", "-o", os.devnull, Path(__file__).parent / "long_chain"])
 
 
 def test_wide_clusters():

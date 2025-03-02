@@ -6,7 +6,6 @@ import itertools
 import json
 import os
 import platform
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -14,7 +13,7 @@ from pathlib import Path
 import pytest
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import ROOT, compile_c, dot  # pylint: disable=wrong-import-position
+from gvtest import ROOT, compile_c, dot, run  # pylint: disable=wrong-import-position
 
 
 def test_json_node_order():
@@ -149,7 +148,7 @@ def test_xml_escape():
                 args += ["--utf8"]
             args += [s]
 
-            return subprocess.check_output(args, universal_newlines=True)
+            return run(args)
 
         for dash, nbsp, raw, utf8 in itertools.product((False, True), repeat=4):
             # something basic with nothing escapable

@@ -16,6 +16,60 @@ ROOT = Path(__file__).resolve().parent.parent
 """absolute path to the root of the repository"""
 
 
+def run_raw(args: List[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
+    """
+    execute an external command
+
+    This function wraps up the common pattern of running a program then (1) if it fails,
+    let its output propagate to stdout/stderr and throw a Python exception, or (2) if it
+    succeeds, return its output.
+
+    Args:
+        args: Command and options to execute.
+        kwargs: Optional extra arguments to `subprocess.run`.
+
+    Return:
+        The command’s stdout output.
+    """
+
+    is_stdout_decoded = kwargs.get("universal_newlines") or kwargs.get("text")
+
+    if kwargs.get("stdout", subprocess.PIPE) == subprocess.PIPE:
+        is_stdout_captured = True
+        kwargs["stdout"] = subprocess.PIPE
+    else:
+        is_stdout_captured = False
+
+    proc = subprocess.run(args, **kwargs)
+
+    if proc.returncode != 0:
+        if is_stdout_captured:
+            if is_stdout_decoded:
+                sys.stdout.write(proc.stdout)
+            else:
+                sys.stdout.buffer.write(proc.stdout)
+    proc.check_returncode()
+
+    return proc.stdout
+
+
+def run(args: List[Union[Path, str]], **kwargs) -> Optional[str]:
+    """
+    execute an external command that takes/returns textual input/output
+
+    This function is the same as `run_raw` but encodes/decodes between bytes in the
+    external world and UTF-8 strings within Python.
+
+    Args:
+        args: Command and options to execute.
+        kwargs: Optional extra arguments to `subprocess.run`.
+
+    Return:
+        The command’s stdout output.
+    """
+    return run_raw(args, text=True, **kwargs)
+
+
 def compile_c(
     src: Path,
     cflags: List[str] = None,
@@ -39,12 +93,8 @@ def compile_c(
         # assume pkg-config can pick up Graphviz’ .pc files
         if len(link) > 0:
             libraries = [f"lib{l}" for l in link]
-            cflags += subprocess.check_output(
-                [pkgconf, "--cflags", "--"] + libraries, universal_newlines=True
-            ).split()
-            ldflags += subprocess.check_output(
-                [pkgconf, "--libs", "--"] + libraries, universal_newlines=True
-            ).split()
+            cflags += run([pkgconf, "--cflags", "--"] + libraries).split()
+            ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
     elif platform.system() == "Windows" and not is_mingw():
         if len(link) > 0:
             if not is_static_build():
@@ -74,7 +124,7 @@ def compile_c(
 
     # compile the program
     try:
-        subprocess.check_call(args)
+        run_raw(args)
     except subprocess.CalledProcessError:
         try:
             os.remove(dst)
@@ -135,7 +185,7 @@ def dot(
     else:
         kwargs["input"] = source
 
-    return subprocess.check_output(args, **kwargs)
+    return run_raw(args, **kwargs)
 
 
 def freedesktop_os_release() -> Dict[str, str]:
@@ -162,9 +212,7 @@ def gvpr(program: Path) -> str:
 
     assert which("gvpr") is not None, "attempt to run GVPR without it available"
 
-    return subprocess.check_output(
-        ["gvpr", "-f", program], stdin=subprocess.DEVNULL, universal_newlines=True
-    )
+    return run(["gvpr", "-f", program], stdin=subprocess.DEVNULL)
 
 
 def build_system() -> str:
@@ -187,11 +235,11 @@ def is_asan_instrumented(binary: Path) -> bool:
     # Get the symbol table of the binary. We deliberately avoid
     # `universal_newlines=True` to tolerate non-ASCII bytes in the symbol table.
     if objdump := shutil.which("objdump"):
-        symbols = subprocess.check_output([objdump, "--syms", binary])
+        symbols = run_raw([objdump, "--syms", binary])
     elif llvm_objdump := shutil.which("llvm-objdump"):
-        symbols = subprocess.check_output([llvm_objdump, "--syms", binary])
+        symbols = run_raw([llvm_objdump, "--syms", binary])
     elif dumpbin := shutil.which("dumpbin"):
-        dependencies = subprocess.check_output([dumpbin, "/DEPENDENTS", binary])
+        dependencies = run_raw([dumpbin, "/DEPENDENTS", binary])
         # Look for the ASan DLL dependency
         return (
             re.search(rb"\bclang_rt\.asan_dynamic-.*\.dll\b", dependencies) is not None

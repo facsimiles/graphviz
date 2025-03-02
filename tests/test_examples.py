@@ -11,7 +11,9 @@ import pytest
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
     is_static_build,
+    run,
     run_c,
+    run_raw,
     which,
 )
 
@@ -96,7 +98,7 @@ def test_gvpr_example(src):
     wd = Path(__file__).parent.parent.resolve()
 
     # run GVPR with the given script
-    subprocess.check_call(["gvpr", "-f", path], stdin=subprocess.DEVNULL, cwd=wd)
+    run_raw(["gvpr", "-f", path], stdin=subprocess.DEVNULL, cwd=wd)
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="GVPR not available")
@@ -118,9 +120,7 @@ def test_gvpr_clustg():
     input = "digraph { N1; N2; N1 -> N2; N3; }"
 
     # run GVPR on this input
-    output = subprocess.check_output(
-        ["gvpr", "-f", path], input=input, cwd=wd, universal_newlines=True
-    )
+    output = run(["gvpr", "-f", path], input=input, cwd=wd)
 
     assert (
         output.strip() == 'strict digraph "clust%1" {\n'

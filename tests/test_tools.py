@@ -21,6 +21,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     has_sandbox,
     remove_asan_summary,
     remove_xtype_warnings,
+    run_raw,
     which,
 )
 
@@ -162,7 +163,7 @@ def test_edgepaint_options(arg: str):
 def test_sandbox_noop():
     """check trivial functionality works when sandboxed"""
     sandbox = which("dot_sandbox")
-    subprocess.check_call([sandbox, "-V"])
+    run_raw([sandbox, "-V"])
 
 
 @pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
