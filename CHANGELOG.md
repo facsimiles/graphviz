@@ -122,6 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Debug builds, now unfortunately seems to always occur when using the GD
   plugin and JPEG images as node shapes. See
   https://graphviz.org/docs/outputs/#image-formats for details. #2619
+- `twopi` no longer crashes when processing graphs with `splines="ortho"`. #2643
 
 ## [12.2.1] – 2024-12-07
 

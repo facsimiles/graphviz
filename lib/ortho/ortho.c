@@ -1152,6 +1152,9 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 	}
 	    
 	seg = rte.segs;
+	if (seg == NULL) {
+		continue;
+	}
 	if (seg->isVert) {
 		p.x = vtrack(seg, mp);
 		p.y = p1.y;
@@ -1530,7 +1533,7 @@ static DEBUG_FN void emitGraph(FILE *fp, maze *mp, size_t n_edges,
     fprintf (fp, "%d %d translate\n", TRANS, TRANS);
 
     fputs ("0 0 1 setrgbcolor\n", fp);
-    for (int i = 0; i < mp->ngcells; i++) {
+    for (size_t i = 0; i < mp->ngcells; i++) {
       const boxf bb = mp->gcells[i].bb;
       fprintf (fp, "%f %f %f %f node\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
     }
