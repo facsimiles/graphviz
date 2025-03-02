@@ -75,22 +75,12 @@ extern "C" {
     typedef void (*glcompdrawfunc_t) (void *obj);
     typedef void (*glcompclickfunc_t)(glCompObj *obj, float x,
 				       float y, glMouseButtonType t);
-    typedef void (*glcompdoubleclickfunc_t) (glCompObj * obj, float x,
-					     float y,
-					     glMouseButtonType t);
     typedef void (*glcompmouseoverfunc_t) (glCompObj * obj, float x,
 					   float y);
-    typedef void (*glcompmouseinfunc_t) (glCompObj * obj, float x,
-					 float y);
-    typedef void (*glcompmouseoutfunc_t) (glCompObj * obj, float x,
-					  float y);
     typedef void (*glcompmousedownfunc_t) (glCompObj * obj, float x,
 					   float y, glMouseButtonType t);
     typedef void (*glcompmouseupfunc_t) (glCompObj * obj, float x,
 					 float y, glMouseButtonType t);
-    typedef void (*glcompmousedragfunct_t) (glCompObj * obj, float dx,
-					    float dy,
-					    glMouseButtonType t);
 
     typedef struct {
 	int topAnchor;		/*anchor booleans */
@@ -159,14 +149,9 @@ DEFINE_LIST(glCompPoly, glCompPoint)
     typedef struct {
 	glcompdrawfunc_t draw;
 	glcompclickfunc_t click;
-	glcompdoubleclickfunc_t doubleclick;
 	glcompmouseoverfunc_t mouseover;
-	glcompmouseinfunc_t mousein;
-	glcompmouseoutfunc_t mouseout;
 	glcompmousedownfunc_t mousedown;
 	glcompmouseupfunc_t mouseup;
-	glcompmousedragfunct_t mousedrag;
-
     } glCompCallBacks;
 
 typedef struct glCompSet_ glCompSet;
@@ -212,7 +197,6 @@ struct glCompObj_ {
 	glCompObj base;
 	float shadowwidth;
 	char *text;
-	glCompImage *image;
     } glCompPanel;
 
 /*label*/
@@ -246,9 +230,7 @@ struct glCompObj_ {
 	glCompObj *clickedObj;
 	glCompCallBacks callbacks;
 	glCompCallBacks functions;
-	int down;
-
-
+	bool down;
     } glCompMouse;
 
 

@@ -96,9 +96,10 @@ typedef struct
 
     } colorschema;
 
+enum {SCHEMACOUNT = 4}; // number of colors
+
     typedef struct {
-	size_t schemacount; // number of colors
-	colorschema *s;
+	colorschema s[SCHEMACOUNT];
     } colorschemaset;
 
     typedef enum {
@@ -129,7 +130,7 @@ typedef struct
 	smyrna_view_mode mode;
     }mouse_action_t;
 
-    typedef struct _viewport_camera {
+    typedef struct {
 	float x;
 	float y;
 
@@ -139,7 +140,7 @@ typedef struct
 	float r;
     } viewport_camera;
 
-    typedef struct _graph_data {
+    typedef struct {
 	Agrec_t h;
 	char *GraphFileName;
     } graph_data;
@@ -220,7 +221,9 @@ typedef struct
 	    int active;	//1 draw hierarchy 0 draw regular topview
 	    reposition_t repos;
 	    levelparms_t level;
-	    hierparms_t hier;
+	    /// if dist2_limit true, don’t contract nodes of distance larger than 2
+	    /// if false then also distance 3 is possible
+	    bool dist2_limit;
 	    Hierarchy *h;
 	    int animate;
 	    glCompColor srcColor;	//fine node colors of topfisheye
@@ -230,7 +233,6 @@ typedef struct
 
 	graph_data Graphdata;
 	float maxedgelen;
-	float minedgelen;
 	float fitin_zoom;
 	xdot* xDot;
 	double global_z;
