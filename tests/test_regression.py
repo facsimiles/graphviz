@@ -2192,7 +2192,7 @@ def test_2087():
 
 
 @pytest.mark.parametrize("html_like_first", (False, True))
-def test_2089(html_like_first: bool):  # FIXME
+def test_2089(html_like_first: bool):
     """
     HTML-like and non-HTML-like strings should peacefully coexist
     https://gitlab.com/graphviz/graphviz/-/issues/2089
