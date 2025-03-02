@@ -1875,7 +1875,7 @@ def test_1913():
         "}}"
     )
 
-    def run(input):
+    def execute(input):
         """
         run Dot with the given input and return its exit status and stderr
         """
@@ -1891,19 +1891,19 @@ def test_1913():
     # Graphviz should accept all legal values for this attribute
     for align in ("left", "right", "center"):
         input = align
-        ret, stderr = run(graph.format(input))
+        ret, stderr = execute(graph.format(input))
         assert ret == 0
         assert stderr.strip() == ""
 
         # these attributes should also be valid when title cased
         input = f"{align[0].upper()}{align[1:]}"
-        ret, stderr = run(graph.format(input))
+        ret, stderr = execute(graph.format(input))
         assert ret == 0
         assert stderr.strip() == ""
 
         # similarly, they should be valid when upper cased
         input = align.upper()
-        ret, stderr = run(graph.format(input))
+        ret, stderr = execute(graph.format(input))
         assert ret == 0
         assert stderr.strip() == ""
 
@@ -1911,17 +1911,17 @@ def test_1913():
     # alignment should be rejected
     for align in ("lamp", "deft", "round", "might", "circle", "venter"):
         input = align
-        _, stderr = run(graph.format(input))
+        _, stderr = execute(graph.format(input))
         assert f"Warning: Illegal value {input} for ALIGN - ignored" in stderr
 
         # these attributes should also fail when title cased
         input = f"{align[0].upper()}{align[1:]}"
-        _, stderr = run(graph.format(input))
+        _, stderr = execute(graph.format(input))
         assert f"Warning: Illegal value {input} for ALIGN - ignored" in stderr
 
         # similarly, they should fail when upper cased
         input = align.upper()
-        _, stderr = run(graph.format(input))
+        _, stderr = execute(graph.format(input))
         assert f"Warning: Illegal value {input} for ALIGN - ignored" in stderr
 
 
