@@ -95,7 +95,7 @@ def test_tools(tool):
         stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        universal_newlines=True,
+        text=True,
     ) as p:
         output, _ = p.communicate()
         ret = p.returncode
@@ -189,7 +189,7 @@ def test_sandbox_write(tmp_path: Path):
     proc = subprocess.run(
         [sandbox, "-o", "probe.dot"],
         input="graph { a -- b; }",
-        universal_newlines=True,
+        text=True,
         cwd=tmp_path,
         check=False,
     )
@@ -208,7 +208,7 @@ def test_sandbox_write_2(tmp_path: Path):
     proc = subprocess.run(
         [sandbox, "-Tsvg", "-O"],
         input="graph { a -- b; }",
-        universal_newlines=True,
+        text=True,
         cwd=tmp_path,
         check=False,
     )

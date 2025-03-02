@@ -174,7 +174,7 @@ def dot(
     kwargs = {}
     if output_is_text:
         kwargs["encoding"] = "utf-8"
-        kwargs["universal_newlines"] = True
+        kwargs["text"] = True
 
     args = ["dot", f"-T{T}"]
 
@@ -232,8 +232,8 @@ def is_asan_instrumented(binary: Path) -> bool:
     """
     assert binary.exists()
 
-    # Get the symbol table of the binary. We deliberately avoid
-    # `universal_newlines=True` to tolerate non-ASCII bytes in the symbol table.
+    # Get the symbol table of the binary. We deliberately avoid `text=True` to tolerate
+    # non-ASCII bytes in the symbol table.
     if objdump := shutil.which("objdump"):
         symbols = run_raw([objdump, "--syms", binary])
     elif llvm_objdump := shutil.which("llvm-objdump"):
@@ -390,8 +390,8 @@ def run_c(
         # run it
         p = subprocess.run(argv, input=input_bytes, capture_output=True)
 
-        # decode output manually rather than using `universal_newlines=True`
-        # above to avoid exceptions from non-UTF-8 bytes in the output
+        # decode output manually rather than using `text=True` above to avoid exceptions
+        # from non-UTF-8 bytes in the output
         stdout = p.stdout.decode("utf-8", "replace")
         stderr = p.stderr.decode("utf-8", "replace")
 

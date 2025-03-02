@@ -18,7 +18,7 @@ def run(args: List[Union[str, Path]], cwd: Path, out: TextIO):  # pylint: disabl
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         cwd=cwd,
-        universal_newlines=True,
+        text=True,
     )
     sys.stderr.write(p.stdout)
     out.write(p.stdout)

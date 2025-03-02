@@ -354,7 +354,7 @@ def test_191():
         ["dot", "-Tdot"],
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         _, stderr = p.communicate(source)
 
@@ -398,7 +398,7 @@ def test_241(test_case: str):
     proc = subprocess.run(
         ["dot", "-Tsvg", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
         check=True,
     )
 
@@ -756,7 +756,7 @@ def test_1328():
     proc = subprocess.run(
         ["dot", "-Tsvg", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     )
 
     assert proc.returncode in (0, 1), "multiple rank constraints caused a crash"
@@ -831,7 +831,7 @@ def test_1411():
     with subprocess.Popen(
         ["dot", "-Tsvg", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         _, output = p.communicate()
 
@@ -935,7 +935,7 @@ def test_1444():
         ["dot", "-Tsvg", input1],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         stdout1, stderr = p.communicate()
 
@@ -953,7 +953,7 @@ def test_1444():
         ["dot", "-Tsvg", input2],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         stdout2, stderr = p.communicate()
 
@@ -976,7 +976,7 @@ def test_1449():
         ["dot", "-Tsvg", "-o", os.devnull],
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         # pass it some input that uses the SVG color scheme
         _, stderr = p.communicate('graph g { colorscheme="svg"; }')
@@ -1193,7 +1193,7 @@ def test_1594():
         stdin=subprocess.PIPE,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         _, stderr = p.communicate()
 
@@ -1322,7 +1322,7 @@ def test_1702():
     proc = subprocess.run(
         [gvpr_bin, "-c", "-o", os.devnull, "-f", depath, input],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
         check=True,
     )
 
@@ -1857,7 +1857,7 @@ def test_1913():
             ["dot", "-Tsvg", "-o", os.devnull],
             stdin=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            universal_newlines=True,
+            text=True,
         ) as p:
             _, stderr = p.communicate(input)
             return p.returncode, remove_asan_summary(remove_xtype_warnings(stderr))
@@ -2035,7 +2035,7 @@ def test_1971():
     # run edgepaint with an invalid option, `-rabbit`, that happens to have the
     # same first character as valid options
     args = ["edgepaint", "-rabbit"]
-    with subprocess.Popen(args, stdin=subprocess.PIPE, universal_newlines=True) as p:
+    with subprocess.Popen(args, stdin=subprocess.PIPE, text=True) as p:
         p.communicate(input)
 
         assert p.returncode != 0, "edgepaint incorrectly accepted '-rabbit'"
@@ -2088,7 +2088,7 @@ def test_2078():
         ["dot", "-Tcanon", "-o", os.devnull],
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         _, stderr = p.communicate(input)
 
@@ -2107,7 +2107,7 @@ def test_2078():
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         stdout, stderr = p.communicate(input)
 
@@ -2203,7 +2203,7 @@ def test_2092():
     an empty node ID should not cause a dot2gxl NULL pointer dereference
     https://gitlab.com/graphviz/graphviz/-/issues/2092
     """
-    p = subprocess.run(["dot2gxl", "-d"], input='<node id="">', universal_newlines=True)
+    p = subprocess.run(["dot2gxl", "-d"], input='<node id="">', text=True)
 
     assert p.returncode != 0, "dot2gxl accepted invalid input"
 
@@ -2216,9 +2216,7 @@ def test_2093():
     dot2gxl should handle elements with no ID
     https://gitlab.com/graphviz/graphviz/-/issues/2093
     """
-    with subprocess.Popen(
-        ["dot2gxl", "-d"], stdin=subprocess.PIPE, universal_newlines=True
-    ) as p:
+    with subprocess.Popen(["dot2gxl", "-d"], stdin=subprocess.PIPE, text=True) as p:
         p.communicate('<graph x="">')
 
         assert p.returncode == 1, "dot2gxl did not reject missing ID"
@@ -2315,10 +2313,9 @@ def test_2138(examine: str):
     # run it with NUL input
     out = run_raw(["gvpr", "-f", script], stdin=subprocess.DEVNULL)
 
-    # Decode into text. We do this instead of `universal_newlines=True` above
-    # because the trailing garbage can contain invalid UTF-8 data causing cryptic
-    # failures. We want to correctly surface this as trailing garbage, not an
-    # obscure UTF-8 decoding error.
+    # Decode into text. We do this instead of `text=True` above because the trailing
+    # garbage can contain invalid UTF-8 data causing cryptic failures. We want to
+    # correctly surface this as trailing garbage, not an obscure UTF-8 decoding error.
     result = out.decode("utf-8", "replace")
 
     if examine == "indices":
@@ -2502,7 +2499,7 @@ def test_2179():
         ["dot", "-Tsvg", "-o", os.devnull],
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         _, stderr = p.communicate(input)
 
@@ -2528,7 +2525,7 @@ def test_2179_1():
         ["dot", "-Tsvg", "-o", os.devnull],
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         _, stderr = p.communicate(input)
 
@@ -2924,7 +2921,7 @@ def test_2396(arg: str):
         capture_output=True,
         input=source,
         cwd=Path(__file__).parent,
-        universal_newlines=True,
+        text=True,
         check=True,
     )
 
@@ -2958,7 +2955,7 @@ def test_2481():
         ["dot"],
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     ) as p:
         _, stderr = p.communicate(input)
         assert p.returncode == 0, "mixed-case keyword was rejected"
@@ -3118,7 +3115,7 @@ def test_gvpr_usage():
             ["gvpr", "-f", "nofile"],
             stderr=subprocess.PIPE,
             cwd=tmp,
-            universal_newlines=True,
+            text=True,
         ) as p:
             _, stderr = p.communicate()
 
@@ -3144,7 +3141,7 @@ def test_2225():
     p = subprocess.run(
         ["sfdp", "-Gsplines=curved", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     )
 
     # if sfdp was built without libgts, it will not handle anything non-trivial
@@ -3254,7 +3251,7 @@ def test_2272_2():
     graph = 'graph { a[label="abc'
 
     # process it with Graphviz, which should not crash
-    p = subprocess.run(["dot", "-o", os.devnull], input=graph, universal_newlines=True)
+    p = subprocess.run(["dot", "-o", os.devnull], input=graph, text=True)
     assert p.returncode != 0, "dot accepted invalid input"
     assert p.returncode == 1, "dot crashed"
 
@@ -3287,11 +3284,7 @@ def test_2283():
     assert input.exists(), "unexpectedly missing test case"
 
     # translate this to SVG
-    p = subprocess.run(
-        ["dot", "-Tsvg", input],
-        capture_output=True,
-        universal_newlines=True,
-    )
+    p = subprocess.run(["dot", "-Tsvg", input], capture_output=True, text=True)
 
     # if sfdp was built without libgts, it will not handle anything non-trivial
     no_gts_error = "remove_overlap: Graphviz not built with triangulation library"
@@ -3740,7 +3733,7 @@ def test_2413(source: str):
         ["dot", "-Tsvg", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
         check=True,
-        universal_newlines=True,
+        text=True,
     )
 
     # work around macOS warnings
@@ -3879,7 +3872,7 @@ def test_2454():
     # run it through gvpr
     program = Path(__file__).parent / "2454.gvpr"
     with subprocess.Popen(
-        ["gvpr", "-cf", program], stdin=subprocess.PIPE, universal_newlines=True
+        ["gvpr", "-cf", program], stdin=subprocess.PIPE, text=True
     ) as p:
         p.communicate(output)
         assert p.returncode == 0, "gvpr failed"
@@ -4189,7 +4182,7 @@ def test_2516():
     proc = subprocess.run(
         ["dot", "-Tsvg", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     )
 
     assert proc.returncode != 0, "malformed HTML label was accepted"
@@ -4271,7 +4264,7 @@ def test_2556():
     p = subprocess.run(
         [sfdp, "-Tpng", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     )
 
     # if sfdp was built without libgts, it will not handle anything non-trivial
@@ -4322,7 +4315,7 @@ def test_2563():
         p = subprocess.run(
             [fdp, f"-Goverlap={overlap}", input],
             capture_output=True,
-            universal_newlines=True,
+            text=True,
         )
 
         # if fdp was built without libgts, it will not handle anything non-trivial
@@ -4816,9 +4809,7 @@ def test_2599():
 
     # pass it through mingle
     mingle = which("mingle")
-    proc = subprocess.run(
-        [mingle, "-v", "999"], universal_newlines=True, input=processed
-    )
+    proc = subprocess.run([mingle, "-v", "999"], text=True, input=processed)
 
     # Address Sanitizer catches segfaults and turns them into non-zero exits, so ignore
     # testing in this scenario
@@ -4842,7 +4833,7 @@ def test_2600():
         input="digraph { A -> B -> C -> D -> E; E -> A }",
         stdout=subprocess.PIPE,
         check=False,
-        universal_newlines=True,
+        text=True,
     )
 
     assert ret.returncode == 1, "acyclic did not detect a cyclic graph"
@@ -4865,7 +4856,7 @@ def test_2604():
         [dot_builtins, "-o", os.devnull, "-Tpng:"],
         stderr=subprocess.PIPE,
         input=input,
-        universal_newlines=True,
+        text=True,
         check=False,
     )
 
@@ -5606,7 +5597,7 @@ def test_duplicate_hard_coded_metrics_warnings():
     p = subprocess.run(
         [gvpack, "-u", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     )
 
     assert (
@@ -5799,7 +5790,7 @@ def test_dot_randomV():
     proc = subprocess.run(
         ["dot", "-randomV"],
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
         check=False,
     )
 
@@ -5813,9 +5804,7 @@ def test_dot_V():
     test the output from `dot -V`
     """
 
-    proc = subprocess.run(
-        ["dot", "-V"], stderr=subprocess.PIPE, universal_newlines=True, check=True
-    )
+    proc = subprocess.run(["dot", "-V"], stderr=subprocess.PIPE, text=True, check=True)
 
     c_src = (Path(__file__).parent / "get-package-version.c").resolve()
     assert c_src.exists(), "missing test case"
@@ -5831,9 +5820,7 @@ def test_dot_Vquestionmark():
     test the output from two short options combined
     """
 
-    proc = subprocess.run(
-        ["dot", "-V?"], stderr=subprocess.PIPE, universal_newlines=True, check=True
-    )
+    proc = subprocess.run(["dot", "-V?"], stderr=subprocess.PIPE, text=True, check=True)
 
     c_src = (Path(__file__).parent / "get-package-version.c").resolve()
     assert c_src.exists(), "missing test case"
@@ -5850,7 +5837,7 @@ def test_dot_Vrandom():
     """
 
     proc = subprocess.run(
-        ["dot", "-Vrandom"], stderr=subprocess.PIPE, universal_newlines=True, check=True
+        ["dot", "-Vrandom"], stderr=subprocess.PIPE, text=True, check=True
     )
 
     c_src = (Path(__file__).parent / "get-package-version.c").resolve()
@@ -5906,7 +5893,7 @@ def test_control_characters_in_error():
         ["dot", "-Tsvg", "-o", os.devnull],
         input=src,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     )
 
     assert "\033" not in ret.stderr, "control character appears in error message"
@@ -5918,7 +5905,7 @@ def test_control_characters_in_error():
         ["dot", "-Tsvg", "-o", os.devnull],
         input=src,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     )
 
     assert "\010" not in ret.stderr, "control character appears in error message"
@@ -6082,7 +6069,7 @@ def test_edgepaint_error_message():
         [edgepaint, "-o", "/a/nonexistent/path"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
-        universal_newlines=True,
+        text=True,
     )
 
     # edgepaint should name itself in the error message, not “(null)”
