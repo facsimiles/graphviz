@@ -149,15 +149,7 @@ def test_xml_escape():
                 args += ["--utf8"]
             args += [s]
 
-            # We would like to pass `encoding="utf-8"`, or even better
-            # `universal_newlines=True`. However, neither of these seem to work as
-            # described in Python == 3.6. Observable using Ubuntu 18.04 in CI.
-            # Instead, we encode and decode manually.
-            args = [str(a).encode("utf-8") for a in args]
-            out = subprocess.check_output(args)
-            decoded = out.decode("utf-8")
-
-            return decoded
+            return subprocess.check_output(args, universal_newlines=True)
 
         for dash, nbsp, raw, utf8 in itertools.product((False, True), repeat=4):
             # something basic with nothing escapable
