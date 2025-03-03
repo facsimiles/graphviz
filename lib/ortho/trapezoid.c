@@ -28,6 +28,7 @@
 #include <ortho/trap.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
+#include <util/unreachable.h>
 
 /* Node types */
 
@@ -301,15 +302,12 @@ locate_endpoint (pointf *v, pointf *vo, int r, segment_t* seg, qnodes_t* qs)
     case T_Y:
       if (_greater_than(v, &rptr->yval)) /* above */
 	return locate_endpoint(v, vo, rptr->right, seg, qs);
-      else if (_equal_to(v, &rptr->yval)) /* the point is already */
-	{			          /* inserted. */
+      if (_equal_to(v, &rptr->yval)) { // the point is already inserted
 	  if (_greater_than(vo, &rptr->yval)) /* above */
 	    return locate_endpoint(v, vo, rptr->right, seg, qs);
-	  else
-	    return locate_endpoint(v, vo, rptr->left, seg, qs); /* below */
+	  return locate_endpoint(v, vo, rptr->left, seg, qs); // below
 	}
-      else
-	return locate_endpoint(v, vo, rptr->left, seg, qs); /* below */
+      return locate_endpoint(v, vo, rptr->left, seg, qs); // below
 
     case T_X:
       if (_equal_to(v, &seg[rptr->segnum].v0) ||
@@ -319,26 +317,21 @@ locate_endpoint (pointf *v, pointf *vo, int r, segment_t* seg, qnodes_t* qs)
 	    {
 	      if (vo->x < v->x)
 		return locate_endpoint(v, vo, rptr->left, seg, qs); /* left */
-	      else
-		return locate_endpoint(v, vo, rptr->right, seg, qs); /* right */
+	      return locate_endpoint(v, vo, rptr->right, seg, qs); // right
 	    }
 
-	  else if (is_left_of(rptr->segnum, seg, vo))
+	  if (is_left_of(rptr->segnum, seg, vo))
 	    return locate_endpoint(v, vo, rptr->left, seg, qs); /* left */
-	  else
-	    return locate_endpoint(v, vo, rptr->right, seg, qs); /* right */
+	  return locate_endpoint(v, vo, rptr->right, seg, qs); // right
 	}
-      else if (is_left_of(rptr->segnum, seg, v))
+      if (is_left_of(rptr->segnum, seg, v))
 	return locate_endpoint(v, vo, rptr->left, seg, qs); /* left */
-      else
-	return locate_endpoint(v, vo, rptr->right, seg, qs); /* right */
+      return locate_endpoint(v, vo, rptr->right, seg, qs); // right
 
     default:
-      fprintf(stderr, "unexpected case in locate_endpoint\n");
-      assert (0);
       break;
     }
-    return 1; /* stop warning */
+    UNREACHABLE();
 }
 
 /* Thread in the segment into the existing trapezoidation. The
@@ -509,7 +502,6 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
       tu = locate_endpoint(&s.v0, &s.v1, s.root0, seg, qs);
       tl = newtrap(tr);		/* tl is the new lower trapezoid */
-      tr->data[tl].state = ST_VALID;
       tr->data[tl] = tr->data[tu];
       tr->data[tu].lo.y = s.v0.y;
       tr->data[tl].hi.y = s.v0.y;
@@ -569,7 +561,6 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       tu = locate_endpoint(&s.v1, &s.v0, s.root1, seg, qs);
 
       tl = newtrap(tr);		/* tl is the new lower trapezoid */
-      tr->data[tl].state = ST_VALID;
       tr->data[tl] = tr->data[tu];
       tr->data[tu].lo.y = tr->data[tl].hi.y = s.v1.y;
       tr->data[tu].lo.x = tr->data[tl].hi.x = s.v1.x;
