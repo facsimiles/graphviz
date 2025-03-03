@@ -80,6 +80,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MinGW on 32-bit x86 (“mingw32”) is no longer supported as a platform.
   Installers and release archives for this platform are no longer provided.
   #2649
+- `gvgen` supports a new option, `-u<seed>`, for specifying the initial state of
+  the random number generator (RNG). The way in which the RNG is seeded has
+  slightly changed.
 
 ### Fixed
 

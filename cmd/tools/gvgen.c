@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <ctype.h>
 #include <getopt.h>
 #include "graph_generator.h"
@@ -47,6 +48,7 @@ typedef struct {
     FILE *outfile;
     char* pfx;
     char* name;
+    unsigned seed; ///< initial state for random number generator
 } opts_t;
 
 static char *cmd;
@@ -76,6 +78,7 @@ static char *Usage = "Usage: %s [-dv?] [options]\n\
  -t<x>,<n>     : n-ary tree \n\
  -T<x,y>       : torus \n\
  -T<x,y,t1,t2> : twisted torus \n\
+ -u<seed>      : state for random number generation\n\
  -w<x>         : wheel\n\
  -d            : directed graph\n\
  -v            : verbose mode\n\
@@ -242,7 +245,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":i:M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:R:s:S:X:t:T:vw:";
+static char *optList = ":i:M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:R:s:S:X:t:T:u:vw:";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -358,6 +361,10 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    if (readOne(optarg, &opts->cnt))
 		errexit(c);
 	    break;
+	case 'u':
+	    if (readOne(optarg, &opts->seed))
+		errexit(c);
+	    break;
 	case 'v':
 	    opts->Verbose = 1;
 	    break;
@@ -424,6 +431,7 @@ int main(int argc, char *argv[])
     opts.pfx = "";
     opts.name = "";
     opts.cnt = 1;
+    opts.seed = (unsigned)time(0);
     graphType = init(argc, argv, &opts);
     if (opts.directed) {
 	fprintf(opts.outfile, "digraph %s{\n", opts.name);
@@ -433,6 +441,9 @@ int main(int argc, char *argv[])
 	fprintf(opts.outfile, "graph %s{\n", opts.name);
 	ef = undirfn;
     }
+
+    // seed the random number generator
+    srand(opts.seed);
 
     switch (graphType) {
     case grid:
