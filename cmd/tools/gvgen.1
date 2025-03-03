@@ -70,6 +70,9 @@ gvgen \- generate graphs
 .BI \-T x,y,u,v
 ]
 [
+.BI \-u seed
+]
+[
 .BI \-w n
 ]
 [
@@ -182,6 +185,10 @@ This will have \fIx*y\fP vertices and
 \fI2*x*y\fP edges.
 If \fIu\fP and \fIv\fP are given, they specify twists of that amount in
 the horizontal and vertical directions, respectively.
+.TP
+.BI \-u " seed"
+Specify the initial state for the random number generator. If this option is not
+given, the current time is used to derive a seed.
 .TP
 .BI \-w " n"
 Generate a path on \fIn\fP vertices.
