@@ -406,6 +406,9 @@ returns the outdegree of node \fIn\fP in (sub)graph \fIsg\fP.
 .TP
 \fBdegreeOf\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBint\fP
 returns the degree of node \fIn\fP in (sub)graph \fIsg\fP.
+.TP
+\fBrename\fP(\fIn\fP : \fBnode_t\fP, \fInewname\fP : \fBstring\fP) : \fBint\fP
+changes the name of \fIn\fP to \fInewname\fP and returns 0 on success or -1 if there is an existing node with that name. 
 .SS "Edges"
 .TP
 \fBedge\fP(\fIt\fP : \fBnode_t\fP, \fIh\fP : \fBnode_t\fP, \fIs\fP : \fBstring\fP) : \fBedge_t\fP
