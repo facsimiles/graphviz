@@ -153,14 +153,14 @@ static void genSegments(cell *cells, size_t ncells, boxf bb, segment_t *seg,
 }
 
 /* Generate a random permutation of the segments 1..n */
-static void 
-generateRandomOrdering(int n, int* permute)
-{
-    int i, j;
-    for (i = 0; i <= n; i++) permute[i] = i;
+static void generateRandomOrdering(size_t n, int *permute) {
+    for (size_t i = 0; i <= n; i++) {
+	assert(i <= INT_MAX);
+	permute[i] = (int)i;
+    }
 
-    for (i = 1; i <= n; i++) {
-	j = i + drand48() * (n + 1 - i);
+    for (size_t i = 1; i <= n; i++) {
+	const size_t j = (size_t)((double)i + drand48() * (double)(n + 1 - i));
 	if (j != i) {
 	    SWAP(&permute[i], &permute[j]);
 	}
@@ -701,8 +701,8 @@ boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
 	}
     }
     srand48(173);
+    generateRandomOrdering(nsegs, permute);
     assert(nsegs <= INT_MAX);
-    generateRandomOrdering((int)nsegs, permute);
     traps_t hor_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
 	fprintf (stderr, "hor traps = %" PRISIZE_T "\n", hor_traps.length);
@@ -712,7 +712,7 @@ boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
     free(hor_traps.data);
 
     genSegments(cells, ncells, bb, segs, 1);
-    generateRandomOrdering((int)nsegs, permute);
+    generateRandomOrdering(nsegs, permute);
     traps_t ver_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
 	fprintf (stderr, "ver traps = %" PRISIZE_T "\n", ver_traps.length);
