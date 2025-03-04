@@ -605,7 +605,7 @@ sources = subprocess.check_output(
         "**/*.cxx",
         "**/*.cc",
     ],
-    universal_newlines=True,
+    text=True,
 )
 
 ret = 0
@@ -618,7 +618,7 @@ for source in sources.split("\x00")[:-1]:
     reformatted = subprocess.check_output(
         ["clang-format", "--style=file", "--", source],
         cwd=root,
-        universal_newlines=True,
+        text=True,
     )
 
     if source in EXCLUDE:

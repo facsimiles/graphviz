@@ -32,7 +32,7 @@ def run(args: list[Union[str, Path]]) -> str:
         the stdout of the process.
     """
     print(f"+ {shlex.join(str(a) for a in args)}")
-    output = subprocess.check_output(args, universal_newlines=True).strip()
+    output = subprocess.check_output(args, text=True).strip()
     if output != "":
         print(output)
     return output
