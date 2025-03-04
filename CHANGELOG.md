@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assumes the value being set is an HTML-like string
 - a new API function `agattr_html` that is the equivalent of `agattr` but for
   HTML-like strings.
+- In gvpr, a new function `rename()` has been added for nodes. See `man gvpr`
+  for more information.
 
 ### Changed
 
