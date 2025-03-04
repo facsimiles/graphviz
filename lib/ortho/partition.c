@@ -139,15 +139,14 @@ store (segment_t* seg, int first, pointf* pts)
     return (last+1);
 }
 
-static void
-genSegments (cell* cells, int ncells, boxf bb, segment_t* seg, int flip)
-{
-    int j = 0, i = 1;
+static void genSegments(cell *cells, size_t ncells, boxf bb, segment_t *seg,
+                        int flip) {
+    int i = 1;
     pointf pts[4];
 
     convert (bb, flip, 1, pts);
     i = store (seg, i, pts);
-    for (j = 0; j < ncells; j++) {
+    for (size_t j = 0; j < ncells; j++) {
 	convert (cells[j].bb, flip, 0, pts);
 	i = store (seg, i, pts);
     }
@@ -692,8 +691,7 @@ boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
 	fprintf(stderr, "cells = %" PRISIZE_T " segs = %" PRISIZE_T
 	        " traps = dynamic\n", ncells, nsegs);
     }
-    assert(ncells <= INT_MAX);
-    genSegments(cells, (int)ncells, bb, segs, 0);
+    genSegments(cells, ncells, bb, segs, 0);
     if (DEBUG) {
 	fprintf(stderr, "%" PRISIZE_T "\n\n", ncells + 1);
 	for (size_t i = 1; i <= nsegs; i++) {
@@ -713,7 +711,7 @@ boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
     monotonate_trapezoids((int)nsegs, segs, &hor_traps, 0, &hor_decomp);
     free(hor_traps.data);
 
-    genSegments(cells, (int)ncells, bb, segs, 1);
+    genSegments(cells, ncells, bb, segs, 1);
     generateRandomOrdering((int)nsegs, permute);
     traps_t ver_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
