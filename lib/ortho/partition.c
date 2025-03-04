@@ -9,7 +9,9 @@
  *************************************************************************/
 
 #include "config.h"
+#include <assert.h>
 #include <common/boxes.h>
+#include <limits.h>
 #include <ortho/partition.h>
 #include <ortho/trap.h>
 #include <math.h>
@@ -681,41 +683,44 @@ dumpSegs (segment_t* sg, int n)
 }
 #endif
 
-boxf *partition(cell *cells, int ncells, size_t *nrects, boxf bb) {
-    int nsegs = 4*(ncells+1);
+boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
+    const size_t nsegs = 4 * (ncells + 1);
     segment_t* segs = gv_calloc(nsegs + 1, sizeof(segment_t));
     int* permute = gv_calloc(nsegs + 1, sizeof(int));
 
     if (DEBUG) {
-	fprintf (stderr, "cells = %d segs = %d traps = dynamic\n", ncells, nsegs);
+	fprintf(stderr, "cells = %" PRISIZE_T " segs = %" PRISIZE_T
+	        " traps = dynamic\n", ncells, nsegs);
     }
-    genSegments (cells, ncells, bb, segs, 0);
+    assert(ncells <= INT_MAX);
+    genSegments(cells, (int)ncells, bb, segs, 0);
     if (DEBUG) {
-	fprintf (stderr, "%d\n\n", ncells+1);
-	for (int i = 1; i <= nsegs; i++) {
+	fprintf(stderr, "%" PRISIZE_T "\n\n", ncells + 1);
+	for (size_t i = 1; i <= nsegs; i++) {
 	    if (i%4 == 1) fprintf(stderr, "4\n");
 	    fprintf (stderr, "%f %f\n", segs[i].v0.x, segs[i].v0.y);
 	    if (i%4 == 0) fprintf(stderr, "\n");
 	}
     }
     srand48(173);
-    generateRandomOrdering (nsegs, permute);
-    traps_t hor_traps = construct_trapezoids(nsegs, segs, permute);
+    assert(nsegs <= INT_MAX);
+    generateRandomOrdering((int)nsegs, permute);
+    traps_t hor_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
 	fprintf (stderr, "hor traps = %" PRISIZE_T "\n", hor_traps.length);
     }
     boxes_t hor_decomp = {0};
-    monotonate_trapezoids(nsegs, segs, &hor_traps, 0, &hor_decomp);
+    monotonate_trapezoids((int)nsegs, segs, &hor_traps, 0, &hor_decomp);
     free(hor_traps.data);
 
-    genSegments (cells, ncells, bb, segs, 1);
-    generateRandomOrdering (nsegs, permute);
-    traps_t ver_traps = construct_trapezoids(nsegs, segs, permute);
+    genSegments(cells, (int)ncells, bb, segs, 1);
+    generateRandomOrdering((int)nsegs, permute);
+    traps_t ver_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
 	fprintf (stderr, "ver traps = %" PRISIZE_T "\n", ver_traps.length);
     }
     boxes_t vert_decomp = {0};
-    monotonate_trapezoids(nsegs, segs, &ver_traps, 1, &vert_decomp);
+    monotonate_trapezoids((int)nsegs, segs, &ver_traps, 1, &vert_decomp);
     free(ver_traps.data);
 
     boxes_t rs = {0};

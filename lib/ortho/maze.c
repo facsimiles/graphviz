@@ -491,8 +491,7 @@ maze *mkMaze(graph_t *g) {
     BB.UR.x += MARGIN;
     BB.UR.y += MARGIN;
     size_t nrect;
-    assert(mp->ngcells <= INT_MAX);
-    rects = partition (mp->gcells, (int)mp->ngcells, &nrect, BB);
+    rects = partition(mp->gcells, mp->ngcells, &nrect, BB);
 
 #ifdef DEBUG
     if (odb_flags & ODB_MAZE) psdump (mp->gcells, mp->ngcells, BB, rects, nrect);
