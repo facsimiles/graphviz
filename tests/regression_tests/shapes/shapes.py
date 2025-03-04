@@ -2,9 +2,13 @@
 Tests of various shape generation against reference examples.
 """
 
+import os
 import subprocess
 import sys
 from pathlib import Path
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../tests"))
+from gvtest import run_raw  # pylint: disable=wrong-import-position
 
 # Import helper function to compare graphs from tests/regressions_tests
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -90,10 +94,9 @@ def generate_shape_graph(shape, output_type):
     output_file = Path("output") / f"{shape}.{output_type}"
     input_graph = f'graph G {{ a [label="" shape={shape}] }}'
     try:
-        subprocess.run(
+        run_raw(
             ["dot", f"-T{output_type}", "-o", output_file],
             input=input_graph.encode("utf_8"),
-            check=True,
         )
     except subprocess.CalledProcessError:
         print(f"An error occurred while generating: {output_file}")

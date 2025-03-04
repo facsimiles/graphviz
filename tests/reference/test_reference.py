@@ -3,12 +3,15 @@ Tests of Graphviz output against expected reference output.
 """
 
 import difflib
-import subprocess
+import os
 import sys
 import tempfile
 from pathlib import Path
 
 import pytest
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../tests"))
+from gvtest import run, run_raw  # pylint: disable=wrong-import-position
 
 
 # pylint: disable=line-too-long
@@ -382,16 +385,11 @@ def test_reference(src: str, format: str, reference: str):
 
         # process our input with Graphviz
         output = t / reference
-        subprocess.run(
-            ["dot", f"-T{format}", "-o", output],
-            input=src,
-            check=True,
-            universal_newlines=True,
-        )
+        run(["dot", f"-T{format}", "-o", output], input=src)
 
         # compare against the reference output
         if output.suffix == ".png":
-            subprocess.check_call(["diffimg", ref, output])
+            run_raw(["diffimg", ref, output])
         else:
             fail = False
             a = ref.read_text(encoding="utf-8")

@@ -2,14 +2,13 @@
 
 import os
 import platform
-import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import compile_c, run_c  # pylint: disable=wrong-import-position
+from gvtest import compile_c, run, run_c  # pylint: disable=wrong-import-position
 
 
 @pytest.mark.parametrize("utility", ("bitarray", "list", "tokenize"))
@@ -73,7 +72,7 @@ def test_gv_find_me(tmp_path: Path):
     _ = compile_c(src, cflags, dst=exe)
 
     # run this
-    output = subprocess.check_output([exe], universal_newlines=True)
+    output = run([exe])
 
     assert os.path.normpath(output) == os.path.normpath(
         f"{exe}\n"

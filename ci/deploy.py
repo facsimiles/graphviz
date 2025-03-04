@@ -66,7 +66,7 @@ def upload(dry_run: bool, version: str, path: Path, name: Optional[str] = None) 
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        universal_newlines=True,
+        text=True,
     )
     log.info("Curl response:")
     for i, line in enumerate(proc.stdout.split("\n"), 1):

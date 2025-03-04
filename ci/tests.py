@@ -20,6 +20,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_macos,
     is_mingw,
     is_static_build,
+    run,
     which,
 )
 
@@ -153,14 +154,7 @@ def test_installation():
 
     expected_version = os.environ["GV_VERSION"]
 
-    actual_version_string = subprocess.check_output(
-        [
-            "dot",
-            "-V",
-        ],
-        universal_newlines=True,
-        stderr=subprocess.STDOUT,
-    )
+    actual_version_string = run(["dot", "-V"], stderr=subprocess.STDOUT)
     try:
         actual_version = actual_version_string.split()[4]
     except IndexError:
