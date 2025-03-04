@@ -674,9 +674,9 @@ dumpSegs (segment_t* sg, int n)
     int i;
     for (i = 1; i <= n; i++) {
       sg++;
-      fprintf (stderr, "%d : (%f,%f) (%f,%f) %d %d %d %d %d\n", i,
-         sg->v0.x, sg->v0.y, sg->v1.x, sg->v1.y,
-         (int)sg->is_inserted, sg->root0,  sg->root1, sg->next, sg->prev);
+      fprintf(stderr, "%d : (%f,%f) (%f,%f) %d %" PRISIZE_T " %" PRISIZE_T
+              " %d %d\n", i, sg->v0.x, sg->v0.y, sg->v1.x, sg->v1.y,
+              (int)sg->is_inserted, sg->root0,  sg->root1, sg->next, sg->prev);
     }
     fprintf (stderr, "====\n");
 }

@@ -26,7 +26,7 @@
 typedef struct {
   pointf v0, v1;       /* two endpoints */ 
   bool is_inserted;      /* inserted in trapezoidation yet ? */
-  int root0, root1;     /* root nodes in Q */
+  size_t root0, root1;   ///< root nodes in Q
   int next;         /* Next logical segment */
   int prev;         /* Previous segment */
 } segment_t;
@@ -39,7 +39,7 @@ typedef struct {
   pointf hi, lo;       /* max/min y-values */ 
   int u0, u1;
   int d0, d1;
-  int sink;         /* pointer to corresponding in Q */
+  size_t sink;          ///< pointer to corresponding in Q
   int usave, uside;     /* I forgot what this means */
   int state;
 } trap_t; 
