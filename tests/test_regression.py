@@ -6080,7 +6080,6 @@ def test_edgepaint_error_message():
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
-@pytest.mark.xfail(strict=True)
 def test_lock_graph():
     """GVPR’s `lock` should not misinterpret numbers >INT_MAX"""
 
