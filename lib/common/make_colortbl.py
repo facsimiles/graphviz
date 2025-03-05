@@ -92,6 +92,9 @@ def main(args: List[str]) -> int:
         # ignore blank lines
         if entry.strip() == "":
             continue
+        # ignore commented lines
+        if re.match(r"\s*#", entry) is not None:
+            continue
 
         # extract fields of the entry
         m = re.match(
