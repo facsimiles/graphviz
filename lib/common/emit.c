@@ -3049,19 +3049,16 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
     pointf LL, UR, size, sz;
-    double X, Y, Z, x, y;
+    double Z;
     int rv;
     Agnode_t *n;
     char *str, *nodename = NULL;
 
     UR = gvc->bb.UR;
     LL = gvc->bb.LL;
-    job->bb.LL.x = LL.x - job->pad.x;           /* job->bb is bb of graph and padding - graph units */
-    job->bb.LL.y = LL.y - job->pad.y;
-    job->bb.UR.x = UR.x + job->pad.x;
-    job->bb.UR.y = UR.y + job->pad.y;
-    sz.x = job->bb.UR.x - job->bb.LL.x;   /* size, including padding - graph units */
-    sz.y = job->bb.UR.y - job->bb.LL.y;
+    job->bb.LL = sub_pointf(LL, job->pad); // job->bb is bb of graph and padding - graph units
+    job->bb.UR = add_pointf(UR, job->pad);
+    sz = sub_pointf(job->bb.UR, job->bb.LL); // size, including padding - graph units
 
     /* determine final drawing size and scale to apply. */
     /* N.B. size given by user is not rotated by landscape mode */
@@ -3079,37 +3076,33 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     }
     
     /* default focus, in graph units = center of bb */
-    x = (LL.x + UR.x) / 2.;
-    y = (LL.y + UR.y) / 2.;
+    pointf xy = scale(0.5, add_pointf(LL, UR));
 
     /* rotate and scale bb to give default absolute size in points*/
     job->rotation = job->gvc->rotation;
-    X = sz.x * Z;
-    Y = sz.y * Z;
+    pointf XY = scale(Z, sz);
 
     /* user can override */
     if ((str = agget(g, "viewport"))) {
         nodename = gv_alloc(strlen(str) + 1);
-	rv = sscanf(str, "%lf,%lf,%lf,\'%[^\']\'", &X, &Y, &Z, nodename);
+	rv = sscanf(str, "%lf,%lf,%lf,\'%[^\']\'", &XY.x, &XY.y, &Z, nodename);
 	if (rv == 4) {
 	    n = agfindnode(g->root, nodename);
 	    if (n) {
-		x = ND_coord(n).x;
-		y = ND_coord(n).y;
+		xy = ND_coord(n);
 	    }
 	}
 	else {
-	    char junk;
-	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%c", &X, &Y, &Z, nodename, &junk);
+	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%c", &XY.x, &XY.y, &Z, nodename,
+	                &(char){0});
 	    if (rv == 4) {
                 n = agfindnode(g->root, nodename);
                 if (n) {
-                    x = ND_coord(n).x;
-                    y = ND_coord(n).y;
+                    xy = ND_coord(n);
 		}
 	    }
 	    else {
-	        rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+	        sscanf(str, "%lf,%lf,%lf,%lf,%lf", &XY.x, &XY.y, &Z, &xy.x, &xy.y);
 	    }
         }
 	free (nodename);
@@ -3120,11 +3113,9 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
      * job->zoom gives scaling factor.
      * job->focus gives the position in the graph of the center of the port
      */
-    job->view.x = X;
-    job->view.y = Y;
+    job->view = XY;
     job->zoom = Z;              /* scaling factor */
-    job->focus.x = x;
-    job->focus.y = y;
+    job->focus = xy;
 }
 
 static void emit_cluster_colors(GVJ_t * job, graph_t * g)
