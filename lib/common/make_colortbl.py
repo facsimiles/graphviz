@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """
-(brewer_lib, svgcolor_lib, color_names) → colortbl.h generator
+(brewer_colors, svgcolor_lib, color_names) → colortbl.h generator
 """
 
 import argparse
@@ -57,7 +57,7 @@ def main(args: List[str]) -> int:
     # parse command line arguments
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "brewer_lib",
+        "brewer_colors",
         type=argparse.FileType("rt"),
         help="input Brewer color table entries",
     )
@@ -80,7 +80,7 @@ def main(args: List[str]) -> int:
 
     # collect all color entries
     entries = (
-        options.brewer_lib.readlines()
+        options.brewer_colors.readlines()
         + options.svgcolor_lib.readlines()
         + options.color_names.readlines()
     )
