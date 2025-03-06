@@ -205,13 +205,12 @@ portable-source:
             }
         - cd build
         - $FILENAME = & invoke-Expression "Get-ChildItem Graphviz*.exe"
-        - mv $FILENAME graphviz-install.exe
         # Install using installer and add bin directory to path.
         # Piping the output of the installer to Out-Null, makes the script wait
         # for the .exe to exit, instead continuing to the next command (which
         # will then fail because the install hasn't finished)
-        - ./graphviz-install.exe /S /D=$Env:graphviz_install_dir | Out-Null
-        - mv graphviz-install.exe graphviz-install-$Env:GV_VERSION-$API.exe
+        - ./${FILENAME} /S /D=$Env:graphviz_install_dir | Out-Null
+        - mv ${FILENAME} graphviz-install-$Env:GV_VERSION-$API.exe
         - $Env:Path = $Env:graphviz_install_dir + "\bin" + ";" + $Env:Path
         - cd ..
         - $Env:INCLUDE += ";C:\Graphviz\include"
