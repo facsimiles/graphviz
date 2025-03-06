@@ -552,7 +552,7 @@ static void init_all_attrs(Agraph_t * g)
     Agedge_t *e;
 
     root = agroot(g);
-    agapply(root, (Agobj_t*)root, agraphattr_init_wrapper, NULL, true);
+    agapply(root, &root->base, agraphattr_init_wrapper, NULL, true);
     for (n = agfstnode(root); n; n = agnxtnode(root, n)) {
 	agnodeattr_init(g, n);
 	for (e = agfstout(root, n); e; e = agnxtout(root, e)) {
