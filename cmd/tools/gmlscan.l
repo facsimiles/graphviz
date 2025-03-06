@@ -16,6 +16,7 @@
 #include <gml2gv.h>
 #include <gmlparse.h>
 #include <util/alloc.h>
+#include <util/agxbuf.h>
 #include "config.h"
 
 #define GRAPH_EOF_TOKEN     '@'     /* lex class must be defined below */
@@ -39,33 +40,20 @@ void initgmlscan(FILE *ifile)
                 YY_FATAL_ERROR( "input in flex scanner failed" )
 #endif
 
-/* buffer for arbitrary length strings (longer than BUFSIZ) */
-static char *Sbuf;
+/// buffer for arbitrary length strings
+static agxbuf Sbuf;
 
 static void beginstr(void) {
-  assert(Sbuf == NULL && "leaking memory");
-  Sbuf = gv_strdup("");
+  assert(agxblen(&Sbuf) == 0 && "leaking memory");
 }
 
 static void addstr(const char *src) {
-  assert(Sbuf != NULL && "missing beginstr()");
-
-  // enlarge the buffer to make room for the suffix
-  {
-    size_t old_size = strlen(Sbuf) + 1;
-    size_t new_size = old_size + strlen(src);
-    Sbuf = gv_realloc(Sbuf, old_size, new_size);
-  }
-
-  strcat(Sbuf, src);
+  agxbput(&Sbuf, src);
 }
 
 static void endstr(void) {
-  assert(Sbuf != NULL && "missing beginstr()");
-
   // take ownership of the Sbuf backing memory
-  gmllval.str = Sbuf;
-  Sbuf = NULL;
+  gmllval.str = agxbdisown(&Sbuf);
 }
 
 %}

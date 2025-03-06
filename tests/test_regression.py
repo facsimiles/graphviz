@@ -942,6 +942,7 @@ def test_1444():
         assert p.returncode == 0, "failed to process a headport edge"
 
     stderr = remove_xtype_warnings(stderr).strip()
+    stderr = remove_asan_summary(stderr)
     assert stderr == "", "emitted an error for a legal graph"
 
     # now locate our second variant, that simply has the attributes swapped

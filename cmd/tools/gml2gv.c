@@ -128,7 +128,6 @@ static char *nameOf(agxbuf *buf, char *name, int cnt) {
 
 int main(int argc, char **argv) {
   Agraph_t *G;
-  Agraph_t *prev = 0;
   FILE *inFile;
   int gcnt, cnt, rv;
   agxbuf buf = {0};
@@ -141,13 +140,11 @@ int main(int argc, char **argv) {
     while ((G = gml_to_gv(nameOf(&buf, gname, gcnt), inFile, cnt, &rv))) {
       cnt++;
       gcnt++;
-      if (prev)
-        agclose(prev);
-      prev = G;
       if (Verbose)
         fprintf(stderr, "%s: %d nodes %d edges\n", agnameof(G), agnnodes(G),
                 agnedges(G));
       agwrite(G, outFile);
+      agclose(G);
       fflush(outFile);
     }
   }
