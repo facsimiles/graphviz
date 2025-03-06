@@ -562,24 +562,18 @@ static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
  * Map string to object kind
  */
 static int toKind(char *k, char *fn) {
-  int kind;
-
   switch (*k) {
   case 'G':
-    kind = AGRAPH;
-    break;
+    return AGRAPH;
   case 'E':
-    kind = AGEDGE;
-    break;
+    return AGEDGE;
   case 'N':
-    kind = AGNODE;
-    break;
+    return AGNODE;
   default:
     exerror("Unknown kind \"%s\" passed to %s()", k, fn);
-    kind = 0;
     break;
   }
-  return kind;
+  return 0;
 }
 
 /* nxtAttr:
