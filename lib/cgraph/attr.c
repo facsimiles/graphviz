@@ -453,7 +453,7 @@ void agedgeattr_delete(Agedge_t * e)
     Agattr_t *rec;
 
     if ((rec = agattrrec(e))) {
-	freeattr((Agobj_t *) e, rec);
+	freeattr(&e->base, rec);
 	agdelrec(e, AgDataRecName);
     }
 }
