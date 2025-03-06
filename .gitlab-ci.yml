@@ -210,7 +210,6 @@ portable-source:
         # for the .exe to exit, instead continuing to the next command (which
         # will then fail because the install hasn't finished)
         - ./${FILENAME} /S /D=$Env:graphviz_install_dir | Out-Null
-        - mv ${FILENAME} graphviz-install-$Env:GV_VERSION-$API.exe
         - $Env:Path = $Env:graphviz_install_dir + "\bin" + ";" + $Env:Path
         - cd ..
         - $Env:INCLUDE += ";C:\Graphviz\include"
@@ -222,7 +221,7 @@ portable-source:
         - $VERSION_ID = "10"
         - $DIR = "Packages\${ID}\${VERSION_ID}\cmake\$Env:configuration"
         - mkdir -p $DIR
-        - mv "build\*.exe" $DIR
+        - mv "build\${FILENAME}" ${DIR}\graphviz-install-$Env:GV_VERSION-${API}.exe
         - mv "build\*.zip" $DIR
     artifacts:
         when: on_success
