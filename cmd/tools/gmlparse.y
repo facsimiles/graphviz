@@ -46,6 +46,7 @@ static char *sortToStr(unsigned short sort);
 void free_node(gmlnode *p) {
     if (!p) return;
     attrs_free(&p->attrlist);
+    free(p->id);
     free (p);
 }
 
@@ -133,9 +134,7 @@ pushG (void)
 static gmlnode*
 mkNode (void)
 {
-    gmlnode* np = gv_alloc(sizeof(gmlnode));
-    np->id = NULL;
-    return np;
+    return gv_alloc(sizeof(gmlnode));
 }
 
 static gmledge*
