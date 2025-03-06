@@ -434,7 +434,7 @@ void agnodeattr_delete(Agnode_t * n)
     Agattr_t *rec;
 
     if ((rec = agattrrec(n))) {
-	freeattr((Agobj_t *) n, rec);
+	freeattr(&n->base, rec);
 	agdelrec(n, AgDataRecName);
     }
 }
