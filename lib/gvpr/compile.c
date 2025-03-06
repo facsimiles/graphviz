@@ -532,7 +532,7 @@ static char *getArg(int n, Gpr_t *state) {
     exerror("program references ARGV[%d] - undefined", n);
     return 0;
   }
-  return (state->argv[n]);
+  return state->argv[n];
 }
 
 /* setDfltAttr:
@@ -586,7 +586,7 @@ static int toKind(char *k, char *fn) {
 /* nxtAttr:
  */
 static char *nxtAttr(Agraph_t *gp, char *k, char *name) {
-  char *fn = (name ? "nxtAttr" : "fstAttr");
+  char *fn = name ? "nxtAttr" : "fstAttr";
   int kind = toKind(k, fn);
   Agsym_t *sym;
 
@@ -1395,7 +1395,7 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
           exerror("NULL kind passed to %s", sym->name);
           v.string = 0;
         } else if (sym->index == F_isattr) {
-          v.integer = (agattr(gp, toKind(kind, sym->name), name, 0) != NULL);
+          v.integer = agattr(gp, toKind(kind, sym->name), name, 0) != NULL;
         } else if (sym->index == F_nxtattr) {
           v.string = nxtAttr(gp, kind, name);
         } else {
