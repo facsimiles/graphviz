@@ -322,17 +322,17 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
 	    dtinsert(rdict, rsym);
 	    switch (kind) {
 	    case AGRAPH:
-		agapply(root, (Agobj_t *)root, (agobjfn_t)addattr, rsym, true);
+		agapply(root, &root->base, (agobjfn_t)addattr, rsym, true);
 		break;
 	    case AGNODE:
 		for (n = agfstnode(root); n; n = agnxtnode(root, n))
-		    addattr(g, (Agobj_t *) n, rsym);
+		    addattr(g, &n->base, rsym);
 		break;
 	    case AGINEDGE:
 	    case AGOUTEDGE:
 		for (n = agfstnode(root); n; n = agnxtnode(root, n))
 		    for (e = agfstout(root, n); e; e = agnxtout(root, e))
-			addattr(g, (Agobj_t *) e, rsym);
+			addattr(g, &e->base, rsym);
 		break;
 	    default:
 		UNREACHABLE();
