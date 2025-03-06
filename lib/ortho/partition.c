@@ -9,7 +9,9 @@
  *************************************************************************/
 
 #include "config.h"
+#include <assert.h>
 #include <common/boxes.h>
+#include <limits.h>
 #include <ortho/partition.h>
 #include <ortho/trap.h>
 #include <math.h>
@@ -137,29 +139,28 @@ store (segment_t* seg, int first, pointf* pts)
     return (last+1);
 }
 
-static void
-genSegments (cell* cells, int ncells, boxf bb, segment_t* seg, int flip)
-{
-    int j = 0, i = 1;
+static void genSegments(cell *cells, size_t ncells, boxf bb, segment_t *seg,
+                        int flip) {
+    int i = 1;
     pointf pts[4];
 
     convert (bb, flip, 1, pts);
     i = store (seg, i, pts);
-    for (j = 0; j < ncells; j++) {
+    for (size_t j = 0; j < ncells; j++) {
 	convert (cells[j].bb, flip, 0, pts);
 	i = store (seg, i, pts);
     }
 }
 
 /* Generate a random permutation of the segments 1..n */
-static void 
-generateRandomOrdering(int n, int* permute)
-{
-    int i, j;
-    for (i = 0; i <= n; i++) permute[i] = i;
+static void generateRandomOrdering(size_t n, int *permute) {
+    for (size_t i = 0; i <= n; i++) {
+	assert(i <= INT_MAX);
+	permute[i] = (int)i;
+    }
 
-    for (i = 1; i <= n; i++) {
-	j = i + drand48() * (n + 1 - i);
+    for (size_t i = 1; i <= n; i++) {
+	const size_t j = (size_t)((double)i + drand48() * (double)(n + 1 - i));
 	if (j != i) {
 	    SWAP(&permute[i], &permute[j]);
 	}
@@ -673,49 +674,51 @@ dumpSegs (segment_t* sg, int n)
     int i;
     for (i = 1; i <= n; i++) {
       sg++;
-      fprintf (stderr, "%d : (%f,%f) (%f,%f) %d %d %d %d %d\n", i,
-         sg->v0.x, sg->v0.y, sg->v1.x, sg->v1.y,
-         (int)sg->is_inserted, sg->root0,  sg->root1, sg->next, sg->prev);
+      fprintf(stderr, "%d : (%f,%f) (%f,%f) %d %" PRISIZE_T " %" PRISIZE_T
+              " %d %d\n", i, sg->v0.x, sg->v0.y, sg->v1.x, sg->v1.y,
+              (int)sg->is_inserted, sg->root0,  sg->root1, sg->next, sg->prev);
     }
     fprintf (stderr, "====\n");
 }
 #endif
 
-boxf *partition(cell *cells, int ncells, size_t *nrects, boxf bb) {
-    int nsegs = 4*(ncells+1);
+boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
+    const size_t nsegs = 4 * (ncells + 1);
     segment_t* segs = gv_calloc(nsegs + 1, sizeof(segment_t));
     int* permute = gv_calloc(nsegs + 1, sizeof(int));
 
     if (DEBUG) {
-	fprintf (stderr, "cells = %d segs = %d traps = dynamic\n", ncells, nsegs);
+	fprintf(stderr, "cells = %" PRISIZE_T " segs = %" PRISIZE_T
+	        " traps = dynamic\n", ncells, nsegs);
     }
-    genSegments (cells, ncells, bb, segs, 0);
+    genSegments(cells, ncells, bb, segs, 0);
     if (DEBUG) {
-	fprintf (stderr, "%d\n\n", ncells+1);
-	for (int i = 1; i <= nsegs; i++) {
+	fprintf(stderr, "%" PRISIZE_T "\n\n", ncells + 1);
+	for (size_t i = 1; i <= nsegs; i++) {
 	    if (i%4 == 1) fprintf(stderr, "4\n");
 	    fprintf (stderr, "%f %f\n", segs[i].v0.x, segs[i].v0.y);
 	    if (i%4 == 0) fprintf(stderr, "\n");
 	}
     }
     srand48(173);
-    generateRandomOrdering (nsegs, permute);
-    traps_t hor_traps = construct_trapezoids(nsegs, segs, permute);
+    generateRandomOrdering(nsegs, permute);
+    assert(nsegs <= INT_MAX);
+    traps_t hor_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
 	fprintf (stderr, "hor traps = %" PRISIZE_T "\n", hor_traps.length);
     }
     boxes_t hor_decomp = {0};
-    monotonate_trapezoids(nsegs, segs, &hor_traps, 0, &hor_decomp);
+    monotonate_trapezoids((int)nsegs, segs, &hor_traps, 0, &hor_decomp);
     free(hor_traps.data);
 
-    genSegments (cells, ncells, bb, segs, 1);
-    generateRandomOrdering (nsegs, permute);
-    traps_t ver_traps = construct_trapezoids(nsegs, segs, permute);
+    genSegments(cells, ncells, bb, segs, 1);
+    generateRandomOrdering(nsegs, permute);
+    traps_t ver_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
 	fprintf (stderr, "ver traps = %" PRISIZE_T "\n", ver_traps.length);
     }
     boxes_t vert_decomp = {0};
-    monotonate_trapezoids(nsegs, segs, &ver_traps, 1, &vert_decomp);
+    monotonate_trapezoids((int)nsegs, segs, &ver_traps, 1, &vert_decomp);
     free(ver_traps.data);
 
     boxes_t rs = {0};
