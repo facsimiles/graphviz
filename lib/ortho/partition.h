@@ -26,4 +26,4 @@
  * @returns array of the tiles
  */
 
-boxf *partition(cell *cells, int ncells, size_t *nrects, boxf bb);
+boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb);
