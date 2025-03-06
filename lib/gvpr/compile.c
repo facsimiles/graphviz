@@ -553,7 +553,6 @@ static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
   default:
     error(ERROR_WARNING, "Unknown kind \"%s\" passed to setDflt()", k);
     return 1;
-    break;
   }
   agattr(gp, kind, name, value);
   return 0;
