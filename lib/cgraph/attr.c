@@ -290,17 +290,13 @@ static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html);
 /// @param is_html Is `value` an HTML-like string?
 static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
                         bool is_html) {
-    Dict_t *ldict, *rdict;
-    Agsym_t *lsym, *psym, *rsym, *rv;
-    Agraph_t *root;
-    Agnode_t *n;
-    Agedge_t *e;
+    Agsym_t *rv;
 
     assert(value);
-    root = agroot(g);
+    Agraph_t *root = agroot(g);
     agdatadict(g, true);	/* force initialization of string attributes */
-    ldict = agdictof(g, kind);
-    lsym = aglocaldictsym(ldict, name);
+    Dict_t *ldict = agdictof(g, kind);
+    Agsym_t *lsym = aglocaldictsym(ldict, name);
     if (lsym) {			/* update old local definition */
 	if (g != root && streq(name, "layout"))
 	    agwarningf("layout attribute is invalid except on the root graph\n");
@@ -311,27 +307,27 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
 	lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
 	rv = lsym;
     } else {
-	psym = agdictsym(ldict, name);	/* search with viewpath up to root */
+	Agsym_t *psym = agdictsym(ldict, name); // search with viewpath up to root
 	if (psym) {		/* new local definition */
 	    lsym = agnewsym(g, name, value, is_html, psym->id, kind);
 	    dtinsert(ldict, lsym);
 	    rv = lsym;
 	} else {		/* new global definition */
-	    rdict = agdictof(root, kind);
-	    rsym = agnewsym(g, name, value, is_html, dtsize(rdict), kind);
+	    Dict_t *rdict = agdictof(root, kind);
+	    Agsym_t *rsym = agnewsym(g, name, value, is_html, dtsize(rdict), kind);
 	    dtinsert(rdict, rsym);
 	    switch (kind) {
 	    case AGRAPH:
 		agapply(root, &root->base, (agobjfn_t)addattr, rsym, true);
 		break;
 	    case AGNODE:
-		for (n = agfstnode(root); n; n = agnxtnode(root, n))
+		for (Agnode_t *n = agfstnode(root); n; n = agnxtnode(root, n))
 		    addattr(g, &n->base, rsym);
 		break;
 	    case AGINEDGE:
 	    case AGOUTEDGE:
-		for (n = agfstnode(root); n; n = agnxtnode(root, n))
-		    for (e = agfstout(root, n); e; e = agnxtout(root, e))
+		for (Agnode_t *n = agfstnode(root); n; n = agnxtnode(root, n))
+		    for (Agedge_t *e = agfstout(root, n); e; e = agnxtout(root, e))
 			addattr(g, &e->base, rsym);
 		break;
 	    default:
