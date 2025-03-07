@@ -5,34 +5,16 @@ add_definitions(-DGVC_EXPORTS)
 
 # Generate colortbl.h from sources
 add_custom_command(
-  OUTPUT svgcolor_lib
-  MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/svgcolor_names
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/make_svgcolor_lib.py
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/make_svgcolor_lib.py
-          ${CMAKE_CURRENT_SOURCE_DIR}/svgcolor_names
-          ${CMAKE_CURRENT_BINARY_DIR}/svgcolor_lib
-  COMMENT "generate SVG color library"
-)
-add_custom_command(
-  OUTPUT brewer_lib
-  MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/brewer_colors
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/make_brewer_lib.py
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/make_brewer_lib.py
-          ${CMAKE_CURRENT_SOURCE_DIR}/brewer_colors
-          ${CMAKE_CURRENT_BINARY_DIR}/brewer_lib
-  COMMENT "generate Brewer color library"
-)
-add_custom_command(
   OUTPUT common/colortbl.h
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/svgcolor_lib
-          ${CMAKE_CURRENT_BINARY_DIR}/brewer_lib
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/svgcolor_names
+          ${CMAKE_CURRENT_SOURCE_DIR}/brewer_colors
           ${CMAKE_CURRENT_SOURCE_DIR}/color_names
           ${CMAKE_CURRENT_SOURCE_DIR}/make_colortbl.py
   COMMAND ${CMAKE_COMMAND} -E make_directory
           "${CMAKE_CURRENT_BINARY_DIR}/common"
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/make_colortbl.py
-          ${CMAKE_CURRENT_BINARY_DIR}/brewer_lib
-          ${CMAKE_CURRENT_BINARY_DIR}/svgcolor_lib
+          ${CMAKE_CURRENT_SOURCE_DIR}/brewer_colors
+          ${CMAKE_CURRENT_SOURCE_DIR}/svgcolor_names
           ${CMAKE_CURRENT_SOURCE_DIR}/color_names
           ${CMAKE_CURRENT_BINARY_DIR}/common/colortbl.h
   COMMENT "generate color table"
