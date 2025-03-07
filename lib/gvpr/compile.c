@@ -1236,8 +1236,10 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
       if (!gp) {
         error(ERROR_WARNING, "NULL graph passed to lock()");
         v.integer = -1;
-      } else
-        v.integer = lockGraph(gp, args[1].integer);
+      } else {
+        const int op = args[1].integer > 0 ? 1 : args[1].integer < 0 ? -1 : 0;
+        v.integer = lockGraph(gp, op);
+      }
       break;
     case F_nnodes:
       gp = int2ptr(args[0].integer);

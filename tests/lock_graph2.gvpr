@@ -1,0 +1,9 @@
+/// @file
+/// @brief supporting GVPR program for test_lock_graph
+
+BEG_G {
+  int locked = lock($, 2147483648);
+  printf("%d\n", locked);
+  int unlocked = lock($, 0);
+  printf("%d\n", unlocked);
+}

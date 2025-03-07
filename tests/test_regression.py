@@ -6077,3 +6077,26 @@ def test_edgepaint_error_message():
     assert re.search(
         r"\bedgepaint\b", proc.stderr
     ), "edgepaint does not know its own name"
+
+
+@pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
+def test_lock_graph():
+    """GVPR’s `lock` should not misinterpret numbers >INT_MAX"""
+
+    # find co-located test sources
+    program1 = Path(__file__).parent / "lock_graph1.gvpr"
+    assert program1.exists(), "missing test case"
+    program2 = Path(__file__).parent / "lock_graph2.gvpr"
+    assert program2.exists(), "missing test case"
+
+    # a basic graph
+    src = "digraph { a -> b; }"
+
+    # process this with a conventional locking program
+    gvpr_bin = which("gvpr")
+    output = run([gvpr_bin, "-f", program1], input=src)
+    assert output == "0\n1\n", "locking a graph did not work"
+
+    # now try this with a large integer for the locking operation
+    output = run(["gvpr", "-f", program2], input=src)
+    assert output == "0\n1\n", "locking a graph using a large integer did not work"

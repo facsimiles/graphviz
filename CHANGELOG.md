@@ -131,6 +131,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Network simplex functions have been refactored to avoid recursion. Now graphs
   with deep node chains that previously caused stack overflows can be processed.
   #2646
+- Calling the GVPR function `lock` with a second argument `> 2³¹ - 1` is no
+  longer misinterpreted as a negative number.
 
 ## [12.2.1] – 2024-12-07
 
