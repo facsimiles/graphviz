@@ -35,20 +35,14 @@ libcommon_C_la_LIBADD = \
 
 colxlate.$(OBJEXT) colxlate.lo: colortbl.h
 
-colortbl.h: brewer_lib svgcolor_lib $(top_srcdir)/lib/common/color_names \
+colortbl.h: $(top_srcdir)/lib/common/brewer_colors \
+            $(top_srcdir)/lib/common/svgcolor_names \
+            $(top_srcdir)/lib/common/color_names \
             $(top_srcdir)/lib/common/make_colortbl.py
-	python3 $(top_srcdir)/lib/common/make_colortbl.py brewer_lib svgcolor_lib \
+	python3 $(top_srcdir)/lib/common/make_colortbl.py \
+	  $(top_srcdir)/lib/common/brewer_colors \
+	  $(top_srcdir)/lib/common/svgcolor_names \
 	  $(top_srcdir)/lib/common/color_names colortbl.h
-
-brewer_lib: $(top_srcdir)/lib/common/brewer_colors \
-            $(top_srcdir)/lib/common/make_brewer_lib.py
-	python3 $(top_srcdir)/lib/common/make_brewer_lib.py \
-	  "$(top_srcdir)/lib/common/brewer_colors" "$@"
-
-svgcolor_lib: $(top_srcdir)/lib/common/svgcolor_names \
-              $(top_srcdir)/lib/common/make_svgcolor_lib.py
-	python3 $(top_srcdir)/lib/common/make_svgcolor_lib.py \
-	  "$(top_srcdir)/lib/common/svgcolor_names" "$@"
 
 utils.$(OBJEXT) utils.lo: entities.h
 
@@ -62,12 +56,11 @@ htmlparse.$(OBJEXT) htmlparse.lo: htmlparse.c htmlparse.h
 htmlparse.c htmlparse.h: $(top_srcdir)/lib/common/htmlparse.y
 	$(YACC) -Wno-yacc -dv $(top_srcdir)/lib/common/htmlparse.y -o htmlparse.c
 
-DISTCLEANFILES = brewer_lib colortbl.h entities.h \
-	htmlparse.[ch] svgcolor_lib
+DISTCLEANFILES = colortbl.h entities.h htmlparse.[ch]
 
 EXTRA_DIST = README.imap \
 	htmlparse.c htmlparse.h \
 	entities.h entities.html entities.py \
-	brewer_colors brewer_lib svgcolor_names svgcolor_lib \
+	brewer_colors svgcolor_names \
 	color_names colortbl.h \
-	make_brewer_lib.py make_colortbl.py make_svgcolor_lib.py
+	make_colortbl.py

@@ -142,13 +142,11 @@ lib/cgraph/grammar.c
 lib/cgraph/grammar.h
 lib/cgraph/grammar.output
 lib/cgraph/scan.c
-lib/common/brewer_lib
 lib/common/colortbl.h
 lib/common/entities.h
 lib/common/htmlparse.c
 lib/common/htmlparse.h
 lib/common/htmlparse.output
-lib/common/svgcolor_lib
 lib/expr/exparse.c
 lib/expr/exparse.h
 plugin/xlib/vimdot
