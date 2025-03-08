@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/random.h>
 
 static const int minsize = 4;
 static const double min_coarsen_factor = 0.75;
@@ -51,7 +52,7 @@ void Multilevel_delete(Multilevel grid){
 }
 
 static void maximal_independent_edge_set_heavest_edge_pernode_supernodes_first(SparseMatrix A, int **cluster, int **clusterp, int *ncluster){
-  int i, ii, j, *ia, *ja, m, n, *p = NULL;
+  int i, ii, j, *ia, *ja, m, n;
   (void)n;
   double *a, amax = 0;
   int jamax = 0;
@@ -96,7 +97,7 @@ static void maximal_independent_edge_set_heavest_edge_pernode_supernodes_first(S
     if (nz > nz0) (*clusterp)[++(*ncluster)] = nz;
   }
 
-  p = random_permutation(m);
+  int *const p = gv_permutation(m);
   for (ii = 0; ii < m; ii++){
     i = p[ii];
     bool first = true;

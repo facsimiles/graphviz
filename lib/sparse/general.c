@@ -14,8 +14,6 @@
 #include <sparse/general.h>
 #include <errno.h>
 #include <util/alloc.h>
-#include <util/gv_math.h>
-#include <util/random.h>
 
 #ifdef DEBUG
 double _statistics[10];
@@ -24,22 +22,6 @@ double _statistics[10];
 double drand(void){
   return rand()/(double) RAND_MAX;
 }
-
-int *random_permutation(int n){
-  int i, j, len;
-  if (n <= 0) return NULL;
-  int *p = gv_calloc(n, sizeof(int));
-  for (i = 0; i < n; i++) p[i] = i;
-
-  len = n;
-  while (len > 1){
-    j = gv_random(len);
-    SWAP(&p[len - 1], &p[j]);
-    len--;
-  }
-  return p;
-}
-
 
 double* vector_subtract_to(int n, double *x, double *y){
   /* y = x-y */

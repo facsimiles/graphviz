@@ -23,6 +23,15 @@
 extern "C" {
 #endif
 
+/// generate a random permutation of the numbers `[0, bound - 1]`
+///
+/// The caller is responsible for `free`ing the returned array. This function
+/// calls `exit` on memory allocation failure.
+///
+/// @param bound Exclusive upper bound on the sequence
+/// @return A permutation of `[0, bound - 1]`
+UTIL_API int *gv_permutation(int bound);
+
 /// generate a random number in the range `[0, bound - 1]`
 ///
 /// This function assumes the caller has previously seeded the `rand` random

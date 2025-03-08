@@ -6,7 +6,31 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/random.h>
+
+int *gv_permutation(int bound) {
+  if (bound <= 0) {
+    return NULL;
+  }
+
+  // initialize a sequence `{0, 1, …, bound - 1}`
+  int *const p = gv_calloc((size_t)bound, sizeof(int));
+  for (int i = 0; i < bound; i++) {
+    p[i] = i;
+  }
+
+  // perform a Fisher-Yates shuffle
+  int len = bound;
+  while (len > 1) {
+    const int j = gv_random(len);
+    SWAP(&p[len - 1], &p[j]);
+    len--;
+  }
+
+  return p;
+}
 
 /// handle random number generation, `bound ≤ RAND_MAX`
 static int random_small(int bound) {

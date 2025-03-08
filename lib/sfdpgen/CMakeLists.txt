@@ -34,6 +34,7 @@ target_link_libraries(sfdpgen PRIVATE
   gvc
   neatogen
   sparse
+  util
 )
 
 endif()

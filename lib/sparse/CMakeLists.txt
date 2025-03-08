@@ -26,5 +26,3 @@ target_include_directories(sparse PRIVATE
   ../cgraph
   ../common
 )
-
-target_link_libraries(sparse PRIVATE util)

@@ -50,8 +50,6 @@ extern double _statistics[10];
 #endif
 
 extern double drand(void);
-extern int *random_permutation(int n);/* random permutation of 0 to n-1 */
-
 
 double* vector_subtract_to(int n, double *x, double *y);/* y = x-y */
 
