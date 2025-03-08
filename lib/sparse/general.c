@@ -26,7 +26,6 @@ double drand(void){
 int irand(int n){
   /* 0, 1, ..., n-1 */
   assert(n > 1);
-  /*return (int) MIN(floor(drand()*n),n-1);*/
   return rand()%n;
 }
 
