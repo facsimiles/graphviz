@@ -1,0 +1,19 @@
+/// @file
+/// @brief supporting GVPR program for test_2639
+
+BEG_G {
+  graph_t aG1, aG2;
+
+  aG1 = isSubg($G, "SUB1");
+  aG2 = isSubg(aG1, "SPOON");
+
+  // set defaults for SPOON subgraph
+  setDflt(aG2, "N", "color", "red");      // should only apply to SPOON
+  setDflt(aG2, "N", "shape", "circle");   // should only apply to SPOON
+
+  // set defaults for FORK subgraph
+  aG2 = isSubg(aG1, "FORK");
+  setDflt(aG2, "N", "color", "blue");     // should only apply to FORK
+  setDflt(aG2, "N", "shape", "square");   // should only apply to FORK
+  setDflt(aG2, "N", "color", "purple");   // override color, purple, not blue
+}

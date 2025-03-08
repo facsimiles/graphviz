@@ -1,0 +1,6 @@
+/// @file
+/// @brief supporting GVPR program for test_2639
+
+BEG_G {
+  printf("%s\n", getDflt($, "N", "color"));
+}

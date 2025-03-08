@@ -5253,6 +5253,43 @@ def test_2636_2():
     assert img.attrib["width"] == "10px", "image width set incorrectly"
 
 
+@pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2639"
+)
+def test_2639():
+    """
+    in GVPR, setting an attribute on a subgraph should not set it on the root graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2639
+    """
+
+    # locate our associated supporting files in this directory
+    input = Path(__file__).parent / "2639.dot"
+    assert input.exists(), "unexpectedly missing test case"
+    program = Path(__file__).parent / "2639.gvpr"
+    assert program.exists(), "unexpectedly missing test case"
+    checker = Path(__file__).parent / "2639_2.gvpr"
+    assert checker.exists(), "unexpectedly missing test case"
+
+    # process the graph with GVPR
+    gvpr_bin = which("gvpr")
+    output = run(
+        [gvpr_bin, "-c", program.read_text(encoding="utf-8")],
+        input=input.read_text(encoding="utf-8"),
+    )
+
+    # run this resulting graph through the checker to retrieve one of its root graph’s
+    # defaults
+    color = run(
+        [gvpr_bin, "-c", checker.read_text(encoding="utf-8"), "-o", os.devnull],
+        input=output,
+    )
+
+    assert (
+        re.search(r"\bred\b", color) is None
+    ), "subgraph default was set on root graph"
+
+
 @pytest.mark.skipif(which("twopi") is None, reason="twopi not available")
 def test_2643():
     """
