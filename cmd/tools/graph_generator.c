@@ -583,25 +583,25 @@ static void genTree(unsigned NN, unsigned *T, int_stack_t *stack,
 
     while (1) {
 	while (N > 2) {
-	    v = (N-1)*T[N];
+	    v = umul(N - 1, T[N]);
 	    double Z = floor(v * drand());
 	    unsigned D = 0;
 	    bool more = true;
 	    unsigned M;
 	    do {
 		D++;
-		const unsigned TD = D*T[D];
+		const unsigned TD = umul(D, T[D]);
 		M = N;
 		J = 0;
 		do {
 		    J++;
 		    if (M < D + 1) break;
 		    M -= D;
-		    if (Z < T[M] * TD) {
+		    if (Z < umul(T[M], TD)) {
                       more = false;
                       break;
                     }
-		    Z -= T[M]*TD;
+		    Z -= umul(T[M], TD);
 		} while (true);
 	    } while (more);
 	    push(stack, J, D);
