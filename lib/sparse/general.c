@@ -14,6 +14,7 @@
 #include <sparse/general.h>
 #include <errno.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/random.h>
 
 #ifdef DEBUG
@@ -25,7 +26,7 @@ double drand(void){
 }
 
 int *random_permutation(int n){
-  int i, j, pp, len;
+  int i, j, len;
   if (n <= 0) return NULL;
   int *p = gv_calloc(n, sizeof(int));
   for (i = 0; i < n; i++) p[i] = i;
@@ -33,9 +34,7 @@ int *random_permutation(int n){
   len = n;
   while (len > 1){
     j = gv_random(len);
-    pp = p[len-1];
-    p[len-1] = p[j];
-    p[j] = pp;
+    SWAP(&p[len - 1], &p[j]);
     len--;
   }
   return p;
