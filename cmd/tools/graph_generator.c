@@ -543,6 +543,16 @@ static unsigned umul(unsigned a, unsigned b) {
   return res;
 }
 
+/// add two unsigned integers, exiting on overflow
+static unsigned uadd(unsigned a, unsigned b) {
+  unsigned res;
+  if (uadd_overflow(a, b, &res)) {
+    fprintf(stderr, "integer overflow in %u + %u\n", a, b);
+    graphviz_exit(EXIT_FAILURE);
+  }
+  return res;
+}
+
 static unsigned *genCnt(unsigned NN) {
     unsigned* T = gv_calloc(NN + 1, sizeof(unsigned));
     unsigned NLAST = 1;
@@ -555,7 +565,7 @@ static unsigned *genCnt(unsigned NN) {
 	    for (unsigned J = 1; J <= NLAST; J++) {
 		if (I <= D) break;
 		I = I-D;
-		SUM += umul(T[I], TD);
+		SUM = uadd(SUM, umul(T[I], TD));
 	    }
 	}
 	NLAST++;

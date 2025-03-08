@@ -41,6 +41,32 @@ static inline bool sadd_overflow(int a, int b, int *res) {
   return false;
 }
 
+/// add two unsigned integers, checking for overflow
+///
+/// @param a Operand 1
+/// @param b Operand 2
+/// @param res [out] Result on success
+/// @return True if overflow would occur
+static inline bool uadd_overflow(unsigned a, unsigned b, unsigned *res) {
+  assert(res != NULL);
+
+  // delegate to hardware optimized implementations where possible
+#if defined(__clang__) &&                                                      \
+    (__clang_major__ > 3 ||                                                    \
+     (__clang_major__ == 3 && __clang_minor__ > 7)) // Clang ≥ 3.8
+  return __builtin_uadd_overflow(a, b, res);
+#elif defined(__GNUC__) && __GNUC__ > 4 // GCC ≥ 5
+  return __builtin_uadd_overflow(a, b, res);
+#endif
+
+  if (UINT_MAX - a < b) {
+    return true;
+  }
+
+  *res = a + b;
+  return false;
+}
+
 /// multiply two unsigned integers, checking for overflow
 ///
 /// @param a Operand 1
