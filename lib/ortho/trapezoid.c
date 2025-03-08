@@ -925,7 +925,8 @@ traps_t construct_trapezoids(int nseg, segment_t *seg, int *permute) {
     for (i = 1; i <= nseg; i++)
 	seg[i].root0 = seg[i].root1 = root;
 
-    for (h = 1; h <= math_logstar_n(nseg); h++) {
+    const int logstar = math_logstar_n(nseg);
+    for (h = 1; h <= logstar; h++) {
 	for (i = math_N(nseg, h -1) + 1; i <= math_N(nseg, h); i++)
 	    add_segment(permute[segi++], seg, &tr, &qs);
 
@@ -934,7 +935,7 @@ traps_t construct_trapezoids(int nseg, segment_t *seg, int *permute) {
 	    find_new_roots(i, seg, &tr, &qs);
     }
 
-    for (i = math_N(nseg, math_logstar_n(nseg)) + 1; i <= nseg; i++)
+    for (i = math_N(nseg, logstar) + 1; i <= nseg; i++)
 	add_segment(permute[segi++], seg, &tr, &qs);
 
     free(qs.data);
