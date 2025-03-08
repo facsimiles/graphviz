@@ -18,6 +18,7 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/list.h>
+#include <util/overflow.h>
 
 void makePath(unsigned n, edgefn ef){
     if (n == 1) {
@@ -532,6 +533,16 @@ static pair pop(int_stack_t *sp) {
 
 /*****************/
 
+/// multiply two unsigned integers, exiting on overflow
+static unsigned umul(unsigned a, unsigned b) {
+  unsigned res;
+  if (umul_overflow(a, b, &res)) {
+    fprintf(stderr, "integer overflow in %u * %u\n", a, b);
+    graphviz_exit(EXIT_FAILURE);
+  }
+  return res;
+}
+
 static unsigned *genCnt(unsigned NN) {
     unsigned* T = gv_calloc(NN + 1, sizeof(unsigned));
     unsigned NLAST = 1;
@@ -540,11 +551,11 @@ static unsigned *genCnt(unsigned NN) {
 	unsigned SUM = 0;
 	for (unsigned D = 1; D <= NLAST; D++) {
 	    unsigned I = NLAST + 1;
-	    const unsigned TD = T[D] * D;
+	    const unsigned TD = umul(T[D], D);
 	    for (unsigned J = 1; J <= NLAST; J++) {
 		if (I <= D) break;
 		I = I-D;
-		SUM += T[I]*TD;
+		SUM += umul(T[I], TD);
 	    }
 	}
 	NLAST++;
