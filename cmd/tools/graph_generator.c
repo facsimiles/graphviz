@@ -580,7 +580,7 @@ drand(void)
 {
     double d;
     d = rand();
-    d = d / RAND_MAX;
+    d = d / (RAND_MAX + 1.0);
     return d;
 }
 
