@@ -24,7 +24,7 @@ import textwrap
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Iterator, List, Set
+from typing import Iterator, List, Set, Union
 
 import pexpect
 import pytest
@@ -32,6 +32,7 @@ from PIL import Image
 
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
+    compile_c,
     dot,
     gvpr,
     is_asan_instrumented,
@@ -5358,6 +5359,81 @@ def test_2640():
     # the seed 1967 was observed previously to cause crashes on Windows
     gvgen = which("gvgen")
     run_raw([gvgen, "-R", "20", "-u1967"], stdout=subprocess.DEVNULL)
+
+
+def _find_plugin_so(compiler: Union[Path, str], plugin: str) -> Path:
+    """
+    find the absolute path to the dynamic library for a given Graphviz plugin
+
+    Args:
+        compiler: C compiler
+        plugin: Name of the plugin being sought
+
+    Return:
+        An absolute path to the corresponding installed dynamic library or `None` if it
+        could not be found.
+    """
+
+    # TODO: Windows support
+    paths = run([compiler, "-print-search-dirs"])
+
+    libpath = re.search("^libraries: =(?P<paths>.*)$", paths, flags=re.MULTILINE)
+    assert libpath is not None, "could not find compiler’s library search path"
+
+    for path in libpath.group("paths").split(":"):
+        candidate = Path(path) / f"graphviz/libgvplugin_{plugin}.so"
+        print(f"checking {candidate}")  # log some useful information
+        if candidate.exists():
+            return candidate
+
+    # not found
+    return None
+
+
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="not implemented yet for Windows"
+)
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2648"
+)
+def test_2648(tmp_path: Path):
+    """
+    rendering multiple times programmatically should not crash
+    https://gitlab.com/graphviz/graphviz/-/issues/2648
+    """
+
+    # find co-located test source
+    c_src = (Path(__file__).parent / "2648.c").resolve()
+    assert c_src.exists(), "missing test case"
+
+    # From here, we essentially want to `run_c([c_src], …)`. However we cannot easily do
+    # this because we want to directly link against plugins (instead of `dlopen` them),
+    # libraries that are not in the linker’s search path. So instead we have to take a
+    # more manual approach.
+
+    # find the C compiler
+    cc = os.environ.get("CC", "cc")
+
+    # find the plugins we need to link against
+    core = _find_plugin_so(cc, "core")
+    assert core is not None, "core plugin library not found"
+    dot_layout = _find_plugin_so(cc, "dot_layout")
+    assert dot_layout is not None, "dot layout plugin library not found"
+
+    ## compile the test code
+    exe = tmp_path / "a.exe"
+    compile_c(c_src, link=["cgraph", "gvc", core, dot_layout], dst=exe)
+
+    # teach the runtime linker how to find the plugins
+    env = os.environ.copy()
+    ld_library_path = f"{core.parent}:{dot_layout.parent}"
+    if "LD_LIBRARY_PATH" in env:
+        env["LD_LIBRARY_PATH"] = f"{ld_library_path}:{env['LD_LIBRARY_PATH']}"
+    else:
+        env["LD_LIBRARY_PATH"] = ld_library_path
+
+    # run the test code
+    subprocess.run([exe], env=env, check=True)
 
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))

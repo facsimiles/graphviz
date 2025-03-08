@@ -73,7 +73,7 @@ def run(args: List[Union[Path, str]], **kwargs) -> Optional[str]:
 def compile_c(
     src: Path,
     cflags: List[str] = None,
-    link: List[str] = None,
+    link: List[Union[Path, str]] = None,
     dst: Optional[Union[Path, str]] = None,
 ) -> Path:
     """compile a C program"""
@@ -91,17 +91,38 @@ def compile_c(
     pkgconf = shutil.which("pkg-config") or shutil.which("pkgconf")
     if pkgconf is not None and not is_cmake():
         # assume pkg-config can pick up Graphviz’ .pc files
-        if len(link) > 0:
-            libraries = [f"lib{l}" for l in link]
+        libraries = []
+        for l in link:
+            # for absolute paths, assume we need no pkg-config lookup
+            if str(l).startswith("/") and Path(l).exists():
+                # flush any pending pkg-config lookup to roughly keep the library
+                # ordering the caller requested
+                if len(libraries) > 0:
+                    cflags += run([pkgconf, "--cflags", "--"] + libraries).split()
+                    ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
+                    libraries = []
+                ldflags += [l]
+            else:
+                libraries += [f"lib{l}"]
+        if len(libraries) > 0:
             cflags += run([pkgconf, "--cflags", "--"] + libraries).split()
             ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
     elif platform.system() == "Windows" and not is_mingw():
         if len(link) > 0:
             if not is_static_build():
                 cflags += ["-DGVDLL=1"]
-            ldflags += ["-link"] + [f"{l}.lib" for l in link]
+            ldflags += ["-link"]
+            for l in link:
+                if str(l).startswith("/") and Path(l).exists():
+                    ldflags += [l]
+                else:
+                    ldflags += [f"{l}.lib"]
     else:
-        ldflags += [f"-l{l}" for l in link]
+        for l in link:
+            if str(l).startswith("/") and Path(l).exists():
+                ldflags += [l]
+            else:
+                ldflags += [f"-l{l}"]
 
     # if the user did not give us destination, use a temporary path
     if dst is None:
@@ -360,7 +381,7 @@ def run_c(
     args: List[str] = None,
     input: str = "",
     cflags: List[str] = None,
-    link: List[str] = None,
+    link: List[Union[Path, str]] = None,
 ) -> Tuple[str, str]:
     """compile and run a C program"""
 
