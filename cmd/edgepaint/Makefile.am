@@ -24,6 +24,7 @@ edgepaint_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
+	$(top_builddir)/lib/util/libutil_C.la \
 	-lm
 
 # add a non-existent C++ source to force the C++ compiler to be used for

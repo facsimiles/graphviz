@@ -49,8 +49,6 @@ extern unsigned char Verbose;
 extern double _statistics[10];
 #endif
 
-
-extern int irand(int n);
 extern double drand(void);
 extern int *random_permutation(int n);/* random permutation of 0 to n-1 */
 

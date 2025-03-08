@@ -29,6 +29,7 @@ gvmap_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
+	$(top_builddir)/lib/util/libutil_C.la \
 	$(GTS_LIBS) -lm
 
 cluster_LDADD = \
@@ -39,6 +40,7 @@ cluster_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
+	$(top_builddir)/lib/util/libutil_C.la \
 	$(GTS_LIBS) -lm
 
 gvmap.sh :
