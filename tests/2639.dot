@@ -1,0 +1,12 @@
+digraph {
+  subgraph SUB1 {
+    a -> b
+    subgraph SPOON {
+      c1 -> d1 -> e1 -> {f1 g1}
+    }
+    subgraph FORK {
+      c2 -> d2 -> e2 -> {f2 g2}
+    }
+  }
+  i ->j
+}

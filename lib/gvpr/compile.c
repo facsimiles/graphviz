@@ -532,7 +532,7 @@ static char *getArg(int n, Gpr_t *state) {
     exerror("program references ARGV[%d] - undefined", n);
     return 0;
   }
-  return (state->argv[n]);
+  return state->argv[n];
 }
 
 /* setDfltAttr:
@@ -553,7 +553,6 @@ static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
   default:
     error(ERROR_WARNING, "Unknown kind \"%s\" passed to setDflt()", k);
     return 1;
-    break;
   }
   agattr(gp, kind, name, value);
   return 0;
@@ -563,30 +562,24 @@ static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
  * Map string to object kind
  */
 static int toKind(char *k, char *fn) {
-  int kind;
-
   switch (*k) {
   case 'G':
-    kind = AGRAPH;
-    break;
+    return AGRAPH;
   case 'E':
-    kind = AGEDGE;
-    break;
+    return AGEDGE;
   case 'N':
-    kind = AGNODE;
-    break;
+    return AGNODE;
   default:
     exerror("Unknown kind \"%s\" passed to %s()", k, fn);
-    kind = 0;
     break;
   }
-  return kind;
+  return 0;
 }
 
 /* nxtAttr:
  */
 static char *nxtAttr(Agraph_t *gp, char *k, char *name) {
-  char *fn = (name ? "nxtAttr" : "fstAttr");
+  char *fn = name ? "nxtAttr" : "fstAttr";
   int kind = toKind(k, fn);
   Agsym_t *sym;
 
@@ -1395,7 +1388,7 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
           exerror("NULL kind passed to %s", sym->name);
           v.string = 0;
         } else if (sym->index == F_isattr) {
-          v.integer = (agattr(gp, toKind(kind, sym->name), name, 0) != NULL);
+          v.integer = agattr(gp, toKind(kind, sym->name), name, 0) != NULL;
         } else if (sym->index == F_nxtattr) {
           v.string = nxtAttr(gp, kind, name);
         } else {
