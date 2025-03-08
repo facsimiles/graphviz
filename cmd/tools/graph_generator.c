@@ -9,6 +9,7 @@
  *************************************************************************/
 
 #include "config.h"
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -533,35 +534,35 @@ static pair pop(int_stack_t *sp) {
 
 /*****************/
 
-/// multiply two unsigned integers, exiting on overflow
-static unsigned umul(unsigned a, unsigned b) {
-  unsigned res;
-  if (umul_overflow(a, b, &res)) {
-    fprintf(stderr, "integer overflow in %u * %u\n", a, b);
+/// multiply two 64-bit unsigned integers, exiting on overflow
+static uint64_t umul(uint64_t a, uint64_t b) {
+  uint64_t res;
+  if (u64mul_overflow(a, b, &res)) {
+    fprintf(stderr, "integer overflow in %" PRIu64 " * %" PRIu64 "\n", a, b);
     graphviz_exit(EXIT_FAILURE);
   }
   return res;
 }
 
-/// add two unsigned integers, exiting on overflow
-static unsigned uadd(unsigned a, unsigned b) {
-  unsigned res;
-  if (uadd_overflow(a, b, &res)) {
-    fprintf(stderr, "integer overflow in %u + %u\n", a, b);
+/// add two 64-bit unsigned integers, exiting on overflow
+static uint64_t uadd(uint64_t a, uint64_t b) {
+  uint64_t res;
+  if (u64add_overflow(a, b, &res)) {
+    fprintf(stderr, "integer overflow in %" PRIu64 " + %" PRIu64 "\n", a, b);
     graphviz_exit(EXIT_FAILURE);
   }
   return res;
 }
 
-static unsigned *genCnt(unsigned NN) {
-    unsigned* T = gv_calloc(NN + 1, sizeof(unsigned));
+static uint64_t *genCnt(unsigned NN) {
+    uint64_t *T = gv_calloc(NN + 1, sizeof(uint64_t));
     unsigned NLAST = 1;
     T[1] = 1;
     while (NN > NLAST) {
-	unsigned SUM = 0;
+	uint64_t SUM = 0;
 	for (unsigned D = 1; D <= NLAST; D++) {
 	    unsigned I = NLAST + 1;
-	    const unsigned TD = umul(T[D], D);
+	    const uint64_t TD = umul(T[D], D);
 	    for (unsigned J = 1; J <= NLAST; J++) {
 		if (I <= D) break;
 		I = I-D;
@@ -583,7 +584,7 @@ drand(void)
     return d;
 }
 
-static void genTree(unsigned NN, unsigned *T, int_stack_t *stack,
+static void genTree(unsigned NN, uint64_t *T, int_stack_t *stack,
                     tree_t *TREE) {
     double v;
     pair p;
@@ -600,7 +601,7 @@ static void genTree(unsigned NN, unsigned *T, int_stack_t *stack,
 	    unsigned M;
 	    do {
 		D++;
-		const unsigned TD = umul(D, T[D]);
+		const uint64_t TD = umul(D, T[D]);
 		M = N;
 		J = 0;
 		do {
@@ -644,7 +645,7 @@ writeTree (tree_t* tp, edgefn ef)
 
 struct treegen_s {
     unsigned N;
-    unsigned* T;
+    uint64_t *T;
     int_stack_t sp;
     tree_t* tp;
 };

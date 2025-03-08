@@ -10,6 +10,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 /** add two integers, checking for overflow
  *
@@ -41,25 +42,25 @@ static inline bool sadd_overflow(int a, int b, int *res) {
   return false;
 }
 
-/// add two unsigned integers, checking for overflow
+/// add two 64-bit unsigned integers, checking for overflow
 ///
 /// @param a Operand 1
 /// @param b Operand 2
 /// @param res [out] Result on success
 /// @return True if overflow would occur
-static inline bool uadd_overflow(unsigned a, unsigned b, unsigned *res) {
+static inline bool u64add_overflow(uint64_t a, uint64_t b, uint64_t *res) {
   assert(res != NULL);
 
   // delegate to hardware optimized implementations where possible
 #if defined(__clang__) &&                                                      \
     (__clang_major__ > 3 ||                                                    \
      (__clang_major__ == 3 && __clang_minor__ > 7)) // Clang ≥ 3.8
-  return __builtin_uadd_overflow(a, b, res);
+  return __builtin_add_overflow(a, b, res);
 #elif defined(__GNUC__) && __GNUC__ > 4 // GCC ≥ 5
-  return __builtin_uadd_overflow(a, b, res);
+  return __builtin_add_overflow(a, b, res);
 #endif
 
-  if (UINT_MAX - a < b) {
+  if (UINT64_MAX - a < b) {
     return true;
   }
 
@@ -67,25 +68,25 @@ static inline bool uadd_overflow(unsigned a, unsigned b, unsigned *res) {
   return false;
 }
 
-/// multiply two unsigned integers, checking for overflow
+/// multiply two 64-bit unsigned integers, checking for overflow
 ///
 /// @param a Operand 1
 /// @param b Operand 2
 /// @param res [out] Result on success
 /// @return True if overflow would occur
-static inline bool umul_overflow(unsigned a, unsigned b, unsigned *res) {
+static inline bool u64mul_overflow(uint64_t a, uint64_t b, uint64_t *res) {
   assert(res != NULL);
 
   // delegate to hardware optimized implementations where possible
 #if defined(__clang__) &&                                                      \
     (__clang_major__ > 3 ||                                                    \
      (__clang_major__ == 3 && __clang_minor__ > 7)) // Clang ≥ 3.8
-  return __builtin_umul_overflow(a, b, res);
+  return __builtin_mul_overflow(a, b, res);
 #elif defined(__GNUC__) && __GNUC__ > 4 // GCC ≥ 5
-  return __builtin_umul_overflow(a, b, res);
+  return __builtin_mul_overflow(a, b, res);
 #endif
 
-  if (a > 0 && UINT_MAX / a < b) {
+  if (a > 0 && UINT64_MAX / a < b) {
     return true;
   }
 
