@@ -347,16 +347,16 @@ merge_trapezoids(int segnum, int tfirst, int tlast, int side, traps_t *tr,
 
   /* First merge polys on the LHS */
   t = tfirst;
-  while (t > 0 && _greater_than_equal_to(&tr->data[t].lo, &tr->data[tlast].lo))
+  while (is_valid_trap(t) && _greater_than_equal_to(&tr->data[t].lo, &tr->data[tlast].lo))
     {
       int tnext;
       bool cond;
       if (side == S_LEFT)
-	cond = ((tnext = tr->data[t].d0) > 0 && tr->data[tnext].rseg == segnum) ||
-		((tnext = tr->data[t].d1) > 0 && tr->data[tnext].rseg == segnum);
+	cond = (is_valid_trap(tnext = tr->data[t].d0) && tr->data[tnext].rseg == segnum) ||
+		(is_valid_trap(tnext = tr->data[t].d1) && tr->data[tnext].rseg == segnum);
       else
-	cond = ((tnext = tr->data[t].d0) > 0 && tr->data[tnext].lseg == segnum) ||
-		((tnext = tr->data[t].d1) > 0 && tr->data[tnext].lseg == segnum);
+	cond = (is_valid_trap(tnext = tr->data[t].d0) && tr->data[tnext].lseg == segnum) ||
+		(is_valid_trap(tnext = tr->data[t].d1) && tr->data[tnext].lseg == segnum);
 
       if (cond)
 	{
@@ -375,14 +375,14 @@ merge_trapezoids(int segnum, int tfirst, int tlast, int side, traps_t *tr,
 
 	      /* Change the upper neighbours of the lower trapezoids */
 
-	      if ((tr->data[t].d0 = tr->data[tnext].d0) > 0) {
+	      if (is_valid_trap(tr->data[t].d0 = tr->data[tnext].d0)) {
 		if (tr->data[tr->data[t].d0].u0 == tnext)
 		  tr->data[tr->data[t].d0].u0 = t;
 		else if (tr->data[tr->data[t].d0].u1 == tnext)
 		  tr->data[tr->data[t].d0].u1 = t;
 	      }
 
-	      if ((tr->data[t].d1 = tr->data[tnext].d1) > 0) {
+	      if (is_valid_trap(tr->data[t].d1 = tr->data[tnext].d1)) {
 		if (tr->data[tr->data[t].d1].u0 == tnext)
 		  tr->data[tr->data[t].d1].u0 = t;
 		else if (tr->data[tr->data[t].d1].u1 == tnext)
@@ -405,10 +405,9 @@ merge_trapezoids(int segnum, int tfirst, int tlast, int side, traps_t *tr,
 
 static void update_trapezoid(segment_t *s, segment_t *seg, traps_t *tr, int t, int tn)
 {
-  if (tr->data[t].u0 > 0 && tr->data[t].u1 > 0)
+  if (is_valid_trap(tr->data[t].u0) && is_valid_trap(tr->data[t].u1))
   {			/* continuation of a chain from abv. */
-    if (tr->data[t].usave > 0) /* three upper neighbours */
-    {
+    if (is_valid_trap(tr->data[t].usave)) { // three upper neighbours
       if (tr->data[t].uside == S_LEFT)
       {
 	tr->data[tn].u0 = tr->data[t].u1;
@@ -446,7 +445,7 @@ static void update_trapezoid(segment_t *s, segment_t *seg, traps_t *tr, int t, i
   {			/* fresh seg. or upward cusp */
     int tmp_u = tr->data[t].u0;
     int td0, td1;
-    if ((td0 = tr->data[tmp_u].d0) > 0 && (td1 = tr->data[tmp_u].d1) > 0)
+    if (is_valid_trap(td0 = tr->data[tmp_u].d0) && is_valid_trap(td1 = tr->data[tmp_u].d1))
     {		/* upward cusp */
       if (tr->data[td0].rseg > 0 && !is_left_of(tr->data[td0].rseg, seg, &s->v1))
       {
@@ -509,14 +508,14 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       tr->data[tl].u0 = tu;
       tr->data[tl].u1 = 0;
 
-      if ((tmp_d = tr->data[tl].d0) > 0 && tr->data[tmp_d].u0 == tu)
+      if (is_valid_trap(tmp_d = tr->data[tl].d0) && tr->data[tmp_d].u0 == tu)
 	tr->data[tmp_d].u0 = tl;
-      if ((tmp_d = tr->data[tl].d0) > 0 && tr->data[tmp_d].u1 == tu)
+      if (is_valid_trap(tmp_d = tr->data[tl].d0) && tr->data[tmp_d].u1 == tu)
 	tr->data[tmp_d].u1 = tl;
 
-      if ((tmp_d = tr->data[tl].d1) > 0 && tr->data[tmp_d].u0 == tu)
+      if (is_valid_trap(tmp_d = tr->data[tl].d1) && tr->data[tmp_d].u0 == tu)
 	tr->data[tmp_d].u0 = tl;
-      if ((tmp_d = tr->data[tl].d1) > 0 && tr->data[tmp_d].u1 == tu)
+      if (is_valid_trap(tmp_d = tr->data[tl].d1) && tr->data[tmp_d].u1 == tu)
 	tr->data[tmp_d].u1 = tl;
 
       /* Now update the query structure and obtain the sinks for the */
@@ -566,14 +565,14 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       tr->data[tl].u0 = tu;
       tr->data[tl].u1 = 0;
 
-      if ((tmp_d = tr->data[tl].d0) > 0 && tr->data[tmp_d].u0 == tu)
+      if (is_valid_trap(tmp_d = tr->data[tl].d0) && tr->data[tmp_d].u0 == tu)
 	tr->data[tmp_d].u0 = tl;
-      if ((tmp_d = tr->data[tl].d0) > 0 && tr->data[tmp_d].u1 == tu)
+      if (is_valid_trap(tmp_d = tr->data[tl].d0) && tr->data[tmp_d].u1 == tu)
 	tr->data[tmp_d].u1 = tl;
 
-      if ((tmp_d = tr->data[tl].d1) > 0 && tr->data[tmp_d].u0 == tu)
+      if (is_valid_trap(tmp_d = tr->data[tl].d1) && tr->data[tmp_d].u0 == tu)
 	tr->data[tmp_d].u0 = tl;
-      if ((tmp_d = tr->data[tl].d1) > 0 && tr->data[tmp_d].u1 == tu)
+      if (is_valid_trap(tmp_d = tr->data[tl].d1) && tr->data[tmp_d].u1 == tu)
 	tr->data[tmp_d].u1 = tl;
 
       /* Now update the query structure and obtain the sinks for the */
@@ -613,7 +612,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
   t = tfirst;			/* topmost trapezoid */
 
-  while (t > 0 && _greater_than_equal_to(&tr->data[t].lo, &tr->data[tlast].lo))
+  while (is_valid_trap(t) && _greater_than_equal_to(&tr->data[t].lo, &tr->data[tlast].lo))
 				/* traverse from top to bot */
     {
       int t_sav, tn_sav;
@@ -648,7 +647,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
       /* error */
 
-      if (tr->data[t].d0 <= 0 && tr->data[t].d1 <= 0) /* case cannot arise */
+      if (!is_valid_trap(tr->data[t].d0) && !is_valid_trap(tr->data[t].d1)) // case cannot arise
 	{
 	  fprintf(stderr, "add_segment: error\n");
 	  break;
@@ -658,7 +657,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       /* two resulting trapezoids t and tn as the upper neighbours of */
       /* the sole lower trapezoid */
 
-      else if (tr->data[t].d0 > 0 && tr->data[t].d1 <= 0)
+      else if (is_valid_trap(tr->data[t].d0) && !is_valid_trap(tr->data[t].d1))
 	{			/* Only one trapezoid below */
 	  update_trapezoid(&s, seg, tr, t, tn);
 
@@ -688,7 +687,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	    }
 	  else
 	    {
-	      if (tr->data[tr->data[t].d0].u0 > 0 && tr->data[tr->data[t].d0].u1 > 0)
+	      if (is_valid_trap(tr->data[tr->data[t].d0].u0) && is_valid_trap(tr->data[tr->data[t].d0].u1))
 		{
 		  if (tr->data[tr->data[t].d0].u0 == t) /* passes through LHS */
 		    {
@@ -709,7 +708,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	}
 
 
-      else if (tr->data[t].d0 <= 0 && tr->data[t].d1 > 0)
+      else if (!is_valid_trap(tr->data[t].d0) && is_valid_trap(tr->data[t].d1))
 	{			/* Only one trapezoid below */
 	  update_trapezoid(&s, seg, tr, t, tn);
 
@@ -739,7 +738,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	    }
 	  else
 	    {
-	      if (tr->data[tr->data[t].d1].u0 > 0 && tr->data[tr->data[t].d1].u1 > 0)
+	      if (is_valid_trap(tr->data[tr->data[t].d1].u0) && is_valid_trap(tr->data[tr->data[t].d1].u1))
 		{
 		  if (tr->data[tr->data[t].d1].u0 == t) /* passes through LHS */
 		    {

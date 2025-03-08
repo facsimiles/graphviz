@@ -179,7 +179,7 @@ inside_polygon (trap_t *t, segment_t* seg)
   if (t->lseg <= 0 || t->rseg <= 0)
     return false;
   
-  if ((t->u0 <= 0 && t->u1 <= 0) || (t->d0 <= 0 && t->d1 <= 0)) /* triangle */
+  if ((!is_valid_trap(t->u0) && !is_valid_trap(t->u1)) || (!is_valid_trap(t->d0) && !is_valid_trap(t->d1))) // triangle
     return _greater_than(&seg[rseg].v1, &seg[rseg].v0);
   
   return false;
@@ -322,7 +322,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
   int mnew;
   int v0, v1;
 
-  if (trnum <= 0 || bitarray_get(*visited, (size_t)trnum))
+  if (!is_valid_trap(trnum) || bitarray_get(*visited, (size_t)trnum))
     return;
 
   t = &tr->data[trnum];
@@ -356,10 +356,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 
   /* special cases for triangles with cusps at the opposite ends. */
   /* take care of this first */
-  if (t->u0 <= 0 && t->u1 <= 0)
-    {
-      if (t->d0 > 0 && t->d1 > 0) /* downward opening triangle */
-	{
+  if (!is_valid_trap(t->u0) && !is_valid_trap(t->u1)) {
+      if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // downward opening triangle
 	  v0 = tr->data[t->d1].lseg;
 	  v1 = t->lseg;
 	  if (from == t->d1)
@@ -385,10 +383,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	}
     }
   
-  else if (t->d0 <= 0 && t->d1 <= 0)
-    {
-      if (t->u0 > 0 && t->u1 > 0) /* upward opening triangle */
-	{
+  else if (!is_valid_trap(t->d0) && !is_valid_trap(t->d1)) {
+      if (is_valid_trap(t->u0) && is_valid_trap(t->u1)) { // upward opening triangle
 	  v0 = t->rseg;
 	  v1 = tr->data[t->u0].rseg;
 	  if (from == t->u1)
@@ -414,10 +410,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	}
     }
   
-  else if (t->u0 > 0 && t->u1 > 0)
-    {
-      if (t->d0 > 0 && t->d1 > 0) /* downward + upward cusps */
-	{
+  else if (is_valid_trap(t->u0) && is_valid_trap(t->u1)) {
+      if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // downward + upward cusps
 	  v0 = tr->data[t->d1].lseg;
 	  v1 = tr->data[t->u0].rseg;
 	  if ((dir == TR_FROM_DN && t->d1 == from) ||
@@ -485,10 +479,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	    }
 	}
     }
-  else if (t->u0 > 0 || t->u1 > 0) /* no downward cusp */
-    {
-      if (t->d0 > 0 && t->d1 > 0) /* only upward cusp */
-	{
+  else if (is_valid_trap(t->u0) || is_valid_trap(t->u1)) { // no downward cusp
+      if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // only upward cusp
 	  if (_equal_to(&t->hi, &seg[t->lseg].v0))
 	    {
 	      v0 = tr->data[t->d1].lseg;
@@ -627,10 +619,10 @@ monotonate_trapezoids(int nsegs, segment_t *seg, traps_t *tr,
 				/* chain  */
   
   /* traverse the polygon */
-    if (tr->data[tr_start].u0 > 0)
+    if (is_valid_trap(tr->data[tr_start].u0))
 	traverse_polygon(&visited, decomp, seg, tr, 0, tr_start,
 	                 tr->data[tr_start].u0, flip, TR_FROM_UP);
-    else if (tr->data[tr_start].d0 > 0)
+    else if (is_valid_trap(tr->data[tr_start].d0))
 	traverse_polygon(&visited, decomp, seg, tr, 0, tr_start,
 	                 tr->data[tr_start].d0, flip, TR_FROM_DN);
   

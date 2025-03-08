@@ -44,6 +44,15 @@ typedef struct {
   int state;
 } trap_t; 
 
+/// is the given index a reference to an existing trapezoid?
+///
+/// The indices stored in `trap_t.{u0|u1|d0|d1|usave}` can contain sentinel
+/// values that represent an unset or invalid trapezoid. This function can be
+/// used to determine the validity of these fields.
+static inline bool is_valid_trap(int index) {
+  return index > 0;
+}
+
 /// an array of trapezoids
 typedef struct {
   size_t length;
