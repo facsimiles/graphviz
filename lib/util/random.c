@@ -22,11 +22,9 @@ int *gv_permutation(int bound) {
   }
 
   // perform a Fisher-Yates shuffle
-  int len = bound;
-  while (len > 1) {
-    const int j = gv_random(len);
-    SWAP(&p[len - 1], &p[j]);
-    len--;
+  for (int i = bound - 1; i > 0; --i) {
+    const int j = gv_random(i + 1);
+    SWAP(&p[i], &p[j]);
   }
 
   return p;
