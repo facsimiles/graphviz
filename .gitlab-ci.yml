@@ -202,13 +202,15 @@ portable-source:
                 Set-Content "env:\$($matches[1])" $matches[2];
               }
             }
-        - $FILENAME = & invoke-Expression "Get-ChildItem build\Graphviz*.exe"
+        - cd build
+        - $FILENAME = & invoke-Expression "Get-ChildItem Graphviz*.exe"
         # Install using installer and add bin directory to path.
         # Piping the output of the installer to Out-Null, makes the script wait
         # for the .exe to exit, instead continuing to the next command (which
         # will then fail because the install hasn't finished)
         - ./${FILENAME} /S /D=$Env:graphviz_install_dir | Out-Null
         - $Env:Path = $Env:graphviz_install_dir + "\bin" + ";" + $Env:Path
+        - cd ..
         - $Env:INCLUDE += ";C:\Graphviz\include"
         - $Env:LIB += ";C:\Graphviz\lib"
         - $Env:graphviz_ROOT="C:\Graphviz"
@@ -218,7 +220,7 @@ portable-source:
         - $VERSION_ID = "10"
         - $DIR = "Packages\${ID}\${VERSION_ID}\cmake\$Env:configuration"
         - mkdir -p $DIR
-        - mv "${FILENAME}" ${DIR}\graphviz-install-$Env:GV_VERSION-${API}.exe
+        - mv "build\${FILENAME}" ${DIR}\graphviz-install-$Env:GV_VERSION-${API}.exe
         - mv "build\*.zip" $DIR
     artifacts:
         when: on_success
