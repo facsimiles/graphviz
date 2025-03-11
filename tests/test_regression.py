@@ -5409,9 +5409,6 @@ def _find_plugin_so(plugin: str) -> Path:
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2648"
-)
 def test_2648(tmp_path: Path):
     """
     rendering multiple times programmatically should not crash
