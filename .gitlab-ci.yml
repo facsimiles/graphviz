@@ -121,7 +121,6 @@ portable-source:
 
 .build_template: &macos_build_definition
     stage: build
-    needs: [] # FIXME: remove when building from portable source
     script:
         - source ci/macos-install-build-dependencies.sh
         - logfile=`mktemp`
@@ -418,8 +417,10 @@ out-of-source-build:
 
 macos-autotools-build:
     <<: *macos_build_definition
+    needs:
+        - job: portable-source
+          artifacts: true
     before_script:
-        - python3 gen_version.py --output GRAPHVIZ_VERSION # FIXME: remove when building from portable source
         - export build_system="autotools"
     tags:
         - saas-macos-medium-m1
@@ -779,6 +780,7 @@ fedora41-cmake-build:
 
 macos-cmake-build:
     <<: *macos_build_definition
+    needs: []
     before_script:
         - export build_system="cmake"
         # fail on any compiler warnings
