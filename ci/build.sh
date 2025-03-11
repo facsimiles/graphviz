@@ -87,13 +87,14 @@ else
         tar cf - *.rpm | xz -9 -c - >${DIR}/graphviz-${GV_VERSION}-rpms.tar.xz
         popd
     elif [[ ${id} == darwin* ]]; then
-        git --version
-        ./autogen.sh
+        tar xfz graphviz-${GV_VERSION}.tar.gz
+        pushd graphviz-${GV_VERSION}
         ./configure --prefix=$( pwd )/build --with-quartz=yes
         make
         make install
-        python3 ci/make_relocatable.py $( pwd )/build
+        python3 ../ci/make_relocatable.py $( pwd )/build
         tar cfz ${DIR}/graphviz-${GV_VERSION}-${ARCH}.tar.gz --options gzip:compression-level=9 build
+        popd
     elif [[ ${id} == cygwin* || ${id} == msys* ]]; then
         if [[ ${id} == msys* ]]; then
             # ensure that MinGW tcl shell is used in order to find tcl functions
