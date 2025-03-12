@@ -5383,7 +5383,10 @@ def _find_plugin_so(plugin: str) -> Path:
     GVPLUGIN_AGE = 0
 
     for subdir in ("lib", "lib64"):
-        candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so"
+        if is_macos():
+            candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.dylib"
+        else:
+            candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so"
         print(f"checking {candidate}")  # log some useful information
         if candidate.exists():
             return candidate
@@ -5434,10 +5437,16 @@ def test_2648(tmp_path: Path):
     # teach the runtime linker how to find the plugins
     env = os.environ.copy()
     ld_library_path = f"{core.parent}:{dot_layout.parent}"
-    if "LD_LIBRARY_PATH" in env:
-        env["LD_LIBRARY_PATH"] = f"{ld_library_path}:{env['LD_LIBRARY_PATH']}"
+    if is_macos():
+        if "DYLD_LIBRARY_PATH" in env:
+            env["DYLD_LIBRARY_PATH"] = f"{ld_library_path}:{env['DYLD_LIBRARY_PATH']}"
+        else:
+            env["DYLD_LIBRARY_PATH"] = ld_library_path
     else:
-        env["LD_LIBRARY_PATH"] = ld_library_path
+        if "LD_LIBRARY_PATH" in env:
+            env["LD_LIBRARY_PATH"] = f"{ld_library_path}:{env['LD_LIBRARY_PATH']}"
+        else:
+            env["LD_LIBRARY_PATH"] = ld_library_path
 
     # run the test code
     print(f"+ {shlex.quote(str(exe))}")
