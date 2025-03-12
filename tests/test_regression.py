@@ -5377,11 +5377,24 @@ def _find_plugin_so(plugin: str) -> Path:
     dot_bin = which("dot")
     root = dot_bin.parents[1]
 
+    # replicate information from ../configure.ac
+    GVPLUGIN_CURRENT = 6
+    GVPLUGIN_REVISION = 0
+    GVPLUGIN_AGE = 0
+
     for subdir in ("lib", "lib64"):
         candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so"
         print(f"checking {candidate}")  # log some useful information
         if candidate.exists():
             return candidate
+
+        if platform.system() == "Linux":
+            # try it with the version info suffix, which is what some RHEL platforms use
+            suffix = f".{GVPLUGIN_CURRENT}.{GVPLUGIN_REVISION}.{GVPLUGIN_AGE}"
+            candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so{suffix}"
+            print(f"checking {candidate}")  # log some useful information
+            if candidate.exists():
+                return candidate
 
     # not found
     return None
