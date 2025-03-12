@@ -24,7 +24,7 @@ import textwrap
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Iterator, List, Set, Union
+from typing import Iterator, List, Set
 
 import pexpect
 import pytest
@@ -5359,12 +5359,11 @@ def test_2640(seed: int):
     run_raw([gvgen, "-R", "20", f"-u{seed}"], stdout=subprocess.DEVNULL)
 
 
-def _find_plugin_so(compiler: Union[Path, str], plugin: str) -> Path:
+def _find_plugin_so(plugin: str) -> Path:
     """
     find the absolute path to the dynamic library for a given Graphviz plugin
 
     Args:
-        compiler: C compiler
         plugin: Name of the plugin being sought
 
     Return:
@@ -5373,13 +5372,13 @@ def _find_plugin_so(compiler: Union[Path, str], plugin: str) -> Path:
     """
 
     # TODO: Windows support
-    paths = run([compiler, "-print-search-dirs"])
 
-    libpath = re.search("^libraries: =(?P<paths>.*)$", paths, flags=re.MULTILINE)
-    assert libpath is not None, "could not find compiler’s library search path"
+    # figure out the path to installed root based on binaries
+    dot_bin = which("dot")
+    root = dot_bin.parents[1]
 
-    for path in libpath.group("paths").split(":"):
-        candidate = Path(path) / f"graphviz/libgvplugin_{plugin}.so"
+    for subdir in ("lib", "lib64"):
+        candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so"
         print(f"checking {candidate}")  # log some useful information
         if candidate.exists():
             return candidate
@@ -5409,13 +5408,10 @@ def test_2648(tmp_path: Path):
     # libraries that are not in the linker’s search path. So instead we have to take a
     # more manual approach.
 
-    # find the C compiler
-    cc = os.environ.get("CC", "cc")
-
     # find the plugins we need to link against
-    core = _find_plugin_so(cc, "core")
+    core = _find_plugin_so("core")
     assert core is not None, "core plugin library not found"
-    dot_layout = _find_plugin_so(cc, "dot_layout")
+    dot_layout = _find_plugin_so("dot_layout")
     assert dot_layout is not None, "dot layout plugin library not found"
 
     ## compile the test code
