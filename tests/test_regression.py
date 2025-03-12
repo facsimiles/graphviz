@@ -5371,8 +5371,6 @@ def _find_plugin_so(plugin: str) -> Path:
         could not be found.
     """
 
-    # TODO: Windows support
-
     # figure out the path to installed root based on binaries
     dot_bin = which("dot")
     root = dot_bin.parents[1]
@@ -5385,6 +5383,8 @@ def _find_plugin_so(plugin: str) -> Path:
     for subdir in ("lib", "lib64"):
         if is_macos():
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.dylib"
+        elif platform.system() == "Windows":
+            candidate = root / subdir / f"gvplugin_{plugin}.lib"
         else:
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so"
         print(f"checking {candidate}")  # log some useful information
@@ -5404,7 +5404,8 @@ def _find_plugin_so(plugin: str) -> Path:
 
 
 @pytest.mark.skipif(
-    platform.system() == "Windows", reason="not implemented yet for Windows"
+    is_static_build(),
+    reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
     strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2648"
