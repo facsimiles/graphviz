@@ -68,6 +68,8 @@ R-devel \
 ruby-devel \
 # Language extension gv_tcl
 # Required in redhat/graphviz.spec.fedora.in
+tcl-devel \
+tk-devel \
 libglade2-devel \
 mono-core \
 # create a Python virtual environment
