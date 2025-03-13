@@ -154,13 +154,13 @@ static void genSegments(cell *cells, size_t ncells, boxf bb, segment_t *seg,
 
 /* Generate a random permutation of the segments 1..n */
 static void generateRandomOrdering(size_t n, int *permute) {
-    for (size_t i = 0; i <= n; i++) {
-	assert(i <= INT_MAX);
-	permute[i] = (int)i;
+    for (size_t i = 0; i < n; i++) {
+	assert(i < INT_MAX);
+	permute[i] = (int)i + 1;
     }
 
-    for (size_t i = 1; i <= n; i++) {
-	const size_t j = (size_t)((double)i + drand48() * (double)(n + 1 - i));
+    for (size_t i = 0; i < n; i++) {
+	const size_t j = (size_t)((double)i + drand48() * (double)(n - i));
 	if (j != i) {
 	    SWAP(&permute[i], &permute[j]);
 	}
@@ -685,7 +685,7 @@ dumpSegs (segment_t* sg, int n)
 boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
     const size_t nsegs = 4 * (ncells + 1);
     segment_t* segs = gv_calloc(nsegs + 1, sizeof(segment_t));
-    int* permute = gv_calloc(nsegs + 1, sizeof(int));
+    int* permute = gv_calloc(nsegs, sizeof(int));
 
     if (DEBUG) {
 	fprintf(stderr, "cells = %" PRISIZE_T " segs = %" PRISIZE_T
