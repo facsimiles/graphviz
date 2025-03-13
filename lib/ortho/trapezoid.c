@@ -909,7 +909,7 @@ static int math_N(int n, int h)
 traps_t construct_trapezoids(int nseg, segment_t *seg, int *permute) {
     int i;
     int h;
-    int segi = 1;
+    int segi = 0;
 
     // We will append later nodes by expanding this on-demand. First node is a
     // sentinel.
