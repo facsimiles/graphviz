@@ -286,7 +286,7 @@ Requires:         %{name}-nox = %{version}-%{release}
 %description plugins-core
 Graphviz plugins - core layout engines and text renderers
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config%{pluginsver}
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 # this one is conditional because of rpm dependency ordering
 # on a fresh install this package is installed before dot is avaiable from graphviz-nox
 # no matter since dot -c is also run from the graphviz-nox install
