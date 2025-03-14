@@ -16,6 +16,7 @@
 #include <ortho/trap.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/alloc.h>
@@ -66,7 +67,8 @@ typedef struct {
   int nextfree;
 } vertexchain_t;
 
-static int chain_idx, mon_idx;
+static int chain_idx;
+static size_t mon_idx;
 	/* Table to hold all the monotone */
 	/* polygons . Each monotone polygon */
 	/* is a circularly linked list */
@@ -179,7 +181,7 @@ inside_polygon (trap_t *t, segment_t* seg)
   if (t->lseg <= 0 || t->rseg <= 0)
     return false;
   
-  if ((t->u0 <= 0 && t->u1 <= 0) || (t->d0 <= 0 && t->d1 <= 0)) /* triangle */
+  if ((!is_valid_trap(t->u0) && !is_valid_trap(t->u1)) || (!is_valid_trap(t->d0) && !is_valid_trap(t->d1))) // triangle
     return _greater_than(&seg[rseg].v1, &seg[rseg].v0);
   
   return false;
@@ -256,11 +258,9 @@ get_vertex_positions (int v0, int v1, int *ip, int *iq)
  * the current monotone polygon mcur. Split the current polygon into 
  * two polygons using the diagonal (v0, v1) 
  */
-static int 
-make_new_monotone_poly (int mcur, int v0, int v1)
-{
+static size_t make_new_monotone_poly(size_t mcur, int v0, int v1) {
   int p, q, ip, iq;
-  int mnew = newmon();
+  const size_t mnew = newmon();
   int i, j, nf0, nf1;
   vertexchain_t *vp0, *vp1;
   
@@ -305,7 +305,8 @@ make_new_monotone_poly (int mcur, int v0, int v1)
   vp1->nextfree++;
 
 #if DEBUG > 0
-  fprintf(stderr, "make_poly: mcur = %d, (v0, v1) = (%d, %d)\n", mcur, v0, v1);
+  fprintf(stderr, "make_poly: mcur = %" PRISIZE_T ", (v0, v1) = (%d, %d)\n",
+          mcur, v0, v1);
   fprintf(stderr, "next posns = (p, q) = (%d, %d)\n", p, q);
 #endif
 
@@ -316,18 +317,18 @@ make_new_monotone_poly (int mcur, int v0, int v1)
 
 /* recursively visit all the trapezoids */
 static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
-                             segment_t *seg, traps_t *tr, int mcur, int trnum,
-                             int from, int flip, int dir) {
+                             segment_t *seg, traps_t *tr, size_t mcur,
+                             size_t trnum, size_t from, int flip, int dir) {
   trap_t *t;
-  int mnew;
+  size_t mnew;
   int v0, v1;
 
-  if (trnum <= 0 || bitarray_get(*visited, (size_t)trnum))
+  if (!is_valid_trap(trnum) || bitarray_get(*visited, trnum))
     return;
 
   t = &tr->data[trnum];
 
-  bitarray_set(visited, (size_t)trnum, true);
+  bitarray_set(visited, trnum, true);
   
   if (t->hi.y > t->lo.y + C_EPS && FP_EQUAL(seg[t->lseg].v0.x, seg[t->lseg].v1.x) &&
       FP_EQUAL(seg[t->rseg].v0.x, seg[t->rseg].v1.x)) {
@@ -356,10 +357,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 
   /* special cases for triangles with cusps at the opposite ends. */
   /* take care of this first */
-  if (t->u0 <= 0 && t->u1 <= 0)
-    {
-      if (t->d0 > 0 && t->d1 > 0) /* downward opening triangle */
-	{
+  if (!is_valid_trap(t->u0) && !is_valid_trap(t->u1)) {
+      if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // downward opening triangle
 	  v0 = tr->data[t->d1].lseg;
 	  v1 = t->lseg;
 	  if (from == t->d1)
@@ -385,10 +384,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	}
     }
   
-  else if (t->d0 <= 0 && t->d1 <= 0)
-    {
-      if (t->u0 > 0 && t->u1 > 0) /* upward opening triangle */
-	{
+  else if (!is_valid_trap(t->d0) && !is_valid_trap(t->d1)) {
+      if (is_valid_trap(t->u0) && is_valid_trap(t->u1)) { // upward opening triangle
 	  v0 = t->rseg;
 	  v1 = tr->data[t->u0].rseg;
 	  if (from == t->u1)
@@ -414,10 +411,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	}
     }
   
-  else if (t->u0 > 0 && t->u1 > 0)
-    {
-      if (t->d0 > 0 && t->d1 > 0) /* downward + upward cusps */
-	{
+  else if (is_valid_trap(t->u0) && is_valid_trap(t->u1)) {
+      if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // downward + upward cusps
 	  v0 = tr->data[t->d1].lseg;
 	  v1 = tr->data[t->u0].rseg;
 	  if ((dir == TR_FROM_DN && t->d1 == from) ||
@@ -485,10 +480,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	    }
 	}
     }
-  else if (t->u0 > 0 || t->u1 > 0) /* no downward cusp */
-    {
-      if (t->d0 > 0 && t->d1 > 0) /* only upward cusp */
-	{
+  else if (is_valid_trap(t->u0) || is_valid_trap(t->u1)) { // no downward cusp
+      if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // only upward cusp
 	  if (_equal_to(&t->hi, &seg[t->lseg].v0))
 	    {
 	      v0 = tr->data[t->d1].lseg;
@@ -595,7 +588,6 @@ static void
 monotonate_trapezoids(int nsegs, segment_t *seg, traps_t *tr, 
     int flip, boxes_t *decomp) {
     int i;
-    int tr_start;
     bitarray_t visited = bitarray_new(tr->length);
 
     mchain = gv_calloc(tr->length, sizeof(monchain_t));
@@ -604,9 +596,10 @@ monotonate_trapezoids(int nsegs, segment_t *seg, traps_t *tr,
 
   /* First locate a trapezoid which lies inside the polygon */
   /* and which is triangular */
-    for (i = 0; i < tr->length; i++)
-	if (inside_polygon(&tr->data[i], seg)) break;
-    tr_start = i;
+    size_t j;
+    for (j = 0; j < tr->length; j++)
+	if (inside_polygon(&tr->data[j], seg)) break;
+    const size_t tr_start = j;
   
   /* Initialise the mon data-structure and start spanning all the */
   /* trapezoids within the polygon */
@@ -627,10 +620,10 @@ monotonate_trapezoids(int nsegs, segment_t *seg, traps_t *tr,
 				/* chain  */
   
   /* traverse the polygon */
-    if (tr->data[tr_start].u0 > 0)
+    if (is_valid_trap(tr->data[tr_start].u0))
 	traverse_polygon(&visited, decomp, seg, tr, 0, tr_start,
 	                 tr->data[tr_start].u0, flip, TR_FROM_UP);
-    else if (tr->data[tr_start].d0 > 0)
+    else if (is_valid_trap(tr->data[tr_start].d0))
 	traverse_polygon(&visited, decomp, seg, tr, 0, tr_start,
 	                 tr->data[tr_start].d0, flip, TR_FROM_DN);
   
@@ -659,11 +652,12 @@ dumpTrap (trap_t* tr, int n)
     int i;
     for (i = 1; i <= n; i++) {
       tr++;
-      fprintf (stderr, "%d : %d %d (%f,%f) (%f,%f) %d %d %d %d\n", i,
-         tr->lseg, tr->rseg, tr->hi.x, tr->hi.y, tr->lo.x, tr->lo.y,
-         tr->u0, tr->u1,  tr->d0, tr->d1);
-      fprintf (stderr, "    %d %d %d %d\n", tr->sink, tr->usave,
-         tr->uside, tr->state);
+      fprintf(stderr, "%d : %d %d (%f,%f) (%f,%f) %" PRISIZE_T " %" PRISIZE_T
+              " %" PRISIZE_T " %" PRISIZE_T "\n", i, tr->lseg, tr->rseg,
+              tr->hi.x, tr->hi.y, tr->lo.x, tr->lo.y, tr->u0, tr->u1, tr->d0,
+              tr->d1);
+      fprintf(stderr, "    %" PRISIZE_T " %" PRISIZE_T " %d %d\n", tr->sink,
+              tr->usave, tr->uside, tr->state);
     }
     fprintf (stderr, "====\n");
 }

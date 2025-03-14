@@ -20,6 +20,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 /* Segment attributes */
 
@@ -37,12 +38,22 @@ typedef struct {
 typedef struct {
   int lseg, rseg;       /* two adjoining segments */
   pointf hi, lo;       /* max/min y-values */ 
-  int u0, u1;
-  int d0, d1;
+  size_t u0, u1;
+  size_t d0, d1;
   size_t sink;          ///< pointer to corresponding in Q
-  int usave, uside;     /* I forgot what this means */
+  size_t usave;         ///< I forgot what this means
+  int uside;            ///< I forgot what this means
   int state;
 } trap_t; 
+
+/// is the given index a reference to an existing trapezoid?
+///
+/// The indices stored in `trap_t.{u0|u1|d0|d1|usave}` can contain sentinel
+/// values that represent an unset or invalid trapezoid. This function can be
+/// used to determine the validity of these fields.
+static inline bool is_valid_trap(size_t index) {
+  return index != 0 && index != SIZE_MAX;
+}
 
 /// an array of trapezoids
 typedef struct {
