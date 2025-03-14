@@ -80,7 +80,6 @@ libtcldot_builtin_la_LIBADD = $(GDTCLFT_LIBS) \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-	$(top_builddir)/lib/util/libutil_C.la \
 	$(GTS_LIBS)
 
 if WITH_PANGOCAIRO

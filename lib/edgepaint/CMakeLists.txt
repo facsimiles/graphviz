@@ -25,6 +25,8 @@ target_include_directories(edgepaintlib PRIVATE
   ../pathplan
 )
 
+target_link_libraries(edgepaintlib PRIVATE util)
+
 # work around needed for an object library
 # https://gitlab.com/graphviz/graphviz/-/issues/1613
 if(APPLE)

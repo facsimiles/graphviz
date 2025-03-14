@@ -23,31 +23,6 @@ double drand(void){
   return rand()/(double) RAND_MAX;
 }
 
-int irand(int n){
-  /* 0, 1, ..., n-1 */
-  assert(n > 1);
-  /*return (int) MIN(floor(drand()*n),n-1);*/
-  return rand()%n;
-}
-
-int *random_permutation(int n){
-  int i, j, pp, len;
-  if (n <= 0) return NULL;
-  int *p = gv_calloc(n, sizeof(int));
-  for (i = 0; i < n; i++) p[i] = i;
-
-  len = n;
-  while (len > 1){
-    j = irand(len);
-    pp = p[len-1];
-    p[len-1] = p[j];
-    p[j] = pp;
-    len--;
-  }
-  return p;
-}
-
-
 double* vector_subtract_to(int n, double *x, double *y){
   /* y = x-y */
   int i;

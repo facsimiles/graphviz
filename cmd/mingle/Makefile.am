@@ -25,6 +25,7 @@ mingle_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
+	$(top_builddir)/lib/util/libutil_C.la \
 	$(ANN_LIBS) -lm
 
 .1.1.pdf:

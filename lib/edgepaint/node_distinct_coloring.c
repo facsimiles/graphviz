@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/random.h>
 
 static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              bool weightedQ, SparseMatrix A,
@@ -164,7 +165,7 @@ static void node_distinct_coloring_internal(int scheme, QuadTree qt,
     srand(123);
     iter = -seed;
     for (i = 0; i < iter; i++){
-      seed = irand(100000);
+      seed = gv_random(100000);
       node_distinct_coloring_internal2(scheme, qt, weightedQ, A, cdim, accuracy, seed, colors, &color_diff, &color_diff_sum);
       if (color_diff_max < color_diff){
 	seed_max = seed; color_diff_max = color_diff;
