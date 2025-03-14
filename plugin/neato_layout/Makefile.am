@@ -28,7 +28,8 @@ libgvplugin_neato_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/twopigen/libtwopigen_C.la \
 	$(top_builddir)/lib/neatogen/libneatogen_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
-	$(top_builddir)/lib/rbtree/librbtree_C.la
+	$(top_builddir)/lib/rbtree/librbtree_C.la \
+	$(top_builddir)/lib/util/libutil_C.la
 
 libgvplugin_neato_layout_la_LDFLAGS = -version-info $(GVPLUGIN_VERSION_INFO)
 libgvplugin_neato_layout_la_SOURCES = $(libgvplugin_neato_layout_C_la_SOURCES)
