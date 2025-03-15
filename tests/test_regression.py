@@ -5177,27 +5177,6 @@ def test_2621():
     run_raw(["dot", "-Gnslimit=50", "-Tsvg", "-o", os.devnull, input])
 
 
-def test_2636():
-    """
-    `-Tsvg_inline` should not reference external files in its output
-    https://gitlab.com/graphviz/graphviz/-/issues/2636#note_2326527219
-    """
-
-    # locate our associated test case in this directory
-    input = Path(__file__).parent / "2636.dot"
-    assert input.exists(), "unexpectedly missing test case"
-
-    # we need to run in our current directory in order to reference the co-located
-    # 2636.svg
-    cwd = Path(__file__).parent
-
-    svg = run(["dot", "-Tsvg_inline", input], cwd=cwd)
-
-    assert (
-        re.search(r"\b2636\.svg\b", svg) is None
-    ), "`-Tsvg_inline` output contained references to external images"
-
-
 def test_2636_1():
     """
     `viewBox` in an SVG image should not override `width` and `height`
@@ -5320,6 +5299,32 @@ def test_2646():
 
     # run this through Graphviz
     dot("pdf", input)
+
+
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2647"
+)
+def test_2647():
+    """
+    `-Tsvg_inline` should allow references to external files in its output
+    https://gitlab.com/graphviz/graphviz/-/issues/2636#note_2326527219
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/4208
+    https://gitlab.com/graphviz/graphviz/-/issues/2647
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2636.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # we need to run in our current directory in order to reference the co-located
+    # 2636.svg
+    cwd = Path(__file__).parent
+
+    svg = run(["dot", "-Tsvg_inline", input], cwd=cwd)
+
+    assert (
+        re.search(r"\b2636\.svg\b", svg) is not None
+    ), "`-Tsvg_inline` output did not reference external image"
 
 
 @pytest.mark.slow  # ~10min
