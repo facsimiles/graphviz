@@ -1,3 +1,4 @@
+# Digest from https://hub.docker.com/_/fedora/tags?name=41
 FROM fedora:41
 
 COPY requirements.txt ./requirements.txt
