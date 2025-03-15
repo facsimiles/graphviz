@@ -1,3 +1,4 @@
+# Digest from https://hub.docker.com/_/ubuntu/tags?name=20.04
 FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive

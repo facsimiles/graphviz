@@ -1,3 +1,4 @@
+# Digest from https://hub.docker.com/_/rockylinux/tags?name=8
 FROM rockylinux:8
 
 COPY requirements.txt ./requirements.txt
