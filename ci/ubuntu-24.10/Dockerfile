@@ -1,3 +1,4 @@
+# Digest from https://hub.docker.com/_/ubuntu/tags?name=24.10
 FROM ubuntu:24.10
 
 ARG DEBIAN_FRONTEND=noninteractive
