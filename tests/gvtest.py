@@ -113,7 +113,7 @@ def compile_c(
                 cflags += ["-DGVDLL=1"]
             ldflags += ["-link"]
             for l in link:
-                if str(l).startswith("/") and Path(l).exists():
+                if Path(l).is_absolute() and Path(l).exists():
                     ldflags += [l]
                 else:
                     ldflags += [f"{l}.lib"]
