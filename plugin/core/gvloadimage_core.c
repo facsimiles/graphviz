@@ -22,9 +22,7 @@
 #include <common/utils.h>
 #include <gvc/gvio.h>
 #include "core_loadimage_xdot.h"
-#include "gvrender_core_svg.h"
 #include <util/agxbuf.h>
-#include <util/base64.h>
 
 extern shape_desc *find_user_shape(char *name);
 
@@ -39,54 +37,6 @@ enum {
     FORMAT_GIF_TK,
 };
 
-/// image type → MIME type
-/// https://www.iana.org/assignments/media-types/media-types.xhtml
-static const char *mime_type(imagetype_t file_type) {
-
-  if (file_type == FT_BMP) {
-    return "image/bmp";
-  }
-
-  if (file_type == FT_GIF) {
-    return "image/gif";
-  }
-
-  if (file_type == FT_PNG) {
-    return "image/png";
-  }
-
-  if (file_type == FT_JPEG) {
-    return "image/jpeg";
-  }
-
-  if (file_type == FT_PDF) {
-    return "application/pdf";
-  }
-
-  if (file_type == FT_PS || file_type == FT_EPS) {
-    return "application/postscript";
-  }
-
-  if (file_type == FT_SVG) {
-    return "image/svg+xml";
-  }
-
-  if (file_type == FT_XML) {
-    return "application/xml";
-  }
-
-  if (file_type == FT_WEBP) {
-    return "image/webp";
-  }
-
-  if (file_type == FT_TIFF) {
-    return "image/tiff";
-  }
-
-  // other types do not have a corresponding MIME type and so cannot be encoded
-  return NULL;
-}
-
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
     (void)filled;
@@ -100,63 +50,7 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled
     assert(us->name);
 
     gvputs(job, "<image xlink:href=\"");
-
-    bool written = false;
-    const char *const mime = mime_type(us->type);
-    // OK to use SVG renderer’s constant `FORMAT_SVG_INLINE` here because we
-    // know we are using the SVG renderer if we reached this point
-    if (job->render.id == FORMAT_SVG_INLINE && mime != NULL &&
-        gvusershape_file_access(us)) {
-
-        // give us a scope to be able to bail out midway
-        do {
-
-            // load the included image’s data
-            const int fd = fileno(us->f);
-            struct stat st;
-            if (fstat(fd, &st) < 0) {
-                break;
-            }
-            us->datasize = (size_t)st.st_size;
-#ifdef HAVE_SYS_MMAN_H
-            us->data = mmap(0, us->datasize, PROT_READ, MAP_PRIVATE, fd, 0);
-            if (us->data == MAP_FAILED) {
-                us->data = NULL;
-                break;
-            }
-#else
-            us->data = malloc(us->datasize);
-            if (us->datasize > 0 && us->data == NULL) {
-                break;
-            }
-            if (fread(us->data, us->datasize, 1, us->f) != 1) {
-                free(us->data);
-                us->data = NULL;
-                break;
-            }
-#endif
-            const size_t encoded_size = gv_base64_size(us->datasize);
-            char *const encoded = gv_base64(us->data, us->datasize);
-#ifdef HAVE_SYS_MMAN_H
-            munmap(us->data, us->datasize);
-#else
-            free(us->data);
-#endif
-            us->data = NULL;
-
-            gvprintf(job, "data:%s;base64,%.*s", mime, (int)encoded_size,
-                     encoded);
-            free(encoded);
-
-            written = true;
-        } while (0);
-
-        gvusershape_file_release(us);
-    }
-
-    if (!written) { // fallback to an external reference
-        gvputs(job, us->name);
-    }
+    gvputs(job, us->name);
     if (job->rotation) {
 
 // FIXME - this is messed up >>>

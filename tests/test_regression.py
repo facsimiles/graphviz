@@ -5301,9 +5301,6 @@ def test_2646():
     dot("pdf", input)
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2647"
-)
 def test_2647():
     """
     `-Tsvg_inline` should allow references to external files in its output
