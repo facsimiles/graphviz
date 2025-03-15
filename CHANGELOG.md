@@ -133,6 +133,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   #2646
 - Calling the GVPR function `lock` with a second argument `> 2³¹ - 1` is no
   longer misinterpreted as a negative number.
+- Out-of-bounds accesses during `gvgen` random tree generation have been fixed.
+  #2640
 
 ## [12.2.1] – 2024-12-07
 
