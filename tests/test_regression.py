@@ -5345,12 +5345,8 @@ def test_MR_2854():
 
 
 @pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
-@pytest.mark.xfail(
-    platform.system() == "Windows",
-    strict=not is_mingw(),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2640",
-)
-def test_2640():
+@pytest.mark.parametrize("seed", range(1, 2000))
+def test_2640(seed: int):
     """
     gvgen should not access values out of bounds
     https://gitlab.com/graphviz/graphviz/-/issues/2640
@@ -5358,7 +5354,7 @@ def test_2640():
 
     # the seed 1967 was observed previously to cause crashes on Windows
     gvgen = which("gvgen")
-    run_raw([gvgen, "-R", "20", "-u1967"], stdout=subprocess.DEVNULL)
+    run_raw([gvgen, "-R", "20", f"-u{seed}"], stdout=subprocess.DEVNULL)
 
 
 def _find_plugin_so(compiler: Union[Path, str], plugin: str) -> Path:
