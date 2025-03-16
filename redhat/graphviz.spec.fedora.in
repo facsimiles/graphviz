@@ -286,7 +286,7 @@ Requires:         %{name}-nox = %{version}-%{release}
 %description plugins-core
 Graphviz plugins - core layout engines and text renderers
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config%{pluginsver}
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 # this one is conditional because of rpm dependency ordering
 # on a fresh install this package is installed before dot is avaiable from graphviz-nox
 # no matter since dot -c is also run from the graphviz-nox install
@@ -296,7 +296,7 @@ Graphviz plugins - core layout engines and text renderers
 # if there is no dot after everything else is done, then remove config
 %postun plugins-core
 if [ $1 -eq 0 ]; then
-        rm -f %{_libdir}/graphviz/config6 || :
+        rm -f %{_libdir}/graphviz/config%{pluginsver} || :
 fi
 
 %files plugins-core
@@ -339,7 +339,7 @@ Requires:         %{name} = %{version}-%{release}
 %description plugins-x
 Graphviz plugins that depend on x11 - most installations will want this.
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-x
 LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 
@@ -392,7 +392,7 @@ to use GIF, you are recommended to use the PNG format instead because
 of the better quality anti-aliased lines provided by the cairo+pango
 based renderer.)
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-gd
 LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 
@@ -415,7 +415,7 @@ Provides:         %{name}-vt = %{version}-%{release}
 %description plugins-vt
 Graphviz plugin for vt terminal rendering.
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-vt
 LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 
@@ -439,7 +439,7 @@ Provides:         %{name}-webp = %{version}-%{release}
 %description plugins-webp
 Graphviz plugin for webp image rendering. 
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-webp
 LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 
@@ -466,7 +466,7 @@ Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
 to use BMP, TIF, or TGA, you are recommended to use the PNG format instead
 supported directly by the cairo+pango based renderer in the base graphviz rpm.)
 
-# run "dot -c" to generate plugin config in {_libdir}/graphviz/config6
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-devil
 LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 
