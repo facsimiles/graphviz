@@ -3,15 +3,19 @@
 """Graphviz CI script for compilation on Windows"""
 
 import argparse
+import os
 import shlex
 import shutil
 import subprocess
 import sys
+import textwrap
 from pathlib import Path
 from typing import TextIO, Union
 
 
-def run(args: list[Union[str, Path]], cwd: Path, out: TextIO):
+def run(
+    args: list[Union[str, Path]], cwd: Path, env: dict[str, str], out: TextIO
+) -> None:
     """run a command, echoing it beforehand"""
 
     print(f"+ {shlex.join(str(x) for x in args)}")
@@ -22,10 +26,42 @@ def run(args: list[Union[str, Path]], cwd: Path, out: TextIO):
         cwd=cwd,
         check=False,
         text=True,
+        env=env,
     )
     sys.stderr.write(p.stdout)
     out.write(p.stdout)
     p.check_returncode()
+
+
+def require(program: str, fallback: Path, env: dict[str, str], log: TextIO) -> None:
+    """
+    detect if a given program is missing from the default $Path and needs a fallback
+
+    Args:
+        program: The name of a program to look for, without its “.exe” suffix.
+        fallback: A path at which to find a version of that program. This alternate
+            version will be used if the sought program is not found in $Path.
+        env: An environment to use when searching for the program. If the program needs
+            a fallback, the $Path variable in this environment will be adjusted.
+        log: Sink to write informational messages to.
+    """
+    assert (
+        fallback / f"{program}.exe"
+    ).exists(), "{fallback} is not a valid fallback path for {program}"
+    which = shutil.which(f"{program}.exe", path=env["PATH"])
+    if which is None:
+        log.write(
+            textwrap.dedent(
+                f"""\
+        {program} not found
+        Fallback needed for: {program}
+        Setting up fallback path for: {program} to {fallback}
+        """
+            )
+        )
+        env["PATH"] = f"{fallback}{os.pathsep}{env['PATH']}"
+    else:
+        log.write(f"Found {program} at {which}\n")
 
 
 def main(args: list[str]) -> int:
@@ -58,11 +94,20 @@ def main(args: list[str]) -> int:
     # find the repository root directory
     root = Path(__file__).resolve().parent.parent
 
+    # an environment we will use during configuration/compilation
+    build_env = os.environ.copy()
+
+    # find some external build dependencies
+    utilities = root / "windows/dependencies/graphviz-build-utilities"
+    require("win_bison", utilities / "winflexbison", build_env, options.logfile)
+    require("win_flex", utilities / "winflexbison", build_env, options.logfile)
+    require("makensis", utilities / "NSIS/Bin", build_env, options.logfile)
+
     build = root / "build"
     if build.exists():
         shutil.rmtree(build)
     build.mkdir(parents=True)
-    run(["cmake", "--version"], build, options.logfile)
+    run(["cmake", "--version"], build, None, options.logfile)
     run(
         [
             "cmake",
@@ -82,14 +127,16 @@ def main(args: list[str]) -> int:
             "..",
         ],
         build,
+        build_env,
         options.logfile,
     )
     run(
         ["cmake", "--build", ".", "--config", options.configuration],
         build,
+        build_env,
         options.logfile,
     )
-    run(["cpack", "-C", options.configuration], build, options.logfile)
+    run(["cpack", "-C", options.configuration], build, build_env, options.logfile)
 
     return 0
 

@@ -185,7 +185,6 @@ portable-source:
         # Build
         - Set-ExecutionPolicy Bypass -Force -Scope Process
         - $logfile = New-TemporaryFile
-        - windows/bin/setup-build-utilities.ps1 2>&1 | tee $logfile
         - python ci/windows_build.py --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS --logfile $logfile
         - if (-not $?) { throw "command failed" }
         - $warnings_count = (Select-String -Pattern " warning " -Path $logfile).length
