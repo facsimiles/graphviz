@@ -5427,6 +5427,7 @@ def test_2648(tmp_path: Path):
         env["LD_LIBRARY_PATH"] = ld_library_path
 
     # run the test code
+    print(f"+ {shlex.quote(str(exe))}")
     subprocess.run([exe], env=env, check=True)
 
 
