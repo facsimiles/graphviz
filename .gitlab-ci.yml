@@ -186,13 +186,6 @@ portable-source:
         - Set-ExecutionPolicy Bypass -Force -Scope Process
         - python ci/windows_build.py --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS
         - if (-not $?) { throw "command failed" }
-        # Test
-        - $Env:Path = $Env:graphviz_install_dir + "\bin" + ";" + $Env:Path
-        - $Env:CFLAGS += " -IC:\Graphviz\include"
-        - $Env:LIB += ";C:\Graphviz\lib"
-        - $Env:graphviz_ROOT="C:\Graphviz"
-        - python -m pytest -m "not slow" --junit-xml=report.xml ci/tests.py tests
-        - if (-not $?) { throw "command failed" }
         # Create artifacts to archive
         - $ID = "windows"
         - $VERSION_ID = "10"

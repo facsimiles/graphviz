@@ -171,6 +171,30 @@ def main(args: list[str]) -> int:
     dst = build / f"graphviz-install-{gv_version}-{api}.exe"
     shutil.move(installer, dst)
 
+    # an environment we will use during testing
+    test_env = os.environ.copy()
+
+    test_env["PATH"] = f"{install_dir}\\bin;{test_env.get('PATH', '')}"
+    test_env["CFLAGS"] = f"{test_env.get('CFLAGS', '')} -I{install_dir}\\include"
+    test_env["LIB"] = f"{test_env.get('LIB', '')};{install_dir}\\lib"
+    test_env["graphviz_ROOT"] = install_dir
+
+    # run the test suite
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-m",
+            "not slow",
+            "--junit-xml=report.xml",
+            "ci/tests.py",
+            "tests",
+        ],
+        root,
+        test_env,
+    )
+
     return 0
 
 
