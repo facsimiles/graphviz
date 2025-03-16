@@ -177,9 +177,6 @@ portable-source:
         - if (-not $?) { throw "command failed" }
         - python -m pip install --requirement requirements.txt
         - if (-not $?) { throw "command failed" }
-        # Retrieve submodules, dependencies are stored there.
-        - git submodule update --init --depth 1
-        - if (-not $?) { throw "command failed" }
         # Install and set PATH
         - $Env:graphviz_install_dir = "C:\Graphviz"
         # Build

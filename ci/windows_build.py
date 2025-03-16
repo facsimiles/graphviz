@@ -93,6 +93,9 @@ def main(args: list[str]) -> int:
     # find the repository root directory
     root = Path(__file__).resolve().parent.parent
 
+    # retrieve submodules, dependencies are stored there
+    run(["git", "submodule", "update", "--init", "--depth=1"], root, None)
+
     # an environment we will use during configuration/compilation
     build_env = os.environ.copy()
 
