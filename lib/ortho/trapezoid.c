@@ -440,8 +440,8 @@ static void update_trapezoid(segment_t *s, segment_t *seg, traps_t *tr,
   else
   {			/* fresh seg. or upward cusp */
     const size_t tmp_u = tr->data[t].u0;
-    size_t td0, td1;
-    if (is_valid_trap(td0 = tr->data[tmp_u].d0) && is_valid_trap(td1 = tr->data[tmp_u].d1))
+    size_t td0;
+    if (is_valid_trap(td0 = tr->data[tmp_u].d0) && is_valid_trap(tr->data[tmp_u].d1))
     {		/* upward cusp */
       if (tr->data[td0].rseg > 0 && !is_left_of(tr->data[td0].rseg, seg, &s->v1))
       {
