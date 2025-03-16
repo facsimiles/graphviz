@@ -1,3 +1,0 @@
-#pragma once
-
-enum { FORMAT_SVG, FORMAT_SVGZ, FORMAT_SVG_INLINE };

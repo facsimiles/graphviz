@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvpr \
 	$(LIBGVC_CFLAGS)
 
-noinst_HEADERS = core_loadimage_xdot.h gvrender_core_svg.h tcl_context.h
+noinst_HEADERS = core_loadimage_xdot.h tcl_context.h
 noinst_LTLIBRARIES = libgvplugin_core_C.la
 if WITH_WIN32
 lib_LTLIBRARIES = libgvplugin_core.la
@@ -37,7 +37,6 @@ libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/xdot/libxdot.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/util/libutil_C.la \
 	$(MATH_LIBS)
 
 if WITH_WIN32

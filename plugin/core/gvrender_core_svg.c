@@ -19,7 +19,6 @@
  */
 
 #include "config.h"
-#include "gvrender_core_svg.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -45,6 +44,8 @@
 #ifndef EDGEALIGN
   #define EDGEALIGN 0
 #endif
+
+enum { FORMAT_SVG, FORMAT_SVGZ, FORMAT_SVG_INLINE };
 
 /* SVG dash array */
 static const char sdasharray[] = "5,2";
