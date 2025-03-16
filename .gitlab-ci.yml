@@ -183,13 +183,6 @@ portable-source:
         - Set-ExecutionPolicy Bypass -Force -Scope Process
         - python ci/windows_build.py --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS
         - if (-not $?) { throw "command failed" }
-        # Create artifacts to archive
-        - $ID = "windows"
-        - $VERSION_ID = "10"
-        - $DIR = "Packages\${ID}\${VERSION_ID}\cmake\$Env:configuration"
-        - mkdir -p $DIR
-        - mv "build\*.exe" $DIR
-        - mv "build\*.zip" $DIR
     artifacts:
         when: on_success
         expire_in: 1 week

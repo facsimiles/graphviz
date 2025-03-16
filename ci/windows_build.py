@@ -4,6 +4,7 @@
 
 import argparse
 import io
+import itertools
 import os
 import shlex
 import shutil
@@ -197,6 +198,17 @@ def main(args: list[str]) -> int:
         root,
         test_env,
     )
+
+    # create artifacts to archive
+    ident = "windows"
+    version_id = "10"
+    packages = (
+        root / "Packages" / ident / version_id / "cmake" / os.environ["configuration"]
+    )
+    packages.mkdir(parents=True)
+    for src in itertools.chain(build.glob("*.exe"), build.glob("*.zip")):
+        print(f"+ mv {shlex.join(str(a) for a in [src, packages])}")
+        shutil.move(src, packages)
 
     return 0
 
