@@ -5137,20 +5137,30 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
         src = Path(__file__).parent / f"{images}_{i}.jpg"
         shutil.copy(src, media / f"2619_{i}.jpg")
 
+    def sh(args: List[Union[Path, str]], stdin: Optional[bytes] = None) -> bytes:
+        """run a command, as if via the shell"""
+        nonlocal tmp_path
+
+        # dump the command being run for the user to observe if the test fails
+        print(
+            f"+ cd {shlex.quote(str(tmp_path))} && {shlex.join(str(x) for x in args)}"
+        )
+
+        proc = subprocess.run(
+            args, input=stdin, stdout=subprocess.PIPE, cwd=tmp_path, check=True
+        )
+        return proc.stdout
+
     # render this
-    dot_result = run_raw(["dot", f"-T{output}", destination], cwd=tmp_path)
+    dot_result = sh(["dot", f"-T{output}", destination])
 
     assert dot_result.strip() != b"", "an empty file was rendered"
 
     # render it with exact position information
-    positioned = run(["dot", "-Tdot", destination], cwd=tmp_path)
+    positioned = sh(["dot", "-Tdot", destination])
 
     # use this to render with neato
-    neato_result = run_raw(
-        ["neato", "-n2", f"-T{output}"],
-        input=positioned.encode("utf-8"),
-        cwd=tmp_path,
-    )
+    neato_result = sh(["neato", "-n2", f"-T{output}"], stdin=positioned)
 
     assert neato_result.strip() != b"", "an empty file was rendered"
 
