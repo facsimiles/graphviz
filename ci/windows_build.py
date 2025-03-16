@@ -147,6 +147,30 @@ def main(args: list[str]) -> int:
     print(summary)
     metrics.write_text(f"{summary}\n", encoding="utf-8")
 
+    # derive Graphviz version
+    version_buffer = io.StringIO()
+    run([sys.executable, "gen_version.py"], root, None, version_buffer)
+    gv_version = version_buffer.getvalue().strip()
+
+    # find the installer
+    installers = list(build.glob("Graphviz*.exe"))
+    assert len(installers) == 1, "failed to find Graphviz installer"
+    installer = build / installers[0]
+
+    # install Graphviz
+    install_dir = "C:\\Graphviz"
+    run([installer, "/S", f"/D={install_dir}"], root, None)
+
+    # which Windows interface are we targeting?
+    if options.platform == "x64":
+        api = "win64"
+    else:
+        api = "win32"
+
+    # move the installer to the location expected by CI archiving steps
+    dst = build / f"graphviz-install-{gv_version}-{api}.exe"
+    shutil.move(installer, dst)
+
     return 0
 
 
