@@ -10,7 +10,7 @@ export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 PATHPLAN_SONAME   = 4
-GVC_SONAME        = 6
+GVC_SONAME        = 7
 CDT_SONAME        = 5
 GRAPH_SONAME      = 5
 CGRAPH_SONAME     = 7
