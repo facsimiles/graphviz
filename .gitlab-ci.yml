@@ -184,11 +184,8 @@ portable-source:
         - $Env:graphviz_install_dir = "C:\Graphviz"
         # Build
         - Set-ExecutionPolicy Bypass -Force -Scope Process
-        - $logfile = New-TemporaryFile
-        - python ci/windows_build.py --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS --logfile $logfile
+        - python ci/windows_build.py --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS
         - if (-not $?) { throw "command failed" }
-        - $warnings_count = (Select-String -Pattern " warning " -Path $logfile).length
-        - echo "$CI_JOB_NAME-warnings $warnings_count" | tee metrics.txt
         - python gen_version.py --output GRAPHVIZ_VERSION
         - if (-not $?) { throw "command failed" }
         # Package

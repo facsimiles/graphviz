@@ -3,6 +3,7 @@
 """Graphviz CI script for compilation on Windows"""
 
 import argparse
+import io
 import os
 import shlex
 import shutil
@@ -81,12 +82,6 @@ def main(args: list[str]) -> int:
         help="build configuration to select",
     )
     parser.add_argument(
-        "--logfile",
-        type=argparse.FileType("at"),
-        required=True,
-        help="file to pipe stdout and stderr to",
-    )
-    parser.add_argument(
         "--platform", choices=("Win32", "x64"), required=True, help="target platform"
     )
     options = parser.parse_args(args[1:])
@@ -97,17 +92,20 @@ def main(args: list[str]) -> int:
     # an environment we will use during configuration/compilation
     build_env = os.environ.copy()
 
+    # buffer for output so we can report warning count later
+    log = io.StringIO()
+
     # find some external build dependencies
     utilities = root / "windows/dependencies/graphviz-build-utilities"
-    require("win_bison", utilities / "winflexbison", build_env, options.logfile)
-    require("win_flex", utilities / "winflexbison", build_env, options.logfile)
-    require("makensis", utilities / "NSIS/Bin", build_env, options.logfile)
+    require("win_bison", utilities / "winflexbison", build_env, log)
+    require("win_flex", utilities / "winflexbison", build_env, log)
+    require("makensis", utilities / "NSIS/Bin", build_env, log)
 
     build = root / "build"
     if build.exists():
         shutil.rmtree(build)
     build.mkdir(parents=True)
-    run(["cmake", "--version"], build, None, options.logfile)
+    run(["cmake", "--version"], build, None, log)
     run(
         [
             "cmake",
@@ -128,15 +126,22 @@ def main(args: list[str]) -> int:
         ],
         build,
         build_env,
-        options.logfile,
+        log,
     )
     run(
         ["cmake", "--build", ".", "--config", options.configuration],
         build,
         build_env,
-        options.logfile,
+        log,
     )
-    run(["cpack", "-C", options.configuration], build, build_env, options.logfile)
+    run(["cpack", "-C", options.configuration], build, build_env, log)
+
+    # report warning count
+    warning_count = log.getvalue().count(" warning ")
+    metrics = Path("metrics.txt")
+    summary = f"{os.environ['CI_JOB_NAME']}-warnings {warning_count}"
+    print(summary)
+    metrics.write_text(f"{summary}\n", encoding="utf-8")
 
     return 0
 
