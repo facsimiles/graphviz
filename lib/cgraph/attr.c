@@ -546,7 +546,7 @@ int agxset_html(void *obj, Agsym_t *sym, const char *value) {
 int agsafeset(void *obj, char *name, const char *value, const char *def) {
     Agsym_t *a;
 
-    a = agattr_text(agraphof(obj), AGTYPE(obj), name, 0);
+    a = agattr_text(agraphof(obj), AGTYPE(obj), name, NULL);
     if (!a)
 	a = agattr_text(agraphof(obj), AGTYPE(obj), name, def);
     return agxset(obj, a, value);
