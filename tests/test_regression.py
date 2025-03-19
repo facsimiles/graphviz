@@ -5360,19 +5360,7 @@ def test_2640(seed: int):
 
 
 @pytest.mark.parametrize(
-    "testcase",
-    (
-        "agattr",
-        "agsafeset",
-        pytest.param(
-            "agset",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2641"
-            ),
-        ),
-        "agstrbind",
-        "agxset",
-    ),
+    "testcase", ("agattr", "agsafeset", "agset", "agstrbind", "agxset")
 )
 @pytest.mark.skipif(
     is_static_build(),

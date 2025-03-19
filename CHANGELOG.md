@@ -94,7 +94,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   two variants `agsafeset_text` and `agsafeset_html`. These should be used in
   preference to `agsafeset` whenever possible. Similarly, `agxset` has gained
   two variants `agxset_text` and `agxset_html`. These should be used in
-  preference to `agxset` whenever possible. #2089, #2641
+  preference to `agxset` whenever possible. Similarly, `agset` has gained two
+  variants `agset_text` and `agset_html`. These should be used in preference to
+  `agset` whenever possible. #2089, #2641
 
 ### Fixed
 
