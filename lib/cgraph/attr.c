@@ -508,21 +508,17 @@ int agset(void *obj, char *name, const char *value) {
 }
 
 static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
-    Agraph_t *g;
-    Agobj_t *hdr;
-    Agattr_t *data;
     Agsym_t *lsym;
 
-    g = agraphof(obj);
-    hdr = obj;
-    data = agattrrec(hdr);
+    Agraph_t *g = agraphof(obj);
+    Agobj_t *hdr = obj;
+    Agattr_t *data = agattrrec(hdr);
     assert(sym->id >= 0 && sym->id < topdictsize(obj));
     agstrfree(g, data->str[sym->id], aghtmlstr(data->str[sym->id]));
     data->str[sym->id] = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     if (hdr->tag.objtype == AGRAPH) {
 	/* also update dict default */
-	Dict_t *dict;
-	dict = agdatadict(g, false)->dict.g;
+	Dict_t *dict = agdatadict(g, false)->dict.g;
 	if ((lsym = aglocaldictsym(dict, sym->name))) {
 	    agstrfree(g, lsym->defval, aghtmlstr(lsym->defval));
 	    lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
