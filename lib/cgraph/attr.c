@@ -138,8 +138,7 @@ static Agdatadict_t *agmakedatadict(Agraph_t * g)
 /* look up an attribute with possible viewpathing */
 static Agsym_t *agdictsym(Dict_t * dict, char *name)
 {
-    Agsym_t key;
-    key.name = name;
+    Agsym_t key = {.name = name};
     return dtsearch(dict, &key);
 }
 
