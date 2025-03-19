@@ -610,11 +610,11 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 /// @ingroup cgraph_node
 #define agfindnode(g,n) (agnode(g,n,0))
 /// @ingroup cgraph_graph
-#define agfindgraphattr(g,a) (agattr(g,AGRAPH,a,NULL))
+#define agfindgraphattr(g,a) (agattr_text(g,AGRAPH,a,NULL))
 /// @ingroup cgraph_node
-#define agfindnodeattr(g,a) (agattr(g,AGNODE,a,NULL))
+#define agfindnodeattr(g,a) (agattr_text(g,AGNODE,a,NULL))
 /// @ingroup cgraph_edge
-#define agfindedgeattr(g,a) (agattr(g,AGEDGE,a,NULL))
+#define agfindedgeattr(g,a) (agattr_text(g,AGEDGE,a,NULL))
 
     typedef struct {
 	int flags;

@@ -50,7 +50,7 @@ static void adjustlen(Agedge_t *e, Agsym_t *sym, int newlen) {
 }
 
 static Agsym_t *bindedgeattr(Agraph_t *g, char *str) {
-  return agattr(g, AGEDGE, str, "");
+  return agattr_text(g, AGEDGE, str, "");
 }
 
 void graphviz_unflatten(Agraph_t *g, const graphviz_unflatten_options_t *opts) {

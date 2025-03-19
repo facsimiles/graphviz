@@ -368,9 +368,9 @@ static void doApply(void)
     attr = binarySearch(view->Topview->attributes, attr_name);
     assert(attr);
     attr->propagate = prog;
-    sym = agattr(g, objKind, attr_name, NULL);
+    sym = agattr_text(g, objKind, attr_name, NULL);
     if (!sym)			/*it shouldnt be null, just in case it is null */
-	sym = agattr(g, objKind, attr_name, def_val);
+	sym = agattr_text(g, objKind, attr_name, def_val);
     /*graph */
     if (objKind == AGRAPH)
 	agset(g, attr_name, value);
@@ -454,18 +454,18 @@ _BB void on_attrAddBtn_clicked(GtkWidget *widget, void *user_data) {
     attr->propagate = 0;
 
     if (objKind == AGRAPH) {
-	agattr(g, AGRAPH, attr_name, defValue);
+	agattr_text(g, AGRAPH, attr_name, defValue);
 	attr->defValG = safestrdup(defValue);
 	attr->objType[0] = 1;
     }
 
     /*nodes */
     else if (objKind == AGNODE) {
-	agattr(g, AGNODE, attr_name, defValue);
+	agattr_text(g, AGNODE, attr_name, defValue);
 	attr->defValN = safestrdup(defValue);
 	attr->objType[1] = 1;
     } else if (objKind == AGEDGE) {
-	agattr(g, AGEDGE, attr_name, defValue);
+	agattr_text(g, AGEDGE, attr_name, defValue);
 	attr->defValE = safestrdup(defValue);
 	attr->objType[2] = 1;
     } else

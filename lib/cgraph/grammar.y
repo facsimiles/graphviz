@@ -294,8 +294,8 @@ static void bindattrs(int kind)
 		assert(aptr->tag == T_atom);	/* signifies unbound attr */
 		name = aptr->u.name;
 		if (kind == AGEDGE && streq(name,Key)) continue;
-		if ((aptr->u.asym = agattr(S->g,kind,name,NULL)) == NULL)
-			aptr->u.asym = agattr(S->g,kind,name,"");
+		if ((aptr->u.asym = agattr_text(S->g,kind,name,NULL)) == NULL)
+			aptr->u.asym = agattr_text(S->g,kind,name,"");
 		aptr->tag = T_attr;				/* signifies bound attr */
 		agstrfree(G, name, false);
 	}
@@ -359,7 +359,7 @@ static void attrstmt(int tkind, char *macroname)
 			if (aghtmlstr(aptr->str)) {
 			  sym = agattr_html(S->g, kind, aptr->u.asym->name, aptr->str);
 			} else {
-			  sym = agattr(S->g, kind, aptr->u.asym->name, aptr->str);
+			  sym = agattr_text(S->g, kind, aptr->u.asym->name, aptr->str);
 			}
 		} else
 			sym = aptr->u.asym;
@@ -507,8 +507,8 @@ static void mkport(Agedge_t *e, char *name, char *val)
 {
 	Agsym_t *attr;
 	if (val) {
-		if ((attr = agattr(S->g,AGEDGE,name,NULL)) == NULL)
-			attr = agattr(S->g,AGEDGE,name,"");
+		if ((attr = agattr_text(S->g,AGEDGE,name,NULL)) == NULL)
+			attr = agattr_text(S->g,AGEDGE,name,"");
 		agxset(e,attr,val);
 	}
 }

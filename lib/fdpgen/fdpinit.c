@@ -39,10 +39,10 @@ static void initialPositions(graph_t * g)
     char *p;
     char c;
 
-    possym = agattr(g,AGNODE, "pos", NULL);
+    possym = agattr_text(g,AGNODE, "pos", NULL);
     if (!possym)
 	return;
-    pinsym = agattr(g,AGNODE, "pin", NULL);
+    pinsym = agattr_text(g,AGNODE, "pin", NULL);
     for (i = 0; (np = GD_neato_nlist(g)[i]); i++) {
 	p = agxget(np, possym);
 	if (p[0]) {
@@ -107,7 +107,7 @@ void fdp_init_node_edge(graph_t * g)
 	ND_id(n) = i++;
     }
 
-    E_len = agattr(g,AGEDGE, "len", NULL);
+    E_len = agattr_text(g,AGEDGE, "len", NULL);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    init_edge(e, E_len);

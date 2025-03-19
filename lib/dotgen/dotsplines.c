@@ -743,12 +743,12 @@ static void setState(graph_t *auxg, attr_state_t *attr_state) {
   attr_state->G_ordering = G_ordering;
 
   E_constr = NULL;
-  E_dir = agattr(auxg, AGEDGE, "dir", NULL);
-  E_samehead = agattr(auxg, AGEDGE, "samehead", NULL);
-  E_sametail = agattr(auxg, AGEDGE, "sametail", NULL);
-  E_weight = agattr(auxg, AGEDGE, "weight", NULL);
+  E_dir = agattr_text(auxg, AGEDGE, "dir", NULL);
+  E_samehead = agattr_text(auxg, AGEDGE, "samehead", NULL);
+  E_sametail = agattr_text(auxg, AGEDGE, "sametail", NULL);
+  E_weight = agattr_text(auxg, AGEDGE, "weight", NULL);
   if (!E_weight)
-    E_weight = agattr(auxg, AGEDGE, "weight", "");
+    E_weight = agattr_text(auxg, AGEDGE, "weight", "");
   E_minlen = NULL;
   E_fontcolor = NULL;
   E_fontname = agfindedgeattr(auxg, "fontname");
@@ -800,7 +800,7 @@ static graph_t *cloneGraph(graph_t *g, attr_state_t *attr_state) {
   else
     auxg = agopen("auxg", Agundirected, NULL);
   agbindrec(auxg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
-  agattr(auxg, AGRAPH, "rank", "");
+  agattr_text(auxg, AGRAPH, "rank", "");
   GD_drawing(auxg) = gv_alloc(sizeof(layout_t));
   GD_drawing(auxg)->quantum = GD_drawing(g)->quantum;
   GD_drawing(auxg)->dpi = GD_drawing(g)->dpi;
@@ -818,7 +818,7 @@ static graph_t *cloneGraph(graph_t *g, attr_state_t *attr_state) {
   for (; sym; sym = agnxtattr(agroot(g), AGNODE, sym)) {
     const bool is_html = aghtmlstr(sym->defval);
     is_html ? agattr_html(auxg, AGNODE, sym->name, sym->defval)
-            : agattr(auxg, AGNODE, sym->name, sym->defval);
+            : agattr_text(auxg, AGNODE, sym->name, sym->defval);
   }
 
   // copy edge attributes
@@ -826,13 +826,13 @@ static graph_t *cloneGraph(graph_t *g, attr_state_t *attr_state) {
   for (; sym; sym = agnxtattr(agroot(g), AGEDGE, sym)) {
     const bool is_html = aghtmlstr(sym->defval);
     is_html ? agattr_html(auxg, AGEDGE, sym->name, sym->defval)
-            : agattr(auxg, AGEDGE, sym->name, sym->defval);
+            : agattr_text(auxg, AGEDGE, sym->name, sym->defval);
   }
 
-  if (!agattr(auxg, AGEDGE, "headport", NULL))
-    agattr(auxg, AGEDGE, "headport", "");
-  if (!agattr(auxg, AGEDGE, "tailport", NULL))
-    agattr(auxg, AGEDGE, "tailport", "");
+  if (!agattr_text(auxg, AGEDGE, "headport", NULL))
+    agattr_text(auxg, AGEDGE, "headport", "");
+  if (!agattr_text(auxg, AGEDGE, "tailport", NULL))
+    agattr_text(auxg, AGEDGE, "tailport", "");
 
   setState(auxg, attr_state);
 

@@ -105,8 +105,8 @@ layout (Agraph_t* g, int depth)
 
         /* add user sort values if necessary */
     if ((pinfo.mode == l_array) && (pinfo.flags & PK_USER_VALS)) {
-	cattr = agattr(root, AGRAPH, "sortv", 0);
-	vattr = agattr(root, AGNODE, "sortv", 0);
+	cattr = agattr_text(root, AGRAPH, "sortv", 0);
+	vattr = agattr_text(root, AGNODE, "sortv", 0);
 	if (cattr || vattr)
 	    pinfo.vals = gv_calloc(total, sizeof(packval_t));
 	else

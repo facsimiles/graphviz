@@ -545,7 +545,7 @@ int init_nop(Agraph_t * g, int adjust)
 
     /* If G_bb not defined, define it */
     if (!G_bb)
-	G_bb = agattr(g, AGRAPH, "bb", "");
+	G_bb = agattr_text(g, AGRAPH, "bb", "");
 
     scan_graph(g);		/* mainly to set up GD_neato_nlist */
     for (i = 0; (np = GD_neato_nlist(g)[i]); i++) {
@@ -638,7 +638,7 @@ static int neatoModel(graph_t * g)
     if (streq(p, "shortpath"))
 	return MODEL_SHORTPATH;
     if (streq(p, "mds")) {
-	if (agattr(g, AGEDGE, "len", 0))
+	if (agattr_text(g, AGEDGE, "len", 0))
 	    return MODEL_MDS;
 	else {
 	    agwarningf(
@@ -790,7 +790,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
     bool haveLen = false;
     bool haveWt = false;
     if (model != MODEL_SUBSET) {
-	haveLen = agattr(g, AGEDGE, "len", 0) != NULL;
+	haveLen = agattr_text(g, AGEDGE, "len", 0) != NULL;
 	haveWt = E_weight != 0;
     }
     bool haveDir = mode == MODE_HIER || mode == MODE_IPSEP;

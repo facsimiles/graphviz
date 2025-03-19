@@ -162,7 +162,7 @@ void setgraphattributes(Agraph_t * g, char *argv[], int argc)
 
     for (i = 0; i < argc; i++) {
 	if (!(a = agfindgraphattr(agroot(g), argv[i])))
-	    a = agattr(agroot(g), AGRAPH, argv[i], "");
+	    a = agattr_text(agroot(g), AGRAPH, argv[i], "");
 	myagxset(g, a, argv[++i]);
     }
 }
@@ -180,11 +180,11 @@ void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
 	}
 	if (e) {
 	    if (!(a = agfindedgeattr(g, argv[i])))
-		a = agattr(agroot(g), AGEDGE, argv[i], "");
+		a = agattr_text(agroot(g), AGEDGE, argv[i], "");
 	    myagxset(e, a, argv[++i]);
 	}
 	else {
-	    agattr(g, AGEDGE, argv[i], argv[i+1]);
+	    agattr_text(g, AGEDGE, argv[i], argv[i + 1]);
 	    i++;
 	}
     }
@@ -198,11 +198,11 @@ void setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc)
     for (i = 0; i < argc; i++) {
 	if (n) {
 	    if (!(a = agfindnodeattr(g, argv[i])))
-		a = agattr(agroot(g), AGNODE, argv[i], "");
+		a = agattr_text(agroot(g), AGNODE, argv[i], "");
 	    myagxset(n, a, argv[++i]);
 	}
 	else {
-	    agattr(g, AGNODE, argv[i], argv[i+1]);
+	    agattr_text(g, AGNODE, argv[i], argv[i + 1]);
 	    i++;
 	}
     }

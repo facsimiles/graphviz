@@ -139,15 +139,15 @@ static int setUInt(unsigned int *v, char *arg)
 }
 
 static Agsym_t *agraphattr(Agraph_t *g, char *name, const char *value) {
-    return agattr(g, AGRAPH, name, value);
+    return agattr_text(g, AGRAPH, name, value);
 }
 
 static Agsym_t *agnodeattr(Agraph_t *g, char *name, const char *value) {
-    return agattr(g, AGNODE, name, value);
+    return agattr_text(g, AGNODE, name, value);
 }
 
 static Agsym_t *agedgeattr(Agraph_t *g, char *name, const char *value) {
-    return agattr(g, AGEDGE, name, value);
+    return agattr_text(g, AGEDGE, name, value);
 }
 
 static void init(int argc, char *argv[], pack_info* pinfo)
@@ -299,7 +299,7 @@ static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new_graph, int attr_kind) {
 	if (aghtmlstr(a->defval)) {
 	    agattr_html(new_graph, attr_kind, a->name, a->defval);
 	} else {
-	    agattr(new_graph, attr_kind, a->name, a->defval);
+	    agattr_text(new_graph, attr_kind, a->name, a->defval);
 	}
     }
 }
@@ -559,7 +559,7 @@ static Agraph_t *cloneGraph(std::vector<Agraph_t *> &gs, GVC_t *gvc,
 	if (Agsym_t *rv = agfindgraphattr(root, a.name))
 	    agxset(root, rv, a.value);
 	else
-	    agattr(root, AGRAPH, a.name, a.value);
+	    agattr_text(root, AGRAPH, a.name, a.value);
     }
 
     /* do common initialization. This will handle root's label. */

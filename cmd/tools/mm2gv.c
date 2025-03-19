@@ -105,12 +105,12 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
     }
 
     if (with_val) {
-	sym = agattr(g, AGEDGE, "len", "1");
+	sym = agattr_text(g, AGEDGE, "len", "1");
     }
     agxbuf xb = {0};
     if (with_label) {
 	agxbprint (&xb, "%s. %d nodes, %d edges.", name, A->m, A->nz);
-	agattr(g, AGRAPH, "label", agxbuse (&xb));
+	agattr_text(g, AGRAPH, "label", agxbuse (&xb));
     }
 
     for (i = 0; i < A->m; i++) {
@@ -126,9 +126,9 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
 	double mindist = 0.;
 	bool first = true;
 
-	sym2 = agattr(g, AGEDGE, "color", "");
-	sym3 = agattr(g, AGEDGE, "wt", "");
-	agattr(g, AGRAPH, "bgcolor", "black");
+	sym2 = agattr_text(g, AGEDGE, "color", "");
+	sym3 = agattr_text(g, AGEDGE, "wt", "");
+	agattr_text(g, AGRAPH, "bgcolor", "black");
 	color = gv_calloc(A->nz, sizeof(double));
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    i = ND_id(n);

@@ -423,8 +423,8 @@ static void writeHdr(gxlstate_t *stp, Agraph_t *g, FILE *gxlFile, bool top) {
 	agxbfree(&buf);
 	Level++;
     } else {
-	Tailport = agattr(g, AGEDGE, "tailport", NULL);
-	Headport = agattr(g, AGEDGE, "headport", NULL);
+	Tailport = agattr_text(g, AGEDGE, "tailport", NULL);
+	Headport = agattr_text(g, AGEDGE, "headport", NULL);
     }
 
     char *uniqueName = mapLookup(stp->graphMap, name);

@@ -364,7 +364,7 @@ static Agsym_t *agattr_(Agraph_t *g, int kind, char *name, const char *value,
     return rv;
 }
 
-Agsym_t *agattr(Agraph_t *g, int kind, char *name, const char *value) {
+Agsym_t *agattr_text(Agraph_t *g, int kind, char *name, const char *value) {
   return agattr_(g, kind, name, value, false);
 }
 
@@ -526,9 +526,9 @@ int agxset_html(void *obj, Agsym_t *sym, const char *value) {
 int agsafeset(void *obj, char *name, const char *value, const char *def) {
     Agsym_t *a;
 
-    a = agattr(agraphof(obj), AGTYPE(obj), name, 0);
+    a = agattr_text(agraphof(obj), AGTYPE(obj), name, 0);
     if (!a)
-	a = agattr(agraphof(obj), AGTYPE(obj), name, def);
+	a = agattr_text(agraphof(obj), AGTYPE(obj), name, def);
     return agxset(obj, a, value);
 }
 

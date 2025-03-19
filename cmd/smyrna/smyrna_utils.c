@@ -33,25 +33,25 @@ float l_float(void *obj, Agsym_t * attr, float def)
 int getAttrBool(Agraph_t* g,void* obj,char* attr_name,int def)
 {
     Agsym_t* attr;
-    attr = agattr(g, AGTYPE(obj), attr_name,0);
+    attr = agattr_text(g, AGTYPE(obj), attr_name,0);
     return late_bool(obj, attr,def);
 }
 int getAttrInt(Agraph_t* g,void* obj,char* attr_name,int def)
 {
     Agsym_t* attr;
-    attr = agattr(g, AGTYPE(obj), attr_name,0);
+    attr = agattr_text(g, AGTYPE(obj), attr_name,0);
     return l_int(obj,attr,def);
 }
 float getAttrFloat(Agraph_t* g,void* obj,char* attr_name,float def)
 {
     Agsym_t* attr;
-    attr = agattr(g, AGTYPE(obj), attr_name,0);
+    attr = agattr_text(g, AGTYPE(obj), attr_name,0);
     return l_float(obj,attr,def);
 }
 char* getAttrStr(Agraph_t* g,void* obj,char* attr_name,char* def)
 {
     Agsym_t* attr;
-    attr = agattr(g, AGTYPE(obj), attr_name,0);
+    attr = agattr_text(g, AGTYPE(obj), attr_name,0);
     return late_string(obj, attr,def);
 }
 

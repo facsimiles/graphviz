@@ -603,9 +603,9 @@ CGRAPH_API char *agcanonStr(char *str); /* manages its own buf */
  *
  * Programmer-defined values may be dynamically
  * attached to graphs, subgraphs, nodes, and edges.
- * Such values are either character string data (see @ref agattr) (for I/O)
- * or uninterpreted binary @ref cgraph_rec (for implementing algorithms
- * efficiently).
+ * Such values are either character string data (see @ref agattr_text and
+ * @ref agattr_html) (for I/O) or uninterpreted binary @ref cgraph_rec (for
+ * implementing algorithms efficiently).
  *
  * *String attributes* are handled automatically in reading and writing graph
  * files. A string attribute is identified by name and by an internal symbol
@@ -647,9 +647,13 @@ struct Agdatadict_s { ///< set of dictionaries per graph
   } dict;
 };
 
-CGRAPH_API Agsym_t *agattr(Agraph_t *g, int kind, char *name,
-                           const char *value);
-/**< @brief creates or looks up attributes of a graph
+CGRAPH_API Agsym_t *agattr_text(Agraph_t *g, int kind, char *name,
+                                const char *value);
+/**< @brief creates or looks up text attributes of a graph
+ *
+ * HTML-like attributes cannot be created or looked up with this function. See
+ * @ref agattr_html for that.
+ *
  * @param g graph. When is NULL, the default is set for all graphs created
  * subsequently.
  * @param kind may be @ref AGRAPH, @ref AGNODE, or @ref AGEDGE.
@@ -665,7 +669,21 @@ CGRAPH_API Agsym_t *agattr(Agraph_t *g, int kind, char *name,
 
 CGRAPH_API Agsym_t *agattr_html(Agraph_t *g, int kind, char *name,
                                 const char *value);
-///< @brief `agattr`, but creates HTML-like values
+///< @brief `agattr_text`, but creates HTML-like values
+///
+/// Regular text attributes cannot be created or looked up with this function.
+/// See @ref agattr_text for that.
+///
+/// @param g Graph. When `g` is `NULL`, the default is set for all graphs
+///   created subsequently.
+/// @param kind May be @ref AGRAPH, @ref AGNODE, or @ref AGEDGE.
+/// @param value Default value. When `value` is `NULL`, the request is to search
+///   for an existing attribute of the given kind and name.
+///
+/// If the attribute already exists, its default for creating new objects is set
+/// to the given `value`; if it does not exist, a new attribute is created with
+/// the given default `value`, and the default is applied to all pre-existing
+/// objects of the given `kind`.
 
 CGRAPH_API Agsym_t *agattrsym(void *obj, char *name);
 ///< looks up a string attribute for a graph object given as an argument

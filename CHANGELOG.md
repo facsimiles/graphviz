@@ -16,8 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   supported in the CMake build system. #2421
 - a new API function `agxset_html` that does the equivalent of `agxset`, but
   assumes the value being set is an HTML-like string
-- a new API function `agattr_html` that is the equivalent of `agattr` but for
-  HTML-like strings.
 - In gvpr, a new function `rename()` has been added for nodes. See `man gvpr`
   for more information.
 
@@ -66,8 +64,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The `EXPANDBP` macro has been removed.
 - **Breaking**: The `EXPANDBB` macro has been removed.
 - **Breaking**: `Agclos_t.strdict` is now an opaque pointer.
-- **Breaking**: `agattr` can no longer be used to create attributes with
-  HTML-like values. For this, use `agattr_html` instead.
+- **Breaking**: The `agattr` function has been removed. To add or lookup
+  attributes, you now need to distinguish between regular text attributes and
+  HTML-like attributes. Regular text attributes are handled through
+  `agattr_text` and HTML-like attributes are handled through `agattr_html`.
 - **Breaking**: `agstrfree` takes an extra parameter indicating whether the
   string being freed is an HTML-like string.
 - **Breaking**: The `agcanon` function has been removed.

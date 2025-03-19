@@ -164,7 +164,7 @@ static int posOf(Agnode_t *np, int idx, double *v) {
 
   if (root != nroot) {
     root = nroot;
-    pos = agattr(root, AGNODE, "pos", 0);
+    pos = agattr_text(root, AGNODE, "pos", 0);
   }
   if (!pos)
     return -1;
@@ -360,7 +360,7 @@ static void assignable(Agobj_t *objp, unsigned char *name) {
 static int setattr(Agobj_t *objp, char *name, char *val) {
   Agsym_t *gsym = agattrsym(objp, name);
   if (!gsym) {
-    gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), name, "");
+    gsym = agattr_text(agroot(agraphof(objp)), AGTYPE(objp), name, "");
   }
   return agxset(objp, gsym, val);
 }
@@ -511,7 +511,7 @@ static int lookup(Expr_t *pgm, Agobj_t *objp, Exid_t *sym, Extype_t *v) {
   } else {
     Agsym_t *gsym = agattrsym(objp, sym->name);
     if (!gsym) {
-      gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), sym->name, "");
+      gsym = agattr_text(agroot(agraphof(objp)), AGTYPE(objp), sym->name, "");
       agxbuf tmp = {0};
       error(ERROR_WARNING,
             "Using value of uninitialized %s attribute \"%s\" of \"%s\"",
@@ -554,7 +554,7 @@ static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
     error(ERROR_WARNING, "Unknown kind \"%s\" passed to setDflt()", k);
     return 1;
   }
-  agattr(gp, kind, name, value);
+  agattr_text(gp, kind, name, value);
   return 0;
 }
 
@@ -584,7 +584,7 @@ static char *nxtAttr(Agraph_t *gp, char *k, char *name) {
   Agsym_t *sym;
 
   if (name) {
-    sym = agattr(gp, kind, name, 0);
+    sym = agattr_text(gp, kind, name, 0);
     if (!sym) {
       exerror("Third argument \"%s\" in nxtAttr() must be the name of an "
               "existing attribute",
@@ -606,9 +606,9 @@ static char *nxtAttr(Agraph_t *gp, char *k, char *name) {
  */
 static char *getDfltAttr(Agraph_t *gp, char *k, char *name) {
   int kind = toKind(k, "getDflt");
-  Agsym_t *sym = agattr(gp, kind, name, 0);
+  Agsym_t *sym = agattr_text(gp, kind, name, 0);
   if (!sym) {
-    sym = agattr(gp, kind, name, "");
+    sym = agattr_text(gp, kind, name, "");
     error(ERROR_WARNING, "Uninitialized %s attribute \"%s\" in %s",
           kindToStr(kind), name, "getDflt");
   }
@@ -1304,7 +1304,7 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
           v.integer = (gsym != NULL);
         else {
           if (!gsym) {
-            gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), name, "");
+            gsym = agattr_text(agroot(agraphof(objp)), AGTYPE(objp), name, "");
             agxbuf tmp = {0};
             error(ERROR_WARNING,
                   "Using value of %s uninitialized attribute \"%s\" of \"%s\" "
@@ -1388,7 +1388,7 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
           exerror("NULL kind passed to %s", sym->name);
           v.string = 0;
         } else if (sym->index == F_isattr) {
-          v.integer = agattr(gp, toKind(kind, sym->name), name, 0) != NULL;
+          v.integer = agattr_text(gp, toKind(kind, sym->name), name, 0) != NULL;
         } else if (sym->index == F_nxtattr) {
           v.string = nxtAttr(gp, kind, name);
         } else {
