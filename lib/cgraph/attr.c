@@ -254,8 +254,7 @@ static void addattr(Agraph_t * g, Agobj_t * obj, Agsym_t * sym)
 
 static Agsym_t *getattr(Agraph_t *g, int kind, char *name) {
   Agsym_t *rv = 0;
-  Dict_t *dict;
-  dict = agdictof(g, kind);
+  Dict_t *dict = agdictof(g, kind);
   if (dict) {
     rv = agdictsym(dict, name); // viewpath up to root
   }
