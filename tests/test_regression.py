@@ -5359,6 +5359,27 @@ def test_2640(seed: int):
     run_raw([gvgen, "-R", "20", f"-u{seed}"], stdout=subprocess.DEVNULL)
 
 
+@pytest.mark.skipif(
+    is_static_build(),
+    reason="dynamic libraries are unavailable to link against in static builds",
+)
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2641"
+)
+def test_2641():
+    """
+    `agattr*` API should preserve some measure of backwards compatibility
+    https://gitlab.com/graphviz/graphviz/-/issues/2641
+    """
+
+    # find co-located test source
+    c_src = (Path(__file__).parent / "2641.c").resolve()
+    assert c_src.exists(), "missing test case"
+
+    # run it
+    run_c(c_src, link=["cgraph"])
+
+
 def _find_plugin_so(plugin: str) -> Path:
     """
     find the absolute path to the dynamic library for a given Graphviz plugin
