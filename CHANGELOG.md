@@ -64,10 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The `EXPANDBP` macro has been removed.
 - **Breaking**: The `EXPANDBB` macro has been removed.
 - **Breaking**: `Agclos_t.strdict` is now an opaque pointer.
-- **Breaking**: The `agattr` function has been removed. To add or lookup
-  attributes, you now need to distinguish between regular text attributes and
-  HTML-like attributes. Regular text attributes are handled through
-  `agattr_text` and HTML-like attributes are handled through `agattr_html`.
 - **Breaking**: `agstrfree` takes an extra parameter indicating whether the
   string being freed is an HTML-like string.
 - **Breaking**: The `agcanon` function has been removed.
@@ -93,7 +89,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   should be avoided where possible due to its ambiguity with respect to the
   caller’s intent. Similarly for string binding, `agstrbind` has gained two
   variants `agstrbind_text` and `agstrbind_html`. These should be used in
-  preference to `agstrbind` whenever possible. #2089, #2641
+  preference to `agstrbind` whenever possible. Similarly for attribute
+  creation/lookup, `agattr` has gained two variants `agattr_text` and
+  `agattr_html`. These should be used in preference to `agattr` whenever
+  possible. #2089, #2641
 
 ### Fixed
 

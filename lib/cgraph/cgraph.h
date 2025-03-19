@@ -618,9 +618,9 @@ CGRAPH_API char *agcanonStr(char *str); /* manages its own buf */
  *
  * Programmer-defined values may be dynamically
  * attached to graphs, subgraphs, nodes, and edges.
- * Such values are either character string data (see @ref agattr_text and
- * @ref agattr_html) (for I/O) or uninterpreted binary @ref cgraph_rec (for
- * implementing algorithms efficiently).
+ * Such values are either character string data (see @ref agattr_text,
+ * @ref agattr_html, and @ref agattr) (for I/O) or uninterpreted binary
+ * @ref cgraph_rec (for implementing algorithms efficiently).
  *
  * *String attributes* are handled automatically in reading and writing graph
  * files. A string attribute is identified by name and by an internal symbol
@@ -699,6 +699,27 @@ CGRAPH_API Agsym_t *agattr_html(Agraph_t *g, int kind, char *name,
 /// to the given `value`; if it does not exist, a new attribute is created with
 /// the given default `value`, and the default is applied to all pre-existing
 /// objects of the given `kind`.
+
+CGRAPH_API Agsym_t *agattr(Agraph_t *g, int kind, char *name,
+                           const char *value);
+///< @brief creates or looks up an attribute, without specifying desired form
+///
+/// Use of this function should be avoided where possible. It is not possible to
+/// explicitly indicate whether the caller is trying to create/lookup a regular
+/// text attribute or an HTML-like attribute. It is better to be explicit with
+/// your intent and instead call either @ref agattr_text or @ref agattr_html.
+///
+/// This function has the following behavior:
+///   1. If the `value` passed was obtained from `agstrdup_html`, an HTML-like
+///      attribute value is created/looked up. That is, the behavior is
+///      equivalent to a call to @ref agattr_html.
+///   2. Otherwise, a regular text attribute value is created/looked up.
+///
+/// @param g graph. When is NULL, the default is set for all graphs created
+///   subsequently.
+/// @param kind may be @ref AGRAPH, @ref AGNODE, or @ref AGEDGE.
+/// @param value default value. When is @ref NULL, the request is to search for
+///   for an existing attribute of the given kind and name.
 
 CGRAPH_API Agsym_t *agattrsym(void *obj, char *name);
 ///< looks up a string attribute for a graph object given as an argument

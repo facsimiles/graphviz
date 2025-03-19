@@ -372,6 +372,27 @@ Agsym_t *agattr_html(Agraph_t *g, int kind, char *name, const char *value) {
   return agattr_(g, kind, name, value, true);
 }
 
+Agsym_t *agattr(Agraph_t *g, int kind, char *name, const char *value) {
+  if (g == NULL) {
+    if (ProtoGraph == NULL) {
+      ProtoGraph = agopen(NULL, ProtoDesc, NULL);
+    }
+    g = ProtoGraph;
+  }
+
+  // Is the value we were passed a previously created HTML-like string? We
+  // essentially want to ask `aghtmlstr(value)` but cannot safely because
+  // `value` may not have originated from `agstrdup`/`agstrdup_html`.
+  if (value != NULL) {
+    const char *const alias = agstrbind_html(g, value);
+    if (alias == value && aghtmlstr(alias)) {
+      return agattr_html(g, kind, name, value);
+    }
+  }
+
+  return agattr_text(g, kind, name, value);
+}
+
 Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr)
 {
     Dict_t *d;
