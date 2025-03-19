@@ -14,8 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A new plugin for outputting ASCII art has been implemented, `-Tascii`. This
   relies on [AA-lib](https://aa-project.sourceforge.net/aalib/) and is only
   supported in the CMake build system. #2421
-- a new API function `agxset_html` that does the equivalent of `agxset`, but
-  assumes the value being set is an HTML-like string
 - In gvpr, a new function `rename()` has been added for nodes. See `man gvpr`
   for more information.
 
@@ -94,7 +92,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `agattr_html`. These should be used in preference to `agattr` whenever
   possible. Similarly for safe attribute creation/lookup, `agsafeset` has gained
   two variants `agsafeset_text` and `agsafeset_html`. These should be used in
-  preference to `agsafeset` whenever possible. #2089, #2641
+  preference to `agsafeset` whenever possible. Similarly, `agxset` has gained
+  two variants `agxset_text` and `agxset_html`. These should be used in
+  preference to `agxset` whenever possible. #2089, #2641
 
 ### Fixed
 

@@ -523,6 +523,21 @@ static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
 }
 
 int agxset(void *obj, Agsym_t *sym, const char *value) {
+
+  // Is the value we were passed a previously created HTML-like string? We
+  // essentially want to ask `aghtmlstr(value)` but cannot safely because
+  // `value` may not have originated from `agstrdup`/`agstrdup_html`.
+  if (value != NULL) {
+    const char *const alias = agstrbind_html(agraphof(obj), value);
+    if (alias == value && aghtmlstr(alias)) {
+      return agxset_html(obj, sym, value);
+    }
+  }
+
+  return agxset_text(obj, sym, value);
+}
+
+int agxset_text(void *obj, Agsym_t *sym, const char *value) {
   return agxset_(obj, sym, value, false);
 }
 

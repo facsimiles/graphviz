@@ -5359,20 +5359,7 @@ def test_2640(seed: int):
     run_raw([gvgen, "-R", "20", f"-u{seed}"], stdout=subprocess.DEVNULL)
 
 
-@pytest.mark.parametrize(
-    "testcase",
-    (
-        "agattr",
-        "agsafeset",
-        "agstrbind",
-        pytest.param(
-            "agxset",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2641"
-            ),
-        ),
-    ),
-)
+@pytest.mark.parametrize("testcase", ("agattr", "agsafeset", "agstrbind", "agxset"))
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
