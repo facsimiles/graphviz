@@ -352,9 +352,9 @@ static Agsym_t *agattr_(Agraph_t *g, int kind, char *name, const char *value,
                  bool is_html) {
     Agsym_t *rv;
 
-    if (g == 0) {
-	if (ProtoGraph == 0)
-	    ProtoGraph = agopen(0, ProtoDesc, 0);
+    if (g == NULL) {
+	if (ProtoGraph == NULL)
+	    ProtoGraph = agopen(NULL, ProtoDesc, NULL);
 	g = ProtoGraph;
     }
     if (value)
