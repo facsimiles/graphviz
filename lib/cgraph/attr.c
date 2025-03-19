@@ -538,13 +538,61 @@ int agxset_html(void *obj, Agsym_t *sym, const char *value) {
   return agxset_(obj, sym, value, true);
 }
 
-int agsafeset(void *obj, char *name, const char *value, const char *def) {
+int agsafeset_text(void *obj, char *name, const char *value, const char *def) {
     Agsym_t *a;
 
     a = agattr_text(agraphof(obj), AGTYPE(obj), name, NULL);
     if (!a)
 	a = agattr_text(agraphof(obj), AGTYPE(obj), name, def);
     return agxset(obj, a, value);
+}
+
+int agsafeset_html(void *obj, char *name, const char *value, const char *def) {
+  Agsym_t *a = agattr_html(agraphof(obj), AGTYPE(obj), name, NULL);
+  if (a == NULL) {
+    a = agattr_html(agraphof(obj), AGTYPE(obj), name, def);
+  }
+  return agxset_html(obj, a, value);
+}
+
+int agsafeset(void *obj, char *name, const char *value, const char *def) {
+
+  // find the graph containing the target object
+  Agraph_t *const graph = agraphof(obj);
+
+  // get the existing attribute, if there is one
+  Agsym_t *a = agattr_text(graph, AGTYPE(obj), name, NULL);
+
+  if (a == NULL) {
+    // Is the default we were passed a previously created HTML-like string? We
+    // essentially want to ask `aghtmlstr(def)` but cannot safely because `def`
+    // may not have originated from `agstrdup`/`agstrdup_html`.
+    bool is_def_html = false;
+    if (def != NULL) {
+      const char *const alias = agstrbind_html(graph, def);
+      if (alias == def && aghtmlstr(alias)) {
+        is_def_html = true;
+      }
+    }
+
+    if (is_def_html) {
+      a = agattr_html(graph, AGTYPE(obj), name, def);
+    } else {
+      a = agattr_text(graph, AGTYPE(obj), name, def);
+    }
+  }
+
+  // Is the value we were passed a previously created HTML-like string? We
+  // essentially want to ask `aghtmlstr(value)` but cannot safely because
+  // `value` may not have originated from `agstrdup`/`agstrdup_html`.
+  if (value != NULL) {
+    const char *const alias = agstrbind_html(graph, value);
+    if (alias == value && aghtmlstr(alias)) {
+      return agxset_html(obj, a, value);
+    }
+  }
+
+  return agxset(obj, a, value);
 }
 
 static void agraphattr_init_wrapper(Agraph_t *g, Agobj_t *ignored1,

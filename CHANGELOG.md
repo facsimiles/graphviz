@@ -92,7 +92,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   preference to `agstrbind` whenever possible. Similarly for attribute
   creation/lookup, `agattr` has gained two variants `agattr_text` and
   `agattr_html`. These should be used in preference to `agattr` whenever
-  possible. #2089, #2641
+  possible. Similarly for safe attribute creation/lookup, `agsafeset` has gained
+  two variants `agsafeset_text` and `agsafeset_html`. These should be used in
+  preference to `agsafeset` whenever possible. #2089, #2641
 
 ### Fixed
 

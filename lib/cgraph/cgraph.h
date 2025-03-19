@@ -770,10 +770,62 @@ CGRAPH_API char *agxget(void *obj, Agsym_t *sym);
 CGRAPH_API int agset(void *obj, char *name, const char *value);
 CGRAPH_API int agxset(void *obj, Agsym_t *sym, const char *value);
 CGRAPH_API int agxset_html(void *obj, Agsym_t *sym, const char *value);
+
+CGRAPH_API int agsafeset_text(void *obj, char *name, const char *value,
+                              const char *def);
+///< @brief set an attribute’s value and default, ensuring it is declared before
+///   setting it locally
+///
+/// The attribue set by this function is a regular text attribute. See
+/// @ref agsafeset_html for the equivalent for an HTML-like attribute.
+///
+/// @param obj Object on which to set the attribute
+/// @param name Name of the attribute to set
+/// @param value Value of the attribute to set
+/// @param def Optional default to declare for the attribute
+
+CGRAPH_API int agsafeset_html(void *obj, char *name, const char *value,
+                              const char *def);
+///< @brief set an attribute’s value and default, ensuring it is declared before
+///   setting it locally
+///
+/// The attribue set by this function is an HTML-like attribute. See
+/// @ref agsafeset_text for the equivalent for a regular text attribute.
+///
+/// @param obj Object on which to set the attribute
+/// @param name Name of the attribute to set
+/// @param value Value of the attribute to set
+/// @param def Optional default to declare for the attribute
+
 CGRAPH_API int agsafeset(void *obj, char *name, const char *value,
                          const char *def);
-///< @brief ensures the given attribute is declared
-///  before setting it locally on an object
+///< @brief set an attribute’s value and default, ensuring it is declared before
+///   setting it locally
+///
+/// Use of this function should be avoided where possible. It is not possible to
+/// explicitly indicate whether the caller is trying to create/lookup a regular
+/// text attribute or an HTML-like attribute. It is better to be explicit with
+/// your intent and instead call either @ref agsafeset_text or
+/// @ref agsafeset_html.
+///
+/// This function has the following behavior:
+///   1. If the attribute needs to be created (it did not already exist) and
+///      `def` was obtained from `agstrdup_html`, an HTML-like default attribute
+///      value is created.
+///   2. If the attribute needs to be created (it did not already exist) and
+///      `def` was not obtained from `agstrdup_html`, a regular text default
+///      attribute value is created.
+///   … then …
+///   1. If the `value` passed was obtained from `agstrdup_html`, an HTML-like
+///      attribute value is created/looked up. That is, the behavior is
+///      equivalent to a call to @ref agsafeset_html.
+///   2. Otherwise, a regular text attribute value is created/looked up. That
+///      is, the behavior is equivalent to a call to @ref agsafeset_text.
+///
+/// @param obj Object on which to set the attribute
+/// @param name Name of the attribute to set
+/// @param value Value of the attribute to set
+/// @param def Optional default to declare for the attribute
 
 /// @}
 
