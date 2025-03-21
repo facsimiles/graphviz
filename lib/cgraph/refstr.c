@@ -367,12 +367,28 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
     return r->s;
 }
 
-char *agstrdup(Agraph_t *g, const char *s) {
+char *agstrdup_text(Agraph_t *g, const char *s) {
   return agstrdup_internal(g, s, false);
 }
 
 char *agstrdup_html(Agraph_t *g, const char *s) {
   return agstrdup_internal(g, s, true);
+}
+
+char *agstrdup(Agraph_t *g, const char *s) {
+
+  // did this string originate from `agstrdup_html(g, …)`?
+  if (s != NULL) {
+    strdict_t *const strdict = *refdict(g);
+    refstr_t *const ref = strdict_find(strdict, s, true);
+    if (ref != NULL && ref->s == s) {
+      // create this copy as HTML-like
+      return agstrdup_html(g, s);
+    }
+  }
+
+  // otherwise, create the copy as regular text
+  return agstrdup_text(g, s);
 }
 
 int agstrfree(Agraph_t *g, const char *s, bool is_html) {

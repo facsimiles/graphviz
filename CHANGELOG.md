@@ -86,6 +86,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: libcgraph’s SO name has been updated 6 → 7.
 - The core plugin’s SVG output (`-Tsvg`, `-Tsvg_inline`) now sets
   `xml:space="preserve"` on text elements for more accurate display.
+- **Breaking**: To duplicate strings, you now should distinguish between regular
+  text strings and HTML-like strings. Regular text strings are handled through
+  `agstrdup_text` and HTML-like strings are handled through `agstrdup_html`. The
+  The `agstrdup` function has been retained for backwards compatibility, but
+  should be avoided where possible due to its ambiguity with respect to the
+  caller’s intent. #2089, #2641
 
 ### Fixed
 

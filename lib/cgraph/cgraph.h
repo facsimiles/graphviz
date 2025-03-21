@@ -578,12 +578,21 @@ CGRAPH_API int agobjkind(void *obj);
  */
 CGRAPH_API char *agstrdup(Agraph_t *, const char *);
 ///< @brief returns a pointer to a reference-counted copy of the argument
-///< string,
-/// creating one if necessary
+///< string, creating one if necessary
+///
+/// Use of this function should be avoided where possible. It is not possible to
+/// explicitly indicate whether the caller is trying to create a regular text
+/// string or an HTML-like string. It is better to be explicit with your intent
+/// and instead call either @ref agstrdup_text or @ref agstrdup_html.
+
+CGRAPH_API char *agstrdup_text(Agraph_t *, const char *);
+///< @brief returns a pointer to a reference-counted regular text copy of the
+///< argument string, creating one if necessary
 
 CGRAPH_API char *agstrdup_html(Agraph_t *, const char *);
-///< create an HTML-like string
-///
+///< @brief returns a pointer to a reference-counted HTML-like copy of the
+///< argument string, creating one if necessary
+
 CGRAPH_API int aghtmlstr(const char *);
 ///< query if a string is an ordinary string or an HTML-like string
 ///
