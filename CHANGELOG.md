@@ -18,8 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assumes the value being set is an HTML-like string
 - In gvpr, a new function `rename()` has been added for nodes. See `man gvpr`
   for more information.
-- A new API function `agstrbind_html` that does the equivalent of `agstrbind`,
-  but for HTML-like strings has been added.
 
 ### Changed
 
@@ -93,7 +91,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `agstrdup_text` and HTML-like strings are handled through `agstrdup_html`. The
   The `agstrdup` function has been retained for backwards compatibility, but
   should be avoided where possible due to its ambiguity with respect to the
-  caller’s intent. #2089, #2641
+  caller’s intent. Similarly for string binding, `agstrbind` has gained two
+  variants `agstrbind_text` and `agstrbind_html`. These should be used in
+  preference to `agstrbind` whenever possible. #2089, #2641
 
 ### Fixed
 

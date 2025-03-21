@@ -599,6 +599,9 @@ CGRAPH_API int aghtmlstr(const char *);
 CGRAPH_API char *agstrbind(Agraph_t *g, const char *);
 ///< returns a pointer to a reference-counted string if it exists, or NULL if
 ///< not
+CGRAPH_API char *agstrbind_text(Agraph_t *g, const char *);
+///< returns a pointer to a reference-counted regular text string if it exists,
+///< or NULL if not
 CGRAPH_API char *agstrbind_html(Agraph_t *g, const char *);
 ///< returns a pointer to a reference-counted HTML-like string if it exists, or
 ///< NULL if not

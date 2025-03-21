@@ -334,11 +334,26 @@ static char *refstrbind(strdict_t *strdict, const char *s, bool is_html) {
 	return NULL;
 }
 
+char *agstrbind(Agraph_t *g, const char *s) {
+
+  // did this string originate from `agstrdup_html(g, …)`?
+  if (s != NULL) {
+    strdict_t *const strdict = *refdict(g);
+    refstr_t *const ref = strdict_find(strdict, s, true);
+    if (ref != NULL && ref->s == s) {
+      // create this copy as HTML-like
+      return agstrbind_html(g, s);
+    }
+  }
+
+  return agstrbind_text(g, s);
+}
+
 char *agstrbind_html(Agraph_t *g, const char *s) {
   return refstrbind(*refdict(g), s, true);
 }
 
-char *agstrbind(Agraph_t * g, const char *s)
+char *agstrbind_text(Agraph_t * g, const char *s)
 {
     return refstrbind(*refdict(g), s, false);
 }
