@@ -431,7 +431,7 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
     char *family = NULL, *weight = NULL, *stretch = NULL, *style = NULL;
     unsigned int flags;
 
-    gvputs(job, "<text");
+    gvputs(job, "<text xml:space=\"preserve\"");
     switch (span->just) {
     case 'l':
 	gvputs(job, " text-anchor=\"start\"");
