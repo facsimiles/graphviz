@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assumes the value being set is an HTML-like string
 - In gvpr, a new function `rename()` has been added for nodes. See `man gvpr`
   for more information.
+- A new API function `agstrbind_html` that does the equivalent of `agstrbind`,
+  but for HTML-like strings has been added.
 
 ### Changed
 

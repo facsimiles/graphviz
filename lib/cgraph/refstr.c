@@ -325,18 +325,22 @@ int agstrclose(Agraph_t * g)
     return 0;
 }
 
-static char *refstrbind(strdict_t *strdict, const char *s) {
+static char *refstrbind(strdict_t *strdict, const char *s, bool is_html) {
     refstr_t *r;
-    r = strdict_find(strdict, s, false);
+    r = strdict_find(strdict, s, is_html);
     if (r)
 	return r->s;
     else
 	return NULL;
 }
 
+char *agstrbind_html(Agraph_t *g, const char *s) {
+  return refstrbind(*refdict(g), s, true);
+}
+
 char *agstrbind(Agraph_t * g, const char *s)
 {
-    return refstrbind(*refdict(g), s);
+    return refstrbind(*refdict(g), s, false);
 }
 
 static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
