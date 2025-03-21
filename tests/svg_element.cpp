@@ -889,7 +889,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
     break;
   case SVG::SVGElementType::Text:
     attributes_str += fmt::format(
-        R"(text-anchor="{}" x="{}" y="{}" font-family="{}" font-size="{:.2f}")",
+        R"(xml:space="preserve" text-anchor="{}" x="{}" y="{}" font-family="{}" font-size="{:.2f}")",
         attributes.text_anchor, attributes.x, attributes.y,
         attributes.font_family, attributes.font_size);
     break;
