@@ -1,5 +1,5 @@
 /// @file
-/// @brief Accompanying test code for test_2641
+/// @brief Accompanying test code for test_2641[agattr]
 
 #include <assert.h>
 #include <graphviz/cgraph.h>

@@ -5359,6 +5359,7 @@ def test_2640(seed: int):
     run_raw([gvgen, "-R", "20", f"-u{seed}"], stdout=subprocess.DEVNULL)
 
 
+@pytest.mark.parametrize("testcase", ("agattr", "agstrbind"))
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
@@ -5366,14 +5367,14 @@ def test_2640(seed: int):
 @pytest.mark.xfail(
     strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2641"
 )
-def test_2641():
+def test_2641(testcase: str):
     """
-    `agattr*` API should preserve some measure of backwards compatibility
+    `agattr*` and friends should preserve some measure of backwards compatibility
     https://gitlab.com/graphviz/graphviz/-/issues/2641
     """
 
     # find co-located test source
-    c_src = (Path(__file__).parent / "2641.c").resolve()
+    c_src = (Path(__file__).parent / f"2641_{testcase}.c").resolve()
     assert c_src.exists(), "missing test case"
 
     # run it
