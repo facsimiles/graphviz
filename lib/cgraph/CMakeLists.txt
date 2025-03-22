@@ -98,8 +98,8 @@ endif()
 
 # Specify library version and soversion
 set_target_properties(cgraph PROPERTIES
-  VERSION 6.0.0
-  SOVERSION 6
+  VERSION 7.0.0
+  SOVERSION 7
 )
 
 if(BUILD_SHARED_LIBS)
