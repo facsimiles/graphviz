@@ -182,7 +182,7 @@ inside_polygon (trap_t *t, segment_t* seg)
     return false;
   
   if ((!is_valid_trap(t->u0) && !is_valid_trap(t->u1)) || (!is_valid_trap(t->d0) && !is_valid_trap(t->d1))) // triangle
-    return _greater_than(&seg[rseg].v1, &seg[rseg].v0);
+    return _greater_than(seg[rseg].v1, seg[rseg].v0);
   
   return false;
 }

@@ -229,8 +229,7 @@ is_left_of (int segnum, segment_t* seg, pointf *v)
   segment_t *s = &seg[segnum];
   double area;
 
-  if (_greater_than(&s->v1, &s->v0)) /* seg. going upwards */
-    {
+  if (_greater_than(s->v1, s->v0)) { // segment going upwards
       if (fp_equal(s->v1.y, v->y)) {
 	  if (v->x < s->v1.x)
 	    area = 1.0;
@@ -290,10 +289,10 @@ static size_t locate_endpoint(pointf *v, pointf *vo, size_t r, segment_t *seg,
       return rptr->trnum;
 
     case T_Y:
-      if (_greater_than(v, &rptr->yval)) /* above */
+      if (_greater_than(*v, rptr->yval)) // above
 	return locate_endpoint(v, vo, rptr->right, seg, qs);
       if (equal_to(*v, rptr->yval)) { // the point is already inserted
-	  if (_greater_than(vo, &rptr->yval)) /* above */
+	  if (_greater_than(*vo, rptr->yval)) // above
 	    return locate_endpoint(v, vo, rptr->right, seg, qs);
 	  return locate_endpoint(v, vo, rptr->left, seg, qs); // below
 	}
@@ -469,8 +468,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
   int tmptriseg;
 
   s = seg[segnum];
-  if (_greater_than(&s.v1, &s.v0)) /* Get higher vertex in v0 */
-    {
+  if (_greater_than(s.v1, s.v0)) { // Get higher vertex in v0
       SWAP(&s.v0, &s.v1);
       SWAP(&s.root0, &s.root1);
       is_swapped = true;
