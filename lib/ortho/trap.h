@@ -94,7 +94,7 @@ static inline bool equal_to(pointf v0, pointf v1) {
   return fp_equal(v0.y, v1.y) && fp_equal(v0.x, v1.x);
 }
 
-static inline bool _greater_than(pointf v0, pointf v1) {
+static inline bool greater_than(pointf v0, pointf v1) {
   return v0.y > v1.y + C_EPS ? true
                              : (v0.y < v1.y - C_EPS ? false : v0.x > v1.x);
 }
