@@ -109,7 +109,7 @@ static bool greater_than_equal_to(pointf v0, pointf v1) {
   return greater_than(v0, v1) || equal_to(v0, v1);
 }
 
-static bool _less_than(pointf v0, pointf v1) {
+static bool less_than(pointf v0, pointf v1) {
   return !greater_than_equal_to(v0, v1);
 }
 
@@ -756,7 +756,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	      yt = (y0 - s.v0.y)/(s.v1.y - s.v0.y);
 	      tmppt.x = s.v0.x + yt * (s.v1.x - s.v0.x);
 
-	      if (_less_than(tmppt, tr->data[t].lo))
+	      if (less_than(tmppt, tr->data[t].lo))
 		i_d0 = true;
 	      else
 		i_d1 = true;
