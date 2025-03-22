@@ -88,7 +88,7 @@ static pointf max_(pointf v0, pointf v1) {
 }
 
 /// return the minimum of the two points
-static pointf _min(pointf v0, pointf v1) {
+static pointf min_(pointf v0, pointf v1) {
   if (v0.y < v1.y - C_EPS)
     return v0;
   if (fp_equal(v0.y, v1.y)) {
@@ -137,7 +137,7 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   const size_t i3 = newnode(qs);
   qnodes_at(qs, i1)->left = i3;
   qnodes_at(qs, i3)->nodetype = T_Y;
-  qnodes_at(qs, i3)->yval = _min(s->v0, s->v1); // root
+  qnodes_at(qs, i3)->yval = min_(s->v0, s->v1); // root
   qnodes_at(qs, i3)->parent = i1;
 
   const size_t i4 = newnode(qs);
