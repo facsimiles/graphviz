@@ -94,7 +94,10 @@ static inline bool equal_to(pointf v0, pointf v1) {
   return fp_equal(v0.y, v1.y) && fp_equal(v0.x, v1.x);
 }
 
-#define _greater_than(v0, v1) \
-  (((v0)->y > (v1)->y + C_EPS) ? true : (((v0)->y < (v1)->y - C_EPS) ? false : ((v0)->x > (v1)->x)))
+static inline bool _greater_than(const pointf *v0, const pointf *v1) {
+  return v0->y > v1->y + C_EPS
+             ? true
+             : (v0->y < v1->y - C_EPS ? false : v0->x > v1->x);
+}
 
 extern traps_t construct_trapezoids(int, segment_t*, int*);
