@@ -87,19 +87,16 @@ static pointf max_(pointf v0, pointf v1) {
   return v1;
 }
 
-/* Return the minimum of the two points into the yval structure */
-static void _min (pointf *yval, pointf *v0, pointf *v1)
-{
-  if (v0->y < v1->y - C_EPS)
-    *yval = *v0;
-  else if (fp_equal(v0->y, v1->y)) {
-      if (v0->x < v1->x)
-	*yval = *v0;
-      else
-	*yval = *v1;
+/// return the minimum of the two points
+static pointf _min(pointf v0, pointf v1) {
+  if (v0.y < v1.y - C_EPS)
+    return v0;
+  if (fp_equal(v0.y, v1.y)) {
+      if (v0.x < v1.x)
+	return v0;
+      return v1;
     }
-  else
-    *yval = *v1;
+  return v1;
 }
 
 static bool greater_than_equal_to(pointf v0, pointf v1) {
@@ -140,7 +137,7 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   const size_t i3 = newnode(qs);
   qnodes_at(qs, i1)->left = i3;
   qnodes_at(qs, i3)->nodetype = T_Y;
-  _min(&qnodes_at(qs, i3)->yval, &s->v0, &s->v1); // root
+  qnodes_at(qs, i3)->yval = _min(s->v0, s->v1); // root
   qnodes_at(qs, i3)->parent = i1;
 
   const size_t i4 = newnode(qs);
