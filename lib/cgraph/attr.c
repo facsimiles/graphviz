@@ -145,11 +145,8 @@ static Agsym_t *agdictsym(Dict_t * dict, char *name)
 /* look up attribute in local dictionary with no view pathing */
 static Agsym_t *aglocaldictsym(Dict_t * dict, char *name)
 {
-    Agsym_t *rv;
-    Dict_t *view;
-
-    view = dtview(dict, NULL);
-    rv = agdictsym(dict, name);
+    Dict_t *const view = dtview(dict, NULL);
+    Agsym_t *const rv = agdictsym(dict, name);
     dtview(dict, view);
     return rv;
 }
