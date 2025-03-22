@@ -105,14 +105,13 @@ static void _min (pointf *yval, pointf *v0, pointf *v1)
     *yval = *v1;
 }
 
-static bool _greater_than_equal_to (pointf *v0, pointf *v1)
-{
-  return greater_than(*v0, *v1) || equal_to(*v0, *v1);
+static bool _greater_than_equal_to(pointf v0, pointf v1) {
+  return greater_than(v0, v1) || equal_to(v0, v1);
 }
 
 static bool _less_than (pointf *v0, pointf *v1)
 {
-  return !_greater_than_equal_to(v0, v1);
+  return !_greater_than_equal_to(*v0, *v1);
 }
 
 /* Initialize the query structure (Q) and the trapezoid table (T)
@@ -326,7 +325,7 @@ static void merge_trapezoids(int segnum, size_t tfirst, size_t tlast, int side,
                              traps_t *tr, qnodes_t *qs) {
   /* First merge polys on the LHS */
   size_t t = tfirst;
-  while (is_valid_trap(t) && _greater_than_equal_to(&tr->data[t].lo, &tr->data[tlast].lo))
+  while (is_valid_trap(t) && _greater_than_equal_to(tr->data[t].lo, tr->data[tlast].lo))
     {
       size_t tnext;
       bool cond;
@@ -589,7 +588,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
   size_t t = tfirst; // topmost trapezoid
 
-  while (is_valid_trap(t) && _greater_than_equal_to(&tr->data[t].lo, &tr->data[tlast].lo))
+  while (is_valid_trap(t) && _greater_than_equal_to(tr->data[t].lo, tr->data[tlast].lo))
 				/* traverse from top to bot */
     {
       const size_t sk = tr->data[t].sink;
