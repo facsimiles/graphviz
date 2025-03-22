@@ -330,8 +330,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 
   bitarray_set(visited, trnum, true);
   
-  if (t->hi.y > t->lo.y + C_EPS && FP_EQUAL(seg[t->lseg].v0.x, seg[t->lseg].v1.x) &&
-      FP_EQUAL(seg[t->rseg].v0.x, seg[t->rseg].v1.x)) {
+  if (t->hi.y > t->lo.y + C_EPS && fp_equal(seg[t->lseg].v0.x, seg[t->lseg].v1.x) &&
+      fp_equal(seg[t->rseg].v0.x, seg[t->rseg].v1.x)) {
       boxf newbox = {0};
       if (flip) {
           newbox.LL.x = t->lo.y;

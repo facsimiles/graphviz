@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -69,7 +70,8 @@ typedef struct {
                 /* left/right of segment. Decrease */
                 /* this value if the input points are */
                 /* spaced very close together */
-#define FP_EQUAL(s, t) (fabs(s - t) <= C_EPS)
+
+static inline bool fp_equal(double s, double t) { return fabs(s - t) <= C_EPS; }
 
 /**
  * @brief double floating point three-way comparison
@@ -89,7 +91,7 @@ static inline int dfp_cmp(double f1, double f2) {
 }
 
 #define _equal_to(v0,v1) \
-  (FP_EQUAL((v0)->y, (v1)->y) && FP_EQUAL((v0)->x, (v1)->x))
+  (fp_equal((v0)->y, (v1)->y) && fp_equal((v0)->x, (v1)->x))
 
 #define _greater_than(v0, v1) \
   (((v0)->y > (v1)->y + C_EPS) ? true : (((v0)->y < (v1)->y - C_EPS) ? false : ((v0)->x > (v1)->x)))

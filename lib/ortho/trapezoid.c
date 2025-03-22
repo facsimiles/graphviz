@@ -80,8 +80,7 @@ static void _max (pointf *yval, pointf *v0, pointf *v1)
 {
   if (v0->y > v1->y + C_EPS)
     *yval = *v0;
-  else if (FP_EQUAL(v0->y, v1->y))
-    {
+  else if (fp_equal(v0->y, v1->y)) {
       if (v0->x > v1->x + C_EPS)
 	*yval = *v0;
       else
@@ -96,8 +95,7 @@ static void _min (pointf *yval, pointf *v0, pointf *v1)
 {
   if (v0->y < v1->y - C_EPS)
     *yval = *v0;
-  else if (FP_EQUAL(v0->y, v1->y))
-    {
+  else if (fp_equal(v0->y, v1->y)) {
       if (v0->x < v1->x)
 	*yval = *v0;
       else
@@ -233,15 +231,13 @@ is_left_of (int segnum, segment_t* seg, pointf *v)
 
   if (_greater_than(&s->v1, &s->v0)) /* seg. going upwards */
     {
-      if (FP_EQUAL(s->v1.y, v->y))
-	{
+      if (fp_equal(s->v1.y, v->y)) {
 	  if (v->x < s->v1.x)
 	    area = 1.0;
 	  else
 	    area = -1.0;
 	}
-      else if (FP_EQUAL(s->v0.y, v->y))
-	{
+      else if (fp_equal(s->v0.y, v->y)) {
 	  if (v->x < s->v0.x)
 	    area = 1.0;
 	  else
@@ -252,15 +248,13 @@ is_left_of (int segnum, segment_t* seg, pointf *v)
     }
   else				/* v0 > v1 */
     {
-      if (FP_EQUAL(s->v1.y, v->y))
-	{
+      if (fp_equal(s->v1.y, v->y)) {
 	  if (v->x < s->v1.x)
 	    area = 1.0;
 	  else
 	    area = -1.0;
 	}
-      else if (FP_EQUAL(s->v0.y, v->y))
-	{
+      else if (fp_equal(s->v0.y, v->y)) {
 	  if (v->x < s->v0.x)
 	    area = 1.0;
 	  else
@@ -309,8 +303,7 @@ static size_t locate_endpoint(pointf *v, pointf *vo, size_t r, segment_t *seg,
       if (_equal_to(v, &seg[rptr->segnum].v0) ||
 	       _equal_to(v, &seg[rptr->segnum].v1))
 	{
-	  if (FP_EQUAL(v->y, vo->y)) /* horizontal segment */
-	    {
+	  if (fp_equal(v->y, vo->y)) { // horizontal segment
 	      if (vo->x < v->x)
 		return locate_endpoint(v, vo, rptr->left, seg, qs); /* left */
 	      return locate_endpoint(v, vo, rptr->right, seg, qs); // right
@@ -653,8 +646,8 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	{			/* Only one trapezoid below */
 	  update_trapezoid(&s, seg, tr, t, tn);
 
-	  if (FP_EQUAL(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
-	      FP_EQUAL(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
+	  if (fp_equal(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
+	      fp_equal(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
 	    {		/* bottom forms a triangle */
 
 	      if (is_swapped)
@@ -704,8 +697,8 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	{			/* Only one trapezoid below */
 	  update_trapezoid(&s, seg, tr, t, tn);
 
-	  if (FP_EQUAL(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
-	      FP_EQUAL(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
+	  if (fp_equal(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
+	      fp_equal(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
 	    {		/* bottom forms a triangle */
 
 	      if (is_swapped)
@@ -761,8 +754,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	  bool i_d0, i_d1;
 
 	  i_d0 = i_d1 = false;
-	  if (FP_EQUAL(tr->data[t].lo.y, s.v0.y))
-	    {
+	  if (fp_equal(tr->data[t].lo.y, s.v0.y)) {
 	      if (tr->data[t].lo.x > s.v0.x)
 		i_d0 = true;
 	      else
@@ -785,8 +777,8 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
 	  update_trapezoid(&s, seg, tr, t, tn);
 
-	  if (FP_EQUAL(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
-	      FP_EQUAL(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
+	  if (fp_equal(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
+	      fp_equal(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
 	    {
 	      /* this case arises only at the lowest trapezoid.. i.e.
 		 tlast, if the lower endpoint of the segment is
