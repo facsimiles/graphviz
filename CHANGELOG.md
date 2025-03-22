@@ -97,6 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   preference to `agxset` whenever possible. Similarly, `agset` has gained two
   variants `agset_text` and `agset_html`. These should be used in preference to
   `agset` whenever possible. #2089, #2641
+- **Breaking**: The `EDGEOF` macro has been removed.
 
 ### Fixed
 

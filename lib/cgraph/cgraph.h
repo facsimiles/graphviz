@@ -1013,10 +1013,6 @@ CGRAPH_API extern Agdesc_t Agstrictundirected; ///< strict undirected
 both nodes and edges are embedded in main graph objects but allocated separately
 in subgraphs */
 #define AGSNMAIN(sn) ((sn) == (&((sn)->node->mainsub)))
-#define EDGEOF(sn, rep)                                                        \
-  (AGSNMAIN(sn)                                                                \
-       ? ((Agedge_t *)((unsigned char *)(rep) - offsetof(Agedge_t, seq_link))) \
-       : ((Dthold_t *)(rep))->obj)
 /// @}
 
 /// @addtogroup cgraph_app
