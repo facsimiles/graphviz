@@ -75,19 +75,16 @@ static size_t newtrap(traps_t *tr) {
   return tr->length - 1;
 }
 
-/* Return the maximum of the two points into the yval structure */
-static void _max (pointf *yval, pointf *v0, pointf *v1)
-{
-  if (v0->y > v1->y + C_EPS)
-    *yval = *v0;
-  else if (fp_equal(v0->y, v1->y)) {
-      if (v0->x > v1->x + C_EPS)
-	*yval = *v0;
-      else
-	*yval = *v1;
+/// return the maximum of the two points
+static pointf _max(pointf v0, pointf v1) {
+  if (v0.y > v1.y + C_EPS)
+    return v0;
+  if (fp_equal(v0.y, v1.y)) {
+      if (v0.x > v1.x + C_EPS)
+	return v0;
+      return v1;
     }
-  else
-    *yval = *v1;
+  return v1;
 }
 
 /* Return the minimum of the two points into the yval structure */
@@ -132,7 +129,7 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
 
   const size_t i1 = newnode(qs);
   qnodes_at(qs, i1)->nodetype = T_Y;
-  _max(&qnodes_at(qs, i1)->yval, &s->v0, &s->v1); // root
+  qnodes_at(qs, i1)->yval = _max(s->v0, s->v1); // root
   const size_t root = i1;
 
   const size_t i2 = newnode(qs);
