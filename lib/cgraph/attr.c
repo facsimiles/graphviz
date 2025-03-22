@@ -153,15 +153,10 @@ static Agsym_t *aglocaldictsym(Dict_t * dict, char *name)
 
 Agsym_t *agattrsym(void *obj, char *name)
 {
-    Agattr_t *data;
-    Agsym_t *rv;
-
-    data = agattrrec(obj);
+    Agattr_t *const data = agattrrec(obj);
     if (data)
-	rv = agdictsym(data->dict, name);
-    else
-	rv = NULL;
-    return rv;
+	return agdictsym(data->dict, name);
+    return NULL;
 }
 
 /* to create a graph's, node's edge's string attributes */
