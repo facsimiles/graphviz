@@ -154,9 +154,9 @@ dot_cleanup_graph(graph_t * g)
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	dot_cleanup_graph(subg);
     }
+    if (! agbindrec(g, "Agraphinfo_t", 0, true)) return;
     free(GD_drawing(g));
     GD_drawing(g) = NULL;
-    if (! agbindrec(g, "Agraphinfo_t", 0, true)) return;
     free (GD_clust(g));
     free (GD_rankleader(g));
 
