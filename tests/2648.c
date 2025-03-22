@@ -10,13 +10,16 @@
 
 static GVC_t *gv_global_context_;
 
-extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
-extern gvplugin_library_t gvplugin_core_LTX_library;
+#ifdef _WIN32
+#define IMPORT __declspec(dllimport)
+#else
+#define IMPORT /* nothing */
+#endif
 
-lt_symlist_t lt_preloaded_symbols[] = {
-    {"gvplugin_dot_layout_LTX_library", &gvplugin_dot_layout_LTX_library},
-    {"gvplugin_core_LTX_library", &gvplugin_core_LTX_library},
-    {0, 0}};
+IMPORT extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
+IMPORT extern gvplugin_library_t gvplugin_core_LTX_library;
+
+lt_symlist_t lt_preloaded_symbols[3];
 
 static void RenderDot(char *dot_input, char *format) {
   Agraph_t *const gv_graph = agmemread(dot_input);
@@ -42,6 +45,17 @@ static void RenderDot(char *dot_input, char *format) {
 }
 
 int main(int argc, char *argv[]) {
+
+  // Define plugins. This is done here rather than globally in a static
+  // initializer because MSVC insists on strict const rules and claims the
+  // addresses of the plugins cannot be used at compile time.
+  lt_preloaded_symbols[0] =
+      (lt_symlist_t){.name = "gvplugin_dot_layout_LTX_library",
+                     .address = &gvplugin_dot_layout_LTX_library};
+  lt_preloaded_symbols[1] =
+      (lt_symlist_t){.name = "gvplugin_core_LTX_library",
+                     .address = &gvplugin_core_LTX_library};
+
   gv_global_context_ =
       gvContextPlugins(lt_preloaded_symbols, 0 /* DEMAND_LOADING */);
 
