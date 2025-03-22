@@ -90,8 +90,9 @@ static inline int dfp_cmp(double f1, double f2) {
   return 0;
 }
 
-#define _equal_to(v0,v1) \
-  (fp_equal((v0)->y, (v1)->y) && fp_equal((v0)->x, (v1)->x))
+static inline bool _equal_to(const pointf *v0, const pointf *v1) {
+  return fp_equal(v0->y, v1->y) && fp_equal(v0->x, v1->x);
+}
 
 #define _greater_than(v0, v1) \
   (((v0)->y > (v1)->y + C_EPS) ? true : (((v0)->y < (v1)->y - C_EPS) ? false : ((v0)->x > (v1)->x)))
