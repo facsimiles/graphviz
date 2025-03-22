@@ -90,7 +90,7 @@ static inline int dfp_cmp(double f1, double f2) {
   return 0;
 }
 
-static inline bool _equal_to(pointf v0, pointf v1) {
+static inline bool equal_to(pointf v0, pointf v1) {
   return fp_equal(v0.y, v1.y) && fp_equal(v0.x, v1.x);
 }
 

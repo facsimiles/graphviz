@@ -292,7 +292,7 @@ static size_t locate_endpoint(pointf *v, pointf *vo, size_t r, segment_t *seg,
     case T_Y:
       if (_greater_than(v, &rptr->yval)) /* above */
 	return locate_endpoint(v, vo, rptr->right, seg, qs);
-      if (_equal_to(*v, rptr->yval)) { // the point is already inserted
+      if (equal_to(*v, rptr->yval)) { // the point is already inserted
 	  if (_greater_than(vo, &rptr->yval)) /* above */
 	    return locate_endpoint(v, vo, rptr->right, seg, qs);
 	  return locate_endpoint(v, vo, rptr->left, seg, qs); // below
@@ -300,8 +300,8 @@ static size_t locate_endpoint(pointf *v, pointf *vo, size_t r, segment_t *seg,
       return locate_endpoint(v, vo, rptr->left, seg, qs); // below
 
     case T_X:
-      if (_equal_to(*v, seg[rptr->segnum].v0) ||
-          _equal_to(*v, seg[rptr->segnum].v1)) {
+      if (equal_to(*v, seg[rptr->segnum].v0) ||
+          equal_to(*v, seg[rptr->segnum].v1)) {
 	  if (fp_equal(v->y, vo->y)) { // horizontal segment
 	      if (vo->x < v->x)
 		return locate_endpoint(v, vo, rptr->left, seg, qs); /* left */
@@ -620,7 +620,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
       if (t == tfirst)
 	tfirstr = tn;
-      if (_equal_to(tr->data[t].lo, tr->data[tlast].lo))
+      if (equal_to(tr->data[t].lo, tr->data[tlast].lo))
 	tlastr = tn;
 
       tr->data[tn] = tr->data[t];
