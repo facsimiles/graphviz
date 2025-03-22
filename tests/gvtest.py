@@ -94,7 +94,7 @@ def compile_c(
         libraries = []
         for l in link:
             # for absolute paths, assume we need no pkg-config lookup
-            if str(l).startswith("/") and Path(l).exists():
+            if Path(l).is_absolute() and Path(l).exists():
                 # flush any pending pkg-config lookup to roughly keep the library
                 # ordering the caller requested
                 if len(libraries) > 0:
@@ -113,13 +113,13 @@ def compile_c(
                 cflags += ["-DGVDLL=1"]
             ldflags += ["-link"]
             for l in link:
-                if str(l).startswith("/") and Path(l).exists():
+                if Path(l).is_absolute() and Path(l).exists():
                     ldflags += [l]
                 else:
                     ldflags += [f"{l}.lib"]
     else:
         for l in link:
-            if str(l).startswith("/") and Path(l).exists():
+            if Path(l).is_absolute() and Path(l).exists():
                 ldflags += [l]
             else:
                 ldflags += [f"-l{l}"]

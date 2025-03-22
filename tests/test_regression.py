@@ -24,7 +24,7 @@ import textwrap
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Iterator, List, Set, Union
+from typing import Iterator, List, Set
 
 import pexpect
 import pytest
@@ -5359,12 +5359,11 @@ def test_2640(seed: int):
     run_raw([gvgen, "-R", "20", f"-u{seed}"], stdout=subprocess.DEVNULL)
 
 
-def _find_plugin_so(compiler: Union[Path, str], plugin: str) -> Path:
+def _find_plugin_so(plugin: str) -> Path:
     """
     find the absolute path to the dynamic library for a given Graphviz plugin
 
     Args:
-        compiler: C compiler
         plugin: Name of the plugin being sought
 
     Return:
@@ -5372,24 +5371,43 @@ def _find_plugin_so(compiler: Union[Path, str], plugin: str) -> Path:
         could not be found.
     """
 
-    # TODO: Windows support
-    paths = run([compiler, "-print-search-dirs"])
+    # figure out the path to installed root based on binaries
+    dot_bin = which("dot")
+    root = dot_bin.parents[1]
 
-    libpath = re.search("^libraries: =(?P<paths>.*)$", paths, flags=re.MULTILINE)
-    assert libpath is not None, "could not find compiler’s library search path"
+    # replicate information from ../configure.ac
+    GVPLUGIN_CURRENT = 6
+    GVPLUGIN_REVISION = 0
+    GVPLUGIN_AGE = 0
 
-    for path in libpath.group("paths").split(":"):
-        candidate = Path(path) / f"graphviz/libgvplugin_{plugin}.so"
+    for subdir in ("lib", "lib64"):
+        if is_macos():
+            candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.dylib"
+        elif is_mingw():
+            candidate = root / f"bin/libgvplugin_{plugin}-{GVPLUGIN_CURRENT}.dll"
+        elif platform.system() == "Windows":
+            candidate = root / subdir / f"gvplugin_{plugin}.lib"
+        else:
+            candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so"
         print(f"checking {candidate}")  # log some useful information
         if candidate.exists():
             return candidate
+
+        if platform.system() == "Linux":
+            # try it with the version info suffix, which is what some RHEL platforms use
+            suffix = f".{GVPLUGIN_CURRENT}.{GVPLUGIN_REVISION}.{GVPLUGIN_AGE}"
+            candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so{suffix}"
+            print(f"checking {candidate}")  # log some useful information
+            if candidate.exists():
+                return candidate
 
     # not found
     return None
 
 
 @pytest.mark.skipif(
-    platform.system() == "Windows", reason="not implemented yet for Windows"
+    is_static_build(),
+    reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
     strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2648"
@@ -5409,13 +5427,10 @@ def test_2648(tmp_path: Path):
     # libraries that are not in the linker’s search path. So instead we have to take a
     # more manual approach.
 
-    # find the C compiler
-    cc = os.environ.get("CC", "cc")
-
     # find the plugins we need to link against
-    core = _find_plugin_so(cc, "core")
+    core = _find_plugin_so("core")
     assert core is not None, "core plugin library not found"
-    dot_layout = _find_plugin_so(cc, "dot_layout")
+    dot_layout = _find_plugin_so("dot_layout")
     assert dot_layout is not None, "dot layout plugin library not found"
 
     ## compile the test code
@@ -5425,12 +5440,19 @@ def test_2648(tmp_path: Path):
     # teach the runtime linker how to find the plugins
     env = os.environ.copy()
     ld_library_path = f"{core.parent}:{dot_layout.parent}"
-    if "LD_LIBRARY_PATH" in env:
-        env["LD_LIBRARY_PATH"] = f"{ld_library_path}:{env['LD_LIBRARY_PATH']}"
+    if is_macos():
+        if "DYLD_LIBRARY_PATH" in env:
+            env["DYLD_LIBRARY_PATH"] = f"{ld_library_path}:{env['DYLD_LIBRARY_PATH']}"
+        else:
+            env["DYLD_LIBRARY_PATH"] = ld_library_path
     else:
-        env["LD_LIBRARY_PATH"] = ld_library_path
+        if "LD_LIBRARY_PATH" in env:
+            env["LD_LIBRARY_PATH"] = f"{ld_library_path}:{env['LD_LIBRARY_PATH']}"
+        else:
+            env["LD_LIBRARY_PATH"] = ld_library_path
 
     # run the test code
+    print(f"+ {shlex.quote(str(exe))}")
     subprocess.run([exe], env=env, check=True)
 
 
