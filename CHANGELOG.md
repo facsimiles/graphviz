@@ -83,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `gvgen` supports a new option, `-u<seed>`, for specifying the initial state of
   the random number generator (RNG). The way in which the RNG is seeded has
   slightly changed.
+- **Breaking**: libcgraph’s SO name has been updated 6 → 7.
 
 ### Fixed
 

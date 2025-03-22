@@ -133,8 +133,8 @@ endif()
 
 # Specify library version and soversion
 set_target_properties(gvc PROPERTIES
-  VERSION 6.0.0
-  SOVERSION 6
+  VERSION 7.0.0
+  SOVERSION 7
 )
 
 # Include DLLs with this library on Windows

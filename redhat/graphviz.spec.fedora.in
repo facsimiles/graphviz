@@ -121,11 +121,6 @@ BuildRequires: libwebp-devel
 %global __provides_exclude_from %{?__provides_exclude_from:%__provides_exclude_from|}%{php_extdir}/.*\\.so$
 %endif
 
-# Fix for the i386 extended precision (rhbz#772637)
-%ifarch i386 i686
-%global FFSTORE -ffloat-store
-%endif
-
 #-- main graphviz rpm ------------------------------------------------
 Requires:         %{name}-nox = %{version}-%{release}
 Requires:         %{name}-x = %{version}-%{release}

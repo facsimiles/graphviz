@@ -10,10 +10,9 @@ export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 PATHPLAN_SONAME   = 4
-GVC_SONAME        = 6
-CDT_SONAME        = 5
-GRAPH_SONAME      = 5
-CGRAPH_SONAME     = 6
+GVC_SONAME        = 7
+CDT_SONAME        = 6
+CGRAPH_SONAME     = 7
 GVPR_SONAME       = 2
 EXPR_SONAME       = 4
 XDOT_SONAME       = 4
@@ -120,7 +119,6 @@ install: build
 	d-devlibdeps \
 		--override s/libpathplan$(PATHPLAN_SONAME)-dev// \
 		--override s/libcgraph$(CGRAPH_SONAME)-dev//   \
-		--override s/libgraph$(GRAPH_SONAME)-dev//    \
 		--override s/libxdot$(XDOT_SONAME)-dev//     \
 		--override s/libcdt$(CDT_SONAME)-dev//      \
 		--override s/libgvpr$(GVPR_SONAME)-dev//      \

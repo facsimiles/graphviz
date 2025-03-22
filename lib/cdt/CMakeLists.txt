@@ -65,8 +65,8 @@ endif()
 
 # Specify library version and soversion
 set_target_properties(cdt PROPERTIES
-  VERSION 5.0.0
-  SOVERSION 5
+  VERSION 6.0.0
+  SOVERSION 6
 )
 
 if(BUILD_SHARED_LIBS)
