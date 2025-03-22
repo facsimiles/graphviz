@@ -487,15 +487,10 @@ char *agxget(void *obj, Agsym_t * sym)
 }
 
 int agset(void *obj, char *name, const char *value) {
-    Agsym_t *sym;
-    int rv;
-
-    sym = agattrsym(obj, name);
+    Agsym_t *const sym = agattrsym(obj, name);
     if (sym == NULL)
-	rv = FAILURE;
-    else
-	rv = agxset(obj, sym, value);
-    return rv;
+	return FAILURE;
+    return agxset(obj, sym, value);
 }
 
 static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
