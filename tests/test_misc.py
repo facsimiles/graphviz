@@ -110,9 +110,6 @@ def test_xml_escape():
     assert xml_c.exists(), "missing xml.c"
 
     with tempfile.TemporaryDirectory() as tmp:
-        # write a dummy config.h to allow standalone compilation
-        (Path(tmp) / "config.h").write_text("", encoding="utf-8")
-
         # compile the stub to something we can run
         xml_exe = Path(tmp) / "xml.exe"
         cflags = [
@@ -120,17 +117,7 @@ def test_xml_escape():
             "-D_POSIX_C_SOURCE=200809L",
             "-DTEST_XML",
             "-I",
-            tmp,
-            "-I",
             ROOT / "lib",
-            "-I",
-            ROOT / "lib/gvc",
-            "-I",
-            ROOT / "lib/pathplan",
-            "-I",
-            ROOT / "lib/cgraph",
-            "-I",
-            ROOT / "lib/cdt",
             "-Wall",
             "-Wextra",
         ]
