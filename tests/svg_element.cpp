@@ -365,7 +365,7 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
           // is a cubic Bezier approximation of a semicircle, is a special case
           // of this. A vertical edge with a `curve` arrow head is vertically
           // mirrored and a horizontal edge with a `curve` arrow head is
-          // horizonally mirrored.
+          // horizontally mirrored.
           {
             const auto horizontal_endpoint_extension =
                 is_vertically_mirrored ? attributes.stroke_width / 2 : 0;
