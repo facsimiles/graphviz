@@ -597,7 +597,7 @@ SVG::SVGRect SVG::SVGElement::text_bbox() const {
                     attributes.font_family));
   }
 
-  // Epirically determined font metrics for the Courier font
+  // Empirically determined font metrics for the Courier font
   const auto courier_width_per_pt = 0.6;
   const auto courier_height_per_pt = 1.2;
   const auto descent_per_pt = 0.257;
