@@ -994,7 +994,7 @@ SVG::SVGElement::miter_shape(SVG::SVGPoint segment_start,
    *     NOTE: In the diagram above, the B segment crosses the x-axis in the
    *           downwards direction so its angle to the x-axis is in this case
    *           larger than a semi-circle (π or 180°). In the picture it is
-   *           around 5π/3 or 300°. The B segement in the opposite direction has
+   *           around 5π/3 or 300°. The B segment in the opposite direction has
    *           an angle to the x-axis which is β-π. This is denoted next to the
    *           Bleft line in the picture.
    *
