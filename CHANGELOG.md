@@ -84,6 +84,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the random number generator (RNG). The way in which the RNG is seeded has
   slightly changed.
 - **Breaking**: libcgraph’s SO name has been updated 6 → 7.
+- The core plugin’s SVG output (`-Tsvg`, `-Tsvg_inline`) now sets
+  `xml:space="preserve"` on text elements for more accurate display.
 
 ### Fixed
 

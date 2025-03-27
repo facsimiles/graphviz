@@ -9,7 +9,7 @@ TEST_CASE(
     "Edge node overlap for normal and inv arrow with all arrow shape modifiers",
     "An edge connected to a node shall touch that node and not overlap it too "
     "much, regardless of if the arrow shape is 'normal' or 'inv' and which "
-    "arrrow shape modifier is used") {
+    "arrow shape modifier is used") {
 
   std::string filename_base = AUTO_NAME();
 
