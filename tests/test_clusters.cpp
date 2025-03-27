@@ -9,8 +9,8 @@
 
 #include "svg_analyzer.h"
 
-TEST_CASE(
-    "clusters in directed and undireced graphs with different layout engines") {
+TEST_CASE("clusters in directed and undirected graphs with different layout "
+          "engines") {
   const auto directed_graph = GENERATE(false, true);
 
   const std::string graph_type = directed_graph ? "digraph" : "graph";
