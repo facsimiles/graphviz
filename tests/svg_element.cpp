@@ -156,7 +156,7 @@ SVG::SVGRect SVG::SVGElement::bbox(bool throw_if_bbox_not_defined) {
               .height = std::numeric_limits<double>::lowest()};
     switch (elem_type) {
     case SVG::SVGElementType::Group:
-      // SVG group bounding box is detemined solely by its children
+      // SVG group bounding box is determined solely by its children
       break;
     case SVG::SVGElementType::Ellipse: {
       m_bbox = {
@@ -229,7 +229,7 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
             .height = std::numeric_limits<double>::lowest()};
   switch (elem_type) {
   case SVG::SVGElementType::Group:
-    // SVG group bounding box is detemined solely by its children
+    // SVG group bounding box is determined solely by its children
     break;
   case SVG::SVGElementType::Ellipse: {
     const auto stroke_width = (attributes.rx == 0 && attributes.ry == 0)
@@ -365,7 +365,7 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
           // is a cubic Bezier approximation of a semicircle, is a special case
           // of this. A vertical edge with a `curve` arrow head is vertically
           // mirrored and a horizontal edge with a `curve` arrow head is
-          // horizonally mirrored.
+          // horizontally mirrored.
           {
             const auto horizontal_endpoint_extension =
                 is_vertically_mirrored ? attributes.stroke_width / 2 : 0;
@@ -597,7 +597,7 @@ SVG::SVGRect SVG::SVGElement::text_bbox() const {
                     attributes.font_family));
   }
 
-  // Epirically determined font metrics for the Courier font
+  // Empirically determined font metrics for the Courier font
   const auto courier_width_per_pt = 0.6;
   const auto courier_height_per_pt = 1.2;
   const auto descent_per_pt = 0.257;
@@ -889,7 +889,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
     break;
   case SVG::SVGElementType::Text:
     attributes_str += fmt::format(
-        R"(text-anchor="{}" x="{}" y="{}" font-family="{}" font-size="{:.2f}")",
+        R"(xml:space="preserve" text-anchor="{}" x="{}" y="{}" font-family="{}" font-size="{:.2f}")",
         attributes.text_anchor, attributes.x, attributes.y,
         attributes.font_family, attributes.font_size);
     break;
@@ -994,7 +994,7 @@ SVG::SVGElement::miter_shape(SVG::SVGPoint segment_start,
    *     NOTE: In the diagram above, the B segment crosses the x-axis in the
    *           downwards direction so its angle to the x-axis is in this case
    *           larger than a semi-circle (π or 180°). In the picture it is
-   *           around 5π/3 or 300°. The B segement in the opposite direction has
+   *           around 5π/3 or 300°. The B segment in the opposite direction has
    *           an angle to the x-axis which is β-π. This is denoted next to the
    *           Bleft line in the picture.
    *
