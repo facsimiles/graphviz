@@ -156,7 +156,7 @@ SVG::SVGRect SVG::SVGElement::bbox(bool throw_if_bbox_not_defined) {
               .height = std::numeric_limits<double>::lowest()};
     switch (elem_type) {
     case SVG::SVGElementType::Group:
-      // SVG group bounding box is detemined solely by its children
+      // SVG group bounding box is determined solely by its children
       break;
     case SVG::SVGElementType::Ellipse: {
       m_bbox = {
@@ -229,7 +229,7 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
             .height = std::numeric_limits<double>::lowest()};
   switch (elem_type) {
   case SVG::SVGElementType::Group:
-    // SVG group bounding box is detemined solely by its children
+    // SVG group bounding box is determined solely by its children
     break;
   case SVG::SVGElementType::Ellipse: {
     const auto stroke_width = (attributes.rx == 0 && attributes.ry == 0)
