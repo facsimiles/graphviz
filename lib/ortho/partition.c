@@ -182,7 +182,7 @@ inside_polygon (trap_t *t, segment_t* seg)
     return false;
   
   if ((!is_valid_trap(t->u0) && !is_valid_trap(t->u1)) || (!is_valid_trap(t->d0) && !is_valid_trap(t->d1))) // triangle
-    return _greater_than(&seg[rseg].v1, &seg[rseg].v0);
+    return greater_than(seg[rseg].v1, seg[rseg].v0);
   
   return false;
 }
@@ -330,8 +330,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 
   bitarray_set(visited, trnum, true);
   
-  if (t->hi.y > t->lo.y + C_EPS && FP_EQUAL(seg[t->lseg].v0.x, seg[t->lseg].v1.x) &&
-      FP_EQUAL(seg[t->rseg].v0.x, seg[t->rseg].v1.x)) {
+  if (t->hi.y > t->lo.y + C_EPS && fp_equal(seg[t->lseg].v0.x, seg[t->lseg].v1.x) &&
+      fp_equal(seg[t->rseg].v0.x, seg[t->rseg].v1.x)) {
       boxf newbox = {0};
       if (flip) {
           newbox.LL.x = t->lo.y;
@@ -435,8 +435,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	}
       else			/* only downward cusp */
 	{
-	  if (_equal_to(&t->lo, &seg[t->lseg].v1))
-	    {
+	  if (equal_to(t->lo, seg[t->lseg].v1)) {
 	      v0 = tr->data[t->u0].rseg;
 	      v1 = seg[t->lseg].next;
 
@@ -482,8 +481,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
     }
   else if (is_valid_trap(t->u0) || is_valid_trap(t->u1)) { // no downward cusp
       if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // only upward cusp
-	  if (_equal_to(&t->hi, &seg[t->lseg].v0))
-	    {
+	  if (equal_to(t->hi, seg[t->lseg].v0)) {
 	      v0 = tr->data[t->d1].lseg;
 	      v1 = t->lseg;
 	      if (!(dir == TR_FROM_DN && t->d0 == from))
@@ -528,9 +526,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	}
       else			/* no cusp */
 	{
-	  if (_equal_to(&t->hi, &seg[t->lseg].v0) &&
-	      _equal_to(&t->lo, &seg[t->rseg].v0))
-	    {
+	  if (equal_to(t->hi, seg[t->lseg].v0) && equal_to(t->lo, seg[t->rseg].v0)) {
 	      v0 = t->rseg;
 	      v1 = t->lseg;
 	      if (dir == TR_FROM_UP)
@@ -550,9 +546,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->u1, trnum, flip, TR_FROM_DN);
 		}
 	    }
-	  else if (_equal_to(&t->hi, &seg[t->rseg].v1) &&
-		   _equal_to(&t->lo, &seg[t->lseg].v1))
-	    {
+	  else if (equal_to(t->hi, seg[t->rseg].v1) &&
+	           equal_to(t->lo, seg[t->lseg].v1)) {
 	      v0 = seg[t->rseg].next;
 	      v1 = seg[t->lseg].next;
 
