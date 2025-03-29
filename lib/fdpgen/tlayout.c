@@ -172,10 +172,10 @@ void fdp_initParams(graph_t * g)
     T_Cell = DFLT_Cell;
     T_C = D_C;
     T_Tfact = D_Tfact;
-    T_maxIters = late_int(g, agattr(g,AGRAPH, "maxiter", NULL), DFLT_maxIters, 0);
-    D_K = T_K = late_double(g, agattr(g,AGRAPH, "K", NULL), DFLT_K, 0.0);
+    T_maxIters = late_int(g, agattr_text(g,AGRAPH, "maxiter", NULL), DFLT_maxIters, 0);
+    D_K = T_K = late_double(g, agattr_text(g,AGRAPH, "K", NULL), DFLT_K, 0.0);
     if (D_T0 == -1.0) {
-	T_T0 = late_double(g, agattr(g,AGRAPH, "T0", NULL), -1.0, 0.0);
+	T_T0 = late_double(g, agattr_text(g,AGRAPH, "T0", NULL), -1.0, 0.0);
     } else
 	T_T0 = D_T0;
     T_seed = DFLT_seed;

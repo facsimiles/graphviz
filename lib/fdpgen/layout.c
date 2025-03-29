@@ -367,15 +367,15 @@ copyAttr (graph_t* g, graph_t* dg, char* attr)
     char*     ov_val;
     Agsym_t*  ov;
 
-    if ((ov = agattr(g,AGRAPH, attr, NULL))) {
+    if ((ov = agattr_text(g,AGRAPH, attr, NULL))) {
 	ov_val = agxget(g,ov);
-	ov = agattr(dg,AGRAPH, attr, NULL);
+	ov = agattr_text(dg,AGRAPH, attr, NULL);
 	if (ov)
 	    agxset (dg, ov, ov_val);
 	else {
 	    const bool is_html = aghtmlstr(ov_val);
 	    is_html ? agattr_html(dg, AGRAPH, attr, ov_val)
-	            : agattr(dg, AGRAPH, attr, ov_val);
+	            : agattr_text(dg, AGRAPH, attr, ov_val);
 	}
     }
 }
@@ -964,9 +964,9 @@ static void setBB(graph_t * g)
  */
 static void init_info(graph_t * g, layout_info * infop)
 {
-    infop->G_coord = agattr(g, AGRAPH, "coords", NULL);
-    infop->G_width = agattr(g, AGRAPH, "width", NULL);
-    infop->G_height = agattr(g, AGRAPH, "height", NULL);
+    infop->G_coord = agattr_text(g, AGRAPH, "coords", NULL);
+    infop->G_width = agattr_text(g, AGRAPH, "width", NULL);
+    infop->G_height = agattr_text(g, AGRAPH, "height", NULL);
     infop->rootg = g;
     infop->gid = 0;
     infop->pack.mode = getPackInfo(g, l_node, CL_OFFSET / 2, &infop->pack);
@@ -1025,7 +1025,7 @@ static void fdp_init_graph(Agraph_t * g)
 {
     setEdgeType (g, EDGETYPE_LINE);
     GD_alg(g) = gv_alloc(sizeof(gdata)); // freed in cleanup_graph
-    GD_ndim(agroot(g)) = late_int(g, agattr(g,AGRAPH, "dim", NULL), 2, 2);
+    GD_ndim(agroot(g)) = late_int(g, agattr_text(g,AGRAPH, "dim", NULL), 2, 2);
     Ndim = GD_ndim(agroot(g)) = MIN(GD_ndim(agroot(g)), MAXDIM);
 
     mkClusters (g, NULL, g);

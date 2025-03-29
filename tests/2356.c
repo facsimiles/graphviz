@@ -24,7 +24,7 @@ static void GraphProc(void) {
       1  // if may contain collapsed nodes
   };
   g = agopen("g", dir, 0);
-  agattr(g, AGRAPH, "mindist", "0.3"); //!!!!!!the line causing the error
+  agattr_text(g, AGRAPH, "mindist", "0.3"); //!!!!!!the line causing the error
   n = agnode(g, "n", 1);
   m = agnode(g, "m", 1);
   e = agedge(g, n, m, 0, 1);

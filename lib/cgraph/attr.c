@@ -138,34 +138,25 @@ static Agdatadict_t *agmakedatadict(Agraph_t * g)
 /* look up an attribute with possible viewpathing */
 static Agsym_t *agdictsym(Dict_t * dict, char *name)
 {
-    Agsym_t key;
-    key.name = name;
+    Agsym_t key = {.name = name};
     return dtsearch(dict, &key);
 }
 
 /* look up attribute in local dictionary with no view pathing */
 static Agsym_t *aglocaldictsym(Dict_t * dict, char *name)
 {
-    Agsym_t *rv;
-    Dict_t *view;
-
-    view = dtview(dict, NULL);
-    rv = agdictsym(dict, name);
+    Dict_t *const view = dtview(dict, NULL);
+    Agsym_t *const rv = agdictsym(dict, name);
     dtview(dict, view);
     return rv;
 }
 
 Agsym_t *agattrsym(void *obj, char *name)
 {
-    Agattr_t *data;
-    Agsym_t *rv;
-
-    data = agattrrec(obj);
+    Agattr_t *const data = agattrrec(obj);
     if (data)
-	rv = agdictsym(data->dict, name);
-    else
-	rv = NULL;
-    return rv;
+	return agdictsym(data->dict, name);
+    return NULL;
 }
 
 /* to create a graph's, node's edge's string attributes */
@@ -255,8 +246,7 @@ static void addattr(Agraph_t * g, Agobj_t * obj, Agsym_t * sym)
 
 static Agsym_t *getattr(Agraph_t *g, int kind, char *name) {
   Agsym_t *rv = 0;
-  Dict_t *dict;
-  dict = agdictof(g, kind);
+  Dict_t *dict = agdictof(g, kind);
   if (dict) {
     rv = agdictsym(dict, name); // viewpath up to root
   }
@@ -352,9 +342,9 @@ static Agsym_t *agattr_(Agraph_t *g, int kind, char *name, const char *value,
                  bool is_html) {
     Agsym_t *rv;
 
-    if (g == 0) {
-	if (ProtoGraph == 0)
-	    ProtoGraph = agopen(0, ProtoDesc, 0);
+    if (g == NULL) {
+	if (ProtoGraph == NULL)
+	    ProtoGraph = agopen(NULL, ProtoDesc, NULL);
 	g = ProtoGraph;
     }
     if (value)
@@ -364,12 +354,33 @@ static Agsym_t *agattr_(Agraph_t *g, int kind, char *name, const char *value,
     return rv;
 }
 
-Agsym_t *agattr(Agraph_t *g, int kind, char *name, const char *value) {
+Agsym_t *agattr_text(Agraph_t *g, int kind, char *name, const char *value) {
   return agattr_(g, kind, name, value, false);
 }
 
 Agsym_t *agattr_html(Agraph_t *g, int kind, char *name, const char *value) {
   return agattr_(g, kind, name, value, true);
+}
+
+Agsym_t *agattr(Agraph_t *g, int kind, char *name, const char *value) {
+  if (g == NULL) {
+    if (ProtoGraph == NULL) {
+      ProtoGraph = agopen(NULL, ProtoDesc, NULL);
+    }
+    g = ProtoGraph;
+  }
+
+  // Is the value we were passed a previously created HTML-like string? We
+  // essentially want to ask `aghtmlstr(value)` but cannot safely because
+  // `value` may not have originated from `agstrdup`/`agstrdup_html`.
+  if (value != NULL) {
+    const char *const alias = agstrbind_html(g, value);
+    if (alias == value && aghtmlstr(alias)) {
+      return agattr_html(g, kind, name, value);
+    }
+  }
+
+  return agattr_text(g, kind, name, value);
 }
 
 Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr)
@@ -475,34 +486,51 @@ char *agxget(void *obj, Agsym_t * sym)
     return data->str[sym->id];
 }
 
-int agset(void *obj, char *name, const char *value) {
-    Agsym_t *sym;
-    int rv;
-
-    sym = agattrsym(obj, name);
+static int agset_(void *obj, char *name, const char *value, bool is_html) {
+    Agsym_t *const sym = agattrsym(obj, name);
     if (sym == NULL)
-	rv = FAILURE;
-    else
-	rv = agxset(obj, sym, value);
-    return rv;
+	return FAILURE;
+    if (is_html) {
+	return agxset_html(obj, sym, value);
+    }
+    return agxset_text(obj, sym, value);
+}
+
+int agset(void *obj, char *name, const char *value) {
+
+  // Is the value we were passed a previously created HTML-like string? We
+  // essentially want to ask `aghtmlstr(value)` but cannot safely because
+  // `value` may not have originated from `agstrdup`/`agstrdup_html`.
+  if (value != NULL) {
+    const char *const alias = agstrbind_html(agraphof(obj), value);
+    if (alias == value && aghtmlstr(alias)) {
+      return agset_html(obj, name, value);
+    }
+  }
+
+  return agset_text(obj, name, value);
+}
+
+int agset_text(void *obj, char *name, const char *value) {
+  return agset_(obj, name, value, false);
+}
+
+int agset_html(void *obj, char *name, const char *value) {
+  return agset_(obj, name, value, true);
 }
 
 static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
-    Agraph_t *g;
-    Agobj_t *hdr;
-    Agattr_t *data;
     Agsym_t *lsym;
 
-    g = agraphof(obj);
-    hdr = obj;
-    data = agattrrec(hdr);
+    Agraph_t *g = agraphof(obj);
+    Agobj_t *hdr = obj;
+    Agattr_t *data = agattrrec(hdr);
     assert(sym->id >= 0 && sym->id < topdictsize(obj));
     agstrfree(g, data->str[sym->id], aghtmlstr(data->str[sym->id]));
     data->str[sym->id] = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     if (hdr->tag.objtype == AGRAPH) {
 	/* also update dict default */
-	Dict_t *dict;
-	dict = agdatadict(g, false)->dict.g;
+	Dict_t *dict = agdatadict(g, false)->dict.g;
 	if ((lsym = aglocaldictsym(dict, sym->name))) {
 	    agstrfree(g, lsym->defval, aghtmlstr(lsym->defval));
 	    lsym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
@@ -516,6 +544,21 @@ static int agxset_(void *obj, Agsym_t *sym, const char *value, bool is_html) {
 }
 
 int agxset(void *obj, Agsym_t *sym, const char *value) {
+
+  // Is the value we were passed a previously created HTML-like string? We
+  // essentially want to ask `aghtmlstr(value)` but cannot safely because
+  // `value` may not have originated from `agstrdup`/`agstrdup_html`.
+  if (value != NULL) {
+    const char *const alias = agstrbind_html(agraphof(obj), value);
+    if (alias == value && aghtmlstr(alias)) {
+      return agxset_html(obj, sym, value);
+    }
+  }
+
+  return agxset_text(obj, sym, value);
+}
+
+int agxset_text(void *obj, Agsym_t *sym, const char *value) {
   return agxset_(obj, sym, value, false);
 }
 
@@ -523,13 +566,61 @@ int agxset_html(void *obj, Agsym_t *sym, const char *value) {
   return agxset_(obj, sym, value, true);
 }
 
-int agsafeset(void *obj, char *name, const char *value, const char *def) {
+int agsafeset_text(void *obj, char *name, const char *value, const char *def) {
     Agsym_t *a;
 
-    a = agattr(agraphof(obj), AGTYPE(obj), name, 0);
+    a = agattr_text(agraphof(obj), AGTYPE(obj), name, NULL);
     if (!a)
-	a = agattr(agraphof(obj), AGTYPE(obj), name, def);
+	a = agattr_text(agraphof(obj), AGTYPE(obj), name, def);
     return agxset(obj, a, value);
+}
+
+int agsafeset_html(void *obj, char *name, const char *value, const char *def) {
+  Agsym_t *a = agattr_html(agraphof(obj), AGTYPE(obj), name, NULL);
+  if (a == NULL) {
+    a = agattr_html(agraphof(obj), AGTYPE(obj), name, def);
+  }
+  return agxset_html(obj, a, value);
+}
+
+int agsafeset(void *obj, char *name, const char *value, const char *def) {
+
+  // find the graph containing the target object
+  Agraph_t *const graph = agraphof(obj);
+
+  // get the existing attribute, if there is one
+  Agsym_t *a = agattr_text(graph, AGTYPE(obj), name, NULL);
+
+  if (a == NULL) {
+    // Is the default we were passed a previously created HTML-like string? We
+    // essentially want to ask `aghtmlstr(def)` but cannot safely because `def`
+    // may not have originated from `agstrdup`/`agstrdup_html`.
+    bool is_def_html = false;
+    if (def != NULL) {
+      const char *const alias = agstrbind_html(graph, def);
+      if (alias == def && aghtmlstr(alias)) {
+        is_def_html = true;
+      }
+    }
+
+    if (is_def_html) {
+      a = agattr_html(graph, AGTYPE(obj), name, def);
+    } else {
+      a = agattr_text(graph, AGTYPE(obj), name, def);
+    }
+  }
+
+  // Is the value we were passed a previously created HTML-like string? We
+  // essentially want to ask `aghtmlstr(value)` but cannot safely because
+  // `value` may not have originated from `agstrdup`/`agstrdup_html`.
+  if (value != NULL) {
+    const char *const alias = agstrbind_html(graph, value);
+    if (alias == value && aghtmlstr(alias)) {
+      return agxset_html(obj, a, value);
+    }
+  }
+
+  return agxset(obj, a, value);
 }
 
 static void agraphattr_init_wrapper(Agraph_t *g, Agobj_t *ignored1,

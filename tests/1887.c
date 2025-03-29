@@ -13,7 +13,7 @@
 int main(void) {
 
   Agraph_t *root = agopen("graphname", Agdirected, NULL);
-  agattr(root, 1, "label", "");
+  agattr_text(root, 1, "label", "");
   Agnode_t *before = agnode(root, "before", 1);
   assert(before != NULL);
   Agnode_t *after = agnode(root, "after", 1);

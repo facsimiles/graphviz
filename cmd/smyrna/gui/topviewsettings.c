@@ -50,7 +50,7 @@ void on_settingsCancelBtn_clicked(GtkWidget *widget, void *user_data) {
 }
 static void copy_attr(Agraph_t *destG, char *attrib, Agraph_t *g)
 {
-    agattr(g, AGRAPH, attrib, agget(destG, attrib));
+    agattr_text(g, AGRAPH, attrib, agget(destG, attrib));
 }
 
 
@@ -90,7 +90,7 @@ static void get_color_button_widget_to_attribute(char *attrib,
 	    (int) ((float) color.red / 65535.0 * 255.0),
 	    (int) ((float) color.green / 65535.0 * 255.0),
 	    (int) ((float) color.blue / 65535.0 * 255.0));
-    agattr(g, AGRAPH, attrib, buf);
+    agattr_text(g, AGRAPH, attrib, buf);
 }
 
 static void get_text_widget_to_attribute(char *attrib, char *widget_name,
@@ -98,7 +98,7 @@ static void get_text_widget_to_attribute(char *attrib, char *widget_name,
 {
     if (strlen(attrib) > 512)
 	return;
-    agattr(g, AGRAPH, attrib, gtk_entry_get_text((GtkEntry*)
+    agattr_text(g, AGRAPH, attrib, gtk_entry_get_text((GtkEntry*)
 			       glade_xml_get_widget(xml, widget_name)));
 }
 
@@ -149,7 +149,7 @@ static void get_checkbox_widget_to_attribute(char *attrib, char *widget_name,
 					       glade_xml_get_widget(xml,
 								    widget_name));
     snprintf(buf, sizeof(buf), "%d", value);
-    agattr(g, AGRAPH, attrib, buf);
+    agattr_text(g, AGRAPH, attrib, buf);
 }
 
 static void set_spinbtn_widget(char *attrib, char *widget_name) {
@@ -180,7 +180,7 @@ static void get_spinbtn_widget_to_attribute(char *attrib,
 					      glade_xml_get_widget(xml,
 								   widget_name));
     snprintf(buf, sizeof(buf), "%f", value);
-    agattr(g, AGRAPH, attrib, buf);
+    agattr_text(g, AGRAPH, attrib, buf);
 }
 static void get_scalebtn_widget_to_attribute(char *attrib, char *widget_name,
 					    Agraph_t * g)
@@ -192,7 +192,7 @@ static void get_scalebtn_widget_to_attribute(char *attrib, char *widget_name,
 					glade_xml_get_widget(xml,
 							     widget_name));
     snprintf(buf, sizeof(buf), "%f", value);
-    agattr(g, AGRAPH, attrib, buf);
+    agattr_text(g, AGRAPH, attrib, buf);
 }
 
 static void set_scalebtn_widget_to_attribute(char *attrib, char *widget_name) {
@@ -240,7 +240,7 @@ static void get_combobox_widget_to_attribute(char *attrib, char *widget_name,
 				 glade_xml_get_widget(xml, widget_name));
 
     snprintf(buf, sizeof(buf), "%d", value);
-    agattr(g, AGRAPH, attrib, buf);
+    agattr_text(g, AGRAPH, attrib, buf);
 }
 
 void load_settings_from_graph(void) {

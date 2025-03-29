@@ -93,7 +93,7 @@ static void set_visibility(Agraph_t * g, int visibility)
     if (!selected_attr)
 	return;
     if (!visible_attr)
-	visible_attr = GN_visible(g) = agattr(g, AGNODE, "visible", "1");
+	visible_attr = GN_visible(g) = agattr_text(g, AGNODE, "visible", "1");
     if (visibility)
 	bf = "1";
     else

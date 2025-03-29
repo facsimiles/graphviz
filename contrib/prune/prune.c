@@ -167,7 +167,7 @@ int main(int argc, char **argv)
 		/* Change attribute (e.g. border style) to show that node has been pruneed */
 		for (size_t j = 0; j < attrs_size(&attr_list); ++j) {
 		    /* create attribute if it doesn't exist and set it */
-		    attr = agattr(graph, AGNODE, attrs_get(&attr_list, j).n, "");
+		    attr = agattr_text(graph, AGNODE, attrs_get(&attr_list, j).n, "");
 		    if (attr == NULL) {
 			fprintf(stderr, "Couldn't create attribute: %s\n",
 				attrs_get(&attr_list, j).n);

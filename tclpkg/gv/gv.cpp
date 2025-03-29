@@ -16,7 +16,7 @@
 #include <util/alloc.h>
 
 #define agfindattr(x, s) agattrsym(x, s)
-#define agraphattr(g, n, s) agattr(g, AGRAPH, n, s)
+#define agraphattr(g, n, s) agattr_text(g, AGRAPH, n, s)
 
 static char emptystring[] = {'\0'};
 
@@ -172,7 +172,7 @@ char *getv(Agnode_t *n, char *attr) {
   if (AGTYPE(n) == AGRAPH) // protonode
     return nullptr;        // FIXME ??
   Agraph_t *g = agroot(agraphof(n));
-  Agsym_t *a = agattr(g, AGNODE, attr, nullptr);
+  Agsym_t *a = agattr_text(g, AGNODE, attr, nullptr);
   return myagxget(n, a);
 }
 char *setv(Agnode_t *n, Agsym_t *a, char *val) {
@@ -189,15 +189,15 @@ char *setv(Agnode_t *n, char *attr, char *val) {
     return nullptr;
   if (AGTYPE(n) == AGRAPH) { // protonode
     auto g = reinterpret_cast<Agraph_t *>(n);
-    (void)agattr(g, AGNODE, attr,
-                 val); // create default attribute in pseudo protonode
-                       // FIXME? - deal with html in "label" attributes
+    (void)agattr_text(g, AGNODE, attr,
+                      val); // create default attribute in pseudo protonode
+                            // FIXME? - deal with html in "label" attributes
     return val;
   }
   Agraph_t *g = agroot(agraphof(n));
-  Agsym_t *a = agattr(g, AGNODE, attr, nullptr);
+  Agsym_t *a = agattr_text(g, AGNODE, attr, nullptr);
   if (!a)
-    a = agattr(g, AGNODE, attr, emptystring);
+    a = agattr_text(g, AGNODE, attr, emptystring);
   myagxset(n, a, val);
   return val;
 }
@@ -215,7 +215,7 @@ char *getv(Agedge_t *e, char *attr) {
   if (AGTYPE(e) == AGRAPH) // protoedge
     return nullptr;        // FIXME ??
   Agraph_t *g = agraphof(agtail(e));
-  Agsym_t *a = agattr(g, AGEDGE, attr, nullptr);
+  Agsym_t *a = agattr_text(g, AGEDGE, attr, nullptr);
   return myagxget(e, a);
 }
 char *setv(Agedge_t *e, Agsym_t *a, char *val) {
@@ -231,15 +231,15 @@ char *setv(Agedge_t *e, char *attr, char *val) {
     return nullptr;
   if (AGTYPE(e) == AGRAPH) { // protoedge
     auto g = reinterpret_cast<Agraph_t *>(e);
-    (void)agattr(g, AGEDGE, attr,
-                 val); // create default attribute in pseudo protoedge
-                       // FIXME? - deal with html in "label" attributes
+    (void)agattr_text(g, AGEDGE, attr,
+                      val); // create default attribute in pseudo protoedge
+                            // FIXME? - deal with html in "label" attributes
     return val;
   }
   Agraph_t *g = agroot(agraphof(agtail(e)));
-  Agsym_t *a = agattr(g, AGEDGE, attr, nullptr);
+  Agsym_t *a = agattr_text(g, AGEDGE, attr, nullptr);
   if (!a)
-    a = agattr(g, AGEDGE, attr, emptystring);
+    a = agattr_text(g, AGEDGE, attr, emptystring);
   myagxset(e, a, val);
   return val;
 }
