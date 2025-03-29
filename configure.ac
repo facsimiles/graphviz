@@ -291,6 +291,9 @@ AC_PROG_OBJC
 dnl ===========================================================================
 dnl Set GCC compiler flags
 
+# Use 64-bit off_t on 32-bit Linux
+AC_SYS_LARGEFILE
+
 if [ test "${GCC}" = "yes" ]
 then
   # Enable common warnings flags
