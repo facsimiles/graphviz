@@ -24,8 +24,8 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
     node_t *n = agfstnode(g);
 
     Agraph_t *rootg = agraphof(ORIGN(n));
-    attrsym_t *G_mindist = agattr(rootg, AGRAPH, "mindist", NULL);
-    attrsym_t *N_root = agattr(rootg, AGNODE, "root", NULL);
+    attrsym_t *G_mindist = agattr_text(rootg, AGRAPH, "mindist", NULL);
+    attrsym_t *N_root = agattr_text(rootg, AGNODE, "root", NULL);
     char *rootname = agget(rootg, "root");
     initBlocklist(&state->bl);
     state->orderCount = 1;

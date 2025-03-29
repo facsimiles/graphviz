@@ -135,14 +135,14 @@ static void color(Agraph_t * g)
     double x, y, maxrank = 0.0;
     double sum[NC], d, lowsat, highsat;
 
-    if (agattr(g, AGNODE, "pos", 0) == NULL) {
+    if (agattr_text(g, AGNODE, "pos", 0) == NULL) {
 	fprintf(stderr,
 		"graph must be run through 'dot' before 'gvcolor'\n");
 	graphviz_exit(1);
     }
     aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), true);
-    if (agattr(g, AGNODE, "style", 0) == NULL)
-	agattr(g, AGNODE, "style", "filled");
+    if (agattr_text(g, AGNODE, "style", 0) == NULL)
+	agattr_text(g, AGNODE, "style", "filled");
     if ((p = agget(g, "Defcolor")))
 	setcolor(p, Defcolor);
 

@@ -270,7 +270,7 @@ removeFill (Agraph_t * g)
 
 }
 
-#define agnodeattr(g,n,v) agattr(g,AGNODE,n,v)
+#define agnodeattr(g,n,v) agattr_text(g,AGNODE,n,v)
 
 static void
 attach_phase_attrs (Agraph_t * g, int maxphase)

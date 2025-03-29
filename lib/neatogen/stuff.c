@@ -245,7 +245,7 @@ int scan_graph_mode(graph_t * G, int mode)
     nV = agnnodes(G);
     nE = agnedges(G);
 
-    lenx = agattr(G, AGEDGE, "len", 0);
+    lenx = agattr_text(G, AGEDGE, "len", 0);
     if (mode == MODE_KK) {
 	Epsilon = .0001 * nV;
 	getdouble(G, "epsilon", &Epsilon);

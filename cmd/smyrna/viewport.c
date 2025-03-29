@@ -326,7 +326,7 @@ void init_viewport(ViewInfo *vi) {
  */
 static void update_graph_params(Agraph_t * graph)
 {
-    agattr(graph, AGRAPH, "GraphFileName",
+    agattr_text(graph, AGRAPH, "GraphFileName",
 	   view->Topview->Graphdata.GraphFileName);
 }
 
@@ -347,7 +347,7 @@ static Agraph_t *loadGraph(char *filename)
 
     /* If no position info, run layout with -Txdot
      */
-    if (!agattr(g, AGNODE, "pos", NULL)) {
+    if (!agattr_text(g, AGNODE, "pos", NULL)) {
 	g_print("There is no position info in graph %s in %s\n", agnameof(g), filename);
 	agclose (g);
 	return 0;
@@ -371,15 +371,15 @@ int add_graph_to_viewport_from_file(char *fileName)
  */
 void updateRecord (Agraph_t* g)
 {
-    GN_size(g) = agattr (g, AGNODE, "size", 0);
-    GN_visible(g) = agattr (g, AGNODE, "visible", 0);
-    GN_selected(g) = agattr (g, AGNODE, "selected", 0);
-    GN_labelattribute(g) = agattr (g, AGNODE, "nodelabelattribute", 0);
+    GN_size(g) = agattr_text (g, AGNODE, "size", 0);
+    GN_visible(g) = agattr_text (g, AGNODE, "visible", 0);
+    GN_selected(g) = agattr_text (g, AGNODE, "selected", 0);
+    GN_labelattribute(g) = agattr_text (g, AGNODE, "nodelabelattribute", 0);
 
-    GE_pos(g)=agattr(g,AGEDGE,"pos",0);
-    GE_visible(g) = agattr (g, AGEDGE, "visible", 0);
-    GE_selected(g) = agattr (g, AGEDGE, "selected", 0);
-    GE_labelattribute(g) = agattr (g, AGEDGE, "edgelabelattribute", 0);
+    GE_pos(g)=agattr_text(g,AGEDGE,"pos",0);
+    GE_visible(g) = agattr_text (g, AGEDGE, "visible", 0);
+    GE_selected(g) = agattr_text (g, AGEDGE, "selected", 0);
+    GE_labelattribute(g) = agattr_text (g, AGEDGE, "edgelabelattribute", 0);
 }
 
 /* graphRecord:
@@ -395,12 +395,12 @@ graphRecord (Agraph_t* g)
 {
     agbindrec(g, "graphRec", sizeof(graphRec), true);
 
-    GG_nodelabelcolor(g) = agattr (g, AGRAPH, "nodelabelcolor", 0);
-    GG_edgelabelcolor(g) = agattr (g, AGRAPH, "edgelabelcolor", 0);
-    GG_labelattribute(g) = agattr (g, AGRAPH, "nodelabelattribute", 0);
-    GG_elabelattribute(g) = agattr (g, AGRAPH, "edgelabelattribute", 0);
+    GG_nodelabelcolor(g) = agattr_text (g, AGRAPH, "nodelabelcolor", 0);
+    GG_edgelabelcolor(g) = agattr_text (g, AGRAPH, "edgelabelcolor", 0);
+    GG_labelattribute(g) = agattr_text (g, AGRAPH, "nodelabelattribute", 0);
+    GG_elabelattribute(g) = agattr_text (g, AGRAPH, "edgelabelattribute", 0);
 
-    GN_pos(g) = agattr (g, AGNODE, "pos", 0);
+    GN_pos(g) = agattr_text (g, AGNODE, "pos", 0);
 
 
     updateRecord (g);

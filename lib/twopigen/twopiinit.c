@@ -98,7 +98,7 @@ void twopi_layout(Agraph_t * g)
 	    setRoot = 1;
 	}
     }
-    if ((rootattr = agattr(g, AGNODE, "root", 0))) {
+    if ((rootattr = agattr_text(g, AGNODE, "root", 0))) {
 	setLocalRoot = 1;
     }
 

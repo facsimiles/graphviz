@@ -218,7 +218,7 @@ static void setName(Dt_t * names, Agobj_t * n, char *value)
     Agsym_t *ap;
     char *oldName;
 
-    ap = agattr(root, AGTYPE(n), GXL_ID, "");
+    ap = agattr_text(root, AGTYPE(n), GXL_ID, "");
     agxset(n, ap, agnameof(n));
     oldName = agxget(n, ap);	/* set/get gives us new copy */
     addToMap(names, oldName, value);
@@ -236,9 +236,9 @@ setNodeAttr(Agnode_t * np, char *name, char *value, userdata_t * ud,
     if (strcmp(name, "name") == 0) {
 	setName(ud->nameMap, (Agobj_t *) np, value);
     } else {
-	ap = agattr(root, AGNODE, name, 0);
+	ap = agattr_text(root, AGNODE, name, 0);
 	if (!ap)
-	    ap = agattr(root, AGNODE, name, defval);
+	    ap = agattr_text(root, AGNODE, name, defval);
 	if (is_html) {
 	    agxset_html(np, ap, value);
 	} else {
@@ -265,9 +265,9 @@ setGlobalNodeAttr(Agraph_t * g, char *name, char *value)
 		name, agnameof(g), NODELBL);
     else
 	name += NLBLLEN;
-    if ((g != root) && !agattr(root, AGNODE, name, 0))
-	agattr(root, AGNODE, name, defval);
-    agattr(G, AGNODE, name, value);
+    if ((g != root) && !agattr_text(root, AGNODE, name, 0))
+	agattr_text(root, AGNODE, name, defval);
+    agattr_text(G, AGNODE, name, value);
 }
 
 static void
@@ -282,21 +282,21 @@ setEdgeAttr(Agedge_t * ep, char *name, char *value, userdata_t * ud,
 	    attrname = "tailport";
 	else
 	    attrname = "headport";
-	ap = agattr(root, AGEDGE, attrname, 0);
+	ap = agattr_text(root, AGEDGE, attrname, 0);
 	if (!ap)
-	    ap = agattr(root, AGEDGE, attrname, defval);
+	    ap = agattr_text(root, AGEDGE, attrname, defval);
     } else if (strcmp(name, "tailport") == 0) {
 	if (ud->edgeinverted)
 	    attrname = "headport";
 	else
 	    attrname = "tailport";
-	ap = agattr(root, AGEDGE, attrname, 0);
+	ap = agattr_text(root, AGEDGE, attrname, 0);
 	if (!ap)
-	    ap = agattr(root, AGEDGE, attrname, defval);
+	    ap = agattr_text(root, AGEDGE, attrname, defval);
     } else {
-	ap = agattr(root, AGEDGE, name, 0);
+	ap = agattr_text(root, AGEDGE, name, 0);
 	if (!ap)
-	    ap = agattr(root, AGEDGE, name, defval);
+	    ap = agattr_text(root, AGEDGE, name, defval);
     }
 
     if (is_html) {
@@ -319,9 +319,9 @@ setGlobalEdgeAttr(Agraph_t * g, char *name, char *value)
 		name, agnameof(g), EDGELBL);
     else
 	name += ELBLLEN;
-    if ((g != root) && !agattr(root, AGEDGE, name, 0))
-	agattr(root, AGEDGE, name, defval);
-    agattr(g, AGEDGE, name, value);
+    if ((g != root) && !agattr_text(root, AGEDGE, name, 0))
+	agattr_text(root, AGEDGE, name, defval);
+    agattr_text(g, AGEDGE, name, value);
 }
 
 static void
@@ -334,13 +334,13 @@ setGraphAttr(Agraph_t * g, char *name, char *value, userdata_t * ud)
     } else if (strcmp(name, "name") == 0)
 	setName(ud->nameMap, (Agobj_t *) g, value);
     else {
-	ap = agattr(root, AGRAPH, name, 0);
+	ap = agattr_text(root, AGRAPH, name, 0);
 	if (ap)
 	    agxset(g, ap, value);
 	else if (g == root)
-	    agattr(root, AGRAPH, name, value);
+	    agattr_text(root, AGRAPH, name, value);
 	else {
-	    ap = agattr(root, AGRAPH, name, defval);
+	    ap = agattr_text(root, AGRAPH, name, defval);
 	    agxset(g, ap, value);
 	}
     }

@@ -1679,7 +1679,7 @@ static bool clust_in_layer(GVJ_t *job, graph_t * sg)
 
     if (job->numLayers <= 1)
 	return true;
-    pg = late_string(sg, agattr(sg, AGRAPH, "layer", 0), "");
+    pg = late_string(sg, agattr_text(sg, AGRAPH, "layer", 0), "");
     if (selectedlayer(job, pg))
 	return true;
     if (pg[0])
@@ -3383,7 +3383,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	job->view.y = job->height / job->scale.y;
     }
 
-    s = late_string(g, agattr(g, AGRAPH, "comment", 0), "");
+    s = late_string(g, agattr_text(g, AGRAPH, "comment", 0), "");
     gvrender_comment(job, s);
 
     job->layerNum = 0;

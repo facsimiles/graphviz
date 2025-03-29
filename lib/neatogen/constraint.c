@@ -442,8 +442,8 @@ static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
     rank(cg, 2, INT_MAX);
 #ifdef DEBUG
     {
-	Agsym_t *mlsym = agattr(cg, AGEDGE, "minlen", "");
-	Agsym_t *rksym = agattr(cg, AGNODE, "rank", "");
+	Agsym_t *mlsym = agattr_text(cg, AGEDGE, "minlen", "");
+	Agsym_t *rksym = agattr_text(cg, AGNODE, "rank", "");
 	char buf[100];
 	node_t *n;
 	edge_t *e;

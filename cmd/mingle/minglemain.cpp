@@ -311,8 +311,8 @@ static void genBundleColors(const pedge &edge, std::ostream &os,
 
 static void export_dot(FILE *fp, int ne, const std::vector<pedge> &edges,
                        Agraph_t *g) {
-	Agsym_t* epos = agattr(g, AGEDGE, const_cast<char*>("pos"), "");
-	Agsym_t* esects = agattr(g, AGEDGE, const_cast<char*>("bundle"), "");
+	Agsym_t* epos = agattr_text(g, AGEDGE, const_cast<char*>("pos"), "");
+	Agsym_t* esects = agattr_text(g, AGEDGE, const_cast<char*>("bundle"), "");
 	Agsym_t* eclrs = nullptr;
 	Agnode_t* n;
 	Agedge_t* e;
@@ -343,7 +343,7 @@ static void export_dot(FILE *fp, int ne, const std::vector<pedge> &edges,
 			buf.str("");
 
 			if (!edge.wgts.empty()) {
-				if (!eclrs) eclrs = agattr(g, AGEDGE, const_cast<char*>("color"), "");
+				if (!eclrs) eclrs = agattr_text(g, AGEDGE, const_cast<char*>("color"), "");
 				genBundleColors(edge, buf, maxwgt);
 				agxset(e, eclrs, buf.str().c_str());
 				buf.str("");

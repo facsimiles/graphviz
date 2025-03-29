@@ -704,13 +704,13 @@ Agsym_t *setAttr(graph_t * g, void *obj, char *name, char *value,
     if (ap == NULL) {
 	switch (agobjkind(obj)) {
 	case AGRAPH:
-	    ap = agattr(g, AGRAPH,name, "");
+	    ap = agattr_text(g, AGRAPH,name, "");
 	    break;
 	case AGNODE:
-	    ap = agattr(g,AGNODE, name, "");
+	    ap = agattr_text(g,AGNODE, name, "");
 	    break;
 	case AGEDGE:
-	    ap = agattr(g,AGEDGE, name, "");
+	    ap = agattr_text(g,AGEDGE, name, "");
 	    break;
 	}
     }
@@ -1070,9 +1070,9 @@ void undoClusterEdges(graph_t * g)
  * default value defaultValue.
  */
 attrsym_t *safe_dcl(graph_t *g, int obj_kind, char *name, char *defaultValue) {
-    attrsym_t *a = agattr(g,obj_kind,name, NULL);
+    attrsym_t *a = agattr_text(g,obj_kind,name, NULL);
     if (!a)	/* attribute does not exist */
-        a = agattr(g, obj_kind, name, defaultValue);
+        a = agattr_text(g, obj_kind, name, defaultValue);
     return a;
 }
 

@@ -337,15 +337,15 @@ void plot_dot_map(Agraph_t* gr, int n, int dim, double *x, SparseMatrix polys,
   if (!gr) {
     fprintf(f, "graph map {\n node [margin = 0 width=0.0001 height=0.00001 shape=plaintext];\n graph [outputorder=edgesfirst, bgcolor=\"#dae2ff\"]\n edge [color=\"#55555515\",fontname=\"Helvetica-Bold\"]\n");
   } else {
-    agattr(gr, AGNODE, "margin", "0"); 
-    agattr(gr, AGNODE, "width", "0.0001"); 
-    agattr(gr, AGNODE, "height", "0.0001"); 
-    agattr(gr, AGNODE, "shape", "plaintext"); 
-    agattr(gr, AGNODE, "margin", "0"); 
-    agattr(gr, AGNODE, "fontname", "Helvetica-Bold"); 
-    agattr(gr, AGRAPH, "outputorder", "edgesfirst");
-    agattr(gr, AGRAPH, "bgcolor", "#dae2ff");
-    if (!A) agattr(gr, AGEDGE, "style","invis");/* do not plot edges */
+    agattr_text(gr, AGNODE, "margin", "0"); 
+    agattr_text(gr, AGNODE, "width", "0.0001"); 
+    agattr_text(gr, AGNODE, "height", "0.0001"); 
+    agattr_text(gr, AGNODE, "shape", "plaintext"); 
+    agattr_text(gr, AGNODE, "margin", "0"); 
+    agattr_text(gr, AGNODE, "fontname", "Helvetica-Bold"); 
+    agattr_text(gr, AGRAPH, "outputorder", "edgesfirst");
+    agattr_text(gr, AGRAPH, "bgcolor", "#dae2ff");
+    if (!A) agattr_text(gr, AGEDGE, "style","invis");/* do not plot edges */
   }
 
   /*polygons */
@@ -362,7 +362,7 @@ void plot_dot_map(Agraph_t* gr, int n, int dim, double *x, SparseMatrix polys,
     fprintf(f,"%s",agxbuse(&sbuff));
     fprintf(f,"\"\n");/* close polygons/lines */
   } else {
-    agattr(gr, AGRAPH, "_background", agxbuse(&sbuff));
+    agattr_text(gr, AGRAPH, "_background", agxbuse(&sbuff));
     agwrite(gr, f);
   }
 

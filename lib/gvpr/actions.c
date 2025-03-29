@@ -133,7 +133,7 @@ int copyAttr(Agobj_t *src, Agobj_t *tgt) {
   while ((sym = agnxtattr(srcg, skind, sym))) {
     tsym = agattrsym(tgt, sym->name);
     if (!tsym)
-      tsym = agattr(tgtg, tkind, sym->name, sym->defval);
+      tsym = agattr_text(tgtg, tkind, sym->name, sym->defval);
     val = agxget(src, sym);
     if (aghtmlstr(val)) {
       val = agstrdup_html(tgtg, val);

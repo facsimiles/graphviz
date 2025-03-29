@@ -40,10 +40,10 @@ static void addRevEdge(Agraph_t *g, Agedge_t *e) {
 
   agcopyattr(e, f);
 
-  sym = agattr(g, AGEDGE, TAILPORT_ID, 0);
+  sym = agattr_text(g, AGEDGE, TAILPORT_ID, 0);
   if (sym)
     agsafeset(f, HEADPORT_ID, agxget(e, sym), "");
-  sym = agattr(g, AGEDGE, HEADPORT_ID, 0);
+  sym = agattr_text(g, AGEDGE, HEADPORT_ID, 0);
   if (sym)
     agsafeset(f, TAILPORT_ID, agxget(e, sym), "");
 }

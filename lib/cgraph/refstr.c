@@ -325,18 +325,37 @@ int agstrclose(Agraph_t * g)
     return 0;
 }
 
-static char *refstrbind(strdict_t *strdict, const char *s) {
+static char *refstrbind(strdict_t *strdict, const char *s, bool is_html) {
     refstr_t *r;
-    r = strdict_find(strdict, s, false);
+    r = strdict_find(strdict, s, is_html);
     if (r)
 	return r->s;
     else
 	return NULL;
 }
 
-char *agstrbind(Agraph_t * g, const char *s)
+char *agstrbind(Agraph_t *g, const char *s) {
+
+  // did this string originate from `agstrdup_html(g, …)`?
+  if (s != NULL) {
+    strdict_t *const strdict = *refdict(g);
+    refstr_t *const ref = strdict_find(strdict, s, true);
+    if (ref != NULL && ref->s == s) {
+      // create this copy as HTML-like
+      return agstrbind_html(g, s);
+    }
+  }
+
+  return agstrbind_text(g, s);
+}
+
+char *agstrbind_html(Agraph_t *g, const char *s) {
+  return refstrbind(*refdict(g), s, true);
+}
+
+char *agstrbind_text(Agraph_t * g, const char *s)
 {
-    return refstrbind(*refdict(g), s);
+    return refstrbind(*refdict(g), s, false);
 }
 
 static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
@@ -367,12 +386,28 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
     return r->s;
 }
 
-char *agstrdup(Agraph_t *g, const char *s) {
+char *agstrdup_text(Agraph_t *g, const char *s) {
   return agstrdup_internal(g, s, false);
 }
 
 char *agstrdup_html(Agraph_t *g, const char *s) {
   return agstrdup_internal(g, s, true);
+}
+
+char *agstrdup(Agraph_t *g, const char *s) {
+
+  // did this string originate from `agstrdup_html(g, …)`?
+  if (s != NULL) {
+    strdict_t *const strdict = *refdict(g);
+    refstr_t *const ref = strdict_find(strdict, s, true);
+    if (ref != NULL && ref->s == s) {
+      // create this copy as HTML-like
+      return agstrdup_html(g, s);
+    }
+  }
+
+  // otherwise, create the copy as regular text
+  return agstrdup_text(g, s);
 }
 
 int agstrfree(Agraph_t *g, const char *s, bool is_html) {

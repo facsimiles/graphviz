@@ -14,10 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A new plugin for outputting ASCII art has been implemented, `-Tascii`. This
   relies on [AA-lib](https://aa-project.sourceforge.net/aalib/) and is only
   supported in the CMake build system. #2421
-- a new API function `agxset_html` that does the equivalent of `agxset`, but
-  assumes the value being set is an HTML-like string
-- a new API function `agattr_html` that is the equivalent of `agattr` but for
-  HTML-like strings.
 - In gvpr, a new function `rename()` has been added for nodes. See `man gvpr`
   for more information.
 
@@ -66,8 +62,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The `EXPANDBP` macro has been removed.
 - **Breaking**: The `EXPANDBB` macro has been removed.
 - **Breaking**: `Agclos_t.strdict` is now an opaque pointer.
-- **Breaking**: `agattr` can no longer be used to create attributes with
-  HTML-like values. For this, use `agattr_html` instead.
 - **Breaking**: `agstrfree` takes an extra parameter indicating whether the
   string being freed is an HTML-like string.
 - **Breaking**: The `agcanon` function has been removed.
@@ -86,6 +80,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: libcgraph’s SO name has been updated 6 → 7.
 - The core plugin’s SVG output (`-Tsvg`, `-Tsvg_inline`) now sets
   `xml:space="preserve"` on text elements for more accurate display.
+- **Breaking**: To duplicate strings, you now should distinguish between regular
+  text strings and HTML-like strings. Regular text strings are handled through
+  `agstrdup_text` and HTML-like strings are handled through `agstrdup_html`. The
+  The `agstrdup` function has been retained for backwards compatibility, but
+  should be avoided where possible due to its ambiguity with respect to the
+  caller’s intent. Similarly for string binding, `agstrbind` has gained two
+  variants `agstrbind_text` and `agstrbind_html`. These should be used in
+  preference to `agstrbind` whenever possible. Similarly for attribute
+  creation/lookup, `agattr` has gained two variants `agattr_text` and
+  `agattr_html`. These should be used in preference to `agattr` whenever
+  possible. Similarly for safe attribute creation/lookup, `agsafeset` has gained
+  two variants `agsafeset_text` and `agsafeset_html`. These should be used in
+  preference to `agsafeset` whenever possible. Similarly, `agxset` has gained
+  two variants `agxset_text` and `agxset_html`. These should be used in
+  preference to `agxset` whenever possible. Similarly, `agset` has gained two
+  variants `agset_text` and `agset_html`. These should be used in preference to
+  `agset` whenever possible. #2089, #2641
+- **Breaking**: The `EDGEOF` macro has been removed.
 
 ### Fixed
 

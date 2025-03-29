@@ -496,15 +496,15 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
     int neededge_loadimage, neededge_device;
 
     g = agopen("G", Agdirected, NULL);
-    agattr(g, AGRAPH, "label", "");
-    agattr(g, AGRAPH, "rankdir", "");
-    agattr(g, AGRAPH, "rank", "");
-    agattr(g, AGRAPH, "ranksep", "");
-    agattr(g, AGNODE, "label", NODENAME_ESC);
-    agattr(g, AGNODE, "shape", "");
-    agattr(g, AGNODE, "style", "");
-    agattr(g, AGNODE, "width", "");
-    agattr(g, AGEDGE, "style", "");
+    agattr_text(g, AGRAPH, "label", "");
+    agattr_text(g, AGRAPH, "rankdir", "");
+    agattr_text(g, AGRAPH, "rank", "");
+    agattr_text(g, AGRAPH, "ranksep", "");
+    agattr_text(g, AGNODE, "label", NODENAME_ESC);
+    agattr_text(g, AGNODE, "shape", "");
+    agattr_text(g, AGNODE, "style", "");
+    agattr_text(g, AGNODE, "width", "");
+    agattr_text(g, AGEDGE, "style", "");
 
     a = agfindgraphattr(g, "rankdir");
     agxset(g, a, "LR");

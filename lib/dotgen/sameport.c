@@ -45,8 +45,8 @@ void dot_sameports(graph_t * g)
     same_list_t samehead = {0};
     same_list_t sametail = {0};
 
-    E_samehead = agattr(g, AGEDGE, "samehead", NULL);
-    E_sametail = agattr(g, AGEDGE, "sametail", NULL);
+    E_samehead = agattr_text(g, AGEDGE, "samehead", NULL);
+    E_sametail = agattr_text(g, AGEDGE, "sametail", NULL);
     if (!(E_samehead || E_sametail))
 	return;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {

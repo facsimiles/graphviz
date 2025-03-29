@@ -25,7 +25,7 @@ GVC_t *gvContext(void)
 {
     GVC_t *gvc;
 
-    agattr(NULL, AGNODE, "label", NODENAME_ESC);
+    agattr_text(NULL, AGNODE, "label", NODENAME_ESC);
     /* default to no builtins, demand loading enabled */
     gvc = gvNEWcontext(NULL, true);
     gvconfig(gvc, false); /* configure for available plugins */
@@ -36,7 +36,7 @@ GVC_t *gvContextPlugins(const lt_symlist_t *builtins, int demand_loading)
 {
     GVC_t *gvc;
 
-    agattr(NULL, AGNODE, "label", NODENAME_ESC);
+    agattr_text(NULL, AGNODE, "label", NODENAME_ESC);
     gvc = gvNEWcontext(builtins, demand_loading);
     gvconfig(gvc, false); /* configure for available plugins */
     return gvc;

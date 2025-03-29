@@ -183,7 +183,7 @@ static void global_def(char *dcl, int kind) {
     }
     else
 	agxbput(&xb, dcl);
-    sym = agattr(NULL, kind, agxbuse(&xb), rhs);
+    sym = agattr_text(NULL, kind, agxbuse(&xb), rhs);
     sym->fixed = 1;
     agxbfree(&xb);
 }
@@ -451,8 +451,8 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     }
 
     /* set persistent attributes here (if not already set from command line options) */
-    if (!agattr(NULL, AGNODE, "label", 0))
-	agattr(NULL, AGNODE, "label", NODENAME_ESC);
+    if (!agattr_text(NULL, AGNODE, "label", 0))
+	agattr_text(NULL, AGNODE, "label", NODENAME_ESC);
     return 0;
 }
 
@@ -727,7 +727,7 @@ void graph_init(graph_t * g, bool use_rankdir)
     N_fontcolor = agfindnodeattr(g, "fontcolor");
     N_label = agfindnodeattr(g, "label");
     if (!N_label)
-	N_label = agattr(g, AGNODE, "label", NODENAME_ESC);
+	N_label = agattr_text(g, AGNODE, "label", NODENAME_ESC);
     N_xlabel = agfindnodeattr(g, "xlabel");
     N_showboxes = agfindnodeattr(g, "showboxes");
     N_penwidth = agfindnodeattr(g, "penwidth");

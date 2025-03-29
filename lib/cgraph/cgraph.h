@@ -578,18 +578,33 @@ CGRAPH_API int agobjkind(void *obj);
  */
 CGRAPH_API char *agstrdup(Agraph_t *, const char *);
 ///< @brief returns a pointer to a reference-counted copy of the argument
-///< string,
-/// creating one if necessary
+///< string, creating one if necessary
+///
+/// Use of this function should be avoided where possible. It is not possible to
+/// explicitly indicate whether the caller is trying to create a regular text
+/// string or an HTML-like string. It is better to be explicit with your intent
+/// and instead call either @ref agstrdup_text or @ref agstrdup_html.
+
+CGRAPH_API char *agstrdup_text(Agraph_t *, const char *);
+///< @brief returns a pointer to a reference-counted regular text copy of the
+///< argument string, creating one if necessary
 
 CGRAPH_API char *agstrdup_html(Agraph_t *, const char *);
-///< create an HTML-like string
-///
+///< @brief returns a pointer to a reference-counted HTML-like copy of the
+///< argument string, creating one if necessary
+
 CGRAPH_API int aghtmlstr(const char *);
 ///< query if a string is an ordinary string or an HTML-like string
 ///
 CGRAPH_API char *agstrbind(Agraph_t *g, const char *);
 ///< returns a pointer to a reference-counted string if it exists, or NULL if
 ///< not
+CGRAPH_API char *agstrbind_text(Agraph_t *g, const char *);
+///< returns a pointer to a reference-counted regular text string if it exists,
+///< or NULL if not
+CGRAPH_API char *agstrbind_html(Agraph_t *g, const char *);
+///< returns a pointer to a reference-counted HTML-like string if it exists, or
+///< NULL if not
 
 CGRAPH_API int agstrfree(Agraph_t *, const char *, bool is_html);
 ///< @param is_html Is the string being freed an HTML-like string?
@@ -603,9 +618,9 @@ CGRAPH_API char *agcanonStr(char *str); /* manages its own buf */
  *
  * Programmer-defined values may be dynamically
  * attached to graphs, subgraphs, nodes, and edges.
- * Such values are either character string data (see @ref agattr) (for I/O)
- * or uninterpreted binary @ref cgraph_rec (for implementing algorithms
- * efficiently).
+ * Such values are either character string data (see @ref agattr_text,
+ * @ref agattr_html, and @ref agattr) (for I/O) or uninterpreted binary
+ * @ref cgraph_rec (for implementing algorithms efficiently).
  *
  * *String attributes* are handled automatically in reading and writing graph
  * files. A string attribute is identified by name and by an internal symbol
@@ -647,9 +662,13 @@ struct Agdatadict_s { ///< set of dictionaries per graph
   } dict;
 };
 
-CGRAPH_API Agsym_t *agattr(Agraph_t *g, int kind, char *name,
-                           const char *value);
-/**< @brief creates or looks up attributes of a graph
+CGRAPH_API Agsym_t *agattr_text(Agraph_t *g, int kind, char *name,
+                                const char *value);
+/**< @brief creates or looks up text attributes of a graph
+ *
+ * HTML-like attributes cannot be created or looked up with this function. See
+ * @ref agattr_html for that.
+ *
  * @param g graph. When is NULL, the default is set for all graphs created
  * subsequently.
  * @param kind may be @ref AGRAPH, @ref AGNODE, or @ref AGEDGE.
@@ -665,7 +684,42 @@ CGRAPH_API Agsym_t *agattr(Agraph_t *g, int kind, char *name,
 
 CGRAPH_API Agsym_t *agattr_html(Agraph_t *g, int kind, char *name,
                                 const char *value);
-///< @brief `agattr`, but creates HTML-like values
+///< @brief `agattr_text`, but creates HTML-like values
+///
+/// Regular text attributes cannot be created or looked up with this function.
+/// See @ref agattr_text for that.
+///
+/// @param g Graph. When `g` is `NULL`, the default is set for all graphs
+///   created subsequently.
+/// @param kind May be @ref AGRAPH, @ref AGNODE, or @ref AGEDGE.
+/// @param value Default value. When `value` is `NULL`, the request is to search
+///   for an existing attribute of the given kind and name.
+///
+/// If the attribute already exists, its default for creating new objects is set
+/// to the given `value`; if it does not exist, a new attribute is created with
+/// the given default `value`, and the default is applied to all pre-existing
+/// objects of the given `kind`.
+
+CGRAPH_API Agsym_t *agattr(Agraph_t *g, int kind, char *name,
+                           const char *value);
+///< @brief creates or looks up an attribute, without specifying desired form
+///
+/// Use of this function should be avoided where possible. It is not possible to
+/// explicitly indicate whether the caller is trying to create/lookup a regular
+/// text attribute or an HTML-like attribute. It is better to be explicit with
+/// your intent and instead call either @ref agattr_text or @ref agattr_html.
+///
+/// This function has the following behavior:
+///   1. If the `value` passed was obtained from `agstrdup_html`, an HTML-like
+///      attribute value is created/looked up. That is, the behavior is
+///      equivalent to a call to @ref agattr_html.
+///   2. Otherwise, a regular text attribute value is created/looked up.
+///
+/// @param g graph. When is NULL, the default is set for all graphs created
+///   subsequently.
+/// @param kind may be @ref AGRAPH, @ref AGNODE, or @ref AGEDGE.
+/// @param value default value. When is @ref NULL, the request is to search for
+///   for an existing attribute of the given kind and name.
 
 CGRAPH_API Agsym_t *agattrsym(void *obj, char *name);
 ///< looks up a string attribute for a graph object given as an argument
@@ -714,12 +768,67 @@ CGRAPH_API void agclean(Agraph_t *g, int kind, char *rec_name);
 CGRAPH_API char *agget(void *obj, char *name);
 CGRAPH_API char *agxget(void *obj, Agsym_t *sym);
 CGRAPH_API int agset(void *obj, char *name, const char *value);
+CGRAPH_API int agset_text(void *obj, char *name, const char *value);
+CGRAPH_API int agset_html(void *obj, char *name, const char *value);
 CGRAPH_API int agxset(void *obj, Agsym_t *sym, const char *value);
+CGRAPH_API int agxset_text(void *obj, Agsym_t *sym, const char *value);
 CGRAPH_API int agxset_html(void *obj, Agsym_t *sym, const char *value);
+
+CGRAPH_API int agsafeset_text(void *obj, char *name, const char *value,
+                              const char *def);
+///< @brief set an attribute’s value and default, ensuring it is declared before
+///   setting it locally
+///
+/// The attribue set by this function is a regular text attribute. See
+/// @ref agsafeset_html for the equivalent for an HTML-like attribute.
+///
+/// @param obj Object on which to set the attribute
+/// @param name Name of the attribute to set
+/// @param value Value of the attribute to set
+/// @param def Optional default to declare for the attribute
+
+CGRAPH_API int agsafeset_html(void *obj, char *name, const char *value,
+                              const char *def);
+///< @brief set an attribute’s value and default, ensuring it is declared before
+///   setting it locally
+///
+/// The attribue set by this function is an HTML-like attribute. See
+/// @ref agsafeset_text for the equivalent for a regular text attribute.
+///
+/// @param obj Object on which to set the attribute
+/// @param name Name of the attribute to set
+/// @param value Value of the attribute to set
+/// @param def Optional default to declare for the attribute
+
 CGRAPH_API int agsafeset(void *obj, char *name, const char *value,
                          const char *def);
-///< @brief ensures the given attribute is declared
-///  before setting it locally on an object
+///< @brief set an attribute’s value and default, ensuring it is declared before
+///   setting it locally
+///
+/// Use of this function should be avoided where possible. It is not possible to
+/// explicitly indicate whether the caller is trying to create/lookup a regular
+/// text attribute or an HTML-like attribute. It is better to be explicit with
+/// your intent and instead call either @ref agsafeset_text or
+/// @ref agsafeset_html.
+///
+/// This function has the following behavior:
+///   1. If the attribute needs to be created (it did not already exist) and
+///      `def` was obtained from `agstrdup_html`, an HTML-like default attribute
+///      value is created.
+///   2. If the attribute needs to be created (it did not already exist) and
+///      `def` was not obtained from `agstrdup_html`, a regular text default
+///      attribute value is created.
+///   … then …
+///   1. If the `value` passed was obtained from `agstrdup_html`, an HTML-like
+///      attribute value is created/looked up. That is, the behavior is
+///      equivalent to a call to @ref agsafeset_html.
+///   2. Otherwise, a regular text attribute value is created/looked up. That
+///      is, the behavior is equivalent to a call to @ref agsafeset_text.
+///
+/// @param obj Object on which to set the attribute
+/// @param name Name of the attribute to set
+/// @param value Value of the attribute to set
+/// @param def Optional default to declare for the attribute
 
 /// @}
 
@@ -904,10 +1013,6 @@ CGRAPH_API extern Agdesc_t Agstrictundirected; ///< strict undirected
 both nodes and edges are embedded in main graph objects but allocated separately
 in subgraphs */
 #define AGSNMAIN(sn) ((sn) == (&((sn)->node->mainsub)))
-#define EDGEOF(sn, rep)                                                        \
-  (AGSNMAIN(sn)                                                                \
-       ? ((Agedge_t *)((unsigned char *)(rep) - offsetof(Agedge_t, seq_link))) \
-       : ((Dthold_t *)(rep))->obj)
 /// @}
 
 /// @addtogroup cgraph_app

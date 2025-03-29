@@ -50,7 +50,7 @@ static void color_string(agxbuf *buf, int dim, double *color){
 void attach_edge_colors(Agraph_t* g, int dim, double *colors){
   /* colors is array of dim*nedges, with color for edge i at colors[dim*i, dim(i+1))
    */
-  Agsym_t* sym = agattr(g, AGEDGE, "color", 0); 
+  Agsym_t* sym = agattr_text(g, AGEDGE, "color", 0); 
   Agedge_t* e;
   Agnode_t* n;
   agxbuf buf = {0};
@@ -58,7 +58,7 @@ void attach_edge_colors(Agraph_t* g, int dim, double *colors){
   int ie = 0;
 
   if (!sym)
-    sym = agattr (g, AGEDGE, "color", "");
+    sym = agattr_text (g, AGEDGE, "color", "");
 
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
     row = ND_id(n);
@@ -118,7 +118,7 @@ SparseMatrix SparseMatrix_import_dot(Agraph_t *g, int dim,
     val = gv_calloc(nedges, sizeof(double));
   }
 
-  sym = agattr(g, AGEDGE, "weight", NULL);
+  sym = agattr_text(g, AGEDGE, "weight", NULL);
   i = 0;
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
     row = ND_id(n);
@@ -138,7 +138,7 @@ SparseMatrix SparseMatrix_import_dot(Agraph_t *g, int dim,
     }
   }
   
-  if (x && (psym = agattr(g, AGNODE, "pos", NULL))) {
+  if (x && (psym = agattr_text(g, AGNODE, "pos", NULL))) {
     bool has_positions = true;
     char* pval;
     if (!(*x)) {
@@ -237,7 +237,7 @@ int Import_dot_splines(Agraph_t* g, int *ne, char ***xsplines){
   for (n = agfstnode (g); n; n = agnxtnode (g, n))
     ND_id(n) = i++;
 
-  sym = agattr(g, AGEDGE, "pos", 0); 
+  sym = agattr_text(g, AGEDGE, "pos", 0); 
   if (!sym) return 0;
  
   *xsplines = gv_calloc(nedges, sizeof(char*));
@@ -270,9 +270,9 @@ void Dot_SetClusterColor(Agraph_t* g, float *rgb_r,  float *rgb_g,  float *rgb_b
   Agnode_t* n;
   agxbuf scluster = {0};
   unsigned i;
-  Agsym_t* clust_clr_sym = agattr(g, AGNODE, "clustercolor", NULL); 
+  Agsym_t* clust_clr_sym = agattr_text(g, AGNODE, "clustercolor", NULL); 
 
-  if (!clust_clr_sym) clust_clr_sym = agattr(g, AGNODE, "clustercolor", "-1"); 
+  if (!clust_clr_sym) clust_clr_sym = agattr_text(g, AGNODE, "clustercolor", "-1"); 
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
     i = ND_id(n);
     if (rgb_r && rgb_g && rgb_b) {
@@ -360,9 +360,9 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   int* J = gv_calloc(nedges, sizeof(int));
   double* val = gv_calloc(nedges, sizeof(double));
 
-  sym = agattr(g, AGEDGE, "weight", NULL); 
-  clust_sym = agattr(g, AGNODE, "cluster", NULL); 
-  clust_clr_sym = agattr(g, AGNODE, "clustercolor", NULL); 
+  sym = agattr_text(g, AGEDGE, "weight", NULL); 
+  clust_sym = agattr_text(g, AGNODE, "cluster", NULL); 
+  clust_clr_sym = agattr_text(g, AGNODE, "clustercolor", NULL); 
   i = 0;
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
     row = ND_id(n);
@@ -436,7 +436,7 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
 
   if (noclusterinfo) {
     double modularity;
-    if (!clust_sym) clust_sym = agattr(g,AGNODE,"cluster","-1");
+    if (!clust_sym) clust_sym = agattr_text(g,AGNODE,"cluster","-1");
 
     if (clustering_scheme == CLUSTERING_MQ){
       mq_clustering(A, maxcluster,
@@ -589,8 +589,8 @@ void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme){
   int* J = gv_calloc(nedges, sizeof(int));
   double* val = gv_calloc(nedges, sizeof(double));
   
-  sym = agattr(g, AGEDGE, "weight", NULL);
-  clust_sym = agattr(g, AGNODE, "cluster", NULL);
+  sym = agattr_text(g, AGEDGE, "weight", NULL);
+  clust_sym = agattr_text(g, AGNODE, "cluster", NULL);
 
   i = 0;
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
@@ -614,7 +614,7 @@ void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme){
 
   {
     double modularity;
-    if (!clust_sym) clust_sym = agattr(g,AGNODE,"cluster","-1");
+    if (!clust_sym) clust_sym = agattr_text(g,AGNODE,"cluster","-1");
     
     if (clustering_scheme == CLUSTERING_MQ){
       mq_clustering(A, maxcluster,

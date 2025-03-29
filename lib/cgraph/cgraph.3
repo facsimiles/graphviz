@@ -90,7 +90,7 @@ Agedge_t	*agopp(Agedge_t *e);
 int		ageqedge(Agedge_t *e0, Agedge_t *e1);
 .SS "STRING ATTRIBUTES"
 .P0
-Agsym_t	*agattr(Agraph_t *g, int kind, char *name, const char *value);
+Agsym_t	*agattr_text(Agraph_t *g, int kind, char *name, const char *value);
 Agsym_t	*agattrsym(void *obj, char *name);
 Agsym_t	*agnxtattr(Agraph_t *g, int kind, Agsym_t *attr);
 char		*agget(void *obj, char *name);
@@ -588,7 +588,7 @@ int main(int argc, char **argv) {
     printf("The graph %s has %d attributes\\n", agnameof(g), cnt);
 
     // make the graph have a node color attribute, default is blue
-    attr = agattr(g, AGNODE, "color", "blue");
+    attr = agattr_text(g, AGNODE, "color", "blue");
 
     // create a new graph of the same kind as g
     Agraph_t *h = agopen("tmp", g->desc, NULL);

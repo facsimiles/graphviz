@@ -20,7 +20,7 @@ static void select_node(Agraph_t* g,Agnode_t*  obj,int reverse)
     Agsym_t* sel_attr = GN_selected(g);
 
     if(!sel_attr)
-	sel_attr = GN_selected(g) = agattr(g, AGNODE,"selected","0");
+	sel_attr = GN_selected(g) = agattr_text(g, AGNODE,"selected","0");
     if(!reverse)
     {
         agxset(obj,sel_attr,"1");
@@ -49,7 +49,7 @@ static void select_edge(Agraph_t* g,Agedge_t*  obj,int reverse)
     Agsym_t* sel_attr = GE_selected(g); 
 
     if (!sel_attr)
-	sel_attr = GE_selected(g) = agattr(g, AGEDGE,"selected","0");
+	sel_attr = GE_selected(g) = agattr_text(g, AGEDGE,"selected","0");
     if (!reverse)
     {
 	agxset(obj,sel_attr,"1");
@@ -212,9 +212,9 @@ void deselect_all(Agraph_t* g)
     Agsym_t* nsel_attr = GN_selected(g);
     Agsym_t* esel_attr = GE_selected(g);
     if(!nsel_attr)
-	nsel_attr = GN_selected(g) = agattr(g, AGNODE,"selected","0");
+	nsel_attr = GN_selected(g) = agattr_text(g, AGNODE,"selected","0");
     if(!esel_attr)
-	esel_attr = GE_selected(g) = agattr(g, AGEDGE,"selected","0");
+	esel_attr = GE_selected(g) = agattr_text(g, AGEDGE,"selected","0");
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	agxset(v,nsel_attr,"0");

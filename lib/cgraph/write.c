@@ -354,8 +354,8 @@ static int write_hdr(Agraph_t *g, iochan_t *ofile, bool top) {
 	    kind = "";
 	if (agisstrict(g))
 	    strict = "strict ";
-	Tailport = agattr(g, AGEDGE, TAILPORT_ID, NULL);
-	Headport = agattr(g, AGEDGE, HEADPORT_ID, NULL);
+	Tailport = agattr_text(g, AGEDGE, TAILPORT_ID, NULL);
+	Headport = agattr_text(g, AGEDGE, HEADPORT_ID, NULL);
     }
     name = agnameof(g);
     sep = " ";
