@@ -5474,9 +5474,6 @@ def test_2648(tmp_path: Path):
     subprocess.run([exe], env=env, check=True)
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2669"
-)
 def test_2669():
     """
     `dpi=…` should scale the SVG `viewBox` as well as the overall size
