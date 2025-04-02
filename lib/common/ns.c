@@ -311,33 +311,89 @@ static bool on_heap(const subtree_t *tree) {
   return tree->heap_index != SIZE_MAX;
 }
 
+/// state for use in `tight_subtree_search`
+typedef struct {
+  Agnode_t *v;
+  int in_i;  ///< iteration counter through `ND_in(v).list`
+  int out_i; ///< iteration counter through `ND_out(v).list`
+  int rv;    ///< result value
+} tst_t;
+
+/// a stack of states
+DEFINE_LIST(tsts, tst_t)
+
 /* find initial tight subtrees */
 static int tight_subtree_search(Agnode_t *v, subtree_t *st)
 {
     Agedge_t *e;
-    int     i;
     int     rv;
 
     rv = 1;
     ND_subtree_set(v,st);
-    for (i = 0; (e = ND_in(v).list[i]); i++) {
-        if (TREE_EDGE(e)) continue;
-        if (ND_subtree(agtail(e)) == 0 && SLACK(e) == 0) {
-               if (add_tree_edge(e) != 0) {
-                   return -1;
-               }
-               rv += tight_subtree_search(agtail(e),st);
+
+    tsts_t todo = {0};
+    tsts_push_back(&todo, (tst_t){.v = v, .rv = 1});
+
+    while (!tsts_is_empty(&todo)) {
+        bool updated = false;
+        tst_t *top = tsts_back(&todo);
+
+        for (; (e = ND_in(top->v).list[top->in_i]); top->in_i++) {
+            if (TREE_EDGE(e)) continue;
+            if (ND_subtree(agtail(e)) == 0 && SLACK(e) == 0) {
+                if (add_tree_edge(e) != 0) {
+                    (void)tsts_pop_back(&todo);
+                    if (tsts_is_empty(&todo)) {
+                        rv = -1;
+                    } else {
+                        --tsts_back(&todo)->rv;
+                    }
+                } else {
+                    ND_subtree_set(agtail(e), st);
+                    const tst_t next = {.v = agtail(e), .rv = 1};
+                    tsts_push_back(&todo, next);
+                }
+                updated = true;
+                break;
+            }
+        }
+        if (updated) {
+            continue;
+        }
+
+        for (; (e = ND_out(top->v).list[top->out_i]); top->out_i++) {
+            if (TREE_EDGE(e)) continue;
+            if (ND_subtree(aghead(e)) == 0 && SLACK(e) == 0) {
+                if (add_tree_edge(e) != 0) {
+                    (void)tsts_pop_back(&todo);
+                    if (tsts_is_empty(&todo)) {
+                        rv = -1;
+                    } else {
+                        --tsts_back(&todo)->rv;
+                    }
+                } else {
+                    ND_subtree_set(aghead(e), st);
+                    const tst_t next = {.v = aghead(e), .rv = 1};
+                    tsts_push_back(&todo, next);
+                }
+                updated = true;
+                break;
+            }
+        }
+        if (updated) {
+          continue;
+        }
+
+        const tst_t last = tsts_pop_back(&todo);
+        if (tsts_is_empty(&todo)) {
+            rv = last.rv;
+        } else {
+            tsts_back(&todo)->rv += last.rv;
         }
     }
-    for (i = 0; (e = ND_out(v).list[i]); i++) {
-        if (TREE_EDGE(e)) continue;
-        if (ND_subtree(aghead(e)) == 0 && SLACK(e) == 0) {
-               if (add_tree_edge(e) != 0) {
-                   return -1;
-               }
-               rv += tight_subtree_search(aghead(e),st);
-        }
-    }
+
+    tsts_free(&todo);
+
     return rv;
 }
 
