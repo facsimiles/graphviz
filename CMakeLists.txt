@@ -130,7 +130,7 @@ else()
       "${WINDOWS_DEPENDENCY_VCPKG_DIR}/x86-windows")
 endif()
 
-set(GRAPHVIZ_PLUGIN_VERSION 6)
+set(GRAPHVIZ_PLUGIN_VERSION 8)
 # Name of the config file used by Graphviz
 set(GVPLUGIN_CONFIG_FILE config${GRAPHVIZ_PLUGIN_VERSION})
 
@@ -728,7 +728,6 @@ if(with_cxx_tests)
   add_subdirectory(tests)
 endif()
 
-MATH(EXPR GRAPHVIZ_PLUGIN_VERSION "${GRAPHVIZ_PLUGIN_VERSION}+1")
 set(GVPLUGIN_VERSION "${GRAPHVIZ_PLUGIN_VERSION}")
 set(VERSION "${GRAPHVIZ_VERSION_STRING}")
 set(prefix "${CMAKE_INSTALL_PREFIX}") # cmake-lint: disable=C0103

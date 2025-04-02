@@ -5397,7 +5397,7 @@ def _find_plugin_so(plugin: str) -> Path:
     root = dot_bin.parents[1]
 
     # replicate information from ../configure.ac
-    GVPLUGIN_CURRENT = 6
+    GVPLUGIN_CURRENT = 8
     GVPLUGIN_REVISION = 0
     GVPLUGIN_AGE = 0
 

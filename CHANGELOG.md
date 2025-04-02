@@ -99,6 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `agset` whenever possible. #2089, #2641
 - **Breaking**: The `EDGEOF` macro has been removed.
 - The Autotools build system enables large file support on 32-bit platforms.
+- **Breaking**: The Graphviz plugin version has been updated 6 → 8. A side
+  effect of this is the config6 file becoming config8.
 
 ### Fixed
 
