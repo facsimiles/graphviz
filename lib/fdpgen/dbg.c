@@ -195,7 +195,7 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
     char *p;
     double theta;
     double arrow_w, arrow_l;
-    int portColor;
+    int portColor = 0;
 
     fprintf(fp, "%s", plog);
 
