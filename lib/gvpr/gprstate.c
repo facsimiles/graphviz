@@ -66,7 +66,6 @@ bindingcmpf (const void *key, const void *ip)
 gvprbinding* 
 findBinding (Gpr_t* state, char* fname)
 {
-    gvprbinding key;
     gvprbinding* bp;
 
     if (!state->bindings) {
@@ -78,7 +77,7 @@ findBinding (Gpr_t* state, char* fname)
 	return NULL;
     }
 
-    key.name = fname;
+    const gvprbinding key = {.name = fname};
     bp = bsearch(&key, state->bindings, state->n_bindings, sizeof(gvprbinding), bindingcmpf);
     if (!bp)
 	error(ERROR_ERROR, "No binding for \"%s\" in call()", fname);
