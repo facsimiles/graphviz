@@ -51,7 +51,7 @@ typedef struct {
     int color_scheme;
     double line_width;
     char *color_scheme_str;
-    const char *opacity;
+    char opacity[3];
     int improve_contiguity_n;
     int nart;
     bool color_optimize;
@@ -141,7 +141,7 @@ init(int argc, char **argv, params_t* pm)
   char stmp[3];  /* two character string plus '\0' */
 
   pm->outfile = NULL;
-  pm->opacity = NULL;
+  pm->opacity[0] = '\0';
   pm->color_scheme_str = NULL;
   pm->nrandom = -1;
   pm->dim = 2;
@@ -235,7 +235,7 @@ init(int argc, char **argv, params_t* pm)
       break;
     case 'c':
       if (sscanf(optarg,"_opacity=%2s", stmp) > 0 && strlen(stmp) == 2){
-        pm->opacity = stmp;
+        strncpy(pm->opacity, stmp, sizeof(pm->opacity));
       } else if (sscanf(optarg, "%d", &r) > 0 && r >= COLOR_SCHEME_NONE &&
                  r <= COLOR_SCHEME_GREY) {
         pm->color_scheme = r;
