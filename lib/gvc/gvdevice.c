@@ -25,6 +25,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <util/gv_fopen.h>
+#include <util/prisize_t.h>
 
 #ifdef _WIN32
 #include <fcntl.h>
@@ -477,7 +478,7 @@ int main (int argc, char *argv[])
 	gvprintnum(&xb, test[i]);
 	buf = agxbuse(&xb);
 	const size_t len = strlen(buf);
-        fprintf (stdout, "%g = %s %d\n", test[i], buf, len);
+        fprintf(stdout, "%g = %s %" PRISIZE_T "\n", test[i], buf, len);
     }
 
     agxbfree(&xb);
