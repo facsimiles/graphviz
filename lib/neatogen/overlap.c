@@ -226,7 +226,8 @@ static void relative_position_constraints_delete(void *d){
   free(data->irn);
   free(data->jcn);
   free(data->val);
-  /* other stuff inside relative_position_constraints is passed back to the user hence no need to deallocator*/
+  // other stuff inside `relative_position_constraints` is passed back to the
+  // user hence no need to deallocate
   free(d);
 }
 

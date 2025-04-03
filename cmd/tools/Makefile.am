@@ -214,7 +214,9 @@ dijkstra_LDADD = \
 gvgen_SOURCES = gvgen.c graph_generator.c
 
 gvgen_LDADD = \
-	$(top_builddir)/lib/cgraph/libcgraph.la $(MATH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/util/libutil_C.la \
+	$(MATH_LIBS)
 
 EXTRA_DIST = gmlscan.c gmlparse.c gmlparse.h
 

@@ -56,31 +56,25 @@ static int random_small(int bound) {
   return r % bound;
 }
 
-/// handle random number generation, `bound > RAND_MAX`
-static int random_big(int bound) {
+uint64_t gv_random_u64(uint64_t bound) {
   assert(bound > 0);
 
-  // see comment in `random_small`, but note that our maximum generated value
-  // here will be `INT_MAX` instead of `RAND_MAX`
-  const int discard_threshold =
-      INT_MAX - (int)(((unsigned)INT_MAX + 1) % (unsigned)bound);
+  // See comment in `random_small`, but note that our maximum generated value
+  // here will be `UINT64_MAX` instead of `RAND_MAX`. Note that we need to do a
+  // slightly different calculation to avoid the integer overflow that would
+  // otherwise result from `UINT64_MAX + 1`.
+  const uint64_t discard_threshold =
+      UINT64_MAX - (UINT64_MAX - bound + 1) % bound;
 
-  int r;
+  uint64_t r;
   do {
-    // generate a random `sizeof(int) * CHAR_BIT`-bit wide value
-    unsigned raw = 0;
-    for (size_t i = 0; i < sizeof(int); ++i) {
+    // generate a random `uint64_t` value
+    r = 0;
+    for (size_t i = 0; i < sizeof(uint64_t); ++i) {
       // `RAND_MAX ≥ 32767` is guaranteed, so `random_small(256)` is safe
       const uint8_t byte = (uint8_t)random_small((int)UINT8_MAX + 1);
-      memcpy((char *)&raw + i, &byte, sizeof(byte));
+      memcpy((char *)&r + i, &byte, sizeof(byte));
     }
-
-    // Shift out the sign bit to force a non-negative value. Assumes two’s
-    // complement representation.
-    const unsigned natural = raw << 1 >> 1;
-
-    r = (int)natural;
-
   } while (r > discard_threshold);
 
   return r % bound;
@@ -90,7 +84,11 @@ int gv_random(int bound) {
   assert(bound > 0);
 
   if (bound > RAND_MAX) {
-    return random_big(bound);
+    _Static_assert(INT_MAX <= UINT64_MAX,
+                   "the `int` type includes non-negative values that do not "
+                   "fit in a `uint64_t`, hence some `int` values can never be "
+                   "returned by `gv_random_u64`");
+    return (int)gv_random_u64((uint64_t)bound);
   }
   return random_small(bound);
 }
