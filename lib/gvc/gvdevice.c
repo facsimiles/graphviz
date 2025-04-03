@@ -461,7 +461,6 @@ static void gvprintnum(agxbuf *xb, double number) {
 int main (int argc, char *argv[])
 {
     agxbuf xb = {0};
-    char *buf;
 
     double test[] = {
 	-maxnegnum*1.1, -maxnegnum*.9,
@@ -476,9 +475,9 @@ int main (int argc, char *argv[])
 
     while (i--) {
 	gvprintnum(&xb, test[i]);
-	buf = agxbuse(&xb);
+	const char *buf = agxbuse(&xb);
 	const size_t len = strlen(buf);
-        fprintf(stdout, "%g = %s %" PRISIZE_T "\n", test[i], buf, len);
+        printf("%g = %s %" PRISIZE_T "\n", test[i], buf, len);
     }
 
     agxbfree(&xb);
