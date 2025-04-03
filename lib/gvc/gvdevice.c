@@ -476,7 +476,7 @@ int main (int argc, char *argv[])
 
     while (i--) {
 	gvprintnum(&xb, test[i]);
-	buf = agxbuse(&xb);;
+	buf = agxbuse(&xb);
         fprintf (stdout, "%g = %s %d\n", test[i], buf, len);
     }
 
