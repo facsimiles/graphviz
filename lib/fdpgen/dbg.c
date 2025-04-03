@@ -290,17 +290,6 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
 	}
     }
 
-#ifdef BOX
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	float wd, ht;
-
-	data = getData(n);
-	wd = data->wd;
-	ht = data->ht;
-	fprintf(fp, "%f %f %f %f doBox\n", wd, ht,
-		data->pos.x - wd / 2, data->pos.y - ht / 2);
-    }
-#else
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	fprintf(fp, "%% %s\n", agnameof(n));
 	if (expMode) {
@@ -329,7 +318,6 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
 	fprintf(fp, "%f inch %f inch %f fillCircle\n", ND_pos(n)[0],
 		ND_pos(n)[1], 3 / scale);
     }
-#endif
 
     fprintf(fp, "0.667 1.000 1.000 sethsbcolor\n");
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
