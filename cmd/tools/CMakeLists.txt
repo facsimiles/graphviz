@@ -330,7 +330,7 @@ if (GETOPT_FOUND)
   )
 endif()
 
-target_link_libraries(gvgen PRIVATE cgraph)
+target_link_libraries(gvgen PRIVATE cgraph util)
 
 tool_defaults(gvgen)
 

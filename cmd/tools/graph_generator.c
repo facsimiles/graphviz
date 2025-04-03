@@ -19,6 +19,7 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/list.h>
+#include <util/random.h>
 #include <util/overflow.h>
 
 void makePath(unsigned n, edgefn ef){
@@ -575,18 +576,8 @@ static uint64_t *genCnt(unsigned NN) {
     return T;
 }
 
-static double 
-drand(void)
-{
-    double d;
-    d = rand();
-    d = d / (RAND_MAX + 1.0);
-    return d;
-}
-
 static void genTree(unsigned NN, uint64_t *T, int_stack_t *stack,
                     tree_t *TREE) {
-    double v;
     pair p;
     unsigned J;
 
@@ -594,8 +585,8 @@ static void genTree(unsigned NN, uint64_t *T, int_stack_t *stack,
 
     while (1) {
 	while (N > 2) {
-	    v = umul(N - 1, T[N]);
-	    double Z = floor(v * drand());
+	    const uint64_t v = umul(N - 1, T[N]);
+	    uint64_t Z = gv_random_u64(v);
 	    unsigned D = 0;
 	    bool more = true;
 	    unsigned M;
