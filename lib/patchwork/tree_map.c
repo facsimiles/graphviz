@@ -41,7 +41,7 @@ static void squarify(size_t n, double *area, rectangle *recs, size_t nadded, dou
     totalarea = area[0];
     squarify(n, area, recs, nadded, maxarea, minarea, totalarea, asp, fillrec);
   } else {
-    double newmaxarea, newminarea, s, h, maxw, minw, newasp, hh, ww, xx, yy;
+    double newmaxarea, newminarea, s, h, maxw, minw, newasp = 0, hh, ww, xx, yy;
     if (nadded < n){
       newmaxarea = fmax(maxarea, area[nadded]);
       newminarea = fmin(minarea, area[nadded]);
