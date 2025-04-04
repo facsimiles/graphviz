@@ -98,6 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   variants `agset_text` and `agset_html`. These should be used in preference to
   `agset` whenever possible. #2089, #2641
 - **Breaking**: The `EDGEOF` macro has been removed.
+- The Autotools build system enables large file support on 32-bit platforms.
 
 ### Fixed
 
