@@ -167,12 +167,12 @@ static void strdict_add(strdict_t *dict, refstr_t *r) {
   static const size_t OCCUPANCY_THRESHOLD_PERCENT = 70;
 
   // do we need to expand the backing store?
-  size_t capacity = dict->buckets == NULL ? 0 : 1ul << dict->capacity_exp;
+  size_t capacity = dict->buckets == NULL ? 0 : (size_t)1 << dict->capacity_exp;
   const bool grow = 100 * dict->size >= OCCUPANCY_THRESHOLD_PERCENT * capacity;
 
   if (grow) {
     const size_t new_c = capacity == 0 ? 10 : dict->capacity_exp + 1;
-    refstr_t **new_b = gv_calloc(1ul << new_c, sizeof(refstr_t *));
+    refstr_t **new_b = gv_calloc((size_t)1 << new_c, sizeof(refstr_t *));
 
     // Construct a new dictionary and copy everything into it. Note we need to
     // rehash because capacity (and hence modulo wraparound behavior) has
@@ -196,7 +196,7 @@ static void strdict_add(strdict_t *dict, refstr_t *r) {
   }
 
   assert(dict->buckets != NULL);
-  capacity = 1ul << dict->capacity_exp;
+  capacity = (size_t)1 << dict->capacity_exp;
   assert(capacity > dict->size);
 
   const size_t h = strdict_hash(r->s, r->is_html);
@@ -227,7 +227,8 @@ static refstr_t *strdict_find(strdict_t *dict, const char *s, bool is_html) {
   assert(s != NULL);
 
   const size_t h = strdict_hash(s, is_html);
-  const size_t capacity = dict->buckets == NULL ? 0 : 1ul << dict->capacity_exp;
+  const size_t capacity = dict->buckets == NULL
+                        ? 0 : (size_t)1 << dict->capacity_exp;
 
   for (size_t i = 0; i < capacity; ++i) {
     const size_t candidate = (h + i) % capacity;
@@ -259,7 +260,8 @@ static void strdict_remove(strdict_t *dict, const refstr_t *key) {
   assert(key != TOMBSTONE);
 
   const size_t h = strdict_hash(key->s, key->is_html);
-  const size_t capacity = dict->buckets == NULL ? 0 : 1ul << dict->capacity_exp;
+  const size_t capacity = dict->buckets == NULL
+                        ? 0 : (size_t)1 << dict->capacity_exp;
 
   for (size_t i = 0; i < capacity; ++i) {
     const size_t candidate = (h + i) % capacity;
@@ -290,7 +292,7 @@ static void strdict_free(strdict_t **dict) {
   assert(dict != NULL);
 
   if (*dict != NULL && (*dict)->buckets != NULL) {
-    for (size_t i = 0; i < 1ul << (*dict)->capacity_exp; ++i) {
+    for (size_t i = 0; i < (size_t)1 << (*dict)->capacity_exp; ++i) {
       if ((*dict)->buckets[i] != TOMBSTONE) {
         free((*dict)->buckets[i]);
       }
@@ -453,7 +455,8 @@ void agrefstrdump(Agraph_t * g)
 {
     const strdict_t *d = *refdict(g);
     for (size_t i = 0;
-         d != NULL && d->buckets != NULL && i < 1ul << d->capacity_exp; ++i) {
+         d != NULL && d->buckets != NULL && i < (size_t)1 << d->capacity_exp;
+         ++i) {
 	refstrprint(d->buckets[i]);
     }
 }
