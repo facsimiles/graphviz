@@ -616,7 +616,7 @@ for source in sources.split("\x00")[:-1]:
 
     # ask `clang-format` to style the file
     reformatted = subprocess.check_output(
-        ["clang-format", "--style=file", "--", source],
+        ["clang-format-19", "--style=file", "--", source],
         cwd=root,
         text=True,
     )
