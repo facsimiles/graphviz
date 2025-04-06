@@ -255,11 +255,11 @@ static void svg_begin_graph(GVJ_t * job)
 
     gvprintf(job, "<svg width=\"%dpt\" height=\"%dpt\"\n",
 	     job->width, job->height);
-    gvprintf(job, " viewBox=\"%.2f %.2f %.2f %.2f\"",
-	job->canvasBox.LL.x,
-	job->canvasBox.LL.y,
-	job->canvasBox.UR.x,
-	job->canvasBox.UR.y);
+    gvprintf(job, " viewBox=\"%d.00 %d.00 %d.00 %d.00\"",
+	job->pageBoundingBox.LL.x,
+	job->pageBoundingBox.LL.y,
+	job->pageBoundingBox.UR.x,
+	job->pageBoundingBox.UR.y);
     // https://svgwg.org/svg2-draft/struct.html#Namespace says:
     // > There's no need to have an ‘xmlns’ attribute declaring that the
     // > element is in the SVG namespace when using the HTML parser. The HTML

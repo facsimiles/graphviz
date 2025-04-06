@@ -101,6 +101,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Autotools build system enables large file support on 32-bit platforms.
 - **Breaking**: The Graphviz plugin version has been updated 6 → 8. A side
   effect of this is the config6 file becoming config8.
+- The core plugin’s SVG output (`-Tsvg`, `-Tsvg_inline`) uses a `viewBox` that
+  matches the image’s dimensions. This reverts behavior introduced in Graphviz
+  2.38.0 to the behavior Graphviz 2.36.0 and prior had. The difference is most
+  apparent when using a non-default `dpi` setting. #2669
 
 ### Fixed
 
