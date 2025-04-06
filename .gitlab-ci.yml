@@ -1448,13 +1448,13 @@ docker_push_ubuntu-24.10:
     - docker_build_ubuntu-24.10
 
 lint_clang_format:
-  image: "$CI_REGISTRY_IMAGE/ubuntu-24.10:$CI_COMMIT_SHA"
   stage: test
-  needs:
-    - docker_build_ubuntu-24.10
+  needs: [] # no dependencies
   script:
+    - env DEBIAN_FRONTEND=noninteractive apt-get update -y
+    - env DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y clang-format-19
     # output some info into the logs for debugging
-    - clang-format --version
+    - clang-format-19 --version
     - cat /etc/os-release
     - uname -rms
     # check file formatting
