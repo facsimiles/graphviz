@@ -1,4 +1,4 @@
-# Run dot -c in the staging install directory to create the config6
+# Run dot -c in the staging install directory to create the config8
 # plugin before the final package is created.
 #
 # This script is called just after the dot executable has been copied

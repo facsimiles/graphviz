@@ -7,7 +7,7 @@ set -x
 
 ci/test_coverage.py --init
 pushd build
-# Use GVBINDIR to specify where to generate and load config6
+# Use GVBINDIR to specify where to generate and load config8
 # since ctest sets LD_LIBRARY_PATH to point to all the
 # locations where the libs reside before cpack copies them to
 # the install directory. Without this Graphviz tries to use
