@@ -24,7 +24,7 @@ import textwrap
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Iterator, List, Set
+from typing import Iterator, List, Set, Tuple
 
 import pexpect
 import pytest
@@ -5472,6 +5472,63 @@ def test_2648(tmp_path: Path):
     # run the test code
     print(f"+ {shlex.quote(str(exe))}")
     subprocess.run([exe], env=env, check=True)
+
+
+def test_2669():
+    """
+    `dpi=…` should scale the SVG `viewBox` as well as the overall size
+    https://gitlab.com/graphviz/graphviz/-/issues/2669
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2669.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    def parse(xml: str) -> Tuple[int, int, Tuple[float, float]]:
+        """
+        parse an SVG
+
+        Args:
+            xml: The text content of an SVG image
+
+        Returns:
+            (width, height, (viewBox width, viewBox height))
+        """
+
+        root = ET.fromstring(xml)
+
+        assert root.attrib["width"].endswith("pt")
+        width = int(root.attrib["width"][:-2])
+
+        assert root.attrib["height"].endswith("pt")
+        height = int(root.attrib["height"][:-2])
+
+        viewbox = re.match(
+            r"\d+(\.\d+)?\s+\d+(\.\d+)?\s+(?P<width>\d+(\.\d+)?)\s+(?P<height>\d+(\.\d+)?)$",
+            root.attrib["viewBox"],
+        )
+        assert viewbox is not None, "unexpected SVG viewBox format"
+
+        vb_width = float(viewbox.group("width"))
+        vb_height = float(viewbox.group("height"))
+
+        return width, height, (vb_width, vb_height)
+
+    # run this through Graphviz as normal
+    svg1 = dot("svg", input)
+
+    # confirm the width and height roughly match the `viewBox`
+    width, height, viewbox = parse(svg1)
+    assert math.isclose(width, viewbox[0], abs_tol=1.0), "mismatched SVG widths"
+    assert math.isclose(height, viewbox[1], abs_tol=1.0), "mismatched SVG heights"
+
+    # run this with a modified DPI
+    svg2 = run(["dot", "-Tsvg", "-Gdpi=60", input])
+
+    # confirm the width and height roughly match the `viewBox`
+    width, height, viewbox = parse(svg2)
+    assert math.isclose(width, viewbox[0], abs_tol=1.0), "mismatched SVG widths"
+    assert math.isclose(height, viewbox[1], abs_tol=1.0), "mismatched SVG heights"
 
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
