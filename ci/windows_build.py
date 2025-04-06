@@ -11,11 +11,14 @@ import subprocess
 import sys
 import textwrap
 from pathlib import Path
-from typing import TextIO, Union
+from typing import Optional, TextIO, Union
 
 
 def run(
-    args: list[Union[str, Path]], cwd: Path, env: dict[str, str], out: TextIO
+    args: list[Union[str, Path]],
+    cwd: Path,
+    env: dict[str, str],
+    out: Optional[TextIO] = None,
 ) -> None:
     """run a command, echoing it beforehand"""
 
@@ -30,7 +33,8 @@ def run(
         env=env,
     )
     sys.stderr.write(p.stdout)
-    out.write(p.stdout)
+    if out is not None:
+        out.write(p.stdout)
     p.check_returncode()
 
 
