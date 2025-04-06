@@ -55,7 +55,6 @@ Makefile
 doc/Makefile
 doc/info/Makefile
 doc/schema/Makefile
-!dot.demo/Makefile
 !rtest2/Makefile
 !windows/build/Makefile
 !windows/prebuild/Makefile
