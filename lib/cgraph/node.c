@@ -402,7 +402,7 @@ static Agsubnode_t *const TOMBSTONE = (Agsubnode_t *)-1;
 /// @return Capacity of the given set
 static size_t node_set_get_capacity(const node_set_t *self) {
   assert(self != NULL);
-  return self->slots == NULL ? 0 : 1ul << self->capacity_exp;
+  return self->slots == NULL ? 0 : (size_t)1 << self->capacity_exp;
 }
 
 node_set_t *node_set_new(void) { return gv_alloc(sizeof(node_set_t)); }
@@ -430,7 +430,8 @@ void node_set_add(node_set_t *self, Agsubnode_t *item) {
 
   if (grow) {
     const size_t new_c = capacity == 0 ? 10 : self->capacity_exp + 1;
-    Agsubnode_t **new_slots = gv_calloc(1ul << new_c, sizeof(Agsubnode_t *));
+    Agsubnode_t **new_slots = gv_calloc((size_t)1 << new_c,
+                                        sizeof(Agsubnode_t *));
 
     // Construct a new set and copy everything into it. Note we need to rehash
     // because capacity (and hence modulo wraparound behavior) has changed. This
