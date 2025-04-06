@@ -41,7 +41,7 @@ dnl ===========================================================================
 # libtool shared library version for plugins
 
 # Increment if the interface has additions, changes, removals.
-GVPLUGIN_CURRENT=6
+GVPLUGIN_CURRENT=8
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
@@ -71,15 +71,7 @@ dnl Checks for system type
 
 AC_CANONICAL_HOST
 
-# This nonsense drives me crazy!!
-case "${host_os}" in
-  *irix* | *nonstopux* )
-    GVPLUGIN_VERSION=`expr $GVPLUGIN_CURRENT + 1`
-    ;;
-  * )
-    GVPLUGIN_VERSION=$GVPLUGIN_CURRENT
-    ;;
-esac
+GVPLUGIN_VERSION=$GVPLUGIN_CURRENT
 AC_DEFINE_UNQUOTED(GVPLUGIN_VERSION,$GVPLUGIN_VERSION,[Compatibility version number for plugins.])
 AC_SUBST([GVPLUGIN_VERSION])
 
