@@ -271,9 +271,14 @@ int gvputs(GVJ_t * job, const char *s)
     return 1;
 }
 
+/// wrap `gvputs` to offer a `void *` first parameter
+static int gvputs_wrapper(void *state, const char *s) {
+  return gvputs(state, s);
+}
+
 int gvputs_xml(GVJ_t *job, const char *s) {
   const xml_flags_t flags = {.dash = 1, .nbsp = 1};
-  return xml_escape(s, flags, (int (*)(void *, const char *))gvputs, job);
+  return xml_escape(s, flags, gvputs_wrapper, job);
 }
 
 void gvputs_nonascii(GVJ_t *job, const char *s) {
