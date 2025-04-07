@@ -155,6 +155,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   longer misinterpreted as a negative number.
 - Out-of-bounds accesses during `gvgen` random tree generation have been fixed.
   #2640
+- `gvmap` no longer reads out-of-bounds memory when processing the
+  `-c_opacity=…` command line option. This was a regression in Graphviz 2.49.0.
 
 ## [12.2.1] – 2024-12-07
 
