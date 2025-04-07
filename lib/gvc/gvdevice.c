@@ -25,6 +25,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <util/gv_fopen.h>
+#include <util/prisize_t.h>
 
 #ifdef _WIN32
 #include <fcntl.h>
@@ -460,8 +461,6 @@ static void gvprintnum(agxbuf *xb, double number) {
 int main (int argc, char *argv[])
 {
     agxbuf xb = {0};
-    char *buf;
-    size_t len;
 
     double test[] = {
 	-maxnegnum*1.1, -maxnegnum*.9,
@@ -476,8 +475,9 @@ int main (int argc, char *argv[])
 
     while (i--) {
 	gvprintnum(&xb, test[i]);
-	buf = agxbuse(&xb);;
-        fprintf (stdout, "%g = %s %d\n", test[i], buf, len);
+	const char *buf = agxbuse(&xb);
+	const size_t len = strlen(buf);
+        printf("%g = %s %" PRISIZE_T "\n", test[i], buf, len);
     }
 
     agxbfree(&xb);
