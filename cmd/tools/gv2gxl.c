@@ -13,8 +13,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <common/types.h>
-#include <common/utils.h>
 #include "convert.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -23,6 +21,7 @@
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/startswith.h>
+#include <util/xml.h>
 
 #define EMPTY(s)	((s == 0) || (*s == '\0'))
 #define SLEN(s)     (sizeof(s)-1)
@@ -129,7 +128,7 @@ static bool legalGXLName(const char *id) {
 }
 
 // `fputs` wrapper to handle the difference in calling convention to what
-// `xml_escape`’s `cb` expects
+// `gv_xml_escape`’s `cb` expects
 static inline int put(void *stream, const char *s) {
   return fputs(s, stream);
 }
@@ -137,13 +136,13 @@ static inline int put(void *stream, const char *s) {
 // write a string to the given file, XML-escaping the input
 static inline int xml_puts(FILE *stream, const char *s) {
   const xml_flags_t flags = {.dash = 1, .nbsp = 1};
-  return xml_escape(s, flags, put, stream);
+  return gv_xml_escape(s, flags, put, stream);
 }
 
-// wrapper around `xml_escape` to set flags for URL escaping
+// wrapper around `gv_xml_escape` to set flags for URL escaping
 static int xml_url_puts(FILE *f, const char *s) {
   const xml_flags_t flags = {0};
-  return xml_escape(s, flags, put, f);
+  return gv_xml_escape(s, flags, put, f);
 }
 
 static bool isGxlGrammar(const char *name) {

@@ -32,6 +32,7 @@ if(CAIRO_FOUND AND PANGOCAIRO_FOUND)
   target_link_libraries(gvplugin_pango PRIVATE
     cgraph
     gvc
+    util
     ${CAIRO_LINK_LIBRARIES}
     ${PANGOCAIRO_LINK_LIBRARIES}
   )

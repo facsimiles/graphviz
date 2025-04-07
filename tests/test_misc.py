@@ -102,11 +102,11 @@ def test_json_edge_order():
 )
 def test_xml_escape():
     """
-    Check the functionality of ../lib/common/xml.c:xml_escape.
+    Check the functionality of ../lib/util/xml.c:gv_xml_escape.
     """
 
     # locate our test program
-    xml_c = Path(__file__).parent / "../lib/common/xml.c"
+    xml_c = Path(__file__).parent / "../lib/util/xml.c"
     assert xml_c.exists(), "missing xml.c"
 
     with tempfile.TemporaryDirectory() as tmp:

@@ -33,6 +33,7 @@ libgvplugin_pango_la_SOURCES = $(libgvplugin_pango_C_la_SOURCES)
 libgvplugin_pango_la_LIBADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/util/libutil_C.la \
 	$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(MATH_LIBS)
 
 if WITH_WIN32

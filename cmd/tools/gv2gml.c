@@ -25,14 +25,13 @@
 
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>
-#include <common/types.h>
-#include <common/utils.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/streq.h>
 #include <util/strview.h>
 #include <util/tokenize.h>
 #include <util/unreachable.h>
+#include <util/xml.h>
 #include "openFile.h"
 
 static FILE *outFile;
@@ -205,7 +204,7 @@ static void emitSpline(char *s, int ix) {
 }
 
 // `fputs` wrapper to handle the difference in calling convention to what
-// `xml_escape`’s `cb` expects
+// `gv_xml_escape`’s `cb` expects
 static inline int put(void *stream, const char *s) {
   return fputs(s, stream);
 }
@@ -213,7 +212,7 @@ static inline int put(void *stream, const char *s) {
 // write a string to the given file, XML-escaping the input
 static inline int xml_puts(FILE *stream, const char *s) {
   const xml_flags_t flags = {.dash = 1, .nbsp = 1};
-  return xml_escape(s, flags, put, stream);
+  return gv_xml_escape(s, flags, put, stream);
 }
 
 static void emitAttr(char *name, char *value, int ix) {
