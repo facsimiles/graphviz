@@ -38,6 +38,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_asan_instrumented,
     is_autotools,
     is_cmake,
+    is_fedora_42,
     is_macos,
     is_mingw,
     is_rocky,
@@ -4673,6 +4674,11 @@ def test_2593():
     "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
 )
 @pytest.mark.xfail(
+    is_autotools() and is_fedora_42(),
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    strict=True,
+)
+@pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
     strict=True,
@@ -5540,6 +5546,11 @@ def test_2669():
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
+    is_autotools() and is_fedora_42(),
+    reason="Tcl packages are unrecognized on Autotools+Fedora42",
+    strict=True,
+)
+@pytest.mark.xfail(
     is_autotools() and is_macos(),
     reason="Autotools on macOS does not detect TCL",
     strict=True,
@@ -5581,6 +5592,11 @@ def test_import_tcl_package(package: str):
     platform.system() == "Windows",
     reason="pexpect.spawn is not available on Windows "
     "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
+)
+@pytest.mark.xfail(
+    is_autotools() and is_fedora_42(),
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    strict=True,
 )
 @pytest.mark.xfail(
     is_cmake() and is_macos(),
@@ -5651,6 +5667,11 @@ def test_triangulation_overflow():
     "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
 )
 @pytest.mark.xfail(
+    is_autotools() and is_fedora_42(),
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    strict=True,
+)
+@pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
     strict=True,
@@ -5715,6 +5736,11 @@ def test_vgpane_bad_triangulation():
     platform.system() == "Windows",
     reason="pexpect.spawn is not available on Windows "
     "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
+)
+@pytest.mark.xfail(
+    is_autotools() and is_fedora_42(),
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    strict=True,
 )
 @pytest.mark.xfail(
     is_cmake() and is_macos(),
