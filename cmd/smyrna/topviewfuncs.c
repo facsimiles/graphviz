@@ -195,7 +195,7 @@ static int object_color(void* obj,glCompColor* c)
 	draws multi edges , single edges
 	this function assumes     glBegin(GL_LINES) has been called 
 */
-static void draw_edge(glCompPoint *posT, glCompPoint *posH, float length) {
+static void draw_edge(glCompPoint *posT, glCompPoint *posH) {
     glVertex3f(posT->x, posT->y, posT->z);
     glVertex3f(posH->x, posH->y, posH->z);
 }
@@ -391,7 +391,7 @@ static void renderSelectedEdges(Agraph_t * g)
 	    posH = ED_posHead(e);
 	    posT.z +=0.01f;
 	    posH.z +=0.01f;
-	    draw_edge(&posT, &posH, getEdgeLength(e));
+	    draw_edge(&posT, &posH);
 	}
     }
     glEnd();
@@ -615,7 +615,7 @@ static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
     glColor4f(c.R,c.G,c.B,c.A);	   
     posT=getPointFromStr(agxget(agtail(e), pos_attr));
     posH=getPointFromStr(agxget(aghead(e), pos_attr));
-    draw_edge(&posT, &posH, getEdgeLength(e));
+    draw_edge(&posT, &posH);
     ED_posTail(e) = posT;
     ED_posHead(e) = posH;
 }
