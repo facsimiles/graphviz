@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include "../tcl-compat.h"
 #include "gd.h"
 #include <assert.h>
 #include <errno.h>
@@ -177,7 +178,7 @@ static cmdImgOptions colorCmdVec[] = {
  * Helper function to interpret color_idx values.
  */
 static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
-  int nlist, retval = TCL_OK;
+  int retval = TCL_OK;
   Tcl_Obj **theList;
   char *firsttag, *secondtag;
 
@@ -186,6 +187,7 @@ static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
     return TCL_OK;
   else {
     Tcl_ResetResult(interp);
+    Tcl_Size nlist;
     if (Tcl_ListObjGetElements(interp, obj, &nlist, &theList) != TCL_OK)
       return TCL_ERROR;
     if (nlist < 1 || nlist > 2)
@@ -851,7 +853,7 @@ static int tclGdTileCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
 
 static int tclGdStyleCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   gdImagePtr im;
-  int ncolor, *colors = NULL, i;
+  int *colors = NULL;
   Tcl_Obj **colorObjv =
       (Tcl_Obj **)(&objv[3]); /* By default, colors are listed in objv. */
   int retval = TCL_OK;
@@ -860,15 +862,15 @@ static int tclGdStyleCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   im = IMGPTR(objv[2]);
 
   /* Figure out how many colors in the style list and allocate memory. */
-  ncolor = argc - 3;
+  Tcl_Size ncolor = (Tcl_Size)argc - 3;
   /* If only one argument, treat it as a list. */
   if (ncolor == 1)
     if (Tcl_ListObjGetElements(interp, objv[3], &ncolor, &colorObjv) != TCL_OK)
       return TCL_ERROR;
 
-  colors = (int *)Tcl_Alloc(ncolor * sizeof(int));
+  colors = (int *)Tcl_Alloc((size_t)ncolor * sizeof(int));
   /* Get the color values. */
-  for (i = 0; i < ncolor; i++)
+  for (Tcl_Size i = 0; i < ncolor; i++)
     if (Tcl_GetIntFromObj(interp, colorObjv[i], &colors[i]) != TCL_OK) {
       retval = TCL_ERROR;
       break;
@@ -876,7 +878,7 @@ static int tclGdStyleCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
 
   /* Call the Style function if no error. */
   if (retval == TCL_OK)
-    gdImageSetStyle(im, colors, ncolor);
+    gdImageSetStyle(im, colors, (int)ncolor);
 
   /* Free the colors. */
   if (colors != NULL)
@@ -1027,7 +1029,7 @@ static int tclGdArcCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
 static int tclGdPolygonCmd(Tcl_Interp *interp, int argc,
                            Tcl_Obj *const objv[]) {
   gdImagePtr im;
-  int color, npoints, i;
+  int color;
   Tcl_Obj **pointObjv = (Tcl_Obj **)(&objv[4]);
   gdPointPtr points = NULL;
   int retval = TCL_OK;
@@ -1041,7 +1043,7 @@ static int tclGdPolygonCmd(Tcl_Interp *interp, int argc,
     return TCL_ERROR;
 
   /* Figure out how many points in the list and allocate memory. */
-  npoints = argc - 4;
+  Tcl_Size npoints = (Tcl_Size)argc - 4;
   /* If only one argument, treat it as a list. */
   if (npoints == 1)
     if (Tcl_ListObjGetElements(interp, objv[4], &npoints, &pointObjv) != TCL_OK)
@@ -1062,10 +1064,10 @@ static int tclGdPolygonCmd(Tcl_Interp *interp, int argc,
     goto out;
   }
 
-  points = (gdPointPtr)Tcl_Alloc(npoints * sizeof(gdPoint));
+  points = (gdPointPtr)Tcl_Alloc((size_t)npoints * sizeof(gdPoint));
 
   /* Get the point values. */
-  for (i = 0; i < npoints; i++)
+  for (Tcl_Size i = 0; i < npoints; i++)
     if (Tcl_GetIntFromObj(interp, pointObjv[i * 2], &points[i].x) != TCL_OK ||
         Tcl_GetIntFromObj(interp, pointObjv[i * 2 + 1], &points[i].y) !=
             TCL_OK) {
@@ -1076,9 +1078,9 @@ static int tclGdPolygonCmd(Tcl_Interp *interp, int argc,
   /* Call the appropriate polygon function. */
   cmd = Tcl_GetString(objv[1]);
   if (cmd[0] == 'p')
-    gdImagePolygon(im, points, npoints, color);
+    gdImagePolygon(im, points, (int)npoints, color);
   else
-    gdImageFilledPolygon(im, points, npoints, color);
+    gdImageFilledPolygon(im, points, (int)npoints, color);
 
 out:
   /* Free the points. */
@@ -1349,7 +1351,7 @@ static int tclGdWriteBufCmd(Tcl_Interp *interp, int argc,
   void *const result = agxbuse(&buffer);
 
   assert(buffer_length <= INT_MAX);
-  Tcl_Obj *output = Tcl_NewByteArrayObj(result, (int)buffer_length);
+  Tcl_Obj *output = Tcl_NewByteArrayObj(result, (Tcl_Size)buffer_length);
   agxbfree(&buffer);
   if (output == NULL)
     return TCL_ERROR;

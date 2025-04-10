@@ -9,6 +9,7 @@
  *************************************************************************/
 
 #include "tcldot.h"
+#include "../tcl-compat.h"
 #include <cgraph/rdr.h>
 #include <stdlib.h>
 #include <string.h>
@@ -60,7 +61,7 @@ static int dotnew_internal(ClientData clientData, Tcl_Interp *interp, int argc,
     Tcl_AppendResult(interp, "\nFailure to open graph.", NULL);
     return TCL_ERROR;
   }
-  setgraphattributes(g, &argv[i], argc - i);
+  setgraphattributes(g, &argv[i], (Tcl_Size)(argc - i));
   Tcl_AppendResult(interp, obj2cmd(g), NULL);
 
   return TCL_OK;

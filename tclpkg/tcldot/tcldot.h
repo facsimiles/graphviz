@@ -8,7 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-
+#include "../tcl-compat.h"
 #include <tcl.h>
 #ifdef EXTERN
 // tcl.h defines `EXTERN` which interferes with the `EXTERN` in globals.h
@@ -62,9 +62,9 @@ extern void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g);
 
-extern void setgraphattributes(Agraph_t * g, char *argv[], int argc);
-extern void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc);
-extern void setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc);
+void setgraphattributes(Agraph_t *g, char *argv[], Tcl_Size argc);
+void setedgeattributes(Agraph_t *g, Agedge_t *e, char *argv[], Tcl_Size argc);
+void setnodeattributes(Agraph_t *g, Agnode_t *n, char *argv[], Tcl_Size argc);
 
 extern size_t Tcldot_string_writer(GVJ_t *job, const char *s, size_t len);
 extern size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len);

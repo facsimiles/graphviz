@@ -8,6 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "../tcl-compat.h"
 #include <assert.h>
 #include <cgraph/rdr.h>
 #include <limits.h>
@@ -33,8 +34,8 @@ int myiodisc_afread(void* channel, char *ubuf, int n)
     assert(n >= 0);
 
     static Tcl_DString dstr;
-    static int strpos;
-    int nput;
+    static Tcl_Size strpos;
+    Tcl_Size nput;
 
     if (!n) {			/* a call with n==0 (from aglexinit) resets */
 	*ubuf = '\0';
@@ -80,7 +81,7 @@ int myiodisc_afread(void* channel, char *ubuf, int n)
 	    memcpy(ubuf, Tcl_DStringValue(&dstr), (size_t)nput);
 	}
     }
-    return nput;
+    return (int)nput;
 }
 
 
