@@ -1195,7 +1195,7 @@ static int tclGdTextCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   int color, x, y;
   double ptsize, angle;
   char *error, *fontname;
-  int i, brect[8], len;
+  int i, brect[8];
   char *str;
   Tcl_Obj *orect[8];
 
@@ -1231,7 +1231,7 @@ static int tclGdTextCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
     return TCL_ERROR;
   }
 
-  str = Tcl_GetStringFromObj(objv[9], &len);
+  str = Tcl_GetStringFromObj(objv[9], NULL);
   fontname = Tcl_GetString(objv[4]);
 
   gdFTUseFontConfig(1);
