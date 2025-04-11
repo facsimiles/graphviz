@@ -34,7 +34,6 @@ if(WITH_SMYRNA)
     selectionfuncs.h
     smyrna_utils.h
     smyrnadefs.h
-    support.h
     topfisheyeview.h
     topviewfuncs.h
     tvnodes.h
