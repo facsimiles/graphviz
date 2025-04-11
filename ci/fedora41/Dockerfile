@@ -10,6 +10,7 @@ byacc \
 flex \
 doxygen \
 gettext \
+git \
 make \
 cmake \
 ninja \
