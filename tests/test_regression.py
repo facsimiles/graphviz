@@ -4402,10 +4402,8 @@ def test_2568():
         # at the end of the output stream
         assert index != 0, "at least one tag was not recognized"
 
-        # if we got no output within 1s, assume we are done and try to neatly exit
+        # if we got no output within 1s, assume we are done
         if index == 2:
-            proc.sendeof()
-            proc.wait()
             break
 
         tag = proc.match.group("tag").decode("utf-8")
@@ -4736,13 +4734,9 @@ def test_2596():
     proc.sendline("vgpane0 triangulate 1")
     proc.expect("% ")
 
-    # delete the pane to clean up
+    # delete the pane to clean up, to exit ASan-clean
     proc.sendline("vgpane0 delete")
     proc.expect("% ")
-
-    # tell TCL to exit
-    proc.sendeof()
-    proc.wait()
 
 
 @pytest.mark.skipif(not is_cmake(), reason="only relevant in CMake builds")
@@ -5651,13 +5645,9 @@ def test_triangulation_overflow():
     proc.expect("cannot be triangulated")
     proc.expect("% ")
 
-    # delete the pane to clean up
+    # delete the pane to clean up, to exit ASan-clean
     proc.sendline("vgpane0 delete")
     proc.expect("% ")
-
-    # tell TCL to exit
-    proc.sendeof()
-    proc.wait()
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
@@ -5722,13 +5712,9 @@ def test_vgpane_bad_triangulation():
     proc.sendline("vgpane0 triangulate")
     proc.expect("wrong # args")
 
-    # delete the pane to clean up
+    # delete the pane to clean up, to exit ASan-clean
     proc.sendline("vgpane0 delete")
     proc.expect("% ")
-
-    # tell TCL to exit
-    proc.sendeof()
-    proc.wait()
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
@@ -5792,10 +5778,6 @@ def test_vgpane_delete():
     # timeout.
     is_valid = proc.expect(['Invalid handle: "vgpane0"', pexpect.TIMEOUT]) == 1
     assert is_valid, "created vgpane was considered an invalid handle"
-
-    # tell TCL to exit
-    proc.sendeof()
-    proc.wait()
 
 
 def test_changelog_dates():
