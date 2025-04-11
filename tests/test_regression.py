@@ -4410,7 +4410,7 @@ def test_2568():
 
         tag = proc.match.group("tag").decode("utf-8")
 
-        # …try to look up its corresponding entities
+        # try to look up its corresponding entities
         if tag.startswith("edge"):
             cmd = "listnodes"
         else:
