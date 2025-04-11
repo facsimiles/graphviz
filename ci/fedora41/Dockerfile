@@ -9,7 +9,6 @@ bison \
 byacc \
 flex \
 doxygen \
-gettext \
 git \
 make \
 cmake \
