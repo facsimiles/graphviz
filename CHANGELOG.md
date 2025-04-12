@@ -108,6 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Tcl bindings have been updated for compatibility with Tcl 9. #2668
 - The SVG output format (`-Tsvg`, `-Tsvg_inline`) no longer duplicates font
   families.
+- **Breaking**: The function `aginternalmapclearlocalnames` has been removed.
+  #2664
 
 ### Fixed
 

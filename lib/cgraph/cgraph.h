@@ -898,12 +898,6 @@ CGRAPH_API int agdegree(Agraph_t *g, Agnode_t *n, int in, int out);
 CGRAPH_API int agcountuniqedges(Agraph_t *g, Agnode_t *n, int in, int out);
 /// @}
 
-/// @defgroup cgmem memory
-/// @{
-/* an engineering compromise is a joy forever */
-CGRAPH_API void aginternalmapclearlocalnames(Agraph_t *g);
-/// @}
-
 /// @cond
 
 /* support for extra API misuse warnings if available */
