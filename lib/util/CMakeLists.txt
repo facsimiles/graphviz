@@ -3,6 +3,7 @@ add_library(util STATIC
   gv_find_me.c
   gv_fopen.c
   random.c
+  xml.c
 )
 
 target_include_directories(util PRIVATE ..)

@@ -25,10 +25,11 @@ noinst_HEADERS = \
   strview.h \
   tokenize.h \
   unreachable.h \
-  unused.h
+  unused.h \
+  xml.h
 noinst_LTLIBRARIES = libutil_C.la
 
-libutil_C_la_SOURCES = base64.c gv_find_me.c gv_fopen.c random.c
+libutil_C_la_SOURCES = base64.c gv_find_me.c gv_fopen.c random.c xml.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 EXTRA_DIST = README

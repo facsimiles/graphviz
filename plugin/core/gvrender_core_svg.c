@@ -38,6 +38,7 @@
 #include <util/agxbuf.h>
 #include <util/strcasecmp.h>
 #include <util/unreachable.h>
+#include <util/xml.h>
 
 #define LOCALNAMEPREFIX		'%'
 
@@ -406,13 +407,13 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target,
     if (href && href[0]) {
 	gvputs(job, " xlink:href=\"");
 	const xml_flags_t flags = {0};
-	xml_escape(href, flags, gvputs_wrapper, job);
+	gv_xml_escape(href, flags, gvputs_wrapper, job);
 	gvputc(job, '"');
     }
     if (tooltip && tooltip[0]) {
 	gvputs(job, " xlink:title=\"");
 	const xml_flags_t flags = {.raw = 1, .dash = 1, .nbsp = 1};
-	xml_escape(tooltip, flags, gvputs_wrapper, job);
+	gv_xml_escape(tooltip, flags, gvputs_wrapper, job);
 	gvputc(job, '"');
     }
     if (target && target[0]) {
@@ -542,7 +543,7 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
         gvputs(job, "\">");
     }
     const xml_flags_t xml_flags = {.raw = 1, .dash = 1, .nbsp = 1};
-    xml_escape(span->str, xml_flags, gvputs_wrapper, job);
+    gv_xml_escape(span->str, xml_flags, gvputs_wrapper, job);
     if (obj->labeledgealigned)
 	gvputs(job, "</tspan></textPath>");
     gvputs(job, "</text>\n");

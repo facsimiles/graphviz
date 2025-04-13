@@ -27,7 +27,7 @@ libcommon_C_la_SOURCES = arrows.c colxlate.c ellipse.c textspan.c textspan_lut.c
 	args.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c postproc.c routespl.c splines.c psusershape.c \
 	timing.c labels.c ns.c shapes.c utils.c geom.c taper.c \
-	output.c emit.c xml.c \
+	output.c emit.c \
 	color_names
 libcommon_C_la_CPPFLAGS = $(AM_CPPFLAGS) $(EXPAT_CFLAGS)
 libcommon_C_la_LIBADD = \

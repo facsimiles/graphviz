@@ -226,7 +226,7 @@ if(GETOPT_FOUND)
     ${GETOPT_INCLUDE_DIRS}
   )
 endif()
-target_link_libraries(gv2gml PRIVATE cgraph gvc)
+target_link_libraries(gv2gml PRIVATE cgraph gvc util)
 if(NOT HAVE_GETOPT_H)
   target_link_libraries(gv2gml PRIVATE ${GETOPT_LINK_LIBRARIES})
 endif()
@@ -420,7 +420,7 @@ if(EXPAT_FOUND)
 
   target_link_libraries(gxl2gv PRIVATE
     cgraph
-    gvc
+    util
     ${EXPAT_LIBRARIES}
   )
 

@@ -34,34 +34,10 @@ extern "C" {
 #define UTILS_API /* nothing */
 #endif
 
-// options to tweak the behavior of XML escaping
-typedef struct {
-  // assume no embedded escapes, and escape "\n" and "\r"
-  unsigned raw : 1;
-  // escape '-'
-  unsigned dash : 1;
-  // escape consecutive ' '
-  unsigned nbsp : 1;
-  // anticipate non-ASCII characters that need to be encoded
-  unsigned utf8 : 1;
-} xml_flags_t;
-
 UTILS_API pointf Bezier(pointf *, double, pointf *, pointf *);
 
 /// @return Computed ymin + ymax
 UTILS_API double attach_attrs_and_arrows(graph_t *, bool *, bool *);
-
-/** XML-escape a string
- *
- * \param s Source string to process.
- * \param flags Options of how to configure escaping.
- * \param cb An `fputs` analogue for emitting escaped output.
- * \param state Caller-defined data to pass to `cb`.
- * \return The first negative value `cb` returns or the last return value of
- *   `cb`.
- */
-UTILS_API int xml_escape(const char *s, xml_flags_t flags,
-                         int (*cb)(void *state, const char *s), void *state);
 
 UTILS_API void write_plain(GVJ_t *job, graph_t *g, FILE *f, bool extend);
 

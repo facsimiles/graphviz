@@ -21,6 +21,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
+#include <util/xml.h>
 
 #include <pango/pangocairo.h>
 #include "gvgetfontlist.h"
@@ -54,7 +55,7 @@ static char* pango_psfontResolve (PostscriptAlias* pa)
 #define ENABLE_PANGO_MARKUP
 
 // wrapper to handle difference in calling conventions between `agxbput` and
-// `xml_escape`’s `cb`
+// `gv_xml_escape`’s `cb`
 static int agxbput_int(void *buffer, const char *s) {
   size_t len = agxbput(buffer, s);
   assert(len <= INT_MAX);
@@ -209,7 +210,7 @@ static bool pango_textlayout(textspan_t * span, char **fontpath)
 	    agxbput(&xb,"<sub>");
 
 	const xml_flags_t xml_flags = {.raw = 1, .dash = 1, .nbsp = 1};
-	xml_escape(span->str, xml_flags, agxbput_int, &xb);
+	gv_xml_escape(span->str, xml_flags, agxbput_int, &xb);
 
 	if (flags & HTML_SUB)
 	    agxbput(&xb,"</sub>");

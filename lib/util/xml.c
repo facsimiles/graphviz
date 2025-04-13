@@ -1,11 +1,9 @@
 /**
  * @file
- * @brief @ref xml_escape
+ * @brief @ref gv_xml_escape
  * @ingroup common_utils
  */
 
-#include <common/types.h>
-#include <common/utils.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -14,6 +12,7 @@
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/unreachable.h>
+#include <util/xml.h>
 
 /* return true if *s points to &[A-Za-z]+;      (e.g. &Ccedil; )
  *                          or &#[0-9]*;        (e.g. &#38; )
@@ -176,8 +175,8 @@ static int xml_core(char previous, const char **current, xml_flags_t flags,
   return cb(state, buffer);
 }
 
-int xml_escape(const char *s, xml_flags_t flags,
-               int (*cb)(void *state, const char *s), void *state) {
+int gv_xml_escape(const char *s, xml_flags_t flags,
+                  int (*cb)(void *state, const char *s), void *state) {
   char previous = '\0';
   int rc = 0;
   while (*s != '\0') {
@@ -246,7 +245,7 @@ int main(int argc, char **argv) {
 
   // escape all input we received
   for (int i = optind; i < argc; ++i) {
-    int r = xml_escape(argv[i], flags, put, stdout);
+    int r = gv_xml_escape(argv[i], flags, put, stdout);
     if (r < 0)
       graphviz_exit(EXIT_FAILURE);
   }
