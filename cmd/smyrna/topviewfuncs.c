@@ -195,38 +195,9 @@ static int object_color(void* obj,glCompColor* c)
 	draws multi edges , single edges
 	this function assumes     glBegin(GL_LINES) has been called 
 */
-static void draw_edge(glCompPoint *posT, glCompPoint *posH, float length,
-                      int deg) {
-    double alpha, R, ITERANGLE;
-    double X1, Y1, X2, Y2;
-
-    if (deg) {
-	R = length / 20.0;
-	if ((deg / 2) * 2 != deg)	/*odd */
-	    ITERANGLE = (deg) * 15.00 * -1;
-	else
-	    ITERANGLE = (deg) * 15.00;
-	ITERANGLE = DEG2RAD * ITERANGLE;
-
-	alpha = atan((posH->y - posT->y) / (posH->x - posT->x));
-	if (posT->x > posH->x)
-	    ITERANGLE = 180 * DEG2RAD - ITERANGLE;
-	X1 = R * cos(alpha - ITERANGLE) + posT->x;
-	Y1 = R * sin(alpha - ITERANGLE) + posT->y;
-	X2 = R * cos(alpha - (180 * DEG2RAD - ITERANGLE)) + posH->x;
-	Y2 = R * sin(alpha - (180 * DEG2RAD - ITERANGLE)) + posH->y;
-	glVertex3f(posT->x, posT->y, posT->z);
-	glVertex3f(X1, Y1, posT->z);
-	glVertex3f(X1, Y1, posT->z);
-	glVertex3f(X2, Y2, posH->z);
-	glVertex3f(X2, Y2, posH->z);
-	glVertex3f(posH->x, posH->y, posH->z);
-    } else {
-	glVertex3f(posT->x, posT->y, posT->z);
-	glVertex3f(posH->x, posH->y, posH->z);
-
-    }
-
+static void draw_edge(glCompPoint posT, glCompPoint posH) {
+    glVertex3f(posT.x, posT.y, posT.z);
+    glVertex3f(posH.x, posH.y, posH.z);
 }
 
 static char* labelOf (Agraph_t* g, Agnode_t* v)
@@ -420,7 +391,7 @@ static void renderSelectedEdges(Agraph_t * g)
 	    posH = ED_posHead(e);
 	    posT.z +=0.01f;
 	    posH.z +=0.01f;
-	    draw_edge(&posT,&posH,getEdgeLength(e),0);
+	    draw_edge(posT, posH);
 	}
     }
     glEnd();
@@ -644,7 +615,7 @@ static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
     glColor4f(c.R,c.G,c.B,c.A);	   
     posT=getPointFromStr(agxget(agtail(e), pos_attr));
     posH=getPointFromStr(agxget(aghead(e), pos_attr));
-    draw_edge(&posT,&posH,getEdgeLength(e),0);
+    draw_edge(posT, posH);
     ED_posTail(e) = posT;
     ED_posHead(e) = posH;
 }
