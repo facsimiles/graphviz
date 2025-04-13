@@ -81,7 +81,6 @@ add_library(common_obj OBJECT
   textspan_lut.c
   timing.c
   utils.c
-  xml.c
 
   # Generated files
   ${BISON_HTMLparse_OUTPUTS}

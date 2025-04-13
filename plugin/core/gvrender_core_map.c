@@ -12,12 +12,11 @@
 
 #include <stdlib.h>
 
-#include <common/types.h>
-#include <common/utils.h>
 #include <gvc/gvplugin_render.h>
 #include <gvc/gvplugin_device.h>
 #include <gvc/gvio.h>
 #include <util/unreachable.h>
+#include <util/xml.h>
 
 enum { FORMAT_IMAP, FORMAT_ISMAP, FORMAT_CMAP, FORMAT_CMAPX, };
 
@@ -26,10 +25,10 @@ static int gvputs_wrapper(void *state, const char *s) {
   return gvputs(state, s);
 }
 
-// wrapper around `xml_escape` to set flags for URL escaping
+// wrapper around `gv_xml_escape` to set flags for URL escaping
 static void xml_url_puts(GVJ_t *job, const char *s) {
   const xml_flags_t flags = {0};
-  (void)xml_escape(s, flags, gvputs_wrapper, job);
+  (void)gv_xml_escape(s, flags, gvputs_wrapper, job);
 }
 
 static void map_output_shape(GVJ_t *job, map_shape_t map_shape, pointf *AF, size_t nump,

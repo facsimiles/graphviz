@@ -33,6 +33,7 @@ target_include_directories(gvplugin_core PRIVATE
 target_link_libraries(gvplugin_core PRIVATE
   cgraph
   gvc
+  util
   xdot
 )
 

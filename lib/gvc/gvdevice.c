@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <util/gv_fopen.h>
 #include <util/prisize_t.h>
+#include <util/xml.h>
 
 #ifdef _WIN32
 #include <fcntl.h>
@@ -279,7 +280,7 @@ static int gvputs_wrapper(void *state, const char *s) {
 
 int gvputs_xml(GVJ_t *job, const char *s) {
   const xml_flags_t flags = {.dash = 1, .nbsp = 1};
-  return xml_escape(s, flags, gvputs_wrapper, job);
+  return gv_xml_escape(s, flags, gvputs_wrapper, job);
 }
 
 void gvputs_nonascii(GVJ_t *job, const char *s) {

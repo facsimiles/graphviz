@@ -133,7 +133,9 @@ def compile_c(
         rtflag = "-MDd" if os.environ.get("configuration") == "Debug" else "-MD"
 
         # construct an invocation of MSVC
-        args = ["cl", src, "-Fe:", dst, "-nologo", rtflag] + cflags + ldflags
+        args = (
+            ["cl", "/std:c11", src, "-Fe:", dst, "-nologo", rtflag] + cflags + ldflags
+        )
 
     else:
         # construct an invocation of the default C compiler

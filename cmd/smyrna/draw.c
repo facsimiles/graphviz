@@ -15,14 +15,13 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 */
 #include "draw.h"
 #include <common/colorprocs.h>
-#include <common/types.h>
-#include <common/utils.h>
 #include "smyrna_utils.h"
 #include <glcomp/glutils.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <util/unreachable.h>
+#include <util/xml.h>
 
 #include <xdot/xdot.h>
 #include "viewport.h"
@@ -352,7 +351,7 @@ static void EmbedText(sdot_op* o, int param)
 		// XML-escape the text
 		const xml_flags_t flags = {.dash = 1, .nbsp = 1};
 		char **ptr = &escaped;
-		(void)xml_escape(o->op.u.text.text, flags, put, ptr);
+		(void)gv_xml_escape(o->op.u.text.text, flags, put, ptr);
 
 		o->font = glNewFont(view->widgets, escaped, &view->penColor,
 		                    font_op->op.u.font.name, font_op->op.u.font.size,
