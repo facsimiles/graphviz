@@ -66,6 +66,7 @@ def upload(dry_run: bool, version: str, path: Path, name: Optional[str] = None) 
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
+        check=False,
         text=True,
     )
     log.info("Curl response:")

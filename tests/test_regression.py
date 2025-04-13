@@ -748,6 +748,7 @@ def test_1328():
     proc = subprocess.run(
         ["dot", "-Tsvg", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
+        check=False,
         text=True,
     )
 
@@ -2196,7 +2197,7 @@ def test_2092():
     an empty node ID should not cause a dot2gxl NULL pointer dereference
     https://gitlab.com/graphviz/graphviz/-/issues/2092
     """
-    p = subprocess.run(["dot2gxl", "-d"], input='<node id="">', text=True)
+    p = subprocess.run(["dot2gxl", "-d"], input='<node id="">', check=False, text=True)
 
     assert p.returncode != 0, "dot2gxl accepted invalid input"
 
@@ -3090,7 +3091,7 @@ def test_gvmap_fclose():
     )
 
     # pass this through gvmap
-    proc = subprocess.run(["gvmap"], input=input.encode("utf-8"))
+    proc = subprocess.run(["gvmap"], input=input.encode("utf-8"), check=False)
 
     assert proc.returncode in (0, 1), "gvmap crashed"
 
@@ -3134,6 +3135,7 @@ def test_2225():
     p = subprocess.run(
         ["sfdp", "-Gsplines=curved", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
+        check=False,
         text=True,
     )
 
@@ -3244,7 +3246,7 @@ def test_2272_2():
     graph = 'graph { a[label="abc'
 
     # process it with Graphviz, which should not crash
-    p = subprocess.run(["dot", "-o", os.devnull], input=graph, text=True)
+    p = subprocess.run(["dot", "-o", os.devnull], input=graph, check=False, text=True)
     assert p.returncode != 0, "dot accepted invalid input"
     assert p.returncode == 1, "dot crashed"
 
@@ -3277,7 +3279,9 @@ def test_2283():
     assert input.exists(), "unexpectedly missing test case"
 
     # translate this to SVG
-    p = subprocess.run(["dot", "-Tsvg", input], capture_output=True, text=True)
+    p = subprocess.run(
+        ["dot", "-Tsvg", input], capture_output=True, check=False, text=True
+    )
 
     # if sfdp was built without libgts, it will not handle anything non-trivial
     no_gts_error = "remove_overlap: Graphviz not built with triangulation library"
@@ -4175,6 +4179,7 @@ def test_2516():
     proc = subprocess.run(
         ["dot", "-Tsvg", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
+        check=False,
         text=True,
     )
 
@@ -4257,6 +4262,7 @@ def test_2556():
     p = subprocess.run(
         [sfdp, "-Tpng", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
+        check=False,
         text=True,
     )
 
@@ -4308,6 +4314,7 @@ def test_2563():
         p = subprocess.run(
             [fdp, f"-Goverlap={overlap}", input],
             capture_output=True,
+            check=False,
             text=True,
         )
 
@@ -4657,7 +4664,9 @@ def test_2593():
     # this typically takes 30-45s to run, so give a wide margin of error and require
     # that ccomps finishes within that
     ccomps = which("ccomps")
-    proc = subprocess.run([ccomps, "-o", os.devnull, input], timeout=60 * 5)
+    proc = subprocess.run(
+        [ccomps, "-o", os.devnull, input], timeout=60 * 5, check=False
+    )
 
     assert proc.returncode == 1, "ccomps did not detect graphs have multiple components"
 
@@ -4802,7 +4811,9 @@ def test_2599():
 
     # pass it through mingle
     mingle = which("mingle")
-    proc = subprocess.run([mingle, "-v", "999"], text=True, input=processed)
+    proc = subprocess.run(
+        [mingle, "-v", "999"], check=False, text=True, input=processed
+    )
 
     # Address Sanitizer catches segfaults and turns them into non-zero exits, so ignore
     # testing in this scenario
@@ -5797,6 +5808,7 @@ def test_duplicate_hard_coded_metrics_warnings():
     p = subprocess.run(
         [gvpack, "-u", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
+        check=False,
         text=True,
     )
 
@@ -6093,6 +6105,7 @@ def test_control_characters_in_error():
         ["dot", "-Tsvg", "-o", os.devnull],
         input=src,
         stderr=subprocess.PIPE,
+        check=False,
         text=True,
     )
 
@@ -6105,6 +6118,7 @@ def test_control_characters_in_error():
         ["dot", "-Tsvg", "-o", os.devnull],
         input=src,
         stderr=subprocess.PIPE,
+        check=False,
         text=True,
     )
 
@@ -6269,6 +6283,7 @@ def test_edgepaint_error_message():
         [edgepaint, "-o", "/a/nonexistent/path"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
+        check=False,
         text=True,
     )
 
