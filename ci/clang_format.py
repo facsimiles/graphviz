@@ -65,7 +65,6 @@ EXCLUDE = (
     "cmd/smyrna/smyrna_utils.c",
     "cmd/smyrna/smyrna_utils.h",
     "cmd/smyrna/smyrnadefs.h",
-    "cmd/smyrna/support.h",
     "cmd/smyrna/topfisheyeview.c",
     "cmd/smyrna/topfisheyeview.h",
     "cmd/smyrna/topviewfuncs.c",

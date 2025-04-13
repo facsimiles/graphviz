@@ -30,7 +30,7 @@ noinst_HEADERS = arcball.h draw.h glexpose.h \
 	hotkeymap.h polytess.h selectionfuncs.h \
 	smyrna_utils.h smyrnadefs.h topfisheyeview.h \
 	topviewfuncs.h tvnodes.h \
-	viewport.h viewportcamera.h support.h \
+	viewport.h viewportcamera.h \
 	gui/datalistcallbacks.h gui/frmobjectui.h \
 	gui/glcompui.h gui/gui.h gui/menucallbacks.h \
 	gui/toolboxcallbacks.h gui/topviewsettings.h gvprpipe.h hier.h glutrender.h

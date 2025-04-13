@@ -16,21 +16,17 @@
 #include <windowsx.h>
 #endif
 #include "frmobjectui.h"
+#include "glexpose.h"
 #include "gltemplate.h"
+#include "glutrender.h"
 #include "gui.h"
 #include "gvprpipe.h"
 #include "menucallbacks.h"
-#include "support.h"
 #include "viewport.h"
+#include <assert.h>
 #include <glade/glade.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkgl.h>
-#ifdef ENABLE_NLS
-#include "libintl.h"
-#endif
-#include "glexpose.h"
-#include "glutrender.h"
-#include <assert.h>
 
 #include <getopt.h>
 #include <stdlib.h>
@@ -227,11 +223,6 @@ int main(int argc, char *argv[]) {
 #else
   package_locale_dir = g_build_filename(smyrnaDir, "locale", NULL);
 #endif /* # */
-#ifdef ENABLE_NLS
-  bindtextdomain(GETTEXT_PACKAGE, package_locale_dir);
-  bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-  textdomain(GETTEXT_PACKAGE);
-#endif
   view = gv_alloc(sizeof(ViewInfo));
   init_viewport(view);
   view->initFileName = parseArgs(argc, argv, view);
