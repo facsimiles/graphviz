@@ -40,7 +40,7 @@ def run_raw(args: List[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     else:
         is_stdout_captured = False
 
-    proc = subprocess.run(args, **kwargs)
+    proc = subprocess.run(args, check=False, **kwargs)
 
     if proc.returncode != 0:
         if is_stdout_captured:
@@ -409,7 +409,7 @@ def run_c(
             input_bytes = input.encode("utf-8")
 
         # run it
-        p = subprocess.run(argv, input=input_bytes, capture_output=True)
+        p = subprocess.run(argv, input=input_bytes, capture_output=True, check=False)
 
         # decode output manually rather than using `text=True` above to avoid exceptions
         # from non-UTF-8 bytes in the output
