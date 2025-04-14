@@ -23,6 +23,9 @@ if [[ ${id} == msys* ]]; then
     VERSION_ID=$( uname -r )
 fi
 
+# validate we have Git and echo version into log
+git --version
+
 META_DATA_DIR=Metadata/${ID}/${VERSION_ID}
 mkdir -p ${META_DATA_DIR}
 DIR=$(pwd)/Packages/${ID}/${VERSION_ID}
@@ -59,7 +62,6 @@ if [ "${build_system}" = "cmake" ]; then
 elif [[ "${CONFIGURE_OPTIONS:-}" =~ "--enable-static" ]]; then
     GV_VERSION=$( cat GRAPHVIZ_VERSION )
     if [ "${use_autogen:-no}" = "yes" ]; then
-        git --version
         ./autogen.sh
         ./configure ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
         make
@@ -104,7 +106,6 @@ else
             CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS:-} --build=x86_64-pc-cygwin"
         fi
         if [ "${use_autogen:-no}" = "yes" ]; then
-            git --version
             ./autogen.sh
             ./configure ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
             make

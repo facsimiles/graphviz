@@ -159,10 +159,11 @@ if not patch_version.isnumeric() or args.date_format:
             cwd=os.path.abspath(os.path.dirname(__file__)),
             universal_newlines=True,
         ).strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    except FileNotFoundError:
+        sys.stderr.write("Warning: Git is not installed: setting version date to 0.\n")
+    except subprocess.CalledProcessError:
         sys.stderr.write(
-            "Warning: build not started in a Git clone, or Git is not "
-            "installed: setting version date to 0.\n"
+            "Warning: build not started in a Git clone: setting version date to 0.\n"
         )
 
 if not patch_version.isnumeric():
