@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/unreachable.h>
@@ -194,8 +195,6 @@ int gv_xml_escape(const char *s, xml_flags_t flags,
 //
 //   ${CC} -std=c11 -DTEST_XML -Ilib lib/util/xml.c
 
-#include <getopt.h>
-
 static int put(void *stream, const char *s) { return fputs(s, stream); }
 
 // stub for testing above functionality
@@ -203,48 +202,28 @@ int main(int argc, char **argv) {
 
   xml_flags_t flags = {0};
 
-  while (true) {
-    static const struct option opts[] = {
-        {"dash", no_argument, 0, 'd'},
-        {"nbsp", no_argument, 0, 'n'},
-        {"raw", no_argument, 0, 'r'},
-        {"utf8", no_argument, 0, 'u'},
-        {0, 0, 0, 0},
-    };
-
-    int index;
-    int c = getopt_long(argc, argv, "dnru", opts, &index);
-
-    if (c == -1)
-      break;
-
-    switch (c) {
-
-    case 'd':
+  int i;
+  for (i = 1; i < argc; ++i) {
+    if (strcmp(argv[i], "--dash") == 0) {
       flags.dash = 1;
-      break;
-
-    case 'n':
+    } else if (strcmp(argv[i], "--nbsp") == 0) {
       flags.nbsp = 1;
-      break;
-
-    case 'r':
+    } else if (strcmp(argv[i], "--raw") == 0) {
       flags.raw = 1;
-      break;
-
-    case 'u':
+    } else if (strcmp(argv[i], "--utf8") == 0) {
       flags.utf8 = 1;
-      break;
-
-    default:
-      fprintf(stderr, "unexpected error\n");
+    } else if (argv[i][0] == '-') {
+      fprintf(stderr, "unrecognized argument %s\n", argv[i]);
       graphviz_exit(EXIT_FAILURE);
+    } else {
+      // assume we have reached content to escape
+      break;
     }
   }
 
   // escape all input we received
-  for (int i = optind; i < argc; ++i) {
-    int r = gv_xml_escape(argv[i], flags, put, stdout);
+  for (; i < argc; ++i) {
+    const int r = gv_xml_escape(argv[i], flags, put, stdout);
     if (r < 0)
       graphviz_exit(EXIT_FAILURE);
   }
