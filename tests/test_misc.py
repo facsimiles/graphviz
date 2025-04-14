@@ -111,7 +111,6 @@ def test_xml_escape(tmp_path: Path):
     # compile the stub to something we can run
     xml_exe = tmp_path / "xml.exe"
     cflags = [
-        "-D_POSIX_C_SOURCE=200809L",
         "-DTEST_XML",
         "-I",
         ROOT / "lib",
