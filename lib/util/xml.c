@@ -192,7 +192,7 @@ int gv_xml_escape(const char *s, xml_flags_t flags,
 #ifdef TEST_XML
 // compile the below test stub with:
 //
-//   ${CC} -std=c99 -DTEST_XML -Ilib -Ilib/gvc -Ilib/pathplan -Ilib/cgraph
+//   ${CC} -std=c11 -DTEST_XML -Ilib -Ilib/gvc -Ilib/pathplan -Ilib/cgraph
 //     -Ilib/cdt lib/common/xml.c
 
 #include <getopt.h>
