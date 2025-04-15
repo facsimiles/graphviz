@@ -1161,11 +1161,7 @@ htmlEntity (char** s)
 static unsigned char
 cvtAndAppend (unsigned char c, agxbuf* xb)
 {
-    char buf[2];
-
-    buf[0] = c;
-    buf[1] = '\0';
-
+    char buf[] = {c, '\0'};
     char *s = latin1ToUTF8(buf);
     char *p = s;
     size_t len = strlen(s);
