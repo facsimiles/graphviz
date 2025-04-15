@@ -813,10 +813,7 @@ static void insertEdge(Dt_t * map, void *t, void *h, edge_t * e)
 /// Check if we already have cluster edge corresponding to t->h, and return it.
 static item *mapEdge(Dt_t * map, edge_t * e)
 {
-    void *key[2];
-
-    key[0] = agtail(e);
-    key[1] = aghead(e);
+    void *key[] = {agtail(e), aghead(e)};
     return dtmatch(map, &key);
 }
 
