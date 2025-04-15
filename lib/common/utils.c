@@ -803,19 +803,11 @@ static edge_t *cloneEdge(edge_t * e, node_t * ct, node_t * ch)
 
 static void insertEdge(Dt_t * map, void *t, void *h, edge_t * e)
 {
-    item dummy;
+    item dummy1 = {.p = {t, h}, .t = agtail(e), .h = aghead(e)};
+    dtinsert(map, &dummy1);
 
-    dummy.p[0] = t;
-    dummy.p[1] = h;
-    dummy.t = agtail(e);
-    dummy.h = aghead(e);
-    dtinsert(map, &dummy);
-
-    dummy.p[0] = h;
-    dummy.p[1] = t;
-    dummy.t = aghead(e);
-    dummy.h = agtail(e);
-    dtinsert(map, &dummy);
+    item dummy2 = {.p = {h, t}, .t = aghead(e), .h = agtail(e)};
+    dtinsert(map, &dummy2);
 }
 
 /// Check if we already have cluster edge corresponding to t->h, and return it.
