@@ -341,7 +341,7 @@ static void makeCompoundEdge(edge_t *e, Dt_t *clustMap) {
 		    agwarningf(
 			  "%s -> %s: tail is inside head cluster %s\n",
 			  agnameof(agtail(e)), agnameof(aghead(e)), agget(e, "lhead"));
-		} else {
+		} else if (!inBoxf(bez->sp, bb)) {
 		    assert(bez->sflag);	/* must be arrowhead on tail */
 		    pointf p = boxIntersectf(bez->list[0], bez->sp, bb);
 		    bez->list[3] = p;
@@ -401,8 +401,7 @@ static void makeCompoundEdge(edge_t *e, Dt_t *clustMap) {
 		    agwarningf(
 			"%s -> %s: head is inside tail cluster %s\n",
 		  	agnameof(agtail(e)), agnameof(aghead(e)), agget(e, "ltail"));
-		} else {
-		    assert(bez->eflag);	/* must be arrowhead on head */
+		} else if (bez->eflag && !inBoxf(nbez.ep, bb)) {
 		    pointf p = boxIntersectf(bez->list[endi], nbez.ep, bb);
 		    starti = endi - 3;
 		    bez->list[starti] = p;

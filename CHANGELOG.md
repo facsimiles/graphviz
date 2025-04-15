@@ -157,6 +157,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   #2640
 - `gvmap` no longer reads out-of-bounds memory when processing the
   `-c_opacity=…` command line option. This was a regression in Graphviz 2.49.0.
+- Using `rankdir=LR` in combination with `ltail` no longer causes crashes in
+  edge cases. #1949
+- Using `splines=curved` no longer causes crashes when cut points unexpectedly
+  do not intersect bounding boxes. #1453
 
 ## [12.2.1] – 2024-12-07
 

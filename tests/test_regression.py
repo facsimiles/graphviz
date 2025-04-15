@@ -980,10 +980,6 @@ def test_1449():
     assert stderr.strip() == "", "SVG color scheme use caused warnings"
 
 
-@pytest.mark.xfail(
-    strict=platform.system() != "Linux",
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1453",
-)
 def test_1453():
     """
     `splines=curved` should not result in segfaults
@@ -1989,7 +1985,6 @@ def test_1939():
     dot("svg", input)
 
 
-@pytest.mark.xfail()  # FIXME
 def test_1949():
     """
     rankdir=LR + compound=true should not lead to an assertion failure
