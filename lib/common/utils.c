@@ -756,13 +756,13 @@ typedef struct {
 static int cmpItem(void *pp1, void *pp2) {
     const void **p1 = pp1;
     const void **p2 = pp2;
-    if (p1[0] < p2[0])
+    if ((uintptr_t)p1[0] < (uintptr_t)p2[0])
 	return -1;
-    if (p1[0] > p2[0])
+    if ((uintptr_t)p1[0] > (uintptr_t)p2[0])
 	return 1;
-    if (p1[1] < p2[1])
+    if ((uintptr_t)p1[1] < (uintptr_t)p2[1])
 	return -1;
-    if (p1[1] > p2[1])
+    if ((uintptr_t)p1[1] > (uintptr_t)p2[1])
 	return 1;
     return 0;
 }
