@@ -8,6 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "../tcl-compat.h"
 #include "tcldot.h"
 #include <string.h>
 #include <util/streq.h>
@@ -15,7 +16,7 @@
 static int nodecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
                             char *argv[]) {
   char **argv2;
-  int i, j, argc2;
+  int i;
   Agraph_t *g;
   Agnode_t *n, *head;
   Agedge_t *e;
@@ -56,7 +57,7 @@ static int nodecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
     }
     e = agedge(g, n, head, NULL, 1);
     Tcl_AppendResult(interp, obj2cmd(e), NULL);
-    setedgeattributes(agroot(g), e, &argv[3], argc - 3);
+    setedgeattributes(agroot(g), e, &argv[3], (Tcl_Size)argc - 3);
     return TCL_OK;
 
   } else if (streq("delete", argv[1])) {
@@ -105,10 +106,11 @@ static int nodecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
 
   } else if (streq("queryattributes", argv[1])) {
     for (i = 2; i < argc; i++) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
-      for (j = 0; j < argc2; j++) {
+      for (Tcl_Size j = 0; j < argc2; j++) {
         if ((a = agfindnodeattr(g, argv2[j]))) {
           Tcl_AppendElement(interp, agxget(n, a));
         } else {
@@ -124,10 +126,11 @@ static int nodecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
 
   } else if (streq("queryattributevalues", argv[1])) {
     for (i = 2; i < argc; i++) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
-      for (j = 0; j < argc2; j++) {
+      for (Tcl_Size j = 0; j < argc2; j++) {
         if ((a = agfindnodeattr(g, argv2[j]))) {
           Tcl_AppendElement(interp, argv2[j]);
           Tcl_AppendElement(interp, agxget(n, a));
@@ -145,6 +148,7 @@ static int nodecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
   } else if (streq("setattributes", argv[1])) {
     g = agroot(g);
     if (argc == 3) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[2], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
@@ -166,7 +170,7 @@ static int nodecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
                          NULL);
         return TCL_ERROR;
       }
-      setnodeattributes(g, n, &argv[2], argc - 2);
+      setnodeattributes(g, n, &argv[2], (Tcl_Size)argc - 2);
     }
     return TCL_OK;
 

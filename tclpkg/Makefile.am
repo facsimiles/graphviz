@@ -126,6 +126,6 @@ uninstall-hook:
 	-rm -rf $(DESTDIR)$(pkgtcldir);
 	-rm -rf $(DESTDIR)$(TCL_INSTALL_DIR)/$(PACKAGE_NAME)-$(PACKAGE_VERSION);
 
-EXTRA_DIST = mkpkgindex.py
+EXTRA_DIST = mkpkgindex.py tcl-compat.h
 
 DISTCLEANFILES = pkgIndex.tcl
