@@ -29,6 +29,7 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
+#include <util/gv_ftell.h>
 #include <util/strview.h>
 #include <util/unreachable.h>
 #ifdef _WIN32
@@ -1421,7 +1422,7 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 			graphviz_exit(EXIT_FAILURE);
 		}
 		print(ex, exnode, env, buffer);
-		size_t size = (size_t)ftell(buffer);
+		const size_t size = gv_ftell(buffer);
 		rewind(buffer);
 		v.string = vmalloc(ex->ve, size + 1);
 		if (v.string == NULL) {

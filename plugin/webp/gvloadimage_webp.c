@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/gv_ftell.h>
 #include <util/gv_math.h>
 #include <util/prisize_t.h>
 
@@ -56,12 +57,7 @@ static cairo_surface_t* webp_really_loadimage(const char *in_file, FILE* const i
     }
 
     fseek(in, 0, SEEK_END);
-    long size = ftell(in);
-    if (size < 0) {
-	fprintf(stderr, "Error: WebP could not determine %s size\n", in_file);
-	return NULL;
-    }
-    size_t data_size = (size_t)size;
+    const size_t data_size = gv_ftell(in);
     rewind(in);
     data = malloc(data_size);
     ok = data_size == 0 || (data != NULL && fread(data, data_size, 1, in) == 1);
