@@ -17,6 +17,7 @@
 
 #include "config.h"
 
+#include "../tcl-compat.h"
 #include                <sys/types.h>
 #include                <stdbool.h>
 #include                <stdint.h>
@@ -71,8 +72,7 @@ static vgpanes_t vgpaneTable;
 
 static int polyid = 0;		/* unique and unchanging id for each poly */
 
-static poly *allocpoly(vgpane_t * vgp, int id, int npts)
-{
+static poly *allocpoly(vgpane_t *vgp, int id, Tcl_Size npts) {
     polys_append(&vgp->poly, (poly){.id = id});
     poly *rv = polys_back(&vgp->poly);
     rv->boundary.pn = 0;
@@ -296,15 +296,13 @@ static bool remove_poly(vgpane_t *vgp, int id) {
     return false;
 }
 
-static int
-insert_poly(Tcl_Interp * interp, vgpane_t * vgp, int id, const char *vargv[],
-	    int vargc)
-{
+static int insert_poly(Tcl_Interp *interp, vgpane_t *vgp, int id,
+                       const char *vargv[], Tcl_Size vargc) {
     poly *np;
-    int i, result;
+    int result;
 
     np = allocpoly(vgp, id, vargc);
-    for (i = 0; i < vargc; i += 2) {
+    for (Tcl_Size i = 0; i < vargc; i += 2) {
 	result =
 	    scanpoint(interp, &vargv[i],
 		      &(np->boundary.ps[np->boundary.pn]));
@@ -419,7 +417,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 {
     (void)clientData;
 
-    int vargc, result;
+    int result;
     char vbuf[30];
     const char **vargv;
     vgpane_t *vgp;
@@ -464,6 +462,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	/* accept either inline or delimited list */
+	Tcl_Size vargc;
 	if (argc == 4) {
 	    result =
 		Tcl_SplitList(interp, argv[3], &vargc,
@@ -472,7 +471,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 		return result;
 	    }
 	} else {
-	    vargc = argc - 3;
+	    vargc = (Tcl_Size)argc - 3;
 	    vargv = &argv[3];
 	}
 	if (!vargc || vargc % 2) {
@@ -515,6 +514,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 			     " ", argv[1], " x y\"", NULL);
 	    return TCL_ERROR;
 	}
+	Tcl_Size vargc;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -523,7 +523,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 		return result;
 	    }
 	} else {
-	    vargc = argc - 2;
+	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
 	result = scanpoint(interp, &vargv[0], &p);
@@ -548,6 +548,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	/* accept either inline or delimited list */
+	Tcl_Size vargc;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -556,7 +557,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 		return result;
 	    }
 	} else {
-	    vargc = argc - 2;
+	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
 
@@ -592,6 +593,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 			     " ", argv[1], " x1 y1 x2 y2\"", NULL);
 	    return TCL_ERROR;
 	}
+	Tcl_Size vargc;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -600,7 +602,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 		return result;
 	    }
 	} else {
-	    vargc = argc - 2;
+	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
 	if (vargc < 4) {
@@ -658,6 +660,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 			     " ", argv[1], " x1 y1 x2 y2\"", NULL);
 	    return TCL_ERROR;
 	}
+	Tcl_Size vargc;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -666,7 +669,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 		return result;
 	    }
 	} else {
-	    vargc = argc - 2;
+	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
 	if ((vargc < 4)) {

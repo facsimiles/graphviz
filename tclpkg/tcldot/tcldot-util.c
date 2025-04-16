@@ -8,7 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <limits.h>
+#include "../tcl-compat.h"
 #include <math.h>
 #include <stddef.h>
 #include "tcldot.h"
@@ -26,10 +26,8 @@ size_t Tcldot_string_writer(GVJ_t *job, const char *s, size_t len)
 
 size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len)
 {
-  if (len > INT_MAX) {
-    len = INT_MAX;
-  }
-  const int written = Tcl_Write((Tcl_Channel)(job->output_file), s, (int)len);
+  const Tcl_Size l = len > TCL_SIZE_MAX ? TCL_SIZE_MAX : (Tcl_Size)len;
+  const Tcl_Size written = Tcl_Write((Tcl_Channel)job->output_file, s, l);
   if (written < 0) {
     return 0;
   }
@@ -155,24 +153,21 @@ static void myagxset(void *obj, Agsym_t *a, char *val)
     }
     agxset(obj, a, val);
 }
-void setgraphattributes(Agraph_t * g, char *argv[], int argc)
-{
-    int i;
+
+void setgraphattributes(Agraph_t *g, char *argv[], Tcl_Size argc) {
     Agsym_t *a;
 
-    for (i = 0; i < argc; i++) {
+    for (Tcl_Size i = 0; i < argc; i++) {
 	if (!(a = agfindgraphattr(agroot(g), argv[i])))
 	    a = agattr_text(agroot(g), AGRAPH, argv[i], "");
 	myagxset(g, a, argv[++i]);
     }
 }
 
-void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
-{
-    int i;
+void setedgeattributes(Agraph_t *g, Agedge_t *e, char *argv[], Tcl_Size argc) {
     Agsym_t *a;
 
-    for (i = 0; i < argc; i++) {
+    for (Tcl_Size i = 0; i < argc; i++) {
 	/* silently ignore attempts to modify "key" */
 	if (strcmp(argv[i], "key") == 0) {
 	    i++;
@@ -190,12 +185,10 @@ void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
     }
 }
 
-void setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc)
-{
-    int i;
+void setnodeattributes(Agraph_t *g, Agnode_t *n, char *argv[], Tcl_Size argc) {
     Agsym_t *a;
 
-    for (i = 0; i < argc; i++) {
+    for (Tcl_Size i = 0; i < argc; i++) {
 	if (n) {
 	    if (!(a = agfindnodeattr(g, argv[i])))
 		a = agattr_text(agroot(g), AGNODE, argv[i], "");

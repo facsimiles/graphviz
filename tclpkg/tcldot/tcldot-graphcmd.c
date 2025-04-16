@@ -8,6 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "../tcl-compat.h"
 #include "tcldot.h"
 #include <stdbool.h>
 #include <string.h>
@@ -22,7 +23,6 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
   ictx_t *ictx = gctx->ictx;
   Agsym_t *a;
   char buf[12], **argv2;
-  int j, argc2;
   GVC_t *gvc = ictx->gvc;
 
   if (argc < 2) {
@@ -71,7 +71,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
     }
     e = agedge(g, tail, head, NULL, 1);
     Tcl_AppendResult(interp, obj2cmd(e), NULL);
-    setedgeattributes(agroot(g), e, &argv[4], argc - 4);
+    setedgeattributes(agroot(g), e, &argv[4], (Tcl_Size)argc - 4);
     return TCL_OK;
 
   } else if (streq("addnode", argv[1])) {
@@ -85,7 +85,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
       i = 2;
     }
     Tcl_AppendResult(interp, obj2cmd(n), NULL);
-    setnodeattributes(agroot(g), n, &argv[i], argc - i);
+    setnodeattributes(agroot(g), n, &argv[i], (Tcl_Size)argc - i);
     return TCL_OK;
 
   } else if (streq("addsubgraph", argv[1])) {
@@ -104,7 +104,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
       sg = agsubg(g, NULL, 1); /* anon subgraph */
       i = 2;
     }
-    setgraphattributes(sg, &argv[i], argc - i);
+    setgraphattributes(sg, &argv[i], (Tcl_Size)argc - i);
     return TCL_OK;
 
   } else if (streq("countnodes", argv[1])) {
@@ -208,10 +208,11 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
 
   } else if (streq("queryattributes", argv[1])) {
     for (int i = 2; i < argc; i++) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
-      for (j = 0; j < argc2; j++) {
+      for (Tcl_Size j = 0; j < argc2; j++) {
         if ((a = agfindgraphattr(g, argv2[j]))) {
           Tcl_AppendElement(interp, agxget(g, a));
         } else {
@@ -227,10 +228,11 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
 
   } else if (streq("queryattributevalues", argv[1])) {
     for (int i = 2; i < argc; i++) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
-      for (j = 0; j < argc2; j++) {
+      for (Tcl_Size j = 0; j < argc2; j++) {
         if ((a = agfindgraphattr(g, argv2[j]))) {
           Tcl_AppendElement(interp, argv2[j]);
           Tcl_AppendElement(interp, agxget(g, a));
@@ -247,10 +249,11 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
 
   } else if (streq("queryedgeattributes", argv[1])) {
     for (int i = 2; i < argc; i++) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
-      for (j = 0; j < argc2; j++) {
+      for (Tcl_Size j = 0; j < argc2; j++) {
         if ((a = agfindedgeattr(g, argv2[j]))) {
           Tcl_AppendElement(interp, agxget(g, a));
         } else {
@@ -266,10 +269,11 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
 
   } else if (streq("queryedgeattributevalues", argv[1])) {
     for (int i = 2; i < argc; i++) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
-      for (j = 0; j < argc2; j++) {
+      for (Tcl_Size j = 0; j < argc2; j++) {
         if ((a = agfindedgeattr(g, argv2[j]))) {
           Tcl_AppendElement(interp, argv2[j]);
           Tcl_AppendElement(interp, agxget(g, a));
@@ -286,10 +290,11 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
 
   } else if (streq("querynodeattributes", argv[1])) {
     for (int i = 2; i < argc; i++) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
-      for (j = 0; j < argc2; j++) {
+      for (Tcl_Size j = 0; j < argc2; j++) {
         if ((a = agfindnodeattr(g, argv2[j]))) {
           Tcl_AppendElement(interp, agxget(g, a));
         } else {
@@ -305,10 +310,11 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
 
   } else if (streq("querynodeattributevalues", argv[1])) {
     for (int i = 2; i < argc; i++) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
-      for (j = 0; j < argc2; j++) {
+      for (Tcl_Size j = 0; j < argc2; j++) {
         if ((a = agfindnodeattr(g, argv2[j]))) {
           Tcl_AppendElement(interp, argv2[j]);
           Tcl_AppendElement(interp, agxget(g, a));
@@ -350,6 +356,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
 
   } else if (streq("setattributes", argv[1])) {
     if (argc == 3) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[2], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
@@ -366,7 +373,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
     }
     if (argc == 4 && streq(argv[2], "viewport")) {
       /* special case to allow viewport to be set without resetting layout */
-      setgraphattributes(g, &argv[2], argc - 2);
+      setgraphattributes(g, &argv[2], (Tcl_Size)argc - 2);
     } else {
       if ((argc < 4) || (argc % 2)) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
@@ -375,12 +382,13 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
                          NULL);
         return TCL_ERROR;
       }
-      setgraphattributes(g, &argv[2], argc - 2);
+      setgraphattributes(g, &argv[2], (Tcl_Size)argc - 2);
     }
     return TCL_OK;
 
   } else if (streq("setedgeattributes", argv[1])) {
     if (argc == 3) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[2], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
@@ -401,12 +409,13 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
                          "?attributename attributevalue? ?...?",
                          NULL);
       }
-      setedgeattributes(g, NULL, &argv[2], argc - 2);
+      setedgeattributes(g, NULL, &argv[2], (Tcl_Size)argc - 2);
     }
     return TCL_OK;
 
   } else if (streq("setnodeattributes", argv[1])) {
     if (argc == 3) {
+      Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[2], &argc2, (const char ***)&argv2) !=
           TCL_OK)
         return TCL_ERROR;
@@ -427,7 +436,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
                          "?attributename attributevalue? ?...?",
                          NULL);
       }
-      setnodeattributes(g, NULL, &argv[2], argc - 2);
+      setnodeattributes(g, NULL, &argv[2], (Tcl_Size)argc - 2);
     }
     return TCL_OK;
 
