@@ -77,7 +77,7 @@ void quartz_free_layout(void *layout)
 {
 	if (layout)
 		CFRelease(layout);
-};
+}
 
 static bool quartz_textlayout(textspan_t *para, char **fontpath)
 {
