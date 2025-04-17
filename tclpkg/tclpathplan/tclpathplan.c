@@ -465,9 +465,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	const char **vargv;
 	bool vargv_needs_free = false;
 	if (argc == 4) {
-	    result =
-		Tcl_SplitList(interp, argv[3], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[3], &vargc, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
@@ -529,8 +527,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	const char **vargv;
 	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result = Tcl_SplitList(interp, argv[2], &(Tcl_Size){0},
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[2], &(Tcl_Size){0}, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
@@ -567,9 +564,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	const char **vargv;
 	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result =
-		Tcl_SplitList(interp, argv[2], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[2], &vargc, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
@@ -621,9 +616,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	const char **vargv;
 	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result =
-		Tcl_SplitList(interp, argv[2], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[2], &vargc, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
@@ -701,9 +694,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	const char **vargv;
 	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result =
-		Tcl_SplitList(interp, argv[2], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[2], &vargc, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
