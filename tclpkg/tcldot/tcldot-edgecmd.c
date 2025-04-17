@@ -10,12 +10,13 @@
 
 #include "../tcl-compat.h"
 #include "tcldot.h"
+#include <stdlib.h>
 #include <string.h>
 #include <util/streq.h>
 
 static int edgecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
                             char *argv[]) {
-  char **argv2;
+  const char **argv2;
   int i;
   Agraph_t *g;
   Agedge_t *e;
@@ -50,18 +51,23 @@ static int edgecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
   } else if (streq("queryattributes", argv[1])) {
     for (i = 2; i < argc; i++) {
       Tcl_Size argc2;
-      if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
-          TCL_OK)
+      if (Tcl_SplitList(interp, argv[i], &argc2, &argv2) != TCL_OK)
         return TCL_ERROR;
       for (Tcl_Size j = 0; j < argc2; j++) {
-        if ((a = agfindedgeattr(g, argv2[j]))) {
-          Tcl_AppendElement(interp, agxget(e, a));
-        } else {
-          Tcl_AppendResult(interp, "no attribute named \"", argv2[j], "\"",
-                           NULL);
+        char *arg = strdup(argv2[j]);
+        if (arg == NULL) {
           Tcl_Free((char *)argv2);
           return TCL_ERROR;
         }
+        if ((a = agfindedgeattr(g, arg))) {
+          Tcl_AppendElement(interp, agxget(e, a));
+        } else {
+          Tcl_AppendResult(interp, "no attribute named \"", arg, "\"", NULL);
+          free(arg);
+          Tcl_Free((char *)argv2);
+          return TCL_ERROR;
+        }
+        free(arg);
       }
       Tcl_Free((char *)argv2);
     }
@@ -70,19 +76,24 @@ static int edgecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
   } else if (streq("queryattributevalues", argv[1])) {
     for (i = 2; i < argc; i++) {
       Tcl_Size argc2;
-      if (Tcl_SplitList(interp, argv[i], &argc2, (const char ***)&argv2) !=
-          TCL_OK)
+      if (Tcl_SplitList(interp, argv[i], &argc2, &argv2) != TCL_OK)
         return TCL_ERROR;
       for (Tcl_Size j = 0; j < argc2; j++) {
-        if ((a = agfindedgeattr(g, argv2[j]))) {
-          Tcl_AppendElement(interp, argv2[j]);
-          Tcl_AppendElement(interp, agxget(e, a));
-        } else {
-          Tcl_AppendResult(interp, "no attribute named \"", argv2[j], "\"",
-                           NULL);
+        char *arg = strdup(argv2[j]);
+        if (arg == NULL) {
           Tcl_Free((char *)argv2);
           return TCL_ERROR;
         }
+        if ((a = agfindedgeattr(g, arg))) {
+          Tcl_AppendElement(interp, arg);
+          Tcl_AppendElement(interp, agxget(e, a));
+        } else {
+          Tcl_AppendResult(interp, "no attribute named \"", arg, "\"", NULL);
+          free(arg);
+          Tcl_Free((char *)argv2);
+          return TCL_ERROR;
+        }
+        free(arg);
       }
       Tcl_Free((char *)argv2);
     }
@@ -91,8 +102,7 @@ static int edgecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
   } else if (streq("setattributes", argv[1])) {
     if (argc == 3) {
       Tcl_Size argc2;
-      if (Tcl_SplitList(interp, argv[2], &argc2, (const char ***)&argv2) !=
-          TCL_OK)
+      if (Tcl_SplitList(interp, argv[2], &argc2, &argv2) != TCL_OK)
         return TCL_ERROR;
       if ((argc2 == 0) || (argc2 % 2)) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
@@ -102,7 +112,9 @@ static int edgecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
         Tcl_Free((char *)argv2);
         return TCL_ERROR;
       }
-      setedgeattributes(agroot(g), e, argv2, argc2);
+      char **argv2_copy = tcldot_argv_dup(argc2, argv2);
+      setedgeattributes(agroot(g), e, argv2_copy, argc2);
+      tcldot_argv_free(argc2, argv2_copy);
       Tcl_Free((char *)argv2);
     } else {
       if ((argc < 4) || (argc % 2)) {
