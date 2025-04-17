@@ -6337,7 +6337,6 @@ def test_lock_graph():
     assert output == "0\n1\n", "locking a graph using a large integer did not work"
 
 
-@pytest.mark.xfail()
 def test_duplicate_font_family():
     """
     SVG output should not contain duplicate `font-family` items
