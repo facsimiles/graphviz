@@ -109,13 +109,13 @@ static int gvloadimage_process_surface(GVJ_t *job, usershape_t *us, gs_t *gs, vo
 {
     cairo_t *cr; /* temp cr for gs */
     int rc, rc2;
-    char width_height[20], cairo_context[30];
+    char width_height[20];
     char *gs_args[] = {
 	"dot",      /* actual value of argv[0] doesn't matter */
 	"-dQUIET",
 	"-dNOPAUSE",
 	"-sDEVICE=cairo",
-	cairo_context,
+	NULL,
 	width_height,
 	NULL,
     };
@@ -134,9 +134,12 @@ static int gvloadimage_process_surface(GVJ_t *job, usershape_t *us, gs_t *gs, vo
     agxbuf dpi = {0};
     agxbprint(&dpi, "-r%d", us->dpi);
     gs_args[6] = agxbuse(&dpi);
-    snprintf(cairo_context, sizeof(cairo_context), "-sCairoContext=%p", cr);
+    agxbuf cairo_context = {0};
+    agxbprint(&cairo_context, "-sCairoContext=%p", cr);
+    gs_args[4] = agxbuse(&cairo_context);
 
     rc = gsapi_init_with_args(instance, GS_ARGC, gs_args);
+    agxbfree(&cairo_context);
     agxbfree(&dpi);
 
     cairo_destroy(cr); /* finished with temp context */
