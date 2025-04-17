@@ -138,8 +138,7 @@ void deleteGraph(gctx_t * gctx, Agraph_t *g)
     Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 
-static void myagxset(void *obj, Agsym_t *a, char *val)
-{
+static void myagxset(void *obj, Agsym_t *a, const char *val) {
     char *hs;
 
     if (strcmp(a->name, "label") == 0 && val[0] == '<') {
