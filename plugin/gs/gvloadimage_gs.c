@@ -17,8 +17,6 @@
 
 #include <gvc/gvplugin_loadimage.h>
 
-#ifdef HAVE_GS
-#ifdef HAVE_PANGOCAIRO
 #include <ghostscript/iapi.h>
 #include <ghostscript/ierrors.h>
 #include <cairo/cairo.h>
@@ -242,15 +240,9 @@ static void gvloadimage_gs_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fill
 static gvloadimage_engine_t engine_cairo = {
     gvloadimage_gs_cairo
 };
-#endif
-#endif
 
 gvplugin_installed_t gvloadimage_gs_types[] = {
-#ifdef HAVE_GS
-#ifdef HAVE_PANGOCAIRO
     {FORMAT_PS_CAIRO,   "ps:cairo", 1, &engine_cairo, NULL},
     {FORMAT_EPS_CAIRO, "eps:cairo", 1, &engine_cairo, NULL},
-#endif
-#endif
     {0, NULL, 0, NULL, NULL}
 };
