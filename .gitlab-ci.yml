@@ -410,6 +410,18 @@ ubuntu-24.10-build:
     variables:
       IMAGE: ubuntu-24.10
 
+ubuntu-25.04-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-25.04
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-25.04
+
 out-of-source-build:
     <<: *deb_build_definition
     script:
@@ -641,6 +653,22 @@ ubuntu-24.10-cmake-build:
         - saas-linux-small-amd64
     variables:
       IMAGE: ubuntu-24.10
+
+ubuntu-25.04-cmake-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-25.04
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror"
+        - export CXXFLAGS="-Werror"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_SMYRNA=ON"
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-25.04
 
 ubuntu-22.04-cmake-minimal-build:
     <<: *deb_build_definition
@@ -1086,6 +1114,18 @@ ubuntu-24.10-test:
     variables:
       IMAGE: ubuntu-24.10
 
+ubuntu-25.04-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "ubuntu-25.04-build"
+          artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-25.04
+
 rocky8-test:
     <<: *linux_test_definition
     before_script:
@@ -1217,6 +1257,19 @@ ubuntu-24.10-cmake-test:
         - saas-linux-small-amd64
     variables:
       IMAGE: ubuntu-24.10
+
+ubuntu-25.04-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+    needs:
+        - job: "ubuntu-25.04-cmake-build"
+          artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-25.04
 
 rocky8-cmake-test:
     <<: *linux_test_definition
@@ -1453,6 +1506,11 @@ docker_build_ubuntu-24.10:
   variables:
     IMAGE: ubuntu-24.10
 
+docker_build_ubuntu-25.04:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: ubuntu-25.04
+
 docker_push_rocky8:
   <<: *docker_push_definition
   variables:
@@ -1515,6 +1573,13 @@ docker_push_ubuntu-24.10:
     IMAGE: ubuntu-24.10
   needs:
     - docker_build_ubuntu-24.10
+
+docker_push_ubuntu-25.04:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: ubuntu-25.04
+  needs:
+    - docker_build_ubuntu-25.04
 
 lint_clang_format:
   stage: test
