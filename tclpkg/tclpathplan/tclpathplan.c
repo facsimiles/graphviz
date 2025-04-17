@@ -526,19 +526,16 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 			     " ", argv[1], " x y\"", NULL);
 	    return TCL_ERROR;
 	}
-	Tcl_Size vargc;
 	const char **vargv;
 	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result =
-		Tcl_SplitList(interp, argv[2], &vargc,
+	    result = Tcl_SplitList(interp, argv[2], &(Tcl_Size){0},
 			      (const char ***) &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
 	    vargv_needs_free = true;
 	} else {
-	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
 	result = scanpoint(interp, &vargv[0], &p);
