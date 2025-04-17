@@ -419,7 +419,6 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 
     int result;
     char vbuf[30];
-    const char **vargv;
     vgpane_t *vgp;
     point p, q, *ps;
     double alpha, gain;
@@ -463,6 +462,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	}
 	/* accept either inline or delimited list */
 	Tcl_Size vargc;
+	const char **vargv;
 	if (argc == 4) {
 	    result =
 		Tcl_SplitList(interp, argv[3], &vargc,
@@ -515,6 +515,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	Tcl_Size vargc;
+	const char **vargv;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -549,6 +550,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	}
 	/* accept either inline or delimited list */
 	Tcl_Size vargc;
+	const char **vargv;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -594,6 +596,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	Tcl_Size vargc;
+	const char **vargv;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -661,6 +664,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	Tcl_Size vargc;
+	const char **vargv;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
