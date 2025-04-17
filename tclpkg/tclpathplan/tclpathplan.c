@@ -38,7 +38,7 @@
 #include <util/list.h>
 #include <util/prisize_t.h>
 
-#if ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION >= 6)) || ( TCL_MAJOR_VERSION > 8)
+#if (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION >= 6) || TCL_MAJOR_VERSION > 8
 #else
 #ifndef Tcl_GetStringResult
 #define Tcl_GetStringResult(interp) interp->result
@@ -225,11 +225,11 @@ static char *buildBindings(char *s1, const char *s2)
 /* convert x and y string args to point */
 static int scanpoint(Tcl_Interp * interp, const char *argv[], point * p)
 {
-    if (sscanf(argv[0], "%lg", &(p->x)) != 1) {
+    if (sscanf(argv[0], "%lg", &p->x) != 1) {
 	Tcl_AppendResult(interp, "invalid x coordinate: \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
-    if (sscanf(argv[1], "%lg", &(p->y)) != 1) {
+    if (sscanf(argv[1], "%lg", &p->y) != 1) {
 	Tcl_AppendResult(interp, "invalid y coordinate: \"", argv[1], "\"", NULL);
 	return TCL_ERROR;
     }
@@ -303,14 +303,12 @@ static int insert_poly(Tcl_Interp *interp, vgpane_t *vgp, int id,
 
     np = allocpoly(vgp, id, vargc);
     for (Tcl_Size i = 0; i < vargc; i += 2) {
-	result =
-	    scanpoint(interp, &vargv[i],
-		      &(np->boundary.ps[np->boundary.pn]));
+	result = scanpoint(interp, &vargv[i], &np->boundary.ps[np->boundary.pn]);
 	if (result != TCL_OK)
 	    return result;
 	np->boundary.pn++;
     }
-    make_CW(&(np->boundary));
+    make_CW(&np->boundary);
     vc_stale(vgp);
     return TCL_OK;
 }
@@ -554,7 +552,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
     } else if (strcmp(argv[1], "insert") == 0) {
 	/* add poly to end poly list, and it coordinates to the end of 
 	   the point list */
-	if ((argc < 3)) {
+	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
 			     " ", argv[1], " x1 y1 x2 y2 ...\"", NULL);
 	    return TCL_ERROR;
@@ -703,7 +701,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
-	if ((vargc < 4)) {
+	if (vargc < 4) {
 	    Tcl_AppendResult(interp,
 			     "invalid points: should be: \"x1 y1 x2 y2\"", NULL);
 	    return TCL_ERROR;
