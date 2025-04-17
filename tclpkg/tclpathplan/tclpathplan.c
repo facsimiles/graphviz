@@ -463,6 +463,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	/* accept either inline or delimited list */
 	Tcl_Size vargc;
 	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 4) {
 	    result =
 		Tcl_SplitList(interp, argv[3], &vargc,
@@ -470,6 +471,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 3;
 	    vargv = &argv[3];
@@ -477,6 +479,9 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	if (!vargc || vargc % 2) {
 	    Tcl_AppendResult(interp,
 			     "There must be a multiple of two terms in the list.", NULL);
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return TCL_ERROR;
 	}
 
@@ -485,10 +490,17 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 
 	if (!remove_poly(vgp, polyid)) {
 	    Tcl_AppendResult(interp, " no such polygon: ", argv[2], NULL);
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return TCL_ERROR;
 	}
 
-	return insert_poly(interp, vgp, polyid, vargv, vargc);
+	result = insert_poly(interp, vgp, polyid, vargv, vargc);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
+	return result;
 
     } else if (strcmp(argv[1], "debug") == 0) {
 	/* debug only */
@@ -516,6 +528,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	}
 	Tcl_Size vargc;
 	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -523,11 +536,15 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
 	result = scanpoint(interp, &vargv[0], &p);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
 	if (result != TCL_OK)
 	    return result;
 
@@ -551,6 +568,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	/* accept either inline or delimited list */
 	Tcl_Size vargc;
 	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -558,6 +576,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
@@ -566,12 +585,18 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	if (!vargc || vargc % 2) {
 	    Tcl_AppendResult(interp,
 			     "There must be a multiple of two terms in the list.", NULL);
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return TCL_ERROR;
 	}
 
 	polyid++;
 
 	result = insert_poly(interp, vgp, polyid, vargv, vargc);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
 	if (result != TCL_OK)
 	    return result;
 
@@ -597,6 +622,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	}
 	Tcl_Size vargc;
 	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -604,6 +630,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
@@ -611,12 +638,22 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	if (vargc < 4) {
 	    Tcl_AppendResult(interp,
 			     "invalid points: should be: \"x1 y1 x2 y2\"", NULL);
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return TCL_ERROR;
 	}
 	result = scanpoint(interp, &vargv[0], &p);
-	if (result != TCL_OK)
+	if (result != TCL_OK) {
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return result;
+	}
 	result = scanpoint(interp, &vargv[2], &q);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
 	if (result != TCL_OK)
 	    return result;
 
@@ -665,6 +702,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	}
 	Tcl_Size vargc;
 	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
@@ -672,6 +710,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
@@ -683,9 +722,16 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	}
 
 	result = scanpoint(interp, &vargv[0], &p);
-	if (result != TCL_OK)
+	if (result != TCL_OK) {
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return result;
+	}
 	result = scanpoint(interp, &vargv[2], &q);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
 	if (result != TCL_OK)
 	    return result;
 
