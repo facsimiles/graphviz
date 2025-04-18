@@ -1111,6 +1111,26 @@ def test_1554():
     ), "computation exceeded bounds"
 
 
+@pytest.mark.xfail(
+    strict=which("dot") is None or is_asan_instrumented(which("dot")),
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/1581",
+)
+def test_1581():
+    """
+    this example found by fuzzing should not cause an out-of-bounds write
+    https://gitlab.com/graphviz/graphviz/-/issues/1581
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1581.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run it through Graphviz
+    p = subprocess.run(["dot", "-Tsvg", "-o", os.devnull, input], check=False)
+
+    assert p.returncode != 42, "Address Sanitizer detect memory safety violations"
+
+
 def test_1585():
     """
     clustering nodes should not reverse their horizontal layout
