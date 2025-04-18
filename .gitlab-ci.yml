@@ -906,6 +906,7 @@ windows-cmake-Win32-asan-release-build:
         - $Env:BUILD_SHARED_LIBS = "ON"
         - $Env:CFLAGS = "-fsanitize=address"
         - $Env:CXXFLAGS = "-fsanitize=address"
+        - $Env:ASAN_OPTIONS = "exitcode=42"
         # Ensure `clang_rt.asan_dynamic-i386.dll` is found
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
@@ -919,6 +920,7 @@ windows-cmake-Win32-asan-debug-build:
         - $Env:BUILD_SHARED_LIBS = "ON"
         - $Env:CFLAGS = "-fsanitize=address"
         - $Env:CXXFLAGS = "-fsanitize=address"
+        - $Env:ASAN_OPTIONS = "exitcode=42"
         # Ensure `clang_rt.asan_dynamic-i386.dll` is found
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
@@ -932,6 +934,7 @@ windows-cmake-x64-asan-release-build:
         - $Env:BUILD_SHARED_LIBS = "ON"
         - $Env:CFLAGS = "-fsanitize=address"
         - $Env:CXXFLAGS = "-fsanitize=address"
+        - $Env:ASAN_OPTIONS = "exitcode=42"
         # Ensure `clang_rt.asan_dynamic-x86_64.dll` is found
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
@@ -945,6 +948,7 @@ windows-cmake-x64-asan-debug-build:
         - $Env:BUILD_SHARED_LIBS = "ON"
         - $Env:CFLAGS = "-fsanitize=address"
         - $Env:CXXFLAGS = "-fsanitize=address"
+        - $Env:ASAN_OPTIONS = "exitcode=42"
         # Ensure `clang_rt.asan_dynamic-x86_64.dll` is found
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
