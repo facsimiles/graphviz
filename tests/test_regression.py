@@ -6335,3 +6335,28 @@ def test_lock_graph():
     # now try this with a large integer for the locking operation
     output = run(["gvpr", "-f", program2], input=src)
     assert output == "0\n1\n", "locking a graph using a large integer did not work"
+
+
+def test_duplicate_font_family():
+    """
+    SVG output should not contain duplicate `font-family` items
+    https://gitlab.com/graphviz/graphviz/-/merge_requests/4298
+    """
+
+    # a sample graph to exercise font families
+    source = textwrap.dedent(
+        """\
+    graph G {
+      graph [fontnames=svg];
+      N [label="node" fontname="Helvetica"];
+    }
+    """
+    )
+
+    # convert this to SVG
+    svg = dot("svg", source=source)
+
+    # extract font families
+    for ff in re.findall(r'font-family="(?P<families>[^"]*)', svg):
+        families = [f.strip() for f in ff.split(",")]
+        assert len(families) == len(set(families)), "duplicate font families listed"

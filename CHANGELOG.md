@@ -106,6 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   2.38.0 to the behavior Graphviz 2.36.0 and prior had. The difference is most
   apparent when using a non-default `dpi` setting. #2669
 - The Tcl bindings have been updated for compatibility with Tcl 9. #2668
+- The SVG output format (`-Tsvg`, `-Tsvg_inline`) no longer duplicates font
+  families.
 
 ### Fixed
 

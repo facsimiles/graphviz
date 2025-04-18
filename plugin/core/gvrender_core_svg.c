@@ -481,7 +481,7 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	stretch = pA->stretch;
 
 	gvprintf(job, " font-family=\"%s", family);
-	if (pA->svg_font_family)
+	if (pA->svg_font_family && pA->svg_font_family != family)
 	    gvprintf(job, ",%s", pA->svg_font_family);
 	gvputc(job, '"');
 	if (weight)
