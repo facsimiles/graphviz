@@ -18,7 +18,7 @@ node [shape = spline] "node55";
 		}11E
 	}
 	Ext_1 -> Act_1;
-	¿œ‹—3 ->22 -> Ac_t23;
+	3 ->22 -> Ac_t23;
 			Act_22 -> AcT_24;
 			{Act_23 -> Act_24 [minlen=2]; rank=same;}
 			Act_23 -> Act_25;
