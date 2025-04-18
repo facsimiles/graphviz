@@ -1,5 +1,5 @@
 digraph G{ label="SelfBottom"
-node [shape = spline] "node55"; 
+"node55";
 "node55" -> "node55"[label ="tailport=se headport=se" tailport=se headport=se];
 "node55" -> "node55"[label ="tailport=se headport=se" tailport=se headport=se];
 "node55" -> "node66"  
