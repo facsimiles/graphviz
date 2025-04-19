@@ -32,6 +32,9 @@ def run_raw(args: List[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
         The command’s stdout output.
     """
 
+    # dump the command being run for the user to observe if the test fails
+    print(f"+ {shlex.join(str(x) for x in args)}")
+
     is_stdout_decoded = kwargs.get("universal_newlines") or kwargs.get("text")
 
     if kwargs.get("stdout", subprocess.PIPE) == subprocess.PIPE:
@@ -141,9 +144,6 @@ def compile_c(
         # construct an invocation of the default C compiler
         cc = os.environ.get("CC", "cc")
         args = [cc, "-std=c11", src, "-o", dst] + cflags + ldflags
-
-    # dump the command being run for the user to observe if the test fails
-    print(f"+ {shlex.join(str(x) for x in args)}")
 
     # compile the program
     try:
