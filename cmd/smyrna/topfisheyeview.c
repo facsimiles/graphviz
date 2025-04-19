@@ -223,8 +223,10 @@ static void drawtopfishnodes(topview * t)
 
 		if (max_visible_level < level)
 		    max_visible_level = level;
-		color_interpolation(srcColor, tarColor, &color,
-				    max_visible_level, level);
+		if (color_interpolation(srcColor, tarColor, &color, max_visible_level, level)
+		    != 0) {
+		    continue;
+		}
 		glColor4f(color.R, color.G, color.B, view->defaultnodealpha);
 
 		glVertex3f((float)x0, (float)y0, 0.0f);
