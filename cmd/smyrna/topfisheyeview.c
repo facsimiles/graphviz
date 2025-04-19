@@ -25,12 +25,12 @@
 static int get_temp_coords(topview * t, int level, int v, double *coord_x,
 			   double *coord_y);
 
-static void color_interpolation(glCompColor srcColor, glCompColor tarColor,
+static int color_interpolation(glCompColor srcColor, glCompColor tarColor,
 				glCompColor * color, int levelcount,
 				int level)
 {
     if (levelcount <= 0)
-	return;
+	return -1;
 
 
     color->R =
@@ -42,6 +42,7 @@ static void color_interpolation(glCompColor srcColor, glCompColor tarColor,
     color->B =
 	((float) level * tarColor.B - (float) level * srcColor.B +
 	 (float) levelcount * srcColor.B) / (float) levelcount;
+    return 0;
 }
 
 static v_data *makeGraph(Agraph_t* gg, int *nedges)
