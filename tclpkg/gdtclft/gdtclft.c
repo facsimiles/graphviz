@@ -526,10 +526,8 @@ static int tclGdDestroyCmd(Tcl_Interp *interp, int argc,
   (void)interp;
   (void)argc;
 
-  gdImagePtr im;
-
   /* Get the image pointer and destroy it */
-  im = IMGPTR(objv[2]);
+  gdImagePtr im = IMGPTR(objv[2]);
   gdImageDestroy(im);
 
   return TCL_OK;
