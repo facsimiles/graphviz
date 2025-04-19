@@ -1361,7 +1361,9 @@ def test_1724():
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_1767():
     """
@@ -1836,7 +1838,9 @@ def test_1909():
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_1910():
     """
@@ -2076,7 +2080,9 @@ def test_1990():
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2057():
     """
@@ -2199,7 +2205,9 @@ def test_2089(html_like_first: bool):
 
 
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2089_2():
     """
@@ -2876,7 +2884,9 @@ def test_2342():
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2356():
     """
@@ -2993,7 +3003,9 @@ def test_2481():
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2484():
     """
@@ -3070,7 +3082,9 @@ def test_user_shapes():
 
 
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_xdot_json():
     """
@@ -3260,7 +3274,9 @@ def test_2270(tmp_path: Path):
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2272():
     """
@@ -3620,7 +3636,9 @@ def test_2371():
     reason="gvplugin_list symbol is not exposed on Windows",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2375():
     """
@@ -3695,7 +3713,9 @@ def test_2391_1():
 
 
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2397():
     """
@@ -5423,7 +5443,9 @@ def test_2640(seed: int):
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2641(testcase: str):
     """
@@ -5490,7 +5512,9 @@ def _find_plugin_so(plugin: str) -> Path:
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.xfail(
-    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+    is_autotools() and is_macos(),
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_2648(tmp_path: Path):
     """

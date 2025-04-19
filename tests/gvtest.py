@@ -90,6 +90,13 @@ def compile_c(
     cflags = os.environ.get("CFLAGS", "").split() + cflags
     ldflags = os.environ.get("LDFLAGS", "").split()
 
+    # on macOS, ensure the compiled binary can find Graphviz libraries at runtime
+    if is_macos():
+        dot_exe = shutil.which("dot")
+        assert dot_exe is not None, "`dot` not found"
+        lib = Path(dot_exe).parents[1] / "lib"
+        ldflags += [f"-Wl,-rpath,{lib}"]
+
     # expand link libraries into command line options
     pkgconf = shutil.which("pkg-config") or shutil.which("pkgconf")
     if pkgconf is not None and not is_cmake():
