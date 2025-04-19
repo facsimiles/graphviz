@@ -634,11 +634,10 @@ static int tclGdWriteCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
 
 static int tclGdInterlaceCmd(Tcl_Interp *interp, int argc,
                              Tcl_Obj *const objv[]) {
-  gdImagePtr im;
   int on_off;
 
   /* Get the image pointer. */
-  im = IMGPTR(objv[2]);
+  gdImagePtr im = IMGPTR(objv[2]);
 
   if (argc == 4) {
     /* Get the on_off values. */
