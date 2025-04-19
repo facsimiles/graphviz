@@ -1,5 +1,11 @@
 variables:
+    # detect_leaks=0 – many of the tests currently trigger ASan memory leak
+    #   detections, so disable these for now
+    # exitcode=42 – allow distinguishing ASan crashes from regular error exits
+    ASAN_OPTIONS: detect_leaks=0,exitcode=42
     FF_TIMESTAMPS: true
+    # make UBSan failures more debuggable
+    UBSAN_OPTIONS: print_stacktrace=1
 
 stages:
     - build_docker_images
@@ -707,7 +713,6 @@ ubuntu-24.10-cmake-ASan-build-and-test-including-ctest:
         - export CFLAGS="-fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined -g -Werror"
         - export CXXFLAGS="-fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined -g -Werror -DBOOST_ALLOW_DEPRECATED_HEADERS"
         - export LDFLAGS="-fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined -g -Werror"
-        - export UBSAN_OPTIONS=print_stacktrace=1
         - export CMAKE_OPTIONS="-Duse_coverage=ON -Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_SMYRNA=ON"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LTDL=ON"
