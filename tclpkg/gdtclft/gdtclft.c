@@ -817,11 +817,9 @@ static int tclGdTileCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   (void)interp;
   (void)argc;
 
-  gdImagePtr im, tile;
-
   /* Get the image pointers. */
-  im = IMGPTR(objv[2]);
-  tile = IMGPTR(objv[3]);
+  gdImagePtr im = IMGPTR(objv[2]);
+  gdImagePtr tile = IMGPTR(objv[3]);
 
   /* Do it. */
   gdImageSetTile(im, tile);
