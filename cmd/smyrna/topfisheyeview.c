@@ -261,8 +261,10 @@ static void drawtopfishedges(topview * t)
 
 		    if (max_visible_level < level)
 			max_visible_level = level;
-		    color_interpolation(srcColor, tarColor, &color,
-					max_visible_level, level);
+		    if (color_interpolation(srcColor, tarColor, &color, max_visible_level,
+		        level) != 0) {
+			continue;
+		    }
 		    glColor4f(color.R, color.G, color.B, view->defaultnodealpha);
 
 		    if (get_temp_coords(t, level, n, &x, &y)) {
