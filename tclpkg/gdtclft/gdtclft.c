@@ -737,9 +737,7 @@ static int tclGdColorResolveCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
                                 const int args[]) {
   (void)argc;
 
-  int color;
-
-  color = gdImageColorResolve(im, args[0], args[1], args[2]);
+  int color = gdImageColorResolve(im, args[0], args[1], args[2]);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(color));
   return TCL_OK;
 }
