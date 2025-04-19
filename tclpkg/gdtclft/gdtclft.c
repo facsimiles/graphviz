@@ -534,12 +534,9 @@ static int tclGdDestroyCmd(Tcl_Interp *interp, int argc,
 }
 
 static int tclGdWriteCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
-  gdImagePtr im;
-  const char *cmd, *fname;
-  int fileByName;
   int arg4;
 
-  cmd = Tcl_GetString(objv[1]);
+  const char *cmd = Tcl_GetString(objv[1]);
   if (cmd[5] == 'J' || cmd[5] == 'W') {
     /* JPEG and WBMP expect an extra (integer) argument */
     if (argc < 5) {
@@ -564,11 +561,11 @@ static int tclGdWriteCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
     /* XXX no error-checking for the WBMP case here */
   }
   /* Get the image pointer. */
-  im = IMGPTR(objv[2]);
-  fname = Tcl_GetString(objv[3]);
+  gdImagePtr im = IMGPTR(objv[2]);
+  const char *fname = Tcl_GetString(objv[3]);
 
   /* Get the file reference. */
-  fileByName = 0; /* first try to get file from open channel */
+  int fileByName = 0; // first try to get file from open channel
   FILE *filePtr = NULL;
 #if !defined(_WIN32)
   ClientData clientdata;
