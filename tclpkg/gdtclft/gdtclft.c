@@ -719,9 +719,7 @@ static int tclGdColorExactCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
                               const int args[]) {
   (void)argc;
 
-  int color;
-
-  color = gdImageColorExact(im, args[0], args[1], args[2]);
+  int color = gdImageColorExact(im, args[0], args[1], args[2]);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(color));
   return TCL_OK;
 }
