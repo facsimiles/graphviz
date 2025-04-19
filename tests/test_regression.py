@@ -1340,6 +1340,9 @@ def test_1724():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_1767():
     """
     using the Pango plugin multiple times should produce consistent results
@@ -1812,6 +1815,9 @@ def test_1909():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_1910():
     """
     Repeatedly using agmemread() should have consistent results
@@ -2049,6 +2055,9 @@ def test_1990():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_2057():
     """
     gvToolTred should be usable by user code
@@ -2169,6 +2178,9 @@ def test_2089(html_like_first: bool):
     assert "label=<foo>" in canonical, "HTML-like label not found"
 
 
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_2089_2():
     """
     HTML-like and non-HTML-like strings should peacefully coexist
@@ -2843,6 +2855,9 @@ def test_2342():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_2356():
     """
     Using `mindist` programmatically in a loop should not cause Windows crashes
@@ -2957,6 +2972,9 @@ def test_2481():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_2484():
     """
     Graphviz context should not preserve state across calls
@@ -3031,6 +3049,9 @@ def test_user_shapes():
     assert '<image xlink:href="usershape.svg" width="62px" height="44px" ' in output
 
 
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_xdot_json():
     """
     check the output of xdot’s JSON API
@@ -3217,6 +3238,9 @@ def test_2270(tmp_path: Path):
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
+)
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
 )
 def test_2272():
     """
@@ -3575,6 +3599,9 @@ def test_2371():
     platform.system() == "Windows",
     reason="gvplugin_list symbol is not exposed on Windows",
 )
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_2375():
     """
     `gvplugin_list` should return full plugin names
@@ -3647,6 +3674,9 @@ def test_2391_1():
     dot("svg", input)
 
 
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_2397():
     """
     escapes in strings should be handled correctly
@@ -4402,15 +4432,13 @@ def test_2568():
         # at the end of the output stream
         assert index != 0, "at least one tag was not recognized"
 
-        # if we got no output within 1s, assume we are done and try to neatly exit
+        # if we got no output within 1s, assume we are done
         if index == 2:
-            proc.sendeof()
-            proc.wait()
             break
 
         tag = proc.match.group("tag").decode("utf-8")
 
-        # …try to look up its corresponding entities
+        # try to look up its corresponding entities
         if tag.startswith("edge"):
             cmd = "listnodes"
         else:
@@ -4736,13 +4764,9 @@ def test_2596():
     proc.sendline("vgpane0 triangulate 1")
     proc.expect("% ")
 
-    # delete the pane to clean up
+    # delete the pane to clean up, to exit ASan-clean
     proc.sendline("vgpane0 delete")
     proc.expect("% ")
-
-    # tell TCL to exit
-    proc.sendeof()
-    proc.wait()
 
 
 @pytest.mark.skipif(not is_cmake(), reason="only relevant in CMake builds")
@@ -5378,6 +5402,9 @@ def test_2640(seed: int):
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
+)
 def test_2641(testcase: str):
     """
     `agattr*` and friends should preserve some measure of backwards compatibility
@@ -5441,6 +5468,9 @@ def _find_plugin_so(plugin: str) -> Path:
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
+)
+@pytest.mark.xfail(
+    is_macos(), strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2667"
 )
 def test_2648(tmp_path: Path):
     """
@@ -5651,13 +5681,9 @@ def test_triangulation_overflow():
     proc.expect("cannot be triangulated")
     proc.expect("% ")
 
-    # delete the pane to clean up
+    # delete the pane to clean up, to exit ASan-clean
     proc.sendline("vgpane0 delete")
     proc.expect("% ")
-
-    # tell TCL to exit
-    proc.sendeof()
-    proc.wait()
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
@@ -5722,13 +5748,9 @@ def test_vgpane_bad_triangulation():
     proc.sendline("vgpane0 triangulate")
     proc.expect("wrong # args")
 
-    # delete the pane to clean up
+    # delete the pane to clean up, to exit ASan-clean
     proc.sendline("vgpane0 delete")
     proc.expect("% ")
-
-    # tell TCL to exit
-    proc.sendeof()
-    proc.wait()
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
@@ -5792,10 +5814,6 @@ def test_vgpane_delete():
     # timeout.
     is_valid = proc.expect(['Invalid handle: "vgpane0"', pexpect.TIMEOUT]) == 1
     assert is_valid, "created vgpane was considered an invalid handle"
-
-    # tell TCL to exit
-    proc.sendeof()
-    proc.wait()
 
 
 def test_changelog_dates():
