@@ -767,32 +767,31 @@ static int tclGdColorTranspCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
 
 static int tclGdColorGetCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
                             const int args[]) {
-  int i, ncolors;
-  Tcl_Obj *tuple[4], *result;
+  Tcl_Obj *result;
 
-  ncolors = gdImageColorsTotal(im);
+  int ncolors = gdImageColorsTotal(im);
   /* IF one arg, return the single color, else return list of all colors. */
   if (argc == 1) {
-    i = args[0];
+    int i = args[0];
     if (i >= ncolors || im->open[i]) {
       Tcl_SetResult(interp, "No such color", TCL_STATIC);
       return TCL_ERROR;
     }
-    tuple[0] = Tcl_NewIntObj(i);
-    tuple[1] = Tcl_NewIntObj(gdImageRed(im, i));
-    tuple[2] = Tcl_NewIntObj(gdImageGreen(im, i));
-    tuple[3] = Tcl_NewIntObj(gdImageBlue(im, i));
-    Tcl_SetObjResult(interp, Tcl_NewListObj(4, tuple));
+    Tcl_Obj *tuple[] = {Tcl_NewIntObj(i), Tcl_NewIntObj(gdImageRed(im, i)),
+                        Tcl_NewIntObj(gdImageGreen(im, i)),
+                        Tcl_NewIntObj(gdImageBlue(im, i))};
+    const Tcl_Size tuple_size = sizeof(tuple) / sizeof(tuple[0]);
+    Tcl_SetObjResult(interp, Tcl_NewListObj(tuple_size, tuple));
   } else {
     result = Tcl_NewListObj(0, NULL);
-    for (i = 0; i < ncolors; i++) {
+    for (int i = 0; i < ncolors; i++) {
       if (im->open[i])
         continue;
-      tuple[0] = Tcl_NewIntObj(i);
-      tuple[1] = Tcl_NewIntObj(gdImageRed(im, i));
-      tuple[2] = Tcl_NewIntObj(gdImageGreen(im, i));
-      tuple[3] = Tcl_NewIntObj(gdImageBlue(im, i));
-      Tcl_ListObjAppendElement(NULL, result, Tcl_NewListObj(4, tuple));
+      Tcl_Obj *tuple[] = {Tcl_NewIntObj(i), Tcl_NewIntObj(gdImageRed(im, i)),
+                          Tcl_NewIntObj(gdImageGreen(im, i)),
+                          Tcl_NewIntObj(gdImageBlue(im, i))};
+      const Tcl_Size tuple_size = sizeof(tuple) / sizeof(tuple[0]);
+      Tcl_ListObjAppendElement(NULL, result, Tcl_NewListObj(tuple_size, tuple));
     }
     Tcl_SetObjResult(interp, result);
   }
