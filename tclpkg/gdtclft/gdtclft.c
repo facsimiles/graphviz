@@ -1032,7 +1032,7 @@ static int tclGdPolygonCmd(Tcl_Interp *interp, int argc,
                            Tcl_Obj *const objv[]) {
   gdImagePtr im;
   int color;
-  Tcl_Obj **pointObjv = (Tcl_Obj **)(&objv[4]);
+  Tcl_Obj *const *pointObjv = &objv[4];
   gdPointPtr points = NULL;
   int retval = TCL_OK;
   char *cmd;
@@ -1047,9 +1047,12 @@ static int tclGdPolygonCmd(Tcl_Interp *interp, int argc,
   /* Figure out how many points in the list and allocate memory. */
   Tcl_Size npoints = (Tcl_Size)argc - 4;
   /* If only one argument, treat it as a list. */
-  if (npoints == 1)
-    if (Tcl_ListObjGetElements(interp, objv[4], &npoints, &pointObjv) != TCL_OK)
+  if (npoints == 1) {
+    Tcl_Obj **pointObjp;
+    if (Tcl_ListObjGetElements(interp, objv[4], &npoints, &pointObjp) != TCL_OK)
       return TCL_ERROR;
+    pointObjv = pointObjp;
+  }
 
   /* Error check size of point list. */
   if (npoints % 2 != 0) {
