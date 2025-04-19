@@ -414,11 +414,9 @@ static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
 static int tclGdCreateCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   int w, h;
   gdImagePtr im = NULL;
-  char *cmd;
-  Tcl_Obj *result;
   int fileByName;
 
-  cmd = Tcl_GetString(objv[1]);
+  char *cmd = Tcl_GetString(objv[1]);
   if (streq(cmd, "create")) {
     int trueColor = 0;
     if (Tcl_GetIntFromObj(interp, objv[2], &w) != TCL_OK)
@@ -515,7 +513,7 @@ static int tclGdCreateCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
     }
   }
 
-  result = Tcl_NewObj();
+  Tcl_Obj *result = Tcl_NewObj();
   IMGPTR(result) = im;
   result->typePtr = &GdPtrType;
   result->bytes = NULL;
