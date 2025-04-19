@@ -803,11 +803,9 @@ static int tclGdBrushCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   (void)interp;
   (void)argc;
 
-  gdImagePtr im, imbrush;
-
   /* Get the image pointers. */
-  im = IMGPTR(objv[2]);
-  imbrush = IMGPTR(objv[3]);
+  gdImagePtr im = IMGPTR(objv[2]);
+  gdImagePtr imbrush = IMGPTR(objv[3]);
 
   /* Do it. */
   gdImageSetBrush(im, imbrush);
