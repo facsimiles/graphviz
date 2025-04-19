@@ -180,7 +180,6 @@ static cmdImgOptions colorCmdVec[] = {
 static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
   int retval = TCL_OK;
   Tcl_Obj **theList;
-  char *firsttag, *secondtag;
 
   /* Assume it's an integer, check other cases on failure. */
   if (Tcl_GetIntFromObj(interp, obj, color) == TCL_OK)
@@ -193,12 +192,12 @@ static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
     if (nlist < 1 || nlist > 2)
       retval = TCL_ERROR;
     else {
-      firsttag = Tcl_GetString(theList[0]);
+      char *firsttag = Tcl_GetString(theList[0]);
       switch (firsttag[0]) {
       case 'b':
         *color = gdBrushed;
         if (nlist == 2) {
-          secondtag = Tcl_GetString(theList[1]);
+          char *secondtag = Tcl_GetString(theList[1]);
           if (secondtag[0] == 's') {
             *color = gdStyledBrushed;
           } else {
@@ -210,7 +209,7 @@ static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
       case 's':
         *color = gdStyled;
         if (nlist == 2) {
-          secondtag = Tcl_GetString(theList[1]);
+          char *secondtag = Tcl_GetString(theList[1]);
           if (secondtag[0] == 'b') {
             *color = gdStyledBrushed;
           } else {
