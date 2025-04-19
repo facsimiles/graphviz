@@ -350,8 +350,6 @@ static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
  */
 static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
                  Tcl_Obj *const objv[]) {
-  unsigned int argi;
-  size_t subi;
   /* Check for subcommand. */
   if (argc < 2) {
     Tcl_SetResult(interp, "wrong # args: should be \"gd option ...\"",
@@ -360,7 +358,8 @@ static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
   }
 
   /* Find the subcommand. */
-  for (subi = 0; subi < sizeof(subcmdVec) / sizeof(subcmdVec[0]); subi++) {
+  for (size_t subi = 0; subi < sizeof(subcmdVec) / sizeof(subcmdVec[0]);
+       subi++) {
     if (streq(subcmdVec[subi].cmd, Tcl_GetString(objv[1]))) {
 
       /* Check arg count. */
@@ -378,8 +377,8 @@ static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
           Tcl_SetResult(interp, "GD handle(s) not specified", TCL_STATIC);
           return TCL_ERROR;
         }
-        for (argi = 2 + subcmdVec[subi].subcmds;
-             argi < (2 + subcmdVec[subi].subcmds + subcmdVec[subi].ishandle);
+        for (unsigned argi = 2 + subcmdVec[subi].subcmds;
+             argi < 2 + subcmdVec[subi].subcmds + subcmdVec[subi].ishandle;
              argi++) {
           if (objv[argi]->typePtr != &GdPtrType &&
               GdPtrTypeSet(interp, objv[argi]) != TCL_OK)
@@ -400,14 +399,14 @@ static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
         }
       }
       /* Call the subcommand function. */
-      return (*subcmdVec[subi].f)(interp, argc, objv);
+      return subcmdVec[subi].f(interp, argc, objv);
     }
   }
 
   /* If we get here, the option doesn't match. */
   Tcl_AppendResult(interp, "bad option \"", Tcl_GetString(objv[1]),
                    "\": should be ", 0);
-  for (subi = 0; subi < sizeof(subcmdVec) / sizeof(subcmdVec[0]); subi++)
+  for (size_t subi = 0; subi < sizeof(subcmdVec) / sizeof(subcmdVec[0]); subi++)
     Tcl_AppendResult(interp, (subi > 0 ? ", " : ""), subcmdVec[subi].cmd, 0);
   return TCL_ERROR;
 }
