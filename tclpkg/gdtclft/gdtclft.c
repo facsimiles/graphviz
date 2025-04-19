@@ -655,13 +655,12 @@ static int tclGdInterlaceCmd(Tcl_Interp *interp, int argc,
 }
 
 static int tclGdColorCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
-  gdImagePtr im;
-  int subi, nsub, i, args[3];
+  int args[3];
 
-  nsub = sizeof(colorCmdVec) / sizeof(colorCmdVec[0]);
+  int nsub = sizeof(colorCmdVec) / sizeof(colorCmdVec[0]);
   if (argc >= 3) {
     /* Find the subcommand. */
-    for (subi = 0; subi < nsub; subi++) {
+    for (int subi = 0; subi < nsub; subi++) {
       if (streq(colorCmdVec[subi].cmd, Tcl_GetString(objv[2]))) {
         /* Check arg count. */
         if ((unsigned)argc - 2 < colorCmdVec[subi].minargs ||
@@ -671,12 +670,12 @@ static int tclGdColorCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
         }
 
         /* Get the image pointer. */
-        im = IMGPTR(objv[3]);
+        gdImagePtr im = IMGPTR(objv[3]);
 
         /* Parse off integer arguments.
          * 1st 4 are gd color <opt> <handle>
          */
-        for (i = 0; i < argc - 4; i++) {
+        for (int i = 0; i < argc - 4; i++) {
           if (Tcl_GetIntFromObj(interp, objv[i + 4], &args[i]) != TCL_OK) {
 
             /* gd text uses -ve colors to turn off anti-aliasing */
@@ -701,7 +700,7 @@ static int tclGdColorCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
     Tcl_AppendResult(interp, "wrong # args: ", 0);
   }
   Tcl_AppendResult(interp, "should be ", 0);
-  for (subi = 0; subi < nsub; subi++)
+  for (int subi = 0; subi < nsub; subi++)
     Tcl_AppendResult(interp, subi > 0 ? ", " : "", colorCmdVec[subi].cmd, 0);
 
   return TCL_ERROR;
