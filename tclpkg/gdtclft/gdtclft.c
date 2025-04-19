@@ -854,8 +854,7 @@ static int tclGdTileCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
 static int tclGdStyleCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   gdImagePtr im;
   int *colors = NULL;
-  Tcl_Obj **colorObjv =
-      (Tcl_Obj **)(&objv[3]); /* By default, colors are listed in objv. */
+  Tcl_Obj *const *colorObjv = &objv[3]; // by default, colors are listed in objv
   int retval = TCL_OK;
 
   /* Get the image pointer. */
@@ -864,9 +863,12 @@ static int tclGdStyleCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   /* Figure out how many colors in the style list and allocate memory. */
   Tcl_Size ncolor = (Tcl_Size)argc - 3;
   /* If only one argument, treat it as a list. */
-  if (ncolor == 1)
-    if (Tcl_ListObjGetElements(interp, objv[3], &ncolor, &colorObjv) != TCL_OK)
+  if (ncolor == 1) {
+    Tcl_Obj **colorObjp;
+    if (Tcl_ListObjGetElements(interp, objv[3], &ncolor, &colorObjp) != TCL_OK)
       return TCL_ERROR;
+    colorObjv = colorObjp;
+  }
 
   colors = (int *)Tcl_Alloc((size_t)ncolor * sizeof(int));
   /* Get the color values. */
