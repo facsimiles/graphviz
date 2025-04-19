@@ -668,6 +668,10 @@ check_c_compiler_flag(-Wimplicit-fallthrough HAVE_C_WIMPLICIT_FALLTHROUGH)
 if(HAVE_C_WIMPLICIT_FALLTHROUGH)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wimplicit-fallthrough")
 endif()
+check_c_compiler_flag(-Wmaybe-uninitialized HAVE_C_WMAYBE_UNINITIALIZED)
+if(HAVE_C_WMAYBE_UNINITIALIZED)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmaybe-uninitialized")
+endif()
 check_c_compiler_flag(
   -Wmissing-field-initializers HAVE_C_WMISSING_FIELD_INITIALIZERS
 )
