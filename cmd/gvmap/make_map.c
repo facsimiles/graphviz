@@ -25,6 +25,7 @@
 #include <neatogen/delaunay.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/list.h>
 #include <util/prisize_t.h>
 
@@ -150,7 +151,7 @@ void improve_contiguity(int n, int dim, int *grouping, SparseMatrix poly_point_m
     }
   }
 
-  if (Verbose) fprintf(stderr,"ratio (edges among discontiguous regions vs total edges)=%f\n",((double) nbad)/ia[n]);
+  GV_INFO("ratio (edges among discontiguous regions vs total edges)=%f", (double)nbad / ia[n]);
   stress_model(dim, D, &x, maxit, &flag);
 
   assert(!flag);
@@ -290,7 +291,7 @@ static void plot_dot_polygons(agxbuf *sbuff, double line_width,
   doubles_t xp = {0};
   doubles_t yp = {0};
 
-  if (Verbose) fprintf(stderr,"npolys = %d\n",npolys);
+  GV_INFO("npolys = %d", npolys);
   first = abs(a[0]); ipoly = first + 1;
   for (i = 0; i < npolys; i++){
     for (j = ia[i]; j < ia[i+1]; j++){
@@ -910,7 +911,7 @@ static void get_polygons(int n, int nrandom, int dim, int *grouping, int nt,
         groups[comps[comps_ptr[i]]] != GRP_BBOX) break;
   }
   ncomps = i + 1;
-  if (Verbose) fprintf(stderr,"ncomps = %d\n",ncomps);
+  GV_INFO("ncomps = %d", ncomps);
 
   *x_poly = gv_calloc(dim * nt, sizeof(double));
   for (i = 0; i < nt; i++){
@@ -992,7 +993,7 @@ static int make_map_internal(bool include_OK_points, int n, int dim, double *x0,
   }
 
   if (shore_depth_tol < 0) shore_depth_tol = sqrt(area/(double) n); /* set to average distance for random distribution */
-  if (Verbose) fprintf(stderr, "nrandom=%d shore_depth_tol=%.08f\n", nrandom, shore_depth_tol);
+  GV_INFO("nrandom=%d shore_depth_tol=%.08f", nrandom, shore_depth_tol);
 
 
   /* add artificial points along each edge to avoid as much as possible 
@@ -1332,7 +1333,7 @@ int make_map_from_rectangle_groups(bool include_OK_points,
     }
     for (i = 0; i < 2; i++) avgsize[i] /= n;
     avgsz = 0.5*(avgsize[0] + avgsize[1]);
-    if (Verbose) fprintf(stderr, "avgsize = {%f, %f}\n",avgsize[0], avgsize[1]);
+    GV_INFO("avgsize = {%f, %f}", avgsize[0], avgsize[1]);
 
     nmax = 2*n;
     X = gv_calloc(dim * (n + nmax), sizeof(double));
@@ -1351,7 +1352,7 @@ int make_map_from_rectangle_groups(bool include_OK_points,
       get_boundingbox(n, dim, x, sizes, bbox);
       const double area = (bbox[1] - bbox[0]) * (bbox[3] - bbox[2]);
       shore_depth_tol = sqrt(area / n);
-      if (Verbose) fprintf(stderr,"setting shore length ======%f\n",shore_depth_tol);
+      GV_INFO("setting shore length ======%f", shore_depth_tol);
     } else {
     }
 
