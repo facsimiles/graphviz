@@ -13,26 +13,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <TargetConditionals.h>
 
 #include <gvc/gvplugin_textlayout.h>
 #include "gvplugin_quartz.h"
 
-#ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
-#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 30200
+#if TARGET_OS_IPHONE
 #include <CoreText/CoreText.h>
-#endif
-#endif
-
-#if (defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&                 \
-     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050) ||                 \
-    (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&                \
-     __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 30200)
-
-#ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1060
-/* symbol defined in 10.5.x dylib but not in headers */
-extern const CFStringRef kCTForegroundColorFromContextAttributeName;
-#endif
 #endif
 
 void *quartz_new_layout(char* fontname, double fontsize, char* text)
@@ -90,9 +77,7 @@ void quartz_free_layout(void *layout)
 {
 	if (layout)
 		CFRelease(layout);
-};
-
-#endif
+}
 
 static bool quartz_textlayout(textspan_t *para, char **fontpath)
 {

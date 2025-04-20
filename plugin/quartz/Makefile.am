@@ -9,7 +9,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	$(QUARTZ_CFLAGS)
 
-noinst_HEADERS = gvplugin_quartz.h GVTextLayout.h
+noinst_HEADERS = gvplugin_quartz.h
 
 if WITH_QUARTZ
 noinst_LTLIBRARIES = libgvplugin_quartz_C.la
@@ -25,8 +25,7 @@ libgvplugin_quartz_C_la_SOURCES = \
 	gvloadimage_quartz.c \
 	gvplugin_quartz.c \
 	gvrender_quartz.c \
-	gvtextlayout_quartz.c \
-	GVTextLayout.m
+	gvtextlayout_quartz.c
 
 libgvplugin_quartz_la_LDFLAGS = -version-info $(GVPLUGIN_VERSION_INFO) -framework CoreFoundation
 libgvplugin_quartz_la_SOURCES = $(libgvplugin_quartz_C_la_SOURCES)

@@ -14,13 +14,14 @@
 #include <gvc/gvplugin.h>
 #include "gvplugin_quartz.h"
 #include <gvc/gvio.h>
+#include <TargetConditionals.h>
 
 extern gvplugin_installed_t gvrender_quartz_types;
 extern gvplugin_installed_t gvtextlayout_quartz_types;
 extern gvplugin_installed_t gvloadimage_quartz_types;
 extern gvplugin_installed_t gvdevice_quartz_types;
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+#if !TARGET_OS_IPHONE
 extern gvplugin_installed_t gvdevice_quartz_types_for_cairo;
 #endif
 /* data consumer backed by the gvdevice */
@@ -34,8 +35,6 @@ CGDataConsumerCallbacks device_data_consumer_callbacks = {
 	device_data_consumer_put_bytes,
 	NULL
 };
-
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
 
 CFStringRef format_to_uti(format_type format)
 {
@@ -71,14 +70,12 @@ CFStringRef format_to_uti(format_type format)
 	}
 }
 
-#endif
-
 static gvplugin_api_t apis[] = {
     {API_render, &gvrender_quartz_types},
 	{API_textlayout, &gvtextlayout_quartz_types},
 	{API_loadimage, &gvloadimage_quartz_types},
 	{API_device, &gvdevice_quartz_types},
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 && defined(HAVE_PANGOCAIRO)
+#if !TARGET_OS_IPHONE && defined(HAVE_PANGOCAIRO)
     {API_device, &gvdevice_quartz_types_for_cairo},
 #endif
     {(api_t)0, 0},

@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <TargetConditionals.h>
 
 #include <gvc/gvplugin_loadimage.h>
 
@@ -29,8 +30,6 @@ static void file_data_provider_rewind(void *info)
   rewind(info);
 }
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1050 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 20000
-
 static off_t file_data_provider_skip_forward(void *info, off_t count)
 {
 	fseek((FILE*)info, count, SEEK_CUR);
@@ -45,25 +44,6 @@ static CGDataProviderSequentialCallbacks file_data_provider_callbacks = {
 	file_data_provider_rewind,
 	NULL
 };
-
-#else
-
-static void file_data_provider_skip_bytes(void *info, size_t count)
-{
-	fseek((FILE*)info, count, SEEK_CUR);
-}
-
-/* bridge FILE* to a sequential CGDataProvider */
-static CGDataProviderCallbacks file_data_provider_callbacks = {
-	file_data_provider_get_bytes,
-	file_data_provider_skip_bytes,
-	file_data_provider_rewind,
-	NULL
-};
-
-#endif
-
-
 
 static void quartz_freeimage(usershape_t *us)
 {
@@ -86,13 +66,9 @@ static CGImageRef quartz_loadimage(GVJ_t * job, usershape_t *us)
 		if (!gvusershape_file_access(us))
 			return NULL;
 			
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1050 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 20000
 		CGDataProviderRef data_provider = CGDataProviderCreateSequential(us->f, &file_data_provider_callbacks);
-#else
-		CGDataProviderRef data_provider = CGDataProviderCreate(us->f, &file_data_provider_callbacks);	
-#endif
 		
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
+#if !TARGET_OS_IPHONE
 		/* match usershape format to a UTI for type hinting, if possible */
 		format_type hint_format_type;
 		switch (us->type) {
@@ -170,7 +146,7 @@ static gvloadimage_engine_t engine = {
 };
 
 gvplugin_installed_t gvloadimage_quartz_types[] = {
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
+#if !TARGET_OS_IPHONE
 	{FORMAT_BMP, "bmp:quartz", 8, &engine, NULL},
 	{FORMAT_GIF, "gif:quartz", 8, &engine, NULL},
 	{FORMAT_PDF, "pdf:quartz", 8, &engine, NULL},
