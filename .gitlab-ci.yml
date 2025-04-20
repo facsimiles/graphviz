@@ -168,8 +168,6 @@ portable-source:
         # disable Windows Defender
         - Add-MpPreference -ExclusionPath 'C:\'
         - $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
-        - nuget install python -ExcludeVersion -OutputDirectory C:\
-        - $Env:Path = "C:\python\tools;" + $Env:Path
         - python --version
         - python -m pip install --requirement requirements.txt
         # Toolchain definitions
@@ -565,8 +563,6 @@ windows-cygwin-build-using-autogen:
         - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
         - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
         - $Env:Path = "C:\cygwin64\bin;" + $Env:Path
-        - nuget install python -ExcludeVersion -OutputDirectory C:\
-        - $Env:Path = "C:\python\tools;" + $Env:Path
         - python gen_version.py --output GRAPHVIZ_VERSION
         - $Env:build_system = "autotools"
         - $Env:use_autogen = "yes"
