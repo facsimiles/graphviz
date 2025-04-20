@@ -756,13 +756,13 @@ typedef struct {
 static int cmpItem(void *pp1, void *pp2) {
     const void **p1 = pp1;
     const void **p2 = pp2;
-    if (p1[0] < p2[0])
+    if ((uintptr_t)p1[0] < (uintptr_t)p2[0])
 	return -1;
-    if (p1[0] > p2[0])
+    if ((uintptr_t)p1[0] > (uintptr_t)p2[0])
 	return 1;
-    if (p1[1] < p2[1])
+    if ((uintptr_t)p1[1] < (uintptr_t)p2[1])
 	return -1;
-    if (p1[1] > p2[1])
+    if ((uintptr_t)p1[1] > (uintptr_t)p2[1])
 	return 1;
     return 0;
 }
@@ -803,28 +803,17 @@ static edge_t *cloneEdge(edge_t * e, node_t * ct, node_t * ch)
 
 static void insertEdge(Dt_t * map, void *t, void *h, edge_t * e)
 {
-    item dummy;
+    item dummy1 = {.p = {t, h}, .t = agtail(e), .h = aghead(e)};
+    dtinsert(map, &dummy1);
 
-    dummy.p[0] = t;
-    dummy.p[1] = h;
-    dummy.t = agtail(e);
-    dummy.h = aghead(e);
-    dtinsert(map, &dummy);
-
-    dummy.p[0] = h;
-    dummy.p[1] = t;
-    dummy.t = aghead(e);
-    dummy.h = agtail(e);
-    dtinsert(map, &dummy);
+    item dummy2 = {.p = {h, t}, .t = aghead(e), .h = agtail(e)};
+    dtinsert(map, &dummy2);
 }
 
 /// Check if we already have cluster edge corresponding to t->h, and return it.
 static item *mapEdge(Dt_t * map, edge_t * e)
 {
-    void *key[2];
-
-    key[0] = agtail(e);
-    key[1] = aghead(e);
+    void *key[] = {agtail(e), aghead(e)};
     return dtmatch(map, &key);
 }
 
@@ -1172,11 +1161,7 @@ htmlEntity (char** s)
 static unsigned char
 cvtAndAppend (unsigned char c, agxbuf* xb)
 {
-    char buf[2];
-
-    buf[0] = c;
-    buf[1] = '\0';
-
+    char buf[] = {c, '\0'};
     char *s = latin1ToUTF8(buf);
     char *p = s;
     size_t len = strlen(s);

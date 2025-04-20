@@ -436,15 +436,17 @@ scformat(void* vp, Sffmt_t* dp)
 	switch (dp->fmt)
 	{
 	case 'f':
-	case 'g':
+	case 'g': {
 		if (node->type != FLOATING)
 		{
 			exerror("scanf: %s: floating variable address argument expected", node->data.variable.symbol->name);
 			return -1;
 		}
 		fmt->fmt.size = sizeof(double);
-		*(void**)vp = &node->data.variable.symbol->value->data.constant.value;
+		const void *const value = &node->data.variable.symbol->value->data.constant.value;
+		memcpy(vp, &value, sizeof(value));
 		break;
+	}
 	case 's':
 	case '[': {
 		if (node->type != STRING)
@@ -459,27 +461,31 @@ scformat(void* vp, Sffmt_t* dp)
 		vmfree(fmt->expr->vm, s);
 		s = vmalloc(fmt->expr->vm, sizeof(char) * (size_t)fmt->fmt.size);
 		memset(s, 0, sizeof(char) * (size_t)fmt->fmt.size);
-		*(void**)vp = s;
+		memcpy(vp, &s, sizeof(s));
 		node->data.variable.symbol->value->data.constant.value.string = s;
 		break;
 	}
-	case 'c':
+	case 'c': {
 		if (node->type != CHARACTER) {
 			exerror("scanf: %s: char variable address argument expected", node->data.variable.symbol->name);
 			return -1;
 		}
 		fmt->fmt.size = sizeof(long long);
-		*((void **) vp) = &node->data.variable.symbol->value->data.constant.value;
+		const void *const value = &node->data.variable.symbol->value->data.constant.value;
+		memcpy(vp, &value, sizeof(value));
 		break;
-	default:
+	}
+	default: {
 		if (node->type != INTEGER && node->type != UNSIGNED)
 		{
 			exerror("scanf: %s: integer variable address argument expected", node->data.variable.symbol->name);
 			return -1;
 		}
 		dp->size = sizeof(long long);
-		*(void**)vp = &node->data.variable.symbol->value->data.constant.value;
+		const void *const value = &node->data.variable.symbol->value->data.constant.value;
+		memcpy(vp, &value, sizeof(value));
 		break;
+	}
 	}
 	fmt->actuals = fmt->actuals->data.operand.right;
 	dp->flags |= SFFMT_VALUE;
