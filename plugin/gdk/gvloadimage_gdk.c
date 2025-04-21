@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/agxbuf.h>
+#include <util/gv_ftell.h>
 
 #include <gvc/gvplugin_loadimage.h>
 #include <gvc/gvio.h>
@@ -36,19 +37,18 @@ static void gdk_set_mimedata_from_file (cairo_surface_t *image, const char *mime
 {
     FILE *fp;
     unsigned char *data = NULL;
-    long len;
     const char *id_prefix = "gvloadimage_gdk-";
 
     fp = fopen (file, "rb");
     if (fp == NULL)
         return;
     fseek (fp, 0, SEEK_END);
-    len = ftell(fp);
+    const size_t len = gv_ftell(fp);
     rewind(fp);
     if (len > 0)
-        data = malloc ((size_t)len);
+        data = malloc(len);
     if (data) {
-        if (fread(data, (size_t)len, 1, fp) != 1) {
+        if (fread(data, len, 1, fp) != 1) {
             free (data);
             data = NULL;
         }

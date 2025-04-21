@@ -11,6 +11,7 @@ noinst_HEADERS = \
   gv_ctype.h \
   gv_find_me.h \
   gv_fopen.h \
+  gv_ftell.h \
   gv_math.h \
   list.h \
   lockfile.h \
