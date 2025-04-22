@@ -438,9 +438,10 @@ static void copyClusterInfo(size_t ncc, Agraph_t **ccs, Agraph_t *root) {
 
 /* doDot:
  * Assume g has nodes.
+ *
+ * @return 0 on success
  */
-static void doDot (Agraph_t* g)
-{
+static int doDot(Agraph_t *g) {
     Agraph_t **ccs;
     Agraph_t *sg;
     pack_info pinfo;
@@ -496,6 +497,7 @@ static void doDot (Agraph_t* g)
 	}
 	free(ccs);
     }
+    return 0;
 }
 
 void dot_layout(Agraph_t * g)
