@@ -235,8 +235,10 @@ static void setEdgeLabelPos(graph_t *g) {
  * recursive call in make_flat_edge without normalization occurring,
  * so that the edge will only be normalized once in the top level call
  * of dot_splines.
+ *
+ * @return 0 on success
  */
-static void dot_splines_(graph_t *g, int normalize) {
+static int dot_splines_(graph_t *g, int normalize) {
   int i, j, k, n_nodes;
   node_t *n;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
@@ -248,7 +250,7 @@ static void dot_splines_(graph_t *g, int normalize) {
   fwdedgeb.out.base.data = (Agrec_t *)&fwdedgebi;
 
   if (et == EDGETYPE_NONE)
-    return;
+    return 0;
   if (et == EDGETYPE_CURVED) {
     resetRW(g);
     if (GD_has_labels(g->root) & EDGE_LABEL) {
@@ -272,7 +274,7 @@ static void dot_splines_(graph_t *g, int normalize) {
 
   mark_lowclusters(g);
   if (routesplinesinit())
-    return;
+    return 0;
   spline_info_t sd = {.Splinesep = GD_nodesep(g) / 4,
                       .Multisep = GD_nodesep(g)};
   edges = gv_calloc(CHUNK, sizeof(edge_t *));
@@ -481,6 +483,7 @@ finish:
   free(P.boxes);
   State = GVSPLINES;
   EdgeLabelsDone = 1;
+  return 0;
 }
 
 /* dot_splines:
