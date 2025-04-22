@@ -395,8 +395,12 @@ int install_cluster(graph_t *g, node_t *n, int pass, node_queue_t *q) {
 
     clust = ND_clust(n);
     if (GD_installed(clust) != pass + 1) {
-	for (r = GD_minrank(clust); r <= GD_maxrank(clust); r++)
-	    install_in_rank(g, GD_rankleader(clust)[r]);
+	for (r = GD_minrank(clust); r <= GD_maxrank(clust); r++) {
+	    const int rc = install_in_rank(g, GD_rankleader(clust)[r]);
+	    if (rc != 0) {
+	        return rc;
+	    }
+	}
 	for (r = GD_minrank(clust); r <= GD_maxrank(clust); r++)
 	    enqueue_neighbors(q, GD_rankleader(clust)[r], pass);
 	GD_installed(clust) = pass + 1;

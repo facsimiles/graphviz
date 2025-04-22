@@ -1111,10 +1111,6 @@ def test_1554():
     ), "computation exceeded bounds"
 
 
-@pytest.mark.xfail(
-    strict=which("dot") is None or is_asan_instrumented(which("dot")),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1581",
-)
 def test_1581():
     """
     this example found by fuzzing should not cause an out-of-bounds write
