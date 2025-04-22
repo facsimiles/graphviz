@@ -333,7 +333,10 @@ static int dotLayout(Agraph_t *g) {
     if (GD_flags(g) & NEW_RANK)
 	removeFill (g);
     dot_sameports(g);
-    dot_splines(g);
+    const int r = dot_splines(g);
+    if (r != 0) {
+	return r;
+    }
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
     return 0;
