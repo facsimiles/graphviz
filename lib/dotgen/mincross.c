@@ -1264,7 +1264,10 @@ int build_ranks(graph_t *g, int pass, ints_t *scratch) {
 	    while (!node_queue_is_empty(&q)) {
 		node_t *n0 = node_queue_pop_front(&q);
 		if (ND_ranktype(n0) != CLUSTER) {
-		    install_in_rank(g, n0);
+		    if (install_in_rank(g, n0) != 0) {
+		        node_queue_free(&q);
+		        return -1;
+		    }
 		    enqueue_neighbors(&q, n0, pass);
 		} else {
 		    install_cluster(g, n0, pass, &q);
