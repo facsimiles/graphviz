@@ -38,7 +38,7 @@
 #include <util/list.h>
 #include <util/prisize_t.h>
 
-#if ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION >= 6)) || ( TCL_MAJOR_VERSION > 8)
+#if (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION >= 6) || TCL_MAJOR_VERSION > 8
 #else
 #ifndef Tcl_GetStringResult
 #define Tcl_GetStringResult(interp) interp->result
@@ -225,11 +225,11 @@ static char *buildBindings(char *s1, const char *s2)
 /* convert x and y string args to point */
 static int scanpoint(Tcl_Interp * interp, const char *argv[], point * p)
 {
-    if (sscanf(argv[0], "%lg", &(p->x)) != 1) {
+    if (sscanf(argv[0], "%lg", &p->x) != 1) {
 	Tcl_AppendResult(interp, "invalid x coordinate: \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
-    if (sscanf(argv[1], "%lg", &(p->y)) != 1) {
+    if (sscanf(argv[1], "%lg", &p->y) != 1) {
 	Tcl_AppendResult(interp, "invalid y coordinate: \"", argv[1], "\"", NULL);
 	return TCL_ERROR;
     }
@@ -303,14 +303,12 @@ static int insert_poly(Tcl_Interp *interp, vgpane_t *vgp, int id,
 
     np = allocpoly(vgp, id, vargc);
     for (Tcl_Size i = 0; i < vargc; i += 2) {
-	result =
-	    scanpoint(interp, &vargv[i],
-		      &(np->boundary.ps[np->boundary.pn]));
+	result = scanpoint(interp, &vargv[i], &np->boundary.ps[np->boundary.pn]);
 	if (result != TCL_OK)
 	    return result;
 	np->boundary.pn++;
     }
-    make_CW(&(np->boundary));
+    make_CW(&np->boundary);
     vc_stale(vgp);
     return TCL_OK;
 }
@@ -419,7 +417,6 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 
     int result;
     char vbuf[30];
-    const char **vargv;
     vgpane_t *vgp;
     point p, q, *ps;
     double alpha, gain;
@@ -463,13 +460,14 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	}
 	/* accept either inline or delimited list */
 	Tcl_Size vargc;
+	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 4) {
-	    result =
-		Tcl_SplitList(interp, argv[3], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[3], &vargc, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 3;
 	    vargv = &argv[3];
@@ -477,6 +475,9 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	if (!vargc || vargc % 2) {
 	    Tcl_AppendResult(interp,
 			     "There must be a multiple of two terms in the list.", NULL);
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return TCL_ERROR;
 	}
 
@@ -485,10 +486,17 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 
 	if (!remove_poly(vgp, polyid)) {
 	    Tcl_AppendResult(interp, " no such polygon: ", argv[2], NULL);
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return TCL_ERROR;
 	}
 
-	return insert_poly(interp, vgp, polyid, vargv, vargc);
+	result = insert_poly(interp, vgp, polyid, vargv, vargc);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
+	return result;
 
     } else if (strcmp(argv[1], "debug") == 0) {
 	/* debug only */
@@ -514,19 +522,21 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 			     " ", argv[1], " x y\"", NULL);
 	    return TCL_ERROR;
 	}
-	Tcl_Size vargc;
+	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result =
-		Tcl_SplitList(interp, argv[2], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[2], &(Tcl_Size){0}, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
-	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
 	result = scanpoint(interp, &vargv[0], &p);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
 	if (result != TCL_OK)
 	    return result;
 
@@ -542,20 +552,21 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
     } else if (strcmp(argv[1], "insert") == 0) {
 	/* add poly to end poly list, and it coordinates to the end of 
 	   the point list */
-	if ((argc < 3)) {
+	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
 			     " ", argv[1], " x1 y1 x2 y2 ...\"", NULL);
 	    return TCL_ERROR;
 	}
 	/* accept either inline or delimited list */
 	Tcl_Size vargc;
+	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result =
-		Tcl_SplitList(interp, argv[2], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[2], &vargc, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
@@ -564,12 +575,18 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	if (!vargc || vargc % 2) {
 	    Tcl_AppendResult(interp,
 			     "There must be a multiple of two terms in the list.", NULL);
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return TCL_ERROR;
 	}
 
 	polyid++;
 
 	result = insert_poly(interp, vgp, polyid, vargv, vargc);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
 	if (result != TCL_OK)
 	    return result;
 
@@ -594,13 +611,14 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	Tcl_Size vargc;
+	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result =
-		Tcl_SplitList(interp, argv[2], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[2], &vargc, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
@@ -608,12 +626,22 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	if (vargc < 4) {
 	    Tcl_AppendResult(interp,
 			     "invalid points: should be: \"x1 y1 x2 y2\"", NULL);
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return TCL_ERROR;
 	}
 	result = scanpoint(interp, &vargv[0], &p);
-	if (result != TCL_OK)
+	if (result != TCL_OK) {
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return result;
+	}
 	result = scanpoint(interp, &vargv[2], &q);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
 	if (result != TCL_OK)
 	    return result;
 
@@ -661,27 +689,35 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	Tcl_Size vargc;
+	const char **vargv;
+	bool vargv_needs_free = false;
 	if (argc == 3) {
-	    result =
-		Tcl_SplitList(interp, argv[2], &vargc,
-			      (const char ***) &vargv);
+	    result = Tcl_SplitList(interp, argv[2], &vargc, &vargv);
 	    if (result != TCL_OK) {
 		return result;
 	    }
+	    vargv_needs_free = true;
 	} else {
 	    vargc = (Tcl_Size)argc - 2;
 	    vargv = &argv[2];
 	}
-	if ((vargc < 4)) {
+	if (vargc < 4) {
 	    Tcl_AppendResult(interp,
 			     "invalid points: should be: \"x1 y1 x2 y2\"", NULL);
 	    return TCL_ERROR;
 	}
 
 	result = scanpoint(interp, &vargv[0], &p);
-	if (result != TCL_OK)
+	if (result != TCL_OK) {
+	    if (vargv_needs_free) {
+		Tcl_Free((char *)vargv);
+	    }
 	    return result;
+	}
 	result = scanpoint(interp, &vargv[2], &q);
+	if (vargv_needs_free) {
+	    Tcl_Free((char *)vargv);
+	}
 	if (result != TCL_OK)
 	    return result;
 
