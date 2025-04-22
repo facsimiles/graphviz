@@ -1595,8 +1595,7 @@ static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
    * so check them all.
    */
   if (isAdjacent) {
-    make_flat_adj_edges(g, edges, ind, cnt, e, et);
-    return 0;
+    return make_flat_adj_edges(g, edges, ind, cnt, e, et);
   }
   if (ED_label(e)) { /* edges with labels aren't multi-edges */
     make_flat_labeled_edge(g, sp, P, e, et);
