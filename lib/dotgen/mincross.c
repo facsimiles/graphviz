@@ -1173,8 +1173,7 @@ void allocate_ranks(graph_t * g)
 }
 
 /* install a node at the current right end of its rank */
-void install_in_rank(graph_t * g, node_t * n)
-{
+int install_in_rank(graph_t *g, node_t *n) {
     int i, r;
 
     r = ND_rank(n);
@@ -1182,7 +1181,7 @@ void install_in_rank(graph_t * g, node_t * n)
     if (GD_rank(g)[r].an <= 0) {
 	agerrorf("install_in_rank, line %d: %s %s rank %d i = %d an = 0\n",
 	      __LINE__, agnameof(g), agnameof(n), r, i);
-	return;
+	return -1;
     }
 
     GD_rank(g)[r].v[i] = n;
@@ -1202,19 +1201,20 @@ void install_in_rank(graph_t * g, node_t * n)
     if (ND_order(n) > GD_rank(Root)[r].an) {
 	agerrorf("install_in_rank, line %d: ND_order(%s) [%d] > GD_rank(Root)[%d].an [%d]\n",
 	      __LINE__, agnameof(n), ND_order(n), r, GD_rank(Root)[r].an);
-	return;
+	return -1;
     }
     if (r < GD_minrank(g) || r > GD_maxrank(g)) {
 	agerrorf("install_in_rank, line %d: rank %d not in rank range [%d,%d]\n",
 	      __LINE__, r, GD_minrank(g), GD_maxrank(g));
-	return;
+	return -1;
     }
     if (GD_rank(g)[r].v + ND_order(n) >
 	GD_rank(g)[r].av + GD_rank(Root)[r].an) {
 	agerrorf("install_in_rank, line %d: GD_rank(g)[%d].v + ND_order(%s) [%d] > GD_rank(g)[%d].av + GD_rank(Root)[%d].an [%d]\n",
 	      __LINE__, r, agnameof(n),ND_order(n), r, r, GD_rank(Root)[r].an);
-	return;
+	return -1;
     }
+    return 0;
 }
 
 /*	install nodes in ranks. the initial ordering ensure that series-parallel
