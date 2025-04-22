@@ -314,7 +314,10 @@ static int dotLayout(Agraph_t *g) {
     if (Verbose) {
         fputs("Starting phase 2 [dot_mincross]\n", stderr);
     }
-    dot_mincross(g);
+    const int rc = dot_mincross(g);
+    if (rc != 0) {
+        return rc;
+    }
     if (maxphase == 2) {
         attach_phase_attrs (g, 2);
         return 0;
