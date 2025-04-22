@@ -345,7 +345,7 @@ checkLabelOrder (graph_t* g)
  * Note that nodes are not placed into GD_rank(g) until mincross()
  * is called.
  */
-void dot_mincross(graph_t *g) {
+int dot_mincross(graph_t *g) {
     int64_t nc;
     char *s;
 
@@ -398,6 +398,7 @@ void dot_mincross(graph_t *g) {
     }
     ints_free(&scratch);
     cleanup2(g, nc);
+    return 0;
 }
 
 static adjmatrix_t *new_matrix(size_t i, size_t j) {
