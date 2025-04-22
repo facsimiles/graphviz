@@ -428,7 +428,10 @@ static int dot_splines_(graph_t *g, int normalize) {
           updateBB(g, ED_label(e));
       }
     } else if (ND_rank(agtail(e0)) == ND_rank(aghead(e0))) {
-      make_flat_edge(g, &sd, &P, edges, ind, cnt, et);
+      const int rc = make_flat_edge(g, &sd, &P, edges, ind, cnt, et);
+      if (rc != 0) {
+        return rc;
+      }
     } else
       make_regular_edge(g, &sd, &P, edges, ind, cnt, et);
   }
