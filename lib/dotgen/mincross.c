@@ -559,7 +559,9 @@ static void ordered_edges(graph_t * g)
 static int64_t mincross_clust(graph_t *g, ints_t *scratch) {
     int c;
 
-    expand_cluster(g);
+    if (expand_cluster(g) != 0) {
+	return -1;
+    }
     ordered_edges(g);
     flat_breakcycles(g);
     flat_reorder(g);
