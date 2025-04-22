@@ -374,7 +374,12 @@ int dot_mincross(graph_t *g) {
     size_t comp;
     for (nc = 0, comp = 0; comp < GD_comp(g).size; comp++) {
 	init_mccomp(g, comp);
-	nc += mincross(g, 0, &scratch);
+	const int64_t mc = mincross(g, 0, &scratch);
+	if (mc < 0) {
+	    ints_free(&scratch);
+	    return -1;
+	}
+	nc += mc;
     }
 
     merge2(g);
@@ -391,7 +396,12 @@ int dot_mincross(graph_t *g) {
     if (GD_n_cluster(g) > 0 && (!(s = agget(g, "remincross")) || mapbool(s))) {
 	mark_lowclusters(g);
 	ReMincross = true;
-	nc = mincross(g, 2, &scratch);
+	const int64_t mc = mincross(g, 2, &scratch);
+	if (mc < 0) {
+	    ints_free(&scratch);
+	    return -1;
+	}
+	nc = mc;
 #ifdef DEBUG
 	for (int c = 1; c <= GD_n_cluster(g); c++)
 	    check_vlists(GD_clust(g)[c]);
