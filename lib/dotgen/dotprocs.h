@@ -46,7 +46,8 @@ DEFINE_LIST(node_queue, Agnode_t *)
     extern Agedge_t *find_flat_edge(Agnode_t *, Agnode_t *);
     extern void flat_edge(Agraph_t *, Agedge_t *);
     extern int flat_edges(Agraph_t *);
-    extern void install_cluster(Agraph_t *, Agnode_t *, int, node_queue_t *);
+    /// @return 0 on success
+    extern int install_cluster(Agraph_t *, Agnode_t *, int, node_queue_t *);
     /// @return 0 on success
     extern int install_in_rank(Agraph_t *, Agnode_t *);
     extern bool is_cluster(Agraph_t *);

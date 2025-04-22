@@ -389,7 +389,7 @@ void build_skeleton(graph_t * g, graph_t * subg)
     }
 }
 
-void install_cluster(graph_t *g, node_t *n, int pass, node_queue_t *q) {
+int install_cluster(graph_t *g, node_t *n, int pass, node_queue_t *q) {
     int r;
     graph_t *clust;
 
@@ -401,6 +401,7 @@ void install_cluster(graph_t *g, node_t *n, int pass, node_queue_t *q) {
 	    enqueue_neighbors(q, GD_rankleader(clust)[r], pass);
 	GD_installed(clust) = pass + 1;
     }
+    return 0;
 }
 
 static void mark_lowcluster_basic(Agraph_t * g);
