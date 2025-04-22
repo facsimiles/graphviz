@@ -38,7 +38,8 @@ DEFINE_LIST(node_queue, Agnode_t *)
     extern void dot_init_node_edge(graph_t * g);
     extern void dot_scan_ranks(graph_t * g);
     extern void enqueue_neighbors(node_queue_t *q, node_t *n0, int pass);
-    extern void expand_cluster(Agraph_t *);
+    /// @return 0 on success
+    extern int expand_cluster(Agraph_t *);
     extern Agedge_t *fast_edge(Agedge_t *);
     extern void fast_node(Agraph_t *, Agnode_t *);
     extern Agedge_t *find_fast_edge(Agnode_t *, Agnode_t *);

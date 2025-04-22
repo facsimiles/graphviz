@@ -287,8 +287,7 @@ remove_rankleaders(graph_t * g)
 }
 
 /* delete virtual nodes of a cluster, and install real nodes or sub-clusters */
-void expand_cluster(graph_t * subg)
-{
+int expand_cluster(graph_t *subg) {
     /* build internal structure of the cluster */
     class2(subg);
     GD_comp(subg).size = 1;
@@ -302,6 +301,7 @@ void expand_cluster(graph_t * subg)
     /* build external structure of the cluster */
     interclexp(subg);
     remove_rankleaders(subg);
+    return 0;
 }
 
 /* this function marks every node in <g> with its top-level cluster under <g> */
