@@ -491,10 +491,7 @@ finish:
  *
  * @return 0 on success
  */
-int dot_splines(graph_t *g) {
-  dot_splines_(g, 1);
-  return 0;
-}
+int dot_splines(graph_t *g) { return dot_splines_(g, 1); }
 
 /* place_vnlabel:
  * assign position of an edge label from its virtual node
