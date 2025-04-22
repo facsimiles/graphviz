@@ -293,8 +293,8 @@ attach_phase_attrs (Agraph_t * g, int maxphase)
     agxbfree(&buf);
 }
 
-static void dotLayout(Agraph_t * g)
-{
+/// @return 0 on success
+static int dotLayout(Agraph_t *g) {
     int maxphase = late_int(g, agfindgraphattr(g,"phase"), -1, 1);
 
     setEdgeType (g, EDGETYPE_SPLINE);
@@ -309,7 +309,7 @@ static void dotLayout(Agraph_t * g)
     dot_rank(g);
     if (maxphase == 1) {
         attach_phase_attrs (g, 1);
-        return;
+        return 0;
     }
     if (Verbose) {
         fputs("Starting phase 2 [dot_mincross]\n", stderr);
@@ -317,7 +317,7 @@ static void dotLayout(Agraph_t * g)
     dot_mincross(g);
     if (maxphase == 2) {
         attach_phase_attrs (g, 2);
-        return;
+        return 0;
     }
     if (Verbose) {
         fputs("Starting phase 3 [dot_position]\n", stderr);
@@ -325,7 +325,7 @@ static void dotLayout(Agraph_t * g)
     dot_position(g);
     if (maxphase == 3) {
         attach_phase_attrs (g, 2);  /* positions will be attached on output */
-        return;
+        return 0;
     }
     if (GD_flags(g) & NEW_RANK)
 	removeFill (g);
@@ -333,6 +333,7 @@ static void dotLayout(Agraph_t * g)
     dot_splines(g);
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
+    return 0;
 }
 
 static void
