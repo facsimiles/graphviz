@@ -54,6 +54,7 @@ static void init_mincross(graph_t * g);
 static void merge2(graph_t * g);
 static void init_mccomp(graph_t *g, size_t c);
 static void cleanup2(graph_t *g, int64_t nc);
+/// @return minimum crossings on success, negative value on failure
 static int64_t mincross_clust(graph_t *g, ints_t *scratch);
 /// @return minimum crossings on success, negative value on failure
 static int64_t mincross(graph_t *g, int startpass, ints_t *scratch);
