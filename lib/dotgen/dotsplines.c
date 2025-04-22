@@ -1181,9 +1181,11 @@ static void makeSimpleFlat(node_t *tn, node_t *hn, edge_t **edges, unsigned ind,
  * essentially using rankdir=LR, to get the needed spline info.
  * This is probably to cute and fragile, and should be rewritten in a
  * more straightforward and laborious fashion.
+ *
+ * @return 0 on success
  */
-static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
-                                unsigned cnt, edge_t *e0, int et) {
+static int make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
+                               unsigned cnt, edge_t *e0, int et) {
   node_t *n;
   node_t *tn, *hn;
   edge_t *e;
@@ -1204,7 +1206,7 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
       agerr(AGPREV, "  Edge %s %s %s\n", agnameof(tn),
             agisdirected(g) ? "->" : "--", agnameof(hn));
     }
-    return;
+    return 0;
   }
   unsigned labels = 0;
   bool ports = false;
@@ -1225,7 +1227,7 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
     else {
       makeSimpleFlatLabels(tn, hn, edges, ind, cnt, et, labels);
     }
-    return;
+    return 0;
   }
 
   attr_state_t attrs = {0};
@@ -1329,6 +1331,7 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   }
 
   cleanupCloneGraph(auxg, &attrs);
+  return 0;
 }
 
 static void makeFlatEnd(graph_t *g, spline_info_t *sp, path *P, node_t *n,
