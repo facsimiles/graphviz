@@ -453,7 +453,10 @@ static int doDot(Agraph_t *g) {
 	/* No pack information; use old dot with components
          * handled during layout
          */
-	dotLayout(g);
+	const int rc = dotLayout(g);
+	if (rc != 0) {
+	    return rc;
+	}
     } else {
 	/* fill in default values */
 	if (mode == l_undef) 
@@ -468,14 +471,22 @@ static int doDot(Agraph_t *g) {
 	size_t ncc;
 	ccs = cccomps(g, &ncc, 0);
 	if (ncc == 1) {
-	    dotLayout(g);
+	    const int rc = dotLayout(g);
+	    if (rc != 0) {
+		free(ccs);
+		return rc;
+	    }
 	} else if (GD_drawing(g)->ratio_kind == R_NONE) {
 	    pinfo.doSplines = true;
 
 	    for (size_t i = 0; i < ncc; i++) {
 		sg = ccs[i];
 		initSubg (sg, g);
-		dotLayout (sg);
+		const int rc = dotLayout (sg);
+		if (rc != 0) {
+		    free(ccs);
+		    return rc;
+		}
 	    }
 	    attachPos (g);
 	    packSubgraphs(ncc, ccs, g, &pinfo);
@@ -487,7 +498,11 @@ static int doDot(Agraph_t *g) {
              * One possibility is to layout nodes, pack, then apply the ratio
              * adjustment. We would then have to re-adjust all positions.
              */
-	    dotLayout(g);
+	    const int rc = dotLayout(g);
+	    if (rc != 0) {
+		free(ccs);
+		return rc;
+	    }
 	}
 
 	for (size_t i = 0; i < ncc; i++) {
