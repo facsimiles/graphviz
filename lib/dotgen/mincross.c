@@ -1300,7 +1300,11 @@ int build_ranks(graph_t *g, int pass, ints_t *scratch) {
 		    }
 		    enqueue_neighbors(&q, n0, pass);
 		} else {
-		    install_cluster(g, n0, pass, &q);
+		    const int rc = install_cluster(g, n0, pass, &q);
+		    if (rc != 0) {
+		        node_queue_free(&q);
+		        return rc;
+		    }
 		}
 	    }
 	}
