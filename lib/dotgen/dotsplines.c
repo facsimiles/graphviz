@@ -488,8 +488,13 @@ finish:
 
 /* dot_splines:
  * If the splines attribute is defined but equal to "", skip edge routing.
+ *
+ * @return 0 on success
  */
-void dot_splines(graph_t *g) { dot_splines_(g, 1); }
+int dot_splines(graph_t *g) {
+  dot_splines_(g, 1);
+  return 0;
+}
 
 /* place_vnlabel:
  * assign position of an edge label from its virtual node

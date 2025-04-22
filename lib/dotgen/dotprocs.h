@@ -80,7 +80,8 @@ DEFINE_LIST(node_queue, Agnode_t *)
     extern void dot_position(Agraph_t *);
     extern void dot_rank(Agraph_t *);
     extern void dot_sameports(Agraph_t *);
-    extern void dot_splines(Agraph_t *);
+    /// @return 0 on success
+    extern int dot_splines(Agraph_t *);
 
 #ifdef __cplusplus
 }
