@@ -729,7 +729,9 @@ static int64_t mincross(graph_t *g, int startpass, ints_t *scratch) {
 	if (pass <= 1) {
 	    maxthispass = MIN(4, MaxIter);
 	    if (g == dot_root(g))
-		build_ranks(g, pass, scratch);
+		if (build_ranks(g, pass, scratch) != 0) {
+		    return -1;
+		}
 	    if (pass == 0)
 		flat_breakcycles(g);
 	    flat_reorder(g);
