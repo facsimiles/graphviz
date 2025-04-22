@@ -1221,7 +1221,7 @@ int install_in_rank(graph_t *g, node_t *n) {
  *	graphs such as trees are drawn with no crossings.  it tries searching
  *	in- and out-edges and takes the better of the two initial orderings.
  */
-void build_ranks(graph_t *g, int pass, ints_t *scratch) {
+int build_ranks(graph_t *g, int pass, ints_t *scratch) {
     int i, j;
     node_t *n, *ns;
     edge_t **otheredges;
@@ -1287,6 +1287,7 @@ void build_ranks(graph_t *g, int pass, ints_t *scratch) {
     if (g == dot_root(g) && ncross(scratch) > 0)
 	transpose(g, false);
     node_queue_free(&q);
+    return 0;
 }
 
 void enqueue_neighbors(node_queue_t *q, node_t *n0, int pass) {
