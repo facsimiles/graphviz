@@ -564,9 +564,17 @@ static int64_t mincross_clust(graph_t *g, ints_t *scratch) {
     flat_breakcycles(g);
     flat_reorder(g);
     int64_t nc = mincross(g, 2, scratch);
+    if (nc < 0) {
+	return nc;
+    }
 
-    for (c = 1; c <= GD_n_cluster(g); c++)
-	nc += mincross_clust(GD_clust(g)[c], scratch);
+    for (c = 1; c <= GD_n_cluster(g); c++) {
+	const int64_t mc = mincross_clust(GD_clust(g)[c], scratch);
+	if (mc < 0) {
+	    return mc;
+	}
+	nc += mc;
+    }
 
     save_vlist(g);
     return nc;
