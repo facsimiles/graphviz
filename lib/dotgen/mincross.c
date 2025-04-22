@@ -387,7 +387,12 @@ int dot_mincross(graph_t *g) {
 
     /* run mincross on contents of each cluster */
     for (int c = 1; c <= GD_n_cluster(g); c++) {
-	nc += mincross_clust(GD_clust(g)[c], &scratch);
+	const int64_t mc = mincross_clust(GD_clust(g)[c], &scratch);
+	if (mc < 0) {
+	    ints_free(&scratch);
+	    return -1;
+	}
+	nc += mc;
 #ifdef DEBUG
 	check_vlists(GD_clust(g)[c]);
 	check_order();
