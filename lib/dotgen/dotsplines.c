@@ -1291,7 +1291,10 @@ static int make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
       ND_coord(n).y = midx;
   }
   dot_sameports(auxg);
-  dot_splines_(auxg, 0);
+  const int rc = dot_splines_(auxg, 0);
+  if (rc != 0) {
+    return rc;
+  }
   dotneato_postprocess(auxg);
 
   /* copy splines */
