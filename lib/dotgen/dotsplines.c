@@ -1274,7 +1274,10 @@ static int make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   dot_init_node_edge(auxg);
 
   dot_rank(auxg);
-  dot_mincross(auxg);
+  const int r = dot_mincross(auxg);
+  if (r != 0) {
+    return r;
+  }
   dot_position(auxg);
 
   /* reposition */
