@@ -78,8 +78,8 @@ static bool cl_vninside(Agraph_t *, Agnode_t *);
 static void completeregularpath(path *, Agedge_t *, Agedge_t *, pathend_t *,
                                 pathend_t *, const boxes_t *);
 static int edgecmp(const void *, const void *);
-static void make_flat_edge(graph_t *, spline_info_t *, path *, Agedge_t **,
-                           unsigned, unsigned, int);
+static int make_flat_edge(graph_t *, spline_info_t *, path *, Agedge_t **,
+                          unsigned, unsigned, int);
 static void make_regular_edge(graph_t *g, spline_info_t *, path *, Agedge_t **,
                               unsigned, unsigned, int);
 static boxf makeregularend(boxf, int, double);
@@ -1554,9 +1554,11 @@ static void make_flat_bottom_edges(graph_t *g, spline_info_t *sp, path *P,
  *  - all non-labeled edges with identical ports between non-adjacent a and b
  *     = connecting bottom to bottom/left/right - route along bottom
  *     = the rest - route along top
+ *
+ * @return 0 on success
  */
-static void make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
-                           edge_t **edges, unsigned ind, unsigned cnt, int et) {
+static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
+                          edge_t **edges, unsigned ind, unsigned cnt, int et) {
   node_t *tn, *hn;
   Agedgeinfo_t fwdedgei;
   Agedgepair_t fwdedge;
@@ -1586,23 +1588,23 @@ static void make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
    */
   if (isAdjacent) {
     make_flat_adj_edges(g, edges, ind, cnt, e, et);
-    return;
+    return 0;
   }
   if (ED_label(e)) { /* edges with labels aren't multi-edges */
     make_flat_labeled_edge(g, sp, P, e, et);
-    return;
+    return 0;
   }
 
   if (et == EDGETYPE_LINE) {
     makeSimpleFlat(agtail(e), aghead(e), edges, ind, cnt, et);
-    return;
+    return 0;
   }
 
   tside = ED_tail_port(e).side;
   hside = ED_head_port(e).side;
   if ((tside == BOTTOM && hside != TOP) || (hside == BOTTOM && tside != TOP)) {
     make_flat_bottom_edges(g, sp, P, edges, ind, cnt, e, et == EDGETYPE_SPLINE);
-    return;
+    return 0;
   }
 
   tn = agtail(e);
@@ -1666,12 +1668,13 @@ static void make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
       ps = routepolylines(P, &pn);
     if (pn == 0) {
       free(ps);
-      return;
+      return 0;
     }
     clip_and_install(e, aghead(e), ps, pn, &sinfo);
     free(ps);
     P->nbox = 0;
   }
+  return 0;
 }
 
 /// Return true if p3 is to left of ray p1->p2
