@@ -14,11 +14,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include <util/agxbuf.h>
 
 #include <gvc/gvplugin_loadimage.h>
 
-#ifdef HAVE_GS
-#ifdef HAVE_PANGOCAIRO
 #include <ghostscript/iapi.h>
 #include <ghostscript/ierrors.h>
 #include <cairo/cairo.h>
@@ -110,15 +109,14 @@ static int gvloadimage_process_surface(GVJ_t *job, usershape_t *us, gs_t *gs, vo
 {
     cairo_t *cr; /* temp cr for gs */
     int rc, rc2;
-    char width_height[20], dpi[10], cairo_context[30];
     char *gs_args[] = {
 	"dot",      /* actual value of argv[0] doesn't matter */
 	"-dQUIET",
 	"-dNOPAUSE",
 	"-sDEVICE=cairo",
-	cairo_context,
-	width_height,
-	dpi,
+	NULL,
+	NULL,
+	NULL,
     };
 #define GS_ARGC sizeof(gs_args)/sizeof(gs_args[0])
 
@@ -130,12 +128,20 @@ static int gvloadimage_process_surface(GVJ_t *job, usershape_t *us, gs_t *gs, vo
 
     cr = cairo_create(gs->surface);  /* temp context for gs */
 
-    snprintf(width_height, sizeof(width_height), "-g%0.fx%0.f", us->x + us->w,
-             us->y + us->h);
-    snprintf(dpi, sizeof(dpi), "-r%d", us->dpi);
-    snprintf(cairo_context, sizeof(cairo_context), "-sCairoContext=%p", cr);
+    agxbuf width_height = {0};
+    agxbprint(&width_height, "-g%0.fx%0.f", us->x + us->w, us->y + us->h);
+    gs_args[5] = agxbuse(&width_height);
+    agxbuf dpi = {0};
+    agxbprint(&dpi, "-r%d", us->dpi);
+    gs_args[6] = agxbuse(&dpi);
+    agxbuf cairo_context = {0};
+    agxbprint(&cairo_context, "-sCairoContext=%p", cr);
+    gs_args[4] = agxbuse(&cairo_context);
 
     rc = gsapi_init_with_args(instance, GS_ARGC, gs_args);
+    agxbfree(&cairo_context);
+    agxbfree(&dpi);
+    agxbfree(&width_height);
 
     cairo_destroy(cr); /* finished with temp context */
 
@@ -242,15 +248,9 @@ static void gvloadimage_gs_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fill
 static gvloadimage_engine_t engine_cairo = {
     gvloadimage_gs_cairo
 };
-#endif
-#endif
 
 gvplugin_installed_t gvloadimage_gs_types[] = {
-#ifdef HAVE_GS
-#ifdef HAVE_PANGOCAIRO
     {FORMAT_PS_CAIRO,   "ps:cairo", 1, &engine_cairo, NULL},
     {FORMAT_EPS_CAIRO, "eps:cairo", 1, &engine_cairo, NULL},
-#endif
-#endif
     {0, NULL, 0, NULL, NULL}
 };
