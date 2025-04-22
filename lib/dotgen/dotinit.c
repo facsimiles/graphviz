@@ -502,7 +502,11 @@ static int doDot(Agraph_t *g) {
 
 void dot_layout(Agraph_t * g)
 {
-    if (agnnodes(g)) doDot (g);
+    if (agnnodes(g)) {
+	if (doDot(g) != 0) { // error?
+	    return;
+	}
+    }
     dotneato_postprocess(g);
 }
 
