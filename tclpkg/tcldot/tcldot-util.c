@@ -15,6 +15,7 @@
 #include <gvc/gvc.h>
 #include <util/alloc.h>
 #include <util/strcasecmp.h>
+#include <util/streq.h>
 #include <util/unreachable.h>
 
 size_t Tcldot_string_writer(GVJ_t *job, const char *s, size_t len)
@@ -139,7 +140,7 @@ void deleteGraph(gctx_t * gctx, Agraph_t *g)
 }
 
 static void myagxset(void *obj, Agsym_t *a, const char *val) {
-    if (strcmp(a->name, "label") == 0 && val[0] == '<') {
+    if (streq(a->name, "label") && val[0] == '<') {
         size_t len = strlen(val);
         if (val[len-1] == '>') {
             char *const hs = gv_strdup(val + 1);
@@ -166,7 +167,7 @@ void setedgeattributes(Agraph_t *g, Agedge_t *e, char *argv[], Tcl_Size argc) {
 
     for (Tcl_Size i = 0; i < argc; i++) {
 	/* silently ignore attempts to modify "key" */
-	if (strcmp(argv[i], "key") == 0) {
+	if (streq(argv[i], "key")) {
 	    i++;
 	    continue;
 	}
