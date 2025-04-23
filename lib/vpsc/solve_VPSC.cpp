@@ -26,6 +26,7 @@
 #include <memory>
 #include <sstream>
 #include <fstream>
+#include <stdexcept>
 using std::ios;
 using std::ofstream;
 
@@ -92,7 +93,7 @@ void VPSC::satisfy() {
 				f<<"Error: Unsatisfied constraint: "<<*cs[i]<<"\n";
 			}
 			//assert(cs[i]->slack()>-0.0000001);
-			throw "Unsatisfied constraint";
+			throw std::runtime_error("Unsatisfied constraint");
 		}
 	}
 }
@@ -124,7 +125,7 @@ void VPSC::refine() {
 	for(unsigned i=0;i<m;i++) {
 		if(cs[i]->slack()<-0.0000001) {
 			assert(cs[i]->slack()>-0.0000001);
-			throw "Unsatisfied constraint";
+			throw std::runtime_error("Unsatisfied constraint");
 		}
 	}
 }
@@ -184,7 +185,7 @@ void IncVPSC::satisfy() {
 			lb->merge(rb,v);
 		} else {
 			if(splitCtr++>10000) {
-				throw "Cycle Error!";
+				throw std::runtime_error("Cycle Error!");
 			}
 			// constraint is within block, need to split first
 			inactive.push_back(lb->splitBetween(v->left,v->right,lb,rb));
@@ -203,7 +204,7 @@ void IncVPSC::satisfy() {
 			//assert(cs[i]->slack()>-0.0000001);
 			ostringstream s;
 			s<<"Unsatisfied constraint: "<<*v;
-			throw s.str().c_str();
+			throw std::runtime_error(s.str());
 		}
 	}
 	if (RECTANGLE_OVERLAP_LOGGING) {
