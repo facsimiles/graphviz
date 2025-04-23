@@ -139,12 +139,10 @@ void deleteGraph(gctx_t * gctx, Agraph_t *g)
 }
 
 static void myagxset(void *obj, Agsym_t *a, const char *val) {
-    char *hs;
-
     if (strcmp(a->name, "label") == 0 && val[0] == '<') {
         size_t len = strlen(val);
         if (val[len-1] == '>') {
-            hs = strdup(val+1);
+            char *const hs = gv_strdup(val + 1);
                 *(hs+len-2) = '\0';
             val = agstrdup_html(agraphof(obj),hs);
             free(hs);
