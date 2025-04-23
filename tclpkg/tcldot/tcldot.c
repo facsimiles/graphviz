@@ -177,10 +177,12 @@ int Tcldot_Init(Tcl_Interp *interp) {
 
 #ifdef USE_TCL_STUBS
   if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
+    free(ictx);
     return TCL_ERROR;
   }
 #else
   if (Tcl_PkgRequire(interp, "Tcl", TCL_VERSION, 0) == NULL) {
+    free(ictx);
     return TCL_ERROR;
   }
 #endif
@@ -194,6 +196,7 @@ int Tcldot_Init(Tcl_Interp *interp) {
             strlen(tilde_dev + strlen("~dev.")) + 1);
   }
   if (Tcl_PkgProvide(interp, "Tcldot", adjusted_version) != TCL_OK) {
+    free(ictx);
     return TCL_ERROR;
   }
 
