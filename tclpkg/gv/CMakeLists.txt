@@ -276,9 +276,22 @@ if(ENABLE_SWIG)
     target_compile_definitions(gv_python3 PRIVATE DEMAND_LOADING=1)
     set_property(
       TARGET gv_python3
-      PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${Python_INCLUDE_DIRS}
+      PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${Python3_INCLUDE_DIRS}
     )
-    target_link_libraries(gv_python3 PRIVATE cdt cgraph gvc ${Python_LIBRARIES})
+    set(PYTHON_FLAGS "")
+    if(HAVE_CXX_WMISSING_FIELD_INITIALIZERS)
+      list(APPEND PYTHON_FLAGS -Wno-missing-field-initializers)
+    endif()
+    if(HAVE_CXX_WSHADOW)
+      list(APPEND PYTHON_FLAGS -Wno-shadow)
+    endif()
+    set_property(
+      TARGET gv_python3
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS "${PYTHON_FLAGS}"
+    )
+    target_link_libraries(gv_python3
+      PRIVATE cdt cgraph gvc ${Python3_LIBRARIES}
+    )
 
     install(
       TARGETS gv_python3
