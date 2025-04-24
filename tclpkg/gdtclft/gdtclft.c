@@ -180,7 +180,6 @@ static cmdImgOptions colorCmdVec[] = {
 static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
   int retval = TCL_OK;
   Tcl_Obj **theList;
-  char *firsttag, *secondtag;
 
   /* Assume it's an integer, check other cases on failure. */
   if (Tcl_GetIntFromObj(interp, obj, color) == TCL_OK)
@@ -193,12 +192,12 @@ static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
     if (nlist < 1 || nlist > 2)
       retval = TCL_ERROR;
     else {
-      firsttag = Tcl_GetString(theList[0]);
+      char *firsttag = Tcl_GetString(theList[0]);
       switch (firsttag[0]) {
       case 'b':
         *color = gdBrushed;
         if (nlist == 2) {
-          secondtag = Tcl_GetString(theList[1]);
+          char *secondtag = Tcl_GetString(theList[1]);
           if (secondtag[0] == 's') {
             *color = gdStyledBrushed;
           } else {
@@ -210,7 +209,7 @@ static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
       case 's':
         *color = gdStyled;
         if (nlist == 2) {
-          secondtag = Tcl_GetString(theList[1]);
+          char *secondtag = Tcl_GetString(theList[1]);
           if (secondtag[0] == 'b') {
             *color = gdStyledBrushed;
           } else {
@@ -351,8 +350,6 @@ static int tclGd_GetColor(Tcl_Interp *interp, Tcl_Obj *obj, int *color) {
  */
 static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
                  Tcl_Obj *const objv[]) {
-  unsigned int argi;
-  size_t subi;
   /* Check for subcommand. */
   if (argc < 2) {
     Tcl_SetResult(interp, "wrong # args: should be \"gd option ...\"",
@@ -361,7 +358,8 @@ static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
   }
 
   /* Find the subcommand. */
-  for (subi = 0; subi < sizeof(subcmdVec) / sizeof(subcmdVec[0]); subi++) {
+  for (size_t subi = 0; subi < sizeof(subcmdVec) / sizeof(subcmdVec[0]);
+       subi++) {
     if (streq(subcmdVec[subi].cmd, Tcl_GetString(objv[1]))) {
 
       /* Check arg count. */
@@ -379,8 +377,8 @@ static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
           Tcl_SetResult(interp, "GD handle(s) not specified", TCL_STATIC);
           return TCL_ERROR;
         }
-        for (argi = 2 + subcmdVec[subi].subcmds;
-             argi < (2 + subcmdVec[subi].subcmds + subcmdVec[subi].ishandle);
+        for (unsigned argi = 2 + subcmdVec[subi].subcmds;
+             argi < 2 + subcmdVec[subi].subcmds + subcmdVec[subi].ishandle;
              argi++) {
           if (objv[argi]->typePtr != &GdPtrType &&
               GdPtrTypeSet(interp, objv[argi]) != TCL_OK)
@@ -401,14 +399,14 @@ static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
         }
       }
       /* Call the subcommand function. */
-      return (*subcmdVec[subi].f)(interp, argc, objv);
+      return subcmdVec[subi].f(interp, argc, objv);
     }
   }
 
   /* If we get here, the option doesn't match. */
   Tcl_AppendResult(interp, "bad option \"", Tcl_GetString(objv[1]),
                    "\": should be ", 0);
-  for (subi = 0; subi < sizeof(subcmdVec) / sizeof(subcmdVec[0]); subi++)
+  for (size_t subi = 0; subi < sizeof(subcmdVec) / sizeof(subcmdVec[0]); subi++)
     Tcl_AppendResult(interp, (subi > 0 ? ", " : ""), subcmdVec[subi].cmd, 0);
   return TCL_ERROR;
 }
@@ -416,11 +414,9 @@ static int gdCmd(ClientData clientData, Tcl_Interp *interp, int argc,
 static int tclGdCreateCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   int w, h;
   gdImagePtr im = NULL;
-  char *cmd;
-  Tcl_Obj *result;
   int fileByName;
 
-  cmd = Tcl_GetString(objv[1]);
+  char *cmd = Tcl_GetString(objv[1]);
   if (streq(cmd, "create")) {
     int trueColor = 0;
     if (Tcl_GetIntFromObj(interp, objv[2], &w) != TCL_OK)
@@ -517,7 +513,7 @@ static int tclGdCreateCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
     }
   }
 
-  result = Tcl_NewObj();
+  Tcl_Obj *result = Tcl_NewObj();
   IMGPTR(result) = im;
   result->typePtr = &GdPtrType;
   result->bytes = NULL;
@@ -530,22 +526,17 @@ static int tclGdDestroyCmd(Tcl_Interp *interp, int argc,
   (void)interp;
   (void)argc;
 
-  gdImagePtr im;
-
   /* Get the image pointer and destroy it */
-  im = IMGPTR(objv[2]);
+  gdImagePtr im = IMGPTR(objv[2]);
   gdImageDestroy(im);
 
   return TCL_OK;
 }
 
 static int tclGdWriteCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
-  gdImagePtr im;
-  const char *cmd, *fname;
-  int fileByName;
   int arg4;
 
-  cmd = Tcl_GetString(objv[1]);
+  const char *cmd = Tcl_GetString(objv[1]);
   if (cmd[5] == 'J' || cmd[5] == 'W') {
     /* JPEG and WBMP expect an extra (integer) argument */
     if (argc < 5) {
@@ -570,11 +561,11 @@ static int tclGdWriteCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
     /* XXX no error-checking for the WBMP case here */
   }
   /* Get the image pointer. */
-  im = IMGPTR(objv[2]);
-  fname = Tcl_GetString(objv[3]);
+  gdImagePtr im = IMGPTR(objv[2]);
+  const char *fname = Tcl_GetString(objv[3]);
 
   /* Get the file reference. */
-  fileByName = 0; /* first try to get file from open channel */
+  int fileByName = 0; // first try to get file from open channel
   FILE *filePtr = NULL;
 #if !defined(_WIN32)
   ClientData clientdata;
@@ -643,11 +634,10 @@ static int tclGdWriteCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
 
 static int tclGdInterlaceCmd(Tcl_Interp *interp, int argc,
                              Tcl_Obj *const objv[]) {
-  gdImagePtr im;
   int on_off;
 
   /* Get the image pointer. */
-  im = IMGPTR(objv[2]);
+  gdImagePtr im = IMGPTR(objv[2]);
 
   if (argc == 4) {
     /* Get the on_off values. */
@@ -665,13 +655,12 @@ static int tclGdInterlaceCmd(Tcl_Interp *interp, int argc,
 }
 
 static int tclGdColorCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
-  gdImagePtr im;
-  int subi, nsub, i, args[3];
+  int args[3];
 
-  nsub = sizeof(colorCmdVec) / sizeof(colorCmdVec[0]);
+  int nsub = sizeof(colorCmdVec) / sizeof(colorCmdVec[0]);
   if (argc >= 3) {
     /* Find the subcommand. */
-    for (subi = 0; subi < nsub; subi++) {
+    for (int subi = 0; subi < nsub; subi++) {
       if (streq(colorCmdVec[subi].cmd, Tcl_GetString(objv[2]))) {
         /* Check arg count. */
         if ((unsigned)argc - 2 < colorCmdVec[subi].minargs ||
@@ -681,12 +670,12 @@ static int tclGdColorCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
         }
 
         /* Get the image pointer. */
-        im = IMGPTR(objv[3]);
+        gdImagePtr im = IMGPTR(objv[3]);
 
         /* Parse off integer arguments.
          * 1st 4 are gd color <opt> <handle>
          */
-        for (i = 0; i < argc - 4; i++) {
+        for (int i = 0; i < argc - 4; i++) {
           if (Tcl_GetIntFromObj(interp, objv[i + 4], &args[i]) != TCL_OK) {
 
             /* gd text uses -ve colors to turn off anti-aliasing */
@@ -711,7 +700,7 @@ static int tclGdColorCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
     Tcl_AppendResult(interp, "wrong # args: ", 0);
   }
   Tcl_AppendResult(interp, "should be ", 0);
-  for (subi = 0; subi < nsub; subi++)
+  for (int subi = 0; subi < nsub; subi++)
     Tcl_AppendResult(interp, subi > 0 ? ", " : "", colorCmdVec[subi].cmd, 0);
 
   return TCL_ERROR;
@@ -721,9 +710,7 @@ static int tclGdColorNewCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
                             const int args[]) {
   (void)argc;
 
-  int color;
-
-  color = gdImageColorAllocate(im, args[0], args[1], args[2]);
+  int color = gdImageColorAllocate(im, args[0], args[1], args[2]);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(color));
   return TCL_OK;
 }
@@ -732,9 +719,7 @@ static int tclGdColorExactCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
                               const int args[]) {
   (void)argc;
 
-  int color;
-
-  color = gdImageColorExact(im, args[0], args[1], args[2]);
+  int color = gdImageColorExact(im, args[0], args[1], args[2]);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(color));
   return TCL_OK;
 }
@@ -743,9 +728,7 @@ static int tclGdColorClosestCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
                                 const int args[]) {
   (void)argc;
 
-  int color;
-
-  color = gdImageColorClosest(im, args[0], args[1], args[2]);
+  int color = gdImageColorClosest(im, args[0], args[1], args[2]);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(color));
   return TCL_OK;
 }
@@ -754,9 +737,7 @@ static int tclGdColorResolveCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
                                 const int args[]) {
   (void)argc;
 
-  int color;
-
-  color = gdImageColorResolve(im, args[0], args[1], args[2]);
+  int color = gdImageColorResolve(im, args[0], args[1], args[2]);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(color));
   return TCL_OK;
 }
@@ -786,32 +767,31 @@ static int tclGdColorTranspCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
 
 static int tclGdColorGetCmd(Tcl_Interp *interp, gdImagePtr im, int argc,
                             const int args[]) {
-  int i, ncolors;
-  Tcl_Obj *tuple[4], *result;
+  Tcl_Obj *result;
 
-  ncolors = gdImageColorsTotal(im);
+  int ncolors = gdImageColorsTotal(im);
   /* IF one arg, return the single color, else return list of all colors. */
   if (argc == 1) {
-    i = args[0];
+    int i = args[0];
     if (i >= ncolors || im->open[i]) {
       Tcl_SetResult(interp, "No such color", TCL_STATIC);
       return TCL_ERROR;
     }
-    tuple[0] = Tcl_NewIntObj(i);
-    tuple[1] = Tcl_NewIntObj(gdImageRed(im, i));
-    tuple[2] = Tcl_NewIntObj(gdImageGreen(im, i));
-    tuple[3] = Tcl_NewIntObj(gdImageBlue(im, i));
-    Tcl_SetObjResult(interp, Tcl_NewListObj(4, tuple));
+    Tcl_Obj *tuple[] = {Tcl_NewIntObj(i), Tcl_NewIntObj(gdImageRed(im, i)),
+                        Tcl_NewIntObj(gdImageGreen(im, i)),
+                        Tcl_NewIntObj(gdImageBlue(im, i))};
+    const Tcl_Size tuple_size = sizeof(tuple) / sizeof(tuple[0]);
+    Tcl_SetObjResult(interp, Tcl_NewListObj(tuple_size, tuple));
   } else {
     result = Tcl_NewListObj(0, NULL);
-    for (i = 0; i < ncolors; i++) {
+    for (int i = 0; i < ncolors; i++) {
       if (im->open[i])
         continue;
-      tuple[0] = Tcl_NewIntObj(i);
-      tuple[1] = Tcl_NewIntObj(gdImageRed(im, i));
-      tuple[2] = Tcl_NewIntObj(gdImageGreen(im, i));
-      tuple[3] = Tcl_NewIntObj(gdImageBlue(im, i));
-      Tcl_ListObjAppendElement(NULL, result, Tcl_NewListObj(4, tuple));
+      Tcl_Obj *tuple[] = {Tcl_NewIntObj(i), Tcl_NewIntObj(gdImageRed(im, i)),
+                          Tcl_NewIntObj(gdImageGreen(im, i)),
+                          Tcl_NewIntObj(gdImageBlue(im, i))};
+      const Tcl_Size tuple_size = sizeof(tuple) / sizeof(tuple[0]);
+      Tcl_ListObjAppendElement(NULL, result, Tcl_NewListObj(tuple_size, tuple));
     }
     Tcl_SetObjResult(interp, result);
   }
@@ -823,11 +803,9 @@ static int tclGdBrushCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   (void)interp;
   (void)argc;
 
-  gdImagePtr im, imbrush;
-
   /* Get the image pointers. */
-  im = IMGPTR(objv[2]);
-  imbrush = IMGPTR(objv[3]);
+  gdImagePtr im = IMGPTR(objv[2]);
+  gdImagePtr imbrush = IMGPTR(objv[3]);
 
   /* Do it. */
   gdImageSetBrush(im, imbrush);
@@ -839,11 +817,9 @@ static int tclGdTileCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
   (void)interp;
   (void)argc;
 
-  gdImagePtr im, tile;
-
   /* Get the image pointers. */
-  im = IMGPTR(objv[2]);
-  tile = IMGPTR(objv[3]);
+  gdImagePtr im = IMGPTR(objv[2]);
+  gdImagePtr tile = IMGPTR(objv[3]);
 
   /* Do it. */
   gdImageSetTile(im, tile);
@@ -852,23 +828,23 @@ static int tclGdTileCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
 }
 
 static int tclGdStyleCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
-  gdImagePtr im;
-  int *colors = NULL;
-  Tcl_Obj **colorObjv =
-      (Tcl_Obj **)(&objv[3]); /* By default, colors are listed in objv. */
+  Tcl_Obj *const *colorObjv = &objv[3]; // by default, colors are listed in objv
   int retval = TCL_OK;
 
   /* Get the image pointer. */
-  im = IMGPTR(objv[2]);
+  gdImagePtr im = IMGPTR(objv[2]);
 
   /* Figure out how many colors in the style list and allocate memory. */
   Tcl_Size ncolor = (Tcl_Size)argc - 3;
   /* If only one argument, treat it as a list. */
-  if (ncolor == 1)
-    if (Tcl_ListObjGetElements(interp, objv[3], &ncolor, &colorObjv) != TCL_OK)
+  if (ncolor == 1) {
+    Tcl_Obj **colorObjp;
+    if (Tcl_ListObjGetElements(interp, objv[3], &ncolor, &colorObjp) != TCL_OK)
       return TCL_ERROR;
+    colorObjv = colorObjp;
+  }
 
-  colors = (int *)Tcl_Alloc((size_t)ncolor * sizeof(int));
+  int *colors = (int *)Tcl_Alloc((size_t)ncolor * sizeof(int));
   /* Get the color values. */
   for (Tcl_Size i = 0; i < ncolor; i++)
     if (Tcl_GetIntFromObj(interp, colorObjv[i], &colors[i]) != TCL_OK) {
@@ -1030,7 +1006,7 @@ static int tclGdPolygonCmd(Tcl_Interp *interp, int argc,
                            Tcl_Obj *const objv[]) {
   gdImagePtr im;
   int color;
-  Tcl_Obj **pointObjv = (Tcl_Obj **)(&objv[4]);
+  Tcl_Obj *const *pointObjv = &objv[4];
   gdPointPtr points = NULL;
   int retval = TCL_OK;
   char *cmd;
@@ -1045,9 +1021,12 @@ static int tclGdPolygonCmd(Tcl_Interp *interp, int argc,
   /* Figure out how many points in the list and allocate memory. */
   Tcl_Size npoints = (Tcl_Size)argc - 4;
   /* If only one argument, treat it as a list. */
-  if (npoints == 1)
-    if (Tcl_ListObjGetElements(interp, objv[4], &npoints, &pointObjv) != TCL_OK)
+  if (npoints == 1) {
+    Tcl_Obj **pointObjp;
+    if (Tcl_ListObjGetElements(interp, objv[4], &npoints, &pointObjp) != TCL_OK)
       return TCL_ERROR;
+    pointObjv = pointObjp;
+  }
 
   /* Error check size of point list. */
   if (npoints % 2 != 0) {
