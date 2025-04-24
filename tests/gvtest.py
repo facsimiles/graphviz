@@ -32,6 +32,9 @@ def run_raw(args: List[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
         The command’s stdout output.
     """
 
+    # dump the command being run for the user to observe if the test fails
+    print(f"+ {shlex.join(str(x) for x in args)}")
+
     is_stdout_decoded = kwargs.get("universal_newlines") or kwargs.get("text")
 
     if kwargs.get("stdout", subprocess.PIPE) == subprocess.PIPE:
@@ -87,6 +90,13 @@ def compile_c(
     cflags = os.environ.get("CFLAGS", "").split() + cflags
     ldflags = os.environ.get("LDFLAGS", "").split()
 
+    # on macOS, ensure the compiled binary can find Graphviz libraries at runtime
+    if is_macos():
+        dot_exe = shutil.which("dot")
+        assert dot_exe is not None, "`dot` not found"
+        lib = Path(dot_exe).parents[1] / "lib"
+        ldflags += [f"-Wl,-rpath,{lib}"]
+
     # expand link libraries into command line options
     pkgconf = shutil.which("pkg-config") or shutil.which("pkgconf")
     if pkgconf is not None and not is_cmake():
@@ -141,9 +151,6 @@ def compile_c(
         # construct an invocation of the default C compiler
         cc = os.environ.get("CC", "cc")
         args = [cc, "-std=c11", src, "-o", dst] + cflags + ldflags
-
-    # dump the command being run for the user to observe if the test fails
-    print(f"+ {shlex.join(str(x) for x in args)}")
 
     # compile the program
     try:
