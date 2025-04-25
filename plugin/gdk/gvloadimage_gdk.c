@@ -8,8 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include "config.h"
-
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -21,7 +19,6 @@
 #include <gvc/gvplugin_loadimage.h>
 #include <gvc/gvio.h>
 
-#ifdef HAVE_PANGOCAIRO
 #include <cairo.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk/gdk.h>
@@ -178,16 +175,12 @@ static gvloadimage_engine_t engine_gdk = {
     gdk_loadimage_cairo
 };
 
-#endif
-
 gvplugin_installed_t gvloadimage_gdk_types[] = {
-#ifdef HAVE_PANGOCAIRO
     {FORMAT_BMP_CAIRO,  "bmp:cairo", 1, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpe:cairo", 2, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpg:cairo", 2, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpeg:cairo", 2, &engine_gdk, NULL},
     {FORMAT_PNG_CAIRO,  "png:cairo", -1, &engine_gdk, NULL},
     {FORMAT_ICO_CAIRO,  "ico:cairo", 1, &engine_gdk, NULL},
-#endif
     {0, NULL, 0, NULL, NULL}
 };

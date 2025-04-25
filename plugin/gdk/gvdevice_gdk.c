@@ -8,14 +8,12 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include "config.h"
 #include <assert.h>
 #include <gvc/gvplugin_device.h>
 #include <gvc/gvio.h>
 #include <limits.h>
 #include <util/gv_math.h>
 #include <util/unreachable.h>
-#ifdef HAVE_PANGOCAIRO
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 enum {
@@ -92,10 +90,8 @@ static gvdevice_features_t device_features_gdk = {
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},                  /* dpi */
 };
-#endif
 
 gvplugin_installed_t gvdevice_gdk_types[] = {
-#ifdef HAVE_PANGOCAIRO
     {FORMAT_BMP, "bmp:cairo", 6, &gdk_engine, &device_features_gdk},
     {FORMAT_ICO, "ico:cairo", 6, &gdk_engine, &device_features_gdk},
     {FORMAT_JPEG, "jpe:cairo", 6, &gdk_engine, &device_features_gdk},
@@ -104,6 +100,5 @@ gvplugin_installed_t gvdevice_gdk_types[] = {
     {FORMAT_PNG, "png:cairo", 6, &gdk_engine, &device_features_gdk},
     {FORMAT_TIFF, "tif:cairo", 6, &gdk_engine, &device_features_gdk},
     {FORMAT_TIFF, "tiff:cairo", 6, &gdk_engine, &device_features_gdk},
-#endif
     {0, NULL, 0, NULL, NULL}
 };
