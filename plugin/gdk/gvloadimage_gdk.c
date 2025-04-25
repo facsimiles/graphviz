@@ -32,11 +32,9 @@ enum {
 
 static void gdk_set_mimedata_from_file (cairo_surface_t *image, const char *mime_type, const char *file)
 {
-    FILE *fp;
     unsigned char *data = NULL;
-    const char *id_prefix = "gvloadimage_gdk-";
 
-    fp = fopen (file, "rb");
+    FILE *const fp = fopen(file, "rb");
     if (fp == NULL)
         return;
     fseek (fp, 0, SEEK_END);
@@ -55,8 +53,8 @@ static void gdk_set_mimedata_from_file (cairo_surface_t *image, const char *mime
     if (data) {
         cairo_surface_set_mime_data (image, mime_type, data, (unsigned long)len, free, data);
         agxbuf id = {0};
-        agxbprint(&id, "%s%s", id_prefix, file);
-        char *unique_id = agxbdisown(&id);
+        agxbprint(&id, "gvloadimage_gdk-%s", file);
+        char *const unique_id = agxbdisown(&id);
         cairo_surface_set_mime_data(image, CAIRO_MIME_TYPE_UNIQUE_ID,
                                     (unsigned char*)unique_id,
                                     strlen(unique_id), free, unique_id);
