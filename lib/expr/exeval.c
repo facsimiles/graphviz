@@ -79,6 +79,12 @@ static int evaldyn(Expr_t *ex, Exnode_t *exnode, void *env, int delete) {
 	char *keyname;
 
 	v = eval(ex, exnode->data.variable.index, env);
+	if (exnode->data.variable.symbol->index > 0) {
+		if (ex->disc->inf != NULL) {
+			return ex->disc->inf(v, exnode->data.variable.symbol, ex->disc);
+		}
+		return 0; // treat the RHS as an empty array
+	}
 	if (exnode->data.variable.symbol->index_type == INTEGER) {
 		if (!(b = dtmatch(exnode->data.variable.symbol->local, &v))) {
 			return 0;

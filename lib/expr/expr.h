@@ -198,6 +198,18 @@ struct Exdisc_s				/* discipline			*/
 	/// @param disc Pointer to the containing discipline.
 	/// @return The “length”, according to the user’s interpretation.
 	Extype_t	(*lengthf)(Exid_t *rhs, Exdisc_t *disc);
+	/// array membership function
+	///
+	/// This callback allows a user-defined `in` handler. That is, extending the
+	/// array membership test’s function.
+	///
+	/// @param lhs The left-hand side operand. That is 'foo' in the expression
+	///   'foo in bar'.
+	/// @param rhs The right-hand side operand. That is 'bar' in the expression
+	///   'foo in bar'.
+	/// @param disc Pointer to the containing discipline.
+	/// @return 0 if `lhs` is not in the array `rhs`, non-zero otherwise
+	int		(*inf)(Extype_t lhs, Exid_t *rhs, Exdisc_t *disc);
 	/* exit function           */
 	Exexit_f	exitf;
 	int*		types;
