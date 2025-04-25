@@ -106,7 +106,6 @@ static cairo_surface_t* gdk_loadimage(GVJ_t * job, usershape_t *us)
     cairo_t *cr = job->context; /* target context */
     GdkPixbuf *image = NULL;
     cairo_surface_t *cairo_image = NULL;
-    cairo_pattern_t *pattern;
 
     assert(job);
     assert(us);
@@ -141,7 +140,7 @@ static cairo_surface_t* gdk_loadimage(GVJ_t * job, usershape_t *us)
         if (image) {
             cairo_save (cr);
             gdk_cairo_set_source_pixbuf (cr, image, 0, 0);
-            pattern = cairo_get_source (cr);
+            cairo_pattern_t *const pattern = cairo_get_source(cr);
             assert(cairo_pattern_get_type (pattern) == CAIRO_PATTERN_TYPE_SURFACE);
             cairo_pattern_get_surface (pattern, &cairo_image);
             cairo_image = cairo_surface_reference (cairo_image);
