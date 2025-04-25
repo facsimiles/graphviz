@@ -1327,7 +1327,15 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 		}
 		return v;
 	case '#':
-		v.integer = dtsize(exnode->data.variable.symbol->local);
+		if (exnode->data.variable.symbol->index > 0) {
+			if (ex->disc->lengthf != NULL) {
+				v = ex->disc->lengthf(exnode->data.variable.symbol, ex->disc);
+			} else {
+				exerror("%s: cannot get length", x->data.variable.symbol->name);
+			}
+		} else {
+			v.integer = dtsize(exnode->data.variable.symbol->local);
+		}
 		return v;
 	case IN_OP:
 		v.integer = evaldyn (ex, exnode, env, 0);
