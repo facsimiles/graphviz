@@ -166,6 +166,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   edge cases. #1949
 - Using `splines=curved` no longer causes crashes when cut points unexpectedly
   do not intersect bounding boxes. #1453
+- In the CMake build system, the configuration step during installation
+  (`dot -c`) now anticipates that `$LD_LIBRARY_PATH` and `$DYLD_LIBRARY_PATH`
+  may be non-empty. #2676
 
 ## [12.2.1] – 2024-12-07
 
