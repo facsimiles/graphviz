@@ -162,9 +162,7 @@ static void gdk_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fille
     (void)filled;
 
     cairo_t *cr = job->context; /* target context */
-    cairo_surface_t *image;
-
-    image = gdk_loadimage(job, us);
+    cairo_surface_t *const image = gdk_loadimage(job, us);
     if (image) {
         cairo_save(cr);
 	cairo_translate(cr, b.LL.x, -b.UR.y);
