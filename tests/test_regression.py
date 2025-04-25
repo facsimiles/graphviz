@@ -4583,14 +4583,7 @@ def test_2577_1():
 @pytest.mark.parametrize(
     "program,a_arg,expected",
     (
-        pytest.param(
-            "BEGIN { print(#ARGV); }",
-            "abc",
-            "1",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2582"
-            ),
-        ),
+        ("BEGIN { print(#ARGV); }", "abc", "1"),
         pytest.param(
             "BEGIN { print(0 in ARGV); }",
             "abc",

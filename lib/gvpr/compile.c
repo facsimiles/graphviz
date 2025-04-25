@@ -1643,6 +1643,29 @@ static int setval(Expr_t *pgm, Exnode_t *x, Exid_t *sym, Exref_t *ref,
   return setattr(objp, sym->name, v.string);
 }
 
+/// gvpr’s custom `#` implementation
+///
+/// The main purpose of this is to extend `#` to work on the command line
+/// options array, `ARGV`.
+///
+/// @param rhs The right-hand side operand to `#`.
+/// @param disc The libexpr discipline.
+/// @return The “length” as defined by us.
+static Extype_t length(Exid_t *rhs, Exdisc_t *disc) {
+  Extype_t v = {0};
+  switch (rhs->index) {
+  case A_ARGV: {
+    Gpr_t *const state = disc->user;
+    v.integer = state->argc;
+    break;
+  }
+  default:
+    exerror("unknown array name: %s", rhs->name);
+    break;
+  }
+  return v;
+}
+
 static int codePhase;
 
 #define haveGraph (1 <= codePhase && codePhase <= 4)
@@ -2188,6 +2211,7 @@ static Exdisc_t *initDisc(Gpr_t *state) {
   dp->getf = getval;
   dp->reff = refval;
   dp->setf = setval;
+  dp->lengthf = length;
   dp->exitf = state->exitf;
   dp->types = a2t;
   dp->user = state;

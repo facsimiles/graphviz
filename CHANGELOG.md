@@ -110,6 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   families.
 - **Breaking**: The function `aginternalmapclearlocalnames` has been removed.
   #2664
+- In gvpr programs, the `#` operator now works on `ARGV`. #2582
 
 ### Fixed
 
