@@ -760,6 +760,11 @@ expr		:	'(' expr ')'
 			$$ = exnewnode(expr.program, '#', false, INTEGER, NULL, NULL);
 			$$->data.variable.symbol = $2;
 		}
+		|	'#' ARRAY
+		{
+			$$ = exnewnode(expr.program, '#', false, INTEGER, NULL, NULL);
+			$$->data.variable.symbol = $2;
+		}
 		|	'~' expr
 		{
 			goto iunary;
