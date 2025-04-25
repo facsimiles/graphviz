@@ -4584,14 +4584,7 @@ def test_2577_1():
     "program,a_arg,expected",
     (
         ("BEGIN { print(#ARGV); }", "abc", "1"),
-        pytest.param(
-            "BEGIN { print(0 in ARGV); }",
-            "abc",
-            "1",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2582"
-            ),
-        ),
+        ("BEGIN { print(0 in ARGV); }", "abc", "1"),
         (
             'BEGIN {string argv[int]; argv[0] = "abc"; print(#argv); print(0 in argv);}',
             None,
