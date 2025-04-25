@@ -13,7 +13,6 @@
 #include <gvc/gvio.h>
 #include <limits.h>
 #include <util/gv_math.h>
-#include <util/unreachable.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 enum {
@@ -32,28 +31,17 @@ static gboolean writer(const char *buf, gsize count, GError **error,
 
 static void gdk_format(GVJ_t * job)
 {
-    char *format_str = "";
+    char *const format_strs[] = {
+	[FORMAT_BMP] = "bmp",
+	[FORMAT_ICO] = "ico",
+	[FORMAT_JPEG] = "jpeg",
+	[FORMAT_PNG] = "png",
+	[FORMAT_TIFF] = "tiff"
+    };
+    assert(job->device.id >= 0);
+    assert(job->device.id < sizeof(format_strs) / sizeof(format_strs[0]));
+    char *const format_str = format_strs[job->device.id];
     GdkPixbuf *pixbuf;
-
-    switch (job->device.id) {
-    case FORMAT_BMP:
-	format_str = "bmp";
-	break;
-    case FORMAT_ICO:
-	format_str = "ico";
-	break;
-    case FORMAT_JPEG:
-	format_str = "jpeg";
-	break;
-    case FORMAT_PNG:
-	format_str = "png";
-	break;
-    case FORMAT_TIFF:
-	format_str = "tiff";
-	break;
-    default:
-	UNREACHABLE();
-    }
 
     argb2rgba(job->width, job->height, job->imagedata);
 
