@@ -25,12 +25,12 @@
 static int get_temp_coords(topview * t, int level, int v, double *coord_x,
 			   double *coord_y);
 
-static void color_interpolation(glCompColor srcColor, glCompColor tarColor,
+static int color_interpolation(glCompColor srcColor, glCompColor tarColor,
 				glCompColor * color, int levelcount,
 				int level)
 {
     if (levelcount <= 0)
-	return;
+	return -1;
 
 
     color->R =
@@ -42,6 +42,7 @@ static void color_interpolation(glCompColor srcColor, glCompColor tarColor,
     color->B =
 	((float) level * tarColor.B - (float) level * srcColor.B +
 	 (float) levelcount * srcColor.B) / (float) levelcount;
+    return 0;
 }
 
 static v_data *makeGraph(Agraph_t* gg, int *nedges)
@@ -222,8 +223,10 @@ static void drawtopfishnodes(topview * t)
 
 		if (max_visible_level < level)
 		    max_visible_level = level;
-		color_interpolation(srcColor, tarColor, &color,
-				    max_visible_level, level);
+		if (color_interpolation(srcColor, tarColor, &color, max_visible_level, level)
+		    != 0) {
+		    continue;
+		}
 		glColor4f(color.R, color.G, color.B, view->defaultnodealpha);
 
 		glVertex3f((float)x0, (float)y0, 0.0f);
@@ -258,8 +261,10 @@ static void drawtopfishedges(topview * t)
 
 		    if (max_visible_level < level)
 			max_visible_level = level;
-		    color_interpolation(srcColor, tarColor, &color,
-					max_visible_level, level);
+		    if (color_interpolation(srcColor, tarColor, &color, max_visible_level,
+		        level) != 0) {
+			continue;
+		    }
 		    glColor4f(color.R, color.G, color.B, view->defaultnodealpha);
 
 		    if (get_temp_coords(t, level, n, &x, &y)) {
