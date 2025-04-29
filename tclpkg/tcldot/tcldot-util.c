@@ -104,11 +104,8 @@ void deleteNode(gctx_t * gctx, Agraph_t *g, Agnode_t *n)
 }
 static void deleteGraphNodes(gctx_t * gctx, Agraph_t *g)
 {
-    Agnode_t *n, *n1;
-
-    n = agfstnode(g);
-    while (n) {
-	n1 = agnxtnode(g, n);
+    for (Agnode_t *n = agfstnode(g); n != NULL; ) {
+	Agnode_t *const n1 = agnxtnode(g, n);
 	deleteNode(gctx, g, n);
 	n = n1;
     }
