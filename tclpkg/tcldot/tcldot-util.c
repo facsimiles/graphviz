@@ -118,12 +118,12 @@ void deleteGraph(gctx_t * gctx, Agraph_t *g)
     deleteGraphNodes(gctx, g);
 
     char *const hndl = obj2cmd(g);
+    Tcl_DeleteCommand(gctx->ictx->interp, hndl);
     if (g == agroot(g)) {
 	agclose(g);
     } else {
 	agdelsubg(agroot(g), g);
     }
-    Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 
 static void myagxset(void *obj, Agsym_t *a, const char *val) {
