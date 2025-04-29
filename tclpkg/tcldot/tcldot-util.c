@@ -86,11 +86,8 @@ void deleteEdge(gctx_t *gctx, Agraph_t * g, Agedge_t *e)
 }
 static void deleteNodeEdges(gctx_t *gctx, Agraph_t *g, Agnode_t *n)
 {
-    Agedge_t *e, *e1;
-
-    e = agfstedge(g, n);
-    while (e) {
-	e1 = agnxtedge(g, e, n);
+    for (Agedge_t *e = agfstedge(g, n); e != NULL; ) {
+	Agedge_t *const e1 = agnxtedge(g, e, n);
 	deleteEdge(gctx, g, e);
 	e = e1;
     }
