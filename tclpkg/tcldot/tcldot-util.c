@@ -96,11 +96,9 @@ void deleteNode(gctx_t * gctx, Agraph_t *g, Agnode_t *n)
 {
     (void)g;
 
-    char *hndl;
-
     deleteNodeEdges(gctx, gctx->g, n); /* delete all edges to/from node in root graph */
 
-    hndl = obj2cmd(n);
+    char *const hndl = obj2cmd(n);
     agdelete(gctx->g, n); /* delete node from root graph */
     Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
