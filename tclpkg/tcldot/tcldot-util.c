@@ -80,9 +80,7 @@ void deleteEdge(gctx_t *gctx, Agraph_t * g, Agedge_t *e)
 {
     (void)g;
 
-    char *hndl;
-
-    hndl = obj2cmd(e);
+    char *const hndl = obj2cmd(e);
     agdelete(gctx->g, e);  /* delete edge from root graph */
     Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
