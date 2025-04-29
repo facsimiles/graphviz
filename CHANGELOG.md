@@ -174,6 +174,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rather than referencing invalid memory. #1581
 - When using the Tcl bindings, deleting a graph no longer triggers a
   use-after-free. This was a regression in Graphviz 2.30. #2618
+- The `layout` command in the Tcl bindings works once again. This was a
+  regression in Graphviz 2.42.0. #2618
 
 ## [12.2.1] – 2024-12-07
 
