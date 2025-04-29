@@ -36,7 +36,6 @@ typedef struct {
 typedef struct {
     Agraph_t *g;        /* the graph */
     ictx_t *ictx;
-    uint64_t idx; 
 } gctx_t;
 
 #ifdef HAVE_LIBGD
