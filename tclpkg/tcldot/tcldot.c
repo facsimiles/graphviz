@@ -24,7 +24,7 @@ static int dotnew_internal(ClientData clientData, Tcl_Interp *interp, int argc,
   int i;
   Agdesc_t kind;
 
-  if ((argc < 2)) {
+  if (argc < 2) {
     Tcl_AppendResult(
         interp, "wrong # args: should be \"", argv[0],
         " graphtype ?graphname? ?attributename attributevalue? ?...?\"", NULL);
@@ -171,8 +171,8 @@ int Tcldot_Init(Tcl_Interp *interp) {
   ictx->myioDisc.putstr = AgIoDisc.putstr; /* no change */
   ictx->myioDisc.flush = AgIoDisc.flush;   /* no change */
 
-  ictx->mydisc.id = &myiddisc;         /* complete replacement */
-  ictx->mydisc.io = &(ictx->myioDisc); /* change parts */
+  ictx->mydisc.id = &myiddisc;       /* complete replacement */
+  ictx->mydisc.io = &ictx->myioDisc; /* change parts */
 
   ictx->ctr = 1; /* init to first odd number,  increment by 2 */
 
