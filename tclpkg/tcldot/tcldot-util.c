@@ -122,15 +122,12 @@ static void deleteGraphNodes(gctx_t * gctx, Agraph_t *g)
 }
 void deleteGraph(gctx_t * gctx, Agraph_t *g)
 {
-    Agraph_t *sg;
-    char *hndl;
-
-    for (sg = agfstsubg (g); sg; sg = agnxtsubg (sg)) {
+    for (Agraph_t *sg = agfstsubg (g); sg; sg = agnxtsubg (sg)) {
 	deleteGraph(gctx, sg);
     }
     deleteGraphNodes(gctx, g);
 
-    hndl = obj2cmd(g);
+    char *const hndl = obj2cmd(g);
     if (g == agroot(g)) {
 	agclose(g);
     } else {
