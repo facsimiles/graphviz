@@ -136,7 +136,9 @@ static inline char *gv_strndup(const char *original, size_t length) {
   }
 
   copy = (char *)gv_alloc(length + 1);
-  memcpy(copy, original, length);
+  if (length > 0) {
+    memcpy(copy, original, length);
+  }
 
   // `gv_alloc` has already zeroed the backing memory, so no need to manually
   // add a NUL terminator
