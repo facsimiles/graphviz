@@ -1,5 +1,4 @@
 digraph G {
-	style=bold;
 	subloaph cluster_outer {
 		Act_1 -> Act_61;
 		Act_1 -> -1585912955559908482Act_3;
