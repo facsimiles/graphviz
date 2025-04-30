@@ -1,4 +1,4 @@
-digraph G {
+digraph {
 	subloaph cluster_outer {
 		Act_1 -> Act_61;
 		Act_1 -> Act_3;
