@@ -1092,10 +1092,6 @@ def test_1494():
     ), "malformed input caused a double free()"
 
 
-@pytest.mark.xfail(
-    strict=not is_ndebug_defined(),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1541",
-)
 def test_1541():
     """
     processing this input should not trigger an assertion failure

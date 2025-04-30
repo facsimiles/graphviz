@@ -978,6 +978,9 @@ void rec_reset_vlists(graph_t * g)
     if (GD_rankleader(g))
 	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	    v = GD_rankleader(g)[r];
+	    if (v == NULL) {
+	        continue;
+	    }
 #ifdef DEBUG
 	    node_in_root_vlist(v);
 #endif

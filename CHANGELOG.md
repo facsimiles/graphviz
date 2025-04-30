@@ -178,6 +178,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   regression in Graphviz 2.42.0. #2618
 - In the CMake build system, configuring with
   `-DENABLE_PYTHON=ON -DENABLE_SWIG=ON` no longer spuriously fails. #2675
+- An assertion failure when processing graphs with empty ranks has been fixed.
+  #1541
 
 ## [12.2.1] – 2024-12-07
 
