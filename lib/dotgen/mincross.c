@@ -910,7 +910,7 @@ assert(v);
 	    rv = GD_rank(Root)[ND_rank(v)].v[ND_order(v) - 1];
     } else
 	rv = GD_rank(Root)[ND_rank(v)].v[ND_order(v) + 1];
-assert((rv == 0) || (ND_order(rv)-ND_order(v))*dir > 0);
+assert(rv == 0 || (ND_order(rv)-ND_order(v))*dir > 0);
     return rv;
 }
 
