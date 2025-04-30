@@ -968,24 +968,21 @@ void rec_save_vlists(graph_t * g)
 
 void rec_reset_vlists(graph_t * g)
 {
-    int r, c;
-    node_t *u, *v, *w;
-
-    /* fix vlists of sub-clusters */
-    for (c = 1; c <= GD_n_cluster(g); c++)
+    // fix vlists of sub-clusters
+    for (int c = 1; c <= GD_n_cluster(g); c++)
 	rec_reset_vlists(GD_clust(g)[c]);
 
     if (GD_rankleader(g))
-	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	    v = GD_rankleader(g)[r];
+	for (int r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	    node_t *const v = GD_rankleader(g)[r];
 	    if (v == NULL) {
 	        continue;
 	    }
 #ifdef DEBUG
 	    node_in_root_vlist(v);
 #endif
-	    u = furthestnode(g, v, -1);
-	    w = furthestnode(g, v, 1);
+	    node_t *const u = furthestnode(g, v, -1);
+	    node_t *const w = furthestnode(g, v, 1);
 	    GD_rankleader(g)[r] = u;
 #ifdef DEBUG
 	    assert(GD_rank(dot_root(g))[r].v[ND_order(u)] == u);
