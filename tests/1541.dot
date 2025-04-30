@@ -3,19 +3,19 @@ digraph G {
 		Act_1 -> Act_61;
 		Act_1 -> Act_3;
 		subgraph cluster_inner {
-			{Act_21 -> Act_22 [minlen=2]; rank=same;}
+			{Act_21 -> Act_22; rank=same;}
 			Act_22 -> Act_23;
 			Act_22 -> Act_24;
-			{Act_23 -> Act_24 [minlen=2]; rank=same;}
+			{Act_23 -> Act_24; rank=same;}
 			Act_23 -> Act_25;
 			Act_24 -> Act_25;
 		}
 	}
 	Ext_1 -> Act_1;
-	Act_3 -> Ex	{Act_21 -> Act_22 [minlen=2]; rank=same;}
+	Act_3 -> Ex	{Act_21 -> Act_22; rank=same;}
 			Act_22 -> Act_23;
 			Act_22 -> Act_24;
-			{Act_23 -> Act_24 [minlen=2]; rank=same;}
+			{Act_23 -> Act_24; rank=same;}
 			Act_23 -> Act_25;
 			Act_24 -> Act_25;
 		}
