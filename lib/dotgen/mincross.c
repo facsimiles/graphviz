@@ -903,9 +903,7 @@ static void cleanup2(graph_t *g, int64_t nc) {
 
 static node_t *neighbor(node_t * v, int dir)
 {
-    node_t *rv;
-
-    rv = NULL;
+    node_t *rv = NULL;
 assert(v);
     if (dir < 0) {
 	if (ND_order(v) > 0)
