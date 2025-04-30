@@ -1092,6 +1092,30 @@ def test_1494():
     ), "malformed input caused a double free()"
 
 
+@pytest.mark.xfail(
+    strict=not is_ndebug_defined(),
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/1541",
+)
+def test_1541():
+    """
+    processing this input should not trigger an assertion failure
+    https://gitlab.com/graphviz/graphviz/-/issues/1514
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1541.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    proc = subprocess.run(
+        ["dot", "-o", os.devnull, input], stderr=subprocess.PIPE, check=False
+    )
+
+    assert (
+        re.search(rb"\bAssertion `v' failed\b", proc.stderr) is None
+    ), "malformed input caused an assertion failure"
+
+
 def test_1554():
     """
     small distances between nodes should not cause a crash in majorization
