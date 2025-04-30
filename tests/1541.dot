@@ -3,7 +3,6 @@ digraph G {
 		Act_1 -> Act_61;
 		Act_1 -> Act_3;
 		subgraph cluster_inner {
-			label = "                          Act_2";
 			{Act_21 -> Act_22 [minlen=2]; rank=same;}
 			Act_22 -> Act_23;
 			Act_22 -> Act_24;
