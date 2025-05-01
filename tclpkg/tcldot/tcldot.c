@@ -15,6 +15,7 @@
 #include <string.h>
 #include <tcl.h>
 #include <util/alloc.h>
+#include <util/streq.h>
 
 static int dotnew_internal(ClientData clientData, Tcl_Interp *interp, int argc,
                            char *argv[]) {
@@ -29,13 +30,13 @@ static int dotnew_internal(ClientData clientData, Tcl_Interp *interp, int argc,
         " graphtype ?graphname? ?attributename attributevalue? ?...?\"", NULL);
     return TCL_ERROR;
   }
-  if (strcmp("digraph", argv[1]) == 0) {
+  if (streq("digraph", argv[1])) {
     kind = Agdirected;
-  } else if (strcmp("digraphstrict", argv[1]) == 0) {
+  } else if (streq("digraphstrict", argv[1])) {
     kind = Agstrictdirected;
-  } else if (strcmp("graph", argv[1]) == 0) {
+  } else if (streq("graph", argv[1])) {
     kind = Agundirected;
-  } else if (strcmp("graphstrict", argv[1]) == 0) {
+  } else if (streq("graphstrict", argv[1])) {
     kind = Agstrictundirected;
   } else {
     Tcl_AppendResult(interp, "bad graphtype \"", argv[1], "\": must be one of:",
@@ -177,10 +178,12 @@ int Tcldot_Init(Tcl_Interp *interp) {
 
 #ifdef USE_TCL_STUBS
   if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
+    free(ictx);
     return TCL_ERROR;
   }
 #else
   if (Tcl_PkgRequire(interp, "Tcl", TCL_VERSION, 0) == NULL) {
+    free(ictx);
     return TCL_ERROR;
   }
 #endif
@@ -194,6 +197,7 @@ int Tcldot_Init(Tcl_Interp *interp) {
             strlen(tilde_dev + strlen("~dev.")) + 1);
   }
   if (Tcl_PkgProvide(interp, "Tcldot", adjusted_version) != TCL_OK) {
+    free(ictx);
     return TCL_ERROR;
   }
 
