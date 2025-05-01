@@ -79,6 +79,12 @@ static int evaldyn(Expr_t *ex, Exnode_t *exnode, void *env, int delete) {
 	char *keyname;
 
 	v = eval(ex, exnode->data.variable.index, env);
+	if (exnode->data.variable.symbol->index > 0) {
+		if (ex->disc->inf != NULL) {
+			return ex->disc->inf(v, exnode->data.variable.symbol, ex->disc);
+		}
+		return 0; // treat the RHS as an empty array
+	}
 	if (exnode->data.variable.symbol->index_type == INTEGER) {
 		if (!(b = dtmatch(exnode->data.variable.symbol->local, &v))) {
 			return 0;
@@ -1327,7 +1333,15 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 		}
 		return v;
 	case '#':
-		v.integer = dtsize(exnode->data.variable.symbol->local);
+		if (exnode->data.variable.symbol->index > 0) {
+			if (ex->disc->lengthf != NULL) {
+				v = ex->disc->lengthf(exnode->data.variable.symbol, ex->disc);
+			} else {
+				exerror("%s: cannot get length", x->data.variable.symbol->name);
+			}
+		} else {
+			v.integer = dtsize(exnode->data.variable.symbol->local);
+		}
 		return v;
 	case IN_OP:
 		v.integer = evaldyn (ex, exnode, env, 0);

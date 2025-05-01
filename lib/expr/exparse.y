@@ -760,6 +760,11 @@ expr		:	'(' expr ')'
 			$$ = exnewnode(expr.program, '#', false, INTEGER, NULL, NULL);
 			$$->data.variable.symbol = $2;
 		}
+		|	'#' ARRAY
+		{
+			$$ = exnewnode(expr.program, '#', false, INTEGER, NULL, NULL);
+			$$->data.variable.symbol = $2;
+		}
 		|	'~' expr
 		{
 			goto iunary;
@@ -936,6 +941,15 @@ expr		:	'(' expr ')'
               			exerror("cannot apply IN to non-array %s", $3->name);
 			if ($3->index_type > 0 && $1->type != $3->index_type)
             		    exerror("%s indices must have type %s, not %s", 
+				$3->name, extypename(expr.program, $3->index_type),extypename(expr.program, $1->type));
+			$$ = exnewnode(expr.program, IN_OP, false, INTEGER, NULL, NULL);
+			$$->data.variable.symbol = $3;
+			$$->data.variable.index = $1;
+		}
+		|	expr IN_OP ARRAY
+		{
+			if ($3->index_type > 0 && $1->type != $3->index_type)
+            		    exerror("%s indices must have type %s, not %s",
 				$3->name, extypename(expr.program, $3->index_type),extypename(expr.program, $1->type));
 			$$ = exnewnode(expr.program, IN_OP, false, INTEGER, NULL, NULL);
 			$$->data.variable.symbol = $3;

@@ -24,7 +24,7 @@ import textwrap
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Iterator, List, Set, Tuple
+from typing import Iterator, List, Optional, Set, Tuple
 
 import pexpect
 import pytest
@@ -4578,6 +4578,40 @@ def test_2577_1():
 
     # it should have printed the expected text
     assert output == "hello world\n", "gvpr cannot handle empty strings to printf"
+
+
+@pytest.mark.parametrize(
+    "program,a_arg,expected",
+    (
+        ("BEGIN { print(#ARGV); }", "abc", "1"),
+        ("BEGIN { print(0 in ARGV); }", "abc", "1"),
+        (
+            'BEGIN {string argv[int]; argv[0] = "abc"; print(#argv); print(0 in argv);}',
+            None,
+            "1\n1",
+        ),
+    ),
+)
+@pytest.mark.skipif(which("gvpr") is None, reason="GVPR not available")
+def test_2582(program: str, a_arg: Optional[str], expected: str):
+    """
+    gvpr should treat `ARGV` as an array
+    https://gitlab.com/graphviz/graphviz/-/issues/2582
+
+    Args:
+        program: Program text to run in gvpr
+        a_arg: An optional parameter to pass via `-a …` to gvpr
+        expected: Expected output
+    """
+    gvprbin = which("gvpr")
+    args = [gvprbin]
+    if a_arg is not None:
+        args += ["-a", a_arg]
+    args += [program]
+
+    actual = run(args)
+
+    assert actual.strip() == expected, "unexpected GVPR program output"
 
 
 @pytest.mark.parametrize(

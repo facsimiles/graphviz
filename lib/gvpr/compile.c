@@ -1643,6 +1643,51 @@ static int setval(Expr_t *pgm, Exnode_t *x, Exid_t *sym, Exref_t *ref,
   return setattr(objp, sym->name, v.string);
 }
 
+/// gvpr’s custom `#` implementation
+///
+/// The main purpose of this is to extend `#` to work on the command line
+/// options array, `ARGV`.
+///
+/// @param rhs The right-hand side operand to `#`.
+/// @param disc The libexpr discipline.
+/// @return The “length” as defined by us.
+static Extype_t length(Exid_t *rhs, Exdisc_t *disc) {
+  Extype_t v = {0};
+  switch (rhs->index) {
+  case A_ARGV: {
+    Gpr_t *const state = disc->user;
+    v.integer = state->argc;
+    break;
+  }
+  default:
+    exerror("unknown array name: %s", rhs->name);
+    break;
+  }
+  return v;
+}
+
+/// gvpr’s custom `in` implementation
+///
+/// The main purpose of this is to extend `in` to work on the command line
+/// options array, `ARGV`.
+///
+/// @param lhs The left-hand side operand to `in`.
+/// @param rhs The right-hand side operand to `in`.
+/// @param disc The libexpr discipline.
+/// @return Non-zero if `lhs` was found to be within `rhs`.
+static int in(Extype_t lhs, Exid_t *rhs, Exdisc_t *disc) {
+  switch (rhs->index) {
+  case A_ARGV: {
+    Gpr_t *const state = disc->user;
+    return lhs.integer >= 0 && lhs.integer < state->argc;
+  }
+  default:
+    exerror("unknown array name: %s", rhs->name);
+    break;
+  }
+  return 0;
+}
+
 static int codePhase;
 
 #define haveGraph (1 <= codePhase && codePhase <= 4)
@@ -2188,6 +2233,8 @@ static Exdisc_t *initDisc(Gpr_t *state) {
   dp->getf = getval;
   dp->reff = refval;
   dp->setf = setval;
+  dp->lengthf = length;
+  dp->inf = in;
   dp->exitf = state->exitf;
   dp->types = a2t;
   dp->user = state;
