@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 """
 (brewer_colors, svgcolor_names, color_names) → colortbl.h generator
