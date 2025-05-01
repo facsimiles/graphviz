@@ -1338,6 +1338,7 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 				v = ex->disc->lengthf(exnode->data.variable.symbol, ex->disc);
 			} else {
 				exerror("%s: cannot get length", x->data.variable.symbol->name);
+				v.integer = 0;
 			}
 		} else {
 			v.integer = dtsize(exnode->data.variable.symbol->local);
