@@ -293,8 +293,8 @@ attach_phase_attrs (Agraph_t * g, int maxphase)
     agxbfree(&buf);
 }
 
-static void dotLayout(Agraph_t * g)
-{
+/// @return 0 on success
+static int dotLayout(Agraph_t *g) {
     int maxphase = late_int(g, agfindgraphattr(g,"phase"), -1, 1);
 
     setEdgeType (g, EDGETYPE_SPLINE);
@@ -309,15 +309,18 @@ static void dotLayout(Agraph_t * g)
     dot_rank(g);
     if (maxphase == 1) {
         attach_phase_attrs (g, 1);
-        return;
+        return 0;
     }
     if (Verbose) {
         fputs("Starting phase 2 [dot_mincross]\n", stderr);
     }
-    dot_mincross(g);
+    const int rc = dot_mincross(g);
+    if (rc != 0) {
+        return rc;
+    }
     if (maxphase == 2) {
         attach_phase_attrs (g, 2);
-        return;
+        return 0;
     }
     if (Verbose) {
         fputs("Starting phase 3 [dot_position]\n", stderr);
@@ -325,14 +328,18 @@ static void dotLayout(Agraph_t * g)
     dot_position(g);
     if (maxphase == 3) {
         attach_phase_attrs (g, 2);  /* positions will be attached on output */
-        return;
+        return 0;
     }
     if (GD_flags(g) & NEW_RANK)
 	removeFill (g);
     dot_sameports(g);
-    dot_splines(g);
+    const int r = dot_splines(g);
+    if (r != 0) {
+	return r;
+    }
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
+    return 0;
 }
 
 static void
@@ -437,9 +444,10 @@ static void copyClusterInfo(size_t ncc, Agraph_t **ccs, Agraph_t *root) {
 
 /* doDot:
  * Assume g has nodes.
+ *
+ * @return 0 on success
  */
-static void doDot (Agraph_t* g)
-{
+static int doDot(Agraph_t *g) {
     Agraph_t **ccs;
     Agraph_t *sg;
     pack_info pinfo;
@@ -451,7 +459,10 @@ static void doDot (Agraph_t* g)
 	/* No pack information; use old dot with components
          * handled during layout
          */
-	dotLayout(g);
+	const int rc = dotLayout(g);
+	if (rc != 0) {
+	    return rc;
+	}
     } else {
 	/* fill in default values */
 	if (mode == l_undef) 
@@ -466,14 +477,22 @@ static void doDot (Agraph_t* g)
 	size_t ncc;
 	ccs = cccomps(g, &ncc, 0);
 	if (ncc == 1) {
-	    dotLayout(g);
+	    const int rc = dotLayout(g);
+	    if (rc != 0) {
+		free(ccs);
+		return rc;
+	    }
 	} else if (GD_drawing(g)->ratio_kind == R_NONE) {
 	    pinfo.doSplines = true;
 
 	    for (size_t i = 0; i < ncc; i++) {
 		sg = ccs[i];
 		initSubg (sg, g);
-		dotLayout (sg);
+		const int rc = dotLayout (sg);
+		if (rc != 0) {
+		    free(ccs);
+		    return rc;
+		}
 	    }
 	    attachPos (g);
 	    packSubgraphs(ncc, ccs, g, &pinfo);
@@ -485,7 +504,11 @@ static void doDot (Agraph_t* g)
              * One possibility is to layout nodes, pack, then apply the ratio
              * adjustment. We would then have to re-adjust all positions.
              */
-	    dotLayout(g);
+	    const int rc = dotLayout(g);
+	    if (rc != 0) {
+		free(ccs);
+		return rc;
+	    }
 	}
 
 	for (size_t i = 0; i < ncc; i++) {
@@ -495,11 +518,16 @@ static void doDot (Agraph_t* g)
 	}
 	free(ccs);
     }
+    return 0;
 }
 
 void dot_layout(Agraph_t * g)
 {
-    if (agnnodes(g)) doDot (g);
+    if (agnnodes(g)) {
+	if (doDot(g) != 0) { // error?
+	    return;
+	}
+    }
     dotneato_postprocess(g);
 }
 

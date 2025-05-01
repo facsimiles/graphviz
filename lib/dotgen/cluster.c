@@ -287,21 +287,24 @@ remove_rankleaders(graph_t * g)
 }
 
 /* delete virtual nodes of a cluster, and install real nodes or sub-clusters */
-void expand_cluster(graph_t * subg)
-{
+int expand_cluster(graph_t *subg) {
     /* build internal structure of the cluster */
     class2(subg);
     GD_comp(subg).size = 1;
     GD_comp(subg).list[0] = GD_nlist(subg);
     allocate_ranks(subg);
     ints_t scratch = {0};
-    build_ranks(subg, 0, &scratch);
+    const int rc = build_ranks(subg, 0, &scratch);
     ints_free(&scratch);
+    if (rc != 0) {
+        return rc;
+    }
     merge_ranks(subg);
 
     /* build external structure of the cluster */
     interclexp(subg);
     remove_rankleaders(subg);
+    return 0;
 }
 
 /* this function marks every node in <g> with its top-level cluster under <g> */
@@ -386,18 +389,23 @@ void build_skeleton(graph_t * g, graph_t * subg)
     }
 }
 
-void install_cluster(graph_t *g, node_t *n, int pass, node_queue_t *q) {
+int install_cluster(graph_t *g, node_t *n, int pass, node_queue_t *q) {
     int r;
     graph_t *clust;
 
     clust = ND_clust(n);
     if (GD_installed(clust) != pass + 1) {
-	for (r = GD_minrank(clust); r <= GD_maxrank(clust); r++)
-	    install_in_rank(g, GD_rankleader(clust)[r]);
+	for (r = GD_minrank(clust); r <= GD_maxrank(clust); r++) {
+	    const int rc = install_in_rank(g, GD_rankleader(clust)[r]);
+	    if (rc != 0) {
+	        return rc;
+	    }
+	}
 	for (r = GD_minrank(clust); r <= GD_maxrank(clust); r++)
 	    enqueue_neighbors(q, GD_rankleader(clust)[r], pass);
 	GD_installed(clust) = pass + 1;
     }
+    return 0;
 }
 
 static void mark_lowcluster_basic(Agraph_t * g);

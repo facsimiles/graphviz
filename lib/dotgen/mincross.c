@@ -54,7 +54,9 @@ static void init_mincross(graph_t * g);
 static void merge2(graph_t * g);
 static void init_mccomp(graph_t *g, size_t c);
 static void cleanup2(graph_t *g, int64_t nc);
+/// @return minimum crossings on success, negative value on failure
 static int64_t mincross_clust(graph_t *g, ints_t *scratch);
+/// @return minimum crossings on success, negative value on failure
 static int64_t mincross(graph_t *g, int startpass, ints_t *scratch);
 static void mincross_step(graph_t * g, int pass);
 static void mincross_options(graph_t * g);
@@ -345,7 +347,7 @@ checkLabelOrder (graph_t* g)
  * Note that nodes are not placed into GD_rank(g) until mincross()
  * is called.
  */
-void dot_mincross(graph_t *g) {
+int dot_mincross(graph_t *g) {
     int64_t nc;
     char *s;
 
@@ -373,14 +375,24 @@ void dot_mincross(graph_t *g) {
     size_t comp;
     for (nc = 0, comp = 0; comp < GD_comp(g).size; comp++) {
 	init_mccomp(g, comp);
-	nc += mincross(g, 0, &scratch);
+	const int64_t mc = mincross(g, 0, &scratch);
+	if (mc < 0) {
+	    ints_free(&scratch);
+	    return -1;
+	}
+	nc += mc;
     }
 
     merge2(g);
 
     /* run mincross on contents of each cluster */
     for (int c = 1; c <= GD_n_cluster(g); c++) {
-	nc += mincross_clust(GD_clust(g)[c], &scratch);
+	const int64_t mc = mincross_clust(GD_clust(g)[c], &scratch);
+	if (mc < 0) {
+	    ints_free(&scratch);
+	    return -1;
+	}
+	nc += mc;
 #ifdef DEBUG
 	check_vlists(GD_clust(g)[c]);
 	check_order();
@@ -390,7 +402,12 @@ void dot_mincross(graph_t *g) {
     if (GD_n_cluster(g) > 0 && (!(s = agget(g, "remincross")) || mapbool(s))) {
 	mark_lowclusters(g);
 	ReMincross = true;
-	nc = mincross(g, 2, &scratch);
+	const int64_t mc = mincross(g, 2, &scratch);
+	if (mc < 0) {
+	    ints_free(&scratch);
+	    return -1;
+	}
+	nc = mc;
 #ifdef DEBUG
 	for (int c = 1; c <= GD_n_cluster(g); c++)
 	    check_vlists(GD_clust(g)[c]);
@@ -398,6 +415,7 @@ void dot_mincross(graph_t *g) {
     }
     ints_free(&scratch);
     cleanup2(g, nc);
+    return 0;
 }
 
 static adjmatrix_t *new_matrix(size_t i, size_t j) {
@@ -541,14 +559,24 @@ static void ordered_edges(graph_t * g)
 static int64_t mincross_clust(graph_t *g, ints_t *scratch) {
     int c;
 
-    expand_cluster(g);
+    if (expand_cluster(g) != 0) {
+	return -1;
+    }
     ordered_edges(g);
     flat_breakcycles(g);
     flat_reorder(g);
     int64_t nc = mincross(g, 2, scratch);
+    if (nc < 0) {
+	return nc;
+    }
 
-    for (c = 1; c <= GD_n_cluster(g); c++)
-	nc += mincross_clust(GD_clust(g)[c], scratch);
+    for (c = 1; c <= GD_n_cluster(g); c++) {
+	const int64_t mc = mincross_clust(GD_clust(g)[c], scratch);
+	if (mc < 0) {
+	    return mc;
+	}
+	nc += mc;
+    }
 
     save_vlist(g);
     return nc;
@@ -703,7 +731,9 @@ static int64_t mincross(graph_t *g, int startpass, ints_t *scratch) {
 	if (pass <= 1) {
 	    maxthispass = MIN(4, MaxIter);
 	    if (g == dot_root(g))
-		build_ranks(g, pass, scratch);
+		if (build_ranks(g, pass, scratch) != 0) {
+		    return -1;
+		}
 	    if (pass == 0)
 		flat_breakcycles(g);
 	    flat_reorder(g);
@@ -1173,8 +1203,7 @@ void allocate_ranks(graph_t * g)
 }
 
 /* install a node at the current right end of its rank */
-void install_in_rank(graph_t * g, node_t * n)
-{
+int install_in_rank(graph_t *g, node_t *n) {
     int i, r;
 
     r = ND_rank(n);
@@ -1182,7 +1211,7 @@ void install_in_rank(graph_t * g, node_t * n)
     if (GD_rank(g)[r].an <= 0) {
 	agerrorf("install_in_rank, line %d: %s %s rank %d i = %d an = 0\n",
 	      __LINE__, agnameof(g), agnameof(n), r, i);
-	return;
+	return -1;
     }
 
     GD_rank(g)[r].v[i] = n;
@@ -1202,26 +1231,27 @@ void install_in_rank(graph_t * g, node_t * n)
     if (ND_order(n) > GD_rank(Root)[r].an) {
 	agerrorf("install_in_rank, line %d: ND_order(%s) [%d] > GD_rank(Root)[%d].an [%d]\n",
 	      __LINE__, agnameof(n), ND_order(n), r, GD_rank(Root)[r].an);
-	return;
+	return -1;
     }
     if (r < GD_minrank(g) || r > GD_maxrank(g)) {
 	agerrorf("install_in_rank, line %d: rank %d not in rank range [%d,%d]\n",
 	      __LINE__, r, GD_minrank(g), GD_maxrank(g));
-	return;
+	return -1;
     }
     if (GD_rank(g)[r].v + ND_order(n) >
 	GD_rank(g)[r].av + GD_rank(Root)[r].an) {
 	agerrorf("install_in_rank, line %d: GD_rank(g)[%d].v + ND_order(%s) [%d] > GD_rank(g)[%d].av + GD_rank(Root)[%d].an [%d]\n",
 	      __LINE__, r, agnameof(n),ND_order(n), r, r, GD_rank(Root)[r].an);
-	return;
+	return -1;
     }
+    return 0;
 }
 
 /*	install nodes in ranks. the initial ordering ensure that series-parallel
  *	graphs such as trees are drawn with no crossings.  it tries searching
  *	in- and out-edges and takes the better of the two initial orderings.
  */
-void build_ranks(graph_t *g, int pass, ints_t *scratch) {
+int build_ranks(graph_t *g, int pass, ints_t *scratch) {
     int i, j;
     node_t *n, *ns;
     edge_t **otheredges;
@@ -1264,10 +1294,17 @@ void build_ranks(graph_t *g, int pass, ints_t *scratch) {
 	    while (!node_queue_is_empty(&q)) {
 		node_t *n0 = node_queue_pop_front(&q);
 		if (ND_ranktype(n0) != CLUSTER) {
-		    install_in_rank(g, n0);
+		    if (install_in_rank(g, n0) != 0) {
+		        node_queue_free(&q);
+		        return -1;
+		    }
 		    enqueue_neighbors(&q, n0, pass);
 		} else {
-		    install_cluster(g, n0, pass, &q);
+		    const int rc = install_cluster(g, n0, pass, &q);
+		    if (rc != 0) {
+		        node_queue_free(&q);
+		        return rc;
+		    }
 		}
 	    }
 	}
@@ -1287,6 +1324,7 @@ void build_ranks(graph_t *g, int pass, ints_t *scratch) {
     if (g == dot_root(g) && ncross(scratch) > 0)
 	transpose(g, false);
     node_queue_free(&q);
+    return 0;
 }
 
 void enqueue_neighbors(node_queue_t *q, node_t *n0, int pass) {

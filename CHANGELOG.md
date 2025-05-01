@@ -169,6 +169,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - In the CMake build system, the configuration step during installation
   (`dot -c`) now anticipates that `$LD_LIBRARY_PATH` and `$DYLD_LIBRARY_PATH`
   may be non-empty. #2676
+- Failures during installing nodes into ranks now results in a graceful exit
+  rather than referencing invalid memory. #1581
 
 ## [12.2.1] – 2024-12-07
 

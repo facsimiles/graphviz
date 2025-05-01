@@ -23,7 +23,8 @@ DEFINE_LIST(node_queue, Agnode_t *)
 
     extern void acyclic(Agraph_t *);
     extern void allocate_ranks(Agraph_t *);
-    extern void build_ranks(Agraph_t *, int, ints_t *);
+    /// @return 0 on success
+    extern int build_ranks(Agraph_t *, int, ints_t *);
     extern void build_skeleton(Agraph_t *, Agraph_t *);
     extern void checkLabelOrder (graph_t* g);
     extern void class1(Agraph_t *);
@@ -37,15 +38,18 @@ DEFINE_LIST(node_queue, Agnode_t *)
     extern void dot_init_node_edge(graph_t * g);
     extern void dot_scan_ranks(graph_t * g);
     extern void enqueue_neighbors(node_queue_t *q, node_t *n0, int pass);
-    extern void expand_cluster(Agraph_t *);
+    /// @return 0 on success
+    extern int expand_cluster(Agraph_t *);
     extern Agedge_t *fast_edge(Agedge_t *);
     extern void fast_node(Agraph_t *, Agnode_t *);
     extern Agedge_t *find_fast_edge(Agnode_t *, Agnode_t *);
     extern Agedge_t *find_flat_edge(Agnode_t *, Agnode_t *);
     extern void flat_edge(Agraph_t *, Agedge_t *);
     extern int flat_edges(Agraph_t *);
-    extern void install_cluster(Agraph_t *, Agnode_t *, int, node_queue_t *);
-    extern void install_in_rank(Agraph_t *, Agnode_t *);
+    /// @return 0 on success
+    extern int install_cluster(Agraph_t *, Agnode_t *, int, node_queue_t *);
+    /// @return 0 on success
+    extern int install_in_rank(Agraph_t *, Agnode_t *);
     extern bool is_cluster(Agraph_t *);
     extern void dot_compoundEdges(Agraph_t *);
     extern Agedge_t *make_aux_edge(Agnode_t *, Agnode_t *, double, int);
@@ -72,11 +76,13 @@ DEFINE_LIST(node_queue, Agnode_t *)
 
     extern Agraph_t* dot_root(void *);
     extern void dot_concentrate(Agraph_t *);
-    extern void dot_mincross(Agraph_t *);
+    /// @return 0 on success
+    extern int dot_mincross(Agraph_t *);
     extern void dot_position(Agraph_t *);
     extern void dot_rank(Agraph_t *);
     extern void dot_sameports(Agraph_t *);
-    extern void dot_splines(Agraph_t *);
+    /// @return 0 on success
+    extern int dot_splines(Agraph_t *);
 
 #ifdef __cplusplus
 }

@@ -78,8 +78,8 @@ static bool cl_vninside(Agraph_t *, Agnode_t *);
 static void completeregularpath(path *, Agedge_t *, Agedge_t *, pathend_t *,
                                 pathend_t *, const boxes_t *);
 static int edgecmp(const void *, const void *);
-static void make_flat_edge(graph_t *, spline_info_t *, path *, Agedge_t **,
-                           unsigned, unsigned, int);
+static int make_flat_edge(graph_t *, spline_info_t *, path *, Agedge_t **,
+                          unsigned, unsigned, int);
 static void make_regular_edge(graph_t *g, spline_info_t *, path *, Agedge_t **,
                               unsigned, unsigned, int);
 static boxf makeregularend(boxf, int, double);
@@ -235,8 +235,10 @@ static void setEdgeLabelPos(graph_t *g) {
  * recursive call in make_flat_edge without normalization occurring,
  * so that the edge will only be normalized once in the top level call
  * of dot_splines.
+ *
+ * @return 0 on success
  */
-static void dot_splines_(graph_t *g, int normalize) {
+static int dot_splines_(graph_t *g, int normalize) {
   int i, j, k, n_nodes;
   node_t *n;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
@@ -248,7 +250,7 @@ static void dot_splines_(graph_t *g, int normalize) {
   fwdedgeb.out.base.data = (Agrec_t *)&fwdedgebi;
 
   if (et == EDGETYPE_NONE)
-    return;
+    return 0;
   if (et == EDGETYPE_CURVED) {
     resetRW(g);
     if (GD_has_labels(g->root) & EDGE_LABEL) {
@@ -272,7 +274,7 @@ static void dot_splines_(graph_t *g, int normalize) {
 
   mark_lowclusters(g);
   if (routesplinesinit())
-    return;
+    return 0;
   spline_info_t sd = {.Splinesep = GD_nodesep(g) / 4,
                       .Multisep = GD_nodesep(g)};
   edges = gv_calloc(CHUNK, sizeof(edge_t *));
@@ -426,7 +428,10 @@ static void dot_splines_(graph_t *g, int normalize) {
           updateBB(g, ED_label(e));
       }
     } else if (ND_rank(agtail(e0)) == ND_rank(aghead(e0))) {
-      make_flat_edge(g, &sd, &P, edges, ind, cnt, et);
+      const int rc = make_flat_edge(g, &sd, &P, edges, ind, cnt, et);
+      if (rc != 0) {
+        return rc;
+      }
     } else
       make_regular_edge(g, &sd, &P, edges, ind, cnt, et);
   }
@@ -481,12 +486,15 @@ finish:
   free(P.boxes);
   State = GVSPLINES;
   EdgeLabelsDone = 1;
+  return 0;
 }
 
 /* dot_splines:
  * If the splines attribute is defined but equal to "", skip edge routing.
+ *
+ * @return 0 on success
  */
-void dot_splines(graph_t *g) { dot_splines_(g, 1); }
+int dot_splines(graph_t *g) { return dot_splines_(g, 1); }
 
 /* place_vnlabel:
  * assign position of an edge label from its virtual node
@@ -1181,9 +1189,11 @@ static void makeSimpleFlat(node_t *tn, node_t *hn, edge_t **edges, unsigned ind,
  * essentially using rankdir=LR, to get the needed spline info.
  * This is probably to cute and fragile, and should be rewritten in a
  * more straightforward and laborious fashion.
+ *
+ * @return 0 on success
  */
-static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
-                                unsigned cnt, edge_t *e0, int et) {
+static int make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
+                               unsigned cnt, edge_t *e0, int et) {
   node_t *n;
   node_t *tn, *hn;
   edge_t *e;
@@ -1204,7 +1214,7 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
       agerr(AGPREV, "  Edge %s %s %s\n", agnameof(tn),
             agisdirected(g) ? "->" : "--", agnameof(hn));
     }
-    return;
+    return 0;
   }
   unsigned labels = 0;
   bool ports = false;
@@ -1225,7 +1235,7 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
     else {
       makeSimpleFlatLabels(tn, hn, edges, ind, cnt, et, labels);
     }
-    return;
+    return 0;
   }
 
   attr_state_t attrs = {0};
@@ -1264,7 +1274,10 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   dot_init_node_edge(auxg);
 
   dot_rank(auxg);
-  dot_mincross(auxg);
+  const int r = dot_mincross(auxg);
+  if (r != 0) {
+    return r;
+  }
   dot_position(auxg);
 
   /* reposition */
@@ -1281,7 +1294,10 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
       ND_coord(n).y = midx;
   }
   dot_sameports(auxg);
-  dot_splines_(auxg, 0);
+  const int rc = dot_splines_(auxg, 0);
+  if (rc != 0) {
+    return rc;
+  }
   dotneato_postprocess(auxg);
 
   /* copy splines */
@@ -1329,6 +1345,7 @@ static void make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   }
 
   cleanupCloneGraph(auxg, &attrs);
+  return 0;
 }
 
 static void makeFlatEnd(graph_t *g, spline_info_t *sp, path *P, node_t *n,
@@ -1551,9 +1568,11 @@ static void make_flat_bottom_edges(graph_t *g, spline_info_t *sp, path *P,
  *  - all non-labeled edges with identical ports between non-adjacent a and b
  *     = connecting bottom to bottom/left/right - route along bottom
  *     = the rest - route along top
+ *
+ * @return 0 on success
  */
-static void make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
-                           edge_t **edges, unsigned ind, unsigned cnt, int et) {
+static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
+                          edge_t **edges, unsigned ind, unsigned cnt, int et) {
   node_t *tn, *hn;
   Agedgeinfo_t fwdedgei;
   Agedgepair_t fwdedge;
@@ -1582,24 +1601,23 @@ static void make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
    * so check them all.
    */
   if (isAdjacent) {
-    make_flat_adj_edges(g, edges, ind, cnt, e, et);
-    return;
+    return make_flat_adj_edges(g, edges, ind, cnt, e, et);
   }
   if (ED_label(e)) { /* edges with labels aren't multi-edges */
     make_flat_labeled_edge(g, sp, P, e, et);
-    return;
+    return 0;
   }
 
   if (et == EDGETYPE_LINE) {
     makeSimpleFlat(agtail(e), aghead(e), edges, ind, cnt, et);
-    return;
+    return 0;
   }
 
   tside = ED_tail_port(e).side;
   hside = ED_head_port(e).side;
   if ((tside == BOTTOM && hside != TOP) || (hside == BOTTOM && tside != TOP)) {
     make_flat_bottom_edges(g, sp, P, edges, ind, cnt, e, et == EDGETYPE_SPLINE);
-    return;
+    return 0;
   }
 
   tn = agtail(e);
@@ -1663,12 +1681,13 @@ static void make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
       ps = routepolylines(P, &pn);
     if (pn == 0) {
       free(ps);
-      return;
+      return 0;
     }
     clip_and_install(e, aghead(e), ps, pn, &sinfo);
     free(ps);
     P->nbox = 0;
   }
+  return 0;
 }
 
 /// Return true if p3 is to left of ray p1->p2
