@@ -1,8 +1,8 @@
+#include <format>
 #include <iostream>
 #include <string>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include "test_edge_node_overlap_utilities.h"
 #include "test_utilities.h"
@@ -29,7 +29,7 @@ TEST_CASE(
   };
 
   const auto filename_base =
-      fmt::format("{}_{}_rankdir_{}", AUTO_NAME(), shape, rankdir);
+      std::format("{}_{}_rankdir_{}", AUTO_NAME(), shape, rankdir);
 
   test_edge_node_overlap(graph_options, {}, {.filename_base = filename_base});
 }

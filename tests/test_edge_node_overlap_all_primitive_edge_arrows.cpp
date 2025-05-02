@@ -1,3 +1,4 @@
+#include <format>
 #include <string>
 
 #include <catch2/catch_all.hpp>
@@ -16,7 +17,7 @@ TEST_CASE("Edge node overlap for all primitive arrow shapes",
   INFO("Edge primitive arrow shape: " << primitive_arrow_shape);
 
   INFO("Edge arrow shape: " << primitive_arrow_shape);
-  filename_base += fmt::format("_arrow_shape_{}", primitive_arrow_shape);
+  filename_base += std::format("_arrow_shape_{}", primitive_arrow_shape);
 
   const graph_options graph_options = {
       .node_shape = "polygon",

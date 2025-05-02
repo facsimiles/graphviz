@@ -1,5 +1,5 @@
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
+#include <format>
 
 #include "svg_analyzer.h"
 #include "test_utilities.h"
@@ -15,7 +15,7 @@ TEST_CASE("SvgAnalyzer penwidth",
   const auto penwidth = GENERATE(0.5, 1.0, 2.0);
   INFO("Node and edge penwidth: " << penwidth);
 
-  auto dot = fmt::format(
+  auto dot = std::format(
       "digraph g1 {{node [shape={} penwidth={}]; edge [penwidth={}]; a -> b}}",
       shape, penwidth, penwidth);
 

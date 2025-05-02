@@ -90,7 +90,6 @@ shellcheck \
 # Libraries used in test
 catch2 \
 libboost-dev \
-libfmt-dev \
 libsvgpp-dev \
 # create a Python virtual environment
 && python3 -m venv /opt/virtualenv \

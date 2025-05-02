@@ -1,3 +1,4 @@
+#include <format>
 #include <string>
 
 #include <catch2/catch_all.hpp>
@@ -14,11 +15,11 @@ TEST_CASE("Edge node overlap for 'box' arrow using various arrow sizes",
   const std::string_view primitive_arrow_shape = "box";
 
   INFO("Edge arrowhead: " << primitive_arrow_shape);
-  filename_base += fmt::format("_arrow_shape_{}", primitive_arrow_shape);
+  filename_base += std::format("_arrow_shape_{}", primitive_arrow_shape);
 
   const auto arrowsize = GENERATE(0.0, 0.1, 0.5, 1.0, 2.0, 3.0);
   INFO("Edge arrowsize: " << arrowsize);
-  filename_base += fmt::format("_arrowsize_{}", arrowsize);
+  filename_base += std::format("_arrowsize_{}", arrowsize);
 
   const graph_options graph_options = {
       .node_shape = "polygon",

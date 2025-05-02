@@ -1,3 +1,4 @@
+#include <format>
 #include <iostream>
 #include <string>
 
@@ -23,7 +24,7 @@ TEST_CASE("Overlap point node shape",
       .edge_penwidth = 2,
   };
 
-  const auto filename_base = fmt::format("{}_rankdir_{}", AUTO_NAME(), rankdir);
+  const auto filename_base = std::format("{}_rankdir_{}", AUTO_NAME(), rankdir);
 
   test_edge_node_overlap(graph_options, {}, {.filename_base = filename_base});
 }

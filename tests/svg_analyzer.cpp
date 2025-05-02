@@ -1,9 +1,9 @@
+#include <format>
 #include <memory>
 #include <stdexcept>
 
 #include <boost/algorithm/string.hpp>
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include "svg_analyzer.h"
 #include "svgpp_context.h"
@@ -160,19 +160,19 @@ void SVGAnalyzer::retrieve_graphviz_components_impl(
     } else if (class_ == "node") {
       if (m_graphs.empty()) {
         throw std::runtime_error{
-            fmt::format("No graph to add node {} to", svg_element.graphviz_id)};
+            std::format("No graph to add node {} to", svg_element.graphviz_id)};
       }
       m_graphs.back().add_node(svg_element);
     } else if (class_ == "edge") {
       if (m_graphs.empty()) {
         throw std::runtime_error{
-            fmt::format("No graph to add edge {} to", svg_element.graphviz_id)};
+            std::format("No graph to add edge {} to", svg_element.graphviz_id)};
       }
       m_graphs.back().add_edge(svg_element);
     } else if (class_ == "cluster") {
       // ignore for now
     } else {
-      throw std::runtime_error{fmt::format("Unknown class {}", class_)};
+      throw std::runtime_error{std::format("Unknown class {}", class_)};
     }
   }
 

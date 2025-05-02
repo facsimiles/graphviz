@@ -1,7 +1,7 @@
+#include <format>
 #include <string_view>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include "svg_analyzer.h"
 #include "test_utilities.h"
@@ -18,11 +18,11 @@ TEST_CASE("Edge color",
   const auto edge_rgb_fillcolor = GENERATE("#000000", "#ffffff", "#5580aa");
   const auto opacity = GENERATE(0, 100, 255);
   const auto edge_rgba_fillcolor =
-      fmt::format("{}{:02x}", edge_rgb_fillcolor, opacity);
+      std::format("{}{:02x}", edge_rgb_fillcolor, opacity);
   INFO("Edge fillcolor: " << edge_rgba_fillcolor);
 
   auto dot =
-      fmt::format("digraph g1 {{edge [arrowhead={} fillcolor=\"{}\"]; a -> b}}",
+      std::format("digraph g1 {{edge [arrowhead={} fillcolor=\"{}\"]; a -> b}}",
                   primitive_arrow_shape, edge_rgba_fillcolor);
 
   const auto engine = "dot";

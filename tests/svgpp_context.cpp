@@ -1,14 +1,14 @@
 #include <any>
+#include <format>
 #include <stdexcept>
 
 #include <boost/array.hpp>
-#include <fmt/format.h>
 
 #include "svg_analyzer_interface.h"
 #include "svgpp_context.h"
 
 static std::string to_color_string(SvgppContext::color_t color) {
-  return fmt::format("rgb({},{},{})", (color >> 16) & 0xff, (color >> 8) & 0xff,
+  return std::format("rgb({},{},{})", (color >> 16) & 0xff, (color >> 8) & 0xff,
                      (color >> 0) & 0xff);
 }
 

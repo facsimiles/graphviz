@@ -1,3 +1,4 @@
+#include <format>
 #include <string>
 
 #include <catch2/catch_all.hpp>
@@ -15,7 +16,7 @@ TEST_CASE(
   const std::string_view primitive_arrow_shape = GENERATE("normal", "inv");
 
   INFO("Edge arrowhead: " << primitive_arrow_shape);
-  filename_base += fmt::format("_arrow_shape_{}", primitive_arrow_shape);
+  filename_base += std::format("_arrow_shape_{}", primitive_arrow_shape);
 
   const graph_options graph_options = {
       .node_shape = "polygon",

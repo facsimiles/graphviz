@@ -1,3 +1,4 @@
+#include <format>
 #include <string>
 #include <string_view>
 
@@ -18,13 +19,13 @@ TEST_CASE("Edge node overlap for crow and vee arrow",
   INFO("Edge arrow shape modifier: " << arrow_shape_modifier);
 
   const auto arrow_shape =
-      fmt::format("{}{}", arrow_shape_modifier, primitive_arrow_shape);
+      std::format("{}{}", arrow_shape_modifier, primitive_arrow_shape);
   INFO("Edge arrowhead: " << arrow_shape);
-  filename_base += fmt::format("_arrow_shape_{}", arrow_shape);
+  filename_base += std::format("_arrow_shape_{}", arrow_shape);
 
   const auto rankdir = GENERATE(from_range(all_rank_directions));
   INFO("Rank direction: " << rankdir);
-  filename_base += fmt::format("_rankdir_{}", rankdir);
+  filename_base += std::format("_rankdir_{}", rankdir);
 
   const graph_options graph_options = {
       .rankdir = rankdir,

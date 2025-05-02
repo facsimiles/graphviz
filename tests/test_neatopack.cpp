@@ -1,8 +1,8 @@
 #include <cstdlib>
+#include <format>
 #include <string>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include <cgraph/cgraph.h>
 #include <gvc/gvc.h>
@@ -22,8 +22,8 @@ TEST_CASE("take an input graph, compute its connected components, lay out each "
 
   const std::string dot =
       num_subgraphs == 1
-          ? fmt::format("{} {{a {} b}}", graph_type, edge_op)
-          : fmt::format("{} {{a {} b; c {} d}}", graph_type, edge_op, edge_op);
+          ? std::format("{} {{a {} b}}", graph_type, edge_op)
+          : std::format("{} {{a {} b; c {} d}}", graph_type, edge_op, edge_op);
   INFO("DOT source: " << dot);
 
   auto *g = agmemread(dot.c_str());

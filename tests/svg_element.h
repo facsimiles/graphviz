@@ -1,13 +1,12 @@
 #pragma once
 
 #include <cmath>
+#include <format>
 #include <optional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
-
-#include <fmt/format.h>
 
 namespace SVG {
 
@@ -146,7 +145,7 @@ public:
         continue;
       }
       if (attribute.value() != child_attribute) {
-        throw std::runtime_error{fmt::format(
+        throw std::runtime_error{std::format(
             "Inconsistent value of attribute: current {}: {}, child {}: {}",
             tag(elem_type), attribute.value(), tag(child.elem_type),
             child_attribute)};

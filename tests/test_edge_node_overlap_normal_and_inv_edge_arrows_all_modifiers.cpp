@@ -1,3 +1,4 @@
+#include <format>
 #include <string>
 
 #include <catch2/catch_all.hpp>
@@ -21,9 +22,9 @@ TEST_CASE(
   INFO("Edge arrow shape modifier: " << arrow_shape_modifier);
 
   const auto arrow_shape =
-      fmt::format("{}{}", arrow_shape_modifier, primitive_arrow_shape);
+      std::format("{}{}", arrow_shape_modifier, primitive_arrow_shape);
   INFO("Edge arrow shape: " << arrow_shape);
-  filename_base += fmt::format("_arrow_{}", arrow_shape);
+  filename_base += std::format("_arrow_{}", arrow_shape);
 
   const graph_options graph_options = {
       .node_shape = "polygon",

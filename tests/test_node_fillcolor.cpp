@@ -1,7 +1,7 @@
+#include <format>
 #include <string_view>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include "svg_analyzer.h"
 #include "test_utilities.h"
@@ -22,10 +22,10 @@ TEST_CASE("Node fillcolor",
       GENERATE("#000000", "#ffffff", "#ff0000", "#aa0f55");
   const auto opacity = GENERATE(0, 200, 255);
   const auto node_rgba_fillcolor =
-      fmt::format("{}{:02x}", node_rgb_fillcolor, opacity);
+      std::format("{}{:02x}", node_rgb_fillcolor, opacity);
   INFO("Node fillcolor: " << node_rgba_fillcolor);
 
-  auto dot = fmt::format(
+  auto dot = std::format(
       "digraph g1 {{node [shape={} style=filled fillcolor=\"{}\"]; a -> b}}",
       shape, node_rgba_fillcolor);
 

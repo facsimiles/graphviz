@@ -1,8 +1,8 @@
 #include <cstddef>
+#include <format>
 #include <string>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include <cgraph/cgraph.h>
 #include <gvc/gvc.h>
@@ -20,9 +20,9 @@ TEST_CASE("clusters in directed and undirected graphs with different layout "
 
   const std::string dot =
       num_clusters_in_dot_source == 1
-          ? fmt::format("{} {{subgraph cluster_0 {{a {} b}}}}", graph_type,
+          ? std::format("{} {{subgraph cluster_0 {{a {} b}}}}", graph_type,
                         edge_op)
-          : fmt::format("{} {{subgraph cluster_0 {{a {} b}}; subgraph "
+          : std::format("{} {{subgraph cluster_0 {{a {} b}}; subgraph "
                         "cluster_1 {{c {} d }}}}",
                         graph_type, edge_op, edge_op);
   INFO("DOT source: " << dot);

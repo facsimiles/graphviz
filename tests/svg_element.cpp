@@ -1,10 +1,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <format>
 #include <limits>
 #include <stdexcept>
-
-#include <fmt/format.h>
 
 #include "svg_element.h"
 #include <util/unreachable.h>
@@ -76,8 +75,8 @@ static std::string rgb_to_hex(const std::string &color, double opacity = 1.0) {
   const auto b = std::stoi(color.substr(comma2 + 1, close_par - 1));
   const auto opacity_int = std::lround(opacity * 255.0);
   const auto opacity_hex_str =
-      opacity_int < 255 ? fmt::format("{:02x}", opacity_int) : "";
-  return fmt::format("#{:02x}{:02x}{:02x}{}", r, g, b, opacity_hex_str);
+      opacity_int < 255 ? std::format("{:02x}", opacity_int) : "";
+  return std::format("#{:02x}{:02x}{:02x}{}", r, g, b, opacity_hex_str);
 }
 
 // convert a valid color specification to the flavor that Graphviz uses in the
@@ -102,7 +101,7 @@ std::string SVG::to_dot_color(const std::string &color, double opacity) {
   }
   if (opacity < 1.0) {
     if (!color.starts_with("rgb")) {
-      throw std::runtime_error{fmt::format(
+      throw std::runtime_error{std::format(
           "Cannot convert stroke={}, stroke_opacity={} to Graphviz color",
           color, opacity)};
     }
@@ -204,7 +203,7 @@ SVG::SVGRect SVG::SVGElement::bbox(bool throw_if_bbox_not_defined) {
       break;
     default:
       throw std::runtime_error{
-          fmt::format("Unhandled svg element type {}", tag(elem_type))};
+          std::format("Unhandled svg element type {}", tag(elem_type))};
     }
 
     const auto throw_if_child_bbox_is_not_defined = false;
@@ -559,7 +558,7 @@ SVG::SVGRect SVG::SVGElement::outline_bbox(bool throw_if_bbox_not_defined) {
     break;
   default:
     throw std::runtime_error{
-        fmt::format("Unhandled svg element type {}", tag(elem_type))};
+        std::format("Unhandled svg element type {}", tag(elem_type))};
   }
 
   const auto throw_if_child_bbox_is_not_defined = false;
@@ -584,7 +583,7 @@ SVG::SVGElement &SVG::SVGElement::find_child(const SVG::SVGElementType etype,
     }
   }
   throw std::runtime_error(
-      fmt::format("SVG element only has {} \"{}\" children, index {} not found",
+      std::format("SVG element only has {} \"{}\" children, index {} not found",
                   i, tag(etype), index));
 }
 
@@ -593,7 +592,7 @@ SVG::SVGRect SVG::SVGElement::text_bbox() const {
 
   if (attributes.font_family != "Courier,monospace") {
     throw std::runtime_error(
-        fmt::format("Cannot calculate bounding box for font \"{}\"",
+        std::format("Cannot calculate bounding box for font \"{}\"",
                     attributes.font_family));
   }
 
@@ -700,7 +699,7 @@ std::string SVG::SVGElement::fill_attribute_to_string() const {
     return "";
   }
 
-  return fmt::format(R"(fill="{}")", to_graphviz_color(attributes.fill));
+  return std::format(R"(fill="{}")", to_graphviz_color(attributes.fill));
 }
 
 std::string SVG::SVGElement::id_attribute_to_string() const {
@@ -708,7 +707,7 @@ std::string SVG::SVGElement::id_attribute_to_string() const {
     return "";
   }
 
-  return fmt::format(R"(id="{}")", attributes.id);
+  return std::format(R"(id="{}")", attributes.id);
 }
 
 std::string SVG::SVGElement::fill_opacity_attribute_to_string() const {
@@ -723,14 +722,14 @@ std::string SVG::SVGElement::fill_opacity_attribute_to_string() const {
     return "";
   }
 
-  return fmt::format(R"(fill-opacity="{}")", attributes.fill_opacity);
+  return std::format(R"(fill-opacity="{}")", attributes.fill_opacity);
 }
 
 std::string SVG::SVGElement::points_attribute_to_string() const {
   std::string points_attribute_str = R"|(points=")|";
   const char *separator = "";
   for (const auto &point : attributes.points) {
-    points_attribute_str += separator + fmt::format("{},{}", point.x, point.y);
+    points_attribute_str += separator + std::format("{},{}", point.x, point.y);
     separator = " ";
   }
   points_attribute_str += '"';
@@ -743,7 +742,7 @@ std::string SVG::SVGElement::stroke_attribute_to_string() const {
     return "";
   }
 
-  return fmt::format(R"(stroke="{}")",
+  return std::format(R"(stroke="{}")",
                      stroke_to_graphviz_color(attributes.stroke));
 }
 
@@ -759,7 +758,7 @@ std::string SVG::SVGElement::stroke_opacity_attribute_to_string() const {
     return "";
   }
 
-  return fmt::format(R"(stroke-opacity="{}")", attributes.stroke_opacity);
+  return std::format(R"(stroke-opacity="{}")", attributes.stroke_opacity);
 }
 
 std::string SVG::SVGElement::stroke_width_attribute_to_string() const {
@@ -768,7 +767,7 @@ std::string SVG::SVGElement::stroke_width_attribute_to_string() const {
     return "";
   }
 
-  return fmt::format(R"(stroke-width="{}")", attributes.stroke_width);
+  return std::format(R"(stroke-width="{}")", attributes.stroke_width);
 }
 
 std::string SVG::SVGElement::to_string(std::size_t indent_size = 2) const {
@@ -779,7 +778,7 @@ std::string SVG::SVGElement::to_string(std::size_t indent_size = 2) const {
             "\n";
   output += R"( "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">)"
             "\n";
-  output += fmt::format("<!-- Generated by graphviz version {} "
+  output += std::format("<!-- Generated by graphviz version {} "
                         "({})\n -->\n",
                         graphviz_version, graphviz_build_date);
   to_string_impl(output, indent_size, 0);
@@ -793,13 +792,13 @@ void SVG::SVGElement::to_string_impl(std::string &output,
   output += indent_str;
 
   if (elem_type == SVG::SVGElementType::Svg) {
-    const auto comment = fmt::format("Title: {} Pages: 1", graphviz_id);
-    output += fmt::format("<!-- {} -->\n", xml_encode(comment));
+    const auto comment = std::format("Title: {} Pages: 1", graphviz_id);
+    output += std::format("<!-- {} -->\n", xml_encode(comment));
   }
   if (elem_type == SVG::SVGElementType::Group &&
       (attributes.class_ == "node" || attributes.class_ == "edge")) {
     const auto comment = graphviz_id;
-    output += fmt::format("<!-- {} -->\n", xml_encode(comment));
+    output += std::format("<!-- {} -->\n", xml_encode(comment));
   }
 
   output += "<";
@@ -815,14 +814,14 @@ void SVG::SVGElement::to_string_impl(std::string &output,
     append_attribute(attributes_str, stroke_width_attribute_to_string());
     append_attribute(attributes_str, stroke_opacity_attribute_to_string());
     attributes_str +=
-        fmt::format(R"( cx="{}" cy="{}" rx="{}" ry="{}")", attributes.cx,
+        std::format(R"( cx="{}" cy="{}" rx="{}" ry="{}")", attributes.cx,
                     attributes.cy, attributes.rx, attributes.ry);
     break;
   case SVG::SVGElementType::Group:
-    attributes_str += fmt::format(R"( class="{}")", attributes.class_);
+    attributes_str += std::format(R"( class="{}")", attributes.class_);
     if (attributes.transform.has_value()) {
       const auto transform = attributes.transform;
-      attributes_str += fmt::format(
+      attributes_str += std::format(
           R"|( transform="scale({} {}) rotate({}) translate({} {})")|",
           transform->a, transform->d, transform->c, transform->e, transform->f);
     }
@@ -836,7 +835,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
     attributes_str += R"|( d=")|";
     auto command = 'M';
     for (const auto &point : path_points) {
-      attributes_str += fmt::format("{}{},{}", command, point.x, point.y);
+      attributes_str += std::format("{}{},{}", command, point.x, point.y);
       switch (command) {
       case 'M':
         command = 'C';
@@ -870,7 +869,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
     break;
   case SVG::SVGElementType::Rect:
     attributes_str +=
-        fmt::format(R"(x="{}" y="{}" width="{}" height="{}")", attributes.x,
+        std::format(R"(x="{}" y="{}" width="{}" height="{}")", attributes.x,
                     attributes.y, attributes.width, attributes.height);
     append_attribute(attributes_str, fill_attribute_to_string());
     append_attribute(attributes_str, stroke_attribute_to_string());
@@ -878,7 +877,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
     append_attribute(attributes_str, stroke_opacity_attribute_to_string());
     break;
   case SVG::SVGElementType::Svg:
-    attributes_str += fmt::format(
+    attributes_str += std::format(
         R"(width="{}pt" height="{}pt")"
         "\n"
         R"( viewBox="{:.2f} {:.2f} {:.2f} {:.2f}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink")",
@@ -888,7 +887,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
         attributes.viewBox.height);
     break;
   case SVG::SVGElementType::Text:
-    attributes_str += fmt::format(
+    attributes_str += std::format(
         R"(xml:space="preserve" text-anchor="{}" x="{}" y="{}" font-family="{}" font-size="{:.2f}")",
         attributes.text_anchor, attributes.x, attributes.y,
         attributes.font_family, attributes.font_size);
@@ -897,7 +896,7 @@ void SVG::SVGElement::to_string_impl(std::string &output,
     // Graphviz doesn't generate attributes on 'title' elements
     break;
   default:
-    throw std::runtime_error{fmt::format(
+    throw std::runtime_error{std::format(
         "Attributes on '{}' elements are not yet implemented", tag(elem_type))};
   }
   if (!attributes_str.empty()) {

@@ -1,10 +1,9 @@
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <stdexcept>
 #include <string_view>
 #include <unordered_set>
-
-#include <fmt/format.h>
 
 #include "test_utilities.h"
 
@@ -213,7 +212,7 @@ void write_to_file(const std::filesystem::path &directory,
   const std::filesystem::path test_artifacts_path = directory / filename;
   std::ofstream outfile{test_artifacts_path};
   if (!outfile.is_open()) {
-    throw std::runtime_error{fmt::format("Could not create output file \"{}\"",
+    throw std::runtime_error{std::format("Could not create output file \"{}\"",
                                          test_artifacts_path.native())};
   }
   outfile << text;

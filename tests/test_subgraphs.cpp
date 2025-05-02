@@ -1,8 +1,8 @@
 #include <cstddef>
+#include <format>
 #include <string>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include <cgraph/cgraph.h>
 #include <gvc/gvc.h>
@@ -20,8 +20,8 @@ TEST_CASE("subgraphs in directed and undirected graphs with different layout "
 
   const std::string dot =
       num_subgraphs == 1
-          ? fmt::format("{} {{subgraph s0 {{a {} b}}}}", graph_type, edge_op)
-          : fmt::format(
+          ? std::format("{} {{subgraph s0 {{a {} b}}}}", graph_type, edge_op)
+          : std::format(
                 "{} {{subgraph s0 {{a {} b}}; subgraph s1 {{c {} d }}}}",
                 graph_type, edge_op, edge_op);
   INFO("DOT source: " << dot);
