@@ -158,13 +158,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
     Tcl_AppendResult(interp, obj2cmd(n), NULL);
     return TCL_OK;
 
-  } else if (streq("layoutedges", argv[1])) {
-    g = agroot(g);
-    if (!aggetrec(g, "Agraphinfo_t", 0))
-      tcldot_layout(gvc, g, (argc > 2) ? argv[2] : NULL);
-    return TCL_OK;
-
-  } else if (streq("layoutnodes", argv[1])) {
+  } else if (streq("layout", argv[1])) {
     g = agroot(g);
     if (!aggetrec(g, "Agraphinfo_t", 0))
       tcldot_layout(gvc, g, (argc > 2) ? argv[2] : NULL);

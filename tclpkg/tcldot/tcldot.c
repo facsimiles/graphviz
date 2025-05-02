@@ -24,7 +24,7 @@ static int dotnew_internal(ClientData clientData, Tcl_Interp *interp, int argc,
   int i;
   Agdesc_t kind;
 
-  if ((argc < 2)) {
+  if (argc < 2) {
     Tcl_AppendResult(
         interp, "wrong # args: should be \"", argv[0],
         " graphtype ?graphname? ?attributename attributevalue? ?...?\"", NULL);
@@ -45,16 +45,16 @@ static int dotnew_internal(ClientData clientData, Tcl_Interp *interp, int argc,
   }
   if (argc % 2) {
     /* if odd number of args then argv[2] is name */
-    g = agopen(argv[2], kind, (Agdisc_t *)ictx);
+    g = agopen(argv[2], kind, &ictx->mydisc);
     i = 3;
   } else {
     /* else use handle as name */
 #if TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION >= 4
     char *name = gv_strdup(Tcl_GetStringResult(interp));
-    g = agopen(name, kind, (Agdisc_t *)ictx);
+    g = agopen(name, kind, &ictx->mydisc);
     free(name);
 #else
-    g = agopen(Tcl_GetStringResult(interp), kind, (Agdisc_t *)ictx);
+    g = agopen(Tcl_GetStringResult(interp), kind, &ictx->mydisc);
 #endif
     i = 2;
   }
@@ -171,8 +171,8 @@ int Tcldot_Init(Tcl_Interp *interp) {
   ictx->myioDisc.putstr = AgIoDisc.putstr; /* no change */
   ictx->myioDisc.flush = AgIoDisc.flush;   /* no change */
 
-  ictx->mydisc.id = &myiddisc;         /* complete replacement */
-  ictx->mydisc.io = &(ictx->myioDisc); /* change parts */
+  ictx->mydisc.id = &myiddisc;       /* complete replacement */
+  ictx->mydisc.io = &ictx->myioDisc; /* change parts */
 
   ictx->ctr = 1; /* init to first odd number,  increment by 2 */
 

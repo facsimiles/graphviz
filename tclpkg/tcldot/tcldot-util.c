@@ -80,19 +80,14 @@ void deleteEdge(gctx_t *gctx, Agraph_t * g, Agedge_t *e)
 {
     (void)g;
 
-    char *hndl;
-
-    hndl = obj2cmd(e);
+    char *const hndl = obj2cmd(e);
     agdelete(gctx->g, e);  /* delete edge from root graph */
     Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 static void deleteNodeEdges(gctx_t *gctx, Agraph_t *g, Agnode_t *n)
 {
-    Agedge_t *e, *e1;
-
-    e = agfstedge(g, n);
-    while (e) {
-	e1 = agnxtedge(g, e, n);
+    for (Agedge_t *e = agfstedge(g, n); e != NULL; ) {
+	Agedge_t *const e1 = agnxtedge(g, e, n);
 	deleteEdge(gctx, g, e);
 	e = e1;
     }
@@ -101,42 +96,34 @@ void deleteNode(gctx_t * gctx, Agraph_t *g, Agnode_t *n)
 {
     (void)g;
 
-    char *hndl;
-
     deleteNodeEdges(gctx, gctx->g, n); /* delete all edges to/from node in root graph */
 
-    hndl = obj2cmd(n);
+    char *const hndl = obj2cmd(n);
     agdelete(gctx->g, n); /* delete node from root graph */
     Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 static void deleteGraphNodes(gctx_t * gctx, Agraph_t *g)
 {
-    Agnode_t *n, *n1;
-
-    n = agfstnode(g);
-    while (n) {
-	n1 = agnxtnode(g, n);
+    for (Agnode_t *n = agfstnode(g); n != NULL; ) {
+	Agnode_t *const n1 = agnxtnode(g, n);
 	deleteNode(gctx, g, n);
 	n = n1;
     }
 }
 void deleteGraph(gctx_t * gctx, Agraph_t *g)
 {
-    Agraph_t *sg;
-    char *hndl;
-
-    for (sg = agfstsubg (g); sg; sg = agnxtsubg (sg)) {
+    for (Agraph_t *sg = agfstsubg (g); sg; sg = agnxtsubg (sg)) {
 	deleteGraph(gctx, sg);
     }
     deleteGraphNodes(gctx, g);
 
-    hndl = obj2cmd(g);
+    char *const hndl = obj2cmd(g);
+    Tcl_DeleteCommand(gctx->ictx->interp, hndl);
     if (g == agroot(g)) {
 	agclose(g);
     } else {
 	agdelsubg(agroot(g), g);
     }
-    Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 
 static void myagxset(void *obj, Agsym_t *a, const char *val) {

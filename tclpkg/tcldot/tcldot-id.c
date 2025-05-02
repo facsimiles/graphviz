@@ -9,6 +9,7 @@
  *************************************************************************/
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <util/alloc.h>
 #include <util/unreachable.h>
@@ -16,10 +17,8 @@
 
 // Agiddisc functions
 static void *myiddisc_open(Agraph_t *g, Agdisc_t *disc) {
-    ictx_t *ictx = (ictx_t *)disc;
-    gctx_t *gctx;
-
-    gctx = gv_alloc(sizeof(gctx_t));
+    ictx_t *const ictx = (ictx_t *)((char *)disc - offsetof(ictx_t, mydisc));
+    gctx_t *const gctx = gv_alloc(sizeof(gctx_t));
     gctx->g = g;
     gctx->ictx = ictx;
     return gctx;
