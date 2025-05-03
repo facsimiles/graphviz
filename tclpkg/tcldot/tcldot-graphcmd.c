@@ -39,7 +39,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
   }
 
   if (streq("addedge", argv[1])) {
-    if ((argc < 4) || (argc % 2)) {
+    if (argc < 4 || argc % 2 != 0) {
       Tcl_AppendResult(
           interp, "wrong # args: should be \"", argv[0],
           " addedge tail head ?attributename attributevalue? ?...?\"", NULL);
@@ -385,7 +385,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
       Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[2], &argc2, &argv2) != TCL_OK)
         return TCL_ERROR;
-      if ((argc2 == 0) || (argc2 % 2)) {
+      if (argc2 == 0 || argc2 % 2 != 0) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
                          "\" setattributes attributename attributevalue "
                          "?attributename attributevalue? ?...?",
@@ -402,7 +402,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
       /* special case to allow viewport to be set without resetting layout */
       setgraphattributes(g, &argv[2], (Tcl_Size)argc - 2);
     } else {
-      if ((argc < 4) || (argc % 2)) {
+      if (argc < 4 || argc % 2 != 0) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
                          "\" setattributes attributename attributevalue "
                          "?attributename attributevalue? ?...?",
@@ -418,7 +418,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
       Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[2], &argc2, &argv2) != TCL_OK)
         return TCL_ERROR;
-      if ((argc2 == 0) || (argc2 % 2)) {
+      if (argc2 == 0 || argc2 % 2 != 0) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
                          "\" setedgeattributes attributename attributevalue "
                          "?attributename attributevalue? ?...?",
@@ -431,7 +431,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
       tcldot_argv_free(argc2, argv2_copy);
       Tcl_Free((char *)argv2);
     } else {
-      if ((argc < 4) || (argc % 2)) {
+      if (argc < 4 || argc % 2 != 0) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
                          "\" setedgeattributes attributename attributevalue "
                          "?attributename attributevalue? ?...?",
@@ -446,7 +446,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
       Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[2], &argc2, &argv2) != TCL_OK)
         return TCL_ERROR;
-      if ((argc2 == 0) || (argc2 % 2)) {
+      if (argc2 == 0 || argc2 % 2 != 0) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
                          "\" setnodeattributes attributename attributevalue "
                          "?attributename attributevalue? ?...?",
@@ -459,7 +459,7 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
       tcldot_argv_free(argc2, argv2_copy);
       Tcl_Free((char *)argv2);
     } else {
-      if ((argc < 4) || (argc % 2)) {
+      if (argc < 4 || argc % 2 != 0) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
                          "\" setnodeattributes attributename attributevalue "
                          "?attributename attributevalue? ?...?",
