@@ -119,7 +119,7 @@ static inline char *gv_strndup(const char *original, size_t length) {
 #if defined(_MSC_VER) || defined(__MINGW32__)
 
   // does the string end before the given length?
-  {
+  if (length > 0) {
     const char *end = (const char *)memchr(original, '\0', length);
     if (end != NULL) {
       length = (size_t)(end - original);
@@ -136,7 +136,9 @@ static inline char *gv_strndup(const char *original, size_t length) {
   }
 
   copy = (char *)gv_alloc(length + 1);
-  memcpy(copy, original, length);
+  if (length > 0) {
+    memcpy(copy, original, length);
+  }
 
   // `gv_alloc` has already zeroed the backing memory, so no need to manually
   // add a NUL terminator

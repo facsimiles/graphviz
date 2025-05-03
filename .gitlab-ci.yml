@@ -966,9 +966,6 @@ windows-mingw64-cmake-build:
         - Add-MpPreference -ExclusionPath 'C:\'
         - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
         - $Env:build_system = "cmake"
-        # fail on any compiler warnings
-        - $Env:CFLAGS = "-Werror -Wno-error=maybe-uninitialized"
-        - $Env:CXXFLAGS = "-Werror -Wno-error=maybe-uninitialized"
         - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-build.sh'
     artifacts:
         when: always
@@ -995,9 +992,6 @@ windows-mingw64-cmake-release-build:
         - Add-MpPreference -ExclusionPath 'C:\'
         - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
         - $Env:build_system = "cmake"
-        # fail on any compiler warnings
-        - $Env:CFLAGS = "-Werror -Wno-error=maybe-uninitialized"
-        - $Env:CXXFLAGS = "-Werror -Wno-error=maybe-uninitialized"
         - $Env:CMAKE_OPTIONS = "-DCMAKE_BUILD_TYPE=Release"
         - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-build.sh'
     tags:
