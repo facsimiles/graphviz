@@ -142,17 +142,6 @@ def main(args: list[str]) -> int:
         if not plugin.is_file():
             continue
         for linkee in otool(plugin):
-            if relative := relative_to(linkee, lib):
-                run(
-                    [
-                        "install_name_tool",
-                        "-change",
-                        linkee,
-                        f"@loader_path/../{relative}",
-                        plugin,
-                    ]
-                )
-                continue
             if relative := relative_to(linkee, plugins):
                 run(
                     [
@@ -160,6 +149,17 @@ def main(args: list[str]) -> int:
                         "-change",
                         linkee,
                         f"@loader_path/{relative}",
+                        plugin,
+                    ]
+                )
+                continue
+            if relative := relative_to(linkee, lib):
+                run(
+                    [
+                        "install_name_tool",
+                        "-change",
+                        linkee,
+                        f"@loader_path/../{relative}",
                         plugin,
                     ]
                 )
