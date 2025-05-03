@@ -102,18 +102,6 @@ def main(args: list[str]) -> int:
                         binary,
                     ]
                 )
-                continue
-            if relative := relative_to(linkee, plugins):
-                run(
-                    [
-                        "install_name_tool",
-                        "-change",
-                        linkee,
-                        f"@executable_path/../lib/graphviz/{relative}",
-                        binary,
-                    ]
-                )
-                continue
 
         # echo the resulting state of the binary for debugging
         run(["otool", "-L", binary])
