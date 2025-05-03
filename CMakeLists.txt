@@ -460,7 +460,7 @@ endif()
 
 if(NOT ENABLE_PYTHON STREQUAL "OFF")
   find_package(Python3 COMPONENTS Development)
-  if(ENABLE_SWIG AND SWIG_python_FOUND AND Python_Development_FOUND)
+  if(ENABLE_SWIG AND SWIG_python_FOUND AND Python3_Development_FOUND)
     if(ENABLE_PYTHON STREQUAL "AUTO")
       message(STATUS "setting -DENABLE_PYTHON=ON")
       set(ENABLE_PYTHON ON)
@@ -692,6 +692,9 @@ if(HAVE_C_WUNDEF)
 endif()
 check_c_compiler_flag(-Wunused-but-set-variable HAVE_C_WUNUSED_BUT_SET_VARIABLE)
 include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(
+  -Wmissing-field-initializers HAVE_CXX_WMISSING_FIELD_INITIALIZERS
+)
 check_cxx_compiler_flag(-Wshadow HAVE_CXX_WSHADOW)
 if(HAVE_CXX_WSHADOW)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow")
