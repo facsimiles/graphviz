@@ -1015,6 +1015,8 @@ windows-cygwin-cmake-build:
         - $Env:CI_COMMIT_TITLE = $null
         # disable Windows Defender
         - Add-MpPreference -ExclusionPath 'C:\'
+        # remove pre-installed Windows Python to avoid CMake picking it up
+        - Remove-Item -Path 'C:\Python313' -Recurse -Force
         - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
         - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
         - $Env:Path = "C:\cygwin64\bin;" + $Env:Path
