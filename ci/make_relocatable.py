@@ -103,6 +103,15 @@ def main(args: list[str]) -> int:
                     ]
                 )
 
+        # add an rpath that lets this binary (transitively) find libraries and
+        # plugins
+        try:
+            run(["install_name_tool", "-add_rpath", "@executable_path/../lib", binary])
+        except subprocess.CalledProcessError:
+            # ignore failure that is typically the result of this rpath already being
+            # present
+            pass
+
         # echo the resulting state of the binary for debugging
         run(["otool", "-L", binary])
 
@@ -110,18 +119,27 @@ def main(args: list[str]) -> int:
     for library in lib.iterdir():
         if not library.is_file():
             continue
-        for linkee in otool(library):
+        for index, linkee in enumerate(otool(library)):
             if relative := relative_to(linkee, lib):
-                run(
-                    [
-                        "install_name_tool",
-                        "-change",
-                        linkee,
-                        f"@loader_path/{relative}",
-                        library,
-                    ]
-                )
-                continue
+                if index == 0:
+                    run(
+                        [
+                            "install_name_tool",
+                            "-id",
+                            f"@rpath/{relative}",
+                            library,
+                        ]
+                    )
+                else:
+                    run(
+                        [
+                            "install_name_tool",
+                            "-change",
+                            linkee,
+                            f"@loader_path/{relative}",
+                            library,
+                        ]
+                    )
 
         run(["otool", "-L", library])
 
@@ -129,17 +147,27 @@ def main(args: list[str]) -> int:
     for plugin in plugins.iterdir():
         if not plugin.is_file():
             continue
-        for linkee in otool(plugin):
+        for index, linkee in enumerate(otool(plugin)):
             if relative := relative_to(linkee, plugins):
-                run(
-                    [
-                        "install_name_tool",
-                        "-change",
-                        linkee,
-                        f"@loader_path/{relative}",
-                        plugin,
-                    ]
-                )
+                if index == 0:
+                    run(
+                        [
+                            "install_name_tool",
+                            "-id",
+                            f"@rpath/graphviz/{relative}",
+                            plugin,
+                        ]
+                    )
+                else:
+                    run(
+                        [
+                            "install_name_tool",
+                            "-change",
+                            linkee,
+                            f"@loader_path/{relative}",
+                            plugin,
+                        ]
+                    )
                 continue
             if relative := relative_to(linkee, lib):
                 run(

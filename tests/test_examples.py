@@ -10,8 +10,6 @@ import pytest
 
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
-    is_autotools,
-    is_macos,
     is_static_build,
     run,
     run_c,
@@ -26,11 +24,6 @@ from gvtest import (  # pylint: disable=wrong-import-position
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
-)
-@pytest.mark.xfail(
-    is_autotools() and is_macos(),
-    strict=True,
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2667",
 )
 def test_compile_example(src):
     """try to compile the example"""
