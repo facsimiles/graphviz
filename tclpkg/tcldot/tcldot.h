@@ -71,6 +71,6 @@ extern size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len);
 extern void tcldot_layout(GVC_t *gvc, Agraph_t * g, const char *engine);
 
 /// duplicate the strings pointed to by `argv` as non-const strings
-char **tcldot_argv_dup(int argc, const char *argv[]);
+char **tcldot_argv_dup(Tcl_Size argc, const char *argv[]);
 /// free the strings pointed to by `argv`
-void tcldot_argv_free(int argc, char *argv[]);
+void tcldot_argv_free(Tcl_Size argc, char *argv[]);

@@ -229,17 +229,17 @@ void tcldot_layout(GVC_t *gvc, Agraph_t * g, const char *engine)
     gvLayout(gvc, g, engine);
 }
 
-char **tcldot_argv_dup(int argc, const char *argv[]) {
+char **tcldot_argv_dup(Tcl_Size argc, const char *argv[]) {
   assert(argc > 0);
   char **argv_ret = gv_calloc((size_t)argc, sizeof(char *));
-  for (int i = 0; i < argc; ++i) {
+  for (Tcl_Size i = 0; i < argc; ++i) {
     argv_ret[i] = gv_strdup(argv[i]);
   }
   return argv_ret;
 }
 
-void tcldot_argv_free(int argc, char *argv[]) {
-  for (int i = 0; i < argc; ++i) {
+void tcldot_argv_free(Tcl_Size argc, char *argv[]) {
+  for (Tcl_Size i = 0; i < argc; ++i) {
     free(argv[i]);
   }
   free(argv);

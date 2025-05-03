@@ -70,9 +70,9 @@ static int dotnew_internal(ClientData clientData, Tcl_Interp *interp, int argc,
 
 static int dotnew(ClientData clientData, Tcl_Interp *interp, int argc,
                   const char *argv[]) {
-  char **argv_copy = tcldot_argv_dup(argc, argv);
+  char **argv_copy = tcldot_argv_dup((Tcl_Size)argc, argv);
   int rc = dotnew_internal(clientData, interp, argc, argv_copy);
-  tcldot_argv_free(argc, argv_copy);
+  tcldot_argv_free((Tcl_Size)argc, argv_copy);
   return rc;
 }
 
