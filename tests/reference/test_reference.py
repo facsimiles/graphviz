@@ -5,7 +5,6 @@ Tests of Graphviz output against expected reference output.
 import difflib
 import os
 import sys
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -372,32 +371,26 @@ from gvtest import run, run_raw  # pylint: disable=wrong-import-position
         ),
     ),
 )
-def test_reference(src: str, format: str, reference: str):
+def test_reference(src: str, format: str, reference: str, tmp_path: Path):
     """test some Graphviz input against a reference source"""
 
     # locate the reference output
     ref = Path(__file__).resolve().parent / "test_reference" / reference
     assert ref.exists()
 
-    # make a scratch space
-    with tempfile.TemporaryDirectory() as tmp:
-        t = Path(tmp)
+    # process our input with Graphviz
+    output = tmp_path / reference
+    run(["dot", f"-T{format}", "-o", output], input=src)
 
-        # process our input with Graphviz
-        output = t / reference
-        run(["dot", f"-T{format}", "-o", output], input=src)
-
-        # compare against the reference output
-        if output.suffix == ".png":
-            run_raw(["diffimg", ref, output])
-        else:
-            fail = False
-            a = ref.read_text(encoding="utf-8")
-            b = output.read_text(encoding="utf-8")
-            for line in difflib.unified_diff(
-                a, b, fromfile=str(ref), tofile=str(output)
-            ):
-                sys.stderr.write(f"{line}\n")
-                fail = True
-            if fail:
-                raise RuntimeError(f"diff {ref} {output} failed")
+    # compare against the reference output
+    if output.suffix == ".png":
+        run_raw(["diffimg", ref, output])
+    else:
+        fail = False
+        a = ref.read_text(encoding="utf-8")
+        b = output.read_text(encoding="utf-8")
+        for line in difflib.unified_diff(a, b, fromfile=str(ref), tofile=str(output)):
+            sys.stderr.write(f"{line}\n")
+            fail = True
+        if fail:
+            raise RuntimeError(f"diff {ref} {output} failed")
