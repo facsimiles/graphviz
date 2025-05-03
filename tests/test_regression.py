@@ -24,7 +24,7 @@ import textwrap
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Iterator, List, Optional, Set, Tuple
+from typing import Iterator, List, Optional, Set, Tuple, Union
 
 import pexpect
 import pytest
@@ -4280,14 +4280,22 @@ def test_2521(testcase: str):
     input = Path(__file__).parent / testcase
     assert input.exists(), "unexpectedly missing test case"
 
+    def sh(args: List[Union[Path, str]]) -> bytes:
+        """run a command, as if via the shell"""
+        # dump the command being run for the user to observe if the test fails
+        print(f"+ {shlex.join(str(x) for x in args)}")
+
+        proc = subprocess.run(args, stdout=subprocess.PIPE, check=True)
+        return proc.stdout
+
     # process this with and without `newrank=true`
-    off = run_raw(["dot", "-Tpng", input])
-    on = run_raw(["dot", "-Gnewrank=true", "-Tpng", input])
+    off = sh(["dot", "-Tpng", input])
+    on = sh(["dot", "-Gnewrank=true", "-Tpng", input])
 
     assert off != on, "-Gnewrank=true had no effect"
 
     # we should be able to reset `newrank` with an explicit setting
-    force_off = run_raw(["dot", "-Gnewrank=false", "-Tpng", input])
+    force_off = sh(["dot", "-Gnewrank=false", "-Tpng", input])
     assert force_off == off, "-Gnewrank=false did not reset the default"
 
 
@@ -5129,20 +5137,30 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
         src = Path(__file__).parent / f"{images}_{i}.jpg"
         shutil.copy(src, media / f"2619_{i}.jpg")
 
+    def sh(args: List[Union[Path, str]], stdin: Optional[bytes] = None) -> bytes:
+        """run a command, as if via the shell"""
+        nonlocal tmp_path
+
+        # dump the command being run for the user to observe if the test fails
+        print(
+            f"+ cd {shlex.quote(str(tmp_path))} && {shlex.join(str(x) for x in args)}"
+        )
+
+        proc = subprocess.run(
+            args, input=stdin, stdout=subprocess.PIPE, cwd=tmp_path, check=True
+        )
+        return proc.stdout
+
     # render this
-    dot_result = run_raw(["dot", f"-T{output}", destination], cwd=tmp_path)
+    dot_result = sh(["dot", f"-T{output}", destination])
 
     assert dot_result.strip() != b"", "an empty file was rendered"
 
     # render it with exact position information
-    positioned = run(["dot", "-Tdot", destination], cwd=tmp_path)
+    positioned = sh(["dot", "-Tdot", destination])
 
     # use this to render with neato
-    neato_result = run_raw(
-        ["neato", "-n2", f"-T{output}"],
-        input=positioned.encode("utf-8"),
-        cwd=tmp_path,
-    )
+    neato_result = sh(["neato", "-n2", f"-T{output}"], stdin=positioned)
 
     assert neato_result.strip() != b"", "an empty file was rendered"
 
