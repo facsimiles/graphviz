@@ -8,8 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include "config.h"
-
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -21,7 +19,6 @@
 #include <gvc/gvplugin_loadimage.h>
 #include <gvc/gvio.h>
 
-#ifdef HAVE_PANGOCAIRO
 #include <cairo.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk/gdk.h>
@@ -35,11 +32,9 @@ enum {
 
 static void gdk_set_mimedata_from_file (cairo_surface_t *image, const char *mime_type, const char *file)
 {
-    FILE *fp;
     unsigned char *data = NULL;
-    const char *id_prefix = "gvloadimage_gdk-";
 
-    fp = fopen (file, "rb");
+    FILE *const fp = fopen(file, "rb");
     if (fp == NULL)
         return;
     fseek (fp, 0, SEEK_END);
@@ -56,13 +51,21 @@ static void gdk_set_mimedata_from_file (cairo_surface_t *image, const char *mime
     fclose(fp);
 
     if (data) {
-        cairo_surface_set_mime_data (image, mime_type, data, (unsigned long)len, free, data);
+        if (cairo_surface_set_mime_data(image, mime_type, data,
+                                        (unsigned long)len, free, data) !=
+            CAIRO_STATUS_SUCCESS) {
+            free(data);
+            return;
+        }
         agxbuf id = {0};
-        agxbprint(&id, "%s%s", id_prefix, file);
-        char *unique_id = agxbdisown(&id);
-        cairo_surface_set_mime_data(image, CAIRO_MIME_TYPE_UNIQUE_ID,
-                                    (unsigned char*)unique_id,
-                                    strlen(unique_id), free, unique_id);
+        agxbprint(&id, "gvloadimage_gdk-%s", file);
+        char *const unique_id = agxbdisown(&id);
+        if (cairo_surface_set_mime_data(image, CAIRO_MIME_TYPE_UNIQUE_ID,
+                                        (unsigned char *)unique_id,
+                                        strlen(unique_id), free, unique_id) !=
+            CAIRO_STATUS_SUCCESS) {
+            free(unique_id);
+        }
     }
 }
 
@@ -103,7 +106,6 @@ static cairo_surface_t* gdk_loadimage(GVJ_t * job, usershape_t *us)
     cairo_t *cr = job->context; /* target context */
     GdkPixbuf *image = NULL;
     cairo_surface_t *cairo_image = NULL;
-    cairo_pattern_t *pattern;
 
     assert(job);
     assert(us);
@@ -138,7 +140,7 @@ static cairo_surface_t* gdk_loadimage(GVJ_t * job, usershape_t *us)
         if (image) {
             cairo_save (cr);
             gdk_cairo_set_source_pixbuf (cr, image, 0, 0);
-            pattern = cairo_get_source (cr);
+            cairo_pattern_t *const pattern = cairo_get_source(cr);
             assert(cairo_pattern_get_type (pattern) == CAIRO_PATTERN_TYPE_SURFACE);
             cairo_pattern_get_surface (pattern, &cairo_image);
             cairo_image = cairo_surface_reference (cairo_image);
@@ -160,9 +162,7 @@ static void gdk_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fille
     (void)filled;
 
     cairo_t *cr = job->context; /* target context */
-    cairo_surface_t *image;
-
-    image = gdk_loadimage(job, us);
+    cairo_surface_t *const image = gdk_loadimage(job, us);
     if (image) {
         cairo_save(cr);
 	cairo_translate(cr, b.LL.x, -b.UR.y);
@@ -178,16 +178,12 @@ static gvloadimage_engine_t engine_gdk = {
     gdk_loadimage_cairo
 };
 
-#endif
-
 gvplugin_installed_t gvloadimage_gdk_types[] = {
-#ifdef HAVE_PANGOCAIRO
     {FORMAT_BMP_CAIRO,  "bmp:cairo", 1, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpe:cairo", 2, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpg:cairo", 2, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpeg:cairo", 2, &engine_gdk, NULL},
     {FORMAT_PNG_CAIRO,  "png:cairo", -1, &engine_gdk, NULL},
     {FORMAT_ICO_CAIRO,  "ico:cairo", 1, &engine_gdk, NULL},
-#endif
     {0, NULL, 0, NULL, NULL}
 };

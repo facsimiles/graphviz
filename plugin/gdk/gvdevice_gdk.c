@@ -8,14 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include "config.h"
 #include <assert.h>
 #include <gvc/gvplugin_device.h>
 #include <gvc/gvio.h>
 #include <limits.h>
 #include <util/gv_math.h>
-#include <util/unreachable.h>
-#ifdef HAVE_PANGOCAIRO
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 enum {
@@ -34,28 +31,17 @@ static gboolean writer(const char *buf, gsize count, GError **error,
 
 static void gdk_format(GVJ_t * job)
 {
-    char *format_str = "";
+    char *const format_strs[] = {
+	[FORMAT_BMP] = "bmp",
+	[FORMAT_ICO] = "ico",
+	[FORMAT_JPEG] = "jpeg",
+	[FORMAT_PNG] = "png",
+	[FORMAT_TIFF] = "tiff"
+    };
+    assert(job->device.id >= 0);
+    assert(job->device.id < sizeof(format_strs) / sizeof(format_strs[0]));
+    char *const format_str = format_strs[job->device.id];
     GdkPixbuf *pixbuf;
-
-    switch (job->device.id) {
-    case FORMAT_BMP:
-	format_str = "bmp";
-	break;
-    case FORMAT_ICO:
-	format_str = "ico";
-	break;
-    case FORMAT_JPEG:
-	format_str = "jpeg";
-	break;
-    case FORMAT_PNG:
-	format_str = "png";
-	break;
-    case FORMAT_TIFF:
-	format_str = "tiff";
-	break;
-    default:
-	UNREACHABLE();
-    }
 
     argb2rgba(job->width, job->height, job->imagedata);
 
@@ -92,10 +78,8 @@ static gvdevice_features_t device_features_gdk = {
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},                  /* dpi */
 };
-#endif
 
 gvplugin_installed_t gvdevice_gdk_types[] = {
-#ifdef HAVE_PANGOCAIRO
     {FORMAT_BMP, "bmp:cairo", 6, &gdk_engine, &device_features_gdk},
     {FORMAT_ICO, "ico:cairo", 6, &gdk_engine, &device_features_gdk},
     {FORMAT_JPEG, "jpe:cairo", 6, &gdk_engine, &device_features_gdk},
@@ -104,6 +88,5 @@ gvplugin_installed_t gvdevice_gdk_types[] = {
     {FORMAT_PNG, "png:cairo", 6, &gdk_engine, &device_features_gdk},
     {FORMAT_TIFF, "tif:cairo", 6, &gdk_engine, &device_features_gdk},
     {FORMAT_TIFF, "tiff:cairo", 6, &gdk_engine, &device_features_gdk},
-#endif
     {0, NULL, 0, NULL, NULL}
 };
