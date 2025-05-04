@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Iterator, Optional, Union
 
 
-def run(args: list[Union[str, Path]]) -> str:
+def run(*args: Union[str, Path]) -> str:
     """
     run a command, echoing it like `set -x`
 
@@ -48,7 +48,7 @@ def otool(binary: Path) -> Iterator[Path]:
     Yields:
         paths to dependent libraries
     """
-    links = run(["otool", "-L", binary])
+    links = run("otool", "-L", binary)
     for line in links.split("\n"):
         if m := re.match(r"\s+(?P<path>[^ ]+)", line):
             yield Path(m.group("path"))
@@ -94,26 +94,24 @@ def main(args: list[str]) -> int:
         for linkee in otool(binary):
             if relative := relative_to(linkee, lib):
                 run(
-                    [
-                        "install_name_tool",
-                        "-change",
-                        linkee,
-                        f"@executable_path/../lib/{relative}",
-                        binary,
-                    ]
+                    "install_name_tool",
+                    "-change",
+                    linkee,
+                    f"@executable_path/../lib/{relative}",
+                    binary,
                 )
 
         # add an rpath that lets this binary (transitively) find libraries and
         # plugins
         try:
-            run(["install_name_tool", "-add_rpath", "@executable_path/../lib", binary])
+            run("install_name_tool", "-add_rpath", "@executable_path/../lib", binary)
         except subprocess.CalledProcessError:
             # ignore failure that is typically the result of this rpath already being
             # present
             pass
 
         # echo the resulting state of the binary for debugging
-        run(["otool", "-L", binary])
+        run("otool", "-L", binary)
 
     # rewrite library links to be relative
     for library in lib.iterdir():
@@ -123,25 +121,21 @@ def main(args: list[str]) -> int:
             if relative := relative_to(linkee, lib):
                 if index == 0:
                     run(
-                        [
-                            "install_name_tool",
-                            "-id",
-                            f"@rpath/{relative}",
-                            library,
-                        ]
+                        "install_name_tool",
+                        "-id",
+                        f"@rpath/{relative}",
+                        library,
                     )
                 else:
                     run(
-                        [
-                            "install_name_tool",
-                            "-change",
-                            linkee,
-                            f"@loader_path/{relative}",
-                            library,
-                        ]
+                        "install_name_tool",
+                        "-change",
+                        linkee,
+                        f"@loader_path/{relative}",
+                        library,
                     )
 
-        run(["otool", "-L", library])
+        run("otool", "-L", library)
 
     # rewrite plugin links to be relative
     for plugin in plugins.iterdir():
@@ -151,37 +145,31 @@ def main(args: list[str]) -> int:
             if relative := relative_to(linkee, plugins):
                 if index == 0:
                     run(
-                        [
-                            "install_name_tool",
-                            "-id",
-                            f"@rpath/graphviz/{relative}",
-                            plugin,
-                        ]
+                        "install_name_tool",
+                        "-id",
+                        f"@rpath/graphviz/{relative}",
+                        plugin,
                     )
                 else:
                     run(
-                        [
-                            "install_name_tool",
-                            "-change",
-                            linkee,
-                            f"@loader_path/{relative}",
-                            plugin,
-                        ]
+                        "install_name_tool",
+                        "-change",
+                        linkee,
+                        f"@loader_path/{relative}",
+                        plugin,
                     )
                 continue
             if relative := relative_to(linkee, lib):
                 run(
-                    [
-                        "install_name_tool",
-                        "-change",
-                        linkee,
-                        f"@loader_path/../{relative}",
-                        plugin,
-                    ]
+                    "install_name_tool",
+                    "-change",
+                    linkee,
+                    f"@loader_path/../{relative}",
+                    plugin,
                 )
                 continue
 
-        run(["otool", "-L", plugin])
+        run("otool", "-L", plugin)
 
     return 0
 
