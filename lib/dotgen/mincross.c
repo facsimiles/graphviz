@@ -903,16 +903,14 @@ static void cleanup2(graph_t *g, int64_t nc) {
 
 static node_t *neighbor(node_t * v, int dir)
 {
-    node_t *rv;
-
-    rv = NULL;
+    node_t *rv = NULL;
 assert(v);
     if (dir < 0) {
 	if (ND_order(v) > 0)
 	    rv = GD_rank(Root)[ND_rank(v)].v[ND_order(v) - 1];
     } else
 	rv = GD_rank(Root)[ND_rank(v)].v[ND_order(v) + 1];
-assert((rv == 0) || (ND_order(rv)-ND_order(v))*dir > 0);
+assert(rv == 0 || (ND_order(rv)-ND_order(v))*dir > 0);
     return rv;
 }
 
@@ -938,10 +936,8 @@ static bool inside_cluster(graph_t *g, node_t *v) {
 
 static node_t *furthestnode(graph_t * g, node_t * v, int dir)
 {
-    node_t *u, *rv;
-
-    rv = u = v;
-    while ((u = neighbor(u, dir))) {
+    node_t *rv = v;
+    for (node_t *u = v; (u = neighbor(u, dir)); ) {
 	if (is_a_normal_node_of(g, u))
 	    rv = u;
 	else if (is_a_vnode_of_an_edge_of(g, u))
@@ -972,21 +968,21 @@ void rec_save_vlists(graph_t * g)
 
 void rec_reset_vlists(graph_t * g)
 {
-    int r, c;
-    node_t *u, *v, *w;
-
-    /* fix vlists of sub-clusters */
-    for (c = 1; c <= GD_n_cluster(g); c++)
+    // fix vlists of sub-clusters
+    for (int c = 1; c <= GD_n_cluster(g); c++)
 	rec_reset_vlists(GD_clust(g)[c]);
 
     if (GD_rankleader(g))
-	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	    v = GD_rankleader(g)[r];
+	for (int r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	    node_t *const v = GD_rankleader(g)[r];
+	    if (v == NULL) {
+	        continue;
+	    }
 #ifdef DEBUG
 	    node_in_root_vlist(v);
 #endif
-	    u = furthestnode(g, v, -1);
-	    w = furthestnode(g, v, 1);
+	    node_t *const u = furthestnode(g, v, -1);
+	    node_t *const w = furthestnode(g, v, 1);
 	    GD_rankleader(g)[r] = u;
 #ifdef DEBUG
 	    assert(GD_rank(dot_root(g))[r].v[ND_order(u)] == u);

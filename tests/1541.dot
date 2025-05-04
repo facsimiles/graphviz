@@ -1,0 +1,10 @@
+digraph {
+	{
+		Act_1 -> Act_3;
+		subgraph cluster_inner {
+			{Act_21 -> Act_22; rank=same;}
+			Act_22 -> Act_23;
+		}
+	}
+	Act_3 -> Ex	{Act_21 -> Act_22; rank=same;}
+		}
