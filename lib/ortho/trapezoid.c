@@ -70,9 +70,8 @@ static size_t newnode(qnodes_t *qs) {
 
 /* Return a free trapezoid */
 static size_t newtrap(traps_t *tr) {
-  tr->data = gv_recalloc(tr->data, tr->length, tr->length + 1, sizeof(trap_t));
-  ++tr->length;
-  return tr->length - 1;
+  traps_append(tr, (trap_t){0});
+  return traps_size(tr) - 1;
 }
 
 /// return the maximum of the two points
@@ -166,36 +165,36 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   const size_t t3 = newtrap(tr); // bottom-most
   const size_t t4 = newtrap(tr); // topmost
 
-  tr->data[t1].hi = qnodes_get(qs, i1).yval;
-  tr->data[t2].hi = qnodes_get(qs, i1).yval;
-  tr->data[t4].lo = qnodes_get(qs, i1).yval;
-  tr->data[t1].lo = qnodes_get(qs, i3).yval;
-  tr->data[t2].lo = qnodes_get(qs, i3).yval;
-  tr->data[t3].hi = qnodes_get(qs, i3).yval;
-  tr->data[t4].hi.y = (double)(INF);
-  tr->data[t4].hi.x = (double)(INF);
-  tr->data[t3].lo.y = (double)-1 * (INF);
-  tr->data[t3].lo.x = (double)-1 * (INF);
-  tr->data[t1].rseg = segnum;
-  tr->data[t2].lseg = segnum;
-  tr->data[t1].u0 = t4;
-  tr->data[t2].u0 = t4;
-  tr->data[t1].d0 = t3;
-  tr->data[t2].d0 = t3;
-  tr->data[t4].d0 = t1;
-  tr->data[t3].u0 = t1;
-  tr->data[t4].d1 = t2;
-  tr->data[t3].u1 = t2;
+  traps_at(tr, t1)->hi = qnodes_get(qs, i1).yval;
+  traps_at(tr, t2)->hi = qnodes_get(qs, i1).yval;
+  traps_at(tr, t4)->lo = qnodes_get(qs, i1).yval;
+  traps_at(tr, t1)->lo = qnodes_get(qs, i3).yval;
+  traps_at(tr, t2)->lo = qnodes_get(qs, i3).yval;
+  traps_at(tr, t3)->hi = qnodes_get(qs, i3).yval;
+  traps_at(tr, t4)->hi.y = (double)(INF);
+  traps_at(tr, t4)->hi.x = (double)(INF);
+  traps_at(tr, t3)->lo.y = (double)-1 * (INF);
+  traps_at(tr, t3)->lo.x = (double)-1 * (INF);
+  traps_at(tr, t1)->rseg = segnum;
+  traps_at(tr, t2)->lseg = segnum;
+  traps_at(tr, t1)->u0 = t4;
+  traps_at(tr, t2)->u0 = t4;
+  traps_at(tr, t1)->d0 = t3;
+  traps_at(tr, t2)->d0 = t3;
+  traps_at(tr, t4)->d0 = t1;
+  traps_at(tr, t3)->u0 = t1;
+  traps_at(tr, t4)->d1 = t2;
+  traps_at(tr, t3)->u1 = t2;
 
-  tr->data[t1].sink = i6;
-  tr->data[t2].sink = i7;
-  tr->data[t3].sink = i4;
-  tr->data[t4].sink = i2;
+  traps_at(tr, t1)->sink = i6;
+  traps_at(tr, t2)->sink = i7;
+  traps_at(tr, t3)->sink = i4;
+  traps_at(tr, t4)->sink = i2;
 
-  tr->data[t1].state = ST_VALID;
-  tr->data[t2].state = ST_VALID;
-  tr->data[t3].state = ST_VALID;
-  tr->data[t4].state = ST_VALID;
+  traps_at(tr, t1)->state = ST_VALID;
+  traps_at(tr, t2)->state = ST_VALID;
+  traps_at(tr, t3)->state = ST_VALID;
+  traps_at(tr, t4)->state = ST_VALID;
 
   qnodes_at(qs, i2)->trnum = t4;
   qnodes_at(qs, i4)->trnum = t3;
@@ -318,50 +317,50 @@ static void merge_trapezoids(int segnum, size_t tfirst, size_t tlast, int side,
                              traps_t *tr, qnodes_t *qs) {
   /* First merge polys on the LHS */
   size_t t = tfirst;
-  while (is_valid_trap(t) && greater_than_equal_to(tr->data[t].lo, tr->data[tlast].lo))
-    {
+  while (is_valid_trap(t) &&
+         greater_than_equal_to(traps_get(tr, t).lo, traps_get(tr, tlast).lo)) {
       size_t tnext;
       bool cond;
       if (side == S_LEFT)
-	cond = (is_valid_trap(tnext = tr->data[t].d0) && tr->data[tnext].rseg == segnum) ||
-		(is_valid_trap(tnext = tr->data[t].d1) && tr->data[tnext].rseg == segnum);
+	cond = (is_valid_trap(tnext = traps_get(tr, t).d0) && traps_get(tr, tnext).rseg == segnum) ||
+		(is_valid_trap(tnext = traps_get(tr, t).d1) && traps_get(tr, tnext).rseg == segnum);
       else
-	cond = (is_valid_trap(tnext = tr->data[t].d0) && tr->data[tnext].lseg == segnum) ||
-		(is_valid_trap(tnext = tr->data[t].d1) && tr->data[tnext].lseg == segnum);
+	cond = (is_valid_trap(tnext = traps_get(tr, t).d0) && traps_get(tr, tnext).lseg == segnum) ||
+		(is_valid_trap(tnext = traps_get(tr, t).d1) && traps_get(tr, tnext).lseg == segnum);
 
       if (cond)
 	{
-	  if (tr->data[t].lseg == tr->data[tnext].lseg &&
-	      tr->data[t].rseg == tr->data[tnext].rseg) /* good neighbours */
+	  if (traps_get(tr, t).lseg == traps_get(tr, tnext).lseg &&
+	      traps_get(tr, t).rseg == traps_get(tr, tnext).rseg) // good neighbors
 	    {			              /* merge them */
 	      /* Use the upper node as the new node i.e. t */
 
-	      const size_t ptnext = qnodes_get(qs, tr->data[tnext].sink).parent;
+	      const size_t ptnext = qnodes_get(qs, traps_get(tr, tnext).sink).parent;
 
-	      if (qnodes_get(qs, ptnext).left == tr->data[tnext].sink)
-		qnodes_at(qs, ptnext)->left = tr->data[t].sink;
+	      if (qnodes_get(qs, ptnext).left == traps_get(tr, tnext).sink)
+		qnodes_at(qs, ptnext)->left = traps_get(tr, t).sink;
 	      else
-		qnodes_at(qs, ptnext)->right = tr->data[t].sink; // redirect parent
+		qnodes_at(qs, ptnext)->right = traps_get(tr, t).sink; // redirect parent
 
 
 	      /* Change the upper neighbours of the lower trapezoids */
 
-	      if (is_valid_trap(tr->data[t].d0 = tr->data[tnext].d0)) {
-		if (tr->data[tr->data[t].d0].u0 == tnext)
-		  tr->data[tr->data[t].d0].u0 = t;
-		else if (tr->data[tr->data[t].d0].u1 == tnext)
-		  tr->data[tr->data[t].d0].u1 = t;
+	      if (is_valid_trap(traps_at(tr, t)->d0 = traps_get(tr, tnext).d0)) {
+		if (traps_get(tr, traps_get(tr, t).d0).u0 == tnext)
+		  traps_at(tr, traps_get(tr, t).d0)->u0 = t;
+		else if (traps_get(tr, traps_get(tr, t).d0).u1 == tnext)
+		  traps_at(tr, traps_get(tr, t).d0)->u1 = t;
 	      }
 
-	      if (is_valid_trap(tr->data[t].d1 = tr->data[tnext].d1)) {
-		if (tr->data[tr->data[t].d1].u0 == tnext)
-		  tr->data[tr->data[t].d1].u0 = t;
-		else if (tr->data[tr->data[t].d1].u1 == tnext)
-		  tr->data[tr->data[t].d1].u1 = t;
+	      if (is_valid_trap(traps_at(tr, t)->d1 = traps_get(tr, tnext).d1)) {
+		if (traps_get(tr, traps_get(tr, t).d1).u0 == tnext)
+		  traps_at(tr, traps_get(tr, t).d1)->u0 = t;
+		else if (traps_get(tr, traps_get(tr, t).d1).u1 == tnext)
+		  traps_at(tr, traps_get(tr, t).d1)->u1 = t;
 	      }
 
-	      tr->data[t].lo = tr->data[tnext].lo;
-	      tr->data[tnext].state = ST_INVALID; /* invalidate the lower */
+	      traps_at(tr, t)->lo = traps_get(tr, tnext).lo;
+	      traps_at(tr, tnext)->state = ST_INVALID; // invalidate the lower
 				            /* trapezium */
 	    }
 	  else		    /* not good neighbours */
@@ -376,67 +375,67 @@ static void merge_trapezoids(int segnum, size_t tfirst, size_t tlast, int side,
 
 static void update_trapezoid(segment_t *s, segment_t *seg, traps_t *tr,
                              size_t t, size_t tn) {
-  if (is_valid_trap(tr->data[t].u0) && is_valid_trap(tr->data[t].u1))
+  if (is_valid_trap(traps_get(tr, t).u0) && is_valid_trap(traps_get(tr, t).u1))
   {			/* continuation of a chain from abv. */
-    if (is_valid_trap(tr->data[t].usave)) { // three upper neighbours
-      if (tr->data[t].uside == S_LEFT)
+    if (is_valid_trap(traps_get(tr, t).usave)) { // three upper neighbours
+      if (traps_get(tr, t).uside == S_LEFT)
       {
-	tr->data[tn].u0 = tr->data[t].u1;
-	tr->data[t].u1 = SIZE_MAX;
-	tr->data[tn].u1 = tr->data[t].usave;
+	traps_at(tr, tn)->u0 = traps_get(tr, t).u1;
+	traps_at(tr, t)->u1 = SIZE_MAX;
+	traps_at(tr, tn)->u1 = traps_get(tr, t).usave;
 
-	tr->data[tr->data[t].u0].d0 = t;
-	tr->data[tr->data[tn].u0].d0 = tn;
-	tr->data[tr->data[tn].u1].d0 = tn;
+	traps_at(tr, traps_get(tr, t).u0)->d0 = t;
+	traps_at(tr, traps_get(tr, tn).u0)->d0 = tn;
+	traps_at(tr, traps_get(tr, tn).u1)->d0 = tn;
       }
       else		/* intersects in the right */
       {
-	tr->data[tn].u1 = SIZE_MAX;
-	tr->data[tn].u0 = tr->data[t].u1;
-	tr->data[t].u1 = tr->data[t].u0;
-	tr->data[t].u0 = tr->data[t].usave;
+	traps_at(tr, tn)->u1 = SIZE_MAX;
+	traps_at(tr, tn)->u0 = traps_get(tr, t).u1;
+	traps_at(tr, t)->u1 = traps_get(tr, t).u0;
+	traps_at(tr, t)->u0 = traps_get(tr, t).usave;
 
-	tr->data[tr->data[t].u0].d0 = t;
-	tr->data[tr->data[t].u1].d0 = t;
-	tr->data[tr->data[tn].u0].d0 = tn;
+	traps_at(tr, traps_get(tr, t).u0)->d0 = t;
+	traps_at(tr, traps_get(tr, t).u1)->d0 = t;
+	traps_at(tr, traps_get(tr, tn).u0)->d0 = tn;
       }
 
-      tr->data[t].usave = 0;
-      tr->data[tn].usave = 0;
+      traps_at(tr, t)->usave = 0;
+      traps_at(tr, tn)->usave = 0;
     }
     else		/* No usave.... simple case */
     {
-      tr->data[tn].u0 = tr->data[t].u1;
-      tr->data[t].u1 = SIZE_MAX;
-      tr->data[tn].u1 = SIZE_MAX;
-      tr->data[tr->data[tn].u0].d0 = tn;
+      traps_at(tr, tn)->u0 = traps_get(tr, t).u1;
+      traps_at(tr, t)->u1 = SIZE_MAX;
+      traps_at(tr, tn)->u1 = SIZE_MAX;
+      traps_at(tr, traps_get(tr, tn).u0)->d0 = tn;
     }
   }
   else
   {			/* fresh seg. or upward cusp */
-    const size_t tmp_u = tr->data[t].u0;
+    const size_t tmp_u = traps_get(tr, t).u0;
     size_t td0;
-    if (is_valid_trap(td0 = tr->data[tmp_u].d0) && is_valid_trap(tr->data[tmp_u].d1))
+    if (is_valid_trap(td0 = traps_get(tr, tmp_u).d0) && is_valid_trap(traps_get(tr, tmp_u).d1))
     {		/* upward cusp */
-      if (tr->data[td0].rseg > 0 && !is_left_of(tr->data[td0].rseg, seg, &s->v1))
+      if (traps_get(tr, td0).rseg > 0 && !is_left_of(traps_get(tr, td0).rseg, seg, &s->v1))
       {
-	tr->data[t].u0 = SIZE_MAX;
-	tr->data[t].u1 = SIZE_MAX;
-	tr->data[tn].u1 = SIZE_MAX;
-	tr->data[tr->data[tn].u0].d1 = tn;
+	traps_at(tr, t)->u0 = SIZE_MAX;
+	traps_at(tr, t)->u1 = SIZE_MAX;
+	traps_at(tr, tn)->u1 = SIZE_MAX;
+	traps_at(tr, traps_get(tr, tn).u0)->d1 = tn;
       }
       else		/* cusp going leftwards */
       {
-	tr->data[tn].u0 = SIZE_MAX;
-	tr->data[tn].u1 = SIZE_MAX;
-	tr->data[t].u1 = SIZE_MAX;
-	tr->data[tr->data[t].u0].d0 = t;
+	traps_at(tr, tn)->u0 = SIZE_MAX;
+	traps_at(tr, tn)->u1 = SIZE_MAX;
+	traps_at(tr, t)->u1 = SIZE_MAX;
+	traps_at(tr, traps_get(tr, t).u0)->d0 = t;
       }
     }
     else		/* fresh segment */
     {
-      tr->data[tr->data[t].u0].d0 = t;
-      tr->data[tr->data[t].u0].d1 = tn;
+      traps_at(tr, traps_get(tr, t).u0)->d0 = t;
+      traps_at(tr, traps_get(tr, t).u0)->d1 = tn;
     }
   }
 }
@@ -469,30 +468,30 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
       const size_t tu = locate_endpoint(&s.v0, &s.v1, s.root0, seg, qs);
       const size_t tl = newtrap(tr); // tl is the new lower trapezoid
-      tr->data[tl] = tr->data[tu];
-      tr->data[tu].lo = s.v0;
-      tr->data[tl].hi = s.v0;
-      tr->data[tu].d0 = tl;
-      tr->data[tu].d1 = 0;
-      tr->data[tl].u0 = tu;
-      tr->data[tl].u1 = 0;
+      traps_set(tr, tl, traps_get(tr, tu));
+      traps_at(tr, tu)->lo = s.v0;
+      traps_at(tr, tl)->hi = s.v0;
+      traps_at(tr, tu)->d0 = tl;
+      traps_at(tr, tu)->d1 = 0;
+      traps_at(tr, tl)->u0 = tu;
+      traps_at(tr, tl)->u1 = 0;
 
-      if (is_valid_trap(tmp_d = tr->data[tl].d0) && tr->data[tmp_d].u0 == tu)
-	tr->data[tmp_d].u0 = tl;
-      if (is_valid_trap(tmp_d = tr->data[tl].d0) && tr->data[tmp_d].u1 == tu)
-	tr->data[tmp_d].u1 = tl;
+      if (is_valid_trap(tmp_d = traps_get(tr, tl).d0) && traps_get(tr, tmp_d).u0 == tu)
+	traps_at(tr, tmp_d)->u0 = tl;
+      if (is_valid_trap(tmp_d = traps_get(tr, tl).d0) && traps_get(tr, tmp_d).u1 == tu)
+	traps_at(tr, tmp_d)->u1 = tl;
 
-      if (is_valid_trap(tmp_d = tr->data[tl].d1) && tr->data[tmp_d].u0 == tu)
-	tr->data[tmp_d].u0 = tl;
-      if (is_valid_trap(tmp_d = tr->data[tl].d1) && tr->data[tmp_d].u1 == tu)
-	tr->data[tmp_d].u1 = tl;
+      if (is_valid_trap(tmp_d = traps_get(tr, tl).d1) && traps_get(tr, tmp_d).u0 == tu)
+	traps_at(tr, tmp_d)->u0 = tl;
+      if (is_valid_trap(tmp_d = traps_get(tr, tl).d1) && traps_get(tr, tmp_d).u1 == tu)
+	traps_at(tr, tmp_d)->u1 = tl;
 
       /* Now update the query structure and obtain the sinks for the */
       /* two trapezoids */
 
       const size_t i1 = newnode(qs); // Upper trapezoid sink
       const size_t i2 = newnode(qs); // Lower trapezoid sink
-      const size_t sk = tr->data[tu].sink;
+      const size_t sk = traps_get(tr, tu).sink;
 
       qnodes_at(qs, sk)->nodetype = T_Y;
       qnodes_at(qs, sk)->yval = s.v0;
@@ -508,8 +507,8 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       qnodes_at(qs, i2)->trnum = tl;
       qnodes_at(qs, i2)->parent = sk;
 
-      tr->data[tu].sink = i1;
-      tr->data[tl].sink = i2;
+      traps_at(tr, tu)->sink = i1;
+      traps_at(tr, tl)->sink = i2;
       tfirst = tl;
     }
   else				/* v0 already present */
@@ -526,30 +525,30 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       const size_t tu = locate_endpoint(&s.v1, &s.v0, s.root1, seg, qs);
 
       const size_t tl = newtrap(tr); // tl is the new lower trapezoid
-      tr->data[tl] = tr->data[tu];
-      tr->data[tu].lo = s.v1;
-      tr->data[tl].hi = s.v1;
-      tr->data[tu].d0 = tl;
-      tr->data[tu].d1 = 0;
-      tr->data[tl].u0 = tu;
-      tr->data[tl].u1 = 0;
+      traps_set(tr, tl, traps_get(tr, tu));
+      traps_at(tr, tu)->lo = s.v1;
+      traps_at(tr, tl)->hi = s.v1;
+      traps_at(tr, tu)->d0 = tl;
+      traps_at(tr, tu)->d1 = 0;
+      traps_at(tr, tl)->u0 = tu;
+      traps_at(tr, tl)->u1 = 0;
 
-      if (is_valid_trap(tmp_d = tr->data[tl].d0) && tr->data[tmp_d].u0 == tu)
-	tr->data[tmp_d].u0 = tl;
-      if (is_valid_trap(tmp_d = tr->data[tl].d0) && tr->data[tmp_d].u1 == tu)
-	tr->data[tmp_d].u1 = tl;
+      if (is_valid_trap(tmp_d = traps_get(tr, tl).d0) && traps_get(tr, tmp_d).u0 == tu)
+	traps_at(tr, tmp_d)->u0 = tl;
+      if (is_valid_trap(tmp_d = traps_get(tr, tl).d0) && traps_get(tr, tmp_d).u1 == tu)
+	traps_at(tr, tmp_d)->u1 = tl;
 
-      if (is_valid_trap(tmp_d = tr->data[tl].d1) && tr->data[tmp_d].u0 == tu)
-	tr->data[tmp_d].u0 = tl;
-      if (is_valid_trap(tmp_d = tr->data[tl].d1) && tr->data[tmp_d].u1 == tu)
-	tr->data[tmp_d].u1 = tl;
+      if (is_valid_trap(tmp_d = traps_get(tr, tl).d1) && traps_get(tr, tmp_d).u0 == tu)
+	traps_at(tr, tmp_d)->u0 = tl;
+      if (is_valid_trap(tmp_d = traps_get(tr, tl).d1) && traps_get(tr, tmp_d).u1 == tu)
+	traps_at(tr, tmp_d)->u1 = tl;
 
       /* Now update the query structure and obtain the sinks for the */
       /* two trapezoids */
 
       const size_t i1 = newnode(qs); // Upper trapezoid sink
       const size_t i2 = newnode(qs); // Lower trapezoid sink
-      const size_t sk = tr->data[tu].sink;
+      const size_t sk = traps_get(tr, tu).sink;
 
       qnodes_at(qs, sk)->nodetype = T_Y;
       qnodes_at(qs, sk)->yval = s.v1;
@@ -565,8 +564,8 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       qnodes_at(qs, i2)->trnum = tl;
       qnodes_at(qs, i2)->parent = sk;
 
-      tr->data[tu].sink = i1;
-      tr->data[tl].sink = i2;
+      traps_at(tr, tu)->sink = i1;
+      traps_at(tr, tl)->sink = i2;
       tlast = tu;
     }
   else				/* v1 already present */
@@ -581,10 +580,11 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
   size_t t = tfirst; // topmost trapezoid
 
-  while (is_valid_trap(t) && greater_than_equal_to(tr->data[t].lo, tr->data[tlast].lo))
+  while (is_valid_trap(t) &&
+         greater_than_equal_to(traps_get(tr, t).lo, traps_get(tr, tlast).lo))
 				/* traverse from top to bot */
     {
-      const size_t sk = tr->data[t].sink;
+      const size_t sk = traps_get(tr, t).sink;
       const size_t i1 = newnode(qs); // left trapezoid sink
       const size_t i2 = newnode(qs); // right trapezoid sink
 
@@ -600,24 +600,24 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       qnodes_at(qs, i2)->nodetype = T_SINK; // right trapezoid (allocate new)
       const size_t tn = newtrap(tr);
       qnodes_at(qs, i2)->trnum = tn;
-      tr->data[tn].state = ST_VALID;
+      traps_at(tr, tn)->state = ST_VALID;
       qnodes_at(qs, i2)->parent = sk;
 
       if (t == tfirst)
 	tfirstr = tn;
-      if (equal_to(tr->data[t].lo, tr->data[tlast].lo))
+      if (equal_to(traps_get(tr, t).lo, traps_get(tr, tlast).lo))
 	tlastr = tn;
 
-      tr->data[tn] = tr->data[t];
-      tr->data[t].sink = i1;
-      tr->data[tn].sink = i2;
+      traps_set(tr, tn, traps_get(tr, t));
+      traps_at(tr, t)->sink = i1;
+      traps_at(tr, tn)->sink = i2;
       const size_t t_sav = t;
       const size_t tn_sav = tn;
 
       /* error */
 
-      if (!is_valid_trap(tr->data[t].d0) && !is_valid_trap(tr->data[t].d1)) // case cannot arise
-	{
+      if (!is_valid_trap(traps_get(tr, t).d0) &&
+          !is_valid_trap(traps_get(tr, t).d1)) { // case cannot arise
 	  fprintf(stderr, "add_segment: error\n");
 	  break;
 	}
@@ -626,12 +626,12 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       /* two resulting trapezoids t and tn as the upper neighbours of */
       /* the sole lower trapezoid */
 
-      else if (is_valid_trap(tr->data[t].d0) && !is_valid_trap(tr->data[t].d1))
-	{			/* Only one trapezoid below */
+      else if (is_valid_trap(traps_get(tr, t).d0) &&
+               !is_valid_trap(traps_get(tr, t).d1)) { // only one trapezoid below
 	  update_trapezoid(&s, seg, tr, t, tn);
 
-	  if (fp_equal(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
-	      fp_equal(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
+	  if (fp_equal(traps_get(tr, t).lo.y, traps_get(tr, tlast).lo.y) &&
+	      fp_equal(traps_get(tr, t).lo.x, traps_get(tr, tlast).lo.x) && tribot)
 	    {		/* bottom forms a triangle */
 
 	      if (is_swapped)
@@ -642,47 +642,46 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	      if (tmptriseg > 0 && is_left_of(tmptriseg, seg, &s.v0))
 		{
 				/* L-R downward cusp */
-		  tr->data[tr->data[t].d0].u0 = t;
-		  tr->data[tn].d0 = SIZE_MAX;
-		  tr->data[tn].d1 = SIZE_MAX;
+		  traps_at(tr, traps_get(tr, t).d0)->u0 = t;
+		  traps_at(tr, tn)->d0 = SIZE_MAX;
+		  traps_at(tr, tn)->d1 = SIZE_MAX;
 		}
 	      else
 		{
 				/* R-L downward cusp */
-		  tr->data[tr->data[tn].d0].u1 = tn;
-		  tr->data[t].d0 = SIZE_MAX;
-		  tr->data[t].d1 = SIZE_MAX;
+		  traps_at(tr, traps_get(tr, tn).d0)->u1 = tn;
+		  traps_at(tr, t)->d0 = SIZE_MAX;
+		  traps_at(tr, t)->d1 = SIZE_MAX;
 		}
 	    }
 	  else
 	    {
-	      if (is_valid_trap(tr->data[tr->data[t].d0].u0) && is_valid_trap(tr->data[tr->data[t].d0].u1))
-		{
-		  if (tr->data[tr->data[t].d0].u0 == t) /* passes through LHS */
-		    {
-		      tr->data[tr->data[t].d0].usave = tr->data[tr->data[t].d0].u1;
-		      tr->data[tr->data[t].d0].uside = S_LEFT;
+	      if (is_valid_trap(traps_get(tr, traps_get(tr, t).d0).u0) &&
+	          is_valid_trap(traps_get(tr, traps_get(tr, t).d0).u1)) {
+		  if (traps_get(tr, traps_get(tr, t).d0).u0 == t) { // passes through LHS
+		      traps_at(tr, traps_get(tr, t).d0)->usave = traps_get(tr, traps_get(tr, t).d0).u1;
+		      traps_at(tr, traps_get(tr, t).d0)->uside = S_LEFT;
 		    }
 		  else
 		    {
-		      tr->data[tr->data[t].d0].usave = tr->data[tr->data[t].d0].u0;
-		      tr->data[tr->data[t].d0].uside = S_RIGHT;
+		      traps_at(tr, traps_get(tr, t).d0)->usave = traps_get(tr, traps_get(tr, t).d0).u0;
+		      traps_at(tr, traps_get(tr, t).d0)->uside = S_RIGHT;
 		    }
 		}
-	      tr->data[tr->data[t].d0].u0 = t;
-	      tr->data[tr->data[t].d0].u1 = tn;
+	      traps_at(tr, traps_get(tr, t).d0)->u0 = t;
+	      traps_at(tr, traps_get(tr, t).d0)->u1 = tn;
 	    }
 
-	  t = tr->data[t].d0;
+	  t = traps_get(tr, t).d0;
 	}
 
 
-      else if (!is_valid_trap(tr->data[t].d0) && is_valid_trap(tr->data[t].d1))
-	{			/* Only one trapezoid below */
+      else if (!is_valid_trap(traps_get(tr, t).d0) &&
+               is_valid_trap(traps_get(tr, t).d1)) { // only one trapezoid below
 	  update_trapezoid(&s, seg, tr, t, tn);
 
-	  if (fp_equal(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
-	      fp_equal(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
+	  if (fp_equal(traps_get(tr, t).lo.y, traps_get(tr, tlast).lo.y) &&
+	      fp_equal(traps_get(tr, t).lo.x, traps_get(tr, tlast).lo.x) && tribot)
 	    {		/* bottom forms a triangle */
 
 	      if (is_swapped)
@@ -693,38 +692,37 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	      if (tmptriseg > 0 && is_left_of(tmptriseg, seg, &s.v0))
 		{
 		  /* L-R downward cusp */
-		  tr->data[tr->data[t].d1].u0 = t;
-		  tr->data[tn].d0 = SIZE_MAX;
-		  tr->data[tn].d1 = SIZE_MAX;
+		  traps_at(tr, traps_get(tr, t).d1)->u0 = t;
+		  traps_at(tr, tn)->d0 = SIZE_MAX;
+		  traps_at(tr, tn)->d1 = SIZE_MAX;
 		}
 	      else
 		{
 		  /* R-L downward cusp */
-		  tr->data[tr->data[tn].d1].u1 = tn;
-		  tr->data[t].d0 = SIZE_MAX;
-		  tr->data[t].d1 = SIZE_MAX;
+		  traps_at(tr, traps_get(tr, tn).d1)->u1 = tn;
+		  traps_at(tr, t)->d0 = SIZE_MAX;
+		  traps_at(tr, t)->d1 = SIZE_MAX;
 		}
 	    }
 	  else
 	    {
-	      if (is_valid_trap(tr->data[tr->data[t].d1].u0) && is_valid_trap(tr->data[tr->data[t].d1].u1))
-		{
-		  if (tr->data[tr->data[t].d1].u0 == t) /* passes through LHS */
-		    {
-		      tr->data[tr->data[t].d1].usave = tr->data[tr->data[t].d1].u1;
-		      tr->data[tr->data[t].d1].uside = S_LEFT;
+	      if (is_valid_trap(traps_get(tr, traps_get(tr, t).d1).u0) &&
+	          is_valid_trap(traps_get(tr, traps_get(tr, t).d1).u1)) {
+		  if (traps_get(tr, traps_get(tr, t).d1).u0 == t) { // passes through LHS
+		      traps_at(tr, traps_get(tr, t).d1)->usave = traps_get(tr, traps_get(tr, t).d1).u1;
+		      traps_at(tr, traps_get(tr, t).d1)->uside = S_LEFT;
 		    }
 		  else
 		    {
-		      tr->data[tr->data[t].d1].usave = tr->data[tr->data[t].d1].u0;
-		      tr->data[tr->data[t].d1].uside = S_RIGHT;
+		      traps_at(tr, traps_get(tr, t).d1)->usave = traps_get(tr, traps_get(tr, t).d1).u0;
+		      traps_at(tr, traps_get(tr, t).d1)->uside = S_RIGHT;
 		    }
 		}
-	      tr->data[tr->data[t].d1].u0 = t;
-	      tr->data[tr->data[t].d1].u1 = tn;
+	      traps_at(tr, traps_get(tr, t).d1)->u0 = t;
+	      traps_at(tr, traps_get(tr, t).d1)->u1 = tn;
 	    }
 
-	  t = tr->data[t].d1;
+	  t = traps_get(tr, t).d1;
 	}
 
       /* two trapezoids below. Find out which one is intersected by */
@@ -738,19 +736,19 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	  bool i_d0, i_d1;
 
 	  i_d0 = i_d1 = false;
-	  if (fp_equal(tr->data[t].lo.y, s.v0.y)) {
-	      if (tr->data[t].lo.x > s.v0.x)
+	  if (fp_equal(traps_get(tr, t).lo.y, s.v0.y)) {
+	      if (traps_get(tr, t).lo.x > s.v0.x)
 		i_d0 = true;
 	      else
 		i_d1 = true;
 	    }
 	  else
 	    {
-	      tmppt.y = y0 = tr->data[t].lo.y;
+	      tmppt.y = y0 = traps_get(tr, t).lo.y;
 	      yt = (y0 - s.v0.y)/(s.v1.y - s.v0.y);
 	      tmppt.x = s.v0.x + yt * (s.v1.x - s.v0.x);
 
-	      if (less_than(tmppt, tr->data[t].lo))
+	      if (less_than(tmppt, traps_get(tr, t).lo))
 		i_d0 = true;
 	      else
 		i_d1 = true;
@@ -761,60 +759,60 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
 	  update_trapezoid(&s, seg, tr, t, tn);
 
-	  if (fp_equal(tr->data[t].lo.y, tr->data[tlast].lo.y) &&
-	      fp_equal(tr->data[t].lo.x, tr->data[tlast].lo.x) && tribot)
+	  if (fp_equal(traps_get(tr, t).lo.y, traps_get(tr, tlast).lo.y) &&
+	      fp_equal(traps_get(tr, t).lo.x, traps_get(tr, tlast).lo.x) && tribot)
 	    {
 	      /* this case arises only at the lowest trapezoid.. i.e.
 		 tlast, if the lower endpoint of the segment is
 		 already inserted in the structure */
 
-	      tr->data[tr->data[t].d0].u0 = t;
-	      tr->data[tr->data[t].d0].u1 = SIZE_MAX;
-	      tr->data[tr->data[t].d1].u0 = tn;
-	      tr->data[tr->data[t].d1].u1 = SIZE_MAX;
+	      traps_at(tr, traps_get(tr, t).d0)->u0 = t;
+	      traps_at(tr, traps_get(tr, t).d0)->u1 = SIZE_MAX;
+	      traps_at(tr, traps_get(tr, t).d1)->u0 = tn;
+	      traps_at(tr, traps_get(tr, t).d1)->u1 = SIZE_MAX;
 
-	      tr->data[tn].d0 = tr->data[t].d1;
-	      tr->data[t].d1 = SIZE_MAX;
-	      tr->data[tn].d1 = SIZE_MAX;
+	      traps_at(tr, tn)->d0 = traps_get(tr, t).d1;
+	      traps_at(tr, t)->d1 = SIZE_MAX;
+	      traps_at(tr, tn)->d1 = SIZE_MAX;
 
-	      tnext = tr->data[t].d1;
+	      tnext = traps_get(tr, t).d1;
 	    }
 	  else if (i_d0)
 				/* intersecting d0 */
 	    {
-	      tr->data[tr->data[t].d0].u0 = t;
-	      tr->data[tr->data[t].d0].u1 = tn;
-	      tr->data[tr->data[t].d1].u0 = tn;
-	      tr->data[tr->data[t].d1].u1 = SIZE_MAX;
+	      traps_at(tr, traps_get(tr, t).d0)->u0 = t;
+	      traps_at(tr, traps_get(tr, t).d0)->u1 = tn;
+	      traps_at(tr, traps_get(tr, t).d1)->u0 = tn;
+	      traps_at(tr, traps_get(tr, t).d1)->u1 = SIZE_MAX;
 
 	      /* new code to determine the bottom neighbours of the */
 	      /* newly partitioned trapezoid */
 
-	      tr->data[t].d1 = SIZE_MAX;
+	      traps_at(tr, t)->d1 = SIZE_MAX;
 
-	      tnext = tr->data[t].d0;
+	      tnext = traps_get(tr, t).d0;
 	    }
 	  else			/* intersecting d1 */
 	    {
-	      tr->data[tr->data[t].d0].u0 = t;
-	      tr->data[tr->data[t].d0].u1 = SIZE_MAX;
-	      tr->data[tr->data[t].d1].u0 = t;
-	      tr->data[tr->data[t].d1].u1 = tn;
+	      traps_at(tr, traps_get(tr, t).d0)->u0 = t;
+	      traps_at(tr, traps_get(tr, t).d0)->u1 = SIZE_MAX;
+	      traps_at(tr, traps_get(tr, t).d1)->u0 = t;
+	      traps_at(tr, traps_get(tr, t).d1)->u1 = tn;
 
 	      /* new code to determine the bottom neighbours of the */
 	      /* newly partitioned trapezoid */
 
-	      tr->data[tn].d0 = tr->data[t].d1;
-	      tr->data[tn].d1 = SIZE_MAX;
+	      traps_at(tr, tn)->d0 = traps_get(tr, t).d1;
+	      traps_at(tr, tn)->d1 = SIZE_MAX;
 
-	      tnext = tr->data[t].d1;
+	      tnext = traps_get(tr, t).d1;
 	    }
 
 	  t = tnext;
 	}
 
-      tr->data[t_sav].rseg = segnum;
-      tr->data[tn_sav].lseg = segnum;
+      traps_at(tr, t_sav)->rseg = segnum;
+      traps_at(tr, tn_sav)->lseg = segnum;
     } /* end-while */
 
   /* Now combine those trapezoids which share common segments. We can */
@@ -841,10 +839,10 @@ find_new_roots(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
   if (s->is_inserted) return;
 
   s->root0 = (size_t)locate_endpoint(&s->v0, &s->v1, s->root0, seg, qs);
-  s->root0 = tr->data[s->root0].sink;
+  s->root0 = traps_get(tr, s->root0).sink;
 
   s->root1 = (size_t)locate_endpoint(&s->v1, &s->v0, s->root1, seg, qs);
-  s->root1 = tr->data[s->root1].sink;
+  s->root1 = traps_get(tr, s->root1).sink;
 }
 
 /* Get log*n for given n */
@@ -883,7 +881,8 @@ traps_t construct_trapezoids(int nseg, segment_t *seg, int *permute) {
 
     // First trapezoid is reserved as a sentinel. We will append later
     // trapezoids by expanding this on-demand.
-    traps_t tr = {.length = 1, .data = gv_calloc(1, sizeof(trap_t))};
+    traps_t tr = {0};
+    traps_append(&tr, (trap_t){0});
 
   /* Add the first segment and get the query structure and trapezoid */
   /* list initialised */
