@@ -223,14 +223,24 @@ int main(int argc, char **argv) {
     }
   }
 
-  // escape all input we received
-  for (; i < argc; ++i) {
-    FILE *const f = fopen(argv[i], "rb");
+  if (i + 2 != argc) {
+    fprintf(stderr,
+            "usage: %s [--dash] [--nbsp] [--raw] [--utf8] <input> <output>\n",
+            argv[0]);
+    graphviz_exit(EXIT_FAILURE);
+  }
+
+  const char *const in = argv[i];
+  const char *const out = argv[i + 1];
+
+  // read in the input
+  char buffer[128] = {0};
+  {
+    FILE *const f = fopen(in, "rb");
     if (f == NULL) {
-      fprintf(stderr, "failed to open %s: %s\n", argv[i], strerror(errno));
+      fprintf(stderr, "failed to open %s: %s\n", in, strerror(errno));
       graphviz_exit(EXIT_FAILURE);
     }
-    char buffer[128] = {0};
     const size_t read = fread(buffer, 1, sizeof(buffer), f);
     (void)fclose(f);
     if (read == 0 || read == sizeof(buffer)) {
@@ -240,9 +250,20 @@ int main(int argc, char **argv) {
               sizeof(buffer) - 1, read);
       graphviz_exit(EXIT_FAILURE);
     }
-    const int r = gv_xml_escape(buffer, flags, put, stdout);
-    if (r < 0)
-      graphviz_exit(EXIT_FAILURE);
+  }
+
+  // open the output
+  FILE *const f = fopen(out, "wb");
+  if (f == NULL) {
+    fprintf(stderr, "failed to open %s: %s\n", out, strerror(errno));
+    graphviz_exit(EXIT_FAILURE);
+  }
+
+  // escape the buffer into the output
+  const int r = gv_xml_escape(buffer, flags, put, f);
+  (void)fclose(f);
+  if (r < 0) {
+    graphviz_exit(EXIT_FAILURE);
   }
 
   graphviz_exit(EXIT_SUCCESS);

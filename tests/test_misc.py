@@ -124,6 +124,8 @@ def test_xml_escape(tmp_path: Path):
         source = tmp_path / "input"
         source.write_text(s, encoding="utf-8")
 
+        destination = tmp_path / "output"
+
         args = [xml_exe]
         if dash:
             args += ["--dash"]
@@ -133,9 +135,11 @@ def test_xml_escape(tmp_path: Path):
             args += ["--raw"]
         if utf8:
             args += ["--utf8"]
-        args += [source]
+        args += [source, destination]
 
-        return run(args)
+        run(args)
+
+        return destination.read_text(encoding="utf-8")
 
     for dash, nbsp, raw, utf8 in itertools.product((False, True), repeat=4):
         # something basic with nothing escapable
