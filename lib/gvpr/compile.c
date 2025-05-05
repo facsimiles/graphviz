@@ -128,21 +128,19 @@ static char *bbOf(Expr_t *pgm, char *pt, bool getll) {
  */
 static char *xyOf(Expr_t *pgm, char *pt, bool getx) {
   double x, y;
-  char *v;
-  char *p;
 
   if (sscanf(pt, "%lf,%lf", &x, &y) == 2) {
-    p = strchr(pt, ',');
+    char *const p = strchr(pt, ',');
     if (getx) {
       size_t len = (size_t)(p - pt);
-      v = exstralloc(pgm, len + 1);
+      char *const v = exstralloc(pgm, len + 1);
       strncpy(v, pt, len);
       v[len] = '\0';
-    } else
-      v = exstring(pgm, p + 1);
-  } else
-    v = "";
-  return v;
+      return v;
+    }
+    return exstring(pgm, p + 1);
+  }
+  return "";
 }
 
 /* Get pos data from node; store x or y into v if successful and return  0;
