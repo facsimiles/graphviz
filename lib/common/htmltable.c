@@ -817,6 +817,7 @@ void free_html_text(htmltxt_t * t)
 		ti->free_layout(ti->layout);
 	    ti++;
 	}
+	free(tl->items);
 	tl++;
     }
     free(t->spans);
