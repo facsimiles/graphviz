@@ -4,6 +4,7 @@
  * @ingroup common_utils
  */
 
+#include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -12,6 +13,7 @@
 #include <string.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
+#include <util/prisize_t.h>
 #include <util/unreachable.h>
 #include <util/xml.h>
 
@@ -216,14 +218,29 @@ int main(int argc, char **argv) {
       fprintf(stderr, "unrecognized argument %s\n", argv[i]);
       graphviz_exit(EXIT_FAILURE);
     } else {
-      // assume we have reached content to escape
+      // assume we have reached filenames
       break;
     }
   }
 
   // escape all input we received
   for (; i < argc; ++i) {
-    const int r = gv_xml_escape(argv[i], flags, put, stdout);
+    FILE *const f = fopen(argv[i], "rb");
+    if (f == NULL) {
+      fprintf(stderr, "failed to open %s: %s\n", argv[i], strerror(errno));
+      graphviz_exit(EXIT_FAILURE);
+    }
+    char buffer[128] = {0};
+    const size_t read = fread(buffer, 1, sizeof(buffer), f);
+    (void)fclose(f);
+    if (read == 0 || read == sizeof(buffer)) {
+      fprintf(stderr,
+              "only escaping 1 - %" PRISIZE_T
+              " bytes is supported, not %" PRISIZE_T " bytes\n",
+              sizeof(buffer) - 1, read);
+      graphviz_exit(EXIT_FAILURE);
+    }
+    const int r = gv_xml_escape(buffer, flags, put, stdout);
     if (r < 0)
       graphviz_exit(EXIT_FAILURE);
   }

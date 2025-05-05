@@ -120,6 +120,10 @@ def test_xml_escape(tmp_path: Path):
     compile_c(xml_c, cflags, dst=xml_exe)
 
     def escape(dash: bool, nbsp: bool, raw: bool, utf8: bool, s: str) -> str:
+
+        source = tmp_path / "input"
+        source.write_text(s, encoding="utf-8")
+
         args = [xml_exe]
         if dash:
             args += ["--dash"]
@@ -129,7 +133,7 @@ def test_xml_escape(tmp_path: Path):
             args += ["--raw"]
         if utf8:
             args += ["--utf8"]
-        args += [s]
+        args += [source]
 
         return run(args)
 
