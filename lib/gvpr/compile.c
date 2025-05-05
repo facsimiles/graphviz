@@ -19,6 +19,7 @@
 #include <gvpr/actions.h>
 #include <gvpr/compile.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -45,8 +46,6 @@ static int isedge(Agobj_t *obj) {
 
 #include <ctype.h>
 #include <gvpr/trie.c>
-
-#define BITS_PER_BYTE 8
 
 static void *int2ptr(long long i) { return (void *)(intptr_t)i; }
 
@@ -2369,7 +2368,7 @@ comp_prog *compileProg(parse_prog *inp, Gpr_t *state, compflags_t flags) {
   bool uses_graph = false;
 
   /* Make sure we have enough bits for types */
-  assert(BITS_PER_BYTE * sizeof(tctype) >= (1 << TBITS));
+  assert(CHAR_BIT * sizeof(tctype) >= (1 << TBITS));
 
   comp_prog *p = calloc(1, sizeof(comp_prog));
   if (!p) {
