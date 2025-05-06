@@ -173,8 +173,7 @@ Agnode_t *agnode(Agraph_t * g, char *name, int cflag)
 void agdelnodeimage(Agraph_t *g, Agobj_t *node, void *ignored) {
     Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
     Agedge_t *e, *f;
-    Agsubnode_t template = {0};
-    template.node = n;
+    Agsubnode_t template = {.node = n};
 
     (void)ignored;
     for (e = agfstedge(g, n); e; e = f) {
