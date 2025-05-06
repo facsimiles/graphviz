@@ -180,7 +180,7 @@ void agdelnodeimage(Agraph_t *g, Agobj_t *node, void *ignored) {
 	f = agnxtedge(g, e, n);
 	agdeledgeimage(g, &e->base, 0);
     }
-    /* If the following lines are switched, switch the discpline using
+    /* If the following lines are switched, switch the discipline using
      * free_subnode below.
      */ 
     node_set_remove(g->n_id, n->base.tag.id);
