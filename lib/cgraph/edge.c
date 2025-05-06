@@ -20,6 +20,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/unused.h>
 
 /* return first outedge of <n> */
 Agedge_t *agfstout(Agraph_t * g, Agnode_t * n)
@@ -154,10 +155,8 @@ static void ins(Dict_t * d, Dtlink_t ** set, Agedge_t * e)
 
 static void del(Dict_t * d, Dtlink_t ** set, Agedge_t * e)
 {
-    void *x;
-    (void)x;
     dtrestore(d, *set);
-    x = dtdelete(d, e);
+    void *x UNUSED = dtdelete(d, e);
     assert(x);
     *set = dtextract(d);
 }
