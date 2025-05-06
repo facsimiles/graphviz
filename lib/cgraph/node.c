@@ -217,10 +217,9 @@ static void dict_relabel(Agraph_t *ignored, Agobj_t *node, void *arg) {
     Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
 
     Agraph_t *g;
-    uint64_t new_id;
 
     g = agraphof(n);
-    new_id = *(uint64_t *) arg;
+    const IDTYPE new_id = *(IDTYPE *)arg;
     Agsubnode_t *key = agsubrep(g, n);
     assert(key != NULL && "node being renamed does not exist");
     node_set_remove(g->n_id, key->node->base.tag.id);
