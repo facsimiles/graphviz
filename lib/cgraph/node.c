@@ -212,8 +212,9 @@ int agdelnode(Agraph_t * g, Agnode_t * n)
 	return FAILURE;
 }
 
-static void dict_relabel(Agraph_t *ignored, Agnode_t *n, void *arg) {
+static void dict_relabel(Agraph_t *ignored, Agobj_t *node, void *arg) {
     (void)ignored;
+    Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
 
     Agraph_t *g;
     uint64_t new_id;
@@ -240,7 +241,7 @@ int agrelabel_node(Agnode_t * n, char *newname)
     if (agmapnametoid(g, AGNODE, newname, &new_id, true)) {
 	if (agfindnode_by_id(agroot(g), new_id) == NULL) {
 	    agfreeid(g, AGNODE, AGID(n));
-	    agapply(g, &n->base, (agobjfn_t)dict_relabel, &new_id, false);
+	    agapply(g, &n->base, dict_relabel, &new_id, false);
 	    return SUCCESS;
 	} else {
 	    agfreeid(g, AGNODE, new_id);	/* couldn't use it after all */
