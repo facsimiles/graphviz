@@ -337,10 +337,10 @@ int agdeledge(Agraph_t * g, Agedge_t * e)
 	if (g->desc.has_attrs)
 	    agedgeattr_delete(e);
 	agmethod_delete(g, e);
-	agrecclose((Agobj_t *) e);
+	agrecclose(&e->base);
 	agfreeid(g, AGEDGE, AGID(e));
     }
-    if (agapply(g, (Agobj_t *)e, (agobjfn_t)agdeledgeimage, NULL, false) == SUCCESS) {
+    if (agapply(g, &e->base, (agobjfn_t)agdeledgeimage, NULL, false) == SUCCESS) {
 	if (g == agroot(g))
 		free(e);
 	return SUCCESS;
