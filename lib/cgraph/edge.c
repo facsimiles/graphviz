@@ -136,10 +136,7 @@ static Agedge_t *agfindedge_by_key(Agraph_t * g, Agnode_t * t, Agnode_t * h,
 static Agedge_t *agfindedge_by_id(Agraph_t * g, Agnode_t * t, Agnode_t * h,
                   IDTYPE id)
 {
-    Agtag_t tag = {0};
-
-    tag.objtype = AGEDGE;
-    tag.id = id;
+    Agtag_t tag = {.objtype = AGEDGE, .id = id};
     return agfindedge_by_key(g, t, h, tag);
 }
 
