@@ -216,9 +216,7 @@ static void dict_relabel(Agraph_t *ignored, Agobj_t *node, void *arg) {
     (void)ignored;
     Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
 
-    Agraph_t *g;
-
-    g = agraphof(n);
+    Agraph_t *const g = agraphof(n);
     const IDTYPE new_id = *(IDTYPE *)arg;
     Agsubnode_t *key = agsubrep(g, n);
     assert(key != NULL && "node being renamed does not exist");
