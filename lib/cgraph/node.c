@@ -15,6 +15,7 @@
 #include <cgraph/cghdr.h>
 #include <cgraph/node_set.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/unreachable.h>
@@ -309,8 +310,8 @@ Dtdisc_t Ag_subnode_seq_disc = {
     .comparf = agsubnodeseqcmpf,
 };
 
-static void agnodesetfinger(Agraph_t * g, Agnode_t * n, void *ignored)
-{
+static void agnodesetfinger(Agraph_t *g, Agobj_t *node, void *ignored) {
+    Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
     Agsubnode_t template = {0};
 	template.node = n;
 	dtsearch(g->n_seq,&template);
@@ -335,7 +336,7 @@ int agnodebefore(Agnode_t *fst, Agnode_t *snd)
 
 	/* move snd out of the way somewhere */
 	n = snd;
-	if (agapply(g, &n->base, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+	if (agapply(g, &n->base, agnodesetfinger, n, false) != SUCCESS) {
 		return FAILURE;
 	}
 	{
@@ -349,7 +350,7 @@ int agnodebefore(Agnode_t *fst, Agnode_t *snd)
 	n = agprvnode(g,snd);
 	do {
 		nxt = agprvnode(g,n);
-		if (agapply(g, &n->base, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+		if (agapply(g, &n->base, agnodesetfinger, n, false) != SUCCESS) {
 		  return FAILURE;
 		}
 		uint64_t seq = AGSEQ(n) + 1;
@@ -361,7 +362,7 @@ int agnodebefore(Agnode_t *fst, Agnode_t *snd)
 		if (n == fst) break;
 		n = nxt;
 	} while (n);
-	if (agapply(g, &snd->base, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+	if (agapply(g, &snd->base, agnodesetfinger, n, false) != SUCCESS) {
 		return FAILURE;
 	}
 	assert(AGSEQ(fst) != 0 && "sequence ID overflow");
