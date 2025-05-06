@@ -5327,9 +5327,6 @@ def test_2636_2():
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2639"
-)
 def test_2639():
     """
     in GVPR, setting an attribute on a subgraph should not set it on the root graph

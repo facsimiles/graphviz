@@ -531,6 +531,16 @@ static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
     error(ERROR_WARNING, "Unknown kind \"%s\" passed to setDflt()", k);
     return 1;
   }
+
+  // make the implicit default on the root graph explicit in order to avoid the
+  // next `agattr_text` thinking its assignment should be hoisted to the root
+  {
+    Agraph_t *const root = agroot(gp);
+    if (agattr_text(root, kind, name, NULL) == NULL) {
+      agattr_text(root, kind, name, "");
+    }
+  }
+
   agattr_text(gp, kind, name, value);
   return 0;
 }
