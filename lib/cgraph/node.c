@@ -202,10 +202,10 @@ int agdelnode(Agraph_t * g, Agnode_t * n)
 	if (g->desc.has_attrs)
 	    agnodeattr_delete(n);
 	agmethod_delete(g, n);
-	agrecclose((Agobj_t *) n);
+	agrecclose(&n->base);
 	agfreeid(g, AGNODE, AGID(n));
     }
-    if (agapply(g, (Agobj_t *)n, (agobjfn_t)agdelnodeimage, NULL, false) == SUCCESS) {
+    if (agapply(g, &n->base, (agobjfn_t)agdelnodeimage, NULL, false) == SUCCESS) {
 	if (g == agroot(g))
 	    free(n);
 	return SUCCESS;
