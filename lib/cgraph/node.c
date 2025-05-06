@@ -312,8 +312,7 @@ Dtdisc_t Ag_subnode_seq_disc = {
 
 static void agnodesetfinger(Agraph_t *g, Agobj_t *node, void *ignored) {
     Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
-    Agsubnode_t template = {0};
-	template.node = n;
+    Agsubnode_t template = {.node = n};
 	dtsearch(g->n_seq,&template);
     (void)ignored;
 }
