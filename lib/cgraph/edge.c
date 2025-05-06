@@ -17,6 +17,7 @@
 #include <cgraph/cghdr.h>
 #include <cgraph/node_set.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <util/alloc.h>
 
@@ -297,8 +298,8 @@ Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h, char *name,
     return e;
 }
 
-void agdeledgeimage(Agraph_t * g, Agedge_t * e, void *ignored)
-{
+void agdeledgeimage(Agraph_t *g, Agobj_t *edge, void *ignored) {
+    Agedge_t *e = (Agedge_t *)((char *)edge - offsetof(Agedge_t, base));
     Agedge_t *in, *out;
     Agnode_t *t, *h;
     Agsubnode_t *sn;
@@ -340,7 +341,7 @@ int agdeledge(Agraph_t * g, Agedge_t * e)
 	agrecclose(&e->base);
 	agfreeid(g, AGEDGE, AGID(e));
     }
-    if (agapply(g, &e->base, (agobjfn_t)agdeledgeimage, NULL, false) == SUCCESS) {
+    if (agapply(g, &e->base, agdeledgeimage, NULL, false) == SUCCESS) {
 	if (g == agroot(g))
 		free(e);
 	return SUCCESS;

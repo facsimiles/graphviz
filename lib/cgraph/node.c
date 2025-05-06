@@ -179,7 +179,7 @@ void agdelnodeimage(Agraph_t * g, Agnode_t * n, void *ignored)
     (void)ignored;
     for (e = agfstedge(g, n); e; e = f) {
 	f = agnxtedge(g, e, n);
-	agdeledgeimage(g, e, 0);
+	agdeledgeimage(g, &e->base, 0);
     }
     /* If the following lines are switched, switch the discpline using
      * free_subnode below.
