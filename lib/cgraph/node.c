@@ -335,7 +335,7 @@ int agnodebefore(Agnode_t *fst, Agnode_t *snd)
 
 	/* move snd out of the way somewhere */
 	n = snd;
-	if (agapply (g,(Agobj_t *)n, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+	if (agapply(g, &n->base, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
 		return FAILURE;
 	}
 	{
@@ -343,30 +343,30 @@ int agnodebefore(Agnode_t *fst, Agnode_t *snd)
 		assert((seq & SEQ_MASK) == seq && "sequence ID overflow");
 		AGSEQ(snd) = seq & SEQ_MASK;
 	}
-	if (agapply(g, (Agobj_t *)n, (agobjfn_t)agnoderenew, n, false) != SUCCESS) {
+	if (agapply(g, &n->base, (agobjfn_t)agnoderenew, n, false) != SUCCESS) {
 		return FAILURE;
 	}
 	n = agprvnode(g,snd);
 	do {
 		nxt = agprvnode(g,n);
-		if (agapply(g, (Agobj_t *)n, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+		if (agapply(g, &n->base, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
 		  return FAILURE;
 		}
 		uint64_t seq = AGSEQ(n) + 1;
 		assert((seq & SEQ_MASK) == seq && "sequence ID overflow");
 		AGSEQ(n) = seq & SEQ_MASK;
-		if (agapply(g, (Agobj_t *)n, (agobjfn_t)agnoderenew, n, false) != SUCCESS) {
+		if (agapply(g, &n->base, (agobjfn_t)agnoderenew, n, false) != SUCCESS) {
 		  return FAILURE;
 		}
 		if (n == fst) break;
 		n = nxt;
 	} while (n);
-	if (agapply(g, (Agobj_t *)snd, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+	if (agapply(g, &snd->base, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
 		return FAILURE;
 	}
 	assert(AGSEQ(fst) != 0 && "sequence ID overflow");
 	AGSEQ(snd) = (AGSEQ(fst) - 1) & SEQ_MASK;
-	if (agapply(g, (Agobj_t *)snd, (agobjfn_t)agnoderenew, snd, false) != SUCCESS) {
+	if (agapply(g, &snd->base, (agobjfn_t)agnoderenew, snd, false) != SUCCESS) {
 		return FAILURE;
 	}
 	return SUCCESS;
