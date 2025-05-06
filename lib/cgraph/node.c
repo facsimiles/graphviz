@@ -170,8 +170,8 @@ Agnode_t *agnode(Agraph_t * g, char *name, int cflag)
 
 /* removes image of node and its edges from graph.
    caller must ensure n belongs to g. */
-void agdelnodeimage(Agraph_t * g, Agnode_t * n, void *ignored)
-{
+void agdelnodeimage(Agraph_t *g, Agobj_t *node, void *ignored) {
+    Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
     Agedge_t *e, *f;
     Agsubnode_t template = {0};
     template.node = n;
@@ -205,7 +205,7 @@ int agdelnode(Agraph_t * g, Agnode_t * n)
 	agrecclose(&n->base);
 	agfreeid(g, AGNODE, AGID(n));
     }
-    if (agapply(g, &n->base, (agobjfn_t)agdelnodeimage, NULL, false) == SUCCESS) {
+    if (agapply(g, &n->base, agdelnodeimage, NULL, false) == SUCCESS) {
 	if (g == agroot(g))
 	    free(n);
 	return SUCCESS;
