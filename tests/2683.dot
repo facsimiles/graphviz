@@ -1,0 +1,15 @@
+digraph {
+  packmode=array_i1
+
+  subgraph cluster_a {
+    label="Cluster A";
+    packmode=array_i7
+
+    1; 3; 5; 7; 9; 11; 13; 
+  }
+  subgraph cluster_b {
+    label="Cluster B";
+    packmode=array_i4
+    2; 4; 6; 8; 
+  }
+}

@@ -5621,6 +5621,24 @@ def test_2669():
     assert math.isclose(height, viewbox[1], abs_tol=1.0), "mismatched SVG heights"
 
 
+@pytest.mark.xfail(
+    strict=which("dot") is None or is_asan_instrumented(which("dot")),
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2683",
+)
+def test_2683():
+    """
+    processing a graph with `packmode` attributes should not cause a crash
+    https://gitlab.com/graphviz/graphviz/-/issues/2683
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2683.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run it through Graphviz
+    dot("dot", input)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
