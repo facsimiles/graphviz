@@ -512,7 +512,6 @@ static int doDot(Agraph_t *g) {
 	}
 
 	for (size_t i = 0; i < ncc; i++) {
-	    free (GD_drawing(ccs[i]));
 	    dot_cleanup_graph(ccs[i]);
 	    agdelete(g, ccs[i]);
 	}

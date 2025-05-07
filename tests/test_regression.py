@@ -5621,10 +5621,6 @@ def test_2669():
     assert math.isclose(height, viewbox[1], abs_tol=1.0), "mismatched SVG heights"
 
 
-@pytest.mark.xfail(
-    strict=which("dot") is None or is_asan_instrumented(which("dot")),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2682",
-)
 def test_2682():
     """
     processing a graph with `pack` attributes should not cause a crash
@@ -5639,10 +5635,6 @@ def test_2682():
     dot("dot", input)
 
 
-@pytest.mark.xfail(
-    strict=which("dot") is None or is_asan_instrumented(which("dot")),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2683",
-)
 def test_2683():
     """
     processing a graph with `packmode` attributes should not cause a crash
