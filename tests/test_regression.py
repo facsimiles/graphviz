@@ -5307,7 +5307,6 @@ def test_2620():
     assert abs(float(bezier2[2][1]) - expected) < 1000, "incorrect edge construction"
 
 
-@pytest.mark.slow  # ~10min
 def test_2621():
     """
     this graph should not trigger an integer overflow in crossing calculation
@@ -5318,7 +5317,7 @@ def test_2621():
     input = Path(__file__).parent / "2621.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    run_raw(["dot", "-Gnslimit=50", "-Tsvg", "-o", os.devnull, input])
+    run_raw(["dot", "-Gmclimit=.05", "-Gphase=2", "-Tsvg", "-o", os.devnull, input])
 
 
 def test_2636_1():
