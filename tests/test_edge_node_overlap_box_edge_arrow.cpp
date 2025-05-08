@@ -1,3 +1,4 @@
+#include <format>
 #include <string>
 
 #include <catch2/catch_all.hpp>
@@ -11,7 +12,7 @@ TEST_CASE("Edge node overlap for box arrow",
 
   const std::string_view primitive_arrow_shape = "box";
 
-  INFO(fmt::format("Edge arrowhead: {}", primitive_arrow_shape));
+  INFO(std::format("Edge arrowhead: {}", primitive_arrow_shape));
 
   std::string filename_base = AUTO_NAME();
 

@@ -1,7 +1,7 @@
+#include <format>
 #include <string_view>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include "svg_analyzer.h"
 #include "test_utilities.h"
@@ -20,7 +20,7 @@ TEST_CASE("Graph rankdir", "Test that the Graphviz `rankdir` attribute affects "
       from_range(all_node_shapes)));
   INFO("Shape: " << shape);
 
-  auto dot = fmt::format(
+  auto dot = std::format(
       "digraph g1 {{rankdir={}; node [shape={} fontname=Courier]; a -> b}}",
       rankdir, shape);
 

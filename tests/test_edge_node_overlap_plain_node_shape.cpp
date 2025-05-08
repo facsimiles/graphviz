@@ -1,3 +1,4 @@
+#include <format>
 #include <iostream>
 #include <string>
 
@@ -17,11 +18,11 @@ TEST_CASE("Overlap plain node shape",
 
   const double fontsize = GENERATE(range(2, 101));
   INFO("Node fontsize: " << fontsize);
-  filename_base += fmt::format("_fontsize_{}", fontsize);
+  filename_base += std::format("_fontsize_{}", fontsize);
 
   const auto rankdir = GENERATE(from_range(all_rank_directions));
   INFO("Rank direction: " << rankdir);
-  filename_base += fmt::format("_rankdir_{}", rankdir);
+  filename_base += std::format("_rankdir_{}", rankdir);
 
   const graph_options graph_options = {
       .rankdir = rankdir,

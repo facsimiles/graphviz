@@ -1,7 +1,7 @@
+#include <format>
 #include <string_view>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include "svg_analyzer.h"
 #include "test_utilities.h"
@@ -20,10 +20,10 @@ TEST_CASE("Node color",
 
   const auto node_rgb_color = GENERATE("#000000", "#ffffff", "#5580aa");
   const auto opacity = GENERATE(0, 100, 255);
-  const auto node_rgba_color = fmt::format("{}{:02x}", node_rgb_color, opacity);
+  const auto node_rgba_color = std::format("{}{:02x}", node_rgb_color, opacity);
   INFO("Node color: " << node_rgba_color);
 
-  auto dot = fmt::format("digraph g1 {{node [shape={} color=\"{}\"]; a -> b}}",
+  auto dot = std::format("digraph g1 {{node [shape={} color=\"{}\"]; a -> b}}",
                          shape, node_rgba_color);
 
   const auto engine = "dot";

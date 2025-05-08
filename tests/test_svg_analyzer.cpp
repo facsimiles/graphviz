@@ -1,6 +1,6 @@
 #include <boost/range/adaptor/indexed.hpp>
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
+#include <format>
 
 #include "svg_analyzer.h"
 #include "test_utilities.h"
@@ -13,7 +13,7 @@ TEST_CASE("SvgAnalyzer",
   const auto shape = GENERATE(from_range(all_node_shapes));
   INFO("Shape: " << shape);
 
-  auto dot = fmt::format("digraph g1 {{node [shape={}]; a -> b}}", shape);
+  auto dot = std::format("digraph g1 {{node [shape={}]; a -> b}}", shape);
 
   auto svg_analyzer = SVGAnalyzer::make_from_dot(dot);
 

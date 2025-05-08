@@ -1,10 +1,10 @@
+#include <format>
 #include <string>
 #include <string_view>
 #include <unordered_set>
 
 #include <catch2/catch_all.hpp>
 #include <cmath>
-#include <fmt/format.h>
 #include <unordered_map>
 
 #include "svg_analyzer.h"
@@ -211,8 +211,8 @@ static bool check_analyzed_svg(SVGAnalyzer &svg_analyzer,
     const auto head_node_bbox = head_node.outline_bbox();
     const auto overlap_bbox = edge_bbox.intersection(head_node_bbox);
     INFO("Head node overlap:");
-    INFO(fmt::format("  width:  {:.3f}", overlap_bbox.width));
-    INFO(fmt::format("  height: {:.3f}", overlap_bbox.height));
+    INFO(std::format("  width:  {:.3f}", overlap_bbox.width));
+    INFO(std::format("  height: {:.3f}", overlap_bbox.height));
     const auto head_node_edge_overlap =
         overlap_in_rank_direction(overlap_bbox, rankdir);
 
@@ -240,8 +240,8 @@ static bool check_analyzed_svg(SVGAnalyzer &svg_analyzer,
     const auto tail_node_bbox = tail_node.outline_bbox();
     const auto overlap_bbox = edge_bbox.intersection(tail_node_bbox);
     INFO("Tail node overlap:");
-    INFO(fmt::format("  width:  {:.6f}", overlap_bbox.width));
-    INFO(fmt::format("  height: {:.6f}", overlap_bbox.height));
+    INFO(std::format("  width:  {:.6f}", overlap_bbox.width));
+    INFO(std::format("  height: {:.6f}", overlap_bbox.height));
     const auto tail_node_edge_overlap =
         overlap_in_rank_direction(overlap_bbox, rankdir);
 
@@ -274,8 +274,8 @@ static bool check_analyzed_svg(SVGAnalyzer &svg_analyzer,
         edge.arrowhead_outline_bbox(dir, primitive_arrowhead_shape);
     const auto overlap_bbox = edge_stem_bbox.intersection(edge_arrowhead_bbox);
     INFO("Edge stem and arrowhead overlap:");
-    INFO(fmt::format("  width:  {:.3f}", overlap_bbox.width));
-    INFO(fmt::format("  height: {:.3f}", overlap_bbox.height));
+    INFO(std::format("  width:  {:.3f}", overlap_bbox.width));
+    INFO(std::format("  height: {:.3f}", overlap_bbox.height));
     const auto edge_stem_arrowhead_overlap =
         overlap_in_rank_direction(overlap_bbox, rankdir);
 
@@ -305,8 +305,8 @@ static bool check_analyzed_svg(SVGAnalyzer &svg_analyzer,
         edge.arrowtail_outline_bbox(dir, primitive_arrowtail_shape);
     const auto overlap_bbox = edge_stem_bbox.intersection(edge_arrowtail_bbox);
     INFO("Edge stem and arrowtail overlap:");
-    INFO(fmt::format("  width:  {:.3f}", overlap_bbox.width));
-    INFO(fmt::format("  height: {:.3f}", overlap_bbox.height));
+    INFO(std::format("  width:  {:.3f}", overlap_bbox.width));
+    INFO(std::format("  height: {:.3f}", overlap_bbox.height));
     const auto edge_stem_arrowtail_overlap =
         overlap_in_rank_direction(overlap_bbox, rankdir);
 
@@ -400,11 +400,11 @@ static bool has_corner_in_rank_direction_unknown_during_layout(
 static std::string generate_dot(const graph_options &graph_options) {
   // use a semi-transparent color to easily see overlaps
   const auto color = "\"#00000060\"";
-  const auto arrowhead = fmt::format("{}{}", graph_options.arrowhead_modifier,
+  const auto arrowhead = std::format("{}{}", graph_options.arrowhead_modifier,
                                      graph_options.primitive_arrowhead_shape);
-  const auto arrowtail = fmt::format("{}{}", graph_options.arrowtail_modifier,
+  const auto arrowtail = std::format("{}{}", graph_options.arrowtail_modifier,
                                      graph_options.primitive_arrowtail_shape);
-  return fmt::format(
+  return std::format(
       "digraph g1 {{"
       "  graph [rankdir={}]"
       "  node [penwidth={} shape={} color={} fontname=Courier fontsize={}]"

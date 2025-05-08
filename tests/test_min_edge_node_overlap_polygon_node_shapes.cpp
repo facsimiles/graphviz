@@ -1,5 +1,5 @@
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
+#include <format>
 
 #include "test_edge_node_overlap_utilities.h"
 #include "test_utilities.h"
@@ -24,7 +24,7 @@ TEST_CASE("Minimum edge and node overlap for polygon node shapes",
       .check_min_edge_stem_arrow_overlap = false,
   };
 
-  const auto filename_base = fmt::format("{}_{}", AUTO_NAME(), shape);
+  const auto filename_base = std::format("{}_{}", AUTO_NAME(), shape);
 
   test_edge_node_overlap(graph_options, check_options,
                          {.filename_base = filename_base});

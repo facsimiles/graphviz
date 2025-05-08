@@ -1,6 +1,5 @@
+#include <format>
 #include <stdexcept>
-
-#include <fmt/format.h>
 
 #include "graphviz_graph.h"
 
@@ -26,7 +25,7 @@ const GraphvizNode &GraphvizGraph::node(std::string_view node_id) const {
     }
   }
   throw std::runtime_error{
-      fmt::format("Unknown node '{}' in graph '{}'", node_id, m_graph_id)};
+      std::format("Unknown node '{}' in graph '{}'", node_id, m_graph_id)};
 }
 
 void GraphvizGraph::add_edge(SVG::SVGElement &svg_g_element) {
@@ -44,7 +43,7 @@ const GraphvizEdge &GraphvizGraph::edge(std::string_view edgeop) const {
     }
   }
   throw std::runtime_error{
-      fmt::format("Unknown edge '{}' in graph '{}'", edgeop, m_graph_id)};
+      std::format("Unknown edge '{}' in graph '{}'", edgeop, m_graph_id)};
 }
 
 void GraphvizGraph::add_bboxes() {

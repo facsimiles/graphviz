@@ -1,5 +1,5 @@
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
+#include <format>
 
 #include "svg_analyzer.h"
 #include "test_utilities.h"
@@ -16,7 +16,7 @@ TEST_CASE("Edge penwidth",
   INFO("Edge penwidth: " << edge_penwidth);
 
   auto dot =
-      fmt::format("digraph g1 {{edge [arrowhead={} penwidth={}]; a -> b}}",
+      std::format("digraph g1 {{edge [arrowhead={} penwidth={}]; a -> b}}",
                   primitive_arrow_shape, edge_penwidth);
 
   const auto engine = "dot";

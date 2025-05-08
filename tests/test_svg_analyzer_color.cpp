@@ -1,7 +1,7 @@
+#include <format>
 #include <string_view>
 
 #include <catch2/catch_all.hpp>
-#include <fmt/format.h>
 
 #include "svg_analyzer.h"
 #include "test_utilities.h"
@@ -17,9 +17,9 @@ TEST_CASE("SvgAnalyzer color",
   const std::string_view color =
       GENERATE("", "\"#10204000\"", "\"#10204080\"", "\"#102040ff\"");
   INFO("Color: " << color);
-  const auto color_attr = color.empty() ? "" : fmt::format(" color={}", color);
+  const auto color_attr = color.empty() ? "" : std::format(" color={}", color);
 
-  auto dot = fmt::format("digraph g1 {{node [shape={}{}]; edge [{}]; a -> b}}",
+  auto dot = std::format("digraph g1 {{node [shape={}{}]; edge [{}]; a -> b}}",
                          shape, color_attr, color_attr);
 
   SVGAnalyzer::make_from_dot(dot).re_create_and_verify_svg();

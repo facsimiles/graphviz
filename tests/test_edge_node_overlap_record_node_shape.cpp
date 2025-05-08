@@ -1,3 +1,4 @@
+#include <format>
 #include <iostream>
 #include <string>
 
@@ -17,7 +18,7 @@ TEST_CASE("Overlap record based node",
 
   const auto rankdir = GENERATE(from_range(all_rank_directions));
   INFO("Rank direction: " << rankdir);
-  filename_base += fmt::format("_rankdir_{}", rankdir);
+  filename_base += std::format("_rankdir_{}", rankdir);
 
   const graph_options graph_options = {
       .rankdir = rankdir,
