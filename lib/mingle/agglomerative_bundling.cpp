@@ -137,10 +137,10 @@ static void Agglomerative_Ink_Bundling_establish(aib_t &grid, int *pick,
 	/* neither i nor jj are matched */
 	inki = inks[i]; inkj = inks[jj];
 	if (ip && jp){/* not the first level */
-	  ni = (ip[i+1] - ip[i]);/* number of edges represented by i */
-	  nj = (ip[jj+1] - ip[jj]);/* number of edges represented by jj */
-	  memcpy(pick, &(jp[ip[i]]), sizeof(int)*ni);
-	  memcpy(pick+ni, &(jp[ip[jj]]), sizeof(int)*nj);
+	  ni = ip[i + 1] - ip[i]; // number of edges represented by i
+	  nj = ip[jj + 1] - ip[jj]; // number of edges represented by jj
+	  memcpy(pick, &jp[ip[i]], sizeof(int) * ni);
+	  memcpy(pick + ni, &jp[ip[jj]], sizeof(int) * nj);
 	} else {/* first level */
 	  pick[0] = i; pick[1] = jj;
 	  ni = nj = 1;
@@ -151,8 +151,8 @@ static void Agglomerative_Ink_Bundling_establish(aib_t &grid, int *pick,
 	inki = inks[i]; inkj = cinks[jc];
 	if (MINGLE_DEBUG) if (Verbose) fprintf(stderr, "ink(%d)=%f, ink(%d->%d)=%f", i, inki, jj, jc, inkj);
 	if (ip) {
-	  ni = (ip[i+1] - ip[i]);/* number of edges represented by i */
-	  memcpy(pick, &(jp[ip[i]]), sizeof(int)*ni);
+	  ni = ip[i + 1] - ip[i]; // number of edges represented by i
+	  memcpy(pick, &jp[ip[i]], sizeof(int) * ni);
 	} else {
 	  ni = 1; pick[0] = i;
 	}
@@ -349,7 +349,7 @@ static void agglomerative_ink_bundling_internal(
   start = clock();
   aib_t grid = Agglomerative_Ink_Bundling_new(A, edges, angle_param, angle);
   if (Verbose > 1)
-    fprintf(stderr, "CPU for agglomerative bundling %f\n", ((double) (clock() - start))/CLOCKS_PER_SEC);
+    fprintf(stderr, "CPU for agglomerative bundling %f\n", (double)(clock() - start) / CLOCKS_PER_SEC);
   ink0 = grid.front().total_ink;
 
   /* find coarsest */
@@ -372,17 +372,17 @@ static void agglomerative_ink_bundling_internal(
             grid.front().n,
             grid.back().n,
             *current_ink,
-            (ink0 -ink1) / (*ink00));
+            (ink0 - ink1) / *ink00);
 
   /* if no meaningful improvement (0.0001%), out, else rebundle the middle section */
-  if ((ink0-ink1)/(*ink00) < 0.000001 || *recurse_level > MAX_RECURSE_LEVEL) {
+  if ((ink0 - ink1) / *ink00 < 0.000001 || *recurse_level > MAX_RECURSE_LEVEL) {
     /* project bundles up */
     R = grid.back().R0;
     if (R){
       ia = R->ia;
       ja = R->ja;
       for (i = 0; i < R->m; i++){
-	pick = &(ja[ia[i]]);
+	pick = &ja[ia[i]];
 	
 	if (MINGLE_DEBUG) if (Verbose) fprintf(stderr,"calling ink2...\n");
 	ink1 = ink(edges, ia[i+1]-ia[i], pick, &ink0, &meet1, &meet2, angle_param, angle);
@@ -438,7 +438,7 @@ static void agglomerative_ink_bundling_internal(
     std::vector<pedge> mid_edges(ne);
     std::vector<double> xx(4 * ne);
     for (i = 0; i < R->m; i++){
-      pick = &(ja[ia[i]]);
+      pick = &ja[ia[i]];
       wgt = 0.;
       for (j = ia[i]; j < ia[i+1]; j++) wgt += edges[j].wgt;
       if (MINGLE_DEBUG) if (Verbose) fprintf(stderr,"calling ink3...\n");
@@ -460,7 +460,7 @@ static void agglomerative_ink_bundling_internal(
 
     /* patching edges with the new mid-section */
     for (i = 0; i < R->m; i++){
-      pick = &(ja[ia[i]]);
+      pick = &ja[ia[i]];
       // middle section of edges that will be bundled again
       const pedge &midedge = mid_edges[i];
       npp = midedge.npoints + 2;
