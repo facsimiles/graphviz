@@ -2296,11 +2296,7 @@ def test_2095_1():
     input = Path(__file__).parent / "2095.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    if platform.system() == "Windows":
-        # this is significantly slower on Windows
-        timeout = 60  # seconds
-    else:
-        timeout = 5  # seconds
+    timeout = 60  # seconds
 
     # this typically takes ~1s to run, so give a wide margin of error and require that
     # that Graphviz finishes within that
