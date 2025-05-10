@@ -104,7 +104,7 @@ static int edgecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
       Tcl_Size argc2;
       if (Tcl_SplitList(interp, argv[2], &argc2, &argv2) != TCL_OK)
         return TCL_ERROR;
-      if ((argc2 == 0) || (argc2 % 2)) {
+      if (argc2 == 0 || argc2 % 2 != 0) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
                          "\" setattributes attributename attributevalue "
                          "?attributename attributevalue? ?...?",
@@ -117,7 +117,7 @@ static int edgecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
       tcldot_argv_free(argc2, argv2_copy);
       Tcl_Free((char *)argv2);
     } else {
-      if ((argc < 4) || (argc % 2)) {
+      if (argc < 4 || argc % 2 != 0) {
         Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
                          "\" setattributes attributename attributevalue "
                          "?attributename attributevalue? ?...?",
@@ -144,8 +144,8 @@ static int edgecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
 
 int edgecmd(ClientData clientData, Tcl_Interp *interp, int argc,
             const char *argv[]) {
-  char **argv_copy = tcldot_argv_dup(argc, argv);
+  char **argv_copy = tcldot_argv_dup((Tcl_Size)argc, argv);
   int rc = edgecmd_internal(clientData, interp, argc, argv_copy);
-  tcldot_argv_free(argc, argv_copy);
+  tcldot_argv_free((Tcl_Size)argc, argv_copy);
   return rc;
 }
