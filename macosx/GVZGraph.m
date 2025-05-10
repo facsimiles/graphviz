@@ -170,7 +170,7 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 - (NSData*)renderWithFormat:(NSString *)format
 {
 	char *renderedData = NULL;
-	unsigned int renderedLength = 0;
+	size_t renderedLength = 0;
 	if (gvRenderData(_graphContext, _graph, (char*)[format UTF8String], &renderedData, &renderedLength) != 0)
 		@throw [NSException exceptionWithName:@"GVException" reason:@"bad render" userInfo:nil];
 	return [NSData dataWithBytesNoCopy:renderedData length:renderedLength freeWhenDone:YES];
