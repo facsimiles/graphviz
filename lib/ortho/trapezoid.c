@@ -20,6 +20,7 @@
 #include "config.h"
 #include <string.h>
 #include <assert.h>
+#include <float.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -44,8 +45,6 @@
 
 #define S_LEFT 1        /* for merge-direction */
 #define S_RIGHT 2
-
-#define INF 1<<30
 
 static double cross(pointf v0, pointf v1, pointf v2) {
   return (v1.x - v0.x) * (v2.y - v0.y) - (v1.y - v0.y) * (v2.x - v0.x);
@@ -172,10 +171,10 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   traps_at(tr, t1)->lo = qnodes_get(qs, i3).yval;
   traps_at(tr, t2)->lo = qnodes_get(qs, i3).yval;
   traps_at(tr, t3)->hi = qnodes_get(qs, i3).yval;
-  traps_at(tr, t4)->hi.y = (double)(INF);
-  traps_at(tr, t4)->hi.x = (double)(INF);
-  traps_at(tr, t3)->lo.y = (double)-1 * (INF);
-  traps_at(tr, t3)->lo.x = (double)-1 * (INF);
+  traps_at(tr, t4)->hi.y = DBL_MAX;
+  traps_at(tr, t4)->hi.x = DBL_MAX;
+  traps_at(tr, t3)->lo.y = -DBL_MAX;
+  traps_at(tr, t3)->lo.x = -DBL_MAX;
   traps_at(tr, t1)->rseg = segnum;
   traps_at(tr, t2)->lseg = segnum;
   traps_at(tr, t1)->u0 = t4;
