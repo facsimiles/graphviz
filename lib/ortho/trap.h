@@ -45,7 +45,7 @@ typedef struct {
   size_t sink;          ///< pointer to corresponding in Q
   size_t usave;         ///< I forgot what this means
   int uside;            ///< I forgot what this means
-  int state;
+  bool is_valid;
 } trap_t; 
 
 /// is the given index a reference to an existing trapezoid?
@@ -59,9 +59,6 @@ static inline bool is_valid_trap(size_t index) {
 
 /// an array of trapezoids
 DEFINE_LIST(traps, trap_t)
-
-#define ST_VALID 1      /* for trapezium state */
-#define ST_INVALID 2
 
 #define C_EPS 1.0e-7        /* tolerance value: Used for making */
                 /* all decisions about collinearity or */

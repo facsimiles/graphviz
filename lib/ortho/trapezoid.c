@@ -191,10 +191,10 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   traps_at(tr, t3)->sink = i4;
   traps_at(tr, t4)->sink = i2;
 
-  traps_at(tr, t1)->state = ST_VALID;
-  traps_at(tr, t2)->state = ST_VALID;
-  traps_at(tr, t3)->state = ST_VALID;
-  traps_at(tr, t4)->state = ST_VALID;
+  traps_at(tr, t1)->is_valid = true;
+  traps_at(tr, t2)->is_valid = true;
+  traps_at(tr, t3)->is_valid = true;
+  traps_at(tr, t4)->is_valid = true;
 
   qnodes_at(qs, i2)->trnum = t4;
   qnodes_at(qs, i4)->trnum = t3;
@@ -360,7 +360,7 @@ static void merge_trapezoids(int segnum, size_t tfirst, size_t tlast, int side,
 	      }
 
 	      traps_at(tr, t)->lo = traps_get(tr, tnext).lo;
-	      traps_at(tr, tnext)->state = ST_INVALID; // invalidate the lower
+	      traps_at(tr, tnext)->is_valid = false; // invalidate the lower
 				            /* trapezium */
 	    }
 	  else		    /* not good neighbours */
@@ -600,7 +600,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       qnodes_at(qs, i2)->nodetype = T_SINK; // right trapezoid (allocate new)
       const size_t tn = newtrap(tr);
       qnodes_at(qs, i2)->trnum = tn;
-      traps_at(tr, tn)->state = ST_VALID;
+      traps_at(tr, tn)->is_valid = true;
       qnodes_at(qs, i2)->parent = sk;
 
       if (t == tfirst)
