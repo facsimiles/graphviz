@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <util/list.h>
 
 /* Segment attributes */
 
@@ -57,10 +58,7 @@ static inline bool is_valid_trap(size_t index) {
 }
 
 /// an array of trapezoids
-typedef struct {
-  size_t length;
-  trap_t *data;
-} traps_t;
+DEFINE_LIST(traps, trap_t)
 
 #define ST_VALID 1      /* for trapezium state */
 #define ST_INVALID 2
