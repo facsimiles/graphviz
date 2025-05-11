@@ -449,7 +449,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
   segment_t s;
   size_t tfirst, tlast;
   size_t tfirstr = 0, tlastr = 0;
-  int tribot = 0;
+  bool tribot = false;
   bool is_swapped;
   int tmptriseg;
 
@@ -571,7 +571,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
   else				/* v1 already present */
     {       /* Get the lowermost intersecting trapezoid */
       tlast = locate_endpoint(&s.v1, &s.v0, s.root1, seg, qs);
-      tribot = 1;
+      tribot = true;
     }
 
   /* Thread the segment into the query tree creating a new X-node */
