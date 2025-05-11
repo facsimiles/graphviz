@@ -90,6 +90,12 @@ def compile_c(
     cflags = os.environ.get("CFLAGS", "").split() + cflags
     ldflags = os.environ.get("LDFLAGS", "").split()
 
+    # enable most warnings
+    if platform.system() == "Windows" and not is_mingw():
+        cflags = ["/Wall"] + cflags
+    else:
+        cflags = ["-Wall", "-Wextra"] + cflags
+
     # on macOS, ensure the compiled binary can find Graphviz libraries at runtime
     if is_macos():
         dot_exe = shutil.which("dot")
