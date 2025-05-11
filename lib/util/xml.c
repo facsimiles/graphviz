@@ -4,13 +4,16 @@
  * @ingroup common_utils
  */
 
+#include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
+#include <util/prisize_t.h>
 #include <util/unreachable.h>
 #include <util/xml.h>
 
@@ -192,10 +195,7 @@ int gv_xml_escape(const char *s, xml_flags_t flags,
 #ifdef TEST_XML
 // compile the below test stub with:
 //
-//   ${CC} -std=c99 -DTEST_XML -Ilib -Ilib/gvc -Ilib/pathplan -Ilib/cgraph
-//     -Ilib/cdt lib/common/xml.c
-
-#include <getopt.h>
+//   ${CC} -std=c11 -DTEST_XML -Ilib lib/util/xml.c
 
 static int put(void *stream, const char *s) { return fputs(s, stream); }
 
@@ -204,50 +204,66 @@ int main(int argc, char **argv) {
 
   xml_flags_t flags = {0};
 
-  while (true) {
-    static const struct option opts[] = {
-        {"dash", no_argument, 0, 'd'},
-        {"nbsp", no_argument, 0, 'n'},
-        {"raw", no_argument, 0, 'r'},
-        {"utf8", no_argument, 0, 'u'},
-        {0, 0, 0, 0},
-    };
-
-    int index;
-    int c = getopt_long(argc, argv, "dnru", opts, &index);
-
-    if (c == -1)
-      break;
-
-    switch (c) {
-
-    case 'd':
+  int i;
+  for (i = 1; i < argc; ++i) {
+    if (strcmp(argv[i], "--dash") == 0) {
       flags.dash = 1;
-      break;
-
-    case 'n':
+    } else if (strcmp(argv[i], "--nbsp") == 0) {
       flags.nbsp = 1;
-      break;
-
-    case 'r':
+    } else if (strcmp(argv[i], "--raw") == 0) {
       flags.raw = 1;
-      break;
-
-    case 'u':
+    } else if (strcmp(argv[i], "--utf8") == 0) {
       flags.utf8 = 1;
+    } else if (argv[i][0] == '-') {
+      fprintf(stderr, "unrecognized argument %s\n", argv[i]);
+      graphviz_exit(EXIT_FAILURE);
+    } else {
+      // assume we have reached filenames
       break;
+    }
+  }
 
-    default:
-      fprintf(stderr, "unexpected error\n");
+  if (i + 2 != argc) {
+    fprintf(stderr,
+            "usage: %s [--dash] [--nbsp] [--raw] [--utf8] <input> <output>\n",
+            argv[0]);
+    graphviz_exit(EXIT_FAILURE);
+  }
+
+  const char *const in = argv[i];
+  const char *const out = argv[i + 1];
+
+  // read in the input
+  char buffer[128] = {0};
+  {
+    FILE *const f = fopen(in, "rb");
+    if (f == NULL) {
+      fprintf(stderr, "failed to open %s: %s\n", in, strerror(errno));
+      graphviz_exit(EXIT_FAILURE);
+    }
+    const size_t read = fread(buffer, 1, sizeof(buffer), f);
+    (void)fclose(f);
+    if (read == 0 || read == sizeof(buffer)) {
+      fprintf(stderr,
+              "only escaping 1 - %" PRISIZE_T
+              " bytes is supported, not %" PRISIZE_T " bytes\n",
+              sizeof(buffer) - 1, read);
       graphviz_exit(EXIT_FAILURE);
     }
   }
 
-  // escape all input we received
-  for (int i = optind; i < argc; ++i) {
-    int r = gv_xml_escape(argv[i], flags, put, stdout);
-    if (r < 0)
-      graphviz_exit(EXIT_FAILURE);
+  // open the output
+  FILE *const f = fopen(out, "wb");
+  if (f == NULL) {
+    fprintf(stderr, "failed to open %s: %s\n", out, strerror(errno));
+    graphviz_exit(EXIT_FAILURE);
+  }
+
+  // escape the buffer into the output
+  const int r = gv_xml_escape(buffer, flags, put, f);
+  (void)fclose(f);
+  if (r < 0) {
+    graphviz_exit(EXIT_FAILURE);
   }
 
   graphviz_exit(EXIT_SUCCESS);

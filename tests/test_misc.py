@@ -8,11 +8,16 @@ import os
 import platform
 import sys
 from pathlib import Path
-
-import pytest
+from typing import Union
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import ROOT, compile_c, dot, run  # pylint: disable=wrong-import-position
+from gvtest import (  # pylint: disable=wrong-import-position
+    ROOT,
+    compile_c,
+    dot,
+    is_mingw,
+    run,
+)
 
 
 def test_json_node_order():
@@ -96,9 +101,6 @@ def test_json_edge_order():
     assert edges == expected
 
 
-@pytest.mark.skipif(
-    platform.system() != "Linux", reason="TODO: make this test case portable"
-)
 def test_xml_escape(tmp_path: Path):
     """
     Check the functionality of ../lib/util/xml.c:gv_xml_escape.
@@ -110,17 +112,24 @@ def test_xml_escape(tmp_path: Path):
 
     # compile the stub to something we can run
     xml_exe = tmp_path / "xml.exe"
-    cflags = [
-        "-D_POSIX_C_SOURCE=200809L",
-        "-DTEST_XML",
-        "-I",
-        ROOT / "lib",
-        "-Wall",
-        "-Wextra",
-    ]
+    lib = ROOT / "lib"
+    cflags = ["-DTEST_XML", f"-I{lib}"]
+    if platform.system() != "Windows" or is_mingw():
+        cflags += ["-Wall", "-Wextra"]
     compile_c(xml_c, cflags, dst=xml_exe)
 
-    def escape(dash: bool, nbsp: bool, raw: bool, utf8: bool, s: str) -> str:
+    def escape(
+        dash: bool, nbsp: bool, raw: bool, utf8: bool, s: Union[bytes, str]
+    ) -> str:
+
+        source = tmp_path / "input"
+        if isinstance(s, bytes):
+            source.write_bytes(s)
+        else:
+            source.write_text(s, encoding="utf-8")
+
+        destination = tmp_path / "output"
+
         args = [xml_exe]
         if dash:
             args += ["--dash"]
@@ -130,9 +139,11 @@ def test_xml_escape(tmp_path: Path):
             args += ["--raw"]
         if utf8:
             args += ["--utf8"]
-        args += [s]
+        args += [source, destination]
 
-        return run(args)
+        run(args)
+
+        return destination.read_text(encoding="utf-8")
 
     for dash, nbsp, raw, utf8 in itertools.product((False, True), repeat=4):
         # something basic with nothing escapable
@@ -164,7 +175,7 @@ def test_xml_escape(tmp_path: Path):
             assert hyphen_escaped == hyphen, "text incorrectly modified"
 
         # line endings
-        nl = "the quick\nbrown\rfox"
+        nl = b"the quick\nbrown\rfox"
         nl_escaped = escape(dash, nbsp, raw, utf8, nl)
         if raw:
             assert (
@@ -173,7 +184,7 @@ def test_xml_escape(tmp_path: Path):
         else:
             # allow benign modification of the \r
             assert nl_escaped in (
-                nl,
+                "the quick\nbrown\rfox",
                 "the quick\nbrown\nfox",
             ), "text incorrectly modified"
 
