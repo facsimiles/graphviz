@@ -8,10 +8,10 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, TextIO, Union
+from typing import TextIO, Union
 
 
-def run(args: List[Union[str, Path]], cwd: Path, out: TextIO):  # pylint: disable=C0116
+def run(args: list[Union[str, Path]], cwd: Path, out: TextIO):  # pylint: disable=C0116
     print(f"+ {shlex.join(str(x) for x in args)}")
     p = subprocess.run(
         args,
@@ -26,7 +26,7 @@ def run(args: List[Union[str, Path]], cwd: Path, out: TextIO):  # pylint: disabl
     p.check_returncode()
 
 
-def main(args: List[str]) -> int:  # pylint: disable=C0116
+def main(args: list[str]) -> int:  # pylint: disable=C0116
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--build-shared-libs",

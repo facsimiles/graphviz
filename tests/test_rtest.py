@@ -15,7 +15,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List
 
 import pytest
 
@@ -37,7 +36,7 @@ class Case:
         input: Path,
         algorithm: str,
         format: str,
-        flags: List[str],
+        flags: list[str],
     ):  # pylint: disable=too-many-arguments
         self.name = name
         self.input = input
@@ -46,7 +45,7 @@ class Case:
         self.flags = flags[:]
 
 
-TESTS: List[Case] = [
+TESTS: list[Case] = [
     Case("shapes", Path("shapes.gv"), "dot", "gv", []),
     Case("shapes", Path("shapes.gv"), "dot", "ps", []),
     Case("crazy", Path("crazy.gv"), "dot", "png", []),
@@ -369,7 +368,7 @@ def doDiff(OUTFILE, testname, fmt):
         print(f"Test {testname}: == Failed == {OUTFILE}", file=sys.stderr)
 
 
-def genOutname(name, alg, fmt, flags: List[str]):
+def genOutname(name, alg, fmt, flags: list[str]):
     """
     Generate output file name given 4 parameters.
       testname layout format flags
@@ -396,7 +395,7 @@ def genOutname(name, alg, fmt, flags: List[str]):
     "name,input,algorithm,format,flags",
     ((c.name, c.input, c.algorithm, c.format, c.flags) for c in TESTS),
 )
-def test_graph(name: str, input: Path, algorithm: str, format: str, flags: List[str]):
+def test_graph(name: str, input: Path, algorithm: str, format: str, flags: list[str]):
     """
     Run a single test.
     """

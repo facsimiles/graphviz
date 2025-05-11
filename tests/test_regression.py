@@ -24,7 +24,7 @@ import textwrap
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Iterator, List, Optional, Set, Tuple, Union
+from typing import Iterator, Optional, Union
 
 import pexpect
 import pytest
@@ -4279,7 +4279,7 @@ def test_2521(testcase: str):
     input = Path(__file__).parent / testcase
     assert input.exists(), "unexpectedly missing test case"
 
-    def sh(args: List[Union[Path, str]]) -> bytes:
+    def sh(args: list[Union[Path, str]]) -> bytes:
         """run a command, as if via the shell"""
         # dump the command being run for the user to observe if the test fails
         print(f"+ {shlex.join(str(x) for x in args)}")
@@ -4376,7 +4376,7 @@ def test_2563():
     assert input.exists(), "unexpectedly missing test case"
 
     # try various `overlap=…` values
-    results: Set[str] = set()
+    results: set[str] = set()
     for overlap in ("scale", "scalexy"):
         # run this through fdp
         fdp = which("fdp")
@@ -4530,7 +4530,7 @@ def test_2572():
                 return False
             return True
 
-    nodes: List[Box] = []
+    nodes: list[Box] = []
     for obj in parsed["objects"]:
         # extract the ellipse drawn for this node
         ellipses = [e for e in obj["_draw_"] if e["op"] == "e"]
@@ -5123,7 +5123,7 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
         src = Path(__file__).parent / f"{images}_{i}.jpg"
         shutil.copy(src, media / f"2619_{i}.jpg")
 
-    def sh(args: List[Union[Path, str]], stdin: Optional[bytes] = None) -> bytes:
+    def sh(args: list[Union[Path, str]], stdin: Optional[bytes] = None) -> bytes:
         """run a command, as if via the shell"""
         nonlocal tmp_path
 
@@ -5593,7 +5593,7 @@ def test_2669():
     input = Path(__file__).parent / "2669.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    def parse(xml: str) -> Tuple[int, int, Tuple[float, float]]:
+    def parse(xml: str) -> tuple[int, int, tuple[float, float]]:
         """
         parse an SVG
 

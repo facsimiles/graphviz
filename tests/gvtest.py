@@ -10,13 +10,13 @@ import sys
 import sysconfig
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Optional, Union
 
 ROOT = Path(__file__).resolve().parent.parent
 """absolute path to the root of the repository"""
 
 
-def run_raw(args: List[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
+def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
     """
     execute an external command
 
@@ -56,7 +56,7 @@ def run_raw(args: List[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     return proc.stdout
 
 
-def run(args: List[Union[Path, str]], **kwargs) -> Optional[str]:
+def run(args: list[Union[Path, str]], **kwargs) -> Optional[str]:
     """
     execute an external command that takes/returns textual input/output
 
@@ -75,8 +75,8 @@ def run(args: List[Union[Path, str]], **kwargs) -> Optional[str]:
 
 def compile_c(
     src: Path,
-    cflags: List[str] = None,
-    link: List[Union[Path, str]] = None,
+    cflags: list[str] = None,
+    link: list[Union[Path, str]] = None,
     dst: Optional[Union[Path, str]] = None,
 ) -> Path:
     """compile a C program"""
@@ -228,7 +228,7 @@ def dot(
     return proc.stdout
 
 
-def freedesktop_os_release() -> Dict[str, str]:
+def freedesktop_os_release() -> dict[str, str]:
     """
     polyfill for `platform.freedesktop_os_release`
     """
@@ -397,11 +397,11 @@ def has_sandbox() -> bool:
 
 def run_c(
     src: Path,
-    args: List[str] = None,
+    args: list[str] = None,
     input: str = "",
-    cflags: List[str] = None,
-    link: List[Union[Path, str]] = None,
-) -> Tuple[str, str]:
+    cflags: list[str] = None,
+    link: list[Union[Path, str]] = None,
+) -> tuple[str, str]:
     """compile and run a C program"""
 
     if args is None:

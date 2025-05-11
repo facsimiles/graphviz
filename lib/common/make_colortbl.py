@@ -8,10 +8,9 @@ import argparse
 import locale
 import re
 import sys
-from typing import List, Tuple
 
 
-def rgb_to_hsv(r: int, g: int, b: int) -> Tuple[int, int, int]:
+def rgb_to_hsv(r: int, g: int, b: int) -> tuple[int, int, int]:
     """transform an RGB color into HSV format"""
 
     r /= 255.0
@@ -48,7 +47,7 @@ def rgb_to_hsv(r: int, g: int, b: int) -> Tuple[int, int, int]:
     return int(h / 360.0 * 255.0), int(s * 255.0), int(v * 255.0)
 
 
-def main(args: List[str]) -> int:
+def main(args: list[str]) -> int:
     """entry point"""
 
     # avoid sorting issues due to locale differences

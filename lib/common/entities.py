@@ -6,12 +6,11 @@ import re
 import sys
 import textwrap
 from pathlib import Path
-from typing import Dict
 
 # get names for html-4.0 characters from:
 #          http://www.w3.org/TR/REC-html40/sgml/entities.html
 entity_name_length_max: int = 0
-entity: Dict[str, str] = {}
+entity: dict[str, str] = {}
 with open(Path(__file__).parent / "entities.html", "rb") as f:
     for rec in f:
         if m := re.match(

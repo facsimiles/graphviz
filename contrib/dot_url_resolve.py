@@ -26,12 +26,12 @@ import sys
 import tempfile
 import urllib.request
 from pathlib import Path
-from typing import Dict, List, Optional, TextIO
+from typing import Optional, TextIO
 
 
 def _translate(
     source: str,
-    translations: Dict[str, Path],
+    translations: dict[str, Path],
     local_store: Path,
     log: Optional[logging.Logger],
 ) -> str:
@@ -73,7 +73,7 @@ def _translate(
 
 def resolve(
     inp: TextIO, outp: TextIO, local_store: Path, log: Optional[logging.Logger] = None
-) -> Dict[str, Path]:
+) -> dict[str, Path]:
     """
     process Graphviz source, converting remote URLs to local paths
 
@@ -88,7 +88,7 @@ def resolve(
     """
 
     # translations from original URLs to local paths
-    downloaded: Dict[str, Path] = {}
+    downloaded: dict[str, Path] = {}
 
     in_string = False
     pending = io.StringIO()
@@ -119,7 +119,7 @@ def resolve(
     return downloaded
 
 
-def main(args: List[str]) -> int:
+def main(args: list[str]) -> int:
     """
     entry point
     """

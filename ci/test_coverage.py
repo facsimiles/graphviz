@@ -7,13 +7,12 @@ import logging
 import subprocess
 import sys
 from pathlib import Path
-from typing import List
 
 # logging output stream, setup in main()
 log = None
 
 
-def main(args: List[str]) -> int:  # pylint: disable=C0116
+def main(args: list[str]) -> int:  # pylint: disable=C0116
     # setup logging to print to stderr
     global log
     ch = logging.StreamHandler()
