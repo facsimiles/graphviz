@@ -47,8 +47,9 @@
 
 #define INF 1<<30
 
-#define CROSS(v0, v1, v2) (((v1).x - (v0).x)*((v2).y - (v0).y) - \
-               ((v1).y - (v0).y)*((v2).x - (v0).x))
+static double cross(pointf v0, pointf v1, pointf v2) {
+  return (v1.x - v0.x) * (v2.y - v0.y) - (v1.y - v0.y) * (v2.x - v0.x);
+}
 
 typedef struct {
   int nodetype;         /* Y-node or S-node */
@@ -229,7 +230,7 @@ is_left_of (int segnum, segment_t* seg, pointf *v)
 	    area = -1.0;
 	}
       else
-	area = CROSS(s->v0, s->v1, *v);
+	area = cross(s->v0, s->v1, *v);
     }
   else				/* v0 > v1 */
     {
@@ -246,7 +247,7 @@ is_left_of (int segnum, segment_t* seg, pointf *v)
 	    area = -1.0;
 	}
       else
-	area = CROSS(s->v1, s->v0, (*v));
+	area = cross(s->v1, s->v0, *v);
     }
 
   return area > 0.0;
