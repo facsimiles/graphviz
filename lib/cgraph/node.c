@@ -15,6 +15,7 @@
 #include <cgraph/cghdr.h>
 #include <cgraph/node_set.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/unreachable.h>
@@ -169,18 +170,17 @@ Agnode_t *agnode(Agraph_t * g, char *name, int cflag)
 
 /* removes image of node and its edges from graph.
    caller must ensure n belongs to g. */
-void agdelnodeimage(Agraph_t * g, Agnode_t * n, void *ignored)
-{
+void agdelnodeimage(Agraph_t *g, Agobj_t *node, void *ignored) {
+    Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
     Agedge_t *e, *f;
-    Agsubnode_t template = {0};
-    template.node = n;
+    Agsubnode_t template = {.node = n};
 
     (void)ignored;
     for (e = agfstedge(g, n); e; e = f) {
 	f = agnxtedge(g, e, n);
-	agdeledgeimage(g, e, 0);
+	agdeledgeimage(g, &e->base, 0);
     }
-    /* If the following lines are switched, switch the discpline using
+    /* If the following lines are switched, switch the discipline using
      * free_subnode below.
      */ 
     node_set_remove(g->n_id, n->base.tag.id);
@@ -201,10 +201,10 @@ int agdelnode(Agraph_t * g, Agnode_t * n)
 	if (g->desc.has_attrs)
 	    agnodeattr_delete(n);
 	agmethod_delete(g, n);
-	agrecclose((Agobj_t *) n);
+	agrecclose(&n->base);
 	agfreeid(g, AGNODE, AGID(n));
     }
-    if (agapply(g, (Agobj_t *)n, (agobjfn_t)agdelnodeimage, NULL, false) == SUCCESS) {
+    if (agapply(g, &n->base, agdelnodeimage, NULL, false) == SUCCESS) {
 	if (g == agroot(g))
 	    free(n);
 	return SUCCESS;
@@ -212,14 +212,12 @@ int agdelnode(Agraph_t * g, Agnode_t * n)
 	return FAILURE;
 }
 
-static void dict_relabel(Agraph_t *ignored, Agnode_t *n, void *arg) {
+static void dict_relabel(Agraph_t *ignored, Agobj_t *node, void *arg) {
     (void)ignored;
+    Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
 
-    Agraph_t *g;
-    uint64_t new_id;
-
-    g = agraphof(n);
-    new_id = *(uint64_t *) arg;
+    Agraph_t *const g = agraphof(n);
+    const IDTYPE new_id = *(IDTYPE *)arg;
     Agsubnode_t *key = agsubrep(g, n);
     assert(key != NULL && "node being renamed does not exist");
     node_set_remove(g->n_id, key->node->base.tag.id);
@@ -240,7 +238,7 @@ int agrelabel_node(Agnode_t * n, char *newname)
     if (agmapnametoid(g, AGNODE, newname, &new_id, true)) {
 	if (agfindnode_by_id(agroot(g), new_id) == NULL) {
 	    agfreeid(g, AGNODE, AGID(n));
-	    agapply(g, (Agobj_t*)n, (agobjfn_t)dict_relabel, &new_id, false);
+	    agapply(g, &n->base, dict_relabel, &new_id, false);
 	    return SUCCESS;
 	} else {
 	    agfreeid(g, AGNODE, new_id);	/* couldn't use it after all */
@@ -309,16 +307,14 @@ Dtdisc_t Ag_subnode_seq_disc = {
     .comparf = agsubnodeseqcmpf,
 };
 
-static void agnodesetfinger(Agraph_t * g, Agnode_t * n, void *ignored)
-{
-    Agsubnode_t template = {0};
-	template.node = n;
+static void agnodesetfinger(Agraph_t *g, Agobj_t *node, void *ignored) {
+    Agnode_t *const n = (Agnode_t *)((char *)node - offsetof(Agnode_t, base));
+    Agsubnode_t template = {.node = n};
 	dtsearch(g->n_seq,&template);
     (void)ignored;
 }
 
-static void agnoderenew(Agraph_t * g, Agnode_t * n, void *ignored)
-{
+static void agnoderenew(Agraph_t *g, Agobj_t *n, void *ignored) {
     dtrenew(g->n_seq, dtfinger(g->n_seq));
     (void)n;
     (void)ignored;
@@ -335,7 +331,7 @@ int agnodebefore(Agnode_t *fst, Agnode_t *snd)
 
 	/* move snd out of the way somewhere */
 	n = snd;
-	if (agapply (g,(Agobj_t *)n, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+	if (agapply(g, &n->base, agnodesetfinger, n, false) != SUCCESS) {
 		return FAILURE;
 	}
 	{
@@ -343,30 +339,30 @@ int agnodebefore(Agnode_t *fst, Agnode_t *snd)
 		assert((seq & SEQ_MASK) == seq && "sequence ID overflow");
 		AGSEQ(snd) = seq & SEQ_MASK;
 	}
-	if (agapply(g, (Agobj_t *)n, (agobjfn_t)agnoderenew, n, false) != SUCCESS) {
+	if (agapply(g, &n->base, agnoderenew, n, false) != SUCCESS) {
 		return FAILURE;
 	}
 	n = agprvnode(g,snd);
 	do {
 		nxt = agprvnode(g,n);
-		if (agapply(g, (Agobj_t *)n, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+		if (agapply(g, &n->base, agnodesetfinger, n, false) != SUCCESS) {
 		  return FAILURE;
 		}
 		uint64_t seq = AGSEQ(n) + 1;
 		assert((seq & SEQ_MASK) == seq && "sequence ID overflow");
 		AGSEQ(n) = seq & SEQ_MASK;
-		if (agapply(g, (Agobj_t *)n, (agobjfn_t)agnoderenew, n, false) != SUCCESS) {
+		if (agapply(g, &n->base, agnoderenew, n, false) != SUCCESS) {
 		  return FAILURE;
 		}
 		if (n == fst) break;
 		n = nxt;
 	} while (n);
-	if (agapply(g, (Agobj_t *)snd, (agobjfn_t)agnodesetfinger, n, false) != SUCCESS) {
+	if (agapply(g, &snd->base, agnodesetfinger, n, false) != SUCCESS) {
 		return FAILURE;
 	}
 	assert(AGSEQ(fst) != 0 && "sequence ID overflow");
 	AGSEQ(snd) = (AGSEQ(fst) - 1) & SEQ_MASK;
-	if (agapply(g, (Agobj_t *)snd, (agobjfn_t)agnoderenew, snd, false) != SUCCESS) {
+	if (agapply(g, &snd->base, agnoderenew, snd, false) != SUCCESS) {
 		return FAILURE;
 	}
 	return SUCCESS;

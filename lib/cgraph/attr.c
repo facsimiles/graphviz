@@ -229,9 +229,8 @@ Agattr_t *agattrrec(void *obj)
   return (Agattr_t *)aggetrec(obj, AgDataRecName, 0);
 }
 
-
-static void addattr(Agraph_t * g, Agobj_t * obj, Agsym_t * sym)
-{
+static void addattr(Agraph_t *g, Agobj_t *obj, void *symbol) {
+    Agsym_t *const sym = symbol;
     Agattr_t *attr = agattrrec(obj);
     assert(attr != NULL);
     if (sym->id >= MINATTR)
@@ -308,7 +307,7 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
 	    dtinsert(rdict, rsym);
 	    switch (kind) {
 	    case AGRAPH:
-		agapply(root, &root->base, (agobjfn_t)addattr, rsym, true);
+		agapply(root, &root->base, addattr, rsym, true);
 		break;
 	    case AGNODE:
 		for (Agnode_t *n = agfstnode(root); n; n = agnxtnode(root, n))
