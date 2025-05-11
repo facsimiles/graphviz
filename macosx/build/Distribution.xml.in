@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+- Copyright (c) 2011 AT&T Intellectual Property
+- All rights reserved. This program and the accompanying materials
+- are made available under the terms of the Eclipse Public License v1.0
+- which accompanies this distribution, and is available at
+- http://www.eclipse.org/legal/epl-v10.html
+-
+- Contributors: Details at http://www.graphviz.org/
+-->
+<installer-gui-script minSpecVersion="1">
+    <title>Graphviz</title>
+    <pkg-ref id="com.att.graphviz"/>
+    <pkg-ref id="com.att.graphviz.app"/>
+    <pkg-ref id="com.att.graphviz" version="0">dot.pkg</pkg-ref>
+    <pkg-ref id="com.att.graphviz.app" version="0">app.pkg</pkg-ref>
+    <options hostArchitectures="arm64,x86_64"/>
+    <choice id="default" title="Graphviz and App" description="Install Graphviz and the macOS Graphivz App."/>
+    <choice id="com.att.graphviz" title="Graphviz" description="Install Graphviz into /usr/local.">
+        <pkg-ref id="com.att.graphviz"/>
+    </choice>
+    <choice id="com.att.graphviz.app" title="Graphviz App" description="Install the macOS Graphviz App into the Applications folder."> 
+        <pkg-ref id="com.att.graphviz.app"/>
+    </choice>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.att.graphviz"/>
+            <line choice="com.att.graphviz.app"/>
+        </line>
+    </choices-outline>
+    <installation-check script="check();"/>
+    <script>
+    <![CDATA[
+        function check() {
+            if (!(system.compareVersions(system.version.ProductVersion, '10.13') >= 0)) {
+                my.result.title = 'Install Failed';
+                my.result.message = 'Graphviz requires macOS 10.13 (High Sierra) or later.';
+                my.result.type = 'Fatal';
+                return false;
+            }
+            if (system.files.fileExistsAtPath('@prefix@/bin/dot') ||
+				system.files.fileExistsAtPath('/Applications/Graphviz.app')) {
+                my.result.title = 'Existing Installation of Graphviz Detected';
+                my.result.message = 'The existing installation of Graphviz will be replaced.';
+                my.result.type = 'Warning';
+                return false;
+            }
+            return true;
+        }
+    ]]>
+    </script>
+</installer-gui-script>

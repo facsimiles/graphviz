@@ -2124,8 +2124,7 @@ AC_CONFIG_FILES(Makefile
 	lib/topfish/Makefile
 	lib/glcomp/Makefile
 	macosx/Info.plist
-	macosx/build/graphviz.pmdoc/01local.xml
-	macosx/build/graphviz.pmdoc/02graphviz.xml
+	macosx/build/Distribution.xml
 	plugin/Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
