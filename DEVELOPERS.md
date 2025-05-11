@@ -263,6 +263,79 @@ flamegraph.pl out.perf-folded > perf.svg
 Now open perf.svg in your favorite SVG viewer. Generally a web browser like
 Firefox is recommended to handle the interactivity of the SVG.
 
+## Memory safety
+
+Graphviz is a 30+ year old code base written in memory unsafe languages. As
+such, there are many known out-of-bounds accesses, use-after-free, memory leaks,
+etc. Any help addressing these is much appreciated.
+
+The main contemporary tools for hunting memory safety problems are Address
+Sanitizer and Valgrind. Feel free to use whichever you prefer, or pick another
+tool that works for you.
+
+### Address Sanitizer
+
+To enable Address Sanitizer (ASan), export some environment variables before you
+compile:
+
+```sh
+export CFLAGS="-g3 -fsanitize=address -fno-sanitize-recover=address"
+export CXXFLAGS="-g3 -fsanitize=address -fno-sanitize-recover=address"
+```
+
+A useful complement to ASan is Undefined Behavior Sanitizer (UBSan). You can
+enable both at once with this alternative to the above:
+
+```sh
+export CFLAGS="-g3 -fsanitize=address,undefined -fno-sanitize-recover=address,undefined"
+export CXXFLAGS="-g3 -fsanitize=address,undefined -fno-sanitize-recover=address,undefined"
+```
+
+If you are on x86/x86-64, also force more readable stack traces:
+
+```sh
+export CFLAGS="${CFLAGS} -fno-omit-frame-pointer"
+export CXXFLAGS="${CXXFLAGS} -fno-omit-frame-pointer"
+```
+
+After compilation and installation, you can run Graphviz commands to find
+problems:
+
+```sh
+$ gml2gv mytest.gml -o /dev/null
+=================================================================
+==166355==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 2 byte(s) in 1 object(s) allocated from:
+    #0 0x7ffff745b9a7 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:454
+    #1 0x5555555a1fcf in gv_strdup ../../lib/util/alloc.h:103
+    #2 0x5555555a7f30 in gmllex ../../cmd/tools/gmlscan.l:101
+    #3 0x555555599853 in gmlparse cmd/tools/gmlparse.c:1300
+    #4 0x5555555a158e in gml_to_gv ../../cmd/tools/gmlparse.y:689
+    #5 0x55555558f5ee in main cmd/tools/gml2gv.c:140
+    #6 0x7ffff6829d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+
+SUMMARY: AddressSanitizer: 2 byte(s) leaked in 1 allocation(s).
+```
+
+Sometimes you want to suppress leak detection and only hunt worse problems:
+
+```
+$ env ASAN_OPTIONS=detect_leaks=0 gml2gv mytest.gml -o /dev/null
+```
+
+If you have also enabled UBSan as recommended above, you will want to tell it to
+generate readable stack traces too:
+
+```
+$ env ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=print_stacktraces=1 \
+  gml2gv mytest.gml -o /dev/null
+```
+
+If you want to run the test suite, the `CFLAGS` and `CXXFLAGS` exported above
+are necessary for tests that compile C code. The `ASAN_OPTIONS` and
+`UBSAN_OPTIONS` will also be useful to avoid drowning in noise.
+
 ## Processing contributors’ Merge Requests
 
 The expected process contributors should follow is described in CONTRIBUTING.md.
