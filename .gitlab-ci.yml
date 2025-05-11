@@ -423,7 +423,7 @@ out-of-source-build:
         - ci/out-of-source-build.sh |& tee $logfile
         - echo "$CI_JOB_NAME-warnings `grep -c 'warning:' $logfile`" | tee metrics.txt
     needs:
-        - job: docker_build_ubuntu-22.04
+        - job: docker_build_ubuntu-24.04
           artifacts: false
         - job: portable-source
           artifacts: true
@@ -435,7 +435,7 @@ out-of-source-build:
         reports:
             metrics: metrics.txt
     variables:
-      IMAGE: ubuntu-22.04
+      IMAGE: ubuntu-24.04
 
 macos-autotools-build:
     <<: *macos_build_definition
