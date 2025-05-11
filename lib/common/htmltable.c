@@ -802,24 +802,20 @@ void free_html_data(htmldata_t * dp)
 
 void free_html_text(htmltxt_t * t)
 {
-    htextspan_t *tl;
-    textspan_t *ti;
-
     if (!t)
 	return;
 
-    tl = t->spans;
+    htextspan_t *const tl = t->spans;
     for (size_t i = 0; i < t->nspans; i++) {
-	ti = tl->items;
-	for (size_t j = 0; j < tl->nitems; j++) {
-	    free(ti->str);
-	    if (ti->layout && ti->free_layout)
-		ti->free_layout(ti->layout);
-	    ti++;
+	textspan_t *const ti = tl[i].items;
+	for (size_t j = 0; j < tl[i].nitems; j++) {
+	    free(ti[j].str);
+	    if (ti[j].layout && ti[j].free_layout)
+		ti[j].free_layout(ti[j].layout);
 	}
-	tl++;
+	free(ti);
     }
-    free(t->spans);
+    free(tl);
     free(t);
 }
 

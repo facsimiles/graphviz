@@ -19,6 +19,7 @@
 #include <gvpr/actions.h>
 #include <gvpr/compile.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -46,8 +47,6 @@ static int isedge(Agobj_t *obj) {
 #include <ctype.h>
 #include <gvpr/trie.c>
 
-#define BITS_PER_BYTE 8
-
 static void *int2ptr(long long i) { return (void *)(intptr_t)i; }
 
 static long long ptr2int(const void *p) { return (long long)(intptr_t)p; }
@@ -70,8 +69,7 @@ static Agdisc_t gprDisc = {0, &gprIoDisc};
 static Agdisc_t gprDisc = {&AgIdDisc, &gprIoDisc};
 #endif
 
-/* nameOf:
- * Return name of object.
+/* Return name of object.
  * Assumes obj !=  NULL
  */
 static char *nameOf(Expr_t *ex, Agobj_t *obj, agxbuf *tmps) {
@@ -104,55 +102,48 @@ static char *nameOf(Expr_t *ex, Agobj_t *obj, agxbuf *tmps) {
   return s;
 }
 
-/* bbOf:
- * If string as form "x,y,u,v" where is all are numeric,
+/* If string as form "x,y,u,v" where is all are numeric,
  * return "x,y" or "u,v", depending on getll, else return ""
  */
 static char *bbOf(Expr_t *pgm, char *pt, bool getll) {
   double x, y, u, v;
-  char *s;
-  char *p;
 
   if (sscanf(pt, "%lf,%lf,%lf,%lf", &x, &y, &u, &v) == 4) {
-    p = strchr(pt, ',');
+    char *p = strchr(pt, ',');
     p = strchr(p + 1, ',');
     if (getll) {
       size_t len = (size_t)(p - pt);
-      s = exstralloc(pgm, len + 1);
+      char *const s = exstralloc(pgm, len + 1);
       strncpy(s, pt, len);
       s[len] = '\0';
-    } else
-      s = exstring(pgm, p + 1);
-  } else
-    s = "";
-  return s;
+      return s;
+    }
+    return exstring(pgm, p + 1);
+  }
+  return "";
 }
 
-/* xyOf:
- * If string as form "x,y" where is x and y are numeric,
+/* If string as form "x,y" where is x and y are numeric,
  * return "x" or "y", depending on getx, else return ""
  */
 static char *xyOf(Expr_t *pgm, char *pt, bool getx) {
   double x, y;
-  char *v;
-  char *p;
 
   if (sscanf(pt, "%lf,%lf", &x, &y) == 2) {
-    p = strchr(pt, ',');
+    char *const p = strchr(pt, ',');
     if (getx) {
       size_t len = (size_t)(p - pt);
-      v = exstralloc(pgm, len + 1);
+      char *const v = exstralloc(pgm, len + 1);
       strncpy(v, pt, len);
       v[len] = '\0';
-    } else
-      v = exstring(pgm, p + 1);
-  } else
-    v = "";
-  return v;
+      return v;
+    }
+    return exstring(pgm, p + 1);
+  }
+  return "";
 }
 
-/* posOf:
- * Get pos data from node; store x or y into v if successful and return  0;
+/* Get pos data from node; store x or y into v if successful and return  0;
  * else return -1
  */
 static int posOf(Agnode_t *np, int idx, double *v) {
@@ -201,8 +192,7 @@ static char *symName(Expr_t *ex, int op) {
 }
 #endif
 
-/* xargs:
- * Convert string argument to graph to type of graph desired.
+/* Convert string argument to graph to type of graph desired.
  *   u => undirected
  *   d => directed
  *   s => strict
@@ -240,8 +230,7 @@ static Agdesc_t xargs(char *args) {
   return desc;
 }
 
-/* deparse:
- * Recreate string representation of expression involving
+/* Recreate string representation of expression involving
  * a reference and a symbol.
  */
 static char *deparse(Expr_t *ex, Exnode_t *n, agxbuf *xb) {
@@ -249,8 +238,7 @@ static char *deparse(Expr_t *ex, Exnode_t *n, agxbuf *xb) {
   return agxbuse(xb);
 }
 
-/* deref:
- * Evaluate reference to derive desired graph object.
+/* Evaluate reference to derive desired graph object.
  * A reference is either DI* or II*
  * The parameter objp is the current object.
  * Assume ref is type-correct.
@@ -319,8 +307,7 @@ static Agobj_t *deref(Expr_t *pgm, Exnode_t *x, Exref_t *ref, Agobj_t *objp,
   return 0;
 }
 
-/* assignable:
- * Check that attribute is not a read-only, pseudo-attribute.
+/* Check that attribute is not a read-only, pseudo-attribute.
  * fatal if not OK.
  */
 static void assignable(Agobj_t *objp, unsigned char *name) {
@@ -353,8 +340,7 @@ static void assignable(Agobj_t *objp, unsigned char *name) {
   }
 }
 
-/* setattr:
- * Set object's attribute name to val.
+/* Set object's attribute name to val.
  * Initialize attribute if necessary.
  */
 static int setattr(Agobj_t *objp, char *name, char *val) {
@@ -365,8 +351,6 @@ static int setattr(Agobj_t *objp, char *name, char *val) {
   return agxset(objp, gsym, val);
 }
 
-/* kindToStr:
- */
 static char *kindToStr(int kind) {
   char *s;
 
@@ -384,13 +368,10 @@ static char *kindToStr(int kind) {
   return s;
 }
 
-/* kindOf:
- * Return string rep of object's kind
- */
+// return string rep of object’s kind
 static char *kindOf(Agobj_t *objp) { return kindToStr(agobjkind(objp)); }
 
-/* lookup:
- * Apply symbol to get field value of objp
+/* Apply symbol to get field value of objp
  * Assume objp != NULL
  */
 static int lookup(Expr_t *pgm, Agobj_t *objp, Exid_t *sym, Extype_t *v) {
@@ -524,9 +505,7 @@ static int lookup(Expr_t *pgm, Agobj_t *objp, Exid_t *sym, Extype_t *v) {
   return 0;
 }
 
-/* getArg:
- * Return value associated with $n.
- */
+// return value associated with $n
 static char *getArg(int n, Gpr_t *state) {
   if (n >= state->argc) {
     exerror("program references ARGV[%d] - undefined", n);
@@ -535,8 +514,6 @@ static char *getArg(int n, Gpr_t *state) {
   return state->argv[n];
 }
 
-/* setDfltAttr:
- */
 static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
   int kind;
 
@@ -558,9 +535,7 @@ static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
   return 0;
 }
 
-/* toKind:
- * Map string to object kind
- */
+// map string to object kind
 static int toKind(char *k, char *fn) {
   switch (*k) {
   case 'G':
@@ -576,8 +551,6 @@ static int toKind(char *k, char *fn) {
   return 0;
 }
 
-/* nxtAttr:
- */
 static char *nxtAttr(Agraph_t *gp, char *k, char *name) {
   char *fn = name ? "nxtAttr" : "fstAttr";
   int kind = toKind(k, fn);
@@ -602,8 +575,6 @@ static char *nxtAttr(Agraph_t *gp, char *k, char *name) {
     return "";
 }
 
-/* getDfltAttr:
- */
 static char *getDfltAttr(Agraph_t *gp, char *k, char *name) {
   int kind = toKind(k, "getDflt");
   Agsym_t *sym = agattr_text(gp, kind, name, 0);
@@ -615,9 +586,7 @@ static char *getDfltAttr(Agraph_t *gp, char *k, char *name) {
   return sym->defval;
 }
 
-/* getval:
- * Return value associated with gpr identifier.
- */
+// return value associated with gpr identifier
 static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
                        void *env, int elt, Exdisc_t *disc) {
   Extype_t v;
@@ -1564,8 +1533,7 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
 
 static char *typeName(long op) { return typenames[op - MINTYPE]; }
 
-/* setval:
- * Set sym to value v.
+/* Set sym to value v.
  * Return -1 if not allowed.
  * Assume already type correct.
  */
@@ -1783,9 +1751,7 @@ static tctype typeChk(tctype intype, Exid_t *sym) {
   return rng;
 }
 
-/* typeChkExp:
- * Type check variable expression.
- */
+// type check variable expression
 static tctype typeChkExp(Exref_t *ref, Exid_t *sym) {
   tctype ty;
 
@@ -1800,8 +1766,7 @@ static tctype typeChkExp(Exref_t *ref, Exid_t *sym) {
   return typeChk(ty, sym);
 }
 
-/* refval:
- * Called during compilation for uses of references:   abc.x
+/* Called during compilation for uses of references:   abc.x
  * Also for abc.f(..),  type abc.v, "abc".x and CONSTANTS.
  * The grammar has been  altered to disallow the first 3.
  * Type check expressions; return value unused.
@@ -1868,8 +1833,7 @@ static Extype_t refval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref) {
   return v;
 }
 
-/* binary:
- * Evaluate (l ex->op r) producing a value of type ex->type,
+/* Evaluate (l ex->op r) producing a value of type ex->type,
  * stored in l.
  * May be unary, with r = NULL
  * Return -1 if operation cannot be done, 0 otherwise.
@@ -1987,8 +1951,6 @@ static int binary(Exnode_t *l, Exnode_t *ex, Exnode_t *r, int arg) {
   return ret;
 }
 
-/* strToTvtype:
- */
 static int strToTvtype(char *s) {
   int rt = 0;
   char *sfx;
@@ -2028,8 +1990,6 @@ static int strToTvtype(char *s) {
   return rt;
 }
 
-/* tvtypeToStr:
- */
 static char *tvtypeToStr(long long v) {
   char *s = 0;
 
@@ -2080,8 +2040,7 @@ static char *tvtypeToStr(long long v) {
   return s;
 }
 
-/* stringOf:
- * Convert value x to type string.
+/* Convert value x to type string.
  * Assume x does not have a built-in type
  * Return -1 if conversion cannot be done, 0 otherwise.
  * If arg is != 0, conversion unnecessary; just report possibility.
@@ -2112,8 +2071,7 @@ static int stringOf(Expr_t *prog, Exnode_t *x, int arg) {
   return rv;
 }
 
-/* convert:
- * Convert value x of type x->type to type type.
+/* Convert value x of type x->type to type type.
  * Return -1 if conversion cannot be done, 0 otherwise.
  * If arg is != 0, conversion unnecessary; just report possibility.
  * In particular, assume x != 0 if arg == 0.
@@ -2191,8 +2149,7 @@ static int convert(Exnode_t *x, long type, int arg) {
   return ret;
 }
 
-/* keyval;
- * Calculate unique key for object.
+/* Calculate unique key for object.
  * We use this to unify local copies of nodes and edges.
  */
 static Extype_t keyval(Extype_t v, long type) {
@@ -2202,15 +2159,11 @@ static Extype_t keyval(Extype_t v, long type) {
   return v;
 }
 
-/* a2t:
- * Convert type indices to symbolic name.
- */
+// convert type indices to symbolic name
 static int a2t[] = {0,      FLOATING, INTEGER, STRING,
                     T_node, T_edge,   T_graph, T_obj};
 
-/* initDisc:
- * Create and initialize expr discipline.
- */
+// create and initialize expr discipline
 static Exdisc_t *initDisc(Gpr_t *state) {
   Exdisc_t *dp = calloc(1, sizeof(Exdisc_t));
   if (!dp) {
@@ -2244,8 +2197,7 @@ static Exdisc_t *initDisc(Gpr_t *state) {
   return dp;
 }
 
-/* compile:
- * Compile given string, then extract and return
+/* Compile given string, then extract and return
  * typed expression.
  */
 static Exnode_t *compile(Expr_t *prog, char *src, char *input, int line,
@@ -2282,9 +2234,7 @@ static Exnode_t *compile(Expr_t *prog, char *src, char *input, int line,
   return e;
 }
 
-/* checkGuard:
- * Check if guard is an assignment and warn.
- */
+// check if guard is an assignment and warn
 static void checkGuard(Exnode_t *gp, char *src, int line) {
   gp = exnoncast(gp);
   if (gp && exisAssign(gp)) {
@@ -2295,8 +2245,6 @@ static void checkGuard(Exnode_t *gp, char *src, int line) {
   }
 }
 
-/* mkStmts:
- */
 static case_stmt *mkStmts(Expr_t *prog, char *src, case_infos_t cases,
                           const char *lbl) {
   agxbuf tmp = {0};
@@ -2396,9 +2344,7 @@ finishBlk:
   return has_begin_g || bp->does_walk_graph;
 }
 
-/* doFlags:
- * Convert command line flags to actions in END_G.
- */
+// convert command line flags to actions in END_G
 static const char *doFlags(compflags_t flags) {
   if (flags.srcout) {
     if (flags.induce) {
@@ -2412,15 +2358,13 @@ static const char *doFlags(compflags_t flags) {
   return "\n";
 }
 
-/* compileProg:
- * Convert gpr sections in libexpr program.
- */
+// convert gpr sections in libexpr program
 comp_prog *compileProg(parse_prog *inp, Gpr_t *state, compflags_t flags) {
   const char *endg_sfx = NULL;
   bool uses_graph = false;
 
   /* Make sure we have enough bits for types */
-  assert(BITS_PER_BYTE * sizeof(tctype) >= (1 << TBITS));
+  assert(CHAR_BIT * sizeof(tctype) >= (1 << TBITS));
 
   comp_prog *p = calloc(1, sizeof(comp_prog));
   if (!p) {
@@ -2511,8 +2455,7 @@ void freeCompileProg(comp_prog *p) {
   free(p);
 }
 
-/* readG:
- * Read graph from file and initialize
+/* Read graph from file and initialize
  * dynamic data.
  */
 Agraph_t *readG(FILE *fp) {
@@ -2530,9 +2473,7 @@ Agraph_t *readG(FILE *fp) {
   return g;
 }
 
-/* openG:
- * Open graph and initialize dynamic data.
- */
+// open graph and initialize dynamic data
 Agraph_t *openG(char *name, Agdesc_t desc) {
   Agraph_t *g;
 
@@ -2545,9 +2486,7 @@ Agraph_t *openG(char *name, Agdesc_t desc) {
   return g;
 }
 
-/* openSubg:
- * Open subgraph and initialize dynamic data.
- */
+// open subgraph and initialize dynamic data
 Agraph_t *openSubg(Agraph_t *g, char *name) {
   Agraph_t *sg;
 
@@ -2557,9 +2496,7 @@ Agraph_t *openSubg(Agraph_t *g, char *name) {
   return sg;
 }
 
-/* openNode:
- * Create node and initialize dynamic data.
- */
+// create node and initialize dynamic data
 Agnode_t *openNode(Agraph_t *g, char *name) {
   Agnode_t *np;
 
@@ -2569,9 +2506,7 @@ Agnode_t *openNode(Agraph_t *g, char *name) {
   return np;
 }
 
-/* openEdge:
- * Create edge and initialize dynamic data.
- */
+// create edge and initialize dynamic data
 Agedge_t *openEdge(Agraph_t *g, Agnode_t *t, Agnode_t *h, char *key) {
   Agedge_t *ep;
   Agraph_t *root;
