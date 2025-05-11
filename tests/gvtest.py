@@ -338,18 +338,6 @@ def is_static_build() -> bool:
     return False
 
 
-def is_ubuntu() -> bool:
-    """is the current environment Ubuntu?"""
-    return freedesktop_os_release().get("ID") == "ubuntu"
-
-
-def is_ubuntu_2004() -> bool:
-    """is the current environment Ubuntu 20.04?"""
-    if not is_ubuntu():
-        return False
-    return freedesktop_os_release().get("VERSION_ID") == "20.04"
-
-
 def remove_asan_summary(s: str) -> str:
     """
     Remove the “Suppressions used…” informational text Address Sanitizer prints.

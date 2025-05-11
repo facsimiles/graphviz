@@ -50,13 +50,13 @@ pages:
 
 portable-source:
     # Doesn't have to wait for all the previous stages, only a docker image of
-    # ubuntu-20.04 is required
+    # ubuntu-22.04 is required
     needs:
-      - docker_build_ubuntu-20.04
+      - docker_build_ubuntu-22.04
     stage: source
     tags:
         - saas-linux-small-amd64
-    image: "$CI_REGISTRY_IMAGE/ubuntu-20.04:$CI_COMMIT_SHA"
+    image: "$CI_REGISTRY_IMAGE/ubuntu-22.04:$CI_COMMIT_SHA"
     script:
         - ./autogen.sh
         - ./configure --enable-man-pdfs
@@ -331,33 +331,6 @@ fedora42-build:
     variables:
       IMAGE: fedora42
 
-ubuntu-20.04-debug-build:
-    <<: *deb_build_definition
-    needs:
-        - job: docker_build_ubuntu-20.04
-          artifacts: false
-        - job: portable-source
-          artifacts: true
-    before_script:
-        - export CFLAGS="-DDEBUG"
-        - export CXXFLAGS="-DDEBUG"
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: ubuntu-20.04
-
-ubuntu-20.04-build:
-    <<: *deb_build_definition
-    needs:
-        - job: docker_build_ubuntu-20.04
-          artifacts: false
-        - job: portable-source
-          artifacts: true
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: ubuntu-20.04
-
 ubuntu-22.04-build:
     <<: *deb_build_definition
     needs:
@@ -365,6 +338,21 @@ ubuntu-22.04-build:
           artifacts: false
         - job: portable-source
           artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-22.04
+
+ubuntu-22.04-debug-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-22.04
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    before_script:
+        - export CFLAGS="-DDEBUG"
+        - export CXXFLAGS="-DDEBUG"
     tags:
         - saas-linux-small-amd64
     variables:
@@ -582,28 +570,6 @@ windows-cygwin-build-using-autogen:
             - stuck_or_timeout_failure
             - runner_system_failure
             - job_execution_timeout
-
-ubuntu-20.04-cmake-build:
-    <<: *deb_build_definition
-    needs:
-        - job: docker_build_ubuntu-20.04
-          artifacts: false
-    before_script:
-        - export build_system="cmake"
-        # fail on any compiler warnings
-        - export CFLAGS="-Werror"
-        - export CXXFLAGS="-Werror"
-        - export CMAKE_OPTIONS="-DWITH_SMYRNA=ON"
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LTDL=ON"
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_EXPAT=ON"
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_GVEDIT=ON"
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=ON"
-        # disable TCL components for which pkgIndex.tcl rule triggers a warning
-        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_TCL=OFF"
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: ubuntu-20.04
 
 ubuntu-22.04-cmake-build:
     <<: *deb_build_definition
@@ -1069,18 +1035,6 @@ meta-data:
             - runner_system_failure
             - job_execution_timeout
 
-ubuntu-20.04-test:
-    <<: *linux_test_definition
-    before_script:
-        - export build_system="autotools"
-    needs:
-        - job: "ubuntu-20.04-build"
-          artifacts: true
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: ubuntu-20.04
-
 ubuntu-22.04-test:
     <<: *linux_test_definition
     before_script:
@@ -1208,19 +1162,6 @@ macos-autotools-test:
     only:
         variables:
           - $ENABLE_GRAPHVIZ_MACOS_CI
-
-ubuntu-20.04-cmake-test:
-    <<: *linux_test_definition
-    before_script:
-        - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
-    needs:
-        - job: "ubuntu-20.04-cmake-build"
-          artifacts: true
-    tags:
-        - saas-linux-small-amd64
-    variables:
-      IMAGE: ubuntu-20.04
 
 ubuntu-22.04-cmake-test:
     <<: *linux_test_definition
@@ -1489,11 +1430,6 @@ docker_build_fedora42:
   variables:
     IMAGE: fedora42
 
-docker_build_ubuntu-20.04:
-  <<: *docker_build_definition
-  variables:
-    IMAGE: ubuntu-20.04
-
 docker_build_ubuntu-22.04:
   <<: *docker_build_definition
   variables:
@@ -1548,13 +1484,6 @@ docker_push_fedora42:
     IMAGE: fedora42
   needs:
     - docker_build_fedora42
-
-docker_push_ubuntu-20.04:
-  <<: *docker_push_definition
-  variables:
-    IMAGE: ubuntu-20.04
-  needs:
-    - docker_build_ubuntu-20.04
 
 docker_push_ubuntu-22.04:
   <<: *docker_push_definition

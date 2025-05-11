@@ -44,7 +44,6 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky,
     is_rocky_8,
     is_static_build,
-    is_ubuntu_2004,
     remove_asan_summary,
     remove_xtype_warnings,
     run,
@@ -4794,11 +4793,6 @@ def test_2593():
     reason="Autotools on macOS does not detect TCL",
     strict=True,
 )
-@pytest.mark.xfail(
-    is_cmake() and is_ubuntu_2004(),
-    reason="TCL packages are not built on Ubuntu 20.04 with CMake < 3.18",
-    strict=True,
-)
 def test_2596():
     """
     running Tclpathplan `triangulate` with a malformed callback script should not read
@@ -5686,11 +5680,6 @@ def test_2683():
     reason="Autotools on macOS does not detect TCL",
     strict=True,
 )
-@pytest.mark.xfail(
-    is_cmake() and is_ubuntu_2004(),
-    reason="TCL packages are not built on Ubuntu 20.04 with CMake < 3.18",
-    strict=True,
-)
 def test_import_tcl_package(package: str):
     """
     The given TCL package should be loadable
@@ -5737,11 +5726,6 @@ def test_import_tcl_package(package: str):
 @pytest.mark.xfail(
     is_autotools() and is_macos(),
     reason="Autotools on macOS does not detect TCL",
-    strict=True,
-)
-@pytest.mark.xfail(
-    is_cmake() and is_ubuntu_2004(),
-    reason="TCL packages are not built on Ubuntu 20.04 with CMake < 3.18",
     strict=True,
 )
 def test_triangulation_overflow():
@@ -5808,11 +5792,6 @@ def test_triangulation_overflow():
     reason="Autotools on macOS does not detect TCL",
     strict=True,
 )
-@pytest.mark.xfail(
-    is_cmake() and is_ubuntu_2004(),
-    reason="TCL packages are not built on Ubuntu 20.04 with CMake < 3.18",
-    strict=True,
-)
 def test_vgpane_bad_triangulation():
     """
     running Tclpathplan `triangulate` with incorrect arguments should be rejected
@@ -5873,11 +5852,6 @@ def test_vgpane_bad_triangulation():
 @pytest.mark.xfail(
     is_autotools() and is_macos(),
     reason="Autotools on macOS does not detect TCL",
-    strict=True,
-)
-@pytest.mark.xfail(
-    is_cmake() and is_ubuntu_2004(),
-    reason="TCL packages are not built on Ubuntu 20.04 with CMake < 3.18",
     strict=True,
 )
 def test_vgpane_delete():
