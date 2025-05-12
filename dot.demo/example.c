@@ -18,7 +18,7 @@ int main(void) {
   Agraph_t *g = agopen("g", Agdirected, 0);
   Agnode_t *n = agnode(g, "n", 1);
   Agnode_t *m = agnode(g, "m", 1);
-  Agedge_t *e = agedge(g, n, m, 0, 1);
+  (void)agedge(g, n, m, 0, 1);
 
   // Set an attribute - in this case one that affects the visible rendering
   agsafeset(n, "color", "red", "");
