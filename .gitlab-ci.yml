@@ -343,10 +343,10 @@ ubuntu-22.04-build:
     variables:
       IMAGE: ubuntu-22.04
 
-ubuntu-22.04-debug-build:
+ubuntu-24.04-debug-build:
     <<: *deb_build_definition
     needs:
-        - job: docker_build_ubuntu-22.04
+        - job: docker_build_ubuntu-24.04
           artifacts: false
         - job: portable-source
           artifacts: true
@@ -356,7 +356,7 @@ ubuntu-22.04-debug-build:
     tags:
         - saas-linux-small-amd64
     variables:
-      IMAGE: ubuntu-22.04
+      IMAGE: ubuntu-24.04
 
 ubuntu-24.04-static-build:
     <<: *deb_build_definition
