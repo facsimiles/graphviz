@@ -6,9 +6,8 @@
 
 int main(void) {
   Agraph_t *g;
-  Agnode_t *n;
   g = agopen("testgraph", Agdirected, 0);
-  n = agnode(g, "foo\\\"bar", 1);
+  (void)agnode(g, "foo\\\"bar", 1);
   agwrite(g, stdout);
   return 0;
 }
