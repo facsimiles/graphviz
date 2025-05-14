@@ -99,17 +99,15 @@ static void indent(graph_t* g)
   }
 }
 
-static char* nname(node_t* v)
-{
-        static char buf[1000];
+/// @param stream Output stream to write to
+static void nname(node_t *v, FILE *stream) {
 	if (ND_node_type(v)) {
 		if (ND_ranktype(v) == CLUSTER)
-			snprintf(buf, sizeof(buf), "v%s_%p", agnameof(ND_clust(v)), v);
+			fprintf(stream, "v%s_%p", agnameof(ND_clust(v)), v);
 		else
-			snprintf(buf, sizeof(buf), "v_%p", v);
+			fprintf(stream, "v_%p", v);
 	} else
-		snprintf(buf, sizeof(buf), "%s", agnameof(v));
-	return buf;
+		fputs(agnameof(v), stream);
 }
 static void dumpg (graph_t* g)
 {
@@ -123,9 +121,8 @@ static void dumpg (graph_t* g)
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
 	  v = GD_rank(g)[r].v[i];
           if (i > 0)
- 	    fprintf (stderr, " -> %s", nname(v));
-          else
- 	    fprintf (stderr, "%s", nname(v));
+ 	    fputs(" -> ", stderr);
+          nname(v, stderr);
         }
         if (i > 1) fprintf (stderr, " [style=invis]}\n");
         else fprintf (stderr, " }\n");
@@ -134,8 +131,10 @@ static void dumpg (graph_t* g)
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
 	  v = GD_rank(g)[r].v[i];
 	  for (j = 0; (e = ND_out(v).list[j]); j++) {
-             fprintf (stderr, "%s -> ", nname(v));
-             fprintf (stderr, "%s\n", nname(aghead(e)));
+             nname(v, stderr);
+             fputs(" -> ", stderr);
+             nname(aghead(e), stderr);
+             fputc('\n', stderr);
           }
         }
     }
@@ -151,7 +150,8 @@ static void dumpr (graph_t* g, int edges)
 	fprintf (stderr, "[%d] ", r);
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
 	  v = GD_rank(g)[r].v[i];
- 	  fprintf (stderr, "%s(%.02f,%d) ", nname(v), saveorder(v),ND_order(v));
+ 	  nname(v, stderr);
+ 	  fprintf(stderr, "(%.02f,%d) ", saveorder(v),ND_order(v));
         }
 	fprintf (stderr, "\n");
     }
@@ -160,8 +160,10 @@ static void dumpr (graph_t* g, int edges)
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
 	  v = GD_rank(g)[r].v[i];
 	  for (j = 0; (e = ND_out(v).list[j]); j++) {
-             fprintf (stderr, "%s -> ", nname(v));
-             fprintf (stderr, "%s\n", nname(aghead(e)));
+             nname(v, stderr);
+             fputs(" -> ", stderr);
+             nname(aghead(e), stderr);
+             fputc('\n', stderr);
           }
         }
     }
