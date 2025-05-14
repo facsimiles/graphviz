@@ -1864,7 +1864,7 @@ static void mincross_options(graph_t * g)
     p = agget(g, "mclimit");
     if (p && (f = atof(p)) > 0.0) {
 	MinQuit = MAX(1, scale_clamp(MinQuit, f));
-	MaxIter = MAX(1, MaxIter * f);
+	MaxIter = MAX(1, scale_clamp(MaxIter, f));
     }
 }
 
