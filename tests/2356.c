@@ -8,7 +8,6 @@
 static void GraphProc(void) {
   Agraph_t *g;
   Agnode_t *n, *m;
-  Agedge_t *e;
   GVC_t *gvc;
   // set up a graphviz context
   gvc = gvContext();
@@ -27,7 +26,7 @@ static void GraphProc(void) {
   agattr_text(g, AGRAPH, "mindist", "0.3"); //!!!!!!the line causing the error
   n = agnode(g, "n", 1);
   m = agnode(g, "m", 1);
-  e = agedge(g, n, m, 0, 1);
+  (void)agedge(g, n, m, 0, 1);
   gvLayout(gvc, g, "circo"); //!!!!!crashes here
   // Free layout data
   gvFreeLayout(gvc, g);

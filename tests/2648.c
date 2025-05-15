@@ -44,7 +44,7 @@ static void RenderDot(char *dot_input, char *format) {
   agclose(gv_graph);
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
 
   // Define plugins. This is done here rather than globally in a static
   // initializer because MSVC insists on strict const rules and claims the

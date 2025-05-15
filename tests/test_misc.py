@@ -5,19 +5,12 @@ Graphviz miscellaneous test cases
 import itertools
 import json
 import os
-import platform
 import sys
 from pathlib import Path
 from typing import Union
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import (  # pylint: disable=wrong-import-position
-    ROOT,
-    compile_c,
-    dot,
-    is_mingw,
-    run,
-)
+from gvtest import ROOT, compile_c, dot, run  # pylint: disable=wrong-import-position
 
 
 def test_json_node_order():
@@ -114,8 +107,6 @@ def test_xml_escape(tmp_path: Path):
     xml_exe = tmp_path / "xml.exe"
     lib = ROOT / "lib"
     cflags = ["-DTEST_XML", f"-I{lib}"]
-    if platform.system() != "Windows" or is_mingw():
-        cflags += ["-Wall", "-Wextra"]
     compile_c(xml_c, cflags, dst=xml_exe)
 
     def escape(
