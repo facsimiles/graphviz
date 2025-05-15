@@ -912,6 +912,7 @@ windows-cmake-Win32-asan-release-build:
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x86"
+    timeout: 2 hours
 
 windows-cmake-Win32-asan-debug-build:
     <<: *windows_build_without_artifacts_definition
@@ -925,6 +926,7 @@ windows-cmake-Win32-asan-debug-build:
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x86"
+    timeout: 2 hours
 
 windows-cmake-x64-asan-release-build:
     <<: *windows_build_without_artifacts_definition
@@ -938,6 +940,7 @@ windows-cmake-x64-asan-release-build:
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x64"
+    timeout: 2 hours
 
 windows-cmake-x64-asan-debug-build:
     <<: *windows_build_without_artifacts_definition
@@ -951,6 +954,7 @@ windows-cmake-x64-asan-debug-build:
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x64"
+    timeout: 2 hours
 
 windows-cmake-x64-debug-static-build:
     <<: *windows_build_without_artifacts_definition

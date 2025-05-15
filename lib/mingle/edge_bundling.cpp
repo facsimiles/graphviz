@@ -229,7 +229,7 @@ void pedge_export_gv(FILE *fp, int ne, const std::vector<pedge> &edges) {
 	  t = tt[kk-1];
 	  for (k = 0; k < dim; k++) {
 	    if (k != 0) fprintf(fp,",");
-	    fprintf(fp, "%f", (x[(j-1)*dim+k]*(1-t)+x[j*dim+k]*(t)));
+	    fprintf(fp, "%f", x[(j - 1) * dim + k] * (1 - t) + x[j * dim + k] * t);
 	  }
 	  fprintf(fp," ");
 	}
@@ -444,7 +444,7 @@ static void force_directed_edge_bundling(SparseMatrix A,
     }
     step = step*0.9;
   if (Verbose > 1)
-    fprintf(stderr, "iter ==== %d cpu = %f npoints = %d\n",iter, ((double) (clock() - start))/CLOCKS_PER_SEC, np - 2);
+    fprintf(stderr, "iter ==== %d cpu = %f npoints = %d\n", iter, (double)(clock() - start) / CLOCKS_PER_SEC, np - 2);
   }
 }
 
@@ -610,7 +610,7 @@ std::vector<pedge> edge_bundling(SparseMatrix A0, int dim,
     assert(0);
   }
   if (Verbose)
-    fprintf(stderr, "total edge bundling cpu = %f\n",((double) (clock() - start))/CLOCKS_PER_SEC);
+    fprintf(stderr, "total edge bundling cpu = %f\n", (double)(clock() - start) / CLOCKS_PER_SEC);
   if (B != A) SparseMatrix_delete(B);
   if (A != A0) SparseMatrix_delete(A);
 
