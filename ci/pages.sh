@@ -10,8 +10,9 @@ set -x
 # build and install Graphviz, which will be used by Doxygen
 GV_VERSION=$( cat GRAPHVIZ_VERSION )
 tar xfz graphviz-${GV_VERSION}.tar.gz
-cd graphviz-${GV_VERSION}
-./configure
+mkdir build
+cd build
+../graphviz-${GV_VERSION}/configure
 make
 make install
 
