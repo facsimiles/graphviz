@@ -27,6 +27,7 @@ pages:
         - ci/pages.sh
         - echo "Preview:" "https://${CI_PROJECT_NAMESPACE}.${CI_PAGES_DOMAIN}/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/public/doxygen/index.html"
     artifacts:
+        expire_in: 1 week
         paths:
             - public
     image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
