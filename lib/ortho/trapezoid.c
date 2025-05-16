@@ -20,6 +20,7 @@
 #include "config.h"
 #include <string.h>
 #include <assert.h>
+#include <float.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -45,10 +46,9 @@
 #define S_LEFT 1        /* for merge-direction */
 #define S_RIGHT 2
 
-#define INF 1<<30
-
-#define CROSS(v0, v1, v2) (((v1).x - (v0).x)*((v2).y - (v0).y) - \
-               ((v1).y - (v0).y)*((v2).x - (v0).x))
+static double cross(pointf v0, pointf v1, pointf v2) {
+  return (v1.x - v0.x) * (v2.y - v0.y) - (v1.y - v0.y) * (v2.x - v0.x);
+}
 
 typedef struct {
   int nodetype;         /* Y-node or S-node */
@@ -171,10 +171,10 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   traps_at(tr, t1)->lo = qnodes_get(qs, i3).yval;
   traps_at(tr, t2)->lo = qnodes_get(qs, i3).yval;
   traps_at(tr, t3)->hi = qnodes_get(qs, i3).yval;
-  traps_at(tr, t4)->hi.y = (double)(INF);
-  traps_at(tr, t4)->hi.x = (double)(INF);
-  traps_at(tr, t3)->lo.y = (double)-1 * (INF);
-  traps_at(tr, t3)->lo.x = (double)-1 * (INF);
+  traps_at(tr, t4)->hi.y = DBL_MAX;
+  traps_at(tr, t4)->hi.x = DBL_MAX;
+  traps_at(tr, t3)->lo.y = -DBL_MAX;
+  traps_at(tr, t3)->lo.x = -DBL_MAX;
   traps_at(tr, t1)->rseg = segnum;
   traps_at(tr, t2)->lseg = segnum;
   traps_at(tr, t1)->u0 = t4;
@@ -191,10 +191,10 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   traps_at(tr, t3)->sink = i4;
   traps_at(tr, t4)->sink = i2;
 
-  traps_at(tr, t1)->state = ST_VALID;
-  traps_at(tr, t2)->state = ST_VALID;
-  traps_at(tr, t3)->state = ST_VALID;
-  traps_at(tr, t4)->state = ST_VALID;
+  traps_at(tr, t1)->is_valid = true;
+  traps_at(tr, t2)->is_valid = true;
+  traps_at(tr, t3)->is_valid = true;
+  traps_at(tr, t4)->is_valid = true;
 
   qnodes_at(qs, i2)->trnum = t4;
   qnodes_at(qs, i4)->trnum = t3;
@@ -229,7 +229,7 @@ is_left_of (int segnum, segment_t* seg, pointf *v)
 	    area = -1.0;
 	}
       else
-	area = CROSS(s->v0, s->v1, *v);
+	area = cross(s->v0, s->v1, *v);
     }
   else				/* v0 > v1 */
     {
@@ -246,7 +246,7 @@ is_left_of (int segnum, segment_t* seg, pointf *v)
 	    area = -1.0;
 	}
       else
-	area = CROSS(s->v1, s->v0, (*v));
+	area = cross(s->v1, s->v0, *v);
     }
 
   return area > 0.0;
@@ -360,7 +360,7 @@ static void merge_trapezoids(int segnum, size_t tfirst, size_t tlast, int side,
 	      }
 
 	      traps_at(tr, t)->lo = traps_get(tr, tnext).lo;
-	      traps_at(tr, tnext)->state = ST_INVALID; // invalidate the lower
+	      traps_at(tr, tnext)->is_valid = false; // invalidate the lower
 				            /* trapezium */
 	    }
 	  else		    /* not good neighbours */
@@ -449,7 +449,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
   segment_t s;
   size_t tfirst, tlast;
   size_t tfirstr = 0, tlastr = 0;
-  int tribot = 0;
+  bool tribot = false;
   bool is_swapped;
   int tmptriseg;
 
@@ -571,7 +571,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
   else				/* v1 already present */
     {       /* Get the lowermost intersecting trapezoid */
       tlast = locate_endpoint(&s.v1, &s.v0, s.root1, seg, qs);
-      tribot = 1;
+      tribot = true;
     }
 
   /* Thread the segment into the query tree creating a new X-node */
@@ -600,7 +600,7 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       qnodes_at(qs, i2)->nodetype = T_SINK; // right trapezoid (allocate new)
       const size_t tn = newtrap(tr);
       qnodes_at(qs, i2)->trnum = tn;
-      traps_at(tr, tn)->state = ST_VALID;
+      traps_at(tr, tn)->is_valid = true;
       qnodes_at(qs, i2)->parent = sk;
 
       if (t == tfirst)

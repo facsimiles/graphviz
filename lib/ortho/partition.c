@@ -175,7 +175,7 @@ inside_polygon (trap_t *t, segment_t* seg)
 {
   int rseg = t->rseg;
 
-  if (t->state == ST_INVALID)
+  if (!t->is_valid)
     return false;
 
   if (t->lseg <= 0 || t->rseg <= 0)
@@ -650,8 +650,8 @@ dumpTrap (trap_t* tr, int n)
               " %" PRISIZE_T " %" PRISIZE_T "\n", i, tr->lseg, tr->rseg,
               tr->hi.x, tr->hi.y, tr->lo.x, tr->lo.y, tr->u0, tr->u1, tr->d0,
               tr->d1);
-      fprintf(stderr, "    %" PRISIZE_T " %" PRISIZE_T " %d %d\n", tr->sink,
-              tr->usave, tr->uside, tr->state);
+      fprintf(stderr, "    %" PRISIZE_T " %" PRISIZE_T " %d %s\n", tr->sink,
+              tr->usave, tr->uside, tr->is_valid ? "valid" : "invalid");
     }
     fprintf (stderr, "====\n");
 }
