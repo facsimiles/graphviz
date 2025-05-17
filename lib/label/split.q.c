@@ -134,10 +134,10 @@ static void MethodZero(RTree_t * rtp)
 	uint64_t biggestDiff = 0;
 	for (int i = 0; i < NODECARD + 1; i++) {
 	    if (!rtp->split.Partitions[0].taken[i]) {
-		Rect_t *r = &rtp->split.BranchBuf[i].rect;
-		Rect_t rect = CombineRect(*r, rtp->split.Partitions[0].cover[0]);
+		const Rect_t r = rtp->split.BranchBuf[i].rect;
+		Rect_t rect = CombineRect(r, rtp->split.Partitions[0].cover[0]);
 		uint64_t growth0 = RectArea(rect) - rtp->split.Partitions[0].area[0];
-		rect = CombineRect(*r, rtp->split.Partitions[0].cover[1]);
+		rect = CombineRect(r, rtp->split.Partitions[0].cover[1]);
 		uint64_t growth1 = RectArea(rect) - rtp->split.Partitions[0].area[1];
 		uint64_t diff;
 		if (growth1 >= growth0) {
