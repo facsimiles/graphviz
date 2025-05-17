@@ -338,7 +338,7 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 
     Rect_t rect = objplp2rect(objp);
 
-    LeafList_t *llp = RTreeSearch(xlp->spdx, xlp->spdx->root, &rect);
+    LeafList_t *llp = RTreeSearch(xlp->spdx, xlp->spdx->root, rect);
     if (!llp)
 	return bp;
 

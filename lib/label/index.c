@@ -137,17 +137,15 @@ void PrintData(Node_t * n)
 ** overlap the argument rectangle.
 ** Returns the number of qualifying data rects.
 */
-LeafList_t *RTreeSearch(RTree_t * rtp, Node_t * n, Rect_t * r)
-{
+LeafList_t *RTreeSearch(RTree_t *rtp, Node_t *n, Rect_t r) {
     LeafList_t *llp = 0;
 
     assert(n);
     assert(n->level >= 0);
-    assert(r);
 
     if (n->level > 0) {		/* this is an internal node in the tree */
 	for (size_t i = 0; i < NODECARD; i++)
-	    if (n->branch[i].child && Overlap(*r, n->branch[i].rect)) {
+	    if (n->branch[i].child && Overlap(r, n->branch[i].rect)) {
 		LeafList_t *tlp = RTreeSearch(rtp, n->branch[i].child, r);
 		if (llp) {
 		    LeafList_t *xlp = llp;
@@ -159,7 +157,7 @@ LeafList_t *RTreeSearch(RTree_t * rtp, Node_t * n, Rect_t * r)
 	    }
     } else {			/* this is a leaf node */
 	for (size_t i = 0; i < NODECARD; i++) {
-	    if (n->branch[i].child && Overlap(*r, n->branch[i].rect)) {
+	    if (n->branch[i].child && Overlap(r, n->branch[i].rect)) {
 		llp = RTreeLeafListAdd(llp, (Leaf_t *) & n->branch[i]);
 #				ifdef RTDEBUG
 		PrintRect(&n->branch[i].rect);
