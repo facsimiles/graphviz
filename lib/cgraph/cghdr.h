@@ -55,7 +55,7 @@ CGHDR_API int agapply(Agraph_t * g, Agobj_t * obj, agobjfn_t fn, void *arg,
 
 	/* global variables */
 extern Agraph_t *Ag_G_global;
-extern char *AgDataRecName;
+extern const char AgDataRecName[];
 
 	/* set ordering disciplines */
 extern Dtdisc_t Ag_subnode_seq_disc;
