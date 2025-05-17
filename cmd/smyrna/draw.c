@@ -309,8 +309,8 @@ static int put(void *buffer, const char *s) {
   return 0;
 }
 
-static void EmbedText(sdot_op* o, int param)
-{
+static void EmbedText(xdot_op *op, int param) {
+	sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
 	(void)param;
 
 	float x, y;
@@ -392,7 +392,7 @@ drawfunc_t OpFns[] = {
   DrawPolygon,
   DrawBeziers,
   DrawPolyline,
-    (drawfunc_t)EmbedText,
+  EmbedText,
     (drawfunc_t)SetFillColor,
     (drawfunc_t)SetPenColor,
     (drawfunc_t)SetFont,
