@@ -19,6 +19,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include <glcomp/glutils.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <util/unreachable.h>
 #include <util/xml.h>
@@ -138,11 +139,10 @@ static void DrawBeziers(sdot_op* o, int param)
 }
 
 //Draws an ellipse made out of points.
-static void DrawEllipse(sdot_op*  o, int param)
-{
+static void DrawEllipse(xdot_op *op, int param) {
+    sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
     int i = 0;
     int filled;
-    xdot_op * op=&o->op;
     view->Topview->global_z += o->layer * LAYER_DIFF;
     set_options(param);
     double x = op->u.ellipse.x - dx;
@@ -397,7 +397,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
 }
 
 drawfunc_t OpFns[] = {
-    (drawfunc_t)DrawEllipse,
+  DrawEllipse,
     (drawfunc_t)DrawPolygon,
     (drawfunc_t)DrawBeziers,
     (drawfunc_t)DrawPolyline,
