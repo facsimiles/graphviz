@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <float.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -2821,9 +2822,8 @@ textBB (double x, double y, textspan_t* span)
     return bb;
 }
 
-static void
-freePara (exdot_op* op)
-{
+static void freePara(xdot_op *xop) {
+    exdot_op *const op = (exdot_op *)((char *)xop - offsetof(exdot_op, op));
     if (op->op.kind == xd_text)
 	free_textspan (op->span, 1);
 }
@@ -2888,7 +2888,7 @@ boxf xdotBB (Agraph_t* g)
 	    expandBB (&bb, bb0.LL);
 	    expandBB (&bb, bb0.UR);
 	    if (!xd->freefunc)
-		xd->freefunc = (freefunc_t)freePara;
+		xd->freefunc = freePara;
 	    break;
 	case xd_font :
 	    fontsize = op->op.u.font.size;
