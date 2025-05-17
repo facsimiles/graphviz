@@ -111,6 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The function `aginternalmapclearlocalnames` has been removed.
   #2664
 - In gvpr programs, the `#` and `in` operators now work on `ARGV`. #2582
+- **Breaking**: `xdot_color_stop.frac` is now a `double`.
 
 ### Fixed
 

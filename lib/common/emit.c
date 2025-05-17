@@ -1467,12 +1467,11 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 	    {
 		char* clr0;
 		char* clr1;
-		float frac;
 		if (op->op.u.grad_color.type == xd_radial) {
 		    xdot_radial_grad* p = &op->op.u.grad_color.u.ring;
 		    clr0 = p->stops[0].color;
 		    clr1 = p->stops[1].color;
-		    frac = p->stops[1].frac;
+		    const double frac = p->stops[1].frac;
 		    if (p->x1 == p->x0 && p->y1 == p->y0)
 			angle = 0;
 		    else
@@ -1485,7 +1484,7 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 		    xdot_linear_grad* p = &op->op.u.grad_color.u.ling;
 		    clr0 = p->stops[0].color;
 		    clr1 = p->stops[1].color;
-		    frac = p->stops[1].frac;
+		    const double frac = p->stops[1].frac;
 		    angle = (int)(180.0*atan2(p->y1-p->y0,p->x1-p->x0)/M_PI);
         	    gvrender_set_fillcolor(job, clr0);
 		    gvrender_set_gradient_vals(job, clr1, angle, frac);
