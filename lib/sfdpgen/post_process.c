@@ -727,7 +727,7 @@ TriangleSmoother TriangleSmoother_new(SparseMatrix A, int dim, double *x,
 
   SparseMatrix_delete(B);
   sm->Lwd = SparseMatrix_copy(sm->Lw);
-  if (!(sm->Lw) || !(sm->Lwd)) {
+  if (!sm->Lw || !sm->Lwd) {
     TriangleSmoother_delete(sm);
     return NULL;
   }
@@ -878,7 +878,7 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
   }
   sm->D->nz = nz;
   sm->ctrl = spring_electrical_control_new();
-  *(sm->ctrl) = *ctrl;
+  *sm->ctrl = *ctrl;
   sm->ctrl->random_start = false;
   sm->ctrl->multilevels = 1;
   sm->ctrl->step /= 2;
