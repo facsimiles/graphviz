@@ -21,9 +21,7 @@
 #include <cgraph/cgraph.h>
 #include <util/exit.h>
 
-static bool Undefined(const Rect_t *r) {
-  return r->boundary[0] > r->boundary[NUMDIMS];
-}
+static bool Undefined(Rect_t r) { return r.boundary[0] > r.boundary[NUMDIMS]; }
 
 /*-----------------------------------------------------------------------------
 | Initialize a rectangle to have all 0 coordinates.
@@ -68,7 +66,7 @@ void PrintRect(Rect_t * r)
 uint64_t RectArea(const Rect_t *r) {
   assert(r);
 
-    if (Undefined(r))
+    if (Undefined(*r))
 	return 0;
 
     uint64_t area = 1;
@@ -91,9 +89,9 @@ Rect_t CombineRect(const Rect_t *r, const Rect_t *rr) {
     Rect_t new;
     assert(r && rr);
 
-    if (Undefined(r))
+    if (Undefined(*r))
 	return *rr;
-    if (Undefined(rr))
+    if (Undefined(*rr))
 	return *r;
 
     for (size_t i = 0; i < NUMDIMS; i++) {
