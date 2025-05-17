@@ -253,10 +253,8 @@ static int getintrsxi(object_t * op, object_t * cp)
 }
 
 /* record the intersecting objects label */
-static double
-recordointrsx(object_t * op, object_t * cp, Rect_t * rp,
-	      double a, object_t * intrsx[XLNBR])
-{
+static double recordointrsx(object_t *op, object_t *cp, Rect_t rp, double a,
+                            object_t *intrsx[XLNBR]) {
     int i = getintrsxi(op, cp);
     if (i < 0)
 	i = 5;
@@ -264,13 +262,13 @@ recordointrsx(object_t * op, object_t * cp, Rect_t * rp,
 	double sa, maxa = 0.0;
 	/* keep maximally overlapping object */
 	Rect_t srect = objp2rect(intrsx[i]);
-	sa = aabbaabb(*rp, srect);
+	sa = aabbaabb(rp, srect);
 	if (sa > a)
 	    maxa = sa;
 	/*keep maximally overlapping label */
 	if (intrsx[i]->lbl) {
 	    srect = objplp2rect(intrsx[i]);
-	    sa = aabbaabb(*rp, srect);
+	    sa = aabbaabb(rp, srect);
 	    if (sa > a)
 		maxa = fmax(sa, maxa);
 	}
@@ -353,7 +351,7 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 	Rect_t srect = objp2rect(cp);
 	a = aabbaabb(rect, srect);
 	if (a > 0.0) {
-	  ra = recordointrsx(objp, cp, &rect, a, intrsx);
+	  ra = recordointrsx(objp, cp, rect, a, intrsx);
 	  bp.n++;
 	  bp.area += ra;
 	}
