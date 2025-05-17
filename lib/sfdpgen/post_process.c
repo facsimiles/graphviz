@@ -27,6 +27,7 @@
 #include <sfdpgen/sfdp.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/gv_math.h>
 #include <util/unused.h>
 
 #define node_degree(i) (ia[(i)+1] - ia[(i)])
@@ -297,13 +298,18 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
   int nz;
   double *d, *w, *lambda;
   double diag_d, diag_w, *a, dist, s = 0, stop = 0, sbot = 0;
-  double xdot = 0;
 
   assert(SparseMatrix_is_symmetric(A, false) && A->type == MATRIX_TYPE_REAL);
 
   /* if x is all zero, make it random */
-  for (i = 0; i < m*dim; i++) xdot += x[i]*x[i];
-  if (xdot == 0){
+  bool has_nonzero = false;
+  for (i = 0; i < m * dim; i++) {
+    if (!is_exactly_equal(x[i], 0)) {
+	    has_nonzero = true;
+	    break;
+    }
+  }
+  if (!has_nonzero) {
     for (i = 0; i < m*dim; i++) x[i] = 72*drand();
   }
 
