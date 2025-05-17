@@ -560,8 +560,8 @@ static void xlhdxunload(XLabels_t * xlp)
 
 static void xlspdxload(XLabels_t *xlp) {
     for (HDict_t *op = dtfirst(xlp->hdx); op; op = dtnext(xlp->hdx, op)) {
-	/*          tree       rectangle    data        node             lvl */
-	RTreeInsert(xlp->spdx, op->d.rect, op->d.data, &xlp->spdx->root, 0);
+	//          tree       rectangle    data        node
+	RTreeInsert(xlp->spdx, op->d.rect, op->d.data, &xlp->spdx->root);
     }
 }
 

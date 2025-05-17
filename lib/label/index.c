@@ -177,22 +177,17 @@ LeafList_t *RTreeSearch(RTree_t *rtp, Node_t *n, Rect_t r) {
 */
 static int RTreeInsert2(RTree_t *, Rect_t, void *, Node_t *, Node_t **, int);
 
-int RTreeInsert(RTree_t *rtp, Rect_t r, void *data, Node_t **n, int level) {
+int RTreeInsert(RTree_t *rtp, Rect_t r, void *data, Node_t **n) {
     Node_t *newnode=0;
     Branch_t b;
     int result = 0;
 
 
     assert(n);
-    assert(level >= 0 && level <= (*n)->level);
     for (size_t i = 0; i < NUMDIMS; i++)
 	assert(r.boundary[i] <= r.boundary[NUMDIMS + i]);
 
-#	ifdef RTDEBUG
-    fprintf(stderr, "RTreeInsert  level=%d\n", level);
-#	endif
-
-    if (RTreeInsert2(rtp, r, data, *n, &newnode, level)) {	/* root was split */
+    if (RTreeInsert2(rtp, r, data, *n, &newnode, 0)) { // root was split
 
 	Node_t *newroot = RTreeNewNode();	/* grow a new root, make tree taller */
 	newroot->level = (*n)->level + 1;
