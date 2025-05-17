@@ -241,11 +241,9 @@ static glCompColor GetglCompColor(const char *color) {
     }
     return c;
 }
-static void SetFillColor(sdot_op*  o, int param)
-{
-    (void)param;
 
-    xdot_op * op=&o->op;
+static void SetFillColor(xdot_op *op, int param) {
+    (void)param;
     view->fillColor = GetglCompColor(op->u.color);
 }
 static void SetPenColor(sdot_op* o, int param)
@@ -393,7 +391,7 @@ drawfunc_t OpFns[] = {
   DrawBeziers,
   DrawPolyline,
   EmbedText,
-    (drawfunc_t)SetFillColor,
+  SetFillColor,
     (drawfunc_t)SetPenColor,
     (drawfunc_t)SetFont,
     (drawfunc_t)SetStyle,
