@@ -30,7 +30,7 @@ typedef struct Node {
 void InitNode(Node_t *);
 void InitBranch(Branch_t *);
 Rect_t NodeCover(Node_t *);
-int PickBranch(Rect_t *, Node_t *);
+int PickBranch(Rect_t, Node_t *);
 int AddBranch(RTree_t *, Branch_t *, Node_t *, Node_t **);
 void DisconBranch(Node_t *, int);
 void PrintBranch(int, Branch_t *);
