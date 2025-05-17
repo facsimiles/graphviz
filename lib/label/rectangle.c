@@ -21,7 +21,9 @@
 #include <cgraph/cgraph.h>
 #include <util/exit.h>
 
-#define Undefined(x) ((x)->boundary[0] > (x)->boundary[NUMDIMS])
+static bool Undefined(const Rect_t *r) {
+  return r->boundary[0] > r->boundary[NUMDIMS];
+}
 
 /*-----------------------------------------------------------------------------
 | Initialize a rectangle to have all 0 coordinates.
