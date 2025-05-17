@@ -120,10 +120,9 @@ static void set_options(int param)
 
 }
 
-static void DrawBeziers(sdot_op* o, int param)
-{
+static void DrawBeziers(xdot_op *op, int param) {
+    sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
     int filled;
-    xdot_op *  op=&o->op;
     xdot_point* ps = op->u.bezier.pts;
     view->Topview->global_z += o->layer * LAYER_DIFF;
 
@@ -397,7 +396,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
 drawfunc_t OpFns[] = {
   DrawEllipse,
   DrawPolygon,
-    (drawfunc_t)DrawBeziers,
+  DrawBeziers,
     (drawfunc_t)DrawPolyline,
     (drawfunc_t)EmbedText,
     (drawfunc_t)SetFillColor,
