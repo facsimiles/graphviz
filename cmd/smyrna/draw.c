@@ -141,7 +141,6 @@ static void DrawBeziers(sdot_op* o, int param)
 //Draws an ellipse made out of points.
 static void DrawEllipse(xdot_op *op, int param) {
     sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
-    int i = 0;
     int filled;
     view->Topview->global_z += o->layer * LAYER_DIFF;
     set_options(param);
@@ -175,7 +174,7 @@ static void DrawEllipse(xdot_op *op, int param) {
 	glBegin(GL_LINE_LOOP);
     else
 	glBegin(GL_POLYGON);
-    for (i = 0; i < 360; i = i + 1) {
+    for (int i = 0; i < 360; ++i) {
 	//convert degrees into radians
 	float degInRad = (float) (i * DEG2RAD);
 	glVertex3f((float)(x + cos(degInRad) * xradius),
