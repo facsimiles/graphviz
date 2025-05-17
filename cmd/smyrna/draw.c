@@ -271,17 +271,14 @@ static void InsertImage(xdot_op *op, int param) {
     sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
     (void)param;
 
-    float x,y;
-    glCompImage *i;
-
     if(!o->obj)
 	return;
 
 
     if(!o->img) {
-	x = o->op.u.image.pos.x;
-	y = o->op.u.image.pos.y;
-	i = o->img = glCompImageNewFile(x, y, o->op.u.image.name);
+	const float x = o->op.u.image.pos.x;
+	const float y = o->op.u.image.pos.y;
+	glCompImage *const i = o->img = glCompImageNewFile(x, y, o->op.u.image.name);
 	if (!o->img) {
 	    fprintf (stderr, "Could not open file \"%s\" to read image.\n", o->op.u.image.name);
 	    return;
