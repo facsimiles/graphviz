@@ -232,7 +232,7 @@ RTreeInsert2(RTree_t * rtp, Rect_t * r, void *data,
     if (n->level > level) {
 	int i = PickBranch(r, n);
 	if (!RTreeInsert2(rtp, r, data, n->branch[i].child, &n2, level)) {	/* recurse: child was not split */
-	    n->branch[i].rect = CombineRect(r, &(n->branch[i].rect));
+	    n->branch[i].rect = CombineRect(*r, n->branch[i].rect);
 	    return 0;
 	} else {		/* child was split */
 	    n->branch[i].rect = NodeCover(n->branch[i].child);

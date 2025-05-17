@@ -83,19 +83,18 @@ uint64_t RectArea(const Rect_t r) {
 /*-----------------------------------------------------------------------------
 | Combine two rectangles, make one that includes both.
 -----------------------------------------------------------------------------*/
-Rect_t CombineRect(const Rect_t *r, const Rect_t *rr) {
+Rect_t CombineRect(const Rect_t r, const Rect_t rr) {
     Rect_t new;
-    assert(r && rr);
 
-    if (Undefined(*r))
-	return *rr;
-    if (Undefined(*rr))
-	return *r;
+    if (Undefined(r))
+	return rr;
+    if (Undefined(rr))
+	return r;
 
     for (size_t i = 0; i < NUMDIMS; i++) {
-	new.boundary[i] = MIN(r->boundary[i], rr->boundary[i]);
+	new.boundary[i] = MIN(r.boundary[i], rr.boundary[i]);
 	size_t j = i + NUMDIMS;
-	new.boundary[j] = MAX(r->boundary[j], rr->boundary[j]);
+	new.boundary[j] = MAX(r.boundary[j], rr.boundary[j]);
     }
     return new;
 }

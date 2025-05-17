@@ -91,7 +91,7 @@ Rect_t NodeCover(Node_t * n)
 		r = n->branch[i].rect;
 		flag = false;
 	    } else
-		r = CombineRect(&r, &(n->branch[i].rect));
+		r = CombineRect(r, n->branch[i].rect);
 	}
     return r;
 }
@@ -114,7 +114,7 @@ int PickBranch(Rect_t * r, Node_t * n)
 	if (n->branch[i].child) {
 	    Rect_t *rr = &n->branch[i].rect;
 	    uint64_t area = RectArea(*rr);
-	    Rect_t rect = CombineRect(r, rr);
+	    Rect_t rect = CombineRect(*r, *rr);
 	    uint64_t increase = RectArea(rect) - area;
 	    if (!bestSet || increase < bestIncr) {
 		best = i;
