@@ -194,7 +194,7 @@ static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
     } else {
 	assert(rec->dict == datadict);
     }
-    return (Agrec_t *) rec;
+    return &rec->h;
 }
 
 static void freeattr(Agobj_t * obj, Agattr_t * attr)
