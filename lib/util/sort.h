@@ -12,19 +12,8 @@
 #include <assert.h>
 #include <stdlib.h>
 
-/// thread-local storage specifier
-#ifdef _MSC_VER
-#define TLS __declspec(thread)
-#elif defined(__GNUC__)
-#define TLS __thread
-#else
-// assume this environment does not support threads and fall back to (thread
-// unsafe) globals
-#define TLS /* nothing */
-#endif
-
-static TLS int (*gv_sort_compar)(const void *, const void *, void *);
-static TLS void *gv_sort_arg;
+static _Thread_local int (*gv_sort_compar)(const void *, const void *, void *);
+static _Thread_local void *gv_sort_arg;
 
 static inline int gv_sort_compar_wrapper(const void *a, const void *b) {
   assert(gv_sort_compar != NULL && "no comparator set in gv_sort");
