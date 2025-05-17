@@ -137,25 +137,24 @@ static unsigned int hd_hil_s_from_xy(point p, int n)
  * intersection area from
  * http://stackoverflow.com/questions/4549544/total-area-of-intersecting-rectangles
 */
-static double aabbaabb(Rect_t * r, Rect_t * s)
-{
-    if (!Overlap(*r, *s))
+static double aabbaabb(Rect_t r, Rect_t s) {
+    if (!Overlap(r, s))
 	return 0;
 
     /* if we get here we have an intersection */
 
     /* rightmost left edge of the 2 rectangles */
     double iminx =
-	r->boundary[0] > s->boundary[0] ? r->boundary[0] : s->boundary[0];
+	r.boundary[0] > s.boundary[0] ? r.boundary[0] : s.boundary[0];
     /* upmost bottom edge */
     double iminy =
-	r->boundary[1] > s->boundary[1] ? r->boundary[1] : s->boundary[1];
+	r.boundary[1] > s.boundary[1] ? r.boundary[1] : s.boundary[1];
     /* leftmost right edge */
     double imaxx =
-	r->boundary[2] < s->boundary[2] ? r->boundary[2] : s->boundary[2];
+	r.boundary[2] < s.boundary[2] ? r.boundary[2] : s.boundary[2];
     /* downmost top edge */
     double imaxy =
-	r->boundary[3] < s->boundary[3] ? r->boundary[3] : s->boundary[3];
+	r.boundary[3] < s.boundary[3] ? r.boundary[3] : s.boundary[3];
     return (imaxx - iminx) * (imaxy - iminy);
 }
 
@@ -265,13 +264,13 @@ recordointrsx(object_t * op, object_t * cp, Rect_t * rp,
 	double sa, maxa = 0.0;
 	/* keep maximally overlapping object */
 	Rect_t srect = objp2rect(intrsx[i]);
-	sa = aabbaabb(rp, &srect);
+	sa = aabbaabb(*rp, srect);
 	if (sa > a)
 	    maxa = sa;
 	/*keep maximally overlapping label */
 	if (intrsx[i]->lbl) {
 	    srect = objplp2rect(intrsx[i]);
-	    sa = aabbaabb(rp, &srect);
+	    sa = aabbaabb(*rp, srect);
 	    if (sa > a)
 		maxa = fmax(sa, maxa);
 	}
@@ -297,13 +296,13 @@ recordlintrsx(object_t * op, object_t * cp, Rect_t * rp,
 	double sa, maxa = 0.0;
 	/* keep maximally overlapping object */
 	Rect_t srect = objp2rect(intrsx[i]);
-	sa = aabbaabb(rp, &srect);
+	sa = aabbaabb(*rp, srect);
 	if (sa > a)
 	    maxa = sa;
 	/*keep maximally overlapping label */
 	if (intrsx[i]->lbl) {
 	    srect = objplp2rect(intrsx[i]);
-	    sa = aabbaabb(rp, &srect);
+	    sa = aabbaabb(*rp, srect);
 	    if (sa > a)
 		maxa = fmax(sa, maxa);
 	}
@@ -352,7 +351,7 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 
 	/*label-object intersect */
 	Rect_t srect = objp2rect(cp);
-	a = aabbaabb(&rect, &srect);
+	a = aabbaabb(rect, srect);
 	if (a > 0.0) {
 	  ra = recordointrsx(objp, cp, &rect, a, intrsx);
 	  bp.n++;
@@ -362,7 +361,7 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 	if (!cp->lbl || !cp->lbl->set)
 	    continue;
 	srect = objplp2rect(cp);
-	a = aabbaabb(&rect, &srect);
+	a = aabbaabb(rect, srect);
 	if (a > 0.0) {
 	  ra = recordlintrsx(objp, cp, &rect, a, intrsx);
 	  bp.n++;
