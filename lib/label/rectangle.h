@@ -26,7 +26,7 @@ void InitRect(Rect_t * r);
 void PrintRect(Rect_t *);
 #endif
 uint64_t RectArea(const Rect_t*);
-bool Overlap(const Rect_t*, const Rect_t*);
+bool Overlap(const Rect_t, const Rect_t);
 Rect_t CombineRect(const Rect_t*, const Rect_t*);
 Rect_t NullRect(void);
 

@@ -139,7 +139,7 @@ static unsigned int hd_hil_s_from_xy(point p, int n)
 */
 static double aabbaabb(Rect_t * r, Rect_t * s)
 {
-    if (!Overlap(r, s))
+    if (!Overlap(*r, *s))
 	return 0;
 
     /* if we get here we have an intersection */
