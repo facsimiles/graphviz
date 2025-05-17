@@ -199,7 +199,7 @@ static void strdict_add(strdict_t *dict, refstr_t *r) {
   capacity = (size_t)1 << dict->capacity_exp;
   assert(capacity > dict->size);
 
-  const size_t h = strdict_hash(r->s, r->is_html);
+  const size_t h = strdict_hash(r->s, r->is_html != 0);
 
   for (size_t i = 0; i < capacity; ++i) {
     const size_t candidate = (h + i) % capacity;
@@ -259,7 +259,7 @@ static void strdict_remove(strdict_t *dict, const refstr_t *key) {
   assert(key != NULL);
   assert(key != TOMBSTONE);
 
-  const size_t h = strdict_hash(key->s, key->is_html);
+  const size_t h = strdict_hash(key->s, key->is_html != 0);
   const size_t capacity = dict->buckets == NULL
                         ? 0 : (size_t)1 << dict->capacity_exp;
 
@@ -277,7 +277,7 @@ static void strdict_remove(strdict_t *dict, const refstr_t *key) {
     }
 
     // is this the string we are searching for?
-    if (refstr_eq(key->s, key->is_html, dict->buckets[candidate])) {
+    if (refstr_eq(key->s, key->is_html != 0, dict->buckets[candidate])) {
       assert(dict->size > 0);
       free(dict->buckets[candidate]);
       dict->buckets[candidate] = TOMBSTONE;
@@ -442,7 +442,7 @@ int aghtmlstr(const char *s)
     if (s == NULL)
 	return 0;
     key = (const refstr_t *)(s - offsetof(refstr_t, s));
-    return key->is_html;
+    return key->is_html != 0;
 }
 
 #ifdef DEBUG
