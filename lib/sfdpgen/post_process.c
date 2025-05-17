@@ -434,14 +434,14 @@ static void get_edge_label_matrix(relative_position_constraints data, int m, int
        j  -0.5 0.25  0.25
        k  -0.5 0.25  0.25
        in general, if i has m neighbors j, k, ..., then
-       p_ii = 1
-       p_jj = 1/m^2
-       p_ij = -1/m
-       p jk = 1/m^2
-       .    i     j    k
-       i    1    -1/m  -1/m ...
-       j   -1/m  1/m^2 1/m^2 ...
-       k   -1/m  1/m^2 1/m^2 ...
+       pᵢᵢ = 1
+       pⱼⱼ = 1 ÷ m²
+       pᵢⱼ = -1 ÷ m
+       pⱼₖ = 1 ÷ m²
+       .    i       j        k
+       i    1       -1 ÷ m   -1 ÷ m ...
+       j   -1 ÷ m   1 ÷ m²   1 ÷ m² ...
+       k   -1 ÷ m   1 ÷ m²   1 ÷ m² ...
     */
     if (!irn){
       assert((!jcn) && (!val));
