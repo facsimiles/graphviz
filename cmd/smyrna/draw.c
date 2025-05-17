@@ -252,8 +252,7 @@ static void SetPenColor(xdot_op *op, int param) {
     view->penColor = GetglCompColor(op->u.color);
 }
 
-static void SetStyle(sdot_op* o, int param)
-{
+static void SetStyle(xdot_op *o, int param) {
     (void)o;
     (void)param;
 }
@@ -392,7 +391,7 @@ drawfunc_t OpFns[] = {
   SetFillColor,
   SetPenColor,
   SetFont,
-    (drawfunc_t)SetStyle,
+  SetStyle,
     (drawfunc_t)InsertImage,
 };
 
