@@ -183,9 +183,8 @@ static void DrawEllipse(xdot_op *op, int param) {
     glEnd();
 }
 
-static void DrawPolygon(sdot_op * o, int param)
-{
-    xdot_op *  op=&o->op;
+static void DrawPolygon(xdot_op *op, int param) {
+    sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
     view->Topview->global_z += o->layer * LAYER_DIFF;
 
     set_options(param);
@@ -397,7 +396,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
 
 drawfunc_t OpFns[] = {
   DrawEllipse,
-    (drawfunc_t)DrawPolygon,
+  DrawPolygon,
     (drawfunc_t)DrawBeziers,
     (drawfunc_t)DrawPolyline,
     (drawfunc_t)EmbedText,
