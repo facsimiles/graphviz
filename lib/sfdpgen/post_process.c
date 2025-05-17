@@ -834,10 +834,7 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
   }
 
   sm->D = SparseMatrix_new(m, m, nz, MATRIX_TYPE_REAL, FORMAT_CSR);
-  if (!(sm->D)){
-    SpringSmoother_delete(sm);
-    return NULL;
-  }
+  assert(sm->D != NULL);
 
   id = sm->D->ia; jd = sm->D->ja;
   d = sm->D->a;
