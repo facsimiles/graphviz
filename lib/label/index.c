@@ -160,7 +160,7 @@ LeafList_t *RTreeSearch(RTree_t *rtp, Node_t *n, Rect_t r) {
 	    if (n->branch[i].child && Overlap(r, n->branch[i].rect)) {
 		llp = RTreeLeafListAdd(llp, (Leaf_t *) & n->branch[i]);
 #				ifdef RTDEBUG
-		PrintRect(&n->branch[i].rect);
+		PrintRect(n->branch[i].rect);
 #				endif
 	    }
 	}

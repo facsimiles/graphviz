@@ -71,7 +71,7 @@ void PrintNode(Node_t * n)
 void PrintBranch(int i, Branch_t * b)
 {
     fprintf(stderr, "  child[%d] X%X\n", i, (unsigned int) b->child);
-    PrintRect(&(b->rect));
+    PrintRect(b->rect);
 }
 #endif
 

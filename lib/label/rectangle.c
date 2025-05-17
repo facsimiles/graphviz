@@ -49,13 +49,10 @@ Rect_t NullRect(void)
 /*-----------------------------------------------------------------------------
 | Print rectangle lower upper bounds by dimension
 -----------------------------------------------------------------------------*/
-void PrintRect(Rect_t * r)
-{
-    assert(r);
+void PrintRect(Rect_t r) {
     fprintf(stderr, "rect:");
     for (size_t i = 0; i < NUMDIMS; i++)
-	fprintf(stderr, "\t%d\t%d\n", r->boundary[i],
-		r->boundary[i + NUMDIMS]);
+	fprintf(stderr, "\t%d\t%d\n", r.boundary[i], r.boundary[i + NUMDIMS]);
 }
 #endif
 

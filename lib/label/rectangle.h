@@ -23,7 +23,7 @@ typedef struct Rect {
 
 void InitRect(Rect_t * r);
 #ifdef RTDEBUG
-void PrintRect(Rect_t *);
+void PrintRect(Rect_t);
 #endif
 uint64_t RectArea(const Rect_t);
 bool Overlap(const Rect_t, const Rect_t);

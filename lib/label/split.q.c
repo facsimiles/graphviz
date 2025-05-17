@@ -51,9 +51,9 @@ void SplitNode(RTree_t * rtp, Node_t * n, Branch_t * b, Node_t ** nn)
     {
 	/* Indicate that a split is about to take place */
 	for (size_t i = 0; i < NODECARD + 1; i++) {
-	    PrintRect(&rtp->split.BranchBuf[i].rect);
+	    PrintRect(rtp->split.BranchBuf[i].rect);
 	}
-	PrintRect(&rtp->split.CoverSplit);
+	PrintRect(rtp->split.CoverSplit);
     }
 #endif
 
@@ -238,12 +238,12 @@ static void Classify(RTree_t * rtp, int i, int group)
 	/* redraw entire group and its cover */
 	int j;
 	MFBSetColor(WHITE);	/* cover is white */
-	PrintRect(&rtp->split.Partitions[0].cover[group]);
+	PrintRect(rtp->split.Partitions[0].cover[group]);
 	MFBSetColor(group + 3);	/* group 0 green, group 1 blue */
 	for (j = 0; j < NODECARD + 1; j++) {
 	    if (rtp->split.Partitions[0].taken[j] &&
 		rtp->split.Partitions[0].partition[j] == group)
-		PrintRect(&rtrtp->split.Partitions[0].BranchBuf[j].rect);
+		PrintRect(rtrtp->split.Partitions[0].BranchBuf[j].rect);
 	}
 	GraphChar();
     }
@@ -324,9 +324,9 @@ PrintPVars(RTree_t * rtp)
 		 rtp->split.Partitions[0].area[1]));
     }
     fprintf(stderr, "cover[0]:\n");
-    PrintRect(&rtp->split.Partitions[0].cover[0]);
+    PrintRect(rtp->split.Partitions[0].cover[0]);
 
     fprintf(stderr, "cover[1]:\n");
-    PrintRect(&rtp->split.Partitions[0].cover[1]);
+    PrintRect(rtp->split.Partitions[0].cover[1]);
 }
 #endif
