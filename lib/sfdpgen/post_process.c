@@ -294,28 +294,26 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
   /* solve a stress model to achieve the ideal distance among a sparse set of edges recorded in A.
      A must be a real matrix.
    */
-  int i, j, k, m = A->m, *ia, *ja, *iw, *jw, *id, *jd;
-  int nz;
-  double *d, *w, *lambda;
-  double diag_d, diag_w, *a, dist, s = 0, stop = 0, sbot = 0;
+  int m = A->m;
+  double stop = 0, sbot = 0;
 
   assert(SparseMatrix_is_symmetric(A, false) && A->type == MATRIX_TYPE_REAL);
 
   /* if x is all zero, make it random */
   bool has_nonzero = false;
-  for (i = 0; i < m * dim; i++) {
+  for (int i = 0; i < m * dim; i++) {
     if (!is_exactly_equal(x[i], 0)) {
 	    has_nonzero = true;
 	    break;
     }
   }
   if (!has_nonzero) {
-    for (i = 0; i < m*dim; i++) x[i] = 72*drand();
+    for (int i = 0; i < m*dim; i++) x[i] = 72*drand();
   }
 
-  ia = A->ia;
-  ja = A->ja;
-  a = A->a;
+  const int *const ia = A->ia;
+  const int *const ja = A->ja;
+  const double *const a = A->a;
 
   StressMajorizationSmoother sm = gv_alloc(sizeof(struct StressMajorizationSmoother_struct));
   sm->scaling = 1.;
@@ -325,30 +323,33 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
   sm->tol_cg = 0.01;
   sm->maxit_cg = floor(sqrt(A->m));
 
-  lambda = sm->lambda = gv_calloc(m, sizeof(double));
+  double *const lambda = sm->lambda = gv_calloc(m, sizeof(double));
 
-  nz = A->nz;
+  int nz = A->nz;
 
   sm->Lw = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
   assert(sm->Lw != NULL);
   sm->Lwd = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
   assert(sm->Lwd != NULL);
 
-  iw = sm->Lw->ia; jw = sm->Lw->ja;
-  id = sm->Lwd->ia; jd = sm->Lwd->ja;
-  w = sm->Lw->a;
-  d = sm->Lwd->a;
+  int *const iw = sm->Lw->ia;
+  int *const jw = sm->Lw->ja;
+  int *const id = sm->Lwd->ia;
+  int *const jd = sm->Lwd->ja;
+  double *const w = sm->Lw->a;
+  double *const d = sm->Lwd->a;
   iw[0] = id[0] = 0;
 
   nz = 0;
-  for (i = 0; i < m; i++){
-    diag_d = diag_w = 0;
-    for (j = ia[i]; j < ia[i+1]; j++){
-      k = ja[j];
+  for (int i = 0; i < m; i++){
+    double diag_d = 0;
+    double diag_w = 0;
+    for (int j = ia[i]; j < ia[i+1]; j++){
+      const int k = ja[j];
       if (k != i){
 
 	jw[nz] = k;
-	dist = a[j];
+	const double dist = a[j];
 	w[nz] = -1;
 	diag_w += w[nz];
 	jd[nz] = k;
@@ -373,12 +374,12 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
     iw[i+1] = nz;
     id[i+1] = nz;
   }
-  s = stop/sbot;
+  const double s = stop / sbot;
   if (s == 0) {
     StressMajorizationSmoother_delete(sm);
     return NULL;
   }
-  for (i = 0; i < nz; i++) d[i] *= s;
+  for (int i = 0; i < nz; i++) d[i] *= s;
 
 
   sm->scaling = s;
