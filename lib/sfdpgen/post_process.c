@@ -877,12 +877,11 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
     id[i+1] = nz;
   }
   sm->D->nz = nz;
-  sm->ctrl = spring_electrical_control_new();
-  *sm->ctrl = *ctrl;
-  sm->ctrl->random_start = false;
-  sm->ctrl->multilevels = 1;
-  sm->ctrl->step /= 2;
-  sm->ctrl->maxiter = 20;
+  sm->ctrl = ctrl;
+  sm->ctrl.random_start = false;
+  sm->ctrl.multilevels = 1;
+  sm->ctrl.step /= 2;
+  sm->ctrl.maxiter = 20;
 
   free(mask);
   free(avg_dist);
@@ -895,16 +894,12 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
 void SpringSmoother_delete(SpringSmoother sm){
   if (!sm) return;
   if (sm->D) SparseMatrix_delete(sm->D);
-  if (sm->ctrl) spring_electrical_control_delete(sm->ctrl);
 }
-
-
-
 
 void SpringSmoother_smooth(SpringSmoother sm, SparseMatrix A, int dim, double *x){
   int flag = 0;
 
-  spring_electrical_spring_embedding(dim, A, sm->D, sm->ctrl, x, &flag);
+  spring_electrical_spring_embedding(dim, A, sm->D, &sm->ctrl, x, &flag);
   assert(!flag);
 
 }
@@ -920,13 +915,13 @@ void post_process_smoothing(int dim, SparseMatrix A, spring_electrical_control c
   cpu = clock();
 #endif
 
-  switch (ctrl->smoothing){
+  switch (ctrl.smoothing){
   case SMOOTHING_RNG:
   case SMOOTHING_TRIANGLE:{
     TriangleSmoother sm;
 
     if (A->m > 2) {  /* triangles need at least 3 nodes */
-      if (ctrl->smoothing == SMOOTHING_RNG){
+      if (ctrl.smoothing == SMOOTHING_RNG){
         sm = TriangleSmoother_new(A, dim, x, false);
       } else {
         sm = TriangleSmoother_new(A, dim, x, true);
@@ -943,11 +938,11 @@ void post_process_smoothing(int dim, SparseMatrix A, spring_electrical_control c
       StressMajorizationSmoother sm;
       int dist_scheme = IDEAL_AVG_DIST;
 
-      if (ctrl->smoothing == SMOOTHING_STRESS_MAJORIZATION_GRAPH_DIST){
+      if (ctrl.smoothing == SMOOTHING_STRESS_MAJORIZATION_GRAPH_DIST){
 	dist_scheme = IDEAL_GRAPH_DIST;
-      } else if (ctrl->smoothing == SMOOTHING_STRESS_MAJORIZATION_AVG_DIST){
+      } else if (ctrl.smoothing == SMOOTHING_STRESS_MAJORIZATION_AVG_DIST){
 	dist_scheme = IDEAL_AVG_DIST;
-      } else if (ctrl->smoothing == SMOOTHING_STRESS_MAJORIZATION_POWER_DIST){
+      } else if (ctrl.smoothing == SMOOTHING_STRESS_MAJORIZATION_POWER_DIST){
 	dist_scheme = IDEAL_POWER_DIST;
       }
 

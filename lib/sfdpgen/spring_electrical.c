@@ -46,31 +46,26 @@ static const double tol = 0.001;
 static const double cool = 0.90;
 
 spring_electrical_control spring_electrical_control_new(void){
-  spring_electrical_control ctrl;
-  ctrl = gv_alloc(sizeof(struct spring_electrical_control_struct));
-  ctrl->p = AUTOP;/*a negativve number default to -1. repulsive force = dist^p */
-  ctrl->random_start = true; // whether to apply SE from a random layout, or from existing layout
-  ctrl->K = -1;/* the natural distance. If K < 0, K will be set to the average distance of an edge */
-  ctrl->multilevels = 0;/* if <=1, single level */
+  spring_electrical_control ctrl = {0};
+  ctrl.p = AUTOP;/*a negativve number default to -1. repulsive force = dist^p */
+  ctrl.random_start = true; // whether to apply SE from a random layout, or from existing layout
+  ctrl.K = -1;/* the natural distance. If K < 0, K will be set to the average distance of an edge */
+  ctrl.multilevels = 0;/* if <=1, single level */
 
-  ctrl->max_qtree_level = 10;/* max level of quadtree */
-  ctrl->maxiter = 500;
-  ctrl->step = 0.1;
-  ctrl->adaptive_cooling = true;
-  ctrl->random_seed = 123;
-  ctrl->beautify_leaves = false;
-  ctrl->smoothing = SMOOTHING_NONE;
-  ctrl->overlap = 0;
-  ctrl->do_shrinking = true;
-  ctrl->tscheme = QUAD_TREE_HYBRID;
-  ctrl->initial_scaling = -4;
-  ctrl->rotation = 0.;
-  ctrl->edge_labeling_scheme = 0;
+  ctrl.max_qtree_level = 10;/* max level of quadtree */
+  ctrl.maxiter = 500;
+  ctrl.step = 0.1;
+  ctrl.adaptive_cooling = true;
+  ctrl.random_seed = 123;
+  ctrl.beautify_leaves = false;
+  ctrl.smoothing = SMOOTHING_NONE;
+  ctrl.overlap = 0;
+  ctrl.do_shrinking = true;
+  ctrl.tscheme = QUAD_TREE_HYBRID;
+  ctrl.initial_scaling = -4;
+  ctrl.rotation = 0.;
+  ctrl.edge_labeling_scheme = 0;
   return ctrl;
-}
-
-void spring_electrical_control_delete(spring_electrical_control ctrl){
-  free(ctrl);
 }
 
 static char* smoothings[] = {
@@ -83,21 +78,21 @@ static char* tschemes[] = {
 
 void spring_electrical_control_print(spring_electrical_control ctrl){
   fprintf (stderr, "spring_electrical_control:\n");
-  fprintf (stderr, "  repulsive exponent: %.03f\n", ctrl->p);
-  fprintf(stderr, "  random start %d seed %d\n", (int)ctrl->random_start,
-          ctrl->random_seed);
-  fprintf (stderr, "  K : %.03f C : %.03f\n", ctrl->K, C);
-  fprintf (stderr, "  max levels %d\n", ctrl->multilevels);
-  fprintf (stderr, "  quadtree size %d max_level %d\n", quadtree_size, ctrl->max_qtree_level);
-  fprintf (stderr, "  Barnes-Hutt constant %.03f tolerance  %.03f maxiter %d\n", bh, tol, ctrl->maxiter);
+  fprintf (stderr, "  repulsive exponent: %.03f\n", ctrl.p);
+  fprintf(stderr, "  random start %d seed %d\n", (int)ctrl.random_start,
+          ctrl.random_seed);
+  fprintf (stderr, "  K : %.03f C : %.03f\n", ctrl.K, C);
+  fprintf (stderr, "  max levels %d\n", ctrl.multilevels);
+  fprintf (stderr, "  quadtree size %d max_level %d\n", quadtree_size, ctrl.max_qtree_level);
+  fprintf (stderr, "  Barnes-Hutt constant %.03f tolerance  %.03f maxiter %d\n", bh, tol, ctrl.maxiter);
   fprintf(stderr, "  cooling %.03f step size  %.03f adaptive %d\n", cool,
-          ctrl->step, (int)ctrl->adaptive_cooling);
+          ctrl.step, (int)ctrl.adaptive_cooling);
   fprintf (stderr, "  beautify_leaves %d node weights %d rotation %.03f\n",
-           (int)ctrl->beautify_leaves, 0, ctrl->rotation);
+           (int)ctrl.beautify_leaves, 0, ctrl.rotation);
   fprintf (stderr, "  smoothing %s overlap %d initial_scaling %.03f do_shrinking %d\n",
-    smoothings[ctrl->smoothing], ctrl->overlap, ctrl->initial_scaling, (int)ctrl->do_shrinking);
-  fprintf (stderr, "  octree scheme %s\n", tschemes[ctrl->tscheme]);
-  fprintf (stderr, "  edge_labeling_scheme %d\n", ctrl->edge_labeling_scheme);
+    smoothings[ctrl.smoothing], ctrl.overlap, ctrl.initial_scaling, (int)ctrl.do_shrinking);
+  fprintf (stderr, "  octree scheme %s\n", tschemes[ctrl.tscheme]);
+  fprintf (stderr, "  edge_labeling_scheme %d\n", ctrl.edge_labeling_scheme);
 }
 
 enum { MAX_I = 20, OPT_UP = 1, OPT_DOWN = -1, OPT_INIT = 0 };
@@ -243,7 +238,9 @@ static void beautify_leaves(int dim, SparseMatrix A, double *x){
   bitarray_reset(&checked);
 }
 
-void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrical_control ctrl, double *x, int *flag){
+void spring_electrical_embedding_fast(int dim, SparseMatrix A0,
+                                      spring_electrical_control *ctrl,
+                                      double *x, int *flag) {
   /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j.  */
   SparseMatrix A = A0;
   int m, n;
@@ -388,7 +385,9 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
   free(force);
 }
 
-static void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrical_control ctrl, double *x, int *flag){
+static void spring_electrical_embedding_slow(int dim, SparseMatrix A0,
+                                             spring_electrical_control *ctrl,
+                                             double *x, int *flag) {
   /* a version that does vertex moves in one go, instead of one at a time, use for debugging the fast version. Quadtree is not used. */
   /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j.  */
   SparseMatrix A = A0;
@@ -514,9 +513,9 @@ static void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_el
   free(force);
 }
 
-
-
-void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_control ctrl, double *x, int *flag){
+void spring_electrical_embedding(int dim, SparseMatrix A0,
+                                 spring_electrical_control *ctrl, double *x,
+                                 int *flag) {
   /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j.  */
   SparseMatrix A = A0;
   int m, n;
@@ -683,7 +682,9 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
   free(distances);
 }
 
-void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_electrical_control ctrl, double *x, int *flag){
+void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D,
+                                        spring_electrical_control *ctrl,
+                                        double *x, int *flag) {
   /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j. Same as the spring-electrical except we also
      introduce force due to spring length
    */
@@ -1079,7 +1080,7 @@ static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_n
 }
 
 void multilevel_spring_electrical_embedding(int dim, SparseMatrix A0,
-                                            spring_electrical_control ctrl,
+                                            spring_electrical_control *ctrl,
                                             double *label_sizes, double *x,
                                             int n_edge_label_nodes,
                                             int *edge_label_nodes, int *flag) {
@@ -1088,12 +1089,11 @@ void multilevel_spring_electrical_embedding(int dim, SparseMatrix A0,
   SparseMatrix A = A0, P = NULL;
   Multilevel grid, grid0;
   double *xc = NULL, *xf = NULL;
-  struct spring_electrical_control_struct ctrl0;
 #ifdef TIME
   clock_t  cpu;
 #endif
 
-  ctrl0 = *ctrl;
+  const spring_electrical_control ctrl0 = *ctrl;
 
 #ifdef TIME
   cpu = clock();
@@ -1194,7 +1194,7 @@ void multilevel_spring_electrical_embedding(int dim, SparseMatrix A0,
   cpu = clock();
 #endif
 
-  post_process_smoothing(dim, A, ctrl, x);
+  post_process_smoothing(dim, A, *ctrl, x);
 
   if (Verbose) fprintf(stderr, "ctrl->overlap=%d\n",ctrl->overlap);
 

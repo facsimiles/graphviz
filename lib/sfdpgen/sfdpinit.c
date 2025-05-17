@@ -82,7 +82,7 @@ static double *getPos(Agraph_t * g)
     return pos;
 }
 
-static void sfdpLayout(graph_t * g, spring_electrical_control ctrl,
+static void sfdpLayout(graph_t * g, spring_electrical_control *ctrl,
                        pointf pad) {
     double *sizes;
     double *pos;
@@ -197,9 +197,7 @@ late_quadtree_scheme (graph_t* g, Agsym_t* sym, int dflt)
 /* tuneControl:
  * Use user values to reset control
  */
-static void
-tuneControl (graph_t* g, spring_electrical_control ctrl)
-{
+static void tuneControl(graph_t *g, spring_electrical_control *ctrl) {
     long seed;
     int init;
 
@@ -239,7 +237,7 @@ void sfdp_layout(graph_t * g)
 	pointf pad;
 	spring_electrical_control ctrl = spring_electrical_control_new();
 
-	tuneControl (g, ctrl);
+	tuneControl(g, &ctrl);
 #if (defined(HAVE_GTS) || defined(HAVE_TRIANGLE))
 	graphAdjustMode(g, &am, "prism0");
 #else
@@ -251,8 +249,8 @@ void sfdp_layout(graph_t * g)
 
 	if ((am.mode == AM_PRISM) && doAdjust) {
 	    doAdjust = 0;  /* overlap removal done in sfdp */
-	    ctrl->overlap = am.value;
-    	    ctrl->initial_scaling = am.scaling;
+	    ctrl.overlap = am.value;
+    	    ctrl.initial_scaling = am.scaling;
 	    sep = sepFactor(g);
 	    if (sep.doAdd) {
 		pad.x = PS2INCH(sep.x);
@@ -261,7 +259,7 @@ void sfdp_layout(graph_t * g)
 	}
 	else {
    		/* Turn off overlap removal in sfdp if prism not used */
-	    ctrl->overlap = -1;
+	    ctrl.overlap = -1;
 	}
 
 	if (Verbose)
@@ -270,7 +268,7 @@ void sfdp_layout(graph_t * g)
 	size_t ncc;
 	ccs = ccomps(g, &ncc, 0);
 	if (ncc == 1) {
-	    sfdpLayout(g, ctrl, pad);
+	    sfdpLayout(g, &ctrl, pad);
 	    if (doAdjust) removeOverlapWith(g, &am);
 	    spline_edges(g);
 	} else {
@@ -281,7 +279,7 @@ void sfdp_layout(graph_t * g)
 	    for (size_t i = 0; i < ncc; i++) {
 		sg = ccs[i];
 		(void)graphviz_node_induce(sg, NULL);
-		sfdpLayout(sg, ctrl, pad);
+		sfdpLayout(sg, &ctrl, pad);
 		if (doAdjust) removeOverlapWith(sg, &am);
 		setEdgeType(sg, EDGETYPE_LINE);
 		spline_edges(sg);
@@ -292,7 +290,6 @@ void sfdp_layout(graph_t * g)
 	    agdelete(g, ccs[i]);
 	}
 	free(ccs);
-	spring_electrical_control_delete(ctrl);
     }
 
     dotneato_postprocess(g);
