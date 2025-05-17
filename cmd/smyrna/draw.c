@@ -246,11 +246,9 @@ static void SetFillColor(xdot_op *op, int param) {
     (void)param;
     view->fillColor = GetglCompColor(op->u.color);
 }
-static void SetPenColor(sdot_op* o, int param)
-{
-    (void)param;
 
-    xdot_op * op=&o->op;
+static void SetPenColor(xdot_op *op, int param) {
+    (void)param;
     view->penColor = GetglCompColor(op->u.color);
 }
 
@@ -392,7 +390,7 @@ drawfunc_t OpFns[] = {
   DrawPolyline,
   EmbedText,
   SetFillColor,
-    (drawfunc_t)SetPenColor,
+  SetPenColor,
     (drawfunc_t)SetFont,
     (drawfunc_t)SetStyle,
     (drawfunc_t)InsertImage,
