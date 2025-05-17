@@ -267,8 +267,8 @@ static void SetFont(xdot_op *op, int param) {
 }
 
 /*for now we only support png files in 2d space, no image rotation*/
-static void InsertImage(sdot_op * o, int param)
-{
+static void InsertImage(xdot_op *op, int param) {
+    sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
     (void)param;
 
     float x,y;
@@ -392,7 +392,7 @@ drawfunc_t OpFns[] = {
   SetPenColor,
   SetFont,
   SetStyle,
-    (drawfunc_t)InsertImage,
+  InsertImage,
 };
 
 void draw_selpoly(glCompPoly_t *selPoly) {
