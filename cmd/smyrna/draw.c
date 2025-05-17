@@ -365,11 +365,10 @@ void drawBorders(ViewInfo * vi)
 
 void drawCircle(float x, float y, float radius, float zdepth)
 {
-    int i;
     if (radius < 0.3)
 	radius = 0.4f;
     glBegin(GL_POLYGON);
-    for (i = 0; i < 360; i = i + 36) {
+    for (int i = 0; i < 360; i += 36) {
 	float degInRad = (float) (i * DEG2RAD);
 	glVertex3f((float)(x + cos(degInRad) * radius),
 		   (float)(y + sin(degInRad) * radius),
