@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include <label/index.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -52,7 +53,7 @@ Rect_t NullRect(void)
 void PrintRect(Rect_t r) {
     fprintf(stderr, "rect:");
     for (size_t i = 0; i < NUMDIMS; i++)
-	fprintf(stderr, "\t%d\t%d\n", r.boundary[i], r.boundary[i + NUMDIMS]);
+	fprintf(stderr, "\t%.0f\t%.0f\n", r.boundary[i], r.boundary[i + NUMDIMS]);
 }
 #endif
 
@@ -66,7 +67,7 @@ uint64_t RectArea(const Rect_t r) {
 
     uint64_t area = 1;
     for (size_t i = 0; i < NUMDIMS; i++) {
-      unsigned int dim = r.boundary[i + NUMDIMS] - r.boundary[i];
+      const uint64_t dim = (uint64_t)(r.boundary[i + NUMDIMS] - r.boundary[i]);
       if (dim == 0) return 0;
       if (UINT64_MAX / dim < area) {
 	agerrorf("label: area too large for rtree\n");
@@ -89,9 +90,9 @@ Rect_t CombineRect(const Rect_t r, const Rect_t rr) {
 	return r;
 
     for (size_t i = 0; i < NUMDIMS; i++) {
-	new.boundary[i] = MIN(r.boundary[i], rr.boundary[i]);
+	new.boundary[i] = fmin(r.boundary[i], rr.boundary[i]);
 	size_t j = i + NUMDIMS;
-	new.boundary[j] = MAX(r.boundary[j], rr.boundary[j]);
+	new.boundary[j] = fmin(r.boundary[j], rr.boundary[j]);
     }
     return new;
 }

@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 typedef struct Rect {
-    int boundary[NUMSIDES];
+  double boundary[NUMSIDES];
 } Rect_t;
 
 void InitRect(Rect_t * r);
