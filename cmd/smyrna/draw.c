@@ -122,14 +122,10 @@ static void set_options(int param)
 
 static void DrawBeziers(xdot_op *op, int param) {
     sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
-    int filled;
     xdot_point* ps = op->u.bezier.pts;
     view->Topview->global_z += o->layer * LAYER_DIFF;
 
-    if (op->kind == xd_filled_bezier)
-	filled = 1;
-    else
-	filled = 0;
+    const int filled = op->kind == xd_filled_bezier;
 
     for (size_t i = 1; i < op->u.bezier.cnt; i += 3) {
 	DrawBezier(ps, filled, param);
