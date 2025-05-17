@@ -260,8 +260,8 @@ static void SetStyle(sdot_op* o, int param)
 
 static sdot_op * font_op;
 
-static void SetFont(sdot_op * o, int param)
-{
+static void SetFont(xdot_op *op, int param) {
+	sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
 	(void)param;
 
 	font_op=o;
@@ -391,7 +391,7 @@ drawfunc_t OpFns[] = {
   EmbedText,
   SetFillColor,
   SetPenColor,
-    (drawfunc_t)SetFont,
+  SetFont,
     (drawfunc_t)SetStyle,
     (drawfunc_t)InsertImage,
 };
