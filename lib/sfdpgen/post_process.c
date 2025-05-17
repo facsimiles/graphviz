@@ -520,7 +520,8 @@ static UNUSED double get_stress(int m, int dim, int *iw, int *jw, double *w,
                                 double *d, double *x, double scaling) {
   int i, j;
   double res = 0., dist;
-  /* we use the fact that d_ij = w_ij*graph_dist(i,j). Also, d_ij and x are scalinged by *scaling, so divide by it to get actual unscaled streee. */
+  // We use the fact that dᵢⱼ = wᵢⱼ × graph_dist(i, j). Also, dᵢⱼ and x are
+  // scaled by ×scaling, so divide by it to get actual unscaled stress.
   for (i = 0; i < m; i++){
     for (j = iw[i]; j < iw[i+1]; j++){
       if (i == jw[j]) {
