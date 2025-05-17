@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <time.h>
 #include <string.h>
 #include <math.h>
@@ -163,11 +164,9 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
   }
 
   sm->Lw = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
+  assert(sm->Lw != NULL);
   sm->Lwd = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
-  if (!(sm->Lw) || !(sm->Lwd)) {
-    StressMajorizationSmoother_delete(sm);
-    return NULL;
-  }
+  assert(sm->Lwd != NULL);
 
   iw = sm->Lw->ia; jw = sm->Lw->ja;
 
