@@ -324,11 +324,9 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
   nz = A->nz;
 
   sm->Lw = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
+  assert(sm->Lw != NULL);
   sm->Lwd = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
-  if (!(sm->Lw) || !(sm->Lwd)) {
-    StressMajorizationSmoother_delete(sm);
-    return NULL;
-  }
+  assert(sm->Lwd != NULL);
 
   iw = sm->Lw->ia; jw = sm->Lw->ja;
   id = sm->Lwd->ia; jd = sm->Lwd->ja;
