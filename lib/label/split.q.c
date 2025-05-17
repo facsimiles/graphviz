@@ -101,7 +101,7 @@ static void GetBranches(RTree_t * rtp, Node_t * n, Branch_t * b)
 	rtp->split.CoverSplit = CombineRect(&rtp->split.CoverSplit,
 					    &rtp->split.BranchBuf[i].rect);
     }
-    rtp->split.CoverSplitArea = RectArea(&rtp->split.CoverSplit);
+    rtp->split.CoverSplitArea = RectArea(rtp->split.CoverSplit);
 
     InitNode(n);
 }
@@ -136,9 +136,9 @@ static void MethodZero(RTree_t * rtp)
 	    if (!rtp->split.Partitions[0].taken[i]) {
 		Rect_t *r = &rtp->split.BranchBuf[i].rect;
 		Rect_t rect = CombineRect(r, &rtp->split.Partitions[0].cover[0]);
-		uint64_t growth0 = RectArea(&rect) - rtp->split.Partitions[0].area[0];
+		uint64_t growth0 = RectArea(rect) - rtp->split.Partitions[0].area[0];
 		rect = CombineRect(r, &rtp->split.Partitions[0].cover[1]);
-		uint64_t growth1 = RectArea(&rect) - rtp->split.Partitions[0].area[1];
+		uint64_t growth1 = RectArea(rect) - rtp->split.Partitions[0].area[1];
 		uint64_t diff;
 		if (growth1 >= growth0) {
 		    diff = growth1 - growth0;
@@ -192,14 +192,14 @@ static void PickSeeds(RTree_t * rtp)
   uint64_t area[NODECARD + 1];
 
     for (int i = 0; i < NODECARD + 1; i++)
-	area[i] = RectArea(&rtp->split.BranchBuf[i].rect);
+	area[i] = RectArea(rtp->split.BranchBuf[i].rect);
 
     uint64_t worst=0;
     for (int i = 0; i < NODECARD; i++) {
 	for (int j = i + 1; j < NODECARD + 1; j++) {
 	    Rect_t rect = CombineRect(&rtp->split.BranchBuf[i].rect,
 	                              &rtp->split.BranchBuf[j].rect);
-	    uint64_t waste = RectArea(&rect) - area[i] - area[j];
+	    uint64_t waste = RectArea(rect) - area[i] - area[j];
 	    if (waste > worst) {
 		worst = waste;
 		seed0 = i;
@@ -230,7 +230,7 @@ static void Classify(RTree_t * rtp, int i, int group)
 	    CombineRect(&rtp->split.BranchBuf[i].rect,
 			&rtp->split.Partitions[0].cover[group]);
     rtp->split.Partitions[0].area[group] =
-	RectArea(&rtp->split.Partitions[0].cover[group]);
+	RectArea(rtp->split.Partitions[0].cover[group]);
     rtp->split.Partitions[0].count[group]++;
 
 #	ifdef RTDEBUG

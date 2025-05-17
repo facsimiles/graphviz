@@ -63,15 +63,13 @@ void PrintRect(Rect_t * r)
 | Calculate the n-dimensional area of a rectangle
 -----------------------------------------------------------------------------*/
 
-uint64_t RectArea(const Rect_t *r) {
-  assert(r);
-
-    if (Undefined(*r))
+uint64_t RectArea(const Rect_t r) {
+    if (Undefined(r))
 	return 0;
 
     uint64_t area = 1;
     for (size_t i = 0; i < NUMDIMS; i++) {
-      unsigned int dim = r->boundary[i + NUMDIMS] - r->boundary[i];
+      unsigned int dim = r.boundary[i + NUMDIMS] - r.boundary[i];
       if (dim == 0) return 0;
       if (UINT64_MAX / dim < area) {
 	agerrorf("label: area too large for rtree\n");

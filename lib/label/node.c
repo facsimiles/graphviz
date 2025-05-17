@@ -113,9 +113,9 @@ int PickBranch(Rect_t * r, Node_t * n)
     for (int i = 0; i < NODECARD; i++) {
 	if (n->branch[i].child) {
 	    Rect_t *rr = &n->branch[i].rect;
-	    uint64_t area = RectArea(rr);
+	    uint64_t area = RectArea(*rr);
 	    Rect_t rect = CombineRect(r, rr);
-	    uint64_t increase = RectArea(&rect) - area;
+	    uint64_t increase = RectArea(rect) - area;
 	    if (!bestSet || increase < bestIncr) {
 		best = i;
 		bestArea = area;
