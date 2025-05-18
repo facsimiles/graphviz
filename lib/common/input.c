@@ -217,7 +217,7 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
  */
 int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
-    char c, *rest;
+    char c;
     const char *val;
     int i, v;
     int Kflag = 0;
@@ -274,7 +274,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    free(Gvfilepath);
 	    Gvfilepath = gv_strdup(argv[i] + strlen("--filepath="));
 	} else if (argv[i] && argv[i][0] == '-') {
-	    rest = &argv[i][2];
+	    char *const rest = &argv[i][2];
 	    switch (c = argv[i][1]) {
 	    case 'G':
 		if (*rest)
