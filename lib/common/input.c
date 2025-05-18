@@ -218,7 +218,7 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
 int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
     char c;
-    int i, v;
+    int v;
     int Kflag = 0;
 
     /* establish if we are running in a CGI environment */
@@ -253,12 +253,12 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
       : (unsigned char)gvc->common.verbose;
 
     size_t nfiles = 0;
-    for (i = 1; i < argc; i++)
+    for (int i = 1; i < argc; i++)
 	if (argv[i] && argv[i][0] != '-')
 	    nfiles++;
     gvc->input_filenames = gv_calloc(nfiles + 1, sizeof(char *));
     nfiles = 0;
-    for (i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
 	if (argv[i] &&
 	    (startswith(argv[i], "-V") || strcmp(argv[i], "--version") == 0)) {
 	    fprintf(stderr, "%s - %s version %s (%s)\n",
@@ -421,7 +421,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    || streq(layout, "")   /* when run as a process from Gvedit on Windows */
 	)
             layout = "dot";
-	i = gvlayout_select(gvc, layout);
+	const int i = gvlayout_select(gvc, layout);
 	if (i == NO_SUPPORT) {
 	    fprintf(stderr, "There is no layout engine support for \"%s\"\n", layout);
             if (streq(layout, "dot")) {
