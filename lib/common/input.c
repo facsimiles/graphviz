@@ -218,7 +218,6 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
 int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
     char c;
-    int v;
     int Kflag = 0;
 
     /* establish if we are running in a CGI environment */
@@ -325,7 +324,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
                     fprintf(stderr, "Missing argument for -K flag\n");
                     return dotneato_usage(argv[0], 1);
                 }
-                v = gvlayout_select(gvc, val);
+                const int v = gvlayout_select(gvc, val);
                 if (v == NO_SUPPORT) {
 	            fprintf(stderr, "There is no layout engine support for \"%s\"\n", val);
                     if (streq(val, "dot")) {
@@ -370,7 +369,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    }
 	    case 'q':
 		if (*rest) {
-		    v = atoi(rest);
+		    const int v = atoi(rest);
 		    if (v <= 0) {
 			fprintf(stderr,
 				"Invalid parameter \"%s\" for -q flag - ignored\n",
