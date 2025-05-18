@@ -217,7 +217,7 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
  */
 int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
-    char c, *rest, *layout;
+    char c, *rest;
     const char *val;
     int i, v;
     int Kflag = 0;
@@ -410,7 +410,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 
     /* if no -K, use cmd name to set layout type */
     if (!Kflag) {
-	layout = gvc->common.cmdname;
+	const char *layout = gvc->common.cmdname;
 	if (streq(layout, "dot_static")
 	    || streq(layout, "dot_builtins")
 	    || streq(layout, "lt-dot")
