@@ -91,6 +91,7 @@ int gvFreeContext(GVC_t * gvc)
 	    free(api);
 	}
     }
+    free(gvc->layerIDs);
     free(gvc);
     return (graphviz_errors + agerrors());
 }
