@@ -218,7 +218,6 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
 int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
     char c;
-    const char *val;
     int i, v;
     int Kflag = 0;
 
@@ -300,8 +299,8 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    return dotneato_usage(argv[0], 1);
 		}
 		break;
-	    case 'T':
-		val = getFlagOpt(argc, argv, &i);
+	    case 'T': {
+		const char *const val = getFlagOpt(argc, argv, &i);
 		if (!val) {
 		    fprintf(stderr, "Missing argument for -T flag\n");
 		    return dotneato_usage(argv[0], 1);
@@ -319,8 +318,9 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    return 2;
 		}
 		break;
-	    case 'K':
-		val = getFlagOpt(argc, argv, &i);
+	    }
+	    case 'K': {
+		const char *const val = getFlagOpt(argc, argv, &i);
 		if (!val) {
                     fprintf(stderr, "Missing argument for -K flag\n");
                     return dotneato_usage(argv[0], 1);
@@ -345,19 +345,21 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
                 }
 		Kflag = 1;
 		break;
+	    }
 	    case 'P':
 		P_graph = gvplugin_graph(gvc);
 		break;
-	    case 'l':
-		val = getFlagOpt(argc, argv, &i);
+	    case 'l': {
+		const char *const val = getFlagOpt(argc, argv, &i);
 		if (!val) {
 		    fprintf(stderr, "Missing argument for -l flag\n");
 		    return dotneato_usage(argv[0], 1);
 		}
 		use_library(gvc, val);
 		break;
-	    case 'o':
-		val = getFlagOpt(argc, argv, &i);
+	    }
+	    case 'o': {
+		const char *const val = getFlagOpt(argc, argv, &i);
 		if (!val) {
 		    fprintf(stderr, "Missing argument for -o flag\n");
 		    return dotneato_usage(argv[0], 1);
@@ -365,6 +367,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		if (! gvc->common.auto_outfile_names)
 		    gvjobs_output_filename(gvc, val);
 		break;
+	    }
 	    case 'q':
 		if (*rest) {
 		    v = atoi(rest);
