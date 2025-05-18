@@ -96,11 +96,9 @@ else
     elif [[ ${id} == darwin* ]]; then
         tar xfz graphviz-${GV_VERSION}.tar.gz
         pushd graphviz-${GV_VERSION}
-        ./configure --disable-dependency-tracking --prefix=$( pwd )/build --with-quartz=yes
-        make
-        make install
-        python3 ../ci/make_relocatable.py $( pwd )/build
-        tar cfz ${DIR}/graphviz-${GV_VERSION}-${ARCH}.tar.gz --options gzip:compression-level=9 build
+        ./configure --disable-dependency-tracking --prefix=/usr/local/graphviz --with-quartz=yes
+        make pkg
+        cp graphviz-${ARCH}.pkg ${DIR}/graphviz-${GV_VERSION}-${ARCH}.pkg
         popd
     elif [[ ${id} == cygwin* || ${id} == msys* ]]; then
         if [[ ${id} == msys* ]]; then

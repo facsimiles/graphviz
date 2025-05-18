@@ -57,6 +57,11 @@ deb: dist
 
 .PHONY: pkg
 pkg: dist
-	tar xzf graphviz-$(VERSION).tar.gz && make -C graphviz-$(VERSION)/macosx/build && mv graphviz-$(VERSION)/macosx/build/graphviz-*.pkg .
+	(dir=`mktemp -d` ;\
+ tar xzf graphviz-$(VERSION).tar.gz -C $${dir} --strip-components 1 ;\
+ make -C $${dir}/macosx/build PREFIX=${prefix} ;\
+ mv $${dir}/macosx/build/graphviz-*.pkg . ;\
+ rm -rf $${dir}\
+)
 
-DISTCLEANFILES = config.cache builddate.h FEATURE/* graphviz-$(VERSION)*
+DISTCLEANFILES = config.cache builddate.h FEATURE/* graphviz-$(VERSION)* graphviz-*.pkg

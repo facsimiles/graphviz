@@ -40,8 +40,7 @@ else
         apt install ./libgv-ruby_${GV_VERSION}-1_amd64.deb
         apt install ./libgv-tcl_${GV_VERSION}-1_amd64.deb
     elif [ "${ID}" = "Darwin" ]; then
-        tar xf ${DIR}/graphviz-${GV_VERSION}-${ARCH}.tar.gz
-        sudo cp -rp build/* /usr/local
+        sudo installer -verbose -target / -pkg ${DIR}/graphviz-${GV_VERSION}-${ARCH}.pkg
     else
         tar xvf ${DIR}/graphviz-${GV_VERSION}-rpms.tar.xz
         rpm --install --force -vv graphviz-*${GV_VERSION}*.rpm

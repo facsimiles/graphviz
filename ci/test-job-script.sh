@@ -32,6 +32,20 @@ if [ "${build_system}" = "cmake" ]; then
   fi
 elif [ "${ID_LIKE:-}" = "debian" ]; then
   export TCLLIBPATH=/usr/lib/tcltk/graphviz/tcl
+elif [ "${ID}" = "Darwin" ]; then
+  if [ -e /etc/paths.d/graphviz ]; then
+    PREFIX=$(cat /etc/paths.d/graphviz)
+    PREFIX=${PREFIX%/bin}
+  else
+    PREFIX=/usr/local
+  fi
+  export PATH=$PATH:${PREFIX}/bin \
+    C_INCLUDE_PATH=${PREFIX}/include \
+    DYLD_LIBRARY_PATH=${PREFIX}/lib \
+    LIBRARY_PATH=${PREFIX}/lib \
+    TCLLIBPATH=${PREFIX}/lib/graphviz/tcl \
+    PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig \
+    graphviz_ROOT=${PREFIX}
 fi
 
 python3 -m pytest -m "not slow" --junit-xml=report.xml ci/tests.py tests
