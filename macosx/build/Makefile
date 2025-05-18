@@ -27,12 +27,11 @@ graphviz-$(UNAME_M).pkg: Distribution.xml app.pkg dot.pkg
 	@echo
 	"$(PRODUCTBUILD)" --package-path . --distribution $< $@
 
-app.pkg: Component.plist Release/Graphviz.app
+app.pkg: Release/Graphviz.app
 	@echo
 	@echo PACKAGING APP...
 	@echo
-	rm -rf Release/Graphviz.app.dSYM
-	"$(PKGBUILD)" --root Release --install-location /Applications --identifier com.att.graphviz.app --component-plist $< $@
+	"$(PKGBUILD)" --install-location /Applications --identifier com.att.graphviz.app --component $< $@
 
 dot.pkg: .$(PREFIX)/bin/$(DOT) Scripts/postinstall
 	@echo
@@ -51,13 +50,14 @@ dot.pkg: .$(PREFIX)/bin/$(DOT) Scripts/postinstall
 	cd .$(PREFIX)/bin; find . -type f -maxdepth 1 | while read a;do dyld_info -linked_dylibs $$a | sed -n -E "s|($(PREFIX))(.*)|\1\2 @executable_path/..\2 $$a|p";done | xargs -t -L1 install_name_tool -change
 	cd .$(PREFIX)/lib; find . -type f -maxdepth 1 | while read a;do dyld_info -linked_dylibs $$a | sed -n -E "s|($(PREFIX)/lib)(.*)|\1\2 @loader_path\2 $$a|p";done | xargs -t -L1 install_name_tool -change
 	cd .$(PREFIX)/lib/graphviz; find . -type f -maxdepth 1 | while read a;do dyld_info -linked_dylibs $$a | sed -n -E "s|($(PREFIX)/lib)(.*)|\1\2 @loader_path/..\2 $$a|p";done | xargs -t -L1 install_name_tool -change
-	cd Release/Graphviz.app/Contents/MacOS; dyld_info -linked_dylibs Graphviz | sed -n -E "s|($(PREFIX)/lib)(.*)|\1\2 @rpath\2 Graphviz|p" | xargs -t -L1 install_name_tool -change
 
 Release/Graphviz.app: ../*.m ../*.h $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	@echo
 	@echo BUILDING GRAPHVIZ GUI...
 	@echo
 	"$(XCODEBUILD)" -project ../graphviz.xcodeproj -configuration Release VALID_ARCHS=$(UNAME_M) ALWAYS_SEARCH_USER_PATHS=NO MACOSX_DEPLOYMENT_TARGET=10.13 LD_RUNPATH_SEARCH_PATHS=$(PREFIX)/lib
+	cd $@/Contents/MacOS; dyld_info -linked_dylibs Graphviz | sed -n -E "s|($(PREFIX)/lib)(.*)|\1\2 @rpath\2 Graphviz|p" | xargs -t -L1 install_name_tool -change
+	codesign -s "-" -fv $@/Contents/MacOS/Graphviz
 
 Scripts/postinstall:
 	@echo
