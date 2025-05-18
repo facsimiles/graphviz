@@ -218,7 +218,7 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
 int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
     char c;
-    int Kflag = 0;
+    bool Kflag = false;
 
     /* establish if we are running in a CGI environment */
     HTTPServerEnVar = getenv("SERVER_NAME");
@@ -342,7 +342,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    if (GvExitOnUsage) graphviz_exit(1);
 		    return 2;
                 }
-		Kflag = 1;
+		Kflag = true;
 		break;
 	    }
 	    case 'P':
