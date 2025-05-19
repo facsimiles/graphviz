@@ -149,7 +149,7 @@ void pop_obj_state(GVJ_t *job)
 
 /* Store image map data into job, substituting for node, edge, etc.
  * names.
- * Return 1 if an assignment was made for url or tooltip or target.
+ * @return 1 if an assignment was made for ID, URL, tooltip, or target
  */
 int
 initMapData (GVJ_t* job, char* lbl, char* url, char* tooltip, char* target, char *id,
@@ -165,8 +165,8 @@ initMapData (GVJ_t* job, char* lbl, char* url, char* tooltip, char* target, char
         obj->id = strdup_and_subst_obj(id, gobj);
 	if (url && url[0]) {
             obj->url = strdup_and_subst_obj(url, gobj);
-	    assigned = 1;
         }
+        assigned = 1;
     }
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if (tooltip && tooltip[0]) {
