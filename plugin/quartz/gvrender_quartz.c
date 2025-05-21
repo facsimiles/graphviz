@@ -261,8 +261,7 @@ static void quartzgen_begin_anchor(GVJ_t * job, char *url, char *tooltip,
     if (url && url_map) {
 	/* set up the hyperlink to the given url */
 	CGContextRef context = job->context;
-	CFURLRef uri =
-	    CFURLCreateWithBytes(kCFAllocatorDefault, (const UInt8 *) url,
+	CFURLRef uri = CFURLCreateWithBytes(NULL, (const UInt8 *)url,
 				 strlen(url), kCFStringEncodingUTF8, NULL);
 	CGPDFContextSetURLForRect(context, uri,
 				  /* need to reverse the CTM on the area to get it to work */
