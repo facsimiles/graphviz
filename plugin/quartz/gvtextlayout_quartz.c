@@ -40,7 +40,7 @@ void *quartz_new_layout(char* fontname, double fontsize, char* text)
 			2,
 			&kCFTypeDictionaryKeyCallBacks,
 			&kCFTypeDictionaryValueCallBacks);
-		CFAttributedStringRef attributed = CFAttributedStringCreate(kCFAllocatorDefault, textref, attributes);
+		CFAttributedStringRef attributed = CFAttributedStringCreate(NULL, textref, attributes);
 		line = CTLineCreateWithAttributedString(attributed);
 		
 		CFRelease(attributed);
