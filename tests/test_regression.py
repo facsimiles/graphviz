@@ -1252,12 +1252,7 @@ def test_1594():
                 strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
             ),
         ),
-        pytest.param(
-            "png:cairo:quartz",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
-            ),
-        ),
+        "png:cairo:quartz",
     ),
 )
 def test_1617(device: str):
