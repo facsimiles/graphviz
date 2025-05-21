@@ -52,7 +52,18 @@ void *quartz_new_layout(char* fontname, double fontsize, char* text)
 		CFRelease(textref);
 	if (fontnameref)
 		CFRelease(fontnameref);
+// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
+// as we do not intend to modify the target through the resulting non-const
+// pointer. We need a non-const pointer simply to satisfy the type of
+// `textspan_t.layout`.
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
+#endif
 	return (void *)line;
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 }
 
 void quartz_size_layout(void *layout, double* width, double* height, double* yoffset_layout)
