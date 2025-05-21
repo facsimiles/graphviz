@@ -13,6 +13,7 @@
 #include <climits>
 #include <stdlib.h>
 #include <string.h>
+#include <util/gv_math.h>
 
 #include <gvc/gvplugin_device.h>
 #include <gvc/gvplugin_render.h>
@@ -141,9 +142,9 @@ static void gdiplusgen_begin_page(GVJ_t *job)
 	/* set up the context transformation */
 	context->ResetTransform();
 
-	context->ScaleTransform(job->scale.x, job->scale.y);
+	context->ScaleTransform(d2f(job->scale.x), d2f(job->scale.y));
 	context->RotateTransform(-job->rotation);
-	context->TranslateTransform(job->translation.x, -job->translation.y);
+	context->TranslateTransform(d2f(job->translation.x), d2f(-job->translation.y));
 }
 
 
@@ -175,7 +176,9 @@ static void gdiplusgen_textspan(GVJ_t *job, pointf p, textspan_t *span)
 
 	/* draw the text */
 	SolidBrush brush(Color(job->obj->pencolor.u.rgba [3], job->obj->pencolor.u.rgba [0], job->obj->pencolor.u.rgba [1], job->obj->pencolor.u.rgba [2]));
-	context->DrawString(&layout->text[0], layout->text.size(), layout->font.get(), PointF(p.x, -p.y), GetGenericTypographic(), &brush);
+	context->DrawString(&layout->text[0], layout->text.size(), layout->font.get(),
+	                    PointF(d2f(p.x), d2f(-p.y)), GetGenericTypographic(),
+	                    &brush);
 
 	if (span->free_layout != &gdiplus_free_layout)
 		delete layout;
@@ -188,7 +191,7 @@ static vector<PointF> points(pointf *A, int n)
 	/* convert Graphviz pointf (struct of double) to GDI+ PointF (struct of float) */
 	vector<PointF> newPoints;
 	for (int i = 0; i < n; ++i)
-		newPoints.push_back(PointF(A[i].x, -A[i].y));
+		newPoints.push_back(PointF(d2f(A[i].x), d2f(-A[i].y)));
 	return newPoints;
 }
 
@@ -204,7 +207,7 @@ static void gdiplusgen_path(GVJ_t *job, const GraphicsPath &pathname,
 
 	/* draw the given path from job pen color and pen width */
 	Pen draw_pen(Color(job->obj->pencolor.u.rgba [3], job->obj->pencolor.u.rgba [0], job->obj->pencolor.u.rgba [1], job->obj->pencolor.u.rgba [2]),
-		job->obj->penwidth);
+		d2f(job->obj->penwidth));
 
 	/*
 	 * Set line type
@@ -232,7 +235,8 @@ static void gdiplusgen_ellipse(GVJ_t *job, pointf *A, int filled)
 	GraphicsPath pathname;
 	double dx = A[1].x - A[0].x;
 	double dy = A[1].y - A[0].y;
-	pathname.AddEllipse(RectF(A[0].x - dx, -A[0].y - dy, dx * 2.0, dy * 2.0));
+	pathname.AddEllipse(RectF(d2f(A[0].x - dx), d2f(-A[0].y - dy), d2f(dx * 2),
+	                          d2f(dy * 2)));
 
 	/* draw the path */
 	gdiplusgen_path(job, pathname, filled);
