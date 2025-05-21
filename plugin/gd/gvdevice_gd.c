@@ -49,6 +49,18 @@ enum {
 	FORMAT_XBM,
 };
 
+/// convert a double to unsigned, clamping as necessary
+static unsigned d2u(double v) {
+  if (v > UINT_MAX) {
+    return UINT_MAX;
+  }
+  if (v < 0) {
+    return 0;
+  }
+  const double rounded = round(v);
+  return (unsigned)rounded;
+}
+
 static void gd_format(GVJ_t * job)
 {
     gdImagePtr im;
@@ -80,6 +92,8 @@ static void gd_format(GVJ_t * job)
 	        im->tpixels[y][x] = color;
 	    }
         }
+        gdImageResolutionX(im) = d2u(job->dpi.x);
+        gdImageResolutionY(im) = d2u(job->dpi.y);
         break;
 #endif
     default:

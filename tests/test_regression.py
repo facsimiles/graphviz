@@ -1232,16 +1232,38 @@ def test_1594():
 @pytest.mark.parametrize(
     "device",
     (
-        "png:cairo:cairo",
-        "png:cairo:devil",
+        pytest.param(
+            "png:cairo:cairo",
+            marks=pytest.mark.xfail(
+                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
+            ),
+        ),
+        pytest.param(
+            "png:cairo:devil",
+            marks=pytest.mark.xfail(
+                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
+            ),
+        ),
         "png:cairo:gd",
-        "png:cairo:gdiplus",
-        "png:cairo:gdk",
-        "png:cairo:quartz",
+        pytest.param(
+            "png:cairo:gdiplus",
+            marks=pytest.mark.xfail(
+                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
+            ),
+        ),
+        pytest.param(
+            "png:cairo:gdk",
+            marks=pytest.mark.xfail(
+                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
+            ),
+        ),
+        pytest.param(
+            "png:cairo:quartz",
+            marks=pytest.mark.xfail(
+                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
+            ),
+        ),
     ),
-)
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
 )
 def test_1617(device: str):
     """
