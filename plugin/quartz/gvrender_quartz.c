@@ -130,7 +130,7 @@ static void quartzgen_begin_page(GVJ_t * job)
 					     job->common->info[1]),
 		    job->obj->type ==
 			ROOTGRAPH_OBJTYPE ?
-			CFStringCreateWithBytesNoCopy(kCFAllocatorDefault,
+			CFStringCreateWithBytesNoCopy(NULL,
 						      (const UInt8 *) agnameof(job->obj->u.g),
 						      strlen(agnameof(job->obj->u.g)),
 						      kCFStringEncodingUTF8,
