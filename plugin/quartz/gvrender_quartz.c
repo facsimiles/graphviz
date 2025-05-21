@@ -164,9 +164,11 @@ static void quartzgen_begin_page(GVJ_t * job)
 
 	default:		/* bitmap formats */
 	    {
-		size_t bytes_per_row =
-		    (job->width * BYTES_PER_PIXEL +
-		     BYTE_ALIGN) & ~BYTE_ALIGN;
+		size_t bytes_per_row = job->width * BYTES_PER_PIXEL;
+		// align up to a 16-byte boundary
+		if (bytes_per_row % 16 != 0) {
+		    bytes_per_row += 16 - (bytes_per_row % 16);
+		}
 
 		void *buffer = NULL;
 

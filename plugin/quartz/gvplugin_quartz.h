@@ -42,7 +42,6 @@ typedef enum {
 	FORMAT_TGA
 } format_type;
 
-static const int BYTE_ALIGN = 15;			/* align to 16 bytes */
 static const int BITS_PER_COMPONENT = 8;	/* bits per color component */
 
 CFStringRef format_to_uti(format_type format);
