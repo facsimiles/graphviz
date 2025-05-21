@@ -36,7 +36,7 @@ void *quartz_new_layout(char* fontname, double fontsize, char* text)
 			NULL,
 			(const void**)attributeNames,
 			(const void**)attributeValues,
-			2,
+			sizeof(attributeNames) / sizeof(attributeNames[0]),
 			&kCFTypeDictionaryKeyCallBacks,
 			&kCFTypeDictionaryValueCallBacks);
 		CFAttributedStringRef attributed = CFAttributedStringCreate(NULL, textref, attributes);
