@@ -124,7 +124,7 @@ static void quartzgen_begin_page(GVJ_t * job)
 		    kCGPDFContextTitle
 		};
 		CFStringRef auxiliaryValues[] = {
-		    CFStringCreateWithFormat(kCFAllocatorDefault, NULL,
+		    CFStringCreateWithFormat(NULL, NULL,
 					     CFSTR("%s %s"),
 					     job->common->info[0],
 					     job->common->info[1]),
