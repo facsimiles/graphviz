@@ -12,7 +12,6 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 #include <TargetConditionals.h>
 
 #include <gvc/gvplugin_textlayout.h>
@@ -24,8 +23,8 @@
 
 void *quartz_new_layout(char* fontname, double fontsize, char* text)
 {
-	CFStringRef fontnameref = CFStringCreateWithBytes(NULL, (const UInt8 *)fontname, strlen(fontname), kCFStringEncodingUTF8, false);
-	CFStringRef textref = CFStringCreateWithBytes(NULL, (const UInt8 *)text, strlen(text), kCFStringEncodingUTF8, false);
+	CFStringRef fontnameref = CFStringCreateWithCString(NULL, fontname, kCFStringEncodingUTF8);
+	CFStringRef textref = CFStringCreateWithCString(NULL, text, kCFStringEncodingUTF8);
 	CTLineRef line = NULL;
 	
 	if (fontnameref && textref) {
