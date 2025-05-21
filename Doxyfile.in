@@ -174,7 +174,7 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = .
+STRIP_FROM_PATH        = . @top_srcdir@
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -906,10 +906,6 @@ WARN_LOGFILE           =
 # directories like /usr/src/myproject. Separate the files or directories with
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
-
-# Include root directory `graphviz` into the doxygen
-# because doxygen builds directory dependency graphs only for root children,
-# but not for root directory itself.
 
 INPUT                  = @top_srcdir@/cmd \
                          @top_srcdir@/lib \
@@ -2339,7 +2335,7 @@ PREDEFINED             = "PRINTF_LIKE(x,y)=" \
                          PATHPLAN_API \
                          RENDER_API \
                          UTILS_API \
-			 CGHDR_API \
+                         CGHDR_API \
                          XDOT_API
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
