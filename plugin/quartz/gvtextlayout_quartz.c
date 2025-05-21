@@ -34,7 +34,7 @@ void *quartz_new_layout(char* fontname, double fontsize, char* text)
 		CFTypeRef attributeNames[] = { kCTFontAttributeName, kCTForegroundColorFromContextAttributeName };
 		CFTypeRef attributeValues[] = { font, kCFBooleanTrue };
 		CFDictionaryRef attributes = CFDictionaryCreate(
-			kCFAllocatorDefault,
+			NULL,
 			(const void**)attributeNames,
 			(const void**)attributeValues,
 			2,

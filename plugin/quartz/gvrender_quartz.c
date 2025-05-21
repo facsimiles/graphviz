@@ -139,7 +139,7 @@ static void quartzgen_begin_page(GVJ_t * job)
 			: CFSTR("")
 		};
 		CFDictionaryRef auxiliaryInfo =
-		    CFDictionaryCreate(kCFAllocatorDefault,
+		    CFDictionaryCreate(NULL,
 				       (const void **) &auxiliaryKeys,
 				       (const void **) &auxiliaryValues,
 				       sizeof(auxiliaryValues) /
