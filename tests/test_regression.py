@@ -1245,12 +1245,7 @@ def test_1594():
             ),
         ),
         "png:cairo:gd",
-        pytest.param(
-            "png:cairo:gdiplus",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
-            ),
-        ),
+        "png:cairo:gdiplus",
         pytest.param(
             "png:cairo:gdk",
             marks=pytest.mark.xfail(
