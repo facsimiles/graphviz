@@ -8,6 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include <guiddef.h>
 #include <gvc/gvplugin.h>
 
 #include "gvplugin_gdiplus.h"
@@ -71,7 +72,7 @@ void SaveBitmapToStream(Bitmap &bitmap, IStream *stream, int format)
 	ImageCodecInfo *codecs = (ImageCodecInfo *)&codec_buffer.front();
 	GetImageEncoders(encoderNum, encoderSize, codecs);
 	for (UINT i = 0; i < encoderNum; ++i)
-		if (memcmp(&(format_id[format]), &codecs[i].FormatID, sizeof(GUID)) == 0) {
+		if (IsEqualGUID(format_id[format], codecs[i].FormatID)) {
 			bitmap.Save(stream, &codecs[i].Clsid, nullptr);
 			break;
 		}
