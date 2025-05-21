@@ -119,11 +119,11 @@ static void quartzgen_begin_page(GVJ_t * job)
 	case FORMAT_PDF:
 	    {
 		/* create the auxiliary info for PDF content, author and title */
-		CFStringRef auxiliaryKeys[] = {
+		const void *auxiliaryKeys[] = {
 		    kCGPDFContextCreator,
 		    kCGPDFContextTitle
 		};
-		CFStringRef auxiliaryValues[] = {
+		const void *auxiliaryValues[] = {
 		    CFStringCreateWithFormat(NULL, NULL,
 					     CFSTR("%s %s"),
 					     job->common->info[0],
@@ -138,8 +138,8 @@ static void quartzgen_begin_page(GVJ_t * job)
 		};
 		CFDictionaryRef auxiliaryInfo =
 		    CFDictionaryCreate(NULL,
-				       (const void **) &auxiliaryKeys,
-				       (const void **) &auxiliaryValues,
+				       auxiliaryKeys,
+				       auxiliaryValues,
 				       sizeof(auxiliaryValues) /
 				       sizeof(auxiliaryValues[0]),
 				       &kCFTypeDictionaryKeyCallBacks,
