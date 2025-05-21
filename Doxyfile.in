@@ -2739,4 +2739,4 @@ GENERATE_LEGEND        = YES
 # files.
 # The default value is: YES.
 
-DOT_CLEANUP            = NO
+DOT_CLEANUP            = YES
