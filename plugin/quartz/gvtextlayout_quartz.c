@@ -24,8 +24,8 @@
 
 void *quartz_new_layout(char* fontname, double fontsize, char* text)
 {
-	CFStringRef fontnameref = CFStringCreateWithBytes(NULL, (const UInt8 *)fontname, strlen(fontname), kCFStringEncodingUTF8, FALSE);
-	CFStringRef textref = CFStringCreateWithBytes(NULL, (const UInt8 *)text, strlen(text), kCFStringEncodingUTF8, FALSE);
+	CFStringRef fontnameref = CFStringCreateWithBytes(NULL, (const UInt8 *)fontname, strlen(fontname), kCFStringEncodingUTF8, false);
+	CFStringRef textref = CFStringCreateWithBytes(NULL, (const UInt8 *)text, strlen(text), kCFStringEncodingUTF8, false);
 	CTLineRef line = NULL;
 	
 	if (fontnameref && textref) {
