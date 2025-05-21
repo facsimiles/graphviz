@@ -1232,12 +1232,6 @@ def test_1594():
 @pytest.mark.parametrize(
     "device",
     (
-        pytest.param(
-            "png:cairo:devil",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
-            ),
-        ),
         "png:cairo:gd",
         "png:cairo:gdiplus",
         pytest.param(
