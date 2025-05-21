@@ -1233,12 +1233,6 @@ def test_1594():
     "device",
     (
         pytest.param(
-            "png:cairo:cairo",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
-            ),
-        ),
-        pytest.param(
             "png:cairo:devil",
             marks=pytest.mark.xfail(
                 strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
