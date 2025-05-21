@@ -30,12 +30,13 @@ void *quartz_new_layout(char* fontname, double fontsize, char* text)
 	if (fontnameref && textref) {
 		/* set up the Core Text line */
 		CTFontRef font = CTFontCreateWithName(fontnameref, fontsize, NULL);
-		CFTypeRef attributeNames[] = { kCTFontAttributeName, kCTForegroundColorFromContextAttributeName };
-		CFTypeRef attributeValues[] = { font, kCFBooleanTrue };
+		const void *attributeNames[] = {
+		  kCTFontAttributeName, kCTForegroundColorFromContextAttributeName};
+		const void *attributeValues[] = {font, kCFBooleanTrue};
 		CFDictionaryRef attributes = CFDictionaryCreate(
 			NULL,
-			(const void**)attributeNames,
-			(const void**)attributeValues,
+			attributeNames,
+			attributeValues,
 			sizeof(attributeNames) / sizeof(attributeNames[0]),
 			&kCFTypeDictionaryKeyCallBacks,
 			&kCFTypeDictionaryValueCallBacks);
