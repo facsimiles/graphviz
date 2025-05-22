@@ -4884,11 +4884,6 @@ def test_2599():
         [mingle, "-v", "999"], check=False, text=True, input=processed
     )
 
-    # Address Sanitizer catches segfaults and turns them into non-zero exits, so ignore
-    # testing in this scenario
-    if is_asan_instrumented(mingle):
-        pytest.skip("crashes of mingle are harder to detect under ASan")
-
     assert proc.returncode in (0, 1), "mingle crashed"
 
 
