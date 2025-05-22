@@ -4862,9 +4862,6 @@ def test_2598_1(tmp_path: Path):
 
 @pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
 @pytest.mark.skipif(which("mingle") is None, reason="mingle not available")
-@pytest.mark.xfail(
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2599", strict=True
-)
 def test_2599():
     """
     mingle should not segfault when processing simple graphs
