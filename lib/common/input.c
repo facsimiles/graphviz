@@ -502,7 +502,6 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
     graph_t *g = NULL;
     static char *fn;
     static FILE *fp;
-    static FILE *oldfp;
     static int gidx;
 
     while (!g) {
@@ -520,10 +519,6 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	}
 	if (fp == NULL)
 	    break;
-	if (oldfp != fp) {
-	    agsetfile(fn ? fn : "<stdin>");
-	    oldfp = fp;
-	}
 	g = agconcat(NULL, fn ? fn : "<stdin>", fp, NULL);
 	if (g) {
 	    gvg_init(gvc, g, fn, gidx++);
@@ -531,7 +526,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	}
 	if (fp != stdin)
 	    fclose (fp);
-	oldfp = fp = NULL;
+	fp = NULL;
 	gidx = 0;
     }
     return g;
