@@ -833,7 +833,10 @@ static void chkClose(Agraph_t *g) {
     agclose(g);
 }
 
-static Agraph_t *ing_read(void *fp) { return readG(fp); }
+static Agraph_t *ing_read(const char *filename, void *fp) {
+  (void)filename;
+  return readG(fp);
+}
 
 /// collective managed state used in `gvpr_core`
 typedef struct {

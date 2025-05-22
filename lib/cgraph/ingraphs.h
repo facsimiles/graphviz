@@ -48,14 +48,16 @@ extern "C" {
 	int ctr;
 	int ingraphs;
 	void *fp;
-	Agraph_t *(*readf)(void*);
+	Agraph_t *(*readf)(const char *, void *);
 	bool heap;
 	unsigned errors;
     } ingraph_state;
 
 CGHDR_API ingraph_state *newIngraph(ingraph_state *, char **);
-CGHDR_API ingraph_state *newIng(ingraph_state *, char **, Agraph_t *(*readf)(void*));
-CGHDR_API ingraph_state *newIngGraphs(ingraph_state *, Agraph_t**, Agraph_t *(*readf)(void*));
+CGHDR_API ingraph_state *newIng(ingraph_state *, char **,
+                                Agraph_t *(*readf)(const char *, void *));
+CGHDR_API ingraph_state *newIngGraphs(ingraph_state *, Agraph_t **,
+                                      Agraph_t *(*readf)(const char *, void *));
 CGHDR_API void closeIngraph(ingraph_state * sp);
 CGHDR_API Agraph_t *nextGraph(ingraph_state *);
 CGHDR_API char *fileName(ingraph_state *);
