@@ -50,8 +50,6 @@ static void nextFile(ingraph_state * sp)
 	    }
 	}
     }
-    if (rv)
-	agsetfile(fileName(sp));
     sp->fp = rv;
 }
 
