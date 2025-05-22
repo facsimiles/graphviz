@@ -291,7 +291,7 @@ bool CFrmSettings::createLayout() {
                     QLatin1Char('{') +
                         WIDGET(QTextEdit, teAttributes)->toPlainText());
 
-  /* Reset line number and file name;
+  /* Reset file name;
    * If known, might want to use real name
    */
   agsetfile("<gvedit>");
