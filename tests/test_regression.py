@@ -5544,19 +5544,22 @@ def test_2648(tmp_path: Path):
     # teach the runtime linker how to find the plugins
     env = os.environ.copy()
     ld_library_path = f"{core.parent}:{dot_layout.parent}"
+    prefix = ""
     if is_macos():
         if "DYLD_LIBRARY_PATH" in env:
             env["DYLD_LIBRARY_PATH"] = f"{ld_library_path}:{env['DYLD_LIBRARY_PATH']}"
         else:
             env["DYLD_LIBRARY_PATH"] = ld_library_path
+        prefix = f"env DYLD_LIBRARY_PATH={env['DYLD_LIBRARY_PATH']} "
     else:
         if "LD_LIBRARY_PATH" in env:
             env["LD_LIBRARY_PATH"] = f"{ld_library_path}:{env['LD_LIBRARY_PATH']}"
         else:
             env["LD_LIBRARY_PATH"] = ld_library_path
+        prefix = f"env LD_LIBRARY_PATH={env['LD_LIBRARY_PATH']} "
 
     # run the test code
-    print(f"+ {shlex.quote(str(exe))}")
+    print(f"+ {prefix}{shlex.quote(str(exe))}")
     subprocess.run([exe], env=env, check=True)
 
 
