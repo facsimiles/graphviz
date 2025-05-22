@@ -131,8 +131,7 @@ ingraph_state *newIngGraphs(ingraph_state *sp, Agraph_t **graphs,
 }
 
 static Agraph_t *dflt_read(const char *filename, void *fp) {
-  (void)filename;
-  return agread(fp, NULL);
+  return agconcat(NULL, filename, fp, NULL);
 }
 
 /* At present, we require opf to be non-NULL. In
