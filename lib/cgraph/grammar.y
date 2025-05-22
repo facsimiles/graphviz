@@ -636,12 +636,6 @@ static void graph_error(aagscan_t scanner)
 	}
 }
 
-static const char *InputFile;
-
-  /* (Re)set file:
-   */
-void agsetfile(const char* f) { InputFile = f; }
-
 Agraph_t *agconcat(Agraph_t *g, const char *filename, void *chan,
                    Agdisc_t *disc) {
 	aagscan_t scanner = NULL;
@@ -650,13 +644,8 @@ Agraph_t *agconcat(Agraph_t *g, const char *filename, void *chan,
 		.Ifile = chan,
 		.G = g,
 		.line_num = 1,
+		.InputFile = filename,
 	};
-	if (filename != NULL) {
-		extra.InputFile = filename;
-	} else if (InputFile != NULL) {
-		agxbput(&extra.InputFileBuffer, InputFile);
-		extra.InputFile = agxbuse(&extra.InputFileBuffer);
-	}
 	if (aaglex_init_extra(&extra, &scanner)) {
 		return NULL;
 	}

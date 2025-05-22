@@ -121,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The `agconcat` function now takes an extra `filename` parameter.
   If you are updating calling code, passing `NULL` for this parameter is a
   reasonable migration strategy.
+- **Breaking**: The `agsetfile` function has been removed.
 
 ### Fixed
 

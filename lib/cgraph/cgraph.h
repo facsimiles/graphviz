@@ -455,9 +455,6 @@ CGRAPH_API Agraph_t *agmemread(const char *cp);
 
 CGRAPH_API Agraph_t *agmemconcat(Agraph_t *g, const char *cp);
 
-CGRAPH_API void agsetfile(const char *);
-///< sets the current file name for subsequent error reporting
-
 CGRAPH_API Agraph_t *agconcat(Agraph_t *g, const char *filename, void *chan,
                               Agdisc_t *disc);
 /**< @brief merges the file contents with a pre-existing graph
