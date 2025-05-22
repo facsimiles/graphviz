@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <time.h>
 #include <string.h>
 #include <math.h>
@@ -26,6 +27,7 @@
 #include <sfdpgen/sfdp.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/gv_math.h>
 #include <util/unused.h>
 
 #define node_degree(i) (ia[(i)+1] - ia[(i)])
@@ -163,11 +165,9 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
   }
 
   sm->Lw = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
+  assert(sm->Lw != NULL);
   sm->Lwd = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
-  if (!(sm->Lw) || !(sm->Lwd)) {
-    StressMajorizationSmoother_delete(sm);
-    return NULL;
-  }
+  assert(sm->Lwd != NULL);
 
   iw = sm->Lw->ia; jw = sm->Lw->ja;
 
@@ -294,23 +294,26 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
   /* solve a stress model to achieve the ideal distance among a sparse set of edges recorded in A.
      A must be a real matrix.
    */
-  int i, j, k, m = A->m, *ia, *ja, *iw, *jw, *id, *jd;
-  int nz;
-  double *d, *w, *lambda;
-  double diag_d, diag_w, *a, dist, s = 0, stop = 0, sbot = 0;
-  double xdot = 0;
+  int m = A->m;
+  double stop = 0, sbot = 0;
 
   assert(SparseMatrix_is_symmetric(A, false) && A->type == MATRIX_TYPE_REAL);
 
   /* if x is all zero, make it random */
-  for (i = 0; i < m*dim; i++) xdot += x[i]*x[i];
-  if (xdot == 0){
-    for (i = 0; i < m*dim; i++) x[i] = 72*drand();
+  bool has_nonzero = false;
+  for (int i = 0; i < m * dim; i++) {
+    if (!is_exactly_equal(x[i], 0)) {
+	    has_nonzero = true;
+	    break;
+    }
+  }
+  if (!has_nonzero) {
+    for (int i = 0; i < m*dim; i++) x[i] = 72*drand();
   }
 
-  ia = A->ia;
-  ja = A->ja;
-  a = A->a;
+  const int *const ia = A->ia;
+  const int *const ja = A->ja;
+  const double *const a = A->a;
 
   StressMajorizationSmoother sm = gv_alloc(sizeof(struct StressMajorizationSmoother_struct));
   sm->scaling = 1.;
@@ -320,32 +323,33 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
   sm->tol_cg = 0.01;
   sm->maxit_cg = floor(sqrt(A->m));
 
-  lambda = sm->lambda = gv_calloc(m, sizeof(double));
+  double *const lambda = sm->lambda = gv_calloc(m, sizeof(double));
 
-  nz = A->nz;
+  int nz = A->nz;
 
   sm->Lw = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
+  assert(sm->Lw != NULL);
   sm->Lwd = SparseMatrix_new(m, m, nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
-  if (!(sm->Lw) || !(sm->Lwd)) {
-    StressMajorizationSmoother_delete(sm);
-    return NULL;
-  }
+  assert(sm->Lwd != NULL);
 
-  iw = sm->Lw->ia; jw = sm->Lw->ja;
-  id = sm->Lwd->ia; jd = sm->Lwd->ja;
-  w = sm->Lw->a;
-  d = sm->Lwd->a;
+  int *const iw = sm->Lw->ia;
+  int *const jw = sm->Lw->ja;
+  int *const id = sm->Lwd->ia;
+  int *const jd = sm->Lwd->ja;
+  double *const w = sm->Lw->a;
+  double *const d = sm->Lwd->a;
   iw[0] = id[0] = 0;
 
   nz = 0;
-  for (i = 0; i < m; i++){
-    diag_d = diag_w = 0;
-    for (j = ia[i]; j < ia[i+1]; j++){
-      k = ja[j];
+  for (int i = 0; i < m; i++){
+    double diag_d = 0;
+    double diag_w = 0;
+    for (int j = ia[i]; j < ia[i+1]; j++){
+      const int k = ja[j];
       if (k != i){
 
 	jw[nz] = k;
-	dist = a[j];
+	const double dist = a[j];
 	w[nz] = -1;
 	diag_w += w[nz];
 	jd[nz] = k;
@@ -370,12 +374,12 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
     iw[i+1] = nz;
     id[i+1] = nz;
   }
-  s = stop/sbot;
+  const double s = stop / sbot;
   if (s == 0) {
     StressMajorizationSmoother_delete(sm);
     return NULL;
   }
-  for (i = 0; i < nz; i++) d[i] *= s;
+  for (int i = 0; i < nz; i++) d[i] *= s;
 
 
   sm->scaling = s;
@@ -430,14 +434,14 @@ static void get_edge_label_matrix(relative_position_constraints data, int m, int
        j  -0.5 0.25  0.25
        k  -0.5 0.25  0.25
        in general, if i has m neighbors j, k, ..., then
-       p_ii = 1
-       p_jj = 1/m^2
-       p_ij = -1/m
-       p jk = 1/m^2
-       .    i     j    k
-       i    1    -1/m  -1/m ...
-       j   -1/m  1/m^2 1/m^2 ...
-       k   -1/m  1/m^2 1/m^2 ...
+       pᵢᵢ = 1
+       pⱼⱼ = 1 ÷ m²
+       pᵢⱼ = -1 ÷ m
+       pⱼₖ = 1 ÷ m²
+       .    i       j        k
+       i    1       -1 ÷ m   -1 ÷ m ...
+       j   -1 ÷ m   1 ÷ m²   1 ÷ m² ...
+       k   -1 ÷ m   1 ÷ m²   1 ÷ m² ...
     */
     if (!irn){
       assert((!jcn) && (!val));
@@ -516,7 +520,8 @@ static UNUSED double get_stress(int m, int dim, int *iw, int *jw, double *w,
                                 double *d, double *x, double scaling) {
   int i, j;
   double res = 0., dist;
-  /* we use the fact that d_ij = w_ij*graph_dist(i,j). Also, d_ij and x are scalinged by *scaling, so divide by it to get actual unscaled streee. */
+  // We use the fact that dᵢⱼ = wᵢⱼ × graph_dist(i, j). Also, dᵢⱼ and x are
+  // scaled by ×scaling, so divide by it to get actual unscaled stress.
   for (i = 0; i < m; i++){
     for (j = iw[i]; j < iw[i+1]; j++){
       if (i == jw[j]) {
@@ -722,7 +727,7 @@ TriangleSmoother TriangleSmoother_new(SparseMatrix A, int dim, double *x,
 
   SparseMatrix_delete(B);
   sm->Lwd = SparseMatrix_copy(sm->Lw);
-  if (!(sm->Lw) || !(sm->Lwd)) {
+  if (!sm->Lw || !sm->Lwd) {
     TriangleSmoother_delete(sm);
     return NULL;
   }
@@ -837,10 +842,7 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
   }
 
   sm->D = SparseMatrix_new(m, m, nz, MATRIX_TYPE_REAL, FORMAT_CSR);
-  if (!(sm->D)){
-    SpringSmoother_delete(sm);
-    return NULL;
-  }
+  assert(sm->D != NULL);
 
   id = sm->D->ia; jd = sm->D->ja;
   d = sm->D->a;
@@ -875,12 +877,11 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
     id[i+1] = nz;
   }
   sm->D->nz = nz;
-  sm->ctrl = spring_electrical_control_new();
-  *(sm->ctrl) = *ctrl;
-  sm->ctrl->random_start = false;
-  sm->ctrl->multilevels = 1;
-  sm->ctrl->step /= 2;
-  sm->ctrl->maxiter = 20;
+  sm->ctrl = ctrl;
+  sm->ctrl.random_start = false;
+  sm->ctrl.multilevels = 1;
+  sm->ctrl.step /= 2;
+  sm->ctrl.maxiter = 20;
 
   free(mask);
   free(avg_dist);
@@ -893,16 +894,12 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
 void SpringSmoother_delete(SpringSmoother sm){
   if (!sm) return;
   if (sm->D) SparseMatrix_delete(sm->D);
-  if (sm->ctrl) spring_electrical_control_delete(sm->ctrl);
 }
-
-
-
 
 void SpringSmoother_smooth(SpringSmoother sm, SparseMatrix A, int dim, double *x){
   int flag = 0;
 
-  spring_electrical_spring_embedding(dim, A, sm->D, sm->ctrl, x, &flag);
+  spring_electrical_spring_embedding(dim, A, sm->D, &sm->ctrl, x, &flag);
   assert(!flag);
 
 }
@@ -918,13 +915,13 @@ void post_process_smoothing(int dim, SparseMatrix A, spring_electrical_control c
   cpu = clock();
 #endif
 
-  switch (ctrl->smoothing){
+  switch (ctrl.smoothing){
   case SMOOTHING_RNG:
   case SMOOTHING_TRIANGLE:{
     TriangleSmoother sm;
 
     if (A->m > 2) {  /* triangles need at least 3 nodes */
-      if (ctrl->smoothing == SMOOTHING_RNG){
+      if (ctrl.smoothing == SMOOTHING_RNG){
         sm = TriangleSmoother_new(A, dim, x, false);
       } else {
         sm = TriangleSmoother_new(A, dim, x, true);
@@ -941,11 +938,11 @@ void post_process_smoothing(int dim, SparseMatrix A, spring_electrical_control c
       StressMajorizationSmoother sm;
       int dist_scheme = IDEAL_AVG_DIST;
 
-      if (ctrl->smoothing == SMOOTHING_STRESS_MAJORIZATION_GRAPH_DIST){
+      if (ctrl.smoothing == SMOOTHING_STRESS_MAJORIZATION_GRAPH_DIST){
 	dist_scheme = IDEAL_GRAPH_DIST;
-      } else if (ctrl->smoothing == SMOOTHING_STRESS_MAJORIZATION_AVG_DIST){
+      } else if (ctrl.smoothing == SMOOTHING_STRESS_MAJORIZATION_AVG_DIST){
 	dist_scheme = IDEAL_AVG_DIST;
-      } else if (ctrl->smoothing == SMOOTHING_STRESS_MAJORIZATION_POWER_DIST){
+      } else if (ctrl.smoothing == SMOOTHING_STRESS_MAJORIZATION_POWER_DIST){
 	dist_scheme = IDEAL_POWER_DIST;
       }
 

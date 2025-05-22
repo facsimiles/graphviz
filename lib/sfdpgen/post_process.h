@@ -17,8 +17,8 @@ enum {SM_SCHEME_NORMAL, SM_SCHEME_NORMAL_ELABEL, SM_SCHEME_STRESS};
 
 struct StressMajorizationSmoother_struct {
   SparseMatrix D;/* distance matrix. The diagonal is removed hence the ia, ja structure is different from Lw and Lwd!! */
-  SparseMatrix Lw;/* the weighted laplacian. with offdiag = -1/w_ij */
-  SparseMatrix Lwd;/* the laplacian like matrix with offdiag = -scaling*d_ij/w_ij. RHS in stress majorization = Lwd.x */
+  SparseMatrix Lw; ///< the weighted laplacian. with offdiag = -1 ÷ wᵢⱼ
+  SparseMatrix Lwd; ///< the laplacian like matrix with offdiag = -scaling × dᵢⱼ ÷ wᵢⱼ. RHS in stress majorization = Lwd.x
   double* lambda;
   void (*data_deallocator)(void*);
   void *data;
