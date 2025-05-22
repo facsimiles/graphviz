@@ -5466,7 +5466,7 @@ def test_2641(testcase: str):
     run_c(c_src, link=["cgraph"])
 
 
-def _find_plugin_so(plugin: str) -> Path:
+def _find_plugin_so(plugin: str) -> Optional[Path]:
     """
     find the absolute path to the dynamic library for a given Graphviz plugin
 
