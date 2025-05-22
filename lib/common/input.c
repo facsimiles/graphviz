@@ -524,7 +524,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	    agsetfile(fn ? fn : "<stdin>");
 	    oldfp = fp;
 	}
-	g = agread(fp,NULL);
+	g = agconcat(NULL, fn ? fn : "<stdin>", fp, NULL);
 	if (g) {
 	    gvg_init(gvc, g, fn, gidx++);
 	    break;
