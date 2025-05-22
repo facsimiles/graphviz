@@ -118,6 +118,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   output. #1617
 - The Quartz plugin’s PNG output (`-Tpng:cairo:quartz`) now sets DPI in the
   written PNG. #1617
+- **Breaking**: The `agconcat` function now takes an extra `filename` parameter.
+  If you are updating calling code, passing `NULL` for this parameter is a
+  reasonable migration strategy.
 
 ### Fixed
 

@@ -84,7 +84,7 @@ static Agraph_t *agmemread0(Agraph_t *arg_g, const char *cp)
 
     disc.id = &AgIdDisc;
     disc.io = &memIoDisc;  
-    if (arg_g) g = agconcat(arg_g, &rdr, &disc);
+    if (arg_g) g = agconcat(arg_g, NULL, &rdr, &disc);
     else g = agread (&rdr, &disc);
     /* Null out filename and reset line number 
      * The name may have been set with a ppDirective, and

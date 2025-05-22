@@ -45,7 +45,7 @@ int		agclose(Agraph_t *g);
 Agraph_t	*agread(void *channel, Agdisc_t *);
 Agraph_t	*agmemread(char *);
 void		agsetfile(char *file_name);
-Agraph_t	*agconcat(Agraph_t *g, void *channel, Agdisc_t *disc)
+Agraph_t	*agconcat(Agraph_t *g, const char *filename, void *channel, Agdisc_t *disc);
 int		agwrite(Agraph_t *g, void *channel);
 int		agnnodes(Agraph_t *g),agnedges(Agraph_t *g), agnsubg(Agraph_t * g);
 int		agisdirected(Agraph_t * g),agisundirected(Agraph_t * g),agisstrict(Agraph_t * g), agissimple(Agraph_t * g); 

@@ -642,8 +642,8 @@ static const char *InputFile;
    */
 void agsetfile(const char* f) { InputFile = f; }
 
-Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
-{
+Agraph_t *agconcat(Agraph_t *g, const char *filename, void *chan,
+                   Agdisc_t *disc) {
 	aagscan_t scanner = NULL;
 	aagextra_t extra = {
 		.Disc = disc ? disc : &AgDefaultDisc,
@@ -651,7 +651,9 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 		.G = g,
 		.line_num = 1,
 	};
-	if (InputFile) {
+	if (filename != NULL) {
+		extra.InputFile = filename;
+	} else if (InputFile != NULL) {
 		agxbput(&extra.InputFileBuffer, InputFile);
 		extra.InputFile = agxbuse(&extra.InputFileBuffer);
 	}
@@ -668,5 +670,7 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 	return extra.G;
 }
 
-Agraph_t *agread(void *fp, Agdisc_t *disc) {return agconcat(NULL,fp,disc); }
+Agraph_t *agread(void *fp, Agdisc_t *disc) {
+  return agconcat(NULL, NULL, fp, disc);
+}
 
