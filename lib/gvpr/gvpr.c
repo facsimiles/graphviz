@@ -834,8 +834,13 @@ static void chkClose(Agraph_t *g) {
 }
 
 static Agraph_t *ing_read(const char *filename, void *fp) {
-  (void)filename;
-  return readG(fp);
+  Agraph_t *g = agconcat(NULL, filename, fp, NULL);
+  if (g) {
+    aginit(g, AGRAPH, UDATA, sizeof(gdata), false);
+    aginit(g, AGNODE, UDATA, sizeof(ndata), false);
+    aginit(g, AGEDGE, UDATA, sizeof(edata), false);
+  }
+  return g;
 }
 
 /// collective managed state used in `gvpr_core`
