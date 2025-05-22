@@ -5138,7 +5138,7 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
 )
 def test_2619_3():
     """
-    loading a JPEG image shall not cause a crash in the GD plugin when the ouput format is PDF
+    loading a JPEG image shall not cause a crash in the GD plugin when the output format is PDF
     https://gitlab.com/graphviz/graphviz/-/issues/2619
     """
 
