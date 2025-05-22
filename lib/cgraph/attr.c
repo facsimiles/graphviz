@@ -27,8 +27,6 @@
 
 /* to create a graph's data dictionary */
 
-#define MINATTR	4		/* minimum allocation */
-
 static void freesym(void *obj);
 
 Dtdisc_t AgDataDictDisc = {
@@ -161,7 +159,7 @@ Agsym_t *agattrsym(void *obj, char *name)
 
 /* to create a graph's, node's edge's string attributes */
 
-char *AgDataRecName = "_AG_strdata";
+const char AgDataRecName[] = "_AG_strdata";
 
 static int topdictsize(Agobj_t * obj)
 {
@@ -174,7 +172,6 @@ static int topdictsize(Agobj_t * obj)
 /* g can be either the enclosing graph, or ProtoGraph */
 static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
 {
-    int sz;
     Agattr_t *rec;
     Agsym_t *sym;
     Dict_t *datadict;
@@ -184,10 +181,7 @@ static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
     assert(datadict);
     if (rec->dict == NULL) {
 	rec->dict = agdictof(agroot(context), AGTYPE(obj));
-	/* don't malloc(0) */
-	sz = topdictsize(obj);
-	if (sz < MINATTR)
-	    sz = MINATTR;
+	const int sz = topdictsize(obj);
 	rec->str = gv_calloc((size_t)sz, sizeof(char *));
 	/* doesn't call agxset() so no obj-modified callbacks occur */
 	for (sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym)) {
@@ -200,7 +194,7 @@ static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
     } else {
 	assert(rec->dict == datadict);
     }
-    return (Agrec_t *) rec;
+    return &rec->h;
 }
 
 static void freeattr(Agobj_t * obj, Agattr_t * attr)
@@ -233,9 +227,8 @@ static void addattr(Agraph_t *g, Agobj_t *obj, void *symbol) {
     Agsym_t *const sym = symbol;
     Agattr_t *attr = agattrrec(obj);
     assert(attr != NULL);
-    if (sym->id >= MINATTR)
-	attr->str = gv_recalloc(attr->str, (size_t)sym->id, (size_t)sym->id + 1,
-	                        sizeof(char *));
+    attr->str = gv_recalloc(attr->str, (size_t)sym->id, (size_t)sym->id + 1,
+                            sizeof(char *));
     if (aghtmlstr(sym->defval)) {
 	attr->str[sym->id] = agstrdup_html(g, sym->defval);
     } else {
