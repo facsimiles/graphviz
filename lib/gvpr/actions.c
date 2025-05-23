@@ -541,7 +541,7 @@ int deleteObj(Agraph_t *g, Agobj_t *obj) {
 
 /* sfioWrite:
  * If the graph is passed in from a library, its output discipline
- * might not use sfio. In this case, we push an sfio discipline on
+ * might not use stdio. In this case, we push a stdio discipline on
  * the graph, write it, and then pop it off.
  */
 int sfioWrite(Agraph_t *g, FILE *fp) {
