@@ -51,24 +51,6 @@ static void *int2ptr(long long i) { return (void *)(intptr_t)i; }
 
 static long long ptr2int(const void *p) { return (long long)(intptr_t)p; }
 
-static int iofread(void *chan, char *buf, int bufsize) {
-  FILE *fp = chan;
-
-  return (int)read(fileno(fp), buf, bufsize);
-}
-
-static int ioputstr(void *chan, const char *str) { return fputs(str, chan); }
-
-static int ioflush(void *chan) { return fflush(chan); }
-
-static Agiodisc_t gprIoDisc = {iofread, ioputstr, ioflush};
-
-#ifdef GVDLL
-static Agdisc_t gprDisc = {0, &gprIoDisc};
-#else
-static Agdisc_t gprDisc = {&AgIdDisc, &gprIoDisc};
-#endif
-
 /* Return name of object.
  * Assumes obj !=  NULL
  */
@@ -2469,12 +2451,7 @@ void freeCompileProg(comp_prog *p) {
  * dynamic data.
  */
 Agraph_t *readG(FILE *fp) {
-  Agraph_t *g;
-
-#ifdef _WIN32
-  gprDisc.id = &AgIdDisc;
-#endif
-  g = agread(fp, &gprDisc);
+  Agraph_t *g = agread(fp, NULL);
   if (g) {
     aginit(g, AGRAPH, UDATA, sizeof(gdata), false);
     aginit(g, AGNODE, UDATA, sizeof(ndata), false);
@@ -2485,12 +2462,7 @@ Agraph_t *readG(FILE *fp) {
 
 // open graph and initialize dynamic data
 Agraph_t *openG(char *name, Agdesc_t desc) {
-  Agraph_t *g;
-
-#ifdef _WIN32
-  gprDisc.id = &AgIdDisc;
-#endif
-  g = agopen(name, desc, &gprDisc);
+  Agraph_t *g = agopen(name, desc, NULL);
   if (g)
     agbindrec(g, UDATA, sizeof(gdata), false);
   return g;
