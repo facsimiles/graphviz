@@ -33,18 +33,6 @@
 #define KINDS(p)                                                               \
   ((AGTYPE(p) == AGRAPH) ? "graph" : (AGTYPE(p) == AGNODE) ? "node" : "edge")
 
-static int iofread(void *chan, char *buf, int bufsize) {
-  FILE *fp = chan;
-
-  return (int)read(fileno(fp), buf, bufsize);
-}
-
-static int ioputstr(void *chan, const char *str) { return fputs(str, chan); }
-
-static int ioflush(void *chan) { return fflush(chan); }
-
-static Agiodisc_t gprIoDisc = {iofread, ioputstr, ioflush};
-
 /* sameG:
  * Return common root if objects belong to same root graph.
  * NULL otherwise
@@ -548,7 +536,7 @@ int sfioWrite(Agraph_t *g, FILE *fp) {
   int rv;
 
   Agiodisc_t *saveio = g->clos->disc.io;
-  g->clos->disc.io = &gprIoDisc;
+  g->clos->disc.io = &AgIoDisc;
   rv = agwrite(g, fp);
   g->clos->disc.io = saveio;
   return rv;
