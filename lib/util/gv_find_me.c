@@ -98,12 +98,12 @@ char *gv_find_me(void) {
 #elif defined(_WIN32)
   {
     char *path = NULL;
-    size_t path_size = 0;
+    DWORD path_size = 0;
     int rc = 0;
 
     do {
       {
-        const size_t size = path_size == 0 ? 1024 : (path_size * 2);
+        const DWORD size = path_size == 0 ? 1024 : (path_size * 2);
         char *const p = realloc(path, size);
         if (p == NULL) {
           // failed, out-of-memory
@@ -120,7 +120,7 @@ char *gv_find_me(void) {
         return NULL;
       }
 
-    } while (rc == path_size);
+    } while ((DWORD)rc == path_size);
 
     return path;
   }

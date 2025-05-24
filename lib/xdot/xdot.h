@@ -46,7 +46,7 @@ extern "C" {
 typedef enum { xd_none, xd_linear, xd_radial } xdot_grad_type;
 
 typedef struct {
-  float frac;
+  double frac;
   char *color;
 } xdot_color_stop;
 

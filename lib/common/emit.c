@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <float.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -1464,33 +1465,28 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 	    filled = FILL;
 	    break;
 	case xd_grad_fill_color : 
-	    {
-		char* clr0;
-		char* clr1;
-		float frac;
-		if (op->op.u.grad_color.type == xd_radial) {
-		    xdot_radial_grad* p = &op->op.u.grad_color.u.ring;
-		    clr0 = p->stops[0].color;
-		    clr1 = p->stops[1].color;
-		    frac = p->stops[1].frac;
-		    if (p->x1 == p->x0 && p->y1 == p->y0)
-			angle = 0;
-		    else
-			angle = (int)(180.0*acos((p->x0 - p->x1)/p->r0)/M_PI);
-        	    gvrender_set_fillcolor(job, clr0);
-		    gvrender_set_gradient_vals(job, clr1, angle, frac);
-		    filled = RGRADIENT;
+	    if (op->op.u.grad_color.type == xd_radial) {
+		xdot_radial_grad* p = &op->op.u.grad_color.u.ring;
+		char *const clr0 = p->stops[0].color;
+		char *const clr1 = p->stops[1].color;
+		const double frac = p->stops[1].frac;
+		if (p->x1 == p->x0 && p->y1 == p->y0) {
+		    angle = 0;
+		} else {
+		    angle = (int)(180 * acos((p->x0 - p->x1) / p->r0) / M_PI);
 		}
-		else {
-		    xdot_linear_grad* p = &op->op.u.grad_color.u.ling;
-		    clr0 = p->stops[0].color;
-		    clr1 = p->stops[1].color;
-		    frac = p->stops[1].frac;
-		    angle = (int)(180.0*atan2(p->y1-p->y0,p->x1-p->x0)/M_PI);
-        	    gvrender_set_fillcolor(job, clr0);
-		    gvrender_set_gradient_vals(job, clr1, angle, frac);
-		    filled = GRADIENT;
-		}
+		gvrender_set_fillcolor(job, clr0);
+		gvrender_set_gradient_vals(job, clr1, angle, frac);
+		filled = RGRADIENT;
+	    } else {
+		xdot_linear_grad* p = &op->op.u.grad_color.u.ling;
+		char *const clr0 = p->stops[0].color;
+		char *const clr1 = p->stops[1].color;
+		const double frac = p->stops[1].frac;
+		angle = (int)(180 * atan2(p->y1 - p->y0, p->x1 - p->x0) / M_PI);
+		gvrender_set_fillcolor(job, clr0);
+		gvrender_set_gradient_vals(job, clr1, angle, frac);
+		filled = GRADIENT;
 	    }
 	    break;
 	case xd_grad_pen_color :
@@ -2826,9 +2822,8 @@ textBB (double x, double y, textspan_t* span)
     return bb;
 }
 
-static void
-freePara (exdot_op* op)
-{
+static void freePara(xdot_op *xop) {
+    exdot_op *const op = (exdot_op *)((char *)xop - offsetof(exdot_op, op));
     if (op->op.kind == xd_text)
 	free_textspan (op->span, 1);
 }
@@ -2844,7 +2839,7 @@ boxf xdotBB (Agraph_t* g)
     boxf bb = GD_bb(g);
     xdot* xd = GD_drawing(g)->xdots;
     textfont_t tf, null_tf = {0};
-    int fontflags = 0;
+    unsigned fontflags = 0;
 
     if (!xd) return bb;
 
@@ -2893,7 +2888,7 @@ boxf xdotBB (Agraph_t* g)
 	    expandBB (&bb, bb0.LL);
 	    expandBB (&bb, bb0.UR);
 	    if (!xd->freefunc)
-		xd->freefunc = (freefunc_t)freePara;
+		xd->freefunc = freePara;
 	    break;
 	case xd_font :
 	    fontsize = op->op.u.font.size;
