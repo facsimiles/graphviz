@@ -19,6 +19,7 @@
 #include <expr/exop.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -189,7 +190,7 @@ typedef struct
 static int
 prformat(void* vp, Sffmt_t* dp)
 {
-	Fmt_t*		fmt = (Fmt_t*)dp;
+	Fmt_t *const fmt = (Fmt_t *)((char *)dp - offsetof(Fmt_t, fmt));
 	Exnode_t*	node;
 	char*		s;
 	long to = 0;
@@ -431,7 +432,7 @@ static int print(Expr_t *ex, Exnode_t *exnode, void *env, FILE *sp) {
 static int
 scformat(void* vp, Sffmt_t* dp)
 {
-	Fmt_t*		fmt = (Fmt_t*)dp;
+	Fmt_t *const fmt = (Fmt_t *)((char *)dp - offsetof(Fmt_t, fmt));
 	Exnode_t*	node;
 
 	if (!fmt->actuals)
