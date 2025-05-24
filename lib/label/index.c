@@ -137,17 +137,15 @@ void PrintData(Node_t * n)
 ** overlap the argument rectangle.
 ** Returns the number of qualifying data rects.
 */
-LeafList_t *RTreeSearch(RTree_t * rtp, Node_t * n, Rect_t * r)
-{
+LeafList_t *RTreeSearch(RTree_t *rtp, Node_t *n, Rect_t r) {
     LeafList_t *llp = 0;
 
     assert(n);
     assert(n->level >= 0);
-    assert(r);
 
     if (n->level > 0) {		/* this is an internal node in the tree */
 	for (size_t i = 0; i < NODECARD; i++)
-	    if (n->branch[i].child && Overlap(r, &n->branch[i].rect)) {
+	    if (n->branch[i].child && Overlap(r, n->branch[i].rect)) {
 		LeafList_t *tlp = RTreeSearch(rtp, n->branch[i].child, r);
 		if (llp) {
 		    LeafList_t *xlp = llp;
@@ -159,10 +157,10 @@ LeafList_t *RTreeSearch(RTree_t * rtp, Node_t * n, Rect_t * r)
 	    }
     } else {			/* this is a leaf node */
 	for (size_t i = 0; i < NODECARD; i++) {
-	    if (n->branch[i].child && Overlap(r, &n->branch[i].rect)) {
+	    if (n->branch[i].child && Overlap(r, n->branch[i].rect)) {
 		llp = RTreeLeafListAdd(llp, (Leaf_t *) & n->branch[i]);
 #				ifdef RTDEBUG
-		PrintRect(&n->branch[i].rect);
+		PrintRect(n->branch[i].rect);
 #				endif
 	    }
 	}
@@ -177,25 +175,19 @@ LeafList_t *RTreeSearch(RTree_t * rtp, Node_t * n, Rect_t * r)
 ** level to insert; e.g. a data rectangle goes in at level = 0.
 ** RTreeInsert2 does the recursion.
 */
-static int RTreeInsert2(RTree_t *, Rect_t *, void *, Node_t *, Node_t **, int);
+static int RTreeInsert2(RTree_t *, Rect_t, void *, Node_t *, Node_t **, int);
 
-int RTreeInsert(RTree_t * rtp, Rect_t * r, void *data, Node_t ** n, int level)
-{
+int RTreeInsert(RTree_t *rtp, Rect_t r, void *data, Node_t **n) {
     Node_t *newnode=0;
     Branch_t b;
     int result = 0;
 
 
-    assert(r && n);
-    assert(level >= 0 && level <= (*n)->level);
+    assert(n);
     for (size_t i = 0; i < NUMDIMS; i++)
-	assert(r->boundary[i] <= r->boundary[NUMDIMS + i]);
+	assert(r.boundary[i] <= r.boundary[NUMDIMS + i]);
 
-#	ifdef RTDEBUG
-    fprintf(stderr, "RTreeInsert  level=%d\n", level);
-#	endif
-
-    if (RTreeInsert2(rtp, r, data, *n, &newnode, level)) {	/* root was split */
+    if (RTreeInsert2(rtp, r, data, *n, &newnode, 0)) { // root was split
 
 	Node_t *newroot = RTreeNewNode();	/* grow a new root, make tree taller */
 	newroot->level = (*n)->level + 1;
@@ -220,21 +212,19 @@ int RTreeInsert(RTree_t * rtp, Rect_t * r, void *data, Node_t ** n, int level)
 ** The level argument specifies the number of steps up from the leaf
 ** level to insert; e.g. a data rectangle goes in at level = 0.
 */
-static int
-RTreeInsert2(RTree_t * rtp, Rect_t * r, void *data,
-	     Node_t * n, Node_t ** new, int level)
-{
+static int RTreeInsert2(RTree_t *rtp, Rect_t r, void *data, Node_t *n,
+                        Node_t **new, int level) {
     Branch_t b;
     Node_t *n2=0;
 
-    assert(r && n && new);
+    assert(n && new);
     assert(level >= 0 && level <= n->level);
 
     /* Still above level for insertion, go down tree recursively */
     if (n->level > level) {
 	int i = PickBranch(r, n);
 	if (!RTreeInsert2(rtp, r, data, n->branch[i].child, &n2, level)) {	/* recurse: child was not split */
-	    n->branch[i].rect = CombineRect(r, &(n->branch[i].rect));
+	    n->branch[i].rect = CombineRect(r, n->branch[i].rect);
 	    return 0;
 	} else {		/* child was split */
 	    n->branch[i].rect = NodeCover(n->branch[i].child);
@@ -244,7 +234,7 @@ RTreeInsert2(RTree_t * rtp, Rect_t * r, void *data,
 	}
     } else if (n->level == level) {	/* at level for insertion. */
 	/*Add rect, split if necessary */
-	b.rect = *r;
+	b.rect = r;
 	b.child = data;
 	return AddBranch(rtp, &b, n, new);
     } else {			/* Not supposed to happen */

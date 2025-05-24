@@ -71,7 +71,7 @@ void PrintNode(Node_t * n)
 void PrintBranch(int i, Branch_t * b)
 {
     fprintf(stderr, "  child[%d] X%X\n", i, (unsigned int) b->child);
-    PrintRect(&(b->rect));
+    PrintRect(b->rect);
 }
 #endif
 
@@ -91,7 +91,7 @@ Rect_t NodeCover(Node_t * n)
 		r = n->branch[i].rect;
 		flag = false;
 	    } else
-		r = CombineRect(&r, &(n->branch[i].rect));
+		r = CombineRect(r, n->branch[i].rect);
 	}
     return r;
 }
@@ -102,20 +102,19 @@ Rect_t NodeCover(Node_t * n)
 ** In case of a tie, pick the one which was smaller before, to get
 ** the best resolution when searching.
 */
-int PickBranch(Rect_t * r, Node_t * n)
-{
+int PickBranch(Rect_t r, Node_t *n) {
     uint64_t bestIncr = 0;
     uint64_t bestArea = 0;
     int best=0;
     bool bestSet = false;
-    assert(r && n);
+    assert(n);
 
     for (int i = 0; i < NODECARD; i++) {
 	if (n->branch[i].child) {
-	    Rect_t *rr = &n->branch[i].rect;
+	    const Rect_t rr = n->branch[i].rect;
 	    uint64_t area = RectArea(rr);
 	    Rect_t rect = CombineRect(r, rr);
-	    uint64_t increase = RectArea(&rect) - area;
+	    uint64_t increase = RectArea(rect) - area;
 	    if (!bestSet || increase < bestIncr) {
 		best = i;
 		bestArea = area;

@@ -18,16 +18,16 @@ extern "C" {
 #endif
 
 typedef struct Rect {
-    int boundary[NUMSIDES];
+  double boundary[NUMSIDES];
 } Rect_t;
 
-void InitRect(Rect_t * r);
+void InitRect(Rect_t *r);
 #ifdef RTDEBUG
-void PrintRect(Rect_t *);
+void PrintRect(Rect_t);
 #endif
-uint64_t RectArea(const Rect_t*);
-bool Overlap(const Rect_t*, const Rect_t*);
-Rect_t CombineRect(const Rect_t*, const Rect_t*);
+uint64_t RectArea(const Rect_t);
+bool Overlap(const Rect_t, const Rect_t);
+Rect_t CombineRect(const Rect_t, const Rect_t);
 Rect_t NullRect(void);
 
 #ifdef __cplusplus

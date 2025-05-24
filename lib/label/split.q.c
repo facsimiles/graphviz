@@ -51,9 +51,9 @@ void SplitNode(RTree_t * rtp, Node_t * n, Branch_t * b, Node_t ** nn)
     {
 	/* Indicate that a split is about to take place */
 	for (size_t i = 0; i < NODECARD + 1; i++) {
-	    PrintRect(&rtp->split.BranchBuf[i].rect);
+	    PrintRect(rtp->split.BranchBuf[i].rect);
 	}
-	PrintRect(&rtp->split.CoverSplit);
+	PrintRect(rtp->split.CoverSplit);
     }
 #endif
 
@@ -98,10 +98,10 @@ static void GetBranches(RTree_t * rtp, Node_t * n, Branch_t * b)
     /* calculate rect containing all in the set */
     rtp->split.CoverSplit = rtp->split.BranchBuf[0].rect;
     for (size_t i = 1; i < NODECARD + 1; i++) {
-	rtp->split.CoverSplit = CombineRect(&rtp->split.CoverSplit,
-					    &rtp->split.BranchBuf[i].rect);
+	rtp->split.CoverSplit = CombineRect(rtp->split.CoverSplit,
+					    rtp->split.BranchBuf[i].rect);
     }
-    rtp->split.CoverSplitArea = RectArea(&rtp->split.CoverSplit);
+    rtp->split.CoverSplitArea = RectArea(rtp->split.CoverSplit);
 
     InitNode(n);
 }
@@ -134,11 +134,11 @@ static void MethodZero(RTree_t * rtp)
 	uint64_t biggestDiff = 0;
 	for (int i = 0; i < NODECARD + 1; i++) {
 	    if (!rtp->split.Partitions[0].taken[i]) {
-		Rect_t *r = &rtp->split.BranchBuf[i].rect;
-		Rect_t rect = CombineRect(r, &rtp->split.Partitions[0].cover[0]);
-		uint64_t growth0 = RectArea(&rect) - rtp->split.Partitions[0].area[0];
-		rect = CombineRect(r, &rtp->split.Partitions[0].cover[1]);
-		uint64_t growth1 = RectArea(&rect) - rtp->split.Partitions[0].area[1];
+		const Rect_t r = rtp->split.BranchBuf[i].rect;
+		Rect_t rect = CombineRect(r, rtp->split.Partitions[0].cover[0]);
+		uint64_t growth0 = RectArea(rect) - rtp->split.Partitions[0].area[0];
+		rect = CombineRect(r, rtp->split.Partitions[0].cover[1]);
+		uint64_t growth1 = RectArea(rect) - rtp->split.Partitions[0].area[1];
 		uint64_t diff;
 		if (growth1 >= growth0) {
 		    diff = growth1 - growth0;
@@ -192,14 +192,14 @@ static void PickSeeds(RTree_t * rtp)
   uint64_t area[NODECARD + 1];
 
     for (int i = 0; i < NODECARD + 1; i++)
-	area[i] = RectArea(&rtp->split.BranchBuf[i].rect);
+	area[i] = RectArea(rtp->split.BranchBuf[i].rect);
 
     uint64_t worst=0;
     for (int i = 0; i < NODECARD; i++) {
 	for (int j = i + 1; j < NODECARD + 1; j++) {
-	    Rect_t rect = CombineRect(&rtp->split.BranchBuf[i].rect,
-	                              &rtp->split.BranchBuf[j].rect);
-	    uint64_t waste = RectArea(&rect) - area[i] - area[j];
+	    Rect_t rect = CombineRect(rtp->split.BranchBuf[i].rect,
+	                              rtp->split.BranchBuf[j].rect);
+	    uint64_t waste = RectArea(rect) - area[i] - area[j];
 	    if (waste > worst) {
 		worst = waste;
 		seed0 = i;
@@ -227,10 +227,10 @@ static void Classify(RTree_t * rtp, int i, int group)
 	    rtp->split.BranchBuf[i].rect;
     else
 	rtp->split.Partitions[0].cover[group] =
-	    CombineRect(&rtp->split.BranchBuf[i].rect,
-			&rtp->split.Partitions[0].cover[group]);
+	    CombineRect(rtp->split.BranchBuf[i].rect,
+			rtp->split.Partitions[0].cover[group]);
     rtp->split.Partitions[0].area[group] =
-	RectArea(&rtp->split.Partitions[0].cover[group]);
+	RectArea(rtp->split.Partitions[0].cover[group]);
     rtp->split.Partitions[0].count[group]++;
 
 #	ifdef RTDEBUG
@@ -238,12 +238,12 @@ static void Classify(RTree_t * rtp, int i, int group)
 	/* redraw entire group and its cover */
 	int j;
 	MFBSetColor(WHITE);	/* cover is white */
-	PrintRect(&rtp->split.Partitions[0].cover[group]);
+	PrintRect(rtp->split.Partitions[0].cover[group]);
 	MFBSetColor(group + 3);	/* group 0 green, group 1 blue */
 	for (j = 0; j < NODECARD + 1; j++) {
 	    if (rtp->split.Partitions[0].taken[j] &&
 		rtp->split.Partitions[0].partition[j] == group)
-		PrintRect(&rtrtp->split.Partitions[0].BranchBuf[j].rect);
+		PrintRect(rtrtp->split.Partitions[0].BranchBuf[j].rect);
 	}
 	GraphChar();
     }
@@ -324,9 +324,9 @@ PrintPVars(RTree_t * rtp)
 		 rtp->split.Partitions[0].area[1]));
     }
     fprintf(stderr, "cover[0]:\n");
-    PrintRect(&rtp->split.Partitions[0].cover[0]);
+    PrintRect(rtp->split.Partitions[0].cover[0]);
 
     fprintf(stderr, "cover[1]:\n");
-    PrintRect(&rtp->split.Partitions[0].cover[1]);
+    PrintRect(rtp->split.Partitions[0].cover[1]);
 }
 #endif

@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include <label/index.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -21,7 +22,7 @@
 #include <cgraph/cgraph.h>
 #include <util/exit.h>
 
-#define Undefined(x) ((x)->boundary[0] > (x)->boundary[NUMDIMS])
+static bool Undefined(Rect_t r) { return r.boundary[0] > r.boundary[NUMDIMS]; }
 
 /*-----------------------------------------------------------------------------
 | Initialize a rectangle to have all 0 coordinates.
@@ -49,13 +50,10 @@ Rect_t NullRect(void)
 /*-----------------------------------------------------------------------------
 | Print rectangle lower upper bounds by dimension
 -----------------------------------------------------------------------------*/
-void PrintRect(Rect_t * r)
-{
-    assert(r);
+void PrintRect(Rect_t r) {
     fprintf(stderr, "rect:");
     for (size_t i = 0; i < NUMDIMS; i++)
-	fprintf(stderr, "\t%d\t%d\n", r->boundary[i],
-		r->boundary[i + NUMDIMS]);
+	fprintf(stderr, "\t%.0f\t%.0f\n", r.boundary[i], r.boundary[i + NUMDIMS]);
 }
 #endif
 
@@ -63,15 +61,13 @@ void PrintRect(Rect_t * r)
 | Calculate the n-dimensional area of a rectangle
 -----------------------------------------------------------------------------*/
 
-uint64_t RectArea(const Rect_t *r) {
-  assert(r);
-
+uint64_t RectArea(const Rect_t r) {
     if (Undefined(r))
 	return 0;
 
     uint64_t area = 1;
     for (size_t i = 0; i < NUMDIMS; i++) {
-      unsigned int dim = r->boundary[i + NUMDIMS] - r->boundary[i];
+      const uint64_t dim = (uint64_t)(r.boundary[i + NUMDIMS] - r.boundary[i]);
       if (dim == 0) return 0;
       if (UINT64_MAX / dim < area) {
 	agerrorf("label: area too large for rtree\n");
@@ -85,19 +81,18 @@ uint64_t RectArea(const Rect_t *r) {
 /*-----------------------------------------------------------------------------
 | Combine two rectangles, make one that includes both.
 -----------------------------------------------------------------------------*/
-Rect_t CombineRect(const Rect_t *r, const Rect_t *rr) {
+Rect_t CombineRect(const Rect_t r, const Rect_t rr) {
     Rect_t new;
-    assert(r && rr);
 
     if (Undefined(r))
-	return *rr;
+	return rr;
     if (Undefined(rr))
-	return *r;
+	return r;
 
     for (size_t i = 0; i < NUMDIMS; i++) {
-	new.boundary[i] = MIN(r->boundary[i], rr->boundary[i]);
+	new.boundary[i] = fmin(r.boundary[i], rr.boundary[i]);
 	size_t j = i + NUMDIMS;
-	new.boundary[j] = MAX(r->boundary[j], rr->boundary[j]);
+	new.boundary[j] = fmin(r.boundary[j], rr.boundary[j]);
     }
     return new;
 }
@@ -105,12 +100,10 @@ Rect_t CombineRect(const Rect_t *r, const Rect_t *rr) {
 /*-----------------------------------------------------------------------------
 | Decide whether two rectangles overlap.
 -----------------------------------------------------------------------------*/
-bool Overlap(const Rect_t *r, const Rect_t *s) {
-    assert(r && s);
-
+bool Overlap(const Rect_t r, const Rect_t s) {
     for (size_t i = 0; i < NUMDIMS; i++) {
 	size_t j = i + NUMDIMS;	/* index for high sides */
-	if (r->boundary[i] > s->boundary[j] || s->boundary[i] > r->boundary[j])
+	if (r.boundary[i] > s.boundary[j] || s.boundary[i] > r.boundary[j])
 	    return false;
     }
     return true;

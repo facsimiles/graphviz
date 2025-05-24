@@ -137,25 +137,20 @@ static unsigned int hd_hil_s_from_xy(point p, int n)
  * intersection area from
  * http://stackoverflow.com/questions/4549544/total-area-of-intersecting-rectangles
 */
-static double aabbaabb(Rect_t * r, Rect_t * s)
-{
+static double aabbaabb(Rect_t r, Rect_t s) {
     if (!Overlap(r, s))
 	return 0;
 
     /* if we get here we have an intersection */
 
     /* rightmost left edge of the 2 rectangles */
-    double iminx =
-	r->boundary[0] > s->boundary[0] ? r->boundary[0] : s->boundary[0];
+    double iminx = fmax(r.boundary[0], s.boundary[0]);
     /* upmost bottom edge */
-    double iminy =
-	r->boundary[1] > s->boundary[1] ? r->boundary[1] : s->boundary[1];
+    double iminy = fmax(r.boundary[1], s.boundary[1]);
     /* leftmost right edge */
-    double imaxx =
-	r->boundary[2] < s->boundary[2] ? r->boundary[2] : s->boundary[2];
+    double imaxx = fmin(r.boundary[2], s.boundary[2]);
     /* downmost top edge */
-    double imaxy =
-	r->boundary[3] < s->boundary[3] ? r->boundary[3] : s->boundary[3];
+    double imaxy = fmin(r.boundary[3], s.boundary[3]);
     return (imaxx - iminx) * (imaxy - iminy);
 }
 
@@ -179,10 +174,10 @@ static bool lblenclosing(object_t *objp, object_t *objp1) {
 /*fill in rectangle from the object */
 static Rect_t objp2rect(const object_t *op) {
   Rect_t r = {0};
-  r.boundary[0] = op->pos.x;
-  r.boundary[1] = op->pos.y;
-  r.boundary[2] = op->pos.x + op->sz.x;
-  r.boundary[3] = op->pos.y + op->sz.y;
+  r.boundary[0] = round(op->pos.x);
+  r.boundary[1] = round(op->pos.y);
+  r.boundary[2] = round(op->pos.x + op->sz.x);
+  r.boundary[3] = round(op->pos.y + op->sz.y);
   return r;
 }
 
@@ -190,10 +185,10 @@ static Rect_t objp2rect(const object_t *op) {
 static Rect_t objplp2rect(const object_t *objp) {
   Rect_t r = {0};
   const xlabel_t *lp = objp->lbl;
-  r.boundary[0] = lp->pos.x;
-  r.boundary[1] = lp->pos.y;
-  r.boundary[2] = lp->pos.x + lp->sz.x;
-  r.boundary[3] = lp->pos.y + lp->sz.y;
+  r.boundary[0] = round(lp->pos.x);
+  r.boundary[1] = round(lp->pos.y);
+  r.boundary[2] = round(lp->pos.x + lp->sz.x);
+  r.boundary[3] = round(lp->pos.y + lp->sz.y);
   return r;
 }
 
@@ -207,13 +202,11 @@ static Rect_t objplpmks(object_t * objp)
     if (objp->lbl)
 	p = objp->lbl->sz;
 
-    rect.boundary[0] = (int) floor(objp->pos.x - p.x);
-    rect.boundary[1] = (int) floor(objp->pos.y - p.y);
+    rect.boundary[0] = floor(objp->pos.x - p.x);
+    rect.boundary[1] = floor(objp->pos.y - p.y);
 
-    rect.boundary[2] = (int) ceil(objp->pos.x + objp->sz.x + p.x);
-    assert(rect.boundary[2] < INT_MAX);
-    rect.boundary[3] = (int) ceil(objp->pos.y + objp->sz.y + p.y);
-    assert(rect.boundary[3] < INT_MAX);
+    rect.boundary[2] = ceil(objp->pos.x + objp->sz.x + p.x);
+    rect.boundary[3] = ceil(objp->pos.y + objp->sz.y + p.y);
 
     return rect;
 }
@@ -254,10 +247,8 @@ static int getintrsxi(object_t * op, object_t * cp)
 }
 
 /* record the intersecting objects label */
-static double
-recordointrsx(object_t * op, object_t * cp, Rect_t * rp,
-	      double a, object_t * intrsx[XLNBR])
-{
+static double recordointrsx(object_t *op, object_t *cp, Rect_t rp, double a,
+                            object_t *intrsx[XLNBR]) {
     int i = getintrsxi(op, cp);
     if (i < 0)
 	i = 5;
@@ -265,13 +256,13 @@ recordointrsx(object_t * op, object_t * cp, Rect_t * rp,
 	double sa, maxa = 0.0;
 	/* keep maximally overlapping object */
 	Rect_t srect = objp2rect(intrsx[i]);
-	sa = aabbaabb(rp, &srect);
+	sa = aabbaabb(rp, srect);
 	if (sa > a)
 	    maxa = sa;
 	/*keep maximally overlapping label */
 	if (intrsx[i]->lbl) {
 	    srect = objplp2rect(intrsx[i]);
-	    sa = aabbaabb(rp, &srect);
+	    sa = aabbaabb(rp, srect);
 	    if (sa > a)
 		maxa = fmax(sa, maxa);
 	}
@@ -297,13 +288,13 @@ recordlintrsx(object_t * op, object_t * cp, Rect_t * rp,
 	double sa, maxa = 0.0;
 	/* keep maximally overlapping object */
 	Rect_t srect = objp2rect(intrsx[i]);
-	sa = aabbaabb(rp, &srect);
+	sa = aabbaabb(*rp, srect);
 	if (sa > a)
 	    maxa = sa;
 	/*keep maximally overlapping label */
 	if (intrsx[i]->lbl) {
 	    srect = objplp2rect(intrsx[i]);
-	    sa = aabbaabb(rp, &srect);
+	    sa = aabbaabb(*rp, srect);
 	    if (sa > a)
 		maxa = fmax(sa, maxa);
 	}
@@ -339,7 +330,7 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 
     Rect_t rect = objplp2rect(objp);
 
-    LeafList_t *llp = RTreeSearch(xlp->spdx, xlp->spdx->root, &rect);
+    LeafList_t *llp = RTreeSearch(xlp->spdx, xlp->spdx->root, rect);
     if (!llp)
 	return bp;
 
@@ -352,9 +343,9 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 
 	/*label-object intersect */
 	Rect_t srect = objp2rect(cp);
-	a = aabbaabb(&rect, &srect);
+	a = aabbaabb(rect, srect);
 	if (a > 0.0) {
-	  ra = recordointrsx(objp, cp, &rect, a, intrsx);
+	  ra = recordointrsx(objp, cp, rect, a, intrsx);
 	  bp.n++;
 	  bp.area += ra;
 	}
@@ -362,7 +353,7 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 	if (!cp->lbl || !cp->lbl->set)
 	    continue;
 	srect = objplp2rect(cp);
-	a = aabbaabb(&rect, &srect);
+	a = aabbaabb(rect, srect);
 	if (a > 0.0) {
 	  ra = recordlintrsx(objp, cp, &rect, a, intrsx);
 	  bp.n++;
@@ -523,17 +514,19 @@ static int xlhdxload(XLabels_t * xlp)
 
     for (size_t i = 0; i < xlp->n_objs; i++) {
 	HDict_t *hp;
-	point pi;
 
 	hp = gv_alloc(sizeof(HDict_t));
 
 	hp->d.data = &xlp->objs[i];
 	hp->d.rect = objplpmks(&xlp->objs[i]);
 	/* center of the labeling area */
-	pi.x = hp->d.rect.boundary[0] +
+	const double x = hp->d.rect.boundary[0] +
 	    (hp->d.rect.boundary[2] - hp->d.rect.boundary[0]) / 2;
-	pi.y = hp->d.rect.boundary[1] +
+	const double y = hp->d.rect.boundary[1] +
 	    (hp->d.rect.boundary[3] - hp->d.rect.boundary[1]) / 2;
+	assert(x >= INT_MIN && x <= INT_MAX);
+	assert(y >= INT_MIN && y <= INT_MAX);
+	const point pi = {.x = (int)x, .y = (int)y};
 
 	hp->key = hd_hil_s_from_xy(pi, order);
 
@@ -561,8 +554,8 @@ static void xlhdxunload(XLabels_t * xlp)
 
 static void xlspdxload(XLabels_t *xlp) {
     for (HDict_t *op = dtfirst(xlp->hdx); op; op = dtnext(xlp->hdx, op)) {
-	/*          tree       rectangle    data        node             lvl */
-	RTreeInsert(xlp->spdx, &op->d.rect, op->d.data, &xlp->spdx->root, 0);
+	//          tree       rectangle    data        node
+	RTreeInsert(xlp->spdx, op->d.rect, op->d.data, &xlp->spdx->root);
     }
 }
 
