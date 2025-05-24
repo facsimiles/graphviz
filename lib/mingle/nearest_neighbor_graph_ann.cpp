@@ -68,12 +68,12 @@ void nearest_neighbor_graph_ann(int nPts, int k, const std::vector<double> &x,
   //========= graph when sort based on x ========
   int nz = 0;
   sortPtsX(nPts, dataPts);
-  ANNkd_tree kdTree(					// build search structure
+  ANNkd_tree xTree( // build search structure
 			  dataPts,					// the data points
 			  nPts,						// number of points
 			  dim);						// dimension of space
   for (int ip = 0; ip < nPts; ip++){
-    kdTree.annkSearch(						// search
+    xTree.annkSearch( // search
 		       dataPts[ip],						// query point
 		       k,								// number of near neighbors
 		       nnIdx.data(),						// nearest neighbors (returned)
@@ -91,12 +91,12 @@ void nearest_neighbor_graph_ann(int nPts, int k, const std::vector<double> &x,
 
   //========= graph when sort based on y ========
   sortPtsY(nPts, dataPts);
-  kdTree = ANNkd_tree(					// build search structure
+  ANNkd_tree yTree( // build search structure
 			  dataPts,					// the data points
 			  nPts,						// number of points
 			  dim);						// dimension of space
   for (int ip = 0; ip < nPts; ip++){
-    kdTree.annkSearch(						// search
+    yTree.annkSearch( // search
 		       dataPts[ip],						// query point
 		       k,								// number of near neighbors
 		       nnIdx.data(),						// nearest neighbors (returned)

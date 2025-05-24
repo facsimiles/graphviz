@@ -183,6 +183,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Using GVPR to set a default attribute on a subgraph whose root graph has no
   default for that attribute no longer incorrectly sets the default on the root
   graph. #2639
+- Mingle no longer crashes when doing Y coordinate search. This was a regression
+  in Graphviz 2.47.0. #2599
 
 ## [12.2.1] – 2024-12-07
 

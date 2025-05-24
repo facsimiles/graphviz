@@ -4862,9 +4862,6 @@ def test_2598_1(tmp_path: Path):
 
 @pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
 @pytest.mark.skipif(which("mingle") is None, reason="mingle not available")
-@pytest.mark.xfail(
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2599", strict=True
-)
 def test_2599():
     """
     mingle should not segfault when processing simple graphs
@@ -4883,11 +4880,6 @@ def test_2599():
     proc = subprocess.run(
         [mingle, "-v", "999"], check=False, text=True, input=processed
     )
-
-    # Address Sanitizer catches segfaults and turns them into non-zero exits, so ignore
-    # testing in this scenario
-    if is_asan_instrumented(mingle):
-        pytest.skip("crashes of mingle are harder to detect under ASan")
 
     assert proc.returncode in (0, 1), "mingle crashed"
 
@@ -5138,7 +5130,7 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
 )
 def test_2619_3():
     """
-    loading a JPEG image shall not cause a crash in the GD plugin when the ouput format is PDF
+    loading a JPEG image shall not cause a crash in the GD plugin when the output format is PDF
     https://gitlab.com/graphviz/graphviz/-/issues/2619
     """
 
@@ -5466,7 +5458,7 @@ def test_2641(testcase: str):
     run_c(c_src, link=["cgraph"])
 
 
-def _find_plugin_so(plugin: str) -> Path:
+def _find_plugin_so(plugin: str) -> Optional[Path]:
     """
     find the absolute path to the dynamic library for a given Graphviz plugin
 
@@ -5544,19 +5536,22 @@ def test_2648(tmp_path: Path):
     # teach the runtime linker how to find the plugins
     env = os.environ.copy()
     ld_library_path = f"{core.parent}:{dot_layout.parent}"
+    prefix = ""
     if is_macos():
         if "DYLD_LIBRARY_PATH" in env:
             env["DYLD_LIBRARY_PATH"] = f"{ld_library_path}:{env['DYLD_LIBRARY_PATH']}"
         else:
             env["DYLD_LIBRARY_PATH"] = ld_library_path
+        prefix = f"env DYLD_LIBRARY_PATH={env['DYLD_LIBRARY_PATH']} "
     else:
         if "LD_LIBRARY_PATH" in env:
             env["LD_LIBRARY_PATH"] = f"{ld_library_path}:{env['LD_LIBRARY_PATH']}"
         else:
             env["LD_LIBRARY_PATH"] = ld_library_path
+        prefix = f"env LD_LIBRARY_PATH={env['LD_LIBRARY_PATH']} "
 
     # run the test code
-    print(f"+ {shlex.quote(str(exe))}")
+    print(f"+ {prefix}{shlex.quote(str(exe))}")
     subprocess.run([exe], env=env, check=True)
 
 
