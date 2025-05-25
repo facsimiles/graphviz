@@ -13,9 +13,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _WIN32
-#include <glcomp/glpangofont.h>
-#endif
 #include <glcomp/opengl.h>
 #include <glcomp/glcompdefs.h>
 #include <GL/glut.h>
