@@ -333,8 +333,8 @@ static void EmbedText(xdot_op *op, int param) {
 
 		// XML-escape the text
 		const xml_flags_t flags = {.dash = 1, .nbsp = 1};
-		char **ptr = &escaped;
-		(void)gv_xml_escape(o->op.u.text.text, flags, put, ptr);
+		char *ptr = escaped;
+		(void)gv_xml_escape(o->op.u.text.text, flags, put, &ptr);
 
 		o->font = glNewFont(view->widgets, escaped, &view->penColor,
 		                    font_op->op.u.font.name, font_op->op.u.font.size,
