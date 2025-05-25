@@ -28,8 +28,8 @@ extern "C" {
 
 glCompTex *glCompSetAddNewTexImage(glCompSet *s, int width, int height,
                                    const unsigned char *data, bool is2D);
-glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs, char *text,
-                                   bool is2D);
+glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs,
+                                   const char *text, bool is2D);
 
     extern void glCompDeleteTexture(glCompTex * t);
 #ifdef __cplusplus
