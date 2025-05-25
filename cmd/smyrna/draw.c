@@ -379,16 +379,16 @@ void drawCircle(float x, float y, float radius, float zdepth)
 }
 
 drawfunc_t OpFns[] = {
-  DrawEllipse,
-  DrawPolygon,
-  DrawBeziers,
-  DrawPolyline,
-  EmbedText,
-  SetFillColor,
-  SetPenColor,
-  SetFont,
-  SetStyle,
-  InsertImage,
+  [xop_ellipse] = DrawEllipse,
+  [xop_polygon] = DrawPolygon,
+  [xop_bezier] = DrawBeziers,
+  [xop_polyline] = DrawPolyline,
+  [xop_text] = EmbedText,
+  [xop_fill_color] = SetFillColor,
+  [xop_pen_color] = SetPenColor,
+  [xop_font] = SetFont,
+  [xop_style] = SetStyle,
+  [xop_image] = InsertImage,
 };
 
 void draw_selpoly(glCompPoly_t *selPoly) {
