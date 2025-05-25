@@ -365,8 +365,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
     glBegin(GL_POLYGON);
     for (int i = 0; i < 360; i += 36) {
 	float degInRad = (float) (i * DEG2RAD);
-	glVertex3f((float)(x + cos(degInRad) * radius),
-		   (float)(y + sin(degInRad) * radius),
+	glVertex3f(x + cosf(degInRad) * radius, y + sinf(degInRad) * radius,
 		   (float)(zdepth + view->Topview->global_z));
     }
 
