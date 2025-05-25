@@ -11,7 +11,7 @@
 #include <glcomp/glpangofont.h>
 #include <stdlib.h>
 
-static PangoLayout *get_pango_layout(char *markup_text,
+static PangoLayout *get_pango_layout(const char *markup_text,
 				     char *fontdescription, int fontsize,
 				     double *width, double *height)
 {
