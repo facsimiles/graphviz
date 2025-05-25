@@ -1230,18 +1230,7 @@ def test_1594():
 
 
 @pytest.mark.parametrize(
-    "device",
-    (
-        "png:cairo:gd",
-        "png:cairo:gdiplus",
-        pytest.param(
-            "png:cairo:gdk",
-            marks=pytest.mark.xfail(
-                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
-            ),
-        ),
-        "png:cairo:quartz",
-    ),
+    "device", ("png:cairo:gd", "png:cairo:gdiplus", "png:cairo:gdk", "png:cairo:quartz")
 )
 def test_1617(device: str):
     """

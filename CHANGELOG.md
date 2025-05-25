@@ -122,6 +122,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   If you are updating calling code, passing `NULL` for this parameter is a
   reasonable migration strategy.
 - **Breaking**: The `agsetfile` function has been removed.
+- The GDK plugin’s output (`-T*:cairo:gdk`) now sets DPI in written JPEGs and
+  PNGs. #1617
 
 ### Fixed
 
