@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <util/gv_math.h>
 
 #include <gvc/gvplugin_loadimage.h>
 #include "gvplugin_gdiplus.h"
@@ -77,7 +78,8 @@ static void gdiplus_loadimage_gdiplus(GVJ_t * job, usershape_t *us, boxf b, bool
 	if (Image *image = gdiplus_loadimage(us)) {
 		assert(job != NULL);
 		auto g = reinterpret_cast<Graphics*>(job->context);
-		g->DrawImage(image, RectF(b.LL.x, b.LL.y, b.UR.x - b.LL.x, b.UR.y - b.LL.y));
+		g->DrawImage(image, RectF(d2f(b.LL.x), d2f(b.LL.y), d2f(b.UR.x - b.LL.x),
+		                          d2f(b.UR.y - b.LL.y)));
 	}
 }
 

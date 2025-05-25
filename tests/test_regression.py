@@ -1229,6 +1229,51 @@ def test_1594():
     assert "line 3:" in stderr, "GVPR did not identify correct line of syntax error"
 
 
+@pytest.mark.parametrize(
+    "device",
+    (
+        "png:cairo:gd",
+        "png:cairo:gdiplus",
+        pytest.param(
+            "png:cairo:gdk",
+            marks=pytest.mark.xfail(
+                strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1617"
+            ),
+        ),
+        "png:cairo:quartz",
+    ),
+)
+def test_1617(device: str):
+    """
+    DPI should be propagated to PNG outputs
+    https://gitlab.com/graphviz/graphviz/-/issues/1617
+    """
+
+    # check if Graphviz was built with the plugin that provides this device
+    p = subprocess.run(
+        ["dot", "-Tpng:unrecognized", "-o", os.devnull, os.devnull],
+        stderr=subprocess.PIPE,
+        check=False,
+        text=True,
+    )
+    if re.search(rf"\b{device}\b", p.stderr) is None:
+        pytest.skip(f'"{device}" output device not supported')
+
+    # run an example with DPI through Graphviz
+    graph = 'digraph G { dpi = "300"; B->C; B->D; C->B; D->A; D->C; }'
+    png = dot(device, source=graph)
+
+    # interpret this with Pillow
+    data = io.BytesIO(png)
+    img = Image.open(data)
+
+    # we should see the DPI propagated to the image
+    default = 72
+    dpi = img.info.get("dpi", (default, default))
+    assert math.isclose(dpi[0], 300, abs_tol=1), "DPI not propagated to output"
+    assert math.isclose(dpi[1], 300, abs_tol=1), "DPI not propagated to output"
+
+
 @pytest.mark.parametrize("long,short", (("--help", "-?"), ("--version", "-V")))
 def test_1618(long: str, short: str):
     """

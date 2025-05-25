@@ -5,6 +5,7 @@
 #pragma once
 
 #include <assert.h>
+#include <float.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -140,3 +141,22 @@ static inline void argb2rgba(size_t width, size_t height, unsigned char *data) {
     *(a) = *(b);                                                               \
     memcpy((b), tmp_, sizeof(*(b)));                                           \
   } while (0)
+
+/// convert a double-precision floating-point to single-precision
+///
+/// Values below or above the range of representable floats are clamped. There
+/// is loss of precision resulting from both this and that single-precision
+/// space inherently has less resolution than double-precision space. The caller
+/// should verify this loss of precision is acceptable/desirable.
+///
+/// @param v Double value to convert
+/// @return Closest float value
+static inline float d2f(double v) {
+  if (v > FLT_MAX) {
+    return FLT_MAX;
+  }
+  if (v < -FLT_MAX) {
+    return -FLT_MAX;
+  }
+  return (float)v;
+}

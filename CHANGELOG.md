@@ -112,6 +112,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   #2664
 - In gvpr programs, the `#` and `in` operators now work on `ARGV`. #2582
 - **Breaking**: `xdot_color_stop.frac` is now a `double`.
+- The GD plugin’s PNG output (`-Tpng:cairo:gd`) now sets DPI in the written PNG.
+  #1617
+- The GDI+ plugin’s output (`-T*:cairo:gdiplus`) now sets DPI in the written
+  output. #1617
+- The Quartz plugin’s PNG output (`-Tpng:cairo:quartz`) now sets DPI in the
+  written PNG. #1617
 
 ### Fixed
 

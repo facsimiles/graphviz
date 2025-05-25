@@ -34,6 +34,7 @@ static void gdiplus_format(GVJ_t *job)
 		job->width * BYTES_PER_PIXEL,	/* bytes per row: exactly width # of pixels */
 		PixelFormat32bppPARGB,			/* pixel format: corresponds to CAIRO_FORMAT_ARGB32 */
 		job->imagedata);				/* pixel data from job */
+	bitmap.SetResolution(job->dpi.x, job->dpi.y);
 	SaveBitmapToStream(bitmap, stream, job->device.id);
 
 	/* blast the streamed buffer back to the gvdevice */

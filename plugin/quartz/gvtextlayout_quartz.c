@@ -24,8 +24,8 @@
 
 void *quartz_new_layout(char* fontname, double fontsize, char* text)
 {
-	CFStringRef fontnameref = CFStringCreateWithBytes(kCFAllocatorDefault, (const UInt8 *)fontname, strlen(fontname), kCFStringEncodingUTF8, FALSE);
-	CFStringRef textref = CFStringCreateWithBytes(kCFAllocatorDefault, (const UInt8 *)text, strlen(text), kCFStringEncodingUTF8, FALSE);
+	CFStringRef fontnameref = CFStringCreateWithBytes(NULL, (const UInt8 *)fontname, strlen(fontname), kCFStringEncodingUTF8, false);
+	CFStringRef textref = CFStringCreateWithBytes(NULL, (const UInt8 *)text, strlen(text), kCFStringEncodingUTF8, false);
 	CTLineRef line = NULL;
 	
 	if (fontnameref && textref) {
@@ -34,13 +34,13 @@ void *quartz_new_layout(char* fontname, double fontsize, char* text)
 		CFTypeRef attributeNames[] = { kCTFontAttributeName, kCTForegroundColorFromContextAttributeName };
 		CFTypeRef attributeValues[] = { font, kCFBooleanTrue };
 		CFDictionaryRef attributes = CFDictionaryCreate(
-			kCFAllocatorDefault,
+			NULL,
 			(const void**)attributeNames,
 			(const void**)attributeValues,
 			2,
 			&kCFTypeDictionaryKeyCallBacks,
 			&kCFTypeDictionaryValueCallBacks);
-		CFAttributedStringRef attributed = CFAttributedStringCreate(kCFAllocatorDefault, textref, attributes);
+		CFAttributedStringRef attributed = CFAttributedStringCreate(NULL, textref, attributes);
 		line = CTLineCreateWithAttributedString(attributed);
 		
 		CFRelease(attributed);

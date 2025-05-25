@@ -124,13 +124,13 @@ static void quartzgen_begin_page(GVJ_t * job)
 		    kCGPDFContextTitle
 		};
 		CFStringRef auxiliaryValues[] = {
-		    CFStringCreateWithFormat(kCFAllocatorDefault, NULL,
+		    CFStringCreateWithFormat(NULL, NULL,
 					     CFSTR("%s %s"),
 					     job->common->info[0],
 					     job->common->info[1]),
 		    job->obj->type ==
 			ROOTGRAPH_OBJTYPE ?
-			CFStringCreateWithBytesNoCopy(kCFAllocatorDefault,
+			CFStringCreateWithBytesNoCopy(NULL,
 						      (const UInt8 *) agnameof(job->obj->u.g),
 						      strlen(agnameof(job->obj->u.g)),
 						      kCFStringEncodingUTF8,
@@ -139,7 +139,7 @@ static void quartzgen_begin_page(GVJ_t * job)
 			: CFSTR("")
 		};
 		CFDictionaryRef auxiliaryInfo =
-		    CFDictionaryCreate(kCFAllocatorDefault,
+		    CFDictionaryCreate(NULL,
 				       (const void **) &auxiliaryKeys,
 				       (const void **) &auxiliaryValues,
 				       sizeof(auxiliaryValues) /
@@ -261,8 +261,7 @@ static void quartzgen_begin_anchor(GVJ_t * job, char *url, char *tooltip,
     if (url && url_map) {
 	/* set up the hyperlink to the given url */
 	CGContextRef context = job->context;
-	CFURLRef uri =
-	    CFURLCreateWithBytes(kCFAllocatorDefault, (const UInt8 *) url,
+	CFURLRef uri = CFURLCreateWithBytes(NULL, (const UInt8 *)url,
 				 strlen(url), kCFStringEncodingUTF8, NULL);
 	CGPDFContextSetURLForRect(context, uri,
 				  /* need to reverse the CTM on the area to get it to work */
