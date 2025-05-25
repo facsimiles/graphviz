@@ -1403,12 +1403,11 @@ static pointf *copyPts(xdot_point *inpts, size_t numpts) {
 static void emit_xdot (GVJ_t * job, xdot* xd)
 {
     int image_warn = 1;
-    exdot_op* op;
     int angle;
     char** styles = NULL;
     int filled = FILL;
 
-    op = (exdot_op*)(xd->ops);
+    exdot_op *op = (exdot_op*)xd->ops;
     for (size_t i = 0; i < xd->cnt; i++) {
 	switch (op->op.kind) {
 	case xd_filled_ellipse :
