@@ -217,10 +217,8 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
  */
 int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
-    char c, *rest, *layout;
-    const char *val;
-    int i, v;
-    int Kflag = 0;
+    char c;
+    bool Kflag = false;
 
     /* establish if we are running in a CGI environment */
     HTTPServerEnVar = getenv("SERVER_NAME");
@@ -254,12 +252,12 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
       : (unsigned char)gvc->common.verbose;
 
     size_t nfiles = 0;
-    for (i = 1; i < argc; i++)
+    for (int i = 1; i < argc; i++)
 	if (argv[i] && argv[i][0] != '-')
 	    nfiles++;
     gvc->input_filenames = gv_calloc(nfiles + 1, sizeof(char *));
     nfiles = 0;
-    for (i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
 	if (argv[i] &&
 	    (startswith(argv[i], "-V") || strcmp(argv[i], "--version") == 0)) {
 	    fprintf(stderr, "%s - %s version %s (%s)\n",
@@ -274,7 +272,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    free(Gvfilepath);
 	    Gvfilepath = gv_strdup(argv[i] + strlen("--filepath="));
 	} else if (argv[i] && argv[i][0] == '-') {
-	    rest = &argv[i][2];
+	    char *const rest = &argv[i][2];
 	    switch (c = argv[i][1]) {
 	    case 'G':
 		if (*rest)
@@ -300,8 +298,8 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    return dotneato_usage(argv[0], 1);
 		}
 		break;
-	    case 'T':
-		val = getFlagOpt(argc, argv, &i);
+	    case 'T': {
+		const char *const val = getFlagOpt(argc, argv, &i);
 		if (!val) {
 		    fprintf(stderr, "Missing argument for -T flag\n");
 		    return dotneato_usage(argv[0], 1);
@@ -319,13 +317,14 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    return 2;
 		}
 		break;
-	    case 'K':
-		val = getFlagOpt(argc, argv, &i);
+	    }
+	    case 'K': {
+		const char *const val = getFlagOpt(argc, argv, &i);
 		if (!val) {
                     fprintf(stderr, "Missing argument for -K flag\n");
                     return dotneato_usage(argv[0], 1);
                 }
-                v = gvlayout_select(gvc, val);
+                const int v = gvlayout_select(gvc, val);
                 if (v == NO_SUPPORT) {
 	            fprintf(stderr, "There is no layout engine support for \"%s\"\n", val);
                     if (streq(val, "dot")) {
@@ -343,21 +342,23 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    if (GvExitOnUsage) graphviz_exit(1);
 		    return 2;
                 }
-		Kflag = 1;
+		Kflag = true;
 		break;
+	    }
 	    case 'P':
 		P_graph = gvplugin_graph(gvc);
 		break;
-	    case 'l':
-		val = getFlagOpt(argc, argv, &i);
+	    case 'l': {
+		const char *const val = getFlagOpt(argc, argv, &i);
 		if (!val) {
 		    fprintf(stderr, "Missing argument for -l flag\n");
 		    return dotneato_usage(argv[0], 1);
 		}
 		use_library(gvc, val);
 		break;
-	    case 'o':
-		val = getFlagOpt(argc, argv, &i);
+	    }
+	    case 'o': {
+		const char *const val = getFlagOpt(argc, argv, &i);
 		if (!val) {
 		    fprintf(stderr, "Missing argument for -o flag\n");
 		    return dotneato_usage(argv[0], 1);
@@ -365,9 +366,10 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		if (! gvc->common.auto_outfile_names)
 		    gvjobs_output_filename(gvc, val);
 		break;
+	    }
 	    case 'q':
 		if (*rest) {
-		    v = atoi(rest);
+		    const int v = atoi(rest);
 		    if (v <= 0) {
 			fprintf(stderr,
 				"Invalid parameter \"%s\" for -q flag - ignored\n",
@@ -410,7 +412,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 
     /* if no -K, use cmd name to set layout type */
     if (!Kflag) {
-	layout = gvc->common.cmdname;
+	const char *layout = gvc->common.cmdname;
 	if (streq(layout, "dot_static")
 	    || streq(layout, "dot_builtins")
 	    || streq(layout, "lt-dot")
@@ -418,16 +420,13 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    || streq(layout, "")   /* when run as a process from Gvedit on Windows */
 	)
             layout = "dot";
-	i = gvlayout_select(gvc, layout);
+	const int i = gvlayout_select(gvc, layout);
 	if (i == NO_SUPPORT) {
 	    fprintf(stderr, "There is no layout engine support for \"%s\"\n", layout);
             if (streq(layout, "dot")) {
 		fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
 	    } else {
-		/* TODO: Detect empty results from gvplugin_list() and prompt to configure with '-c' */
-		/* fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, "")); */
-		char *lyts;
-		lyts = gvplugin_list(gvc, API_layout, "");
+		const char *const lyts = gvplugin_list(gvc, API_layout, "");
 		if (strlen(lyts) > 1) {
                     fprintf(stderr, " Use one of:%s\n", lyts);
 		} else {
