@@ -3561,7 +3561,6 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    }
 	}
 	else if (istyle.striped) {
-	    int rv;
 	    AF[0] = GD_bb(sg).LL;
 	    AF[2] = GD_bb(sg).UR;
 	    AF[1].x = AF[2].x;
@@ -3572,8 +3571,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
         	gvrender_set_pencolor(job, "transparent");
 	    else
     		gvrender_set_pencolor(job, pencolor);
-	    rv = stripedBox (job, AF, fillcolor, 0);
-	    if (rv > 1)
+	    if (stripedBox (job, AF, fillcolor, 0) > 1)
 		agerr (AGPREV, "in cluster %s\n", agnameof(sg));
 	    gvrender_box(job, GD_bb(sg), 0);
 	}
