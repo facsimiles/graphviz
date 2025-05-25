@@ -117,7 +117,7 @@ glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs,
 
 
     data = glCompCreatePangoTexture(def, fs, text, &surface, &width, &height);
-    if (!data)			/*pango error , */
+    if (!data) // pango error
 	return NULL;
     t = glCompSetAddNewTexture(s, width, height, data, is2D);
     cairo_surface_destroy(surface);
