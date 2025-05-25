@@ -389,6 +389,8 @@ drawfunc_t OpFns[] = {
   [xop_font] = SetFont,
   [xop_style] = SetStyle,
   [xop_image] = InsertImage,
+  [xop_grad_color] = NULL,
+  [xop_fontchar] = NULL,
 };
 
 void draw_selpoly(glCompPoly_t *selPoly) {

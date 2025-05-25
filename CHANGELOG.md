@@ -200,6 +200,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in Graphviz 2.47.0. #2599
 - Smyrna no longer frees invalid pointers when processing xdot input. This was a
   regression in Graphviz 2.50.0. #2687
+- Smyrna no longer crashes when processing xdot gradient colors or font
+  characters. This was a regression in Graphviz 2.34.0.
 
 ## [12.2.1] – 2024-12-07
 
