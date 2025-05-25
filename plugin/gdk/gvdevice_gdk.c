@@ -40,7 +40,7 @@ static void gdk_format(GVJ_t * job)
 	[FORMAT_TIFF] = "tiff"
     };
     assert(job->device.id >= 0);
-    assert(job->device.id < sizeof(format_strs) / sizeof(format_strs[0]));
+    assert(job->device.id < (int)(sizeof(format_strs) / sizeof(format_strs[0])));
     char *const format_str = format_strs[job->device.id];
     GdkPixbuf *pixbuf;
 
