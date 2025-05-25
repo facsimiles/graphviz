@@ -67,7 +67,7 @@ glCompFont glNewFont(glCompSet *s, const char *text, glCompColor *c,
 
 }
 
-glCompFont glNewFontFromParent(glCompObj *o, char *text) {
+glCompFont glNewFontFromParent(glCompObj *o, const char *text) {
     glCompCommon *parent;
     glCompFont font = {0};
     parent = o->common.parent;
