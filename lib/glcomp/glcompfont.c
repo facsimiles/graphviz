@@ -43,8 +43,8 @@ void glDeleteFont(glCompFont * f)
     *f = (glCompFont){0};
 }
 
-glCompFont glNewFont(glCompSet *s, char *text, glCompColor *c, char *fontdesc,
-                     int fs, bool is2D) {
+glCompFont glNewFont(glCompSet *s, const char *text, glCompColor *c,
+                     char *fontdesc, int fs, bool is2D) {
     glCompFont font = {0};
     font.color.R = c->R;
     font.color.G = c->G;
