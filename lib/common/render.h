@@ -109,7 +109,8 @@ extern "C" {
     RENDER_API void gv_cleanup_edge(Agedge_t * e);
     RENDER_API void gv_cleanup_node(Agnode_t * n);
     RENDER_API void* init_xdot (Agraph_t* g);
-    RENDER_API int initMapData (GVJ_t*, char*, char*, char*, char*, char*, void*);
+RENDER_API bool initMapData(GVJ_t *, char *, char *, char *, char *, char *,
+                            void *);
     RENDER_API bool isPolygon(node_t *);
     RENDER_API void makeSelfEdge(edge_t *edges[], size_t ind, size_t cnt,
 	double sizex, double sizey, splineInfo * sinfo);

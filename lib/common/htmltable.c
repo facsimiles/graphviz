@@ -380,7 +380,6 @@ initAnchor(GVJ_t * job, htmlenv_t * env, htmldata_t * data, boxf b,
   htmlmap_data_t * save)
 {
     obj_state_t *obj = job->obj;
-    int changed;
     char *id;
     static int anchorId;
     agxbuf xb = {0};
@@ -399,7 +398,7 @@ initAnchor(GVJ_t * job, htmlenv_t * env, htmldata_t * data, boxf b,
 	agxbprint(&xb, "%s_%d", env->objid, anchorId++);
 	id = agxbuse(&xb);
     }
-    changed =
+    const bool changed =
 	initMapData(job, NULL, data->href, data->title, data->target, id,
 		    obj->u.g);
     agxbfree(&xb);
