@@ -927,16 +927,13 @@ char *parseXDotColor(char *cp, xdot_color *clr) {
   switch (c) {
   case '[':
     return linGradient(cp + 1, clr);
-    break;
   case '(':
     return radGradient(cp + 1, clr);
-    break;
   case '#':
   case '/':
     clr->type = xd_none;
     clr->u.clr = cp;
     return cp;
-    break;
   default:
     if (gv_isalnum(c)) {
       clr->type = xd_none;
