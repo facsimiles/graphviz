@@ -72,7 +72,6 @@ static Agiodisc_t memIoDisc = {memiofread, 0, 0};
 
 static Agraph_t *agmemread0(Agraph_t *arg_g, const char *cp)
 {
-    Agraph_t* g;
     rdr_t rdr;
     Agdisc_t disc;
 
@@ -84,14 +83,8 @@ static Agraph_t *agmemread0(Agraph_t *arg_g, const char *cp)
 
     disc.id = &AgIdDisc;
     disc.io = &memIoDisc;  
-    if (arg_g) g = agconcat(arg_g, &rdr, &disc);
-    else g = agread (&rdr, &disc);
-    /* Null out filename and reset line number 
-     * The name may have been set with a ppDirective, and
-     * we want to reset line_num.
-     */
-    agsetfile(NULL);
-    return g;
+    if (arg_g) return agconcat(arg_g, NULL, &rdr, &disc);
+    return agread(&rdr, &disc);
 }
 
 Agraph_t *agmemread(const char *cp)

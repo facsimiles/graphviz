@@ -50,8 +50,6 @@ static void nextFile(ingraph_state * sp)
 	    }
 	}
     }
-    if (rv)
-	agsetfile(fileName(sp));
     sp->fp = rv;
 }
 
@@ -72,7 +70,7 @@ Agraph_t *nextGraph(ingraph_state * sp)
     g = NULL;
 
     while (sp->fp != NULL) {
-	if ((g = sp->readf(sp->fp)) != 0)
+	if ((g = sp->readf(fileName(sp), sp->fp)) != 0)
 	    break;
 	if (sp->u.Files)	/* Only close if not using stdin */
 	    (void)fclose(sp->fp);
@@ -84,9 +82,9 @@ Agraph_t *nextGraph(ingraph_state * sp)
 /* Create new ingraph state. If sp is non-NULL, we
  * assume user is supplying memory.
  */
-static ingraph_state*
-new_ing(ingraph_state * sp, char **files, Agraph_t** graphs, Agraph_t *(*readf)(void*))
-{
+static ingraph_state *new_ing(ingraph_state *sp, char **files,
+                              Agraph_t **graphs,
+                              Agraph_t *(*readf)(const char *, void *)) {
     if (!sp) {
 	sp = malloc(sizeof(ingraph_state));
 	if (!sp) {
@@ -118,7 +116,7 @@ new_ing(ingraph_state * sp, char **files, Agraph_t** graphs, Agraph_t *(*readf)(
 }
 
 ingraph_state *newIng(ingraph_state *sp, char **files,
-                      Agraph_t *(*readf)(void *)) {
+                      Agraph_t *(*readf)(const char *, void *)) {
   return new_ing(sp, files, 0, readf);
 }
 
@@ -126,12 +124,12 @@ ingraph_state *newIng(ingraph_state *sp, char **files,
  * assume user is supplying memory.
  */
 ingraph_state *newIngGraphs(ingraph_state *sp, Agraph_t **graphs,
-                            Agraph_t *(*readf)(void *)) {
+                            Agraph_t *(*readf)(const char *, void *)) {
   return new_ing(sp, 0, graphs, readf);
 }
 
-static Agraph_t *dflt_read(void *fp) {
-  return agread(fp, NULL);
+static Agraph_t *dflt_read(const char *filename, void *fp) {
+  return agconcat(NULL, filename, fp, NULL);
 }
 
 /* At present, we require opf to be non-NULL. In
