@@ -88,6 +88,7 @@ static Agsym_t *agnewsym(Agraph_t * g, const char *name, const char *value,
     sym->name = agstrdup(g, name);
     sym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     sym->id = id;
+    sym->owner = g;
     return sym;
 }
 
