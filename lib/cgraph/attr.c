@@ -297,7 +297,7 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
 	    rv = lsym;
 	} else {		/* new global definition */
 	    Dict_t *rdict = agdictof(root, kind);
-	    Agsym_t *rsym = agnewsym(g, name, value, is_html, dtsize(rdict), kind);
+	    Agsym_t *rsym = agnewsym(root, name, value, is_html, dtsize(rdict), kind);
 	    dtinsert(rdict, rsym);
 	    switch (kind) {
 	    case AGRAPH:
