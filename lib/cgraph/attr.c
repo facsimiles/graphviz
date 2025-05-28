@@ -214,8 +214,8 @@ static void freesym(void *obj) {
     Agsym_t *sym;
 
     sym = obj;
-    agstrfree(Ag_G_global, sym->name, false);
-    agstrfree(Ag_G_global, sym->defval, aghtmlstr(sym->defval));
+    agstrfree(sym->owner, sym->name, false);
+    agstrfree(sym->owner, sym->defval, aghtmlstr(sym->defval));
     free(sym);
 }
 
