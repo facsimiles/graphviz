@@ -168,7 +168,6 @@ void aginternalmapclearlocalnames(Agraph_t * g)
     IMapEntry_t *sym, *nxt;
     Dict_t **d_name;
 
-    Ag_G_global = g;
     d_name = g->clos->lookup_by_name;
     for (i = 0; i < 3; i++) {
 	if (d_name[i]) {
@@ -195,7 +194,6 @@ static void closeit(Dict_t ** d)
 
 void aginternalmapclose(Agraph_t * g)
 {
-    Ag_G_global = g;
     closeit(g->clos->lookup_by_name);
     closeit(g->clos->lookup_by_id);
 }

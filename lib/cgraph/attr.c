@@ -409,7 +409,6 @@ int agraphattr_delete(Agraph_t * g)
     Agdatadict_t *dd;
     Agattr_t *attr;
 
-    Ag_G_global = g;
     if ((attr = agattrrec(g))) {
 	freeattr(&g->base, attr);
 	agdelrec(g, attr->h.name);
