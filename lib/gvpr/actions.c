@@ -33,18 +33,6 @@
 #define KINDS(p)                                                               \
   ((AGTYPE(p) == AGRAPH) ? "graph" : (AGTYPE(p) == AGNODE) ? "node" : "edge")
 
-static int iofread(void *chan, char *buf, int bufsize) {
-  FILE *fp = chan;
-
-  return (int)read(fileno(fp), buf, bufsize);
-}
-
-static int ioputstr(void *chan, const char *str) { return fputs(str, chan); }
-
-static int ioflush(void *chan) { return fflush(chan); }
-
-static Agiodisc_t gprIoDisc = {iofread, ioputstr, ioflush};
-
 /* sameG:
  * Return common root if objects belong to same root graph.
  * NULL otherwise
@@ -541,14 +529,14 @@ int deleteObj(Agraph_t *g, Agobj_t *obj) {
 
 /* sfioWrite:
  * If the graph is passed in from a library, its output discipline
- * might not use sfio. In this case, we push an sfio discipline on
+ * might not use stdio. In this case, we push a stdio discipline on
  * the graph, write it, and then pop it off.
  */
 int sfioWrite(Agraph_t *g, FILE *fp) {
   int rv;
 
   Agiodisc_t *saveio = g->clos->disc.io;
-  g->clos->disc.io = &gprIoDisc;
+  g->clos->disc.io = &AgIoDisc;
   rv = agwrite(g, fp);
   g->clos->disc.io = saveio;
   return rv;
