@@ -14,6 +14,7 @@
 #include <limits.h>
 #include <util/gv_math.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <util/agxbuf.h>
 
 enum {
 	FORMAT_BMP,
@@ -39,7 +40,7 @@ static void gdk_format(GVJ_t * job)
 	[FORMAT_TIFF] = "tiff"
     };
     assert(job->device.id >= 0);
-    assert(job->device.id < sizeof(format_strs) / sizeof(format_strs[0]));
+    assert(job->device.id < (int)(sizeof(format_strs) / sizeof(format_strs[0])));
     char *const format_str = format_strs[job->device.id];
     GdkPixbuf *pixbuf;
 
@@ -60,8 +61,17 @@ static void gdk_format(GVJ_t * job)
                 NULL                    // destroy_fn_data
                );
 
-    gdk_pixbuf_save_to_callback(pixbuf, writer, job, format_str, NULL, NULL);
+    agxbuf x_dpi = {0};
+    agxbprint(&x_dpi, "%.0f", job->dpi.x);
+    agxbuf y_dpi = {0};
+    agxbprint(&y_dpi, "%.0f", job->dpi.y);
 
+    gdk_pixbuf_save_to_callback(pixbuf, writer, job, format_str, NULL, "x-dpi",
+                                agxbuse(&x_dpi), "y-dpi", agxbuse(&y_dpi),
+                                NULL);
+
+    agxbfree(&y_dpi);
+    agxbfree(&x_dpi);
     g_object_unref(pixbuf);
 }
 
