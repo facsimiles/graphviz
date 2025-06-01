@@ -127,9 +127,8 @@ static int visible(Agsym_t* attr, void* obj)
     if (attr) {
 	const char *const s = agxget(obj, attr);
 	if (*s) return mapbool(s);
-	else return 1;
     }
-    else return 1;
+    return 1;
 }
 
 static int object_color(void* obj,glCompColor* c)
