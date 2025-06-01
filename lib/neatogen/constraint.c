@@ -17,6 +17,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/itos.h>
 #include <util/list.h>
 
 /* For precision, scale up before algorithms, then scale down */
@@ -444,15 +445,12 @@ static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
     {
 	Agsym_t *mlsym = agattr_text(cg, AGEDGE, "minlen", "");
 	Agsym_t *rksym = agattr_text(cg, AGNODE, "rank", "");
-	char buf[100];
 	node_t *n;
 	edge_t *e;
 	for (n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
-	    snprintf(buf, sizeof(buf), "%d", ND_rank(n));
-	    agxset(n, rksym, buf);
+	    agxset(n, rksym, ITOS(ND_rank(n)));
 	    for (e = agfstedge(cg, n); e; e = agnxtedge(cg, e, n)) {
-		snprintf(buf, sizeof(buf), "%d", ED_minlen(e));
-		agxset(e, mlsym, buf);
+		agxset(e, mlsym, ITOS(ED_minlen(e)));
 	    }
 	}
     }
