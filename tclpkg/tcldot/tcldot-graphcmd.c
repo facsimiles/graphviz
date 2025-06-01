@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/itos.h>
 #include <util/streq.h>
 
 static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
@@ -23,7 +24,6 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
   gctx_t *gctx = (gctx_t *)clientData;
   ictx_t *ictx = gctx->ictx;
   Agsym_t *a;
-  char buf[12];
   const char **argv2;
   GVC_t *gvc = ictx->gvc;
 
@@ -110,13 +110,11 @@ static int graphcmd_internal(ClientData clientData, Tcl_Interp *interp,
     return TCL_OK;
 
   } else if (streq("countnodes", argv[1])) {
-    snprintf(buf, sizeof(buf), "%d", agnnodes(g));
-    Tcl_AppendResult(interp, buf, NULL);
+    Tcl_AppendResult(interp, ITOS(agnnodes(g)), NULL);
     return TCL_OK;
 
   } else if (streq("countedges", argv[1])) {
-    snprintf(buf, sizeof(buf), "%d", agnedges(g));
-    Tcl_AppendResult(interp, buf, NULL);
+    Tcl_AppendResult(interp, ITOS(agnedges(g)), NULL);
     return TCL_OK;
 
   } else if (streq("delete", argv[1])) {
