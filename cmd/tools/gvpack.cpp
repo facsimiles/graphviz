@@ -541,14 +541,13 @@ static Agraph_t *cloneGraph(std::vector<Agraph_t *> &gs, GVC_t *gvc,
     Agraph_t *subg;
     Agnode_t *n;
     Agnode_t *np;
-    Agsym_t *G_bb;
     bool doWarn = true;
 
     if (verbose)
 	std::cerr << "Creating clone graph\n";
     root = agopen(gname, kind, &AgDefaultDisc);
     initAttrs(root, gs);
-    G_bb = agfindgraphattr(root, const_cast<char*>("bb"));
+    Agsym_t *const G_bb = agfindgraphattr(root, const_cast<char*>("bb"));
     if (doPack) assert(G_bb);
 
     /* add command-line attributes */
