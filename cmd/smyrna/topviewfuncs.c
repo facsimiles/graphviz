@@ -618,10 +618,9 @@ static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
 static void edge_spline (Agraph_t* g, Agedge_t* e, glCompColor c)
 {
     Agsym_t* pos_attr_e = GE_pos(g);
-    xdot * x;
 
     glColor4f(c.R,c.G,c.B,c.A);	   
-    x = makeXDotSpline (agxget(e,pos_attr_e));
+    xdot *const x = makeXDotSpline(agxget(e, pos_attr_e));
     if (x) {
 	draw_xdot(x,0);
 	freeXDot (x);
