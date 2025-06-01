@@ -211,9 +211,7 @@ static void freeattr(Agobj_t * obj, Agattr_t * attr)
 }
 
 static void freesym(void *obj) {
-    Agsym_t *sym;
-
-    sym = obj;
+    Agsym_t *const sym = obj;
     agstrfree(sym->owner, sym->name, false);
     agstrfree(sym->owner, sym->defval, aghtmlstr(sym->defval));
     free(sym);
