@@ -20,6 +20,7 @@
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/itos.h>
 #include <util/startswith.h>
 #include <util/unreachable.h>
 
@@ -296,7 +297,6 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   int i, row, ic,nc, j;
   double v;
   int type = MATRIX_TYPE_REAL;
-  char scluster[100];
   float ff;
 
   int MAX_GRPS, MIN_GRPS;
@@ -450,8 +450,7 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
     for (i = 0; i < nnodes; i++) (*clusters)[i]++;/* make into 1 based */
     for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
       i = ND_id(n);
-      snprintf(scluster, sizeof(scluster), "%d", (*clusters)[i]);
-      agxset(n,clust_sym,scluster);
+      agxset(n, clust_sym, ITOS((*clusters)[i]));
     }
     MIN_GRPS = 1;
     MAX_GRPS = nc;
