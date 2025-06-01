@@ -38,11 +38,11 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
+#include <util/itos.h>
 #include <util/prisize_t.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
@@ -978,10 +978,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
 #else
 	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);
 #endif
-	    agxbuf buf = {0};
-	    agxbprint(&buf, "%ld", seed);
-	    agset(G, "start", agxbuse(&buf));
-	    agxbfree(&buf);
+	    agset(G, "start", ITOS(seed));
 	}
 	*seedp = seed;
     }
