@@ -293,9 +293,7 @@ static void init_graph(Agraph_t *g, bool fill, GVC_t *gvc) {
  * attributes have been initialized.
  */
 static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new_graph, int attr_kind) {
-    Agsym_t *a;
-
-    for (a = agnxtattr(old, attr_kind, 0); a; a =  agnxtattr(old, attr_kind, a)) {
+    for (Agsym_t *a = agnxtattr(old, attr_kind, 0); a; a = agnxtattr(old, attr_kind, a)) {
 	if (aghtmlstr(a->defval)) {
 	    agattr_html(new_graph, attr_kind, a->name, a->defval);
 	} else {
