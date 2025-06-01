@@ -303,12 +303,11 @@ static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new_graph, int attr_kind) {
 }
 static void cloneAttrs(void *old, void *new_graph) {
     int attr_kind = AGTYPE(old);
-    Agsym_t *a;
     char* s;
     Agraph_t *g = agroot(old);
     Agraph_t *ng = agroot(new_graph);
 
-    for (a = agnxtattr(g, attr_kind, 0); a; a =  agnxtattr(g, attr_kind, a)) {
+    for (Agsym_t *a = agnxtattr(g, attr_kind, 0); a; a = agnxtattr(g, attr_kind, a)) {
 	s = agxget (old, a);
 	if (aghtmlstr(s)) {
 	    char *scopy = agstrdup_html(ng, s);
