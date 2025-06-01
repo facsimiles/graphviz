@@ -124,10 +124,8 @@ static void glCompColorxlate(glCompColor *c, const char *str) {
  */
 static int visible(Agsym_t* attr, void* obj)
 {
-    char* s;
-
     if (attr) {
-	s = agxget (obj, attr);
+	const char *const s = agxget(obj, attr);
 	if (*s) return mapbool(s);
 	else return 1;
     }
