@@ -20,8 +20,9 @@ extern "C" {
 
 // creates a font file with given name and font description
 unsigned char *glCompCreatePangoTexture(char *fontdescription, int fontsize,
-                                        char *txt, cairo_surface_t **surface,
-                                        int *w, int *h);
+                                        const char *txt,
+                                        cairo_surface_t **surface, int *w,
+                                        int *h);
 
 #ifdef __cplusplus
 }

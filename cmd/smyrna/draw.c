@@ -252,11 +252,6 @@ static void SetPenColor(xdot_op *op, int param) {
     view->penColor = GetglCompColor(op->u.color);
 }
 
-static void SetStyle(xdot_op *o, int param) {
-    (void)o;
-    (void)param;
-}
-
 static sdot_op * font_op;
 
 static void SetFont(xdot_op *op, int param) {
@@ -333,8 +328,8 @@ static void EmbedText(xdot_op *op, int param) {
 
 		// XML-escape the text
 		const xml_flags_t flags = {.dash = 1, .nbsp = 1};
-		char **ptr = &escaped;
-		(void)gv_xml_escape(o->op.u.text.text, flags, put, ptr);
+		char *ptr = escaped;
+		(void)gv_xml_escape(o->op.u.text.text, flags, put, &ptr);
 
 		o->font = glNewFont(view->widgets, escaped, &view->penColor,
 		                    font_op->op.u.font.name, font_op->op.u.font.size,
@@ -370,8 +365,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
     glBegin(GL_POLYGON);
     for (int i = 0; i < 360; i += 36) {
 	float degInRad = (float) (i * DEG2RAD);
-	glVertex3f((float)(x + cos(degInRad) * radius),
-		   (float)(y + sin(degInRad) * radius),
+	glVertex3f(x + cosf(degInRad) * radius, y + sinf(degInRad) * radius,
 		   (float)(zdepth + view->Topview->global_z));
     }
 
@@ -379,16 +373,18 @@ void drawCircle(float x, float y, float radius, float zdepth)
 }
 
 drawfunc_t OpFns[] = {
-  DrawEllipse,
-  DrawPolygon,
-  DrawBeziers,
-  DrawPolyline,
-  EmbedText,
-  SetFillColor,
-  SetPenColor,
-  SetFont,
-  SetStyle,
-  InsertImage,
+  [xop_ellipse] = DrawEllipse,
+  [xop_polygon] = DrawPolygon,
+  [xop_bezier] = DrawBeziers,
+  [xop_polyline] = DrawPolyline,
+  [xop_text] = EmbedText,
+  [xop_fill_color] = SetFillColor,
+  [xop_pen_color] = SetPenColor,
+  [xop_font] = SetFont,
+  [xop_style] = NULL,
+  [xop_image] = InsertImage,
+  [xop_grad_color] = NULL,
+  [xop_fontchar] = NULL,
 };
 
 void draw_selpoly(glCompPoly_t *selPoly) {

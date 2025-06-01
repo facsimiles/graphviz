@@ -568,8 +568,8 @@ static void xdot_gradient_fillcolor(GVJ_t *job, int filled, pointf *A, size_t n)
 	    c1.y = G[0].y;
 	}
 	else {
-	    c1.x = G[0].x +  (r2/4) * cos(angle);
-	    c1.y = G[0].y +  (r2/4) * sin(angle);
+	    c1.x = G[0].x + r2 / 4 * cos(angle);
+	    c1.y = G[0].y + r2 / 4 * sin(angle);
 	}
 	c2.x = G[0].x;
 	c2.y = G[0].y;
@@ -606,7 +606,7 @@ static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
     xdot_style (job);
     xdot_pencolor (job);
     if (filled) {
-	if ((filled == GRADIENT) || (filled == RGRADIENT)) {
+	if (filled == GRADIENT || filled == RGRADIENT) {
 	   xdot_gradient_fillcolor (job, filled, A, 2);
 	}
         else 
@@ -624,7 +624,7 @@ static void xdot_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
     xdot_style (job);
     xdot_pencolor (job);
     if (filled) {
-	if ((filled == GRADIENT) || (filled == RGRADIENT)) {
+	if (filled == GRADIENT || filled == RGRADIENT) {
 	   xdot_gradient_fillcolor(job, filled, A, n);
 	}
         else
@@ -639,7 +639,7 @@ static void xdot_polygon(GVJ_t *job, pointf *A, size_t n, int filled) {
     xdot_style (job);
     xdot_pencolor (job);
     if (filled) {
-	if ((filled == GRADIENT) || (filled == RGRADIENT)) {
+	if (filled == GRADIENT || filled == RGRADIENT) {
 	   xdot_gradient_fillcolor(job, filled, A, n);
 	}
         else

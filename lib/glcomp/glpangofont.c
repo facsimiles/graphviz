@@ -11,7 +11,7 @@
 #include <glcomp/glpangofont.h>
 #include <stdlib.h>
 
-static PangoLayout *get_pango_layout(char *markup_text,
+static PangoLayout *get_pango_layout(const char *markup_text,
 				     char *fontdescription, int fontsize,
 				     double *width, double *height)
 {
@@ -48,8 +48,9 @@ static PangoLayout *get_pango_layout(char *markup_text,
 }
 
 unsigned char *glCompCreatePangoTexture(char *fontdescription, int fontsize,
-                                        char *txt, cairo_surface_t **surface,
-                                        int *w, int *h) {
+                                        const char *txt,
+                                        cairo_surface_t **surface, int *w,
+                                        int *h) {
     PangoLayout *layout;
     double width, height;
     *surface = NULL;

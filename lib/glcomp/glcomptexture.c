@@ -92,8 +92,8 @@ glCompTex *glCompSetAddNewTexImage(glCompSet *s, int width, int height,
 
 }
 
-glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs, char *text,
-                                   bool is2D) {
+glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs,
+                                   const char *text, bool is2D) {
     int width, height;
     glCompTex *t;
     cairo_surface_t *surface = NULL;
@@ -117,7 +117,7 @@ glCompTex *glCompSetAddNewTexLabel(glCompSet *s, char *def, int fs, char *text,
 
 
     data = glCompCreatePangoTexture(def, fs, text, &surface, &width, &height);
-    if (!data)			/*pango error , */
+    if (!data) // pango error
 	return NULL;
     t = glCompSetAddNewTexture(s, width, height, data, is2D);
     cairo_surface_destroy(surface);

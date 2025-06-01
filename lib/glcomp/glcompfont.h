@@ -13,9 +13,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _WIN32
-#include <glcomp/glpangofont.h>
-#endif
 #include <glcomp/opengl.h>
 #include <glcomp/glcompdefs.h>
 #include <GL/glut.h>
@@ -26,9 +23,9 @@ extern "C" {
 
     void glprintfglut(void *font, float xpos, float ypos, float zpos, char *bf);
 
-glCompFont glNewFont(glCompSet *s, char *text, glCompColor *c, char *fontdesc,
-                     int fs, bool is2D);
-glCompFont glNewFontFromParent(glCompObj *o, char *text);
+glCompFont glNewFont(glCompSet *s, const char *text, glCompColor *c,
+                     char *fontdesc, int fs, bool is2D);
+glCompFont glNewFontFromParent(glCompObj *o, const char *text);
     void glDeleteFont(glCompFont * f);
 void glCompDrawText(glCompFont f, float x, float y);
 void glCompRenderText(glCompFont f, glCompObj *parentObj);
