@@ -136,11 +136,10 @@ static int object_color(void* obj,glCompColor* c)
     gvcolor_t cl;
     Agraph_t* g=view->g[view->activeGraph];
     Agraph_t* objg=agraphof(obj);
-    int objType;
     float Alpha = 1;
     Agsym_t* vis;
 
-    objType=AGTYPE(obj);
+    const int objType = AGTYPE(obj);
 
     if(objType==AGEDGE) {
 	Alpha=getAttrFloat(g,objg,"defaultedgealpha",1);
