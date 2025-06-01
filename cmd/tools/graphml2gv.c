@@ -185,22 +185,14 @@ static char *defval = "";
 
 static void setEdgeAttr(Agedge_t *ep, char *name, const char *value,
                         userdata_t *ud) {
-    char *attrname;
-
     if (strcmp(name, "headport") == 0) {
-	if (ud->edgeinverted)
-	    attrname = "tailport";
-	else
-	    attrname = "headport";
+	char *const attrname = ud->edgeinverted ? "tailport" : "headport";
 	Agsym_t *ap = agattr_text(root, AGEDGE, attrname, 0);
 	if (!ap)
 	    ap = agattr_text(root, AGEDGE, attrname, defval);
 	agxset(ep, ap, value);
     } else if (strcmp(name, "tailport") == 0) {
-	if (ud->edgeinverted)
-	    attrname = "headport";
-	else
-	    attrname = "tailport";
+	char *const attrname = ud->edgeinverted ? "headport" : "tailport";
 	Agsym_t *ap = agattr_text(root, AGEDGE, attrname, 0);
 	if (!ap)
 	    ap = agattr_text(root, AGEDGE, attrname, defval);
