@@ -21,8 +21,6 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 
-Agraph_t *Ag_G_global;
-
 /*
  * this code sets up the resource management discipline
  * and returns a new main graph struct.

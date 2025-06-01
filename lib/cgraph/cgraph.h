@@ -653,6 +653,8 @@ struct Agsym_s {
   unsigned char kind;  /* referent object type */
   unsigned char fixed; /* immutable value */
   unsigned char print; /* always print */
+  Agraph_t *owner; ///< graph from whose string pool `name` and `defval` were
+                   ///< allocated
 };
 
 struct Agdatadict_s { ///< set of dictionaries per graph

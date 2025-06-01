@@ -577,10 +577,7 @@ static void startgraph(aagscan_t scanner, char *name, bool directed, bool strict
 	if (ctx->G == NULL) {
 		ctx->SubgraphDepth = 0;
 		Agdesc_t req = {.directed = directed, .strict = strict, .maingraph = true};
-		Ag_G_global = ctx->G = agopen(name,req,ctx->Disc);
-	}
-	else {
-		Ag_G_global = ctx->G;
+		ctx->G = agopen(name,req,ctx->Disc);
 	}
 	ctx->S = push(ctx->S,ctx->G);
 	agstrfree(NULL, name, false);
@@ -632,7 +629,7 @@ static void graph_error(aagscan_t scanner)
 		freestack(scanner);
 		endgraph(scanner);
 		agclose(ctx->G);
-		ctx->G = Ag_G_global = NULL;
+		ctx->G = NULL;
 	}
 }
 
@@ -650,7 +647,6 @@ Agraph_t *agconcat(Agraph_t *g, const char *filename, void *chan,
 		return NULL;
 	}
 	aagset_in(chan, scanner);
-	Ag_G_global = NULL;
 	aagparse(scanner);
 	if (extra.G == NULL) aglexbad(scanner);
 	aaglex_destroy(scanner);

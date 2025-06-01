@@ -124,6 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The `agsetfile` function has been removed.
 - The GDK plugin’s output (`-T*:cairo:gdk`) now sets DPI in written JPEGs and
   PNGs. #1617
+- **Breaking**: The `Agsym_t` struct has gained a new member, `owner`.
 
 ### Fixed
 

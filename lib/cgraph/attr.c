@@ -88,6 +88,7 @@ static Agsym_t *agnewsym(Agraph_t * g, const char *name, const char *value,
     sym->name = agstrdup(g, name);
     sym->defval = is_html ? agstrdup_html(g, value) : agstrdup(g, value);
     sym->id = id;
+    sym->owner = g;
     return sym;
 }
 
@@ -213,8 +214,8 @@ static void freesym(void *obj) {
     Agsym_t *sym;
 
     sym = obj;
-    agstrfree(Ag_G_global, sym->name, false);
-    agstrfree(Ag_G_global, sym->defval, aghtmlstr(sym->defval));
+    agstrfree(sym->owner, sym->name, false);
+    agstrfree(sym->owner, sym->defval, aghtmlstr(sym->defval));
     free(sym);
 }
 
@@ -296,7 +297,7 @@ static Agsym_t *setattr(Agraph_t * g, int kind, char *name, const char *value,
 	    rv = lsym;
 	} else {		/* new global definition */
 	    Dict_t *rdict = agdictof(root, kind);
-	    Agsym_t *rsym = agnewsym(g, name, value, is_html, dtsize(rdict), kind);
+	    Agsym_t *rsym = agnewsym(root, name, value, is_html, dtsize(rdict), kind);
 	    dtinsert(rdict, rsym);
 	    switch (kind) {
 	    case AGRAPH:
@@ -408,7 +409,6 @@ int agraphattr_delete(Agraph_t * g)
     Agdatadict_t *dd;
     Agattr_t *attr;
 
-    Ag_G_global = g;
     if ((attr = agattrrec(g))) {
 	freeattr(&g->base, attr);
 	agdelrec(g, attr->h.name);
