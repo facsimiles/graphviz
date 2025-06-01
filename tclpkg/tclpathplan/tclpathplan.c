@@ -35,6 +35,7 @@
 #include <tcl.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/itos.h>
 #include <util/list.h>
 #include <util/prisize_t.h>
 
@@ -416,7 +417,6 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
     (void)clientData;
 
     int result;
-    char vbuf[30];
     vgpane_t *vgp;
     point p, q, *ps;
     double alpha, gain;
@@ -543,8 +543,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	/* determine the polygons (if any) that contain the point */
 	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
 	    if (in_poly(polys_get(&vgp->poly, i).boundary, p)) {
-		snprintf(vbuf, sizeof(vbuf), "%d", polys_get(&vgp->poly, i).id);
-		Tcl_AppendElement(interp, vbuf);
+		Tcl_AppendElement(interp, ITOS(polys_get(&vgp->poly, i).id));
 	    }
 	}
 	return TCL_OK;
@@ -590,15 +589,13 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	if (result != TCL_OK)
 	    return result;
 
-	snprintf(vbuf, sizeof(vbuf), "%d", polyid);
-	Tcl_AppendResult(interp, vbuf, NULL);
+	Tcl_AppendResult(interp, ITOS(polyid), NULL);
 	return TCL_OK;
 
     } else if (strcmp(argv[1], "list") == 0) {
 	/* return list of polygon ids */
 	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    snprintf(vbuf, sizeof(vbuf), "%d", polys_get(&vgp->poly, i).id);
-	    Tcl_AppendElement(interp, vbuf);
+	    Tcl_AppendElement(interp, ITOS(polys_get(&vgp->poly, i).id));
 	}
 	return TCL_OK;
 
