@@ -215,10 +215,9 @@ static int get_xml_attr(char *attrname, const char **atts)
 
 static void setName(Dt_t * names, Agobj_t * n, char *value)
 {
-    Agsym_t *ap;
     char *oldName;
 
-    ap = agattr_text(root, AGTYPE(n), GXL_ID, "");
+    Agsym_t *const ap = agattr_text(root, AGTYPE(n), GXL_ID, "");
     agxset(n, ap, agnameof(n));
     oldName = agxget(n, ap);	/* set/get gives us new copy */
     addToMap(names, oldName, value);
