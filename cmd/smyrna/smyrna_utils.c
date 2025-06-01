@@ -37,8 +37,7 @@ int getAttrBool(Agraph_t* g,void* obj,char* attr_name,int def)
 }
 int getAttrInt(Agraph_t* g,void* obj,char* attr_name,int def)
 {
-    Agsym_t* attr;
-    attr = agattr_text(g, AGTYPE(obj), attr_name,0);
+    Agsym_t *const attr = agattr_text(g, AGTYPE(obj), attr_name, 0);
     return l_int(obj,attr,def);
 }
 float getAttrFloat(Agraph_t* g,void* obj,char* attr_name,float def)
