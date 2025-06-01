@@ -100,11 +100,9 @@ static void set_visibility(Agraph_t * g, int visibility)
     }
 }
 
-int tv_show_all(void)
-{
+void tv_show_all(void) {
     set_visibility(view->g[view->activeGraph], 1);
     updateSmGraph(view->g[view->activeGraph], view->Topview);
-    return 1;
 }
 
 int tv_hide_all(void)

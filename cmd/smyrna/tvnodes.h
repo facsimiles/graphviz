@@ -12,7 +12,7 @@
 
 #include "gui.h"
 
-    int tv_show_all(void);
+void tv_show_all(void);
     int tv_hide_all(void);
     int tv_save_as(int);
     void setup_tree (Agraph_t* g);
