@@ -604,12 +604,12 @@ static void edge_xdot (Agraph_t* g, Agedge_t* e, glCompColor c)
 static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
 {
     Agsym_t* pos_attr = GN_pos(g);
-    glCompPoint posT;	/*Tail position*/
-    glCompPoint posH;	/*Head position*/
 
     glColor4f(c.R,c.G,c.B,c.A);	   
-    posT=getPointFromStr(agxget(agtail(e), pos_attr));
-    posH=getPointFromStr(agxget(aghead(e), pos_attr));
+    // tail position
+    const glCompPoint posT = getPointFromStr(agxget(agtail(e), pos_attr));
+    // head position
+    const glCompPoint posH = getPointFromStr(agxget(aghead(e), pos_attr));
     draw_edge(posT, posH);
     ED_posTail(e) = posT;
     ED_posHead(e) = posH;
