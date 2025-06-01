@@ -13,6 +13,7 @@ noinst_HEADERS = \
   gv_fopen.h \
   gv_ftell.h \
   gv_math.h \
+  itos.h \
   list.h \
   lockfile.h \
   optional.h \
