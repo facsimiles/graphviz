@@ -105,12 +105,9 @@ void tv_show_all(void) {
     updateSmGraph(view->g[view->activeGraph], view->Topview);
 }
 
-int tv_hide_all(void)
-{
+void tv_hide_all(void) {
     set_visibility(view->g[view->activeGraph], 0);
     updateSmGraph(view->g[view->activeGraph], view->Topview);
-
-    return 1;
 }
 
 int tv_save_as(int withEdges)
