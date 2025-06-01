@@ -17,7 +17,7 @@ import stat
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 # logging output stream, setup in main()
 log = None
@@ -160,7 +160,7 @@ def main() -> int:  # pylint: disable=missing-function-docstring
     skip_release = re.match(r"\d+\.\d+\.\d+$", version) is None
 
     # list of assets we have uploaded
-    assets: List[str] = []
+    assets: list[str] = []
 
     # 0-pad major version to 2 digits, to sort versions properly
     vparts = version.split(".")

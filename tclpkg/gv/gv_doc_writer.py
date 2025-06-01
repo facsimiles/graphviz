@@ -7,7 +7,6 @@ import os
 import re
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
 @dataclasses.dataclass
@@ -24,7 +23,7 @@ class Syntax:
 class Lang:
     """template substitutions for a given language binding"""
 
-    types: Dict[str, str]  # syntax translations, C→this language
+    types: dict[str, str]  # syntax translations, C→this language
     syntax: Syntax  # how to describe a function in this language
     synopsis: str = ""  # content for the `.SH SYNOPSIS` man page section
     usage: str = ""  # content for the `.SH USAGE` man page section
@@ -475,7 +474,7 @@ def gv_doc_commands(lang: Lang) -> str:
             if re.match("#", rec):
                 continue
 
-            params: List[Tuple[str, str]] = []
+            params: list[tuple[str, str]] = []
             func = None
             functype = None
             for i, type_name in enumerate(re.split(r"[\(,]", rec)):
