@@ -229,15 +229,10 @@ static void set_combobox_widget(char *attrib, char *widget_name) {
 static void get_combobox_widget_to_attribute(char *attrib, char *widget_name,
 					    Agraph_t * g)
 {
-    char buf[25];
-    int value;
-
-    value = (int)
-	gtk_combo_box_get_active((GtkComboBox *)
+    const int value = (int)gtk_combo_box_get_active((GtkComboBox *)
 				 glade_xml_get_widget(xml, widget_name));
 
-    snprintf(buf, sizeof(buf), "%d", value);
-    agattr_text(g, AGRAPH, attrib, buf);
+    agattr_text(g, AGRAPH, attrib, ITOS(value));
 }
 
 void load_settings_from_graph(void) {
