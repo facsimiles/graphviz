@@ -86,7 +86,6 @@ static int create_save_subgraph_from_filter(char *filename, int withEdges)
 static void set_visibility(Agraph_t * g, int visibility)
 {
     Agnode_t *v;
-    char *bf;
     Agsym_t *visible_attr = GN_visible(g);
     Agsym_t *selected_attr = GN_selected(g);
 
@@ -94,10 +93,7 @@ static void set_visibility(Agraph_t * g, int visibility)
 	return;
     if (!visible_attr)
 	visible_attr = GN_visible(g) = agattr_text(g, AGNODE, "visible", "1");
-    if (visibility)
-	bf = "1";
-    else
-	bf = "0";
+    const char *const bf = visibility ? "1" : "0";
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	if (!ND_selected(v)) continue;
 	agxset(v, visible_attr, bf);
