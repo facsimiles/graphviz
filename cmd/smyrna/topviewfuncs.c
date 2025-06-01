@@ -278,13 +278,12 @@ static void renderNodes(Agraph_t * g)
     Agsym_t* pos_attr = GN_pos(g);
     Agsym_t* size_attr = GN_size(g);
     Agsym_t* selected_attr = GN_selected(g);
-    int defaultNodeShape;
     float nodeSize;
     glCompColor c;
     xdot * x;
     int ind;
 
-    defaultNodeShape=getAttrInt(g,g,"defaultnodeshape",0);
+    const int defaultNodeShape=getAttrInt(g, g, "defaultnodeshape", 0);
 
     x=parseXdotwithattrs(g);
     if (x) {
