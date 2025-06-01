@@ -18,8 +18,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/itos.h>
 #include <util/streq.h>
 
 static void
@@ -278,19 +278,15 @@ attach_phase_attrs (Agraph_t * g, int maxphase)
     Agsym_t* rk = agnodeattr(g,"rank","");
     Agsym_t* order = agnodeattr(g,"order","");
     Agnode_t* n;
-    agxbuf buf = {0};
 
     for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
 	if (maxphase >= 1) {
-	    agxbprint(&buf, "%d", ND_rank(n));
-	    agxset(n, rk, agxbuse(&buf));
+	    agxset(n, rk, ITOS(ND_rank(n)));
 	}
 	if (maxphase >= 2) {
-	    agxbprint(&buf, "%d", ND_order(n));
-	    agxset(n, order, agxbuse(&buf));
+	    agxset(n, order, ITOS(ND_order(n)));
 	}
     }
-    agxbfree(&buf);
 }
 
 /// @return 0 on success
