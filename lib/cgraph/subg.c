@@ -47,9 +47,7 @@ static Agraph_t *localsubg(Agraph_t * g, IDTYPE id)
 }
 
 Agraph_t *agidsubg(Agraph_t *g, IDTYPE id) {
-    Agraph_t *subg;
-    subg = agfindsubg_by_id(g, id);
-    return subg;
+    return agfindsubg_by_id(g, id);
 }
 
 Agraph_t *agsubg(Agraph_t * g, char *name, int cflag)
