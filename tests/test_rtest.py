@@ -37,7 +37,7 @@ class Case:
         algorithm: str,
         format: str,
         flags: list[str],
-    ):  # pylint: disable=too-many-arguments
+    ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self.name = name
         self.input = input
         self.algorithm = algorithm
