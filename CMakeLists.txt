@@ -257,7 +257,7 @@ endif()
 
 if(NOT ENABLE_TCL STREQUAL "OFF")
   if(WIN32 AND NOT MINGW)
-    FIND_PROGRAM(TCL_RUNTIME_LIBRARY NAMES tcl86t.dll)
+    find_program(TCL_RUNTIME_LIBRARY NAMES tcl86t.dll)
     set(TCL_RUNTIME_LIBRARIES ${TCL_RUNTIME_LIBRARY})
   endif()
   find_package(TCL)
