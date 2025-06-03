@@ -132,9 +132,10 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 		if (exnode->data.variable.symbol->index_type == INTEGER) {
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, &v)))
 			{
-				if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t))))
+				b = calloc(1, sizeof(Exassoc_t));
+				if (b == NULL) {
 					exnospace();
-				*b = (Exassoc_t){0};
+				}
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
 			}
@@ -151,9 +152,10 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 				keyname = v.string;
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, keyname)))
 			{
-				if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t) + strlen(keyname))))
+				b = calloc(1, sizeof(Exassoc_t) + strlen(keyname));
+				if (b == NULL) {
 					exnospace();
-				*b = (Exassoc_t){0};
+				}
 				strcpy(b->name, keyname);
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
@@ -792,13 +794,14 @@ static void replace(agxbuf *s, char *base, char *repl, int ng, size_t *sub) {
   }
 }
 
-static void addItem(Expr_t *ex, Dt_t *arr, Extype_t v, char *tok) {
+static void addItem(Dt_t *arr, Extype_t v, char *tok) {
 	Exassoc_t* b;
 
 	if (!(b = dtmatch(arr, &v))) {
-		if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t))))
+		b = calloc(1, sizeof(Exassoc_t));
+		if (b == NULL) {
 	    	exerror("out of space [assoc]");
-		*b = (Exassoc_t){0};
+		}
 		b->key = v;
 		dtinsert(arr, b);
 	}
@@ -828,17 +831,17 @@ static Extype_t exsplit(Expr_t *ex, Exnode_t *exnode, void *env) {
 		sz = strspn (str, seps);
 	    if (sz) {
 			if (v.integer == 0) {  /* initial separator => empty field */
-	    		addItem(ex, arr, v, "");
+	    		addItem(arr, v, "");
 	    		v.integer++;
 			}
 			for (size_t i = 1; i < sz; i++) {
-	    		addItem(ex, arr, v, "");
+	    		addItem(arr, v, "");
 	    		v.integer++;
 			}
 		}
 		str += sz;
 		if (*str == '\0') { /* terminal separator => empty field */
-			addItem(ex, arr, v, "");
+			addItem(arr, v, "");
 			v.integer++;
 	    	break;
 		}
@@ -850,7 +853,7 @@ static Extype_t exsplit(Expr_t *ex, Exnode_t *exnode, void *env) {
 			memcpy(tok, str, sz);
 			tok[sz] = '\0';
 		}
-		addItem(ex, arr, v, tok);
+		addItem(arr, v, tok);
 		v.integer++;
 		str += sz;
 	}
@@ -892,7 +895,7 @@ static Extype_t extokens(Expr_t *ex, Exnode_t *exnode, void *env) {
 			memcpy(tok, str, sz);
 			tok[sz] = '\0';
 		}
-		addItem(ex, arr, v, tok);
+		addItem(arr, v, tok);
 		v.integer++;
 		str += sz;
 	}
