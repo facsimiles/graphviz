@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 project(Graphviz)
 
 include(FeatureSummary)
@@ -544,15 +544,10 @@ else()
   execute_process(
     COMMAND           ${Python3_EXECUTABLE} gen_version.py
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    RESULT_VARIABLE   gen_version_result
     OUTPUT_VARIABLE   GRAPHVIZ_VERSION_STRING
-    ERROR_VARIABLE    gen_version_error
     OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_STRIP_TRAILING_WHITESPACE
+    COMMAND_ERROR_IS_FATAL ANY
   )
-  if(NOT gen_version_result EQUAL 0)
-    message(FATAL_ERROR "Failed to set version: ${gen_version_error}")
-  endif()
 endif()
 
 # Set GRAPHVIZ_VERSION_BUILD to time of last commit, or to 0 if that fails.
@@ -560,15 +555,10 @@ execute_process(
   COMMAND           ${Python3_EXECUTABLE}
                     gen_version.py --committer-date-graphviz
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  RESULT_VARIABLE   gen_date_result
   OUTPUT_VARIABLE   GRAPHVIZ_VERSION_BUILD
-  ERROR_VARIABLE    gen_date_error
   OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_STRIP_TRAILING_WHITESPACE
+  COMMAND_ERROR_IS_FATAL ANY
 )
-if(NOT gen_date_result EQUAL 0)
-  message(FATAL_ERROR "Failed to set date: ${gen_date_error}")
-endif()
 
 string(REGEX REPLACE "\\..*"
   "" GRAPHVIZ_VERSION_MAJOR

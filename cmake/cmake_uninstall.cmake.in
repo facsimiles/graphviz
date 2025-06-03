@@ -10,11 +10,8 @@ foreach(file ${files})
   if(IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
     execute_process(
       COMMAND "@CMAKE_COMMAND@" -E remove "$ENV{DESTDIR}${file}"
-      RESULT_VARIABLE rm_retval
+      COMMAND_ERROR_IS_FATAL ANY
     )
-    if(NOT rm_retval EQUAL 0)
-      message(FATAL_ERROR "Problem when removing $ENV{DESTDIR}${file}")
-    endif()
   else()
     message(STATUS "File $ENV{DESTDIR}${file} does not exist.")
   endif()
