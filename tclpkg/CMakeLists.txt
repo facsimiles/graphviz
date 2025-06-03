@@ -29,28 +29,24 @@ if(ENABLE_TCL)
   else()
     set(SWIG_INDEX "")
   endif()
-  if(CMAKE_VERSION VERSION_LESS "3.18.0")
-    message(WARNING "CMake < 3.18, so TCL pkgIndex.tcl will not be built")
-  else()
-    add_custom_target(tcl_pkgindex
-      ALL
-      COMMAND ${CMAKE_COMMAND} -E cat tcldot/pkgIndex.tcl
-        tclpathplan/pkgIndex.tcl ${GD_INDEX} ${SWIG_INDEX} >pkgIndex.tcl
-      COMMAND ${CMAKE_COMMAND} -E echo "\"#" "end\"" >>pkgIndex.tcl
-      BYPRODUCTS pkgIndex.tcl
-      COMMENT "create TCL package index"
-    )
-    add_dependencies(tcl_pkgindex tcldot_pkgindex tclplan_pkgindex)
-    if(GD_FOUND)
-      add_dependencies(tcl_pkgindex gdtclft_pkgindex)
-    endif()
-    if(ENABLE_SWIG)
-      add_dependencies(tcl_pkgindex gv_tcl_pkgindex)
-    endif()
-
-    install(
-      FILES ${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl
-      DESTINATION ${LIBRARY_INSTALL_DIR}/graphviz/tcl
-    )
+  add_custom_target(tcl_pkgindex
+    ALL
+    COMMAND ${CMAKE_COMMAND} -E cat tcldot/pkgIndex.tcl
+      tclpathplan/pkgIndex.tcl ${GD_INDEX} ${SWIG_INDEX} >pkgIndex.tcl
+    COMMAND ${CMAKE_COMMAND} -E echo "\"#" "end\"" >>pkgIndex.tcl
+    BYPRODUCTS pkgIndex.tcl
+    COMMENT "create TCL package index"
+  )
+  add_dependencies(tcl_pkgindex tcldot_pkgindex tclplan_pkgindex)
+  if(GD_FOUND)
+    add_dependencies(tcl_pkgindex gdtclft_pkgindex)
   endif()
+  if(ENABLE_SWIG)
+    add_dependencies(tcl_pkgindex gv_tcl_pkgindex)
+  endif()
+
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/pkgIndex.tcl
+    DESTINATION ${LIBRARY_INSTALL_DIR}/graphviz/tcl
+  )
 endif()

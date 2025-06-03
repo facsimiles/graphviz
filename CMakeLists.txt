@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 project(Graphviz)
 
 include(FeatureSummary)

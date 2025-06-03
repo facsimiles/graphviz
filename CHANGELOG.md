@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (13.0.1)]
 
+### Changed
+
+- When using the CMake build system, the minimum required version of CMake has
+  been upgraded 3.14.1 → 3.18.
+
 ### Fixed
 
 - Graphs with large weights no longer trigger double `free`s. #1494, #2331
