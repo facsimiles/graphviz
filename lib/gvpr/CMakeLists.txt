@@ -56,14 +56,6 @@ target_link_libraries(gvpr PRIVATE
   $<TARGET_OBJECTS:vmalloc>
 )
 
-# CMake versions < 3.21.0 do not make the `gvpr` target depend on the libraries
-# on which it uses `TARGET_OBJECTS`. This results in compilation failures,
-# wherein the build cannot find lib/sfio/CMakeFiles/sfio.dir/sfcvt.c.o and does
-# not know how to build it.
-if(CMAKE_VERSION VERSION_LESS "3.21.0")
-  add_dependencies(gvpr ast expr sfio vmalloc)
-endif()
-
 if(NOT HAVE_GETOPT_H)
   target_link_libraries(gvpr PRIVATE ${GETOPT_LINK_LIBRARIES})
 endif()

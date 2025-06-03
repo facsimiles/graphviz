@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - When using the CMake build system, the minimum required version of CMake has
-  been upgraded 3.14.1 → 3.20.
+  been upgraded 3.14.1 → 3.21.
 
 ### Fixed
 

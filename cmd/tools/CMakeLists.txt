@@ -369,16 +369,6 @@ target_link_libraries(gvpack PRIVATE
 if(BUILD_SHARED_LIBS)
   target_link_libraries(gvpack PRIVATE gvplugin_neato_layout)
 else()
-  # From CMake docs:
-  #   Note: Referencing `$<TARGET_OBJECTS>` in `target_link_libraries` calls
-  #   worked in versions of CMake prior to 3.21 for some cases, but was not
-  #   fully supported:
-  #     * It did not place the object files before libraries on link lines.
-  #     * It did not add an ordering dependency on the object library.
-  #     * It did not work in Xcode with multiple architectures.
-  if(CMAKE_VERSION VERSION_LESS "3.21.0")
-    message(WARNING "CMake <3.21, linking gvpack may not work")
-  endif()
   target_link_libraries(gvpack PRIVATE
     $<TARGET_OBJECTS:gvplugin_neato_layout>
     $<TARGET_PROPERTY:gvplugin_neato_layout,LINK_LIBRARIES>
