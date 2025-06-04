@@ -605,8 +605,8 @@ static int edgecmp(const void *x, const void *y) {
   {
     t0 = ND_coord(agtail(le0)).x - ND_coord(aghead(le0)).x;
     t1 = ND_coord(agtail(le1)).x - ND_coord(aghead(le1)).x;
-    const int v0 = abs((int)t0);
-    const int v1 = abs((int)t1);
+    const double v0 = fabs(t0);
+    const double v1 = fabs(t1);
     if (v0 < v1) {
       return -1;
     }
