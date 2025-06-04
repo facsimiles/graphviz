@@ -127,8 +127,7 @@ static int flat_limits(graph_t * g, edge_t * e)
     return pos;
 }
 
-/* flat_node:
- * Create virtual node representing edge label between
+/* Create virtual node representing edge label between
  * actual ends of edge e. 
  * This node is characterized by being virtual and having a non-NULL
  * ND_alg pointing to e.
@@ -202,8 +201,7 @@ static void abomination(graph_t * g)
     GD_minrank(g)--;
 }
 
-/* checkFlatAdjacent:
- * Check if tn and hn are adjacent. 
+/* Check if tn and hn are adjacent. 
  * If so, set adjacent bit on all related edges.
  * Assume e is flat.
  */
@@ -239,8 +237,7 @@ checkFlatAdjacent (edge_t* e)
     }
 }
  
-/* flat_edges:
- * Process flat edges.
+/* Process flat edges.
  * First, mark flat edges as having adjacent endpoints or not.
  *
  * Second, if there are edge labels, nodes are placed on ranks 0,2,4,...

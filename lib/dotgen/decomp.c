@@ -72,8 +72,7 @@ static node_t *pop(node_stack_t *sp) {
   return node_stack_pop_back(sp);
 }
 
-/* search_component:
- * iterative dfs for components.
+/* iterative dfs for components.
  * We process the edges in reverse order of the recursive version to maintain
  * the processing order of the nodes.
  * Since are using a stack, we need to indicate nodes on the stack. Nodes unprocessed

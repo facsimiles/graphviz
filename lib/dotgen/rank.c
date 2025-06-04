@@ -846,8 +846,8 @@ static void break_cycles(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	dfs(g, n);
 }
-/* setMinMax:
- * This will only be called with the root graph or a cluster
+
+/* This will only be called with the root graph or a cluster
  * which are guaranteed to contain nodes. Thus, leader will be
  * set.
  */
@@ -878,8 +878,7 @@ static void setMinMax (graph_t* g, int doRoot)
     GD_leader(g) = leader;
 }
 
-/* readout_levels:
- * Store node rank information in original graph.
+/* Store node rank information in original graph.
  * Set rank bounds in graph and clusters
  * Free added data structures.
  *

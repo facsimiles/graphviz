@@ -56,7 +56,7 @@ edge_t *find_flat_edge(node_t * u, node_t * v)
     return ffe(u, ND_flat_out(u), v, ND_flat_in(v));
 }
 
-/* safe_list_append - append e to list L only if e not already a member */
+/// append e to list L only if e not already a member
 static void 
 safe_list_append(edge_t * e, elist * L)
 {
@@ -91,7 +91,7 @@ edge_t *fast_edge(edge_t * e)
     return e;
 }
 
-/* zapinlist - remove e from list and fill hole with last member of list */
+/// remove e from list and fill hole with last member of list
 void zapinlist(elist * L, edge_t * e)
 {
     for (size_t i = 0; i < L->size; i++) {
@@ -122,8 +122,7 @@ void safe_other_edge(edge_t * e)
     safe_list_append(e, &ND_other(agtail(e)));
 }
 
-/* new_virtual_edge:
- * Create and return a new virtual edge e attached to orig.
+/* Create and return a new virtual edge e attached to orig.
  * ED_to_orig(e) = orig
  * ED_to_virt(orig) = e if e is the first virtual edge attached.
  * orig might be an input edge, reverse of an input edge, or virtual edge

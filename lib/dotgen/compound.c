@@ -70,16 +70,13 @@ static pointf boxIntersectf(pointf pp, pointf cp, boxf * bp)
     return ipp;
 }
 
-/* inBoxf:
- * Returns true if p is on or in box bb
- */
+/// returns true if p is on or in box bb
 static int inBoxf(pointf p, boxf * bb)
 {
     return INSIDE(p, *bb);
 }
 
-/* getCluster:
- * Returns subgraph with given name.
+/* Returns subgraph with given name.
  * Returns NULL if no name is given, or subgraph of
  * that name does not exist.
  */
@@ -104,8 +101,7 @@ static graph_t *getCluster(char *cluster_name, Dt_t *map) {
  * Possibly unnecessary with double values, but harmless.
  */
 
-/* countVertCross:
- * Return the number of times the Bezier control polygon crosses
+/* Return the number of times the Bezier control polygon crosses
  * the vertical line x = xcoord.
  */
 static int countVertCross(pointf * pts, double xcoord)
@@ -126,8 +122,7 @@ static int countVertCross(pointf * pts, double xcoord)
     return num_crossings;
 }
 
-/* countHorzCross:
- * Return the number of times the Bezier control polygon crosses
+/* Return the number of times the Bezier control polygon crosses
  * the horizontal line y = ycoord.
  */
 static int countHorzCross(pointf * pts, double ycoord)
@@ -148,8 +143,7 @@ static int countHorzCross(pointf * pts, double ycoord)
     return num_crossings;
 }
 
-/* findVertical:
- * Given 4 Bezier control points pts, corresponding to the portion
+/* Given 4 Bezier control points pts, corresponding to the portion
  * of an initial spline with path parameter in the range
  * 0.0 <= tmin <= t <= tmax <= 1.0, return t where the spline 
  * first crosses a vertical line segment
@@ -190,8 +184,7 @@ findVertical(pointf * pts, double tmin, double tmax,
 
 }
 
-/* findHorizontal:
- * Given 4 Bezier control points pts, corresponding to the portion
+/* Given 4 Bezier control points pts, corresponding to the portion
  * of an initial spline with path parameter in the range
  * 0.0 <= tmin <= t <= tmax <= 1.0, return t where the spline 
  * first crosses a horizontal line segment
@@ -232,8 +225,7 @@ findHorizontal(pointf * pts, double tmin, double tmax,
 			  xmax);
 }
 
-/* splineIntersectf:
- * Given four spline control points and a box,
+/* Given four spline control points and a box,
  * find the shortest portion of the spline from
  * pts[0] to the intersection with the box, if any.
  * If an intersection is found, the four points are stored in pts[0..3]
@@ -281,8 +273,7 @@ static int splineIntersectf(pointf * pts, boxf * bb)
 	return 0;
 }
 
-/* makeCompoundEdge:
- * If edge e has a cluster head and/or cluster tail,
+/* If edge e has a cluster head and/or cluster tail,
  * clip spline to outside of cluster. 
  * Requirement: spline is composed of only one part, 
  * with n control points where n >= 4 and n (mod 3) = 1.
@@ -452,8 +443,6 @@ static void makeCompoundEdge(edge_t *e, Dt_t *clustMap) {
     *ED_spl(e)->list = nbez;
 }
 
-/* dot_compoundEdges:
- */
 void dot_compoundEdges(graph_t * g)
 {
     edge_t *e;
