@@ -492,9 +492,13 @@ dcl_item	:	dcl_name {checkName ($1); expr.id=$1;} array initialize
 					static Dtdisc_t disc_key = {
 						.key = offsetof(Exassoc_t, key),
 						.size = sizeof(Extype_t),
+						.freef = free,
 						.comparf = cmpKey,
 					};
-					static Dtdisc_t disc_name = {.key = offsetof(Exassoc_t, name)};
+					static Dtdisc_t disc_name = {
+						.key = offsetof(Exassoc_t, name),
+						.freef = free,
+					};
 					Dtdisc_t *const disc = $3 == INTEGER ? &disc_key : &disc_name;
 					if (!($1->local = dtopen(disc, Dtoset)))
 						exerror("%s: cannot initialize associative array", $1->name);
