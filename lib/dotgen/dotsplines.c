@@ -589,11 +589,10 @@ static int edgecmp(const void *x, const void *y) {
   le0 = getmainedge(e0);
   le1 = getmainedge(e1);
 
-  t0 = ND_rank(agtail(le0)) - ND_rank(aghead(le0));
-  t1 = ND_rank(agtail(le1)) - ND_rank(aghead(le1));
-  v0 = abs((int)t0); /* ugly, but explicit as to how we avoid equality tests on
-                        fp numbers */
-  v1 = abs((int)t1);
+  const int rank_diff0 = ND_rank(agtail(le0)) - ND_rank(aghead(le0));
+  const int rank_diff1 = ND_rank(agtail(le1)) - ND_rank(aghead(le1));
+  v0 = abs(rank_diff0);
+  v1 = abs(rank_diff1);
   if (v0 < v1) {
     return -1;
   }
