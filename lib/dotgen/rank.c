@@ -432,7 +432,6 @@ static void dot1_rank(graph_t *g)
     edgelabel_ranks(g);
 
     collapse_sets(g,g);
-    /*collapse_leaves(g); */
     class1(g);
     p = minmax_edges(g);
     decompose(g, 0);
