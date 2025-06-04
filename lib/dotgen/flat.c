@@ -8,6 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include	<assert.h>
 #include	<dotgen/dot.h>
 #include	<stdbool.h>
 #include	<stddef.h>
@@ -17,10 +18,13 @@
 static node_t *make_vn_slot(graph_t * g, int r, int pos)
 {
     int i;
-    node_t **v, *n;
+    node_t *n;
 
-    v = GD_rank(g)[r].v = gv_recalloc(GD_rank(g)[r].v, GD_rank(g)[r].n + 1,
-                                      GD_rank(g)[r].n + 2, sizeof(node_t *));
+    assert(GD_rank(g)[r].av == GD_rank(g)[r].v);
+    GD_rank(g)[r].av = gv_recalloc(GD_rank(g)[r].av, GD_rank(g)[r].n + 1,
+                                   GD_rank(g)[r].n + 2, sizeof(node_t *));
+    GD_rank(g)[r].v = GD_rank(g)[r].av;
+    node_t **const v = GD_rank(g)[r].v;
     for (i = GD_rank(g)[r].n; i > pos; i--) {
 	v[i] = v[i - 1];
 	ND_order(v[i])++;

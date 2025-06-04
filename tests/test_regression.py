@@ -1065,10 +1065,6 @@ def test_1489():
     ), "malformed input caused an invalid memory access"
 
 
-@pytest.mark.xfail(
-    strict=which("dot") is None or is_asan_instrumented(which("dot")),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1494",
-)
 def test_1494():
     """
     processing this input found by fuzzing should not trigger a double-free
@@ -2897,10 +2893,6 @@ def test_2242():
 @pytest.mark.skipif(
     platform.system() == "Windows" and not is_mingw(),
     reason="string literal in 2331.c is too large to be handled by MSVC",
-)
-@pytest.mark.xfail(
-    strict=which("dot") is None or is_asan_instrumented(which("dot")),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2331",
 )
 def test_2331(tmp_path: Path):
     """

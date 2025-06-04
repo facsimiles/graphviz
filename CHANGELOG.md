@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (13.0.1)]
 
+### Fixed
+
+- Graphs with large weights no longer trigger double `free`s. #1494, #2331
+
 ## [13.0.0] – 2025-06-08
 
 ### Added
