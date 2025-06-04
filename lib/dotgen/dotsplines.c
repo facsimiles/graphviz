@@ -571,7 +571,6 @@ static int edgecmp(const void *x, const void *y) {
   Agedgepair_t fwdedgea, fwdedgeb;
   edge_t *e0, *e1, *ea, *eb, *le0, *le1;
   int et0, et1, rv;
-  double t0, t1;
 
   fwdedgea.out.base.data = (Agrec_t *)&fwdedgeai;
   fwdedgeb.out.base.data = (Agrec_t *)&fwdedgebi;
@@ -603,8 +602,8 @@ static int edgecmp(const void *x, const void *y) {
   }
 
   {
-    t0 = ND_coord(agtail(le0)).x - ND_coord(aghead(le0)).x;
-    t1 = ND_coord(agtail(le1)).x - ND_coord(aghead(le1)).x;
+    const double t0 = ND_coord(agtail(le0)).x - ND_coord(aghead(le0)).x;
+    const double t1 = ND_coord(agtail(le1)).x - ND_coord(aghead(le1)).x;
     const double v0 = fabs(t0);
     const double v1 = fabs(t1);
     if (v0 < v1) {
