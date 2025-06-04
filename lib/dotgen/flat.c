@@ -318,9 +318,7 @@ flat_edges(graph_t * g)
 		ED_adjacent(e) = ED_adjacent(le); 
 		if (ED_label(e)) {
 		    if (ED_adjacent(e)) {
-			double lw;
-			if (GD_flip(g)) lw = ED_label(e)->dimen.y;
-			else lw = ED_label(e)->dimen.x; 
+			const double lw = GD_flip(g) ? ED_label(e)->dimen.y : ED_label(e)->dimen.x;
 			ED_dist(le) = MAX(lw,ED_dist(le));
 		    }
 		    else {
