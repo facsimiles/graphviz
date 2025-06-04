@@ -299,8 +299,7 @@ flat_edges(graph_t * g)
 	    for (i = 0; (e = ND_flat_out(n).list[i]); i++) {
 		if (ED_label(e)) {
 		    if (ED_adjacent(e)) {
-			if (GD_flip(g)) ED_dist(e) = ED_label(e)->dimen.y;
-			else ED_dist(e) = ED_label(e)->dimen.x; 
+			ED_dist(e) = GD_flip(g) ? ED_label(e)->dimen.y : ED_label(e)->dimen.x;
 		    }
 		    else {
 			reset = true;
