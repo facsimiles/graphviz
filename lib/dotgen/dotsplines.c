@@ -285,9 +285,9 @@ static int dot_splines_(graph_t *g, int normalize) {
   for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
     n_nodes += GD_rank(g)[i].n;
     if ((n = GD_rank(g)[i].v[0]))
-      sd.LeftBound = MIN(sd.LeftBound, (ND_coord(n).x - ND_lw(n)));
+      sd.LeftBound = MIN(sd.LeftBound, ND_coord(n).x - ND_lw(n));
     if (GD_rank(g)[i].n && (n = GD_rank(g)[i].v[GD_rank(g)[i].n - 1]))
-      sd.RightBound = MAX(sd.RightBound, (ND_coord(n).x + ND_rw(n)));
+      sd.RightBound = MAX(sd.RightBound, ND_coord(n).x + ND_rw(n));
     sd.LeftBound -= MINW;
     sd.RightBound += MINW;
 
@@ -540,7 +540,7 @@ static void setflags(edge_t *e, int hint1, int hint2, int f3) {
     else /* f1 == SELF*EDGE */
       f2 = FWDEDGE;
   }
-  ED_tree_index(e) = (f1 | f2 | f3);
+  ED_tree_index(e) = f1 | f2 | f3;
 }
 
 /* edgecmp:

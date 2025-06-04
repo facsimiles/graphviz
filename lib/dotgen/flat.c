@@ -70,12 +70,12 @@ static void setbounds(node_t * v, int *bounds, int lpos, int rpos)
 	    else if (l >= rpos)
 		bounds[SRB] = bounds[HRB] = ord;
 	    /* could be spanning this one */
-	    else if ((l < lpos) && (r > rpos));	/* ignore */
+	    else if (l < lpos && r > rpos); // ignore
 	    /* must have intersecting ranges */
 	    else {
-		if ((l < lpos) || ((l == lpos) && (r < rpos)))
+		if (l < lpos || (l == lpos && r < rpos))
 		    bounds[SLB] = ord;
-		if ((r > rpos) || ((r == rpos) && (l > lpos)))
+		if (r > rpos || (r == rpos && l > lpos))
 		    bounds[SRB] = ord;
 	    }
 	} else {		/* forward */
@@ -226,7 +226,7 @@ checkFlatAdjacent (edge_t* e)
 	lo = ND_order(hn);
 	hi = ND_order(tn);
     }
-    rank = &(GD_rank(dot_root(tn))[ND_rank(tn)]);
+    rank = &GD_rank(dot_root(tn))[ND_rank(tn)];
     for (i = lo + 1; i < hi; i++) {
 	n = rank->v[i];
 	if ((ND_node_type(n) == VIRTUAL && ND_label(n)) || 
@@ -279,11 +279,11 @@ flat_edges(graph_t * g)
 	}
     }
 
-    if ((GD_rank(g)[0].flat) || (GD_n_cluster(g) > 0)) {
+    if (GD_rank(g)[0].flat || GD_n_cluster(g) > 0) {
 	bool found = false;
 	for (i = 0; (n = GD_rank(g)[0].v[i]); i++) {
 	    for (size_t j = 0; (e = ND_flat_in(n).list[j]); j++) {
-		if ((ED_label(e)) && !ED_adjacent(e)) {
+		if (ED_label(e) && !ED_adjacent(e)) {
 		    abomination(g);
 		    found = true;
 		    break;

@@ -409,7 +409,7 @@ static void expand_ranksets(graph_t *g) {
 	    if (GD_minrank(g) > ND_rank(n))
 		GD_minrank(g) = ND_rank(n);
 
-	    if (ND_ranktype(n) && (ND_ranktype(n) != LEAFSET))
+	    if (ND_ranktype(n) && ND_ranktype(n) != LEAFSET)
 		UF_singleton(n);
 	    n = agnxtnode(g, n);
 	}

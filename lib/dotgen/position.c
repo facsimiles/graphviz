@@ -705,7 +705,7 @@ static int clust_ht(Agraph_t * g)
 
     /* account for a possible cluster label in clusters */
     /* room for root graph label is handled in dotneato_postprocess */
-    if ((g != dot_root(g)) && GD_label(g)) {
+    if (g != dot_root(g) && GD_label(g)) {
 	haveClustLabel = 1;
 	if (!GD_flip(agroot(g))) {
 	    ht1 += GD_border(g)[BOTTOM_IX].y;
