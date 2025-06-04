@@ -570,7 +570,7 @@ static int edgecmp(const void *x, const void *y) {
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
   edge_t *e0, *e1, *ea, *eb, *le0, *le1;
-  int et0, et1, v0, v1, rv;
+  int et0, et1, rv;
   double t0, t1;
 
   fwdedgea.out.base.data = (Agrec_t *)&fwdedgeai;
@@ -589,26 +589,30 @@ static int edgecmp(const void *x, const void *y) {
   le0 = getmainedge(e0);
   le1 = getmainedge(e1);
 
-  const int rank_diff0 = ND_rank(agtail(le0)) - ND_rank(aghead(le0));
-  const int rank_diff1 = ND_rank(agtail(le1)) - ND_rank(aghead(le1));
-  v0 = abs(rank_diff0);
-  v1 = abs(rank_diff1);
-  if (v0 < v1) {
-    return -1;
-  }
-  if (v0 > v1) {
-    return 1;
+  {
+    const int rank_diff0 = ND_rank(agtail(le0)) - ND_rank(aghead(le0));
+    const int rank_diff1 = ND_rank(agtail(le1)) - ND_rank(aghead(le1));
+    const int v0 = abs(rank_diff0);
+    const int v1 = abs(rank_diff1);
+    if (v0 < v1) {
+      return -1;
+    }
+    if (v0 > v1) {
+      return 1;
+    }
   }
 
-  t0 = ND_coord(agtail(le0)).x - ND_coord(aghead(le0)).x;
-  t1 = ND_coord(agtail(le1)).x - ND_coord(aghead(le1)).x;
-  v0 = abs((int)t0);
-  v1 = abs((int)t1);
-  if (v0 < v1) {
-    return -1;
-  }
-  if (v0 > v1) {
-    return 1;
+  {
+    t0 = ND_coord(agtail(le0)).x - ND_coord(aghead(le0)).x;
+    t1 = ND_coord(agtail(le1)).x - ND_coord(aghead(le1)).x;
+    const int v0 = abs((int)t0);
+    const int v1 = abs((int)t1);
+    if (v0 < v1) {
+      return -1;
+    }
+    if (v0 > v1) {
+      return 1;
+    }
   }
 
   /* This provides a cheap test for edges having the same set of endpoints.  */
