@@ -159,9 +159,7 @@ flat_node(edge_t * e)
     vn = make_vn_slot(g, r - 1, place);
     dimen = ED_label(e)->dimen;
     if (GD_flip(g)) {
-	double f = dimen.x;
-	dimen.x = dimen.y;
-	dimen.y = f;
+	SWAP(&dimen.x, &dimen.y);
     }
     ND_ht(vn) = dimen.y;
     h2 = ND_ht(vn) / 2;
