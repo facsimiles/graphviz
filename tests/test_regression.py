@@ -2890,6 +2890,65 @@ def test_2242():
         assert ref == png, "repeated rendering changed output"
 
 
+@pytest.mark.skipif(
+    is_static_build(),
+    reason="dynamic libraries are unavailable to link against in static builds",
+)
+@pytest.mark.skipif(
+    platform.system() == "Windows" and not is_mingw(),
+    reason="string literal in 2331.c is too large to be handled by MSVC",
+)
+@pytest.mark.xfail(
+    strict=which("dot") is None or is_asan_instrumented(which("dot")),
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2331",
+)
+def test_2331(tmp_path: Path):
+    """
+    the example in this test should not cause a double-free
+    https://gitlab.com/graphviz/graphviz/-/issues/2331
+    """
+
+    # find co-located test source
+    c_src = (Path(__file__).parent / "2331.c").resolve()
+    assert c_src.exists(), "missing test case"
+
+    # From here, we essentially want to `run_c([c_src], …)`. However we cannot easily do
+    # this because we want to directly link against plugins (instead of `dlopen` them),
+    # libraries that are not in the linker’s search path. So instead we have to take a
+    # more manual approach.
+
+    # find the plugins we need to link against
+    core = _find_plugin_so("core")
+    assert core is not None, "core plugin library not found"
+    dot_layout = _find_plugin_so("dot_layout")
+    assert dot_layout is not None, "dot layout plugin library not found"
+
+    ## compile the test code
+    exe = tmp_path / "a.exe"
+    compile_c(c_src, link=["cgraph", "gvc", core, dot_layout], dst=exe)
+
+    # teach the runtime linker how to find the plugins
+    env = os.environ.copy()
+    ld_library_path = f"{core.parent}:{dot_layout.parent}"
+    prefix = ""
+    if is_macos():
+        if "DYLD_LIBRARY_PATH" in env:
+            env["DYLD_LIBRARY_PATH"] = f"{ld_library_path}:{env['DYLD_LIBRARY_PATH']}"
+        else:
+            env["DYLD_LIBRARY_PATH"] = ld_library_path
+        prefix = f"env DYLD_LIBRARY_PATH={env['DYLD_LIBRARY_PATH']} "
+    else:
+        if "LD_LIBRARY_PATH" in env:
+            env["LD_LIBRARY_PATH"] = f"{ld_library_path}:{env['LD_LIBRARY_PATH']}"
+        else:
+            env["LD_LIBRARY_PATH"] = ld_library_path
+        prefix = f"env LD_LIBRARY_PATH={env['LD_LIBRARY_PATH']} "
+
+    # run the test code
+    print(f"+ {prefix}{shlex.quote(str(exe))}")
+    subprocess.run([exe], env=env, check=True)
+
+
 def test_2342():
     """
     using an arrow with size 0 should not trigger an assertion failure
