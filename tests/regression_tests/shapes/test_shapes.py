@@ -12,12 +12,6 @@ import pytest
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../tests"))
 from gvtest import run_raw  # pylint: disable=wrong-import-position
 
-# Import helper function to compare graphs from tests/regressions_tests
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from regression_test_helpers import (  # pylint: disable=import-error,wrong-import-position
-    compare_graphs,
-)
-
 shapes = [
     "box",
     "polygon",
@@ -130,4 +124,11 @@ def test_shape(shape, output_type):
     my_dir = Path(__file__).resolve().parent
     os.chdir(my_dir)
     generate_shape_graph(shape, output_type)
-    assert compare_graphs(shape, output_type)
+
+    ref = my_dir / f"reference/{shape}.{output_type}"
+    reference = ref.read_text(encoding="utf-8")
+
+    out = my_dir / f"output/{shape}.{output_type}"
+    output = out.read_text(encoding="utf-8")
+
+    assert reference == output
