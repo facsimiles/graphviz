@@ -150,13 +150,14 @@ void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend) {
 	printstring(putstr, f, "node ", agstrcanon(agnameof(n), node_buffer));
 	free(node_buffer);
 	printpoint(putstr, f, ND_coord(n), offsets.Y);
-	char *buffer = NULL;
-	if (ND_label(n)->html)   /* if html, get original text */
-	    lbl = agcanonStr (agxget(n, N_label));
-	else {
-	    const size_t required = 2 * strlen(ND_label(n)->text) + 2;
-	    buffer = gv_alloc(required);
-	    lbl = canon(agraphof(n), ND_label(n)->text, buffer);
+	// if HTML, get original text
+	char *const value = ND_label(n)->html ? agxget(n, N_label) : ND_label(n)->text;
+	const size_t required = 2 * strlen(value) + 2;
+	char *const buffer = gv_alloc(required);
+	if (ND_label(n)->html) {
+	    lbl = agstrcanon(value, buffer);
+	} else {
+	    lbl = canon(agraphof(n), value, buffer);
 	}
         printdouble(putstr, f, " ", ND_width(n));
         printdouble(putstr, f, " ", ND_height(n));
