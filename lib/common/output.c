@@ -108,14 +108,14 @@ static char *canon(graph_t *g, char *s, char *buffer) {
 static void writenodeandport(int (*putstr)(void *chan, const char *str),
                              FILE *f, node_t *node, char *portname) {
     char *name;
-    char *buffer = NULL;
+    char *const value =
+      IS_CLUST_NODE(node) ? strchr(agnameof(node), ':') + 1 : agnameof(node);
+    const size_t required = 2 * strlen(value) + 2;
+    char *const buffer = gv_alloc(required);
     if (IS_CLUST_NODE(node)) {
-	char *const value = strchr(agnameof(node), ':') + 1;
-	const size_t required = 2 * strlen(value) + 2;
-	buffer = gv_alloc(required);
 	name = canon(agraphof(node), value, buffer);
     } else
-	name = agcanonStr (agnameof(node));
+	name = agstrcanon(value, buffer);
     printstring(putstr, f, " ", name); /* slimey i know */
     free(buffer);
     if (portname && *portname)
