@@ -34,23 +34,23 @@ double yDir(double y, double Y_off) {
 }
 
 static void agputs(int (*putstr)(void *chan, const char *str), const char* s,
-                   FILE* fp) {
+                   void* fp) {
     putstr(fp, s);
 }
 
 static void agputc(int (*putstr)(void *chan, const char *str), char c,
-                   FILE *fp) {
+                   void *fp) {
     char buf[] = {c, '\0'};
     putstr(fp, buf);
 }
 
-static void printstring(int (*putstr)(void *chan, const char *str), FILE *f,
+static void printstring(int (*putstr)(void *chan, const char *str), void *f,
                         char *prefix, char *s) {
   if (prefix) agputs(putstr, prefix, f);
   agputs(putstr, s, f);
 }
 
-static void printint(int (*putstr)(void *chan, const char *str), FILE *f,
+static void printint(int (*putstr)(void *chan, const char *str), void *f,
                      char *prefix, size_t i) {
   agxbuf buf = {0};
     
@@ -60,7 +60,7 @@ static void printint(int (*putstr)(void *chan, const char *str), FILE *f,
   agxbfree(&buf);
 }
 
-static void printdouble(int (*putstr)(void *chan, const char *str), FILE *f,
+static void printdouble(int (*putstr)(void *chan, const char *str), void *f,
                         char *prefix, double v) {
   agxbuf buf = {0};
     
@@ -70,7 +70,7 @@ static void printdouble(int (*putstr)(void *chan, const char *str), FILE *f,
   agxbfree(&buf);
 }
 
-static void printpoint(int (*putstr)(void *chan, const char *str), FILE *f,
+static void printpoint(int (*putstr)(void *chan, const char *str), void *f,
                        pointf p, double yOff) {
   printdouble(putstr, f, " ", PS2INCH(p.x));
   printdouble(putstr, f, " ", PS2INCH(yDir(p.y, yOff)));
@@ -114,7 +114,7 @@ static void writenodeandport(int (*putstr)(void *chan, const char *str),
 	printstring(putstr, f, ":", agcanonStr(portname));
 }
 
-void write_plain(GVJ_t *job, graph_t *g, FILE *f, bool extend) {
+void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend) {
     char *tport, *hport;
     node_t *n;
     edge_t *e;

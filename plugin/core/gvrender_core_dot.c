@@ -464,10 +464,10 @@ static void dot_end_graph(GVJ_t *job)
     g->clos->disc.io = &io;
     switch (job->render.id) {
 	case FORMAT_PLAIN:
-	    write_plain(job, g, (FILE*)job, false);
+	    write_plain(job, g, job, false);
 	    break;
 	case FORMAT_PLAIN_EXT:
-	    write_plain(job, g, (FILE*)job, true);
+	    write_plain(job, g, job, true);
 	    break;
 	case FORMAT_DOT:
 	case FORMAT_CANON:
