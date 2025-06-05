@@ -213,7 +213,6 @@ static char *agcanonhtmlstr(const char *arg, char *buf)
 
 /**
  * canonicalize a string for printing.
- * must agree with strings in scan.l
  * Unsafe if buffer is not large enough.
  */
 char *agstrcanon(char *arg, char *buf)
@@ -243,7 +242,6 @@ static char *getoutputbuffer(const char *str)
 
 /**
  * canonicalize a string for printing.
- * must agree with strings in scan.l
  * Shared static buffer - unsafe.
  */
 char *agcanonStr(char *str)
