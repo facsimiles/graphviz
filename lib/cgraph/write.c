@@ -19,8 +19,8 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdio.h>		/* need sprintf() */
+#include <stdlib.h>
 #include <ctype.h>
 #include <cgraph/cghdr.h>
 #include <inttypes.h>
@@ -255,15 +255,21 @@ char *agcanonStr(char *str)
 }
 
 static int _write_canonstr(Agraph_t *g, iochan_t *ofile, char *str, bool chk) {
-    if (chk) {
-	str = agcanonStr(str);
-    } else {
-	char *buffer = getoutputbuffer(str);
-	if (buffer == NULL)
-	    return EOF;
-	str = _agstrcanon(str, buffer);
+
+    // maximum bytes required for canonicalized string
+    const size_t required = 2 * strlen(str) + 2;
+
+    // allocate space to stage the canonicalized string
+    char *const scratch = malloc(required);
+    if (scratch == NULL) {
+	return EOF;
     }
-    return ioput(g, ofile, str);
+
+    char *const canonicalized =
+      chk ? agstrcanon(str, scratch) : _agstrcanon(str, scratch);
+    const int rc = ioput(g, ofile, canonicalized);
+    free(scratch);
+    return rc;
 }
 
 /// @param known Is `str` already known to be a reference-counted string?
