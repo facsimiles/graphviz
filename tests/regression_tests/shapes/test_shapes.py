@@ -127,6 +127,7 @@ def test_shape(shape, output_type):
     """
     Check a shape corresponds to its reference.
     """
-    os.chdir(Path(__file__).resolve().parent)
+    my_dir = Path(__file__).resolve().parent
+    os.chdir(my_dir)
     generate_shape_graph(shape, output_type)
     assert compare_graphs(shape, output_type)
