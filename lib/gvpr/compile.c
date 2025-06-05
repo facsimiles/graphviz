@@ -30,7 +30,6 @@
 #include <unistd.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
-#include <util/exit.h>
 #include <util/prisize_t.h>
 #include <util/startswith.h>
 #include <util/unreachable.h>
@@ -148,31 +147,6 @@ static int posOf(Agnode_t *np, int idx, double *v) {
   } else
     return -1;
 }
-
-#if defined(DEBUG) && DEBUG > 1
-static char *symName(Expr_t *ex, int op) {
-  if (op >= MINNAME && op <= MAXNAME)
-    return gprnames[op];
-  else {
-    // calculate how much space we need to construct a name
-    int bytes = vsnprintf(NULL, 0, "<unknown (%d)>", op);
-    if (bytes < 0) {
-      fprintf(stderr, "%s: vsnprintf failure\n", __func__);
-      graphviz_exit(EXIT_FAILURE);
-    }
-
-    // construct a managed buffer to store this name
-    char *s = vmalloc(ex->ve, (size_t)bytes + 1);
-
-    // make the name
-    if (s != NULL) {
-      snprintf(s, (size_t)bytes + 1, "<unknown (%d)>", op);
-    }
-
-    return s;
-  }
-}
-#endif
 
 /* Convert string argument to graph to type of graph desired.
  *   u => undirected
