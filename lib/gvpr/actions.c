@@ -746,13 +746,8 @@ char *toHtml(Agraph_t *g, char *arg) { return agstrdup_html(g, arg); }
  * Canonicalize a string for printing.
  */
 char *canon(Expr_t *pgm, char *arg) {
-  char *p;
-
-  p = agcanonStr(arg);
-  if (p != arg)
-    p = exstring(pgm, p);
-
-  return p;
+  char *const buffer = exstralloc(pgm, 2 * strlen(arg) + 2);
+  return agstrcanon(arg, buffer);
 }
 
 #undef S
