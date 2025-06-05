@@ -14,9 +14,10 @@
 #include <gvc/gvc.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 #include <util/agxbuf.h>
+#include <util/alloc.h>
 #include <util/prisize_t.h>
 
 /// state for offset calculations
@@ -93,11 +94,13 @@ static offsets_t setYInvert(graph_t *g) {
 
 /* canon:
  * Canonicalize a string which may not have been allocated using agstrdup.
+ *
+ * @param buffer Scratch space to use during canonicalization. This must be at
+ *   least `2 * strlen(s) + 2` bytes.
  */
-static char* canon (graph_t *g, char* s)
-{
+static char *canon(graph_t *g, char *s, char *buffer) {
     char* ns = agstrdup (g, s);
-    char* cs = agcanonStr (ns);
+    char *const cs = agstrcanon(ns, buffer);
     agstrfree(g, ns, false);
     return cs;
 }
@@ -105,11 +108,16 @@ static char* canon (graph_t *g, char* s)
 static void writenodeandport(int (*putstr)(void *chan, const char *str),
                              FILE *f, node_t *node, char *portname) {
     char *name;
-    if (IS_CLUST_NODE(node))
-	name = canon (agraphof(node), strchr(agnameof(node), ':') + 1);
-    else
+    char *buffer = NULL;
+    if (IS_CLUST_NODE(node)) {
+	char *const value = strchr(agnameof(node), ':') + 1;
+	const size_t required = 2 * strlen(value) + 2;
+	buffer = gv_alloc(required);
+	name = canon(agraphof(node), value, buffer);
+    } else
 	name = agcanonStr (agnameof(node));
     printstring(putstr, f, " ", name); /* slimey i know */
+    free(buffer);
     if (portname && *portname)
 	printstring(putstr, f, ":", agcanonStr(portname));
 }
@@ -135,13 +143,18 @@ void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend) {
 	    continue;
 	printstring(putstr, f, "node ", agcanonStr(agnameof(n)));
 	printpoint(putstr, f, ND_coord(n), offsets.Y);
+	char *buffer = NULL;
 	if (ND_label(n)->html)   /* if html, get original text */
 	    lbl = agcanonStr (agxget(n, N_label));
-	else
-	    lbl = canon(agraphof(n),ND_label(n)->text);
+	else {
+	    const size_t required = 2 * strlen(ND_label(n)->text) + 2;
+	    buffer = gv_alloc(required);
+	    lbl = canon(agraphof(n), ND_label(n)->text, buffer);
+	}
         printdouble(putstr, f, " ", ND_width(n));
         printdouble(putstr, f, " ", ND_height(n));
         printstring(putstr, f, " ", lbl);
+        free(buffer);
 	printstring(putstr, f, " ", late_nnstring(n, N_style, "solid"));
 	printstring(putstr, f, " ", ND_shape(n)->name);
 	printstring(putstr, f, " ", late_nnstring(n, N_color, DEFAULT_COLOR));
@@ -179,7 +192,11 @@ void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend) {
 		}
 	    }
 	    if (ED_label(e)) {
-		printstring(putstr, f, " ", canon(agraphof(agtail(e)),ED_label(e)->text));
+		const size_t required = 2 * strlen(ED_label(e)->text) + 2;
+		char *const buffer = gv_alloc(required);
+		printstring(putstr, f, " ", canon(agraphof(agtail(e)), ED_label(e)->text,
+		                                  buffer));
+		free(buffer);
 		printpoint(putstr, f, ED_label(e)->pos, offsets.Y);
 	    }
 	    printstring(putstr, f, " ", late_nnstring(e, E_style, "solid"));
