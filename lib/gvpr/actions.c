@@ -14,6 +14,7 @@
 
 #include <ast/ast.h>
 #include <ast/error.h>
+#include <cgraph/agstrcanon.h>
 #include <gvpr/actions.h>
 #include <gvpr/compile.h>
 #include <limits.h>
@@ -746,7 +747,7 @@ char *toHtml(Agraph_t *g, char *arg) { return agstrdup_html(g, arg); }
  * Canonicalize a string for printing.
  */
 char *canon(Expr_t *pgm, char *arg) {
-  char *const buffer = exstralloc(pgm, 2 * strlen(arg) + 2);
+  char *const buffer = exstralloc(pgm, agstrcanon_bytes(arg));
   return agstrcanon(arg, buffer);
 }
 

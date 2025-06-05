@@ -10,6 +10,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include <cgraph/agstrcanon.h>
 #include <common/render.h>
 #include <gvc/gvc.h>
 #include <stdarg.h>
@@ -17,7 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <util/agxbuf.h>
-#include <util/alloc.h>
 #include <util/prisize_t.h>
 
 /// state for offset calculations
@@ -96,7 +96,7 @@ static offsets_t setYInvert(graph_t *g) {
  * Canonicalize a string which may not have been allocated using agstrdup.
  *
  * @param buffer Scratch space to use during canonicalization. This must be at
- *   least `2 * strlen(s) + 2` bytes.
+ *   least `agstrcanon_bytes(s)` bytes.
  */
 static char *canon(graph_t *g, char *s, char *buffer) {
     char* ns = agstrdup (g, s);
@@ -110,8 +110,7 @@ static void writenodeandport(int (*putstr)(void *chan, const char *str),
     char *name;
     char *const value =
       IS_CLUST_NODE(node) ? strchr(agnameof(node), ':') + 1 : agnameof(node);
-    const size_t required = 2 * strlen(value) + 2;
-    char *const buffer = gv_alloc(required);
+    char *const buffer = agstrcanon_buffer(value);
     if (IS_CLUST_NODE(node)) {
 	name = canon(agraphof(node), value, buffer);
     } else
@@ -119,8 +118,7 @@ static void writenodeandport(int (*putstr)(void *chan, const char *str),
     printstring(putstr, f, " ", name); /* slimey i know */
     free(buffer);
     if (portname && *portname) {
-	const size_t required2 = 2 * strlen(portname) + 2;
-	char *const buffer2 = gv_alloc(required2);
+	char *const buffer2 = agstrcanon_buffer(portname);
 	printstring(putstr, f, ":", agstrcanon(portname, buffer2));
 	free(buffer2);
     }
@@ -145,15 +143,13 @@ void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend) {
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n))
 	    continue;
-	const size_t node_required = 2 * strlen(agnameof(n)) + 2;
-	char *const node_buffer = gv_alloc(node_required);
+	char *const node_buffer = agstrcanon_buffer(agnameof(n));
 	printstring(putstr, f, "node ", agstrcanon(agnameof(n), node_buffer));
 	free(node_buffer);
 	printpoint(putstr, f, ND_coord(n), offsets.Y);
 	// if HTML, get original text
 	char *const value = ND_label(n)->html ? agxget(n, N_label) : ND_label(n)->text;
-	const size_t required = 2 * strlen(value) + 2;
-	char *const buffer = gv_alloc(required);
+	char *const buffer = agstrcanon_buffer(value);
 	if (ND_label(n)->html) {
 	    lbl = agstrcanon(value, buffer);
 	} else {
@@ -200,8 +196,7 @@ void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend) {
 		}
 	    }
 	    if (ED_label(e)) {
-		const size_t required = 2 * strlen(ED_label(e)->text) + 2;
-		char *const buffer = gv_alloc(required);
+		char *const buffer = agstrcanon_buffer(ED_label(e)->text);
 		printstring(putstr, f, " ", canon(agraphof(agtail(e)), ED_label(e)->text,
 		                                  buffer));
 		free(buffer);

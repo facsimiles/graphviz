@@ -22,6 +22,7 @@
 #include <stdio.h>		/* need sprintf() */
 #include <stdlib.h>
 #include <ctype.h>
+#include <cgraph/agstrcanon.h>
 #include <cgraph/cghdr.h>
 #include <inttypes.h>
 #include <util/gv_ctype.h>
@@ -227,9 +228,7 @@ static char *getoutputbuffer(const char *str)
 {
     static char *rv;
     static size_t len = 0;
-    size_t req;
-
-    req = MAX(2 * strlen(str) + 2, BUFSIZ);
+    const size_t req = MAX(agstrcanon_bytes(str), BUFSIZ);
     if (req > len) {
 	char *r = realloc(rv, req);
 	if (r == NULL)
@@ -255,7 +254,7 @@ char *agcanonStr(char *str)
 static int _write_canonstr(Agraph_t *g, iochan_t *ofile, char *str, bool chk) {
 
     // maximum bytes required for canonicalized string
-    const size_t required = 2 * strlen(str) + 2;
+    const size_t required = agstrcanon_bytes(str);
 
     // allocate space to stage the canonicalized string
     char *const scratch = malloc(required);
