@@ -118,8 +118,12 @@ static void writenodeandport(int (*putstr)(void *chan, const char *str),
 	name = agstrcanon(value, buffer);
     printstring(putstr, f, " ", name); /* slimey i know */
     free(buffer);
-    if (portname && *portname)
-	printstring(putstr, f, ":", agcanonStr(portname));
+    if (portname && *portname) {
+	const size_t required2 = 2 * strlen(portname) + 2;
+	char *const buffer2 = gv_alloc(required2);
+	printstring(putstr, f, ":", agstrcanon(portname, buffer2));
+	free(buffer2);
+    }
 }
 
 void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend) {
