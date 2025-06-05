@@ -145,7 +145,10 @@ void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend) {
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n))
 	    continue;
-	printstring(putstr, f, "node ", agcanonStr(agnameof(n)));
+	const size_t node_required = 2 * strlen(agnameof(n)) + 2;
+	char *const node_buffer = gv_alloc(node_required);
+	printstring(putstr, f, "node ", agstrcanon(agnameof(n), node_buffer));
+	free(node_buffer);
 	printpoint(putstr, f, ND_coord(n), offsets.Y);
 	char *buffer = NULL;
 	if (ND_label(n)->html)   /* if html, get original text */
