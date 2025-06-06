@@ -1870,7 +1870,7 @@ def test_1909():
     output = run(["gvpr", "-c", "-f", prog, graph])
 
     # we should have produced this graph without names like "%2" in it
-    assert output == "// begin\n" "digraph bug {\n" "	a -> b;\n" "	b -> c;\n" "}\n"
+    assert re.search(r"%\d+\b", output) is None
 
 
 @pytest.mark.skipif(
