@@ -435,7 +435,7 @@ void common_init_node(node_t * n)
     fi.fontname = late_nnstring(n, N_fontname, DEFAULT_FONTNAME);
     fi.fontcolor = late_nnstring(n, N_fontcolor, DEFAULT_COLOR);
     ND_label(n) = make_label(n, str,
-	        (aghtmlstr(str) ? LT_HTML : LT_NONE) | ( (shapeOf(n) == SH_RECORD) ? LT_RECD : LT_NONE),
+	        (aghtmlstr(str) ? LT_HTML : LT_NONE) | (shapeOf(n) == SH_RECORD ? LT_RECD : LT_NONE),
 		fi.fontsize, fi.fontname, fi.fontcolor);
     if (N_xlabel && (str = agxget(n, N_xlabel)) && str[0]) {
 	ND_xlabel(n) = make_label(n, str, aghtmlstr(str) ? LT_HTML : LT_NONE,
