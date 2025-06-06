@@ -3895,8 +3895,7 @@ def test_2436():
 )
 def test_2434():
     """
-    the order in which `agmemread` and `gvContext` calls are made should have
-    no impact
+    the order in which `agmemread` and `gvContext` calls are made should have no impact
     https://gitlab.com/graphviz/graphviz/-/issues/2434
     """
 
