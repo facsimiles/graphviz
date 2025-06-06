@@ -4828,7 +4828,7 @@ def test_2593():
 )
 @pytest.mark.xfail(
     is_autotools() and is_fedora_42(),
-    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42",
     strict=True,
 )
 @pytest.mark.xfail(
@@ -5763,7 +5763,7 @@ def test_import_tcl_package(package: str):
 )
 @pytest.mark.xfail(
     is_autotools() and is_fedora_42(),
-    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42",
     strict=True,
 )
 @pytest.mark.xfail(
@@ -5827,7 +5827,7 @@ def test_triangulation_overflow():
 )
 @pytest.mark.xfail(
     is_autotools() and is_fedora_42(),
-    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42",
     strict=True,
 )
 @pytest.mark.xfail(
@@ -5889,7 +5889,7 @@ def test_vgpane_bad_triangulation():
 )
 @pytest.mark.xfail(
     is_autotools() and is_fedora_42(),
-    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42",
     strict=True,
 )
 @pytest.mark.xfail(
