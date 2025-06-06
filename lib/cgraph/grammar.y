@@ -28,6 +28,7 @@
 
 %code requires {
 #include <cghdr.h>
+#include <common/const.h>
 #include <util/agxbuf.h>
 
 struct gstack_s;
@@ -635,6 +636,11 @@ static void graph_error(aagscan_t scanner)
 
 Agraph_t *agconcat(Agraph_t *g, const char *filename, void *chan,
                    Agdisc_t *disc) {
+	// if the proto graph’s default node label has not yet been set, set it now
+	if (agattr_text(NULL, AGNODE, "label", NULL) == NULL) {
+		agattr_text(NULL, AGNODE, "label", NODENAME_ESC);
+	}
+
 	aagscan_t scanner = NULL;
 	aagextra_t extra = {
 		.Disc = disc ? disc : &AgDefaultDisc,
