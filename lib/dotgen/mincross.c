@@ -25,10 +25,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_math.h>
+#include <util/itos.h>
 #include <util/list.h>
 #include <util/streq.h>
 
@@ -310,7 +310,6 @@ checkLabelOrder (graph_t* g)
 {
     int j, r, lo, hi;
     graph_t* lg = NULL;
-    agxbuf buf = {0};
     rank_t* rk;
     Agnode_t* u;
     Agnode_t* n;
@@ -322,8 +321,7 @@ checkLabelOrder (graph_t* g)
 	    u = rk->v[j];
 	    if ((e = ND_alg(u))) {
 		if (!lg) lg = agopen ("lg", Agstrictdirected, 0);
-		agxbprint(&buf, "%d", j);
-		n = agnode(lg, agxbuse(&buf), 1);
+		n = agnode(lg, ITOS(j), 1);
 		agbindrec(n, "info", sizeof(info_t), true);
 		lo = ND_order(aghead(ND_out(u).list[0]));
 		hi = ND_order(aghead(ND_out(u).list[1]));
@@ -341,7 +339,6 @@ checkLabelOrder (graph_t* g)
 	    lg = NULL;
 	}
     }
-    agxbfree(&buf);
 }
 
 /* dot_mincross:

@@ -13,6 +13,7 @@
 #include "gui.h"
 #include <common/colorprocs.h>
 #include <stdint.h>
+#include <util/itos.h>
 #include <util/startswith.h>
 #include "viewport.h"
 
@@ -142,14 +143,10 @@ static void set_checkbox_widget(char *attrib, char *widget_name) {
 static void get_checkbox_widget_to_attribute(char *attrib, char *widget_name,
 					    Agraph_t * g)
 {
-    int value;
-    char buf[100];
-
-    value = (int) gtk_toggle_button_get_active((GtkToggleButton *)
+    const int value = (int)gtk_toggle_button_get_active((GtkToggleButton *)
 					       glade_xml_get_widget(xml,
 								    widget_name));
-    snprintf(buf, sizeof(buf), "%d", value);
-    agattr_text(g, AGRAPH, attrib, buf);
+    agattr_text(g, AGRAPH, attrib, ITOS(value));
 }
 
 static void set_spinbtn_widget(char *attrib, char *widget_name) {
@@ -232,15 +229,10 @@ static void set_combobox_widget(char *attrib, char *widget_name) {
 static void get_combobox_widget_to_attribute(char *attrib, char *widget_name,
 					    Agraph_t * g)
 {
-    char buf[25];
-    int value;
-
-    value = (int)
-	gtk_combo_box_get_active((GtkComboBox *)
+    const int value = (int)gtk_combo_box_get_active((GtkComboBox *)
 				 glade_xml_get_widget(xml, widget_name));
 
-    snprintf(buf, sizeof(buf), "%d", value);
-    agattr_text(g, AGRAPH, attrib, buf);
+    agattr_text(g, AGRAPH, attrib, ITOS(value));
 }
 
 void load_settings_from_graph(void) {

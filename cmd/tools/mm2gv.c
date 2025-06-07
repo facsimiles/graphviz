@@ -15,6 +15,7 @@
 
 #include "config.h"
 #include <util/alloc.h>
+#include <util/itos.h>
 
 #define STANDALONE
 #include <cgraph/cgraph.h>
@@ -114,8 +115,7 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
     }
 
     for (i = 0; i < A->m; i++) {
-	agxbprint(&xb, "%d", i);
-	n = agnode(g, agxbuse(&xb), 1);
+	n = agnode(g, ITOS(i), 1);
 	agbindrec(n, "nodeinfo", sizeof(Agnodeinfo_t), true);
 	ND_id(n) = i;
 	arr[i] = n;

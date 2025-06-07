@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <util/itos.h>
 
 static int myindegree(Agnode_t *n) { return agdegree(n->root, n, 1, 0); }
 
@@ -43,10 +44,7 @@ static bool ischainnode(Agnode_t *n) {
 }
 
 static void adjustlen(Agedge_t *e, Agsym_t *sym, int newlen) {
-  char buf[12];
-
-  snprintf(buf, sizeof(buf), "%d", newlen);
-  agxset(e, sym, buf);
+  agxset(e, sym, ITOS(newlen));
 }
 
 static Agsym_t *bindedgeattr(Agraph_t *g, char *str) {
