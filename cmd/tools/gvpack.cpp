@@ -293,9 +293,7 @@ static void init_graph(Agraph_t *g, bool fill, GVC_t *gvc) {
  * attributes have been initialized.
  */
 static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new_graph, int attr_kind) {
-    Agsym_t *a;
-
-    for (a = agnxtattr(old, attr_kind, 0); a; a =  agnxtattr(old, attr_kind, a)) {
+    for (Agsym_t *a = agnxtattr(old, attr_kind, 0); a; a = agnxtattr(old, attr_kind, a)) {
 	if (aghtmlstr(a->defval)) {
 	    agattr_html(new_graph, attr_kind, a->name, a->defval);
 	} else {
@@ -305,12 +303,11 @@ static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new_graph, int attr_kind) {
 }
 static void cloneAttrs(void *old, void *new_graph) {
     int attr_kind = AGTYPE(old);
-    Agsym_t *a;
     char* s;
     Agraph_t *g = agroot(old);
     Agraph_t *ng = agroot(new_graph);
 
-    for (a = agnxtattr(g, attr_kind, 0); a; a =  agnxtattr(g, attr_kind, a)) {
+    for (Agsym_t *a = agnxtattr(g, attr_kind, 0); a; a = agnxtattr(g, attr_kind, a)) {
 	s = agxget (old, a);
 	if (aghtmlstr(s)) {
 	    char *scopy = agstrdup_html(ng, s);
@@ -544,14 +541,13 @@ static Agraph_t *cloneGraph(std::vector<Agraph_t *> &gs, GVC_t *gvc,
     Agraph_t *subg;
     Agnode_t *n;
     Agnode_t *np;
-    Agsym_t *G_bb;
     bool doWarn = true;
 
     if (verbose)
 	std::cerr << "Creating clone graph\n";
     root = agopen(gname, kind, &AgDefaultDisc);
     initAttrs(root, gs);
-    G_bb = agfindgraphattr(root, const_cast<char*>("bb"));
+    Agsym_t *const G_bb = agfindgraphattr(root, const_cast<char*>("bb"));
     if (doPack) assert(G_bb);
 
     /* add command-line attributes */

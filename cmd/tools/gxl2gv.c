@@ -215,12 +215,9 @@ static int get_xml_attr(char *attrname, const char **atts)
 
 static void setName(Dt_t * names, Agobj_t * n, char *value)
 {
-    Agsym_t *ap;
-    char *oldName;
-
-    ap = agattr_text(root, AGTYPE(n), GXL_ID, "");
+    Agsym_t *const ap = agattr_text(root, AGTYPE(n), GXL_ID, "");
     agxset(n, ap, agnameof(n));
-    oldName = agxget(n, ap);	/* set/get gives us new copy */
+    char *const oldName = agxget(n, ap); // set/get gives us new copy
     addToMap(names, oldName, value);
     agrename(n, value);
 }
@@ -231,12 +228,10 @@ static void
 setNodeAttr(Agnode_t * np, char *name, char *value, userdata_t * ud,
   bool is_html)
 {
-    Agsym_t *ap;
-
     if (strcmp(name, "name") == 0) {
 	setName(ud->nameMap, (Agobj_t *) np, value);
     } else {
-	ap = agattr_text(root, AGNODE, name, 0);
+	Agsym_t *ap = agattr_text(root, AGNODE, name, 0);
 	if (!ap)
 	    ap = agattr_text(root, AGNODE, name, defval);
 	if (is_html) {

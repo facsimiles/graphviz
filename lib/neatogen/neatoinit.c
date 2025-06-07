@@ -383,12 +383,11 @@ static pos_edge nop_init_edges(Agraph_t * g)
     node_t *n;
     edge_t *e;
     int nedges = 0;
-    attrsym_t *E_pos;
 
     if (agnedges(g) == 0)
 	return AllEdges;
 
-    E_pos = agfindedgeattr(g, "pos");
+    attrsym_t *const E_pos = agfindedgeattr(g, "pos");
     if (!E_pos || Nop < 2)
 	return NoEdges;
 

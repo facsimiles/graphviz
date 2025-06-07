@@ -124,14 +124,11 @@ static void glCompColorxlate(glCompColor *c, const char *str) {
  */
 static int visible(Agsym_t* attr, void* obj)
 {
-    char* s;
-
     if (attr) {
-	s = agxget (obj, attr);
+	const char *const s = agxget(obj, attr);
 	if (*s) return mapbool(s);
-	else return 1;
     }
-    else return 1;
+    return 1;
 }
 
 static int object_color(void* obj,glCompColor* c)
@@ -139,11 +136,10 @@ static int object_color(void* obj,glCompColor* c)
     gvcolor_t cl;
     Agraph_t* g=view->g[view->activeGraph];
     Agraph_t* objg=agraphof(obj);
-    int objType;
     float Alpha = 1;
     Agsym_t* vis;
 
-    objType=AGTYPE(obj);
+    const int objType = AGTYPE(obj);
 
     if(objType==AGEDGE) {
 	Alpha=getAttrFloat(g,objg,"defaultedgealpha",1);
@@ -282,13 +278,12 @@ static void renderNodes(Agraph_t * g)
     Agsym_t* pos_attr = GN_pos(g);
     Agsym_t* size_attr = GN_size(g);
     Agsym_t* selected_attr = GN_selected(g);
-    int defaultNodeShape;
     float nodeSize;
     glCompColor c;
     xdot * x;
     int ind;
 
-    defaultNodeShape=getAttrInt(g,g,"defaultnodeshape",0);
+    const int defaultNodeShape=getAttrInt(g, g, "defaultnodeshape", 0);
 
     x=parseXdotwithattrs(g);
     if (x) {
@@ -609,12 +604,12 @@ static void edge_xdot (Agraph_t* g, Agedge_t* e, glCompColor c)
 static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
 {
     Agsym_t* pos_attr = GN_pos(g);
-    glCompPoint posT;	/*Tail position*/
-    glCompPoint posH;	/*Head position*/
 
     glColor4f(c.R,c.G,c.B,c.A);	   
-    posT=getPointFromStr(agxget(agtail(e), pos_attr));
-    posH=getPointFromStr(agxget(aghead(e), pos_attr));
+    // tail position
+    const glCompPoint posT = getPointFromStr(agxget(agtail(e), pos_attr));
+    // head position
+    const glCompPoint posH = getPointFromStr(agxget(aghead(e), pos_attr));
     draw_edge(posT, posH);
     ED_posTail(e) = posT;
     ED_posHead(e) = posH;
@@ -623,10 +618,9 @@ static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
 static void edge_spline (Agraph_t* g, Agedge_t* e, glCompColor c)
 {
     Agsym_t* pos_attr_e = GE_pos(g);
-    xdot * x;
 
     glColor4f(c.R,c.G,c.B,c.A);	   
-    x = makeXDotSpline (agxget(e,pos_attr_e));
+    xdot *const x = makeXDotSpline(agxget(e, pos_attr_e));
     if (x) {
 	draw_xdot(x,0);
 	freeXDot (x);

@@ -595,10 +595,9 @@ static void emitEdge(Agraph_t *G, Agedge_t *e) {
 }
 
 static void emitGraphAttrs(Agraph_t *G) {
-    Agsym_t*  s;
     char* v;
 
-    for (s = agnxtattr (G, AGRAPH, NULL); s; s = agnxtattr (G, AGRAPH, s)) {
+    for (Agsym_t *s = agnxtattr(G, AGRAPH, NULL); s; s = agnxtattr(G, AGRAPH, s)) {
 	if (*(v = agxget (G, s))) {
 	    emitAttr(s->name, v, 1);
 	}
