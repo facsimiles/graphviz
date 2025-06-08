@@ -77,11 +77,10 @@ def test_existence(binary: str):
 
     os_id = freedesktop_os_release().get("ID")
 
-    # FIXME: Remove skip when
-    # https://gitlab.com/graphviz/graphviz/-/issues/1834 is fixed
+    # https://gitlab.com/graphviz/graphviz/-/issues/1834
     if os_id == "rocky" and binary == "smyrna":
         check_that_tool_does_not_exist(binary, os_id)
-        pytest.skip("smyrna is not built for Rocky (#1834)")
+        pytest.skip("smyrna is not built for Rocky due to lacking libgts")
 
     if os_id == "rocky" and binary == "mingle":
         check_that_tool_does_not_exist(binary, os_id)
@@ -95,7 +94,7 @@ def test_existence(binary: str):
         check_that_tool_does_not_exist(binary, os_id)
         pytest.skip(f"{binary} is not built on Windows due to lacking Qt")
 
-    # FIXME: Smyrna dependencies are not avaiable in other jobs
+    # Smyrna dependencies are not avaiable in other jobs
     if binary == "smyrna" and platform.system() != "Linux":
         check_that_tool_does_not_exist(binary, os_id)
         pytest.skip("smyrna is not built on non-Linux due to lacking dependencies")

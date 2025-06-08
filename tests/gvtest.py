@@ -198,6 +198,7 @@ def dot(
         "cmapx",
         "dot",
         "fig",
+        "gv",
         "json",
         "pic",
         "svg",
