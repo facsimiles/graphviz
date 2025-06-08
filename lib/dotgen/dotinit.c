@@ -353,8 +353,7 @@ initSubg (Agraph_t* sg, Agraph_t* g)
     GD_fontnames(sg) = GD_fontnames(g);
 }
 
-/* attachPos:
- * the packing library assumes all units are in inches stored in ND_pos, so we
+/* the packing library assumes all units are in inches stored in ND_pos, so we
  * have to copy the position info there.
  */
 static void
@@ -371,8 +370,7 @@ attachPos (Agraph_t* g)
     }
 }
 
-/* resetCoord:
- * Store new position info from pack library call, stored in ND_pos in inches,
+/* Store new position info from pack library call, stored in ND_pos in inches,
  * back to ND_coord in points.
  */
 static void
@@ -413,8 +411,7 @@ copyCluster (Agraph_t* scl, Agraph_t* cl)
     GD_label(scl) = NULL;
 }
 
-/* copyClusterInfo:
- * Copy cluster tree and info from components to main graph.
+/* Copy cluster tree and info from components to main graph.
  * Note that the original clusters have no Agraphinfo_t at this time.
  */
 static void copyClusterInfo(size_t ncc, Agraph_t **ccs, Agraph_t *root) {
@@ -438,8 +435,7 @@ static void copyClusterInfo(size_t ncc, Agraph_t **ccs, Agraph_t *root) {
     } 
 }
 
-/* doDot:
- * Assume g has nodes.
+/* Assume g has nodes.
  *
  * @return 0 on success
  */

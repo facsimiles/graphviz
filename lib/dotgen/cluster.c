@@ -19,7 +19,7 @@ map_interclust_node(node_t * n)
 {
     node_t *rv;
 
-    if ((ND_clust(n) == NULL) || (  GD_expanded(ND_clust(n))) )
+    if (ND_clust(n) == NULL || GD_expanded(ND_clust(n)))
 	rv = n;
     else
 	rv = GD_rankleader(ND_clust(n))[ND_rank(n)];
@@ -80,16 +80,15 @@ map_path(node_t * from, node_t * to, edge_t * orig, edge_t * ve, int type)
 
     assert(ND_rank(from) < ND_rank(to));
 
-    if ((agtail(ve) == from) && (aghead(ve) == to))
+    if (agtail(ve) == from && aghead(ve) == to)
 	return;
 
     if (ED_count(ve) > 1) {
 	ED_to_virt(orig) = NULL;
 	if (ND_rank(to) - ND_rank(from) == 1) {
-	    if ((e = find_fast_edge(from, to)) && (ports_eq(orig, e))) {
+	    if ((e = find_fast_edge(from, to)) && ports_eq(orig, e)) {
 		merge_oneway(orig, e);
-		if ((ND_node_type(from) == NORMAL)
-		    && (ND_node_type(to) == NORMAL))
+		if (ND_node_type(from) == NORMAL && ND_node_type(to) == NORMAL)
 		    other_edge(orig);
 		return;
 	    }
@@ -108,13 +107,12 @@ map_path(node_t * from, node_t * to, edge_t * orig, edge_t * ve, int type)
 	}
     } else {
 	if (ND_rank(to) - ND_rank(from) == 1) {
-	    if ((ve = find_fast_edge(from, to)) && (ports_eq(orig, ve))) {
+	    if ((ve = find_fast_edge(from, to)) && ports_eq(orig, ve)) {
 		/*ED_to_orig(ve) = orig; */
 		ED_to_virt(orig) = ve;
 		ED_edge_type(ve) = type;
 		ED_count(ve)++;
-		if ((ND_node_type(from) == NORMAL)
-		    && (ND_node_type(to) == NORMAL))
+		if (ND_node_type(from) == NORMAL && ND_node_type(to) == NORMAL)
 		    other_edge(orig);
 	    } else {
 		ED_to_virt(orig) = NULL;
@@ -147,7 +145,7 @@ static void make_interclust_chain(node_t * from, node_t * to, edge_t * orig) {
 
     u = map_interclust_node(from);
     v = map_interclust_node(to);
-    if ((u == from) && (v == to))
+    if (u == from && v == to)
 	newtype = VIRTUAL;
     else
 	newtype = CLUSTER_EDGE;

@@ -67,12 +67,6 @@ static void free_matrix(adjmatrix_t * p);
 static int ordercmpf(const void *, const void *);
 static int64_t ncross(ints_t *scratch);
 #ifdef DEBUG
-#if DEBUG > 1
-static int gd_minrank(Agraph_t *g) {return GD_minrank(g);}
-static int gd_maxrank(Agraph_t *g) {return GD_maxrank(g);}
-static rank_t *gd_rank(Agraph_t *g, int r) {return &GD_rank(g)[r];}
-static int nd_order(Agnode_t *v) { return ND_order(v); }
-#endif
 void check_rs(graph_t * g, int null_ok);
 void check_order(void);
 void check_vlists(graph_t * g);
@@ -247,9 +241,7 @@ getComp (graph_t* g, node_t* n, graph_t* comp, int* indices)
     return backedge;
 }
 
-/* fixLabelOrder:
- * For each pair of nodes (labels), we add an edge 
- */
+/// for each pair of nodes (labels), we add an edge 
 static void
 fixLabelOrder (graph_t* g, rank_t* rk)
 {
@@ -296,8 +288,7 @@ fixLabelOrder (graph_t* g, rank_t* rk)
     free (arr);
 }
 
-/* checkLabelOrder:
- * Check that the ordering of labels for flat edges is consistent. 
+/* Check that the ordering of labels for flat edges is consistent. 
  * This is necessary because dot_position will attempt to force the label
  * to be between the edge's vertices. This can lead to an infeasible problem.
  *
@@ -341,8 +332,7 @@ checkLabelOrder (graph_t* g)
     }
 }
 
-/* dot_mincross:
- * Minimize edge crossings
+/* Minimize edge crossings
  * Note that nodes are not placed into GD_rank(g) until mincross()
  * is called.
  */
@@ -521,8 +511,7 @@ static void do_ordering_for_nodes(graph_t * g)
     }
 }
 
-/* ordered_edges:
- * handle case where graph specifies edge ordering
+/* handle case where graph specifies edge ordering
  * If the graph does not have an ordering attribute, we then
  * check for nodes having the attribute.
  * Note that, in this implementation, the value of G_ordering
@@ -991,8 +980,7 @@ void rec_reset_vlists(graph_t * g)
 	}
 }
 
-/* realFillRanks:
- * The structures in crossing minimization and positioning require
+/* The structures in crossing minimization and positioning require
  * that clusters have some node on each rank. This function recursively
  * guarantees this property. It takes into account nodes and edges in
  * a cluster, the latter causing dummy nodes for intervening ranks.
@@ -1166,8 +1154,7 @@ static void flat_breakcycles(graph_t * g)
     }
 }
 
-/* allocate_ranks:
- * Allocate rank structure, determining number of nodes per rank.
+/* Allocate rank structure, determining number of nodes per rank.
  * Note that no nodes are put into the structure yet.
  */
 void allocate_ranks(graph_t * g)
@@ -1623,8 +1610,7 @@ static int ordercmpf(const void *x, const void *y) {
   return 0;
 }
 
-/* flat_mval:
- * Calculate a mval for nodes with no in or out non-flat edges.
+/* Calculate a mval for nodes with no in or out non-flat edges.
  * Assume (ND_out(n).size == 0) && (ND_in(n).size == 0)
  * Find flat edge a->n where a has the largest order and set
  * n.mval = a.mval+1, assuming a.mval is defined (>=0).

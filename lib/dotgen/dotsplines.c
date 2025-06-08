@@ -169,8 +169,7 @@ static void swap_spline(splines *s) {
   }
 }
 
-/* edge_normalize:
- * Some back edges are reversed during layout and the reversed edge
+/* Some back edges are reversed during layout and the reversed edge
  * is used to compute the spline. We would like to guarantee that
  * the order of control points always goes from tail to head, so
  * we reverse them if necessary.
@@ -187,8 +186,7 @@ static void edge_normalize(graph_t *g) {
   }
 }
 
-/* resetRW:
- * In position, each node has its rw stored in mval and,
+/* In position, each node has its rw stored in mval and,
  * if a node is part of a loop, rw may be increased to
  * reflect the loops and associated labels. We restore
  * the original value here.
@@ -203,8 +201,7 @@ static void resetRW(graph_t *g) {
   }
 }
 
-/* setEdgeLabelPos:
- * Set edge label position information for regular and non-adjacent flat edges.
+/* Set edge label position information for regular and non-adjacent flat edges.
  * Dot has allocated space and position for these labels. This info will be
  * used when routing orthogonal edges.
  */
@@ -285,9 +282,9 @@ static int dot_splines_(graph_t *g, int normalize) {
   for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
     n_nodes += GD_rank(g)[i].n;
     if ((n = GD_rank(g)[i].v[0]))
-      sd.LeftBound = MIN(sd.LeftBound, (ND_coord(n).x - ND_lw(n)));
+      sd.LeftBound = MIN(sd.LeftBound, ND_coord(n).x - ND_lw(n));
     if (GD_rank(g)[i].n && (n = GD_rank(g)[i].v[GD_rank(g)[i].n - 1]))
-      sd.RightBound = MAX(sd.RightBound, (ND_coord(n).x + ND_rw(n)));
+      sd.RightBound = MAX(sd.RightBound, ND_coord(n).x + ND_rw(n));
     sd.LeftBound -= MINW;
     sd.RightBound += MINW;
 
@@ -489,15 +486,13 @@ finish:
   return 0;
 }
 
-/* dot_splines:
- * If the splines attribute is defined but equal to "", skip edge routing.
+/* If the splines attribute is defined but equal to "", skip edge routing.
  *
  * @return 0 on success
  */
 int dot_splines(graph_t *g) { return dot_splines_(g, 1); }
 
-/* place_vnlabel:
- * assign position of an edge label from its virtual node
+/* assign position of an edge label from its virtual node
  * This is for regular edges only.
  */
 static void place_vnlabel(node_t *n) {
@@ -540,11 +535,10 @@ static void setflags(edge_t *e, int hint1, int hint2, int f3) {
     else /* f1 == SELF*EDGE */
       f2 = FWDEDGE;
   }
-  ED_tree_index(e) = (f1 | f2 | f3);
+  ED_tree_index(e) = f1 | f2 | f3;
 }
 
-/* edgecmp:
- * lexicographically order edges by
+/* lexicographically order edges by
  *  - edge type
  *  - |rank difference of nodes|
  *  - |x difference of nodes|
@@ -570,8 +564,7 @@ static int edgecmp(const void *x, const void *y) {
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
   edge_t *e0, *e1, *ea, *eb, *le0, *le1;
-  int et0, et1, v0, v1, rv;
-  double t0, t1;
+  int et0, et1, rv;
 
   fwdedgea.out.base.data = (Agrec_t *)&fwdedgeai;
   fwdedgeb.out.base.data = (Agrec_t *)&fwdedgebi;
@@ -589,27 +582,30 @@ static int edgecmp(const void *x, const void *y) {
   le0 = getmainedge(e0);
   le1 = getmainedge(e1);
 
-  t0 = ND_rank(agtail(le0)) - ND_rank(aghead(le0));
-  t1 = ND_rank(agtail(le1)) - ND_rank(aghead(le1));
-  v0 = abs((int)t0); /* ugly, but explicit as to how we avoid equality tests on
-                        fp numbers */
-  v1 = abs((int)t1);
-  if (v0 < v1) {
-    return -1;
-  }
-  if (v0 > v1) {
-    return 1;
+  {
+    const int rank_diff0 = ND_rank(agtail(le0)) - ND_rank(aghead(le0));
+    const int rank_diff1 = ND_rank(agtail(le1)) - ND_rank(aghead(le1));
+    const int v0 = abs(rank_diff0);
+    const int v1 = abs(rank_diff1);
+    if (v0 < v1) {
+      return -1;
+    }
+    if (v0 > v1) {
+      return 1;
+    }
   }
 
-  t0 = ND_coord(agtail(le0)).x - ND_coord(aghead(le0)).x;
-  t1 = ND_coord(agtail(le1)).x - ND_coord(aghead(le1)).x;
-  v0 = abs((int)t0);
-  v1 = abs((int)t1);
-  if (v0 < v1) {
-    return -1;
-  }
-  if (v0 > v1) {
-    return 1;
+  {
+    const double t0 = ND_coord(agtail(le0)).x - ND_coord(aghead(le0)).x;
+    const double t1 = ND_coord(agtail(le1)).x - ND_coord(aghead(le1)).x;
+    const double v0 = fabs(t0);
+    const double v1 = fabs(t1);
+    if (v0 < v1) {
+      return -1;
+    }
+    if (v0 > v1) {
+      return 1;
+    }
   }
 
   /* This provides a cheap test for edges having the same set of endpoints.  */
@@ -793,8 +789,7 @@ static void setState(graph_t *auxg, attr_state_t *attr_state) {
   G_ordering = agfindgraphattr(auxg, "ordering");
 }
 
-/* cloneGraph:
- * Create clone graph. It stores the global Agsyms, to be
+/* Create clone graph. It stores the global Agsyms, to be
  * restored in cleanupCloneGraph. The graph uses the main
  * graph's settings for certain geometry parameters, and
  * declares all node and edge attributes used in the original
@@ -894,8 +889,7 @@ static void cleanupCloneGraph(graph_t *g, attr_state_t *attr_state) {
   agclose(g);
 }
 
-/* cloneNode:
- * If original graph has rankdir=LR or RL, records change shape,
+/* If original graph has rankdir=LR or RL, records change shape,
  * so we wrap a record node's label in "{...}" to prevent this.
  */
 static node_t *cloneNode(graph_t *g, node_t *orign) {
@@ -920,9 +914,7 @@ static edge_t *cloneEdge(graph_t *g, node_t *tn, node_t *hn, edge_t *orig) {
   return e;
 }
 
-/* transformf:
- * Rotate, if necessary, then translate points.
- */
+/// rotate, if necessary, then translate points
 static pointf transformf(pointf p, pointf del, int flip) {
   if (flip) {
     double i = p.x;
@@ -932,8 +924,7 @@ static pointf transformf(pointf p, pointf del, int flip) {
   return add_pointf(p, del);
 }
 
-/* edgelblcmpfn:
- * lexicographically order edges by
+/* lexicographically order edges by
  *  - has label
  *  - label is wider
  *  - label is higher
@@ -980,8 +971,7 @@ static int edgelblcmpfn(const void *x, const void *y) {
 
 #define LBL_SPACE 6 /* space between labels, in points */
 
-/* makeSimpleFlatLabels:
- * This handles the second simplest case for flat edges between
+/* This handles the second simplest case for flat edges between
  * two adjacent nodes. We still invoke a dot on a rotated problem
  * to handle edges with ports. This usually works, but fails for
  * records because of their weird nature.
@@ -1181,8 +1171,7 @@ static void makeSimpleFlat(node_t *tn, node_t *hn, edge_t **edges, unsigned ind,
   }
 }
 
-/* make_flat_adj_edges:
- * In the simple case, with no labels or ports, this creates a simple
+/* In the simple case, with no labels or ports, this creates a simple
  * spindle of splines.
  * If there are only labels, cobble something together.
  * Otherwise, we run dot recursively on the 2 nodes and the edges,
@@ -1560,8 +1549,7 @@ static void make_flat_bottom_edges(graph_t *g, spline_info_t *sp, path *P,
   }
 }
 
-/* make_flat_edge:
- * Construct flat edges edges[ind...ind+cnt-1]
+/* Construct flat edges edges[ind...ind+cnt-1]
  * There are 4 main cases:
  *  - all edges between a and b where a and b are adjacent
  *  - one labeled edge
@@ -1695,8 +1683,7 @@ static bool leftOf(pointf p1, pointf p2, pointf p3) {
   return (p1.y - p2.y) * (p3.x - p2.x) - (p3.y - p2.y) * (p1.x - p2.x) > 0;
 }
 
-/* makeLineEdge:
- * Create an edge as line segment. We guarantee that the points
+/* Create an edge as line segment. We guarantee that the points
  * are always drawn downwards. This means that for flipped edges,
  * we draw from the head to the tail. The routine returns the
  * end node of the edge in *hp. The points are stored in the
@@ -2024,8 +2011,7 @@ static void completeregularpath(path *P, edge_t *first, edge_t *last,
   adjustregularpath(P, fb, lb);
 }
 
-/* makeregularend:
- * Add box to fill between node and interrank space. Needed because
+/* Add box to fill between node and interrank space. Needed because
  * nodes in a given rank can differ in height.
  * for now, regular edges always go from top to bottom
  */
@@ -2037,8 +2023,7 @@ static boxf makeregularend(boxf b, int side, double y) {
   return (boxf){{b.LL.x, b.UR.y}, {b.UR.x, y}};
 }
 
-/* adjustregularpath:
- * make sure the path is wide enough.
+/* make sure the path is wide enough.
  * the % 2 was so that in rank boxes would only be grown if
  * they were == 0 while inter-rank boxes could be stretched to a min
  * width.
@@ -2240,8 +2225,7 @@ static Agraph_t *cl_bound(graph_t *g, node_t *n, node_t *adj) {
   return rv;
 }
 
-/* maximal_bbox:
- * Return an initial bounding box to be used for building the
+/* Return an initial bounding box to be used for building the
  * beginning or ending of the path of boxes.
  * Height reflects height of tallest node on rank.
  * The extra space provided by FUDGE allows begin/endpath to create a box

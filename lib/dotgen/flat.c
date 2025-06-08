@@ -8,6 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include	<assert.h>
 #include	<dotgen/dot.h>
 #include	<stdbool.h>
 #include	<stddef.h>
@@ -17,10 +18,13 @@
 static node_t *make_vn_slot(graph_t * g, int r, int pos)
 {
     int i;
-    node_t **v, *n;
+    node_t *n;
 
-    v = GD_rank(g)[r].v = gv_recalloc(GD_rank(g)[r].v, GD_rank(g)[r].n + 1,
-                                      GD_rank(g)[r].n + 2, sizeof(node_t *));
+    assert(GD_rank(g)[r].av == GD_rank(g)[r].v);
+    GD_rank(g)[r].av = gv_recalloc(GD_rank(g)[r].av, GD_rank(g)[r].n + 1,
+                                   GD_rank(g)[r].n + 2, sizeof(node_t *));
+    GD_rank(g)[r].v = GD_rank(g)[r].av;
+    node_t **const v = GD_rank(g)[r].v;
     for (i = GD_rank(g)[r].n; i > pos; i--) {
 	v[i] = v[i - 1];
 	ND_order(v[i])++;
@@ -66,12 +70,12 @@ static void setbounds(node_t * v, int *bounds, int lpos, int rpos)
 	    else if (l >= rpos)
 		bounds[SRB] = bounds[HRB] = ord;
 	    /* could be spanning this one */
-	    else if ((l < lpos) && (r > rpos));	/* ignore */
+	    else if (l < lpos && r > rpos); // ignore
 	    /* must have intersecting ranges */
 	    else {
-		if ((l < lpos) || ((l == lpos) && (r < rpos)))
+		if (l < lpos || (l == lpos && r < rpos))
 		    bounds[SLB] = ord;
-		if ((r > rpos) || ((r == rpos) && (l > lpos)))
+		if (r > rpos || (r == rpos && l > lpos))
 		    bounds[SRB] = ord;
 	    }
 	} else {		/* forward */
@@ -123,8 +127,7 @@ static int flat_limits(graph_t * g, edge_t * e)
     return pos;
 }
 
-/* flat_node:
- * Create virtual node representing edge label between
+/* Create virtual node representing edge label between
  * actual ends of edge e. 
  * This node is characterized by being virtual and having a non-NULL
  * ND_alg pointing to e.
@@ -155,9 +158,7 @@ flat_node(edge_t * e)
     vn = make_vn_slot(g, r - 1, place);
     dimen = ED_label(e)->dimen;
     if (GD_flip(g)) {
-	double f = dimen.x;
-	dimen.x = dimen.y;
-	dimen.y = f;
+	SWAP(&dimen.x, &dimen.y);
     }
     ND_ht(vn) = dimen.y;
     h2 = ND_ht(vn) / 2;
@@ -200,8 +201,7 @@ static void abomination(graph_t * g)
     GD_minrank(g)--;
 }
 
-/* checkFlatAdjacent:
- * Check if tn and hn are adjacent. 
+/* Check if tn and hn are adjacent. 
  * If so, set adjacent bit on all related edges.
  * Assume e is flat.
  */
@@ -222,7 +222,7 @@ checkFlatAdjacent (edge_t* e)
 	lo = ND_order(hn);
 	hi = ND_order(tn);
     }
-    rank = &(GD_rank(dot_root(tn))[ND_rank(tn)]);
+    rank = &GD_rank(dot_root(tn))[ND_rank(tn)];
     for (i = lo + 1; i < hi; i++) {
 	n = rank->v[i];
 	if ((ND_node_type(n) == VIRTUAL && ND_label(n)) || 
@@ -237,8 +237,7 @@ checkFlatAdjacent (edge_t* e)
     }
 }
  
-/* flat_edges:
- * Process flat edges.
+/* Process flat edges.
  * First, mark flat edges as having adjacent endpoints or not.
  *
  * Second, if there are edge labels, nodes are placed on ranks 0,2,4,...
@@ -275,11 +274,11 @@ flat_edges(graph_t * g)
 	}
     }
 
-    if ((GD_rank(g)[0].flat) || (GD_n_cluster(g) > 0)) {
+    if (GD_rank(g)[0].flat || GD_n_cluster(g) > 0) {
 	bool found = false;
 	for (i = 0; (n = GD_rank(g)[0].v[i]); i++) {
 	    for (size_t j = 0; (e = ND_flat_in(n).list[j]); j++) {
-		if ((ED_label(e)) && !ED_adjacent(e)) {
+		if (ED_label(e) && !ED_adjacent(e)) {
 		    abomination(g);
 		    found = true;
 		    break;
@@ -297,8 +296,7 @@ flat_edges(graph_t * g)
 	    for (i = 0; (e = ND_flat_out(n).list[i]); i++) {
 		if (ED_label(e)) {
 		    if (ED_adjacent(e)) {
-			if (GD_flip(g)) ED_dist(e) = ED_label(e)->dimen.y;
-			else ED_dist(e) = ED_label(e)->dimen.x; 
+			ED_dist(e) = GD_flip(g) ? ED_label(e)->dimen.y : ED_label(e)->dimen.x;
 		    }
 		    else {
 			reset = true;
@@ -317,9 +315,7 @@ flat_edges(graph_t * g)
 		ED_adjacent(e) = ED_adjacent(le); 
 		if (ED_label(e)) {
 		    if (ED_adjacent(e)) {
-			double lw;
-			if (GD_flip(g)) lw = ED_label(e)->dimen.y;
-			else lw = ED_label(e)->dimen.x; 
+			const double lw = GD_flip(g) ? ED_label(e)->dimen.y : ED_label(e)->dimen.x;
 			ED_dist(le) = MAX(lw,ED_dist(le));
 		    }
 		    else {

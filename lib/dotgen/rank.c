@@ -409,7 +409,7 @@ static void expand_ranksets(graph_t *g) {
 	    if (GD_minrank(g) > ND_rank(n))
 		GD_minrank(g) = ND_rank(n);
 
-	    if (ND_ranktype(n) && (ND_ranktype(n) != LEAFSET))
+	    if (ND_ranktype(n) && ND_ranktype(n) != LEAFSET)
 		UF_singleton(n);
 	    n = agnxtnode(g, n);
 	}
@@ -432,7 +432,6 @@ static void dot1_rank(graph_t *g)
     edgelabel_ranks(g);
 
     collapse_sets(g,g);
-    /*collapse_leaves(g); */
     class1(g);
     p = minmax_edges(g);
     decompose(g, 0);
@@ -847,8 +846,8 @@ static void break_cycles(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	dfs(g, n);
 }
-/* setMinMax:
- * This will only be called with the root graph or a cluster
+
+/* This will only be called with the root graph or a cluster
  * which are guaranteed to contain nodes. Thus, leader will be
  * set.
  */
@@ -879,8 +878,7 @@ static void setMinMax (graph_t* g, int doRoot)
     GD_leader(g) = leader;
 }
 
-/* readout_levels:
- * Store node rank information in original graph.
+/* Store node rank information in original graph.
  * Set rank bounds in graph and clusters
  * Free added data structures.
  *
