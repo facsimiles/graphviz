@@ -42,13 +42,12 @@ static void quartz_format(GVJ_t *job)
 	    format_to_uti((format_type)job->device.id), 1, NULL);
 	CGDataProviderRef data_provider = CGDataProviderCreateDirect(job->imagedata, BYTES_PER_PIXEL * job->width * job->height, &memory_data_provider_callbacks);
 	
-	CFStringRef keys[] = {kCGImagePropertyDPIWidth, kCGImagePropertyDPIHeight};
-	CFNumberRef values[] = {
+	const void *keys[] = {kCGImagePropertyDPIWidth, kCGImagePropertyDPIHeight};
+	const void *values[] = {
 		CFNumberCreate(NULL, kCFNumberDoubleType, &job->dpi.x),
 		CFNumberCreate(NULL, kCFNumberDoubleType, &job->dpi.y)
 	};
-	CFDictionaryRef dpi = CFDictionaryCreate(NULL, (const void **)keys,
-	                                         (const void **)values,
+	CFDictionaryRef dpi = CFDictionaryCreate(NULL, keys, values,
 	                                         sizeof(keys) / sizeof(keys[0]),
 	                                         &kCFTypeDictionaryKeyCallBacks,
 	                                         &kCFTypeDictionaryValueCallBacks);

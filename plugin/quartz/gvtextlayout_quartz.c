@@ -12,7 +12,6 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 #include <TargetConditionals.h>
 
 #include <gvc/gvplugin_textlayout.h>
@@ -24,20 +23,21 @@
 
 void *quartz_new_layout(char* fontname, double fontsize, char* text)
 {
-	CFStringRef fontnameref = CFStringCreateWithBytes(NULL, (const UInt8 *)fontname, strlen(fontname), kCFStringEncodingUTF8, false);
-	CFStringRef textref = CFStringCreateWithBytes(NULL, (const UInt8 *)text, strlen(text), kCFStringEncodingUTF8, false);
+	CFStringRef fontnameref = CFStringCreateWithCString(NULL, fontname, kCFStringEncodingUTF8);
+	CFStringRef textref = CFStringCreateWithCString(NULL, text, kCFStringEncodingUTF8);
 	CTLineRef line = NULL;
 	
 	if (fontnameref && textref) {
 		/* set up the Core Text line */
 		CTFontRef font = CTFontCreateWithName(fontnameref, fontsize, NULL);
-		CFTypeRef attributeNames[] = { kCTFontAttributeName, kCTForegroundColorFromContextAttributeName };
-		CFTypeRef attributeValues[] = { font, kCFBooleanTrue };
+		const void *attributeNames[] = {
+		  kCTFontAttributeName, kCTForegroundColorFromContextAttributeName};
+		const void *attributeValues[] = {font, kCFBooleanTrue};
 		CFDictionaryRef attributes = CFDictionaryCreate(
 			NULL,
-			(const void**)attributeNames,
-			(const void**)attributeValues,
-			2,
+			attributeNames,
+			attributeValues,
+			sizeof(attributeNames) / sizeof(attributeNames[0]),
 			&kCFTypeDictionaryKeyCallBacks,
 			&kCFTypeDictionaryValueCallBacks);
 		CFAttributedStringRef attributed = CFAttributedStringCreate(NULL, textref, attributes);
@@ -52,7 +52,18 @@ void *quartz_new_layout(char* fontname, double fontsize, char* text)
 		CFRelease(textref);
 	if (fontnameref)
 		CFRelease(fontnameref);
+// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
+// as we do not intend to modify the target through the resulting non-const
+// pointer. We need a non-const pointer simply to satisfy the type of
+// `textspan_t.layout`.
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
+#endif
 	return (void *)line;
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 }
 
 void quartz_size_layout(void *layout, double* width, double* height, double* yoffset_layout)

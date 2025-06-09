@@ -11,7 +11,6 @@
 #include "config.h"
 
 #include <stdlib.h>
-#include <string.h>
 #include <TargetConditionals.h>
 #include <util/gv_math.h>
 
@@ -119,29 +118,27 @@ static void quartzgen_begin_page(GVJ_t * job)
 	case FORMAT_PDF:
 	    {
 		/* create the auxiliary info for PDF content, author and title */
-		CFStringRef auxiliaryKeys[] = {
+		const void *auxiliaryKeys[] = {
 		    kCGPDFContextCreator,
 		    kCGPDFContextTitle
 		};
-		CFStringRef auxiliaryValues[] = {
+		const void *auxiliaryValues[] = {
 		    CFStringCreateWithFormat(NULL, NULL,
 					     CFSTR("%s %s"),
 					     job->common->info[0],
 					     job->common->info[1]),
 		    job->obj->type ==
 			ROOTGRAPH_OBJTYPE ?
-			CFStringCreateWithBytesNoCopy(NULL,
-						      (const UInt8 *) agnameof(job->obj->u.g),
-						      strlen(agnameof(job->obj->u.g)),
+			CFStringCreateWithCStringNoCopy(NULL,
+						      agnameof(job->obj->u.g),
 						      kCFStringEncodingUTF8,
-						      false,
 						      kCFAllocatorNull)
 			: CFSTR("")
 		};
 		CFDictionaryRef auxiliaryInfo =
 		    CFDictionaryCreate(NULL,
-				       (const void **) &auxiliaryKeys,
-				       (const void **) &auxiliaryValues,
+				       auxiliaryKeys,
+				       auxiliaryValues,
 				       sizeof(auxiliaryValues) /
 				       sizeof(auxiliaryValues[0]),
 				       &kCFTypeDictionaryKeyCallBacks,
@@ -166,9 +163,11 @@ static void quartzgen_begin_page(GVJ_t * job)
 
 	default:		/* bitmap formats */
 	    {
-		size_t bytes_per_row =
-		    (job->width * BYTES_PER_PIXEL +
-		     BYTE_ALIGN) & ~BYTE_ALIGN;
+		size_t bytes_per_row = job->width * BYTES_PER_PIXEL;
+		// align up to a 16-byte boundary
+		if (bytes_per_row % 16 != 0) {
+		    bytes_per_row += 16 - (bytes_per_row % 16);
+		}
 
 		void *buffer = NULL;
 
@@ -250,6 +249,17 @@ static void quartzgen_end_page(GVJ_t * job)
     CGContextEndPage(context);
 }
 
+/// create a Core Foundation URL from a C string
+static CFURLRef make_url(const char *url) {
+  assert(url != NULL);
+  CFStringRef u = CFStringCreateWithCStringNoCopy(NULL, url,
+                                                  kCFStringEncodingUTF8,
+                                                  kCFAllocatorNull);
+  CFURLRef res = CFURLCreateWithString(NULL, u, NULL);
+  CFRelease(u);
+  return res;
+}
+
 static void quartzgen_begin_anchor(GVJ_t * job, char *url, char *tooltip,
 				   char *target, char *id)
 {
@@ -261,8 +271,7 @@ static void quartzgen_begin_anchor(GVJ_t * job, char *url, char *tooltip,
     if (url && url_map) {
 	/* set up the hyperlink to the given url */
 	CGContextRef context = job->context;
-	CFURLRef uri = CFURLCreateWithBytes(NULL, (const UInt8 *)url,
-				 strlen(url), kCFStringEncodingUTF8, NULL);
+	CFURLRef uri = make_url(url);
 	CGPDFContextSetURLForRect(context, uri,
 				  /* need to reverse the CTM on the area to get it to work */
 				  CGRectApplyAffineTransform(CGRectMake
