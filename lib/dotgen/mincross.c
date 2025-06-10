@@ -35,7 +35,7 @@
 struct adjmatrix_t {
   size_t nrows;
   size_t ncols;
-  char *data;
+  uint8_t *data;    ///< bit-packed backing memory
   size_t allocated; ///< how many bytes have been allocated backing `data`?
 };
 
@@ -50,11 +50,13 @@ static bool matrix_get(adjmatrix_t *me, size_t row, size_t col) {
 
   // if this index is beyond anything set, infer it as unset
   const size_t index = row * me->ncols + col;
-  if (index >= me->allocated) {
+  const size_t byte_index = index / 8;
+  const size_t bit_index = index % 8;
+  if (byte_index >= me->allocated) {
     return false;
   }
 
-  return me->data[index] != 0;
+  return (me->data[byte_index] >> bit_index) & 1;
 }
 
 /// set the value of a matrix cell to true
@@ -67,13 +69,15 @@ static void matrix_set(adjmatrix_t *me, size_t row, size_t col) {
 
   // if we are updating beyond allocated space, expand the backing store
   const size_t index = row * me->ncols + col;
-  if (index >= me->allocated) {
-    me->data =
-        gv_recalloc(me->data, me->allocated, index + 1, sizeof(me->data[0]));
-    me->allocated = index + 1;
+  const size_t byte_index = index / 8;
+  const size_t bit_index = index % 8;
+  if (byte_index >= me->allocated) {
+    me->data = gv_recalloc(me->data, me->allocated, byte_index + 1,
+                           sizeof(me->data[0]));
+    me->allocated = byte_index + 1;
   }
 
-  me->data[index] = true;
+  me->data[byte_index] |= (uint8_t)(UINT8_C(1) << bit_index);
 }
 
 /* #define DEBUG */
