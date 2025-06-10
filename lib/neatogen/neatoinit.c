@@ -1113,16 +1113,16 @@ void dumpOpts (ipsep_options* opp, int nv)
 static void
 majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, adjust_data* am)
 {
+#if !defined(DIGCOLA) || !defined(IPSEPCOLA)
+    (void)mg;
+    (void)am;
+#endif
+
     int ne;
     int rv = 0;
     node_t *v;
     vtx_data *gp;
     node_t** nodes;
-#ifdef DIGCOLA
-#ifdef IPSEPCOLA
-    expand_t margin;
-#endif
-#endif
     int init = checkStart(g, nv, mode == MODE_HIER ? INIT_SELF : INIT_RANDOM);
     int opts = checkExp (g);
 
@@ -1184,7 +1184,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, adj
                     fprintf(stderr,"Removing overlaps as postprocess...\n");
             }
             else opt.noverlap = 0;
-	    margin = sepFactor (g);
+	    const expand_t margin = sepFactor (g);
  	    /* Multiply by 2 since opt.gap is the gap size, not the margin */
 	    if (margin.doAdd) {
 		opt.gap.x = 2.0*PS2INCH(margin.x);

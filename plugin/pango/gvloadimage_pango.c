@@ -39,11 +39,9 @@ static void cairo_freeimage(usershape_t *us)
     cairo_surface_destroy(us->data);
 }
 
-static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
-{
+static cairo_surface_t *cairo_loadimage(usershape_t *us) {
     cairo_surface_t *surface = NULL; /* source surface */
 
-    assert(job);
     assert(us);
     assert(us->name);
     assert(us->name[0]);
@@ -93,7 +91,7 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fil
     // suppress unused parameter warning
     (void)filled;
 
-    surface = cairo_loadimage(job, us);
+    surface = cairo_loadimage(us);
     if (surface) {
         cairo_save(cr);
 	cairo_translate(cr, b.LL.x, -b.UR.y);
@@ -106,22 +104,18 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fil
 
 static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    cairo_surface_t *surface; 	/* source surface */
-    cairo_format_t format;
-    int X, Y, x, y, stride;
-
     // suppress unused parameter warning
     (void)filled;
 
-    surface = cairo_loadimage(job, us);
+    cairo_surface_t *const surface = cairo_loadimage(us); // source surface
     if (surface) {
-       	format = cairo_image_surface_get_format(surface);
+       	const cairo_format_t format = cairo_image_surface_get_format(surface);
         if ((format != CAIRO_FORMAT_ARGB32) && (format != CAIRO_FORMAT_RGB24))
 	    return;
 
-	X = cairo_image_surface_get_width(surface);
-	Y = cairo_image_surface_get_height(surface);
-	stride = cairo_image_surface_get_stride(surface);
+	const int X = cairo_image_surface_get_width(surface);
+	const int Y = cairo_image_surface_get_height(surface);
+	const int stride = cairo_image_surface_get_stride(surface);
 	const unsigned char *data = cairo_image_surface_get_data(surface);
 
         gvputs(job, "save\n");
@@ -130,10 +124,10 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled
 	/* see parallel code in gd_loadimage_ps().  FIXME: refactor... */
         gvputs(job, "/myctr 0 def\n");
         gvputs(job, "/myarray [\n");
-        for (y = 0; y < Y; y++) {
+        for (int y = 0; y < Y; y++) {
 	    gvputs(job, "<");
 	    const unsigned char *ix = data + y * stride;
-            for (x = 0; x < X; x++) {
+            for (int x = 0; x < X; x++) {
 		uint32_t rgba;
 		memcpy(&rgba, ix, sizeof(rgba));
 		ix += sizeof(rgba);

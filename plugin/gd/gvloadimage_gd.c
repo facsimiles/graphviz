@@ -35,9 +35,7 @@ static void gd_freeimage(usershape_t *us)
     gdImageDestroy(us->data);
 }
 
-static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
-{
-    assert(job);
+static gdImagePtr gd_loadimage(usershape_t *us) {
     assert(us);
     assert(us->name);
 
@@ -94,7 +92,7 @@ static void gd_loadimage_gd(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 
     gdImagePtr im2, im = job->context;
 
-    if ((im2 = gd_loadimage(job, us))) {
+    if ((im2 = gd_loadimage(us))) {
         if (job->rotation) {
 	    im2 = gd_rotateimage(im2, job->rotation);
 	    us->data = im2;
@@ -114,7 +112,7 @@ static void gd_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool filled
     cairo_surface_t *surface;    /* source surface */
     gdImagePtr im;
 
-    if ((im = gd_loadimage(job, us))) {
+    if ((im = gd_loadimage(us))) {
 	width = im->sx;
 	height = im->sy;
         const int stride = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32,
@@ -183,7 +181,7 @@ static void gd_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     gdImagePtr im = NULL;
     int X, Y, x, y, px;
 
-    if ((im = gd_loadimage(job, us))) {
+    if ((im = gd_loadimage(us))) {
 	X = im->sx;
 	Y = im->sy;
 

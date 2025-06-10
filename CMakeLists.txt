@@ -691,6 +691,10 @@ if(HAVE_C_WUNDEF)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wundef")
 endif()
 check_c_compiler_flag(-Wunused-but-set-variable HAVE_C_WUNUSED_BUT_SET_VARIABLE)
+check_c_compiler_flag(-Wunused-parameter HAVE_C_WUNUSED_PARAMETER)
+if(HAVE_C_WUNUSED_PARAMETER)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunused-parameter")
+endif()
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag(
   -Wmissing-field-initializers HAVE_CXX_WMISSING_FIELD_INITIALIZERS
