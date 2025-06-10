@@ -36,6 +36,7 @@ struct adjmatrix_t {
   size_t nrows;
   size_t ncols;
   char *data;
+  size_t allocated; ///< how many bytes have been allocated backing `data`?
 };
 
 /// get the value of a matrix cell
@@ -46,7 +47,14 @@ struct adjmatrix_t {
 /// @return True if the given cell was set
 static bool matrix_get(adjmatrix_t *me, size_t row, size_t col) {
   assert(me != NULL);
-  return me->data[row * me->ncols + col] != 0;
+
+  // if this index is beyond anything set, infer it as unset
+  const size_t index = row * me->ncols + col;
+  if (index >= me->allocated) {
+    return false;
+  }
+
+  return me->data[index] != 0;
 }
 
 /// set the value of a matrix cell to true
@@ -56,7 +64,16 @@ static bool matrix_get(adjmatrix_t *me, size_t row, size_t col) {
 /// @param col Column coordinate
 static void matrix_set(adjmatrix_t *me, size_t row, size_t col) {
   assert(me != NULL);
-  me->data[row * me->ncols + col] = true;
+
+  // if we are updating beyond allocated space, expand the backing store
+  const size_t index = row * me->ncols + col;
+  if (index >= me->allocated) {
+    me->data =
+        gv_recalloc(me->data, me->allocated, index + 1, sizeof(me->data[0]));
+    me->allocated = index + 1;
+  }
+
+  me->data[index] = true;
 }
 
 /* #define DEBUG */
@@ -432,7 +449,6 @@ static adjmatrix_t *new_matrix(size_t i, size_t j) {
     adjmatrix_t *rv = gv_alloc(sizeof(adjmatrix_t));
     rv->nrows = i;
     rv->ncols = j;
-    rv->data = gv_calloc(i * j, sizeof(char));
     return rv;
 }
 

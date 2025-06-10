@@ -994,10 +994,6 @@ def test_1453():
     dot("svg", input)
 
 
-@pytest.mark.xfail(
-    strict=which("dot") is None or is_asan_instrumented(which("dot")),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/1472",
-)
 def test_1472():
     """
     processing a malformed graph found by Google Autofuzz should not crash
