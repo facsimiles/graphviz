@@ -38,6 +38,27 @@ struct adjmatrix_t {
   char *data;
 };
 
+/// get the value of a matrix cell
+///
+/// @param me Matrix to inspect
+/// @param row Row coordinate
+/// @param col Column coordinate
+/// @return True if the given cell was set
+static bool matrix_get(adjmatrix_t *me, size_t row, size_t col) {
+  assert(me != NULL);
+  return me->data[row * me->ncols + col] != 0;
+}
+
+/// set the value of a matrix cell to true
+///
+/// @param me Matrix to update
+/// @param row Row coordinate
+/// @param col Column coordinate
+static void matrix_set(adjmatrix_t *me, size_t row, size_t col) {
+  assert(me != NULL);
+  me->data[row * me->ncols + col] = true;
+}
+
 /* #define DEBUG */
 #define MARK(v)		(ND_mark(v))
 #define saveorder(v)	(ND_coord(v)).x
@@ -423,8 +444,6 @@ static void free_matrix(adjmatrix_t * p)
     }
 }
 
-#define ELT(M,i,j)		(M->data[((i)*M->ncols)+(j)])
-
 static void init_mccomp(graph_t *g, size_t c) {
     int r;
 
@@ -593,7 +612,7 @@ static bool left2right(graph_t *g, node_t *v, node_t *w) {
     if (GD_flip(g)) {
 	SWAP(&v, &w);
     }
-    return ELT(M, flatindex(v), flatindex(w)) != 0;
+    return matrix_get(M, (size_t)flatindex(v), (size_t)flatindex(w));
 }
 
 static int64_t in_cross(node_t *v, node_t *w) {
@@ -1109,7 +1128,7 @@ static void flat_search(graph_t * g, node_t * v)
 	    if (ND_onstack(aghead(e))) {
 		assert(flatindex(aghead(e)) < M->nrows);
 		assert(flatindex(agtail(e)) < M->ncols);
-		ELT(M, flatindex(aghead(e)), flatindex(agtail(e))) = 1;
+		matrix_set(M, (size_t)flatindex(aghead(e)), (size_t)flatindex(agtail(e)));
 		delete_flat_edge(e);
 		i--;
 		if (ED_edge_type(e) == FLATORDER)
@@ -1118,7 +1137,7 @@ static void flat_search(graph_t * g, node_t * v)
 	    } else {
 		assert(flatindex(aghead(e)) < M->nrows);
 		assert(flatindex(agtail(e)) < M->ncols);
-		ELT(M, flatindex(agtail(e)), flatindex(aghead(e))) = 1;
+		matrix_set(M, (size_t)flatindex(agtail(e)), (size_t)flatindex(aghead(e)));
 		if (!ND_mark(aghead(e)))
 		    flat_search(g, aghead(e));
 	    }
