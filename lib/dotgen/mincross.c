@@ -1165,20 +1165,20 @@ static void flat_search(graph_t * g, node_t * v)
 
 static void flat_breakcycles(graph_t * g)
 {
-    int i, r, flat;
+    int i, r;
     node_t *v;
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	flat = 0;
+	bool flat = false;
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
 	    v = GD_rank(g)[r].v[i];
 	    ND_mark(v) = false;
 	    ND_onstack(v) = false;
 	    ND_low(v) = i;
-	    if (ND_flat_out(v).size > 0 && flat == 0) {
+	    if (ND_flat_out(v).size > 0 && !flat) {
 		GD_rank(g)[r].flat =
 		    new_matrix((size_t)GD_rank(g)[r].n, (size_t)GD_rank(g)[r].n);
-		flat = 1;
+		flat = true;
 	    }
 	}
 	if (flat) {
