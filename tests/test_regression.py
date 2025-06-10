@@ -1087,14 +1087,14 @@ def test_1494():
     ), "malformed input caused a double free()"
 
 
-def test_1541():
+def test_1514():
     """
     processing this input should not trigger an assertion failure
     https://gitlab.com/graphviz/graphviz/-/issues/1514
     """
 
     # locate our associated test case in this directory
-    input = Path(__file__).parent / "1541.dot"
+    input = Path(__file__).parent / "1514.dot"
     assert input.exists(), "unexpectedly missing test case"
 
     # run this through Graphviz
