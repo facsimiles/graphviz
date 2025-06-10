@@ -610,8 +610,6 @@ static int64_t mincross_clust(graph_t *g, ints_t *scratch) {
 }
 
 static bool left2right(graph_t *g, node_t *v, node_t *w) {
-    adjmatrix_t *M;
-
     /* CLUSTER indicates orig nodes of clusters, and vnodes of skeletons */
     if (!ReMincross) {
 	if (ND_clust(v) != ND_clust(w) && ND_clust(v) && ND_clust(w)) {
@@ -626,7 +624,7 @@ static bool left2right(graph_t *g, node_t *v, node_t *w) {
 	if (ND_clust(v) != ND_clust(w))
 	    return true;
     }
-    M = GD_rank(g)[ND_rank(v)].flat;
+    adjmatrix_t *const M = GD_rank(g)[ND_rank(v)].flat;
     if (M == NULL)
 	return false;
     if (GD_flip(g)) {
