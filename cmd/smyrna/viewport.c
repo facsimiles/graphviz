@@ -154,7 +154,7 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
     vi->edgelabelcolor.A =
 	(float) atof(get_attribute_value("defaultedgealpha", vi, g));
     vi->labelnumberofnodes =
-	atof(get_attribute_value("labelnumberofnodes", vi, g));
+	atoi(get_attribute_value("labelnumberofnodes", vi, g));
     vi->labelshownodes = atoi(get_attribute_value("labelshownodes", vi, g));
     vi->labelshowedges = atoi(get_attribute_value("labelshowedges", vi, g));
     vi->colschms =
