@@ -39,7 +39,7 @@ UTILS_API pointf Bezier(pointf *, double, pointf *, pointf *);
 /// @return Computed ymin + ymax
 UTILS_API double attach_attrs_and_arrows(graph_t *, bool *, bool *);
 
-UTILS_API void write_plain(GVJ_t *job, graph_t *g, FILE *f, bool extend);
+UTILS_API void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend);
 
 /// @param yOff Displacement to apply to `y`
 UTILS_API double yDir(double y, double yOff);

@@ -19,9 +19,10 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdio.h>		/* need sprintf() */
+#include <stdlib.h>
 #include <ctype.h>
+#include <cgraph/agstrcanon.h>
 #include <cgraph/cghdr.h>
 #include <inttypes.h>
 #include <util/gv_ctype.h>
@@ -213,7 +214,6 @@ static char *agcanonhtmlstr(const char *arg, char *buf)
 
 /**
  * canonicalize a string for printing.
- * must agree with strings in scan.l
  * Unsafe if buffer is not large enough.
  */
 char *agstrcanon(char *arg, char *buf)
@@ -228,9 +228,7 @@ static char *getoutputbuffer(const char *str)
 {
     static char *rv;
     static size_t len = 0;
-    size_t req;
-
-    req = MAX(2 * strlen(str) + 2, BUFSIZ);
+    const size_t req = MAX(agstrcanon_bytes(str), BUFSIZ);
     if (req > len) {
 	char *r = realloc(rv, req);
 	if (r == NULL)
@@ -243,7 +241,6 @@ static char *getoutputbuffer(const char *str)
 
 /**
  * canonicalize a string for printing.
- * must agree with strings in scan.l
  * Shared static buffer - unsafe.
  */
 char *agcanonStr(char *str)
@@ -255,15 +252,21 @@ char *agcanonStr(char *str)
 }
 
 static int _write_canonstr(Agraph_t *g, iochan_t *ofile, char *str, bool chk) {
-    if (chk) {
-	str = agcanonStr(str);
-    } else {
-	char *buffer = getoutputbuffer(str);
-	if (buffer == NULL)
-	    return EOF;
-	str = _agstrcanon(str, buffer);
+
+    // maximum bytes required for canonicalized string
+    const size_t required = agstrcanon_bytes(str);
+
+    // allocate space to stage the canonicalized string
+    char *const scratch = malloc(required);
+    if (scratch == NULL) {
+	return EOF;
     }
-    return ioput(g, ofile, str);
+
+    char *const canonicalized =
+      chk ? agstrcanon(str, scratch) : _agstrcanon(str, scratch);
+    const int rc = ioput(g, ofile, canonicalized);
+    free(scratch);
+    return rc;
 }
 
 /// @param known Is `str` already known to be a reference-counted string?
