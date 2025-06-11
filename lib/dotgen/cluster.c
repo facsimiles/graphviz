@@ -158,16 +158,14 @@ static void make_interclust_chain(node_t * from, node_t * to, edge_t * orig) {
  */
 static void interclexp(graph_t * subg)
 {
-    graph_t *g;
-    node_t *n;
-    edge_t *e, *prev, *next;
+    edge_t *next;
 
-    g = dot_root(subg);
-    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
+    graph_t *const g = dot_root(subg);
+    for (node_t *n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 
 	/* N.B. n may be in a sub-cluster of subg */
-	prev = NULL;
-	for (e = agfstedge(g, n); e; e = next) {
+	edge_t *prev = NULL;
+	for (edge_t *e = agfstedge(g, n); e; e = next) {
 	    next = agnxtedge(g, e, n);
 	    if (agcontains(subg, e))
 		continue;
@@ -209,15 +207,8 @@ static void interclexp(graph_t * subg)
 	    }
 
 	    /* backward edges */
-	    else {
-/*
-I think that make_interclust_chain should create call other_edge(e) anyway 
-				if (agcontains(subg,agtail(e))
-					&& agfindedge(g,aghead(e),agtail(e))) other_edge(e);
-*/
-		make_interclust_chain(aghead(e), agtail(e), e);
-		prev = e;
-	    }
+	    make_interclust_chain(aghead(e), agtail(e), e);
+	    prev = e;
 	}
     }
 }
