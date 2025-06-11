@@ -1429,7 +1429,7 @@ static void flat_reorder(graph_t * g)
 		flat_e = ND_flat_out(v).list[j];
 		if (constraining_flat_edge(g, flat_e)) local_out_cnt++;
 	    }
-	    if ((local_in_cnt == 0) && (local_out_cnt == 0))
+	    if (local_in_cnt == 0 && local_out_cnt == 0)
 		nodes_append(&temprank, v);
 	    else {
 		if (!MARK(v) && local_in_cnt == 0) {
@@ -1452,8 +1452,8 @@ static void flat_reorder(graph_t * g)
 		v = GD_rank(g)[r].v[i];
 		if (ND_flat_out(v).list) {
 		    for (size_t j = 0; (e = ND_flat_out(v).list[j]); j++) {
-			if ( (!GD_flip(g) && ND_order(aghead(e)) < ND_order(agtail(e))) ||
-				 ( (GD_flip(g)) && (ND_order(aghead(e)) > ND_order(agtail(e)) ))) {
+			if ((!GD_flip(g) && ND_order(aghead(e)) < ND_order(agtail(e))) ||
+				  (GD_flip(g) && ND_order(aghead(e)) > ND_order(agtail(e)))) {
 			    assert(!constraining_flat_edge(g, e));
 			    delete_flat_edge(e);
 			    j--;
