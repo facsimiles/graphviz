@@ -2881,8 +2881,10 @@ def test_2242():
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.skipif(
-    platform.system() == "Windows" and not is_mingw(),
-    reason="string literal in 2331.c is too large to be handled by MSVC",
+    platform.system() == "Windows"
+    and which("dot") is not None
+    and is_asan_instrumented(which("dot")),
+    reason="ASan runs out of memory in its internal pool on Windows",
 )
 def test_2331(tmp_path: Path):
     """
