@@ -81,8 +81,6 @@ static node_t *pop(node_stack_t *sp) {
  */
 static void search_component(node_stack_t *stk, graph_t *g, node_t *n) {
     node_t *other;
-    edge_t *e;
-    edge_t **ep;
 
     push(stk, n);
     while ((n = pop(stk))) {
@@ -92,9 +90,8 @@ static void search_component(node_stack_t *stk, graph_t *g, node_t *n) {
 
 	for (size_t c = 0; c < sizeof(vec) / sizeof(vec[0]); ++c) {
 	    if (vec[c].list && vec[c].size != 0) {
-		size_t i;
-		for (i = vec[c].size - 1, ep = vec[c].list + i; i != SIZE_MAX; i--, ep--) {
-		    e = *ep;
+		for (size_t i = vec[c].size - 1; i != SIZE_MAX; i--) {
+		  edge_t *const e = vec[c].list[i];
 		    if ((other = aghead(e)) == n)
 			other = agtail(e);
 		    if (ND_mark(other) != Cmark && other == UF_find(other))
