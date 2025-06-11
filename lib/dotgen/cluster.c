@@ -190,7 +190,9 @@ static void interclexp(graph_t * subg)
 	    if (ND_rank(agtail(e)) == ND_rank(aghead(e))) {
 		edge_t* fe;
 		if ((fe = find_flat_edge(agtail(e), aghead(e))) == NULL) {
-		    flat_edge(g, e);
+		    if (!ED_to_virt(e)) {
+		        flat_edge(g, e);
+		    }
 		    prev = e;
 		} else if (e != fe) {
 		    safe_other_edge(e);

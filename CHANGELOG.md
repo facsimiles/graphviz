@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (13.0.2)]
 
+### Fixed
+
+- Inter-cluster edges are no longer spuriously duplicated. #162, #258, #2615
+
 ## [13.0.1] – 2025-06-15
 
 ### Changed
