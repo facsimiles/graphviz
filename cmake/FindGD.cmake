@@ -55,12 +55,9 @@ if(GD_LIBRARY)
   if(GDLIB_CONFIG)
     message(STATUS "Found gdlib-config: ${GDLIB_CONFIG}")
     execute_process(COMMAND ${GDLIB_CONFIG} --features
-                    RESULT_VARIABLE GDLIB_CONFIG_EXIT_STATUS
                     OUTPUT_VARIABLE GD_FEATURES
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(NOT GDLIB_CONFIG_EXIT_STATUS EQUAL 0)
-      message(FATAL_ERROR "Failed to query GD features")
-    endif()
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    COMMAND_ERROR_IS_FATAL ANY)
     message(STATUS "Detected GD features: ${GD_FEATURES}")
     string(REPLACE " " ";" GD_FEATURES_LIST ${GD_FEATURES})
     if("GD_PNG" IN_LIST GD_FEATURES_LIST)

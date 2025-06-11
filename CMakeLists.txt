@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 project(Graphviz)
 
 include(FeatureSummary)
@@ -257,7 +257,7 @@ endif()
 
 if(NOT ENABLE_TCL STREQUAL "OFF")
   if(WIN32 AND NOT MINGW)
-    FIND_PROGRAM(TCL_RUNTIME_LIBRARY NAMES tcl86t.dll)
+    find_program(TCL_RUNTIME_LIBRARY NAMES tcl86t.dll)
     set(TCL_RUNTIME_LIBRARIES ${TCL_RUNTIME_LIBRARY})
   endif()
   find_package(TCL)
@@ -544,15 +544,10 @@ else()
   execute_process(
     COMMAND           ${Python3_EXECUTABLE} gen_version.py
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    RESULT_VARIABLE   gen_version_result
     OUTPUT_VARIABLE   GRAPHVIZ_VERSION_STRING
-    ERROR_VARIABLE    gen_version_error
     OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_STRIP_TRAILING_WHITESPACE
+    COMMAND_ERROR_IS_FATAL ANY
   )
-  if(NOT gen_version_result EQUAL 0)
-    message(FATAL_ERROR "Failed to set version: ${gen_version_error}")
-  endif()
 endif()
 
 # Set GRAPHVIZ_VERSION_BUILD to time of last commit, or to 0 if that fails.
@@ -560,15 +555,10 @@ execute_process(
   COMMAND           ${Python3_EXECUTABLE}
                     gen_version.py --committer-date-graphviz
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  RESULT_VARIABLE   gen_date_result
   OUTPUT_VARIABLE   GRAPHVIZ_VERSION_BUILD
-  ERROR_VARIABLE    gen_date_error
   OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_STRIP_TRAILING_WHITESPACE
+  COMMAND_ERROR_IS_FATAL ANY
 )
-if(NOT gen_date_result EQUAL 0)
-  message(FATAL_ERROR "Failed to set date: ${gen_date_error}")
-endif()
 
 string(REGEX REPLACE "\\..*"
   "" GRAPHVIZ_VERSION_MAJOR
@@ -610,7 +600,7 @@ add_custom_target(uninstall
 
 # =========================== Compiler configuration ===========================
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_STANDARD 17)

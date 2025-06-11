@@ -150,13 +150,13 @@ def compile_c(
 
         # construct an invocation of MSVC
         args = (
-            ["cl", "/std:c11", src, "-Fe:", dst, "-nologo", rtflag] + cflags + ldflags
+            ["cl", "/std:c17", src, "-Fe:", dst, "-nologo", rtflag] + cflags + ldflags
         )
 
     else:
         # construct an invocation of the default C compiler
         cc = os.environ.get("CC", "cc")
-        args = [cc, "-std=c11", src, "-o", dst] + cflags + ldflags
+        args = [cc, "-std=c17", src, "-o", dst] + cflags + ldflags
 
     # compile the program
     try:

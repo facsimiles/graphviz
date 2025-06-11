@@ -122,7 +122,7 @@ static bool pango_textlayout(textspan_t * span, char **fontpath)
 	    fnt = fontname;
 
 	desc = pango_font_description_from_string(fnt);
-        /* all text layout is done at a scale of FONT_DPI (nominaly 96.) */
+        // all text layout is done at a scale of FONT_DPI (nominally 96.)
         pango_font_description_set_size (desc, (int)(fontsize * PANGO_SCALE));
 
         if (fontpath && (font = pango_font_map_load_font(fontmap, context, desc))) {  /* -v support */
