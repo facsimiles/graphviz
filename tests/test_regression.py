@@ -2896,7 +2896,7 @@ def test_2331(tmp_path: Path):
     c_src = (Path(__file__).parent / "2331.c").resolve()
     assert c_src.exists(), "missing test case"
 
-    # From here, we essentially want to `run_c([c_src], …)`. However we cannot easily do
+    # From here, we essentially want to `run_c(c_src, …)`. However we cannot easily do
     # this because we want to directly link against plugins (instead of `dlopen` them),
     # libraries that are not in the linker’s search path. So instead we have to take a
     # more manual approach.
@@ -5583,7 +5583,7 @@ def test_2648(tmp_path: Path):
     c_src = (Path(__file__).parent / "2648.c").resolve()
     assert c_src.exists(), "missing test case"
 
-    # From here, we essentially want to `run_c([c_src], …)`. However we cannot easily do
+    # From here, we essentially want to `run_c(c_src, …)`. However we cannot easily do
     # this because we want to directly link against plugins (instead of `dlopen` them),
     # libraries that are not in the linker’s search path. So instead we have to take a
     # more manual approach.
