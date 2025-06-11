@@ -2907,7 +2907,7 @@ def test_2331(tmp_path: Path):
     dot_layout = _find_plugin_so("dot_layout")
     assert dot_layout is not None, "dot layout plugin library not found"
 
-    ## compile the test code
+    # compile the test code
     exe = tmp_path / "a.exe"
     compile_c(c_src, link=["cgraph", "gvc", core, dot_layout], dst=exe)
 
@@ -5594,7 +5594,7 @@ def test_2648(tmp_path: Path):
     dot_layout = _find_plugin_so("dot_layout")
     assert dot_layout is not None, "dot layout plugin library not found"
 
-    ## compile the test code
+    # compile the test code
     exe = tmp_path / "a.exe"
     compile_c(c_src, link=["cgraph", "gvc", core, dot_layout], dst=exe)
 
