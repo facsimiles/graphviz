@@ -205,7 +205,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - In the CMake build system, configuring with
   `-DENABLE_PYTHON=ON -DENABLE_SWIG=ON` no longer spuriously fails. #2675
 - An assertion failure when processing graphs with empty ranks has been fixed.
-  #1541
+  #1514
 - Using GVPR to set a default attribute on a subgraph whose root graph has no
   default for that attribute no longer incorrectly sets the default on the root
   graph. #2639
