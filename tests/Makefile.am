@@ -2,4 +2,4 @@
 
 SUBDIRS = graphs linux.x86 regression_tests
 
-EXTRA_DIST = graphs nshare test_rtest.py tests.txt test_regression.py
+EXTRA_DIST = graphs gvtest.py nshare test_rtest.py tests.txt test_regression.py
