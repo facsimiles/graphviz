@@ -45,7 +45,6 @@ void GetOGLPosRef(int x, int y, float *X, float *Y) {
 }
 
 float GetOGLDistance(float l) {
-    double wwinX;
     double wwinY;
     double wwinZ;
     double posX, posY, posZ;
@@ -66,7 +65,7 @@ float GetOGLDistance(float l) {
     glBegin(GL_POINTS);
     glVertex3f(10.0f, 10.0f, 1.0f);
     glEnd();
-    gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
+    gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &(double){0},
 	       &wwinY, &wwinZ);
     float x = 50.0f;
     const float y = 50.0f;
