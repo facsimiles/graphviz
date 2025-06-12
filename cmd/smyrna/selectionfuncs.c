@@ -158,7 +158,7 @@ void pick_object_xyz(Agraph_t *g, topview *t, float x, float y, float z) {
     if(agobjkind(a)==AGNODE)
     {
 	select_node(g,a,1);	
-	ND_printLabel((Agnode_t*)a) = 1;
+	ND_printLabel(a) = 1;
 
 	cacheSelectedNodes(g,t);
 
