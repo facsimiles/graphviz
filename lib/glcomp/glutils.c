@@ -125,10 +125,7 @@ void to3D(int x, int y, float *X, float *Y, float *Z) {
 
 static glCompPoint sub(glCompPoint p, glCompPoint q)
 {
-    p.x -= q.x;
-    p.y -= q.y;
-    p.z -= q.z;
-    return p;
+    return (glCompPoint){.x = p.x - q.x, .y = p.y - q.y, .z = p.z - q.z};
 }
 
 static double dot(glCompPoint p, glCompPoint q)
