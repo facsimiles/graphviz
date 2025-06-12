@@ -94,7 +94,6 @@ void to3D(int x, int y, float *X, float *Y, float *Z) {
     int32_t viewport[4];
     double modelview[16];
     double projection[16];
-    float winX, winY;
     float winZ[400];
     double posX, posY, posZ;
     int idx;
@@ -103,8 +102,8 @@ void to3D(int x, int y, float *X, float *Y, float *Z) {
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    winX = (float) x;
-    winY = (float) viewport[3] - (float) y;
+    const double winX = x;
+    const double winY = (double)viewport[3] - y;
 
     glReadPixels(x - WIDTH / 2, (int) winY - WIDTH / 2, WIDTH, WIDTH,
 		 GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
