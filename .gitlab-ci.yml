@@ -1528,18 +1528,24 @@ lint_html:
       - job_execution_timeout
 
 lint_python:
+  image: "$CI_REGISTRY_IMAGE/ubuntu-24.04:$CI_COMMIT_SHA"
   stage: test
-  needs: [] # no dependencies
+  needs:
+    - job: "ubuntu-24.04-build"
+      artifacts: true
+  tags:
+    - saas-linux-small-amd64
+  before_script:
+    - export build_system="autotools"
   script:
-    - env DEBIAN_FRONTEND=noninteractive apt-get update -y
-    - env DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y python3-venv
+    # grant virtualenv access to system-installed `gv` package
+    - echo 'include-system-site-packages = true' >> /opt/virtualenv/pyvenv.cfg
+    - source /opt/virtualenv/bin/activate
+    - ci/install-packages.sh
     # output some info into the logs for debugging
     - python3 --version
     - cat /etc/os-release
     - uname -rms
-    - python3 -m venv /opt/virtualenv
-    - source /opt/virtualenv/bin/activate
-    - python3 -m pip install --requirement requirements.txt
     - python3 -m pip install --requirement doc/infosrc/requirements.txt
     - git ls-files -z -- cmd/dot/dot_sandbox '**.py' | xargs -0 -- python3 -m pylint --rcfile=.pylintrc --disable=fixme
     - git ls-files -z -- cmd/dot/dot_sandbox '**.py' | xargs -0 -- python3 -m black --check
