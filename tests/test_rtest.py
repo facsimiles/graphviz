@@ -14,6 +14,7 @@ import re
 import shutil
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
@@ -25,24 +26,15 @@ OUTDIR = Path("ndata")  # Directory for test output
 OUTHTML = Path("nhtml")  # Directory for html test report
 
 
+@dataclass
 class Case:
-    """
-    test case struct
-    """
+    """test case struct"""
 
-    def __init__(
-        self,
-        name: str,
-        input: Path,
-        algorithm: str,
-        format: str,
-        flags: list[str],
-    ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self.name = name
-        self.input = input
-        self.algorithm = algorithm
-        self.format = format
-        self.flags = flags[:]
+    name: str
+    input: Path
+    algorithm: str
+    format: str
+    flags: list[str]
 
 
 TESTS: list[Case] = [
