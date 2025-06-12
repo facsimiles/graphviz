@@ -1870,7 +1870,7 @@ def test_1909():
     output = run(["gvpr", "-c", "-f", prog, graph])
 
     # we should have produced this graph without names like "%2" in it
-    assert output == "// begin\n" "digraph bug {\n" "	a -> b;\n" "	b -> c;\n" "}\n"
+    assert re.search(r"%\d+\b", output) is None
 
 
 @pytest.mark.skipif(
@@ -3869,9 +3869,6 @@ def test_2429():
 
 
 @pytest.mark.skipif(which("nop") is None, reason="nop not available")
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2436"
-)
 def test_2436():
     """
     nop should preserve empty labels
@@ -3890,13 +3887,13 @@ def test_2436():
     assert re.search(r'\blabel\s*=\s*""', output), "empty label was not preserved"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2434"
+@pytest.mark.skipif(
+    is_static_build(),
+    reason="dynamic libraries are unavailable to link against in static builds",
 )
 def test_2434():
     """
-    the order in which `agmemread` and `gvContext` calls are made should have
-    no impact
+    the order in which `agmemread` and `gvContext` calls are made should have no impact
     https://gitlab.com/graphviz/graphviz/-/issues/2434
     """
 
@@ -4831,7 +4828,7 @@ def test_2593():
 )
 @pytest.mark.xfail(
     is_autotools() and is_fedora_42(),
-    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42",
     strict=True,
 )
 @pytest.mark.xfail(
@@ -5766,7 +5763,7 @@ def test_import_tcl_package(package: str):
 )
 @pytest.mark.xfail(
     is_autotools() and is_fedora_42(),
-    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42",
     strict=True,
 )
 @pytest.mark.xfail(
@@ -5830,7 +5827,7 @@ def test_triangulation_overflow():
 )
 @pytest.mark.xfail(
     is_autotools() and is_fedora_42(),
-    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42",
     strict=True,
 )
 @pytest.mark.xfail(
@@ -5892,7 +5889,7 @@ def test_vgpane_bad_triangulation():
 )
 @pytest.mark.xfail(
     is_autotools() and is_fedora_42(),
-    reason="'vgpane' command is unrecognized on Autotools+Fedora42 fails for unknown reasons",
+    reason="'vgpane' command is unrecognized on Autotools+Fedora42",
     strict=True,
 )
 @pytest.mark.xfail(

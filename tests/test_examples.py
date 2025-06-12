@@ -114,7 +114,9 @@ def test_gvpr_clustg():
 
     assert (
         output.strip() == 'strict digraph "clust%1" {\n'
-        "\tnode [_cnt=0];\n"
+        "\tnode [_cnt=0,\n"
+        '\t\tlabel="\\N"\n'
+        "\t];\n"
         "\tedge [_cnt=0];\n"
         "\tN1 -> N2\t[_cnt=1];\n"
         "\tN3;\n"

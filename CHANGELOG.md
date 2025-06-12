@@ -11,10 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When using the CMake build system, the minimum required version of CMake has
   been upgraded 3.14.1 → 3.21.
 - Building Graphviz from source now requires a C compiler with ISO C17 support.
+- Processing a graph with GVPR now makes explicit the default `"\N"` label for
+  nodes.
 
 ### Fixed
 
 - Graphs with large weights no longer trigger double `free`s. #1494, #2331
+- `nop` preserves empty string labels. #2436
+- The order of programmatic calls to `gvContext`/`gvContextPlugin` and
+  `agmemread` no longer affects default node labels. #2434
 
 ## [13.0.0] – 2025-06-08
 
