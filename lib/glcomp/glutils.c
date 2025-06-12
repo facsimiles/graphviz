@@ -63,7 +63,7 @@ float GetOGLDistance(float l) {
     glBegin(GL_POINTS);
     glVertex3f(10.0f, 10.0f, 1.0f);
     glEnd();
-    gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &(double){0},
+    gluProject(10.0, 10.0, 1.0, modelview, projection, viewport, &(double){0},
                &(double){0}, &wwinZ);
     float x = 50.0f;
     const float y = 50.0f;
