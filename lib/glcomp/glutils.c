@@ -47,7 +47,7 @@ void GetOGLPosRef(int x, int y, float *X, float *Y) {
 float GetOGLDistance(float l) {
     double wwinZ;
     double posX;
-    double posXX, posZZ;
+    double posXX;
 
     int32_t viewport[4];
     double modelview[16];
@@ -75,7 +75,7 @@ float GetOGLDistance(float l) {
     winX = x;
     winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport,
-                 &posXX, &(double){0}, &posZZ);
+                 &posXX, &(double){0}, &(double){0});
     return ((float) (posXX - posX));
 }
 
