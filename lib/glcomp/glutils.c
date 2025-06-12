@@ -76,7 +76,7 @@ float GetOGLDistance(float l) {
     winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport,
                  &posXX, &(double){0}, &(double){0});
-    return ((float) (posXX - posX));
+    return (float)(posXX - posX);
 }
 
 /*
