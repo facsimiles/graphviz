@@ -119,7 +119,6 @@ void to3D(int x, int y, float *X, float *Y, float *Z) {
     *X = (float)posX;
     *Y = (float)posY;
     *Z = (float)posZ;
-    return;
 }
 
 #include <math.h>
