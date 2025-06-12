@@ -152,8 +152,7 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
 
 void pick_object_xyz(Agraph_t *g, topview *t, float x, float y, float z) {
     const glCompPoint p = {.x = x, .y = y, .z = z};
-    void* a;
-    a=pick_object(g,p);
+    void *const a = pick_object(g, p);
     if (!a)
 	return;
     if(agobjkind(a)==AGNODE)
