@@ -92,7 +92,9 @@ def compile_c(
 
     # enable most warnings
     if platform.system() == "Windows" and not is_mingw():
-        cflags = ["/Wall"] + cflags
+        # C5045 warns about opportunities for Spectre mitigations that we do not care
+        # about in test code, so disable it
+        cflags = ["/Wall", "/wd5045"] + cflags
     else:
         cflags = ["-Wall", "-Wextra"] + cflags
 
