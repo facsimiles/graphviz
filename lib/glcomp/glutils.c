@@ -25,7 +25,6 @@ int GetOGLPosRef(int x, int y, float *X, float *Y) {
     int32_t viewport[4];
     double modelview[16];
     double projection[16];
-    float winX, winY;
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -38,8 +37,8 @@ int GetOGLPosRef(int x, int y, float *X, float *Y) {
     glEnd();
     gluProject(-100.0, -100.0, 0.00, modelview, projection, viewport,
 	       &wwinX, &wwinY, &wwinZ);
-    winX = (float) x;
-    winY = (float) viewport[3] - (float) y;
+    const double winX = x;
+    const double winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
 		 &posY, &posZ);
 
