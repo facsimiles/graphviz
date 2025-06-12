@@ -84,7 +84,7 @@ float GetOGLDistance(float l) {
 
 /*
 	functions def: returns opengl coordinates of first hit object by using screen coordinates
-	x,y; 2D screen coordiantes (usually received from mouse events
+	x,y; 2D screen coordinates (usually received from mouse events
 	X,Y,Z; pointers to coordinates values to be calculated
 	return value: no return value
 
