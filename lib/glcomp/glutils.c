@@ -52,7 +52,6 @@ float GetOGLDistance(float l) {
     int32_t viewport[4];
     double modelview[16];
     double projection[16];
-    float winX, winY;
 
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
@@ -68,13 +67,13 @@ float GetOGLDistance(float l) {
                &(double){0}, &wwinZ);
     float x = 50.0f;
     const float y = 50.0f;
-    winX = x;
-    winY = (float) viewport[3] - y;
+    double winX = x;
+    double winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
 		 &posY, &posZ);
     x += l;
     winX = x;
-    winY = (float) viewport[3] - y;
+    winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport,
 		 &posXX, &posYY, &posZZ);
     return ((float) (posXX - posX));
