@@ -30,7 +30,7 @@ int GetOGLPosRef(int x, int y, float *X, float *Y) {
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    //draw a point  to a not important location to get window coordinates
+    // draw a point to an unimportant location to get window coordinates
     glColor4f(0.0f, 0.0f, 0.0f, 0.001f);
 
     glBegin(GL_POINTS);
