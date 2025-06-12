@@ -10,7 +10,9 @@ import json
 from json2html import json2html
 
 
-def main():  # pylint: disable=missing-function-docstring
+def main():
+    """entry point"""
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=argparse.FileType("rt"), help="Input file")
     parser.add_argument("output", type=argparse.FileType("wt"), help="Output file")

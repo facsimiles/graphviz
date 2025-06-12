@@ -10,7 +10,9 @@ from pathlib import Path
 from typing import List
 
 
-def main(args: List[str]) -> int:  # pylint: disable=C0116
+def main(args: List[str]) -> int:
+    """entry point"""
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--file",

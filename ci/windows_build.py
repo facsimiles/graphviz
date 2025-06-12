@@ -11,7 +11,9 @@ from pathlib import Path
 from typing import TextIO, Union
 
 
-def run(args: list[Union[str, Path]], cwd: Path, out: TextIO):  # pylint: disable=C0116
+def run(args: list[Union[str, Path]], cwd: Path, out: TextIO):
+    """run a command, echoing it beforehand"""
+
     print(f"+ {shlex.join(str(x) for x in args)}")
     p = subprocess.run(
         args,
@@ -26,7 +28,9 @@ def run(args: list[Union[str, Path]], cwd: Path, out: TextIO):  # pylint: disabl
     p.check_returncode()
 
 
-def main(args: list[str]) -> int:  # pylint: disable=C0116
+def main(args: list[str]) -> int:
+    """entry point"""
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--build-shared-libs",

@@ -114,7 +114,9 @@ def get_format(path: Path) -> str:
     return path.suffix[1:].lower()
 
 
-def main() -> int:  # pylint: disable=missing-function-docstring
+def main() -> int:
+    """entry point"""
+
     # setup logging to print to stderr
     global log
     ch = logging.StreamHandler()
