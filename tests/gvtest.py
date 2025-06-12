@@ -92,9 +92,11 @@ def compile_c(
 
     # enable most warnings
     if platform.system() == "Windows" and not is_mingw():
-        # C5045 warns about opportunities for Spectre mitigations that we do not care
-        # about in test code, so disable it
-        cflags = ["/Wall", "/wd5045"] + cflags
+        # disable:
+        #   • C4820: warns about padding introduced at the end of a struct
+        #   • C5045: warns about opportunities for Spectre mitigations
+        # We do not care about these in test code.
+        cflags = ["/Wall", "/wd4820", "/wd5045"] + cflags
     else:
         cflags = ["-Wall", "-Wextra"] + cflags
 
