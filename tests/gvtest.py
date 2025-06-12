@@ -153,8 +153,11 @@ def compile_c(
         rtflag = "-MDd" if os.environ.get("configuration") == "Debug" else "-MD"
 
         # construct an invocation of MSVC
+        cl = Path(__file__).parent / "cl.py"
         args = (
-            ["cl", "/std:c17", src, "-Fe:", dst, "-nologo", rtflag] + cflags + ldflags
+            [sys.executable, cl, "/std:c17", src, "-Fe:", dst, "-nologo", rtflag]
+            + cflags
+            + ldflags
         )
 
     else:

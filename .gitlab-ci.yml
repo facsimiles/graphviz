@@ -177,13 +177,6 @@ portable-source:
         - if (-not $?) { throw "command failed" }
         - python -m pip install --requirement requirements.txt
         - if (-not $?) { throw "command failed" }
-        # Toolchain definitions
-        - if($Env:project_platform -eq "x64") {
-            $TARGET_ARCH = "x64";
-          }
-          else {
-            $TARGET_ARCH = "x86";
-          }
         # Retrieve submodules, dependencies are stored there.
         - git submodule update --init --depth 1
         - if (-not $?) { throw "command failed" }
@@ -208,14 +201,6 @@ portable-source:
                 $API = "win32";
             }
         # Test
-        # Set up VCTools variables and import into PowerShell environment
-        - cmd.exe /c "call `"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat`" $TARGET_ARCH && set > %temp%\vcvars.txt";
-        - >-
-            Get-Content "$Env:temp\vcvars.txt" | Foreach-Object {
-              if ($_ -match "^([A-Za-z0-9_()]*)=(.*)$") {
-                Set-Content "env:\$($matches[1])" $matches[2];
-              }
-            }
         - cd build
         - $FILENAME = & invoke-Expression "Get-ChildItem Graphviz*.exe"
         - mv $FILENAME graphviz-install.exe
@@ -228,7 +213,7 @@ portable-source:
         - mv graphviz-install.exe graphviz-install-$Env:GV_VERSION-$API.exe
         - $Env:Path = $Env:graphviz_install_dir + "\bin" + ";" + $Env:Path
         - cd ..
-        - $Env:INCLUDE += ";C:\Graphviz\include"
+        - $Env:CFLAGS += " -IC:\Graphviz\include"
         - $Env:LIB += ";C:\Graphviz\lib"
         - $Env:graphviz_ROOT="C:\Graphviz"
         - python -m pytest -m "not slow" --junit-xml=report.xml ci/tests.py tests
