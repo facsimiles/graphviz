@@ -7,7 +7,7 @@ author: Michael Hohn <mhhohn@lbl.gov>
  based on: modgraph.tcl by John Ellson <ellson@research.att.com>
 """
 
-import gv  # pylint: disable=import-error
+import gv
 
 with open("/proc/modules", "rt", encoding="utf-8") as mod:
     modules = mod.readlines()
