@@ -17,7 +17,6 @@
 
 /*transforms 2d windows location to 3d gl coords but depth is calculated unlike the previous function*/
 int GetOGLPosRef(int x, int y, float *X, float *Y) {
-    double wwinX;
     double wwinY;
     double wwinZ;
     double posX, posY, posZ;
@@ -36,7 +35,7 @@ int GetOGLPosRef(int x, int y, float *X, float *Y) {
     glVertex3f(-100.0f, -100.0f, 0.0f);
     glEnd();
     gluProject(-100.0, -100.0, 0.00, modelview, projection, viewport,
-	       &wwinX, &wwinY, &wwinZ);
+               &(double){0}, &wwinY, &wwinZ);
     const double winX = x;
     const double winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
