@@ -241,7 +241,7 @@ void glCompCalcWidget(glCompCommon * parent, glCompCommon * child,
     case glAlignNone:
 	break;
     }
-    if (child->align == glAlignNone)	// No alignment , chekc anchors
+    if (child->align == glAlignNone)	// No alignment, check anchors
     {
 	ref->pos.x = parent->refPos.x + child->pos.x + borderWidth;
 	ref->pos.y = parent->refPos.y + child->pos.y + borderWidth;
