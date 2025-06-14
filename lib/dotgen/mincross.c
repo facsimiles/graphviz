@@ -35,8 +35,50 @@
 struct adjmatrix_t {
   size_t nrows;
   size_t ncols;
-  char *data;
+  uint8_t *data;    ///< bit-packed backing memory
+  size_t allocated; ///< how many bytes have been allocated backing `data`?
 };
+
+/// get the value of a matrix cell
+///
+/// @param me Matrix to inspect
+/// @param row Row coordinate
+/// @param col Column coordinate
+/// @return True if the given cell was set
+static bool matrix_get(adjmatrix_t *me, size_t row, size_t col) {
+  assert(me != NULL);
+
+  // if this index is beyond anything set, infer it as unset
+  const size_t index = row * me->ncols + col;
+  const size_t byte_index = index / 8;
+  const size_t bit_index = index % 8;
+  if (byte_index >= me->allocated) {
+    return false;
+  }
+
+  return (me->data[byte_index] >> bit_index) & 1;
+}
+
+/// set the value of a matrix cell to true
+///
+/// @param me Matrix to update
+/// @param row Row coordinate
+/// @param col Column coordinate
+static void matrix_set(adjmatrix_t *me, size_t row, size_t col) {
+  assert(me != NULL);
+
+  // if we are updating beyond allocated space, expand the backing store
+  const size_t index = row * me->ncols + col;
+  const size_t byte_index = index / 8;
+  const size_t bit_index = index % 8;
+  if (byte_index >= me->allocated) {
+    me->data = gv_recalloc(me->data, me->allocated, byte_index + 1,
+                           sizeof(me->data[0]));
+    me->allocated = byte_index + 1;
+  }
+
+  me->data[byte_index] |= (uint8_t)(UINT8_C(1) << bit_index);
+}
 
 /* #define DEBUG */
 #define MARK(v)		(ND_mark(v))
@@ -411,7 +453,6 @@ static adjmatrix_t *new_matrix(size_t i, size_t j) {
     adjmatrix_t *rv = gv_alloc(sizeof(adjmatrix_t));
     rv->nrows = i;
     rv->ncols = j;
-    rv->data = gv_calloc(i * j, sizeof(char));
     return rv;
 }
 
@@ -422,8 +463,6 @@ static void free_matrix(adjmatrix_t * p)
 	free(p);
     }
 }
-
-#define ELT(M,i,j)		(M->data[((i)*M->ncols)+(j)])
 
 static void init_mccomp(graph_t *g, size_t c) {
     int r;
@@ -571,8 +610,6 @@ static int64_t mincross_clust(graph_t *g, ints_t *scratch) {
 }
 
 static bool left2right(graph_t *g, node_t *v, node_t *w) {
-    adjmatrix_t *M;
-
     /* CLUSTER indicates orig nodes of clusters, and vnodes of skeletons */
     if (!ReMincross) {
 	if (ND_clust(v) != ND_clust(w) && ND_clust(v) && ND_clust(w)) {
@@ -587,13 +624,13 @@ static bool left2right(graph_t *g, node_t *v, node_t *w) {
 	if (ND_clust(v) != ND_clust(w))
 	    return true;
     }
-    M = GD_rank(g)[ND_rank(v)].flat;
+    adjmatrix_t *const M = GD_rank(g)[ND_rank(v)].flat;
     if (M == NULL)
 	return false;
     if (GD_flip(g)) {
 	SWAP(&v, &w);
     }
-    return ELT(M, flatindex(v), flatindex(w)) != 0;
+    return matrix_get(M, (size_t)flatindex(v), (size_t)flatindex(w));
 }
 
 static int64_t in_cross(node_t *v, node_t *w) {
@@ -1109,7 +1146,7 @@ static void flat_search(graph_t * g, node_t * v)
 	    if (ND_onstack(aghead(e))) {
 		assert(flatindex(aghead(e)) < M->nrows);
 		assert(flatindex(agtail(e)) < M->ncols);
-		ELT(M, flatindex(aghead(e)), flatindex(agtail(e))) = 1;
+		matrix_set(M, (size_t)flatindex(aghead(e)), (size_t)flatindex(agtail(e)));
 		delete_flat_edge(e);
 		i--;
 		if (ED_edge_type(e) == FLATORDER)
@@ -1118,7 +1155,7 @@ static void flat_search(graph_t * g, node_t * v)
 	    } else {
 		assert(flatindex(aghead(e)) < M->nrows);
 		assert(flatindex(agtail(e)) < M->ncols);
-		ELT(M, flatindex(agtail(e)), flatindex(aghead(e))) = 1;
+		matrix_set(M, (size_t)flatindex(agtail(e)), (size_t)flatindex(aghead(e)));
 		if (!ND_mark(aghead(e)))
 		    flat_search(g, aghead(e));
 	    }
@@ -1128,20 +1165,20 @@ static void flat_search(graph_t * g, node_t * v)
 
 static void flat_breakcycles(graph_t * g)
 {
-    int i, r, flat;
+    int i, r;
     node_t *v;
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	flat = 0;
+	bool flat = false;
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
 	    v = GD_rank(g)[r].v[i];
 	    ND_mark(v) = false;
 	    ND_onstack(v) = false;
 	    ND_low(v) = i;
-	    if (ND_flat_out(v).size > 0 && flat == 0) {
+	    if (ND_flat_out(v).size > 0 && !flat) {
 		GD_rank(g)[r].flat =
 		    new_matrix((size_t)GD_rank(g)[r].n, (size_t)GD_rank(g)[r].n);
-		flat = 1;
+		flat = true;
 	    }
 	}
 	if (flat) {

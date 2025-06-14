@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `nop` preserves empty string labels. #2436
 - The order of programmatic calls to `gvContext`/`gvContextPlugin` and
   `agmemread` no longer affects default node labels. #2434
+- Adjacency matrices are sparse and expanded on demand, removing out-of-bounds
+  accesses when computing these for some graphs. #1472
 
 ## [13.0.0] – 2025-06-08
 
