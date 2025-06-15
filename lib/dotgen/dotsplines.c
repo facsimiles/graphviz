@@ -402,10 +402,9 @@ static int dot_splines_(graph_t *g, int normalize) {
       makeStraightEdges(g, edgelist, cnt, et, &sinfo);
       free(edgelist);
     } else if (agtail(e0) == aghead(e0)) {
-      int r;
       double sizey;
       n = agtail(e0);
-      r = ND_rank(n);
+      const int r = ND_rank(n);
       if (r == GD_maxrank(g)) {
         if (r > 0)
           sizey = ND_coord(GD_rank(g)[r - 1].v[0]).y - ND_coord(n).y;
