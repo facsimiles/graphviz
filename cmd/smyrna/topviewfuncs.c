@@ -836,10 +836,8 @@ void initSmGraph(Agraph_t * g,topview* rv)
 
 void renderSmGraph(topview* t)
 {
-    /*
-	we like to have blending affect where node and edge  overlap
-	to achive this depth test should be turned off.
-    */
+    // We would like to have blending affect where node and edge overlap. To
+    // achieve this, depth test should be turned off.
 
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_DEPTH_TEST);

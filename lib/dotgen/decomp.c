@@ -80,26 +80,18 @@ static node_t *pop(node_stack_t *sp) {
  * so we use mark = Cmark+1 to indicate nodes on the stack.
  */
 static void search_component(node_stack_t *stk, graph_t *g, node_t *n) {
-    int c;
-    elist vec[4];
     node_t *other;
-    edge_t *e;
-    edge_t **ep;
 
     push(stk, n);
     while ((n = pop(stk))) {
 	if (ND_mark(n) == Cmark) continue;
 	add_to_component(g, n);
-	vec[0] = ND_out(n);
-	vec[1] = ND_in(n);
-	vec[2] = ND_flat_out(n);
-	vec[3] = ND_flat_in(n);
+	elist vec[] = {ND_flat_in(n), ND_flat_out(n), ND_in(n), ND_out(n)};
 
-	for (c = 3; c >= 0; c--) {
+	for (size_t c = 0; c < sizeof(vec) / sizeof(vec[0]); ++c) {
 	    if (vec[c].list && vec[c].size != 0) {
-		size_t i;
-		for (i = vec[c].size - 1, ep = vec[c].list + i; i != SIZE_MAX; i--, ep--) {
-		    e = *ep;
+		for (size_t i = vec[c].size - 1; i != SIZE_MAX; i--) {
+		  edge_t *const e = vec[c].list[i];
 		    if ((other = aghead(e)) == n)
 			other = agtail(e);
 		    if (ND_mark(other) != Cmark && other == UF_find(other))

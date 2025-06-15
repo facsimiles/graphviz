@@ -221,9 +221,6 @@ def test_146():
     ), "alpha=0 color set to something non-transparent"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/162"
-)
 def test_162():
     """
     `minlen=0` should not duplicate edges
@@ -399,9 +396,6 @@ def test_241(test_case: str):
     ), "splines setting caused warnings"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/258"
-)
 def test_258():
     """
     cluster edges should not be duplicated
@@ -5092,9 +5086,6 @@ def test_2614():
     assert canonical.count('\\"') == 2, "quotes in string were not properly escaped"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2615"
-)
 def test_2615():
     """
     cluster→cluster edges should not be duplicated
