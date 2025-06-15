@@ -1471,7 +1471,7 @@ static void make_flat_labeled_edge(graph_t *g, const spline_info_t sp, path *P,
     free(ps);
 }
 
-static void make_flat_bottom_edges(graph_t *g, spline_info_t *sp, path *P,
+static void make_flat_bottom_edges(graph_t *g, const spline_info_t sp, path *P,
                                    edge_t **edges, unsigned ind, unsigned cnt,
                                    edge_t *e, bool use_splines) {
   node_t *tn, *hn;
@@ -1490,11 +1490,11 @@ static void make_flat_bottom_edges(graph_t *g, spline_info_t *sp, path *P,
   } else {
     vspace = GD_ranksep(g);
   }
-  stepx = sp->Multisep / (cnt + 1);
+  stepx = sp.Multisep / (cnt + 1);
   stepy = vspace / (cnt + 1);
 
-  makeBottomFlatEnd(g, *sp, P, tn, e, &tend, true);
-  makeBottomFlatEnd(g, *sp, P, hn, e, &hend, false);
+  makeBottomFlatEnd(g, sp, P, tn, e, &tend, true);
+  makeBottomFlatEnd(g, sp, P, hn, e, &hend, false);
 
   for (unsigned i = 0; i < cnt; i++) {
     boxf b;
@@ -1600,7 +1600,8 @@ static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
   tside = ED_tail_port(e).side;
   hside = ED_head_port(e).side;
   if ((tside == BOTTOM && hside != TOP) || (hside == BOTTOM && tside != TOP)) {
-    make_flat_bottom_edges(g, sp, P, edges, ind, cnt, e, et == EDGETYPE_SPLINE);
+    make_flat_bottom_edges(g, *sp, P, edges, ind, cnt, e,
+                           et == EDGETYPE_SPLINE);
     return 0;
   }
 
