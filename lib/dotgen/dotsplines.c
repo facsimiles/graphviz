@@ -236,7 +236,7 @@ static void setEdgeLabelPos(graph_t *g) {
  * @return 0 on success
  */
 static int dot_splines_(graph_t *g, int normalize) {
-  int i, j, k, n_nodes;
+  int i, j, n_nodes;
   node_t *n;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
@@ -301,7 +301,7 @@ static int dot_splines_(graph_t *g, int normalize) {
       }
       if (ND_node_type(n) != NORMAL && !sinfo.splineMerge(n))
         continue;
-      for (k = 0; (e = ND_out(n).list[k]); k++) {
+      for (int k = 0; (e = ND_out(n).list[k]); k++) {
         if (ED_edge_type(e) == FLATORDER || ED_edge_type(e) == IGNORED)
           continue;
         setflags(e, REGULAREDGE, FWDEDGE, MAINGRAPH);
@@ -310,7 +310,7 @@ static int dot_splines_(graph_t *g, int normalize) {
           GROWEDGES;
       }
       if (ND_flat_out(n).list)
-        for (k = 0; (e = ND_flat_out(n).list[k]); k++) {
+        for (int k = 0; (e = ND_flat_out(n).list[k]); k++) {
           setflags(e, FLATEDGE, 0, AUXGRAPH);
           edges[n_edges++] = e;
           if (n_edges % CHUNK == 0)
@@ -325,7 +325,7 @@ static int dot_splines_(graph_t *g, int normalize) {
         if (ND_node_type(n) == NORMAL) {
           SWAP(&ND_rw(n), &ND_mval(n));
         }
-        for (k = 0; (e = ND_other(n).list[k]); k++) {
+        for (int k = 0; (e = ND_other(n).list[k]); k++) {
           setflags(e, 0, 0, AUXGRAPH);
           edges[n_edges++] = e;
           if (n_edges % CHUNK == 0)
