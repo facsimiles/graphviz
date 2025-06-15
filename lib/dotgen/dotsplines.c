@@ -1336,11 +1336,9 @@ static int make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned ind,
   return 0;
 }
 
-static void makeFlatEnd(graph_t *g, spline_info_t *sp, path *P, node_t *n,
+static void makeFlatEnd(graph_t *g, const spline_info_t sp, path *P, node_t *n,
                         edge_t *e, pathend_t *endp, bool isBegin) {
-  boxf b;
-
-  b = endp->nb = maximal_bbox(g, *sp, n, NULL, e);
+  boxf b = endp->nb = maximal_bbox(g, sp, n, NULL, e);
   endp->sidemask = TOP;
   if (isBegin)
     beginpath(P, e, FLATEDGE, endp, false);
@@ -1413,8 +1411,8 @@ static void make_flat_labeled_edge(graph_t *g, spline_info_t *sp, path *P,
     ydelta /= 6;
     lb.LL.y = lb.UR.y - MAX(5, ydelta);
 
-    makeFlatEnd(g, sp, P, tn, e, &tend, true);
-    makeFlatEnd(g, sp, P, hn, e, &hend, false);
+    makeFlatEnd(g, *sp, P, tn, e, &tend, true);
+    makeFlatEnd(g, *sp, P, hn, e, &hend, false);
 
     boxf boxes[] = {
         {
@@ -1624,8 +1622,8 @@ static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
   stepx = sp->Multisep / (cnt + 1);
   stepy = vspace / (cnt + 1);
 
-  makeFlatEnd(g, sp, P, tn, e, &tend, true);
-  makeFlatEnd(g, sp, P, hn, e, &hend, false);
+  makeFlatEnd(g, *sp, P, tn, e, &tend, true);
+  makeFlatEnd(g, *sp, P, hn, e, &hend, false);
 
   for (unsigned i = 0; i < cnt; i++) {
     boxf b;
