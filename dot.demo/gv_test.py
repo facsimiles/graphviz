@@ -4,7 +4,7 @@
 example usage of Graphviz Python module
 """
 
-import gv  # pylint: disable=import-error
+import gv
 
 g = gv.digraph("G")
 n = gv.node(g, "hello")
