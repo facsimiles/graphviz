@@ -255,6 +255,7 @@ static int dot_splines_(graph_t *g, int normalize) {
                  "xlabels\n");
     }
   }
+  spline_info_t sd = {0};
 #ifdef ORTHO
   if (et == EDGETYPE_ORTHO) {
     resetRW(g);
@@ -272,8 +273,8 @@ static int dot_splines_(graph_t *g, int normalize) {
   mark_lowclusters(g);
   if (routesplinesinit())
     return 0;
-  spline_info_t sd = {.Splinesep = GD_nodesep(g) / 4,
-                      .Multisep = GD_nodesep(g)};
+  sd = (spline_info_t){.Splinesep = GD_nodesep(g) / 4,
+                       .Multisep = GD_nodesep(g)};
   edges = gv_calloc(CHUNK, sizeof(edge_t *));
 
   /* compute boundaries and list of splines */
@@ -477,9 +478,7 @@ finish:
 #endif
     routesplinesterm();
   }
-  if (et != EDGETYPE_CURVED) {
-    free(sd.Rank_box);
-  }
+  free(sd.Rank_box);
   free(edges);
   free(P.boxes);
   State = GVSPLINES;
