@@ -92,7 +92,11 @@ def compile_c(
 
     # enable most warnings
     if platform.system() == "Windows" and not is_mingw():
-        cflags = ["/Wall"] + cflags
+        # disable:
+        #   • C4820: warns about padding introduced at the end of a struct
+        #   • C5045: warns about opportunities for Spectre mitigations
+        # We do not care about these in test code.
+        cflags = ["/Wall", "/wd4820", "/wd5045"] + cflags
     else:
         cflags = ["-Wall", "-Wextra"] + cflags
 
@@ -149,8 +153,11 @@ def compile_c(
         rtflag = "-MDd" if os.environ.get("configuration") == "Debug" else "-MD"
 
         # construct an invocation of MSVC
+        cl = Path(__file__).parent / "cl.py"
         args = (
-            ["cl", "/std:c17", src, "-Fe:", dst, "-nologo", rtflag] + cflags + ldflags
+            [sys.executable, cl, "/std:c17", src, "-Fe:", dst, "-nologo", rtflag]
+            + cflags
+            + ldflags
         )
 
     else:

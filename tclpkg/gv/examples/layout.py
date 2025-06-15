@@ -7,7 +7,9 @@ example usage of the Graphviz Python module
 import gv  # pylint: disable=import-error
 
 
-def main():  # pylint: disable=missing-function-docstring
+def main():
+    """entry point"""
+
     # create a new empty graph
     G = gv.digraph("G")
     # define a simple graph ( A->B )

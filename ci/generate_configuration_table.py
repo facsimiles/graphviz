@@ -11,7 +11,9 @@ import sys
 from argparse import ArgumentParser
 
 
-def main():  # pylint: disable=missing-function-docstring
+def main():
+    """entry point"""
+
     parser = ArgumentParser(
         description="Generate a table of the Graphviz compile "
         "configuration for different platforms from files "

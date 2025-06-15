@@ -12,7 +12,9 @@ from pathlib import Path
 log = None
 
 
-def main(args: list[str]) -> int:  # pylint: disable=C0116
+def main(args: list[str]) -> int:
+    """entry point"""
+
     # setup logging to print to stderr
     global log
     ch = logging.StreamHandler()
