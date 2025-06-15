@@ -994,7 +994,6 @@ static void selfRight(edge_t *edges[], size_t ind, size_t cnt, double stepx,
     pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    pointf points[1000];
 
     e = edges[ind];
     n = agtail(e);
@@ -1029,14 +1028,15 @@ static void selfRight(edge_t *edges[], size_t ind, size_t cnt, double stepx,
         tx += stepx;
         hx += stepx;
         dy += sgn * stepy;
-        size_t pointn = 0;
-        points[pointn++] = tp;
-        points[pointn++] = (pointf){tp.x + tx / 3, tp.y + dy};
-        points[pointn++] = (pointf){np.x + dx, tp.y + dy};
-        points[pointn++] = (pointf){np.x + dx, (tp.y + hp.y) / 2};
-        points[pointn++] = (pointf){np.x + dx, hp.y - dy};
-        points[pointn++] = (pointf){hp.x + hx / 3, hp.y - dy};
-        points[pointn++] = hp;
+        pointf points[] = {
+	    tp,
+	    {tp.x + tx / 3, tp.y + dy},
+	    {np.x + dx, tp.y + dy},
+	    {np.x + dx, (tp.y + hp.y) / 2},
+	    {np.x + dx, hp.y - dy},
+	    {hp.x + hx / 3, hp.y - dy},
+	    hp,
+        };
         if (ED_label(e)) {
 	    if (GD_flip(agraphof(agtail(e)))) {
 		width = ED_label(e)->dimen.y;
@@ -1049,6 +1049,7 @@ static void selfRight(edge_t *edges[], size_t ind, size_t cnt, double stepx,
 	    if (width > stepx)
 		dx += width - stepx;
         }
+        const size_t pointn = sizeof(points) / sizeof(points[0]);
 	clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
