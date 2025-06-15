@@ -322,7 +322,6 @@ conc_slope(node_t* n)
 {
     double s_in, s_out, m_in, m_out;
     int cnt_in, cnt_out;
-    pointf p;
     edge_t *e;
 
     s_in = s_out = 0.0;
@@ -330,12 +329,12 @@ conc_slope(node_t* n)
 	s_in += ND_coord(agtail(e)).x;
     for (cnt_out = 0; (e = ND_out(n).list[cnt_out]); cnt_out++)
 	s_out += ND_coord(aghead(e)).x;
-    p.x = ND_coord(n).x - (s_in / cnt_in);
-    p.y = ND_coord(n).y - ND_coord(agtail(ND_in(n).list[0])).y;
-    m_in = atan2(p.y, p.x);
-    p.x = s_out / cnt_out - ND_coord(n).x;
-    p.y = ND_coord(aghead(ND_out(n).list[0])).y - ND_coord(n).y;
-    m_out = atan2(p.y, p.x);
+    const double x1 = ND_coord(n).x - s_in / cnt_in;
+    const double y1 = ND_coord(n).y - ND_coord(agtail(ND_in(n).list[0])).y;
+    m_in = atan2(y1, x1);
+    const double x2 = s_out / cnt_out - ND_coord(n).x;
+    const double y2 = ND_coord(aghead(ND_out(n).list[0])).y - ND_coord(n).y;
+    m_out = atan2(y2, x2);
     return (m_in + m_out) / 2.0;
 }
 
