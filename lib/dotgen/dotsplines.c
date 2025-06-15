@@ -475,8 +475,10 @@ finish:
 #else
   if (et != EDGETYPE_CURVED) {
 #endif
-    free(sd.Rank_box);
     routesplinesterm();
+  }
+  if (et != EDGETYPE_CURVED) {
+    free(sd.Rank_box);
   }
   free(edges);
   free(P.boxes);
