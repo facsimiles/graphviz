@@ -2073,13 +2073,10 @@ static void adjustregularpath(path *P, size_t fb, size_t lb) {
 }
 
 static boxf rank_box(spline_info_t *sp, graph_t *g, int r) {
-  boxf b;
-  node_t *left0, *left1;
-
-  b = sp->Rank_box[r];
+  boxf b = sp->Rank_box[r];
   if (b.LL.x == b.UR.x) {
-    left0 = GD_rank(g)[r].v[0];
-    left1 = GD_rank(g)[r + 1].v[0];
+    node_t *const left0 = GD_rank(g)[r].v[0];
+    node_t *const left1 = GD_rank(g)[r + 1].v[0];
     b.LL.x = sp->LeftBound;
     b.LL.y = ND_coord(left1).y + GD_rank(g)[r + 1].ht2;
     b.UR.x = sp->RightBound;
