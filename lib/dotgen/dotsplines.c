@@ -1368,7 +1368,7 @@ static void makeBottomFlatEnd(graph_t *g, spline_info_t *sp, path *P, node_t *n,
     endp->boxes[endp->boxn++] = b;
 }
 
-static void make_flat_labeled_edge(graph_t *g, spline_info_t *sp, path *P,
+static void make_flat_labeled_edge(graph_t *g, const spline_info_t sp, path *P,
                                    edge_t *e, int et) {
   node_t *tn, *hn, *ln;
   pointf *ps;
@@ -1411,8 +1411,8 @@ static void make_flat_labeled_edge(graph_t *g, spline_info_t *sp, path *P,
     ydelta /= 6;
     lb.LL.y = lb.UR.y - MAX(5, ydelta);
 
-    makeFlatEnd(g, *sp, P, tn, e, &tend, true);
-    makeFlatEnd(g, *sp, P, hn, e, &hend, false);
+    makeFlatEnd(g, sp, P, tn, e, &tend, true);
+    makeFlatEnd(g, sp, P, hn, e, &hend, false);
 
     boxf boxes[] = {
         {
@@ -1589,7 +1589,7 @@ static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
     return make_flat_adj_edges(g, edges, ind, cnt, e, et);
   }
   if (ED_label(e)) { /* edges with labels aren't multi-edges */
-    make_flat_labeled_edge(g, sp, P, e, et);
+    make_flat_labeled_edge(g, *sp, P, e, et);
     return 0;
   }
 
