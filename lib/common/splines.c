@@ -239,18 +239,14 @@ void
 clip_and_install(edge_t *fe, node_t *hn, pointf *ps, size_t pn,
 		 splineInfo * info)
 {
-    pointf p2;
-    bezier *newspl;
-    node_t *tn;
     int clipTail, clipHead;
     size_t start, end;
-    graph_t *g;
     edge_t *orig;
     boxf *tbox, *hbox;
 
-    tn = agtail(fe);
-    g = agraphof(tn);
-    newspl = new_spline(fe, pn);
+    node_t *tn = agtail(fe);
+    graph_t *const g = agraphof(tn);
+    bezier *const newspl = new_spline(fe, pn);
 
     for (orig = fe; ED_to_orig(orig) != NULL && ED_edge_type(orig) != NORMAL;
          orig = ED_to_orig(orig));
@@ -276,8 +272,8 @@ clip_and_install(edge_t *fe, node_t *hn, pointf *ps, size_t pn,
     if(clipTail && ND_shape(tn) && ND_shape(tn)->fns->insidefn) {
 	inside_t inside_context = {.s = {.n = tn, .bp = tbox}};
 	for (start = 0; start < pn - 4; start += 3) {
-	    p2.x = ps[start + 3].x - ND_coord(tn).x;
-	    p2.y = ps[start + 3].y - ND_coord(tn).y;
+	    const pointf p2 = {.x = ps[start + 3].x - ND_coord(tn).x,
+	                       .y = ps[start + 3].y - ND_coord(tn).y};
 	    if (!ND_shape(tn)->fns->insidefn(&inside_context, p2))
 		break;
 	}
@@ -287,8 +283,8 @@ clip_and_install(edge_t *fe, node_t *hn, pointf *ps, size_t pn,
     if(clipHead && ND_shape(hn) && ND_shape(hn)->fns->insidefn) {
 	inside_t inside_context = {.s = {.n = hn, .bp = hbox}};
 	for (end = pn - 4; end > 0; end -= 3) {
-	    p2.x = ps[end].x - ND_coord(hn).x;
-	    p2.y = ps[end].y - ND_coord(hn).y;
+	    const pointf p2 = {.x = ps[end].x - ND_coord(hn).x,
+	                       .y = ps[end].y - ND_coord(hn).y};
 	    if (!ND_shape(hn)->fns->insidefn(&inside_context, p2))
 		break;
 	}
