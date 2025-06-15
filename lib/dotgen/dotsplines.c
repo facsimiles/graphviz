@@ -427,6 +427,7 @@ static int dot_splines_(graph_t *g, int normalize) {
     } else if (ND_rank(agtail(e0)) == ND_rank(aghead(e0))) {
       const int rc = make_flat_edge(g, sd, &P, edges, ind, cnt, et);
       if (rc != 0) {
+        free(sd.Rank_box);
         return rc;
       }
     } else
