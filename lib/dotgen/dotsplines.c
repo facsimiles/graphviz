@@ -78,7 +78,7 @@ static bool cl_vninside(Agraph_t *, Agnode_t *);
 static void completeregularpath(path *, Agedge_t *, Agedge_t *, pathend_t *,
                                 pathend_t *, const boxes_t *);
 static int edgecmp(const void *, const void *);
-static int make_flat_edge(graph_t *, spline_info_t *, path *, Agedge_t **,
+static int make_flat_edge(graph_t *, const spline_info_t, path *, Agedge_t **,
                           unsigned, unsigned, int);
 static void make_regular_edge(graph_t *g, spline_info_t *, path *, Agedge_t **,
                               unsigned, unsigned, int);
@@ -424,7 +424,7 @@ static int dot_splines_(graph_t *g, int normalize) {
           updateBB(g, ED_label(e));
       }
     } else if (ND_rank(agtail(e0)) == ND_rank(aghead(e0))) {
-      const int rc = make_flat_edge(g, &sd, &P, edges, ind, cnt, et);
+      const int rc = make_flat_edge(g, sd, &P, edges, ind, cnt, et);
       if (rc != 0) {
         return rc;
       }
@@ -1555,7 +1555,7 @@ static void make_flat_bottom_edges(graph_t *g, const spline_info_t sp, path *P,
  *
  * @return 0 on success
  */
-static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
+static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
                           edge_t **edges, unsigned ind, unsigned cnt, int et) {
   node_t *tn, *hn;
   Agedgeinfo_t fwdedgei;
@@ -1588,7 +1588,7 @@ static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
     return make_flat_adj_edges(g, edges, ind, cnt, e, et);
   }
   if (ED_label(e)) { /* edges with labels aren't multi-edges */
-    make_flat_labeled_edge(g, *sp, P, e, et);
+    make_flat_labeled_edge(g, sp, P, e, et);
     return 0;
   }
 
@@ -1600,8 +1600,7 @@ static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
   tside = ED_tail_port(e).side;
   hside = ED_head_port(e).side;
   if ((tside == BOTTOM && hside != TOP) || (hside == BOTTOM && tside != TOP)) {
-    make_flat_bottom_edges(g, *sp, P, edges, ind, cnt, e,
-                           et == EDGETYPE_SPLINE);
+    make_flat_bottom_edges(g, sp, P, edges, ind, cnt, e, et == EDGETYPE_SPLINE);
     return 0;
   }
 
@@ -1619,11 +1618,11 @@ static int make_flat_edge(graph_t *g, spline_info_t *sp, path *P,
   } else {
     vspace = GD_ranksep(g);
   }
-  stepx = sp->Multisep / (cnt + 1);
+  stepx = sp.Multisep / (cnt + 1);
   stepy = vspace / (cnt + 1);
 
-  makeFlatEnd(g, *sp, P, tn, e, &tend, true);
-  makeFlatEnd(g, *sp, P, hn, e, &hend, false);
+  makeFlatEnd(g, sp, P, tn, e, &tend, true);
+  makeFlatEnd(g, sp, P, hn, e, &hend, false);
 
   for (unsigned i = 0; i < cnt; i++) {
     boxf b;
