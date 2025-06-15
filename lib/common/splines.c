@@ -887,7 +887,6 @@ static void selfTop(edge_t *edges[], size_t ind, size_t cnt, double sizex,
     pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    pointf points[1000];
 
     e = edges[ind];
     n = agtail(e);
@@ -958,14 +957,15 @@ static void selfTop(edge_t *edges[], size_t ind, size_t cnt, double sizex,
         ty += stepy;
         hy += stepy;
         dx += sgn * stepx;
-        size_t pointn = 0;
-        points[pointn++] = tp;
-        points[pointn++] = (pointf){tp.x + dx, tp.y + ty / 3};
-        points[pointn++] = (pointf){tp.x + dx, np.y + dy};
-        points[pointn++] = (pointf){(tp.x + hp.x) / 2, np.y + dy};
-        points[pointn++] = (pointf){hp.x - dx, np.y + dy};
-        points[pointn++] = (pointf){hp.x - dx, hp.y + hy / 3};
-        points[pointn++] = hp;
+        pointf points[] = {
+	    tp,
+	    {tp.x + dx, tp.y + ty / 3},
+	    {tp.x + dx, np.y + dy},
+	    {(tp.x + hp.x) / 2, np.y + dy},
+	    {hp.x - dx, np.y + dy},
+	    {hp.x - dx, hp.y + hy / 3},
+	    hp,
+        };
         if (ED_label(e)) {
 	    if (GD_flip(agraphof(agtail(e)))) {
 		height = ED_label(e)->dimen.x;
@@ -978,6 +978,7 @@ static void selfTop(edge_t *edges[], size_t ind, size_t cnt, double sizex,
 	    if (height > stepy)
 		dy += height - stepy;
         }
+        const size_t pointn = sizeof(points) / sizeof(points[0]);
        clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
