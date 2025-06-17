@@ -63,7 +63,7 @@ cleanup1(graph_t * g)
              * handle it a second time. For example, parallel multiedges
              * share a virtual edge.
              */
-            if (f && (e != ED_to_orig(f))) {
+            if (f && e != ED_to_orig(f)) {
                 ED_to_virt(e) = NULL;
             }
         }
