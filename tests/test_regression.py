@@ -2881,8 +2881,10 @@ def test_2242():
     reason="dynamic libraries are unavailable to link against in static builds",
 )
 @pytest.mark.skipif(
-    platform.system() == "Windows" and not is_mingw(),
-    reason="string literal in 2331.c is too large to be handled by MSVC",
+    platform.system() == "Windows"
+    and which("dot") is not None
+    and is_asan_instrumented(which("dot")),
+    reason="ASan runs out of memory in its internal pool on Windows",
 )
 def test_2331(tmp_path: Path):
     """
@@ -2894,7 +2896,7 @@ def test_2331(tmp_path: Path):
     c_src = (Path(__file__).parent / "2331.c").resolve()
     assert c_src.exists(), "missing test case"
 
-    # From here, we essentially want to `run_c([c_src], …)`. However we cannot easily do
+    # From here, we essentially want to `run_c(c_src, …)`. However we cannot easily do
     # this because we want to directly link against plugins (instead of `dlopen` them),
     # libraries that are not in the linker’s search path. So instead we have to take a
     # more manual approach.
@@ -2905,7 +2907,7 @@ def test_2331(tmp_path: Path):
     dot_layout = _find_plugin_so("dot_layout")
     assert dot_layout is not None, "dot layout plugin library not found"
 
-    ## compile the test code
+    # compile the test code
     exe = tmp_path / "a.exe"
     compile_c(c_src, link=["cgraph", "gvc", core, dot_layout], dst=exe)
 
@@ -5581,7 +5583,7 @@ def test_2648(tmp_path: Path):
     c_src = (Path(__file__).parent / "2648.c").resolve()
     assert c_src.exists(), "missing test case"
 
-    # From here, we essentially want to `run_c([c_src], …)`. However we cannot easily do
+    # From here, we essentially want to `run_c(c_src, …)`. However we cannot easily do
     # this because we want to directly link against plugins (instead of `dlopen` them),
     # libraries that are not in the linker’s search path. So instead we have to take a
     # more manual approach.
@@ -5592,7 +5594,7 @@ def test_2648(tmp_path: Path):
     dot_layout = _find_plugin_so("dot_layout")
     assert dot_layout is not None, "dot layout plugin library not found"
 
-    ## compile the test code
+    # compile the test code
     exe = tmp_path / "a.exe"
     compile_c(c_src, link=["cgraph", "gvc", core, dot_layout], dst=exe)
 
