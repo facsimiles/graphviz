@@ -3355,9 +3355,6 @@ def test_2272_2():
     assert p.returncode == 1, "dot crashed"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2278"
-)
 def test_2278():
     """
     the shortcut for setting ubiquitous properties should work as expected
@@ -6124,7 +6121,7 @@ def test_gvpr_printf(statement: str, expected: str):
 
 
 usage_info = """\
-Usage: dot [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>
+Usage: dot [-Vv?] [-(GNEA)name=val] [-(KTlso)<val>] <dot files>
 (additional options for neato)    [-x] [-n<v>]
 (additional options for fdp)      [-L(gO)] [-L(nUCT)<val>]
 (additional options for config)  [-cv]
@@ -6134,6 +6131,7 @@ Usage: dot [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>
  -Gname=val  - Set graph attribute 'name' to 'val'
  -Nname=val  - Set node attribute 'name' to 'val'
  -Ename=val  - Set edge attribute 'name' to 'val'
+ -Aname=val  - Set attribute 'name' to 'val' for graph, node, and edge
  -Tv         - Set output format to 'v'
  -Kv         - Set layout engine to 'v' (overrides default based on command name)
  -lv         - Use external library 'v'
