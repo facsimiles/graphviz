@@ -112,9 +112,8 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
     glCompPoint posH;
     glCompPoint posN;
     int defaultNodeShape;
-    float dist = FLT_MAX;
+    double dist = DBL_MAX;
     float nd; // node distance to point
-    float ed; // edge distance to point
     float nodeSize=0;
     void *rv = NULL;
 
@@ -143,7 +142,7 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
 	{
 	    posT = ED_posTail(e);
 	    posH = ED_posHead(e);
-	    ed=point_to_lineseg_dist(p, posT,posH);
+	    const double ed = point_to_lineseg_dist(p, posT, posH);
 	    if( ed < dist ) {rv=e;dist=ed;}
 	}
     }
