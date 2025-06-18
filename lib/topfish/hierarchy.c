@@ -753,26 +753,15 @@ void
 set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci,
     levelparms_t* parms)
 {
-    int n, i;
-    int *nodes;
-    double *distances;
-    ex_vtx_data *graph;
-    int level;
-    int group_size;
-    int thresh;
-    int vtx;
-    ex_vtx_data *cgraph;
-    int *cv2v;
-    int v, u;
     int min_level = 0;
 
-    graph = hierarchy->geom_graphs[min_level];	// finest graph
-    n = hierarchy->nvtxs[min_level];
+    ex_vtx_data *graph = hierarchy->geom_graphs[min_level]; // finest graph
+    int n = hierarchy->nvtxs[min_level];
 
     // compute distances from foci nodes
-    nodes = gv_calloc(n, sizeof(int));
-    distances = gv_calloc(n, sizeof(double));
-    for (i = 0; i < n; i++) {
+    int *nodes = gv_calloc(n, sizeof(int));
+    double *distances = gv_calloc(n, sizeof(double));
+    for (int i = 0; i < n; i++) {
 	nodes[i] = i;
 	distances[i] = dist_from_foci(graph, i, foci_nodes, num_foci);
     }
@@ -784,11 +773,11 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci,
      * The sizes of the buckets is a geometric series with 
      * factor: 'coarsening_rate'
      */
-    level = min_level;
-    group_size = parms->num_fine_nodes * num_foci;
-    thresh = group_size;
-    for (i = 0; i < n; i++) {
-	vtx = nodes[i];
+    int level = min_level;
+    int group_size = parms->num_fine_nodes * num_foci;
+    int thresh = group_size;
+    for (int i = 0; i < n; i++) {
+	const int vtx = nodes[i];
 	if (i > thresh && level < hierarchy->nlevels - 1) {
 	    level++;
 	    group_size = (int) (group_size * parms->coarsening_rate);
@@ -805,13 +794,13 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci,
     // and 'v' are merged, than the active level of '{u,v}' will be 
     // the minimum of the active levels of 'u' and 'v'
     for (level = min_level + 1; level < hierarchy->nlevels; level++) {
-	cgraph = hierarchy->geom_graphs[level];
+	ex_vtx_data *const cgraph = hierarchy->geom_graphs[level];
 	graph = hierarchy->geom_graphs[level - 1];
-	cv2v = hierarchy->cv2v[level];
+	const int *const cv2v = hierarchy->cv2v[level];
 	n = hierarchy->nvtxs[level];
-	for (i = 0; i < n; i++) {
-	    v = cv2v[2 * i];
-	    u = cv2v[2 * i + 1];
+	for (int i = 0; i < n; i++) {
+	    const int v = cv2v[2 * i];
+	    const int u = cv2v[2 * i + 1];
 	    if (u >= 0) {	// cv is decomposed from 2 fine nodes
 		if (graph[v].active_level < level
 		    || graph[u].active_level < level) {
@@ -836,17 +825,17 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci,
     //----------------------
     // Propagate final levels all the way to fine nodes
     for (level = hierarchy->nlevels - 1; level > 0; level--) {
-	cgraph = hierarchy->geom_graphs[level];
+	ex_vtx_data *const cgraph = hierarchy->geom_graphs[level];
 	graph = hierarchy->geom_graphs[level - 1];
-	cv2v = hierarchy->cv2v[level];
+	const int *const cv2v = hierarchy->cv2v[level];
 	n = hierarchy->nvtxs[level];
-	for (i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) {
 	    if (cgraph[i].active_level < level) {
 		continue;
 	    }
 	    // active level has been already reached, copy level to children
-	    v = cv2v[2 * i];
-	    u = cv2v[2 * i + 1];
+	    const int v = cv2v[2 * i];
+	    const int u = cv2v[2 * i + 1];
 	    graph[v].active_level = cgraph[i].active_level;
 	    if (u >= 0) {
 		graph[u].active_level = cgraph[i].active_level;
