@@ -3355,6 +3355,33 @@ def test_2272_2():
     assert p.returncode == 1, "dot crashed"
 
 
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2278"
+)
+def test_2278():
+    """
+    the shortcut for setting ubiquitous properties should work as expected
+    https://gitlab.com/graphviz/graphviz/-/issues/2278
+    """
+
+    # a simple graph that will involve fonts
+    graph = 'digraph { a->b[label="hello world"]; }'
+
+    # process this, setting the default font
+    svg = run(
+        ["dot", "-Tsvg", "-Efontname=Arial", "-Gfontname=Arial", "-Nfontname=Arial"],
+        input=graph,
+    )
+
+    # the output of this should differ from the default output
+    default = dot("svg", source=graph)
+    assert svg != default, "-E/-G/-N had no effect"
+
+    # the shortcut for setting all of these should behave as expected
+    svg_a = run(["dot", "-Tsvg", "-Afontname=Arial"], input=graph)
+    assert svg == svg_a, "-A was not equivalent to -E+-G+-N"
+
+
 def test_2282():
     """
     using the `fdp` layout with JSON output should result in valid JSON
