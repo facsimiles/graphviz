@@ -106,42 +106,34 @@ static void pick_objects_in_rect(Agraph_t *g, float x1, float y1, float x2,
 
 static void* pick_object(Agraph_t* g,glCompPoint p)
 {
-    Agnode_t *v;
-    Agedge_t *e;
-    glCompPoint posT;
-    glCompPoint posH;
-    glCompPoint posN;
-    int defaultNodeShape;
     double dist = DBL_MAX;
-    float nd; // node distance to point
     float nodeSize=0;
     void *rv = NULL;
 
-    defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
+    const int defaultNodeShape = getAttrBool(g, g, "defaultnodeshape", 0);
 
     if(defaultNodeShape==0)
         nodeSize=GetOGLDistance(view->nodeScale*view->Topview->fitin_zoom/view->zoom);
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-    {
+    for (Agnode_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	if(!ND_visible(v))
 	    continue;
-	posN = ND_A(v);
+	const glCompPoint posN = ND_A(v);
 	if(defaultNodeShape==1)
 	{
 	    nodeSize = ND_size(v);
 	}
 
-	nd=distBetweenPts(posN,p,nodeSize);
+	// node distance to point
+	const float nd = distBetweenPts(posN , p, nodeSize);
 	if( nd < dist )
 	{
 	    rv=v;dist=nd;
 	}
 
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-	{
-	    posT = ED_posTail(e);
-	    posH = ED_posHead(e);
+	for (Agedge_t *e = agfstout(g, v); e; e = agnxtout(g, e)) {
+	    const glCompPoint posT = ED_posTail(e);
+	    const glCompPoint posH = ED_posHead(e);
 	    const double ed = point_to_lineseg_dist(p, posT, posH);
 	    if( ed < dist ) {rv=e;dist=ed;}
 	}
