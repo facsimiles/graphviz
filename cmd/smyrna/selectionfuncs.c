@@ -151,16 +151,14 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
 }
 
 void pick_object_xyz(Agraph_t *g, topview *t, float x, float y, float z) {
-    glCompPoint p;
-    void* a;
-    p.x=x;p.y=y;p.z=z;
-    a=pick_object(g,p);
+    const glCompPoint p = {.x = x, .y = y, .z = z};
+    void *const a = pick_object(g, p);
     if (!a)
 	return;
     if(agobjkind(a)==AGNODE)
     {
 	select_node(g,a,1);	
-	ND_printLabel((Agnode_t*)a) = 1;
+	ND_printLabel(a) = 1;
 
 	cacheSelectedNodes(g,t);
 

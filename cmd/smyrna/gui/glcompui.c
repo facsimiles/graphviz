@@ -154,18 +154,6 @@ static void CBglCompMouseUp(glCompObj *obj, float x, float y, glMouseButtonType 
     sel->base.common.pos.x = -5000;
 }
 
-static void CBglCompMouseRightClick(glCompObj *obj, float x, float y,
-			     glMouseButtonType t)
-{
-    (void)obj;
-
-    if (t == glMouseRightButton) 
-	{
-		float X, Y, Z = 0;
-		to3D((int) x, (int) y, &X, &Y, &Z);
-    }
-}
-
 static void attrList(glCompObj *obj, float x, float y, glMouseButtonType t) {
 	(void)obj;
 	(void)x;
@@ -218,7 +206,6 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompPanel *p = NULL;
     glCompButton *b = NULL;
     glCompImage *i = NULL;
-    s->base.common.callbacks.click = CBglCompMouseRightClick;
 
     p = glCompPanelNew(s, 25, 25, 45, 47);
     p->base.common.align = glAlignLeft;

@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-    int GetOGLPosRef(int x, int y, float *X, float *Y);
+void GetOGLPosRef(int x, int y, float *X, float *Y);
     float GetOGLDistance(float l);
 void to3D(int x, int y, float *X, float *Y, float *Z);
     double point_to_lineseg_dist(glCompPoint p, glCompPoint a, glCompPoint b);

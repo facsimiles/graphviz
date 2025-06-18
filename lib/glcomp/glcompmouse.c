@@ -16,7 +16,7 @@
 
 void glCompMouseInit(glCompMouse * m)
 {
-    m->functions.click = glCompClick;
+    m->functions.click = NULL;
     m->functions.draw = NULL;
     m->functions.mousedown = glCompMouseDown;
     m->functions.mouseover = glCompMouseOver;
@@ -28,13 +28,6 @@ void glCompMouseInit(glCompMouse * m)
     m->dragX = 0;
     m->dragY = 0;
     m->down = false;
-}
-
-void glCompClick(glCompObj *o, float x, float y, glMouseButtonType t) {
-    (void)o;
-    (void)x;
-    (void)y;
-    (void)t;
 }
 
 void glCompMouseDown(glCompObj *obj, float x, float y, glMouseButtonType t) {

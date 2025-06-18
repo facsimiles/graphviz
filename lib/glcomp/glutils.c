@@ -16,81 +16,72 @@
 #include <glcomp/glcompdefs.h>
 
 /*transforms 2d windows location to 3d gl coords but depth is calculated unlike the previous function*/
-int GetOGLPosRef(int x, int y, float *X, float *Y) {
-    double wwinX;
-    double wwinY;
+void GetOGLPosRef(int x, int y, float *X, float *Y) {
     double wwinZ;
-    double posX, posY, posZ;
+    double posX, posY;
 
     int32_t viewport[4];
     double modelview[16];
     double projection[16];
-    float winX, winY;
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    //draw a point  to a not important location to get window coordinates
+    // draw a point to an unimportant location to get window coordinates
     glColor4f(0.0f, 0.0f, 0.0f, 0.001f);
 
     glBegin(GL_POINTS);
     glVertex3f(-100.0f, -100.0f, 0.0f);
     glEnd();
     gluProject(-100.0, -100.0, 0.00, modelview, projection, viewport,
-	       &wwinX, &wwinY, &wwinZ);
-    winX = (float) x;
-    winY = (float) viewport[3] - (float) y;
+               &(double){0}, &(double){0}, &wwinZ);
+    const double winX = x;
+    const double winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
-		 &posY, &posZ);
+                 &posY, &(double){0}); // ignore Z that the caller does not need
 
     *X = (float) posX;
     *Y = (float) posY;
-    (void)posZ; // ignore Z that the caller does not need
-
-    return 1;
 }
 
 float GetOGLDistance(float l) {
-    double wwinX;
-    double wwinY;
     double wwinZ;
-    double posX, posY, posZ;
-    double posXX, posYY, posZZ;
+    double posX;
+    double posXX;
 
     int32_t viewport[4];
     double modelview[16];
     double projection[16];
-    float winX, winY;
 
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    //draw a point  to a not important location to get window coordinates
+    // draw a point to an unimportant location to get window coordinates
     glColor4f(0.0f, 0.0f, 0.0f, 0.001f);
 
     glBegin(GL_POINTS);
     glVertex3f(10.0f, 10.0f, 1.0f);
     glEnd();
-    gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
-	       &wwinY, &wwinZ);
+    gluProject(10.0, 10.0, 1.0, modelview, projection, viewport, &(double){0},
+               &(double){0}, &wwinZ);
     float x = 50.0f;
     const float y = 50.0f;
-    winX = x;
-    winY = (float) viewport[3] - y;
+    double winX = x;
+    double winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
-		 &posY, &posZ);
+                 &(double){0}, &(double){0});
     x += l;
     winX = x;
-    winY = (float) viewport[3] - y;
+    winY = (double)viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport,
-		 &posXX, &posYY, &posZZ);
-    return ((float) (posXX - posX));
+                 &posXX, &(double){0}, &(double){0});
+    return (float)(posXX - posX);
 }
 
 /*
-	functions def: returns opengl coordinates of firt hit object by using screen coordinates
-	x,y; 2D screen coordiantes (usually received from mouse events
+	functions def: returns opengl coordinates of first hit object by using screen coordinates
+	x,y; 2D screen coordinates (usually received from mouse events
 	X,Y,Z; pointers to coordinates values to be calculated
 	return value: no return value
 
@@ -103,7 +94,6 @@ void to3D(int x, int y, float *X, float *Y, float *Z) {
     int32_t viewport[4];
     double modelview[16];
     double projection[16];
-    float winX, winY;
     float winZ[400];
     double posX, posY, posZ;
     int idx;
@@ -112,8 +102,8 @@ void to3D(int x, int y, float *X, float *Y, float *Z) {
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    winX = (float) x;
-    winY = (float) viewport[3] - (float) y;
+    const double winX = x;
+    const double winY = (double)viewport[3] - y;
 
     glReadPixels(x - WIDTH / 2, (int) winY - WIDTH / 2, WIDTH, WIDTH,
 		 GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
@@ -129,17 +119,13 @@ void to3D(int x, int y, float *X, float *Y, float *Z) {
     *X = (float)posX;
     *Y = (float)posY;
     *Z = (float)posZ;
-    return;
 }
 
 #include <math.h>
 
 static glCompPoint sub(glCompPoint p, glCompPoint q)
 {
-    p.x -= q.x;
-    p.y -= q.y;
-    p.z -= q.z;
-    return p;
+    return (glCompPoint){.x = p.x - q.x, .y = p.y - q.y, .z = p.z - q.z};
 }
 
 static double dot(glCompPoint p, glCompPoint q)
@@ -255,7 +241,7 @@ void glCompCalcWidget(glCompCommon * parent, glCompCommon * child,
     case glAlignNone:
 	break;
     }
-    if (child->align == glAlignNone)	// No alignment , chekc anchors
+    if (child->align == glAlignNone)	// No alignment, check anchors
     {
 	ref->pos.x = parent->refPos.x + child->pos.x + borderWidth;
 	ref->pos.y = parent->refPos.y + child->pos.y + borderWidth;
