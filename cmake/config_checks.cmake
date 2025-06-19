@@ -15,16 +15,20 @@ check_function_exists( dl_iterate_phdr  HAVE_DL_ITERATE_PHDR )
 check_function_exists( drand48          HAVE_DRAND48         )
 check_function_exists( inotify_init1    HAVE_INOTIFY_INIT1   )
 check_function_exists( memrchr          HAVE_MEMRCHR         )
-if(PANGOCAIRO_FOUND AND
-   ${PANGOCAIRO_VERSION} VERSION_GREATER_EQUAL 1.4 AND
-   ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  message(STATUS "Pangocairo >= 1.4, so have pango_fc_font_lock_face")
-  set(HAVE_PANGO_FC_FONT_LOCK_FACE 1)
+if(PANGOCAIRO_FOUND)
+  if(${PANGOCAIRO_VERSION} VERSION_GREATER_EQUAL 1.4 AND
+     ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    message(STATUS "Pangocairo >= 1.4, so have pango_fc_font_lock_face")
+    set(HAVE_PANGO_FC_FONT_LOCK_FACE 1)
+  else()
+    message(
+      STATUS
+      "Pangocairo < 1.4, so do not have pango_fc_font_lock_face"
+    )
+    set(HAVE_PANGO_FC_FONT_LOCK_FACE 0)
+  endif()
 else()
-  message(
-    STATUS
-    "Pangocairo < 1.4 or not found, so do not have pango_fc_font_lock_face"
-  )
+  message(STATUS "Pangocairo not found, so do not have pango_fc_font_lock_face")
   set(HAVE_PANGO_FC_FONT_LOCK_FACE 0)
 endif()
 check_function_exists( setenv           HAVE_SETENV          )
