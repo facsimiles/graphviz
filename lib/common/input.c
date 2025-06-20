@@ -30,7 +30,7 @@
 #include <util/streq.h>
 
 static char *usageFmt =
-    "Usage: %s [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>\n";
+    "Usage: %s [-Vv?] [-(GNEA)name=val] [-(KTlso)<val>] <dot files>\n";
 
 static char *genericItems = "\n\
  -V          - Print version and exit\n\
@@ -38,6 +38,7 @@ static char *genericItems = "\n\
  -Gname=val  - Set graph attribute 'name' to 'val'\n\
  -Nname=val  - Set node attribute 'name' to 'val'\n\
  -Ename=val  - Set edge attribute 'name' to 'val'\n\
+ -Aname=val  - Set attribute 'name' to 'val' for graph, node, and edge\n\
  -Tv         - Set output format to 'v'\n\
  -Kv         - Set layout engine to 'v' (overrides default based on command name)\n\
  -lv         - Use external library 'v'\n\
@@ -295,6 +296,16 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    global_def(rest, AGEDGE);
 		else {
 		    fprintf(stderr, "Missing argument for -E flag\n");
+		    return dotneato_usage(argv[0], 1);
+		}
+		break;
+	    case 'A':
+		if (*rest) {
+		    global_def(rest, AGRAPH);
+		    global_def(rest, AGNODE);
+		    global_def(rest, AGEDGE);
+		} else {
+		    fprintf(stderr, "Missing argument for -A flag\n");
 		    return dotneato_usage(argv[0], 1);
 		}
 		break;
