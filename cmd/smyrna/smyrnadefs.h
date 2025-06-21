@@ -327,7 +327,6 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	/*labelling properties */
 	void *glutfont;
 	int labelnumberofnodes;
-	int labelshowedges;
 
 	glCompSet *widgets;	//for novice user open gl menu
 	char *initFileName;	//file name from command line
