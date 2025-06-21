@@ -131,9 +131,6 @@ enum {SCHEMACOUNT = 4}; // number of colors
     }mouse_action_t;
 
     typedef struct {
-	float x;
-	float y;
-
 	float targetx;
 	float targety;
 
