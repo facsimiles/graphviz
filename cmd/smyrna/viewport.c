@@ -141,7 +141,6 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
 	get_glut_font(atoi(get_attribute_value("labelglutfont", vi, g)));
     vi->labelnumberofnodes =
 	atoi(get_attribute_value("labelnumberofnodes", vi, g));
-    vi->labelshownodes = atoi(get_attribute_value("labelshownodes", vi, g));
     vi->labelshowedges = atoi(get_attribute_value("labelshowedges", vi, g));
     vi->colschms =
 	create_color_theme(atoi
