@@ -239,18 +239,14 @@ void
 clip_and_install(edge_t *fe, node_t *hn, pointf *ps, size_t pn,
 		 splineInfo * info)
 {
-    pointf p2;
-    bezier *newspl;
-    node_t *tn;
     int clipTail, clipHead;
     size_t start, end;
-    graph_t *g;
     edge_t *orig;
     boxf *tbox, *hbox;
 
-    tn = agtail(fe);
-    g = agraphof(tn);
-    newspl = new_spline(fe, pn);
+    node_t *tn = agtail(fe);
+    graph_t *const g = agraphof(tn);
+    bezier *const newspl = new_spline(fe, pn);
 
     for (orig = fe; ED_to_orig(orig) != NULL && ED_edge_type(orig) != NORMAL;
          orig = ED_to_orig(orig));
@@ -276,8 +272,8 @@ clip_and_install(edge_t *fe, node_t *hn, pointf *ps, size_t pn,
     if(clipTail && ND_shape(tn) && ND_shape(tn)->fns->insidefn) {
 	inside_t inside_context = {.s = {.n = tn, .bp = tbox}};
 	for (start = 0; start < pn - 4; start += 3) {
-	    p2.x = ps[start + 3].x - ND_coord(tn).x;
-	    p2.y = ps[start + 3].y - ND_coord(tn).y;
+	    const pointf p2 = {.x = ps[start + 3].x - ND_coord(tn).x,
+	                       .y = ps[start + 3].y - ND_coord(tn).y};
 	    if (!ND_shape(tn)->fns->insidefn(&inside_context, p2))
 		break;
 	}
@@ -287,8 +283,8 @@ clip_and_install(edge_t *fe, node_t *hn, pointf *ps, size_t pn,
     if(clipHead && ND_shape(hn) && ND_shape(hn)->fns->insidefn) {
 	inside_t inside_context = {.s = {.n = hn, .bp = hbox}};
 	for (end = pn - 4; end > 0; end -= 3) {
-	    p2.x = ps[end].x - ND_coord(hn).x;
-	    p2.y = ps[end].y - ND_coord(hn).y;
+	    const pointf p2 = {.x = ps[end].x - ND_coord(hn).x,
+	                       .y = ps[end].y - ND_coord(hn).y};
 	    if (!ND_shape(hn)->fns->insidefn(&inside_context, p2))
 		break;
 	}
@@ -326,7 +322,6 @@ conc_slope(node_t* n)
 {
     double s_in, s_out, m_in, m_out;
     int cnt_in, cnt_out;
-    pointf p;
     edge_t *e;
 
     s_in = s_out = 0.0;
@@ -334,12 +329,12 @@ conc_slope(node_t* n)
 	s_in += ND_coord(agtail(e)).x;
     for (cnt_out = 0; (e = ND_out(n).list[cnt_out]); cnt_out++)
 	s_out += ND_coord(aghead(e)).x;
-    p.x = ND_coord(n).x - (s_in / cnt_in);
-    p.y = ND_coord(n).y - ND_coord(agtail(ND_in(n).list[0])).y;
-    m_in = atan2(p.y, p.x);
-    p.x = s_out / cnt_out - ND_coord(n).x;
-    p.y = ND_coord(aghead(ND_out(n).list[0])).y - ND_coord(n).y;
-    m_out = atan2(p.y, p.x);
+    const double x1 = ND_coord(n).x - s_in / cnt_in;
+    const double y1 = ND_coord(n).y - ND_coord(agtail(ND_in(n).list[0])).y;
+    m_in = atan2(y1, x1);
+    const double x2 = s_out / cnt_out - ND_coord(n).x;
+    const double y2 = ND_coord(aghead(ND_out(n).list[0])).y - ND_coord(n).y;
+    m_out = atan2(y2, x2);
     return (m_in + m_out) / 2.0;
 }
 
@@ -822,7 +817,6 @@ static void selfBottom(edge_t *edges[], size_t ind, size_t cnt, double sizex,
     edge_t *e;
     int sgn, point_pair;
     double hy, ty, stepx, dx, dy, height;
-    pointf points[1000];
 
     e = edges[ind];
     n = agtail(e);
@@ -856,14 +850,15 @@ static void selfBottom(edge_t *edges[], size_t ind, size_t cnt, double sizex,
         ty += stepy;
         hy += stepy;
         dx += sgn * stepx;
-        size_t pointn = 0;
-        points[pointn++] = tp;
-        points[pointn++] = (pointf){tp.x + dx, tp.y - ty / 3};
-        points[pointn++] = (pointf){tp.x + dx, np.y - dy};
-        points[pointn++] = (pointf){(tp.x + hp.x) / 2, np.y - dy};
-        points[pointn++] = (pointf){hp.x - dx, np.y - dy};
-        points[pointn++] = (pointf){hp.x - dx, hp.y - hy / 3};
-        points[pointn++] = hp;
+        pointf points[] = {
+    	    tp,
+    	    {tp.x + dx, tp.y - ty / 3},
+    	    {tp.x + dx, np.y - dy},
+    	    {(tp.x + hp.x) / 2, np.y - dy},
+    	    {hp.x - dx, np.y - dy},
+    	    {hp.x - dx, hp.y - hy / 3},
+    	    hp
+        };
         if (ED_label(e)) {
 	if (GD_flip(agraphof(agtail(e)))) {
     	    height = ED_label(e)->dimen.x;
@@ -876,6 +871,7 @@ static void selfBottom(edge_t *edges[], size_t ind, size_t cnt, double sizex,
     	if (height > stepy)
     	    dy += height - stepy;
         }
+        const size_t pointn = sizeof(points) / sizeof(points[0]);
         clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
@@ -891,7 +887,6 @@ static void selfTop(edge_t *edges[], size_t ind, size_t cnt, double sizex,
     pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    pointf points[1000];
 
     e = edges[ind];
     n = agtail(e);
@@ -962,14 +957,15 @@ static void selfTop(edge_t *edges[], size_t ind, size_t cnt, double sizex,
         ty += stepy;
         hy += stepy;
         dx += sgn * stepx;
-        size_t pointn = 0;
-        points[pointn++] = tp;
-        points[pointn++] = (pointf){tp.x + dx, tp.y + ty / 3};
-        points[pointn++] = (pointf){tp.x + dx, np.y + dy};
-        points[pointn++] = (pointf){(tp.x + hp.x) / 2, np.y + dy};
-        points[pointn++] = (pointf){hp.x - dx, np.y + dy};
-        points[pointn++] = (pointf){hp.x - dx, hp.y + hy / 3};
-        points[pointn++] = hp;
+        pointf points[] = {
+	    tp,
+	    {tp.x + dx, tp.y + ty / 3},
+	    {tp.x + dx, np.y + dy},
+	    {(tp.x + hp.x) / 2, np.y + dy},
+	    {hp.x - dx, np.y + dy},
+	    {hp.x - dx, hp.y + hy / 3},
+	    hp,
+        };
         if (ED_label(e)) {
 	    if (GD_flip(agraphof(agtail(e)))) {
 		height = ED_label(e)->dimen.x;
@@ -982,6 +978,7 @@ static void selfTop(edge_t *edges[], size_t ind, size_t cnt, double sizex,
 	    if (height > stepy)
 		dy += height - stepy;
         }
+        const size_t pointn = sizeof(points) / sizeof(points[0]);
        clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
@@ -997,7 +994,6 @@ static void selfRight(edge_t *edges[], size_t ind, size_t cnt, double stepx,
     pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    pointf points[1000];
 
     e = edges[ind];
     n = agtail(e);
@@ -1032,14 +1028,15 @@ static void selfRight(edge_t *edges[], size_t ind, size_t cnt, double stepx,
         tx += stepx;
         hx += stepx;
         dy += sgn * stepy;
-        size_t pointn = 0;
-        points[pointn++] = tp;
-        points[pointn++] = (pointf){tp.x + tx / 3, tp.y + dy};
-        points[pointn++] = (pointf){np.x + dx, tp.y + dy};
-        points[pointn++] = (pointf){np.x + dx, (tp.y + hp.y) / 2};
-        points[pointn++] = (pointf){np.x + dx, hp.y - dy};
-        points[pointn++] = (pointf){hp.x + hx / 3, hp.y - dy};
-        points[pointn++] = hp;
+        pointf points[] = {
+	    tp,
+	    {tp.x + tx / 3, tp.y + dy},
+	    {np.x + dx, tp.y + dy},
+	    {np.x + dx, (tp.y + hp.y) / 2},
+	    {np.x + dx, hp.y - dy},
+	    {hp.x + hx / 3, hp.y - dy},
+	    hp,
+        };
         if (ED_label(e)) {
 	    if (GD_flip(agraphof(agtail(e)))) {
 		width = ED_label(e)->dimen.y;
@@ -1052,6 +1049,7 @@ static void selfRight(edge_t *edges[], size_t ind, size_t cnt, double stepx,
 	    if (width > stepx)
 		dx += width - stepx;
         }
+        const size_t pointn = sizeof(points) / sizeof(points[0]);
 	clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
@@ -1067,7 +1065,6 @@ static void selfLeft(edge_t *edges[], size_t ind, size_t cnt, double stepx,
     pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    pointf points[1000];
 
     e = edges[ind];
     n = agtail(e);
@@ -1105,15 +1102,15 @@ static void selfLeft(edge_t *edges[], size_t ind, size_t cnt, double stepx,
         tx += stepx;
         hx += stepx;
         dy += sgn * stepy;
-        size_t pointn = 0;
-        points[pointn++] = tp;
-        points[pointn++] = (pointf){tp.x - tx / 3, tp.y + dy};
-        points[pointn++] = (pointf){np.x - dx, tp.y + dy};
-        points[pointn++] = (pointf){np.x - dx, (tp.y + hp.y) / 2};
-        points[pointn++] = (pointf){np.x - dx, hp.y - dy};
-        points[pointn++] = (pointf){hp.x - hx / 3, hp.y - dy};
-
-        points[pointn++] = hp;
+        pointf points[] = {
+    	    tp,
+    	    {tp.x - tx / 3, tp.y + dy},
+    	    {np.x - dx, tp.y + dy},
+    	    {np.x - dx, (tp.y + hp.y) / 2},
+    	    {np.x - dx, hp.y - dy},
+    	    {hp.x - hx / 3, hp.y - dy},
+    	    hp,
+        };
         if (ED_label(e)) {
     	if (GD_flip(agraphof(agtail(e)))) {
     	    width = ED_label(e)->dimen.y;
@@ -1127,6 +1124,7 @@ static void selfLeft(edge_t *edges[], size_t ind, size_t cnt, double stepx,
     	    dx += width - stepx;
         }
 
+        const size_t pointn = sizeof(points) / sizeof(points[0]);
         clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
