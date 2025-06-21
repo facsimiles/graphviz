@@ -139,13 +139,6 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
 
     vi->glutfont =
 	get_glut_font(atoi(get_attribute_value("labelglutfont", vi, g)));
-    colorxlate(get_attribute_value("edgelabelcolor", vi, g), &cl,
-	       RGBA_DOUBLE);
-    vi->edgelabelcolor.R = (float)cl.u.RGBA[0];
-    vi->edgelabelcolor.G = (float)cl.u.RGBA[1];
-    vi->edgelabelcolor.B = (float)cl.u.RGBA[2];
-    vi->edgelabelcolor.A =
-	(float) atof(get_attribute_value("defaultedgealpha", vi, g));
     vi->labelnumberofnodes =
 	atoi(get_attribute_value("labelnumberofnodes", vi, g));
     vi->labelshownodes = atoi(get_attribute_value("labelshownodes", vi, g));

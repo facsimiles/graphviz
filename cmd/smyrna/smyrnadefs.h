@@ -326,7 +326,6 @@ enum {SCHEMACOUNT = 4}; // number of colors
 
 	/*labelling properties */
 	void *glutfont;
-	glCompColor edgelabelcolor;
 	int labelnumberofnodes;
 	int labelshownodes;
 	int labelshowedges;
