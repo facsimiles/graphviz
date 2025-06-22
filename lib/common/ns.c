@@ -805,25 +805,7 @@ static int decreasingrankcmpf(const node_t **x, const node_t **y) {
 }
 
 static int increasingrankcmpf(const node_t **x, const node_t **y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  node_t **n0 = (node_t **)x;
-  node_t **n1 = (node_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
-  if (ND_rank(*n0) < ND_rank(*n1)) {
-    return -1;
-  }
-  if (ND_rank(*n0) > ND_rank(*n1)) {
-    return 1;
-  }
-  return 0;
+  return -decreasingrankcmpf(x, y);
 }
 
 static void TB_balance(network_simplex_ctx_t *ctx)
