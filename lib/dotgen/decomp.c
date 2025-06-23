@@ -75,9 +75,10 @@ static node_t *pop(node_stack_t *sp) {
 /* iterative dfs for components.
  * We process the edges in reverse order of the recursive version to maintain
  * the processing order of the nodes.
- * Since are using a stack, we need to indicate nodes on the stack. Nodes unprocessed
- * in this call to decompose will have mark < Cmark; processed nodes will have mark=Cmark;
- * so we use mark = Cmark+1 to indicate nodes on the stack.
+ * Since we are using a stack, we need to indicate nodes on the stack. Nodes
+ * unprocessed in this call to decompose will have mark < Cmark; processed nodes
+ * will have mark=Cmark; so we use mark = Cmark+1 to indicate nodes on the
+ * stack.
  */
 static void search_component(node_stack_t *stk, graph_t *g, node_t *n) {
     node_t *other;
