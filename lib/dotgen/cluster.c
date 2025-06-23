@@ -58,9 +58,7 @@ static node_t*
 clone_vn(graph_t * g, node_t * vn)
 {
     node_t *rv;
-    int r;
-
-    r = ND_rank(vn);
+    const int r = ND_rank(vn);
     make_slots(g, r, ND_order(vn), 2);
     rv = virtual_node(g);
     ND_lw(rv) = ND_lw(vn);
