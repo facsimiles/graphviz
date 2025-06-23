@@ -556,12 +556,14 @@ static void remove_aux_edges(graph_t * g)
 		ND_next(nprev) = nnext;
 	    else
 		GD_nlist(g) = nnext;
+	    if (nnext != NULL) {
+		ND_prev(nnext) = nprev;
+	    }
 	    free(n->base.data);
 	    free(n);
 	} else
 	    nprev = n;
     }
-    ND_prev(GD_nlist(g)) = NULL;
 }
 
 /// Set x coords of nodes.
