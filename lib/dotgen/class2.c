@@ -45,8 +45,7 @@ incr_width(graph_t * g, node_t * v)
 }
 
 static node_t *plain_vnode(graph_t *g) {
-    node_t *v;
-    v = virtual_node(g);
+    node_t *const v = virtual_node(g);
     incr_width(g, v);
     return v;
 }
