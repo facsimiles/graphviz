@@ -13,6 +13,7 @@ import pytest
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../tests"))
 from gvtest import (  # pylint: disable=wrong-import-position
+    ROOT,
     build_system,
     dot,
     freedesktop_os_release,
@@ -151,7 +152,7 @@ def test_installation():
     check that Graphviz reports the expected version number
     """
 
-    expected_version = os.environ["GV_VERSION"]
+    expected_version = run([sys.executable, ROOT / "gen_version.py"]).strip()
 
     actual_version_string = run(["dot", "-V"], stderr=subprocess.STDOUT)
     try:
