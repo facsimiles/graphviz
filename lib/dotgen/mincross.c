@@ -1740,7 +1740,7 @@ static bool medians(graph_t * g, int r0, int r1)
     }
     for (i = 0; i < GD_rank(g)[r0].n; i++) {
 	n = v[i];
-	if ((ND_out(n).size == 0) && (ND_in(n).size == 0))
+	if (ND_out(n).size == 0 && ND_in(n).size == 0)
 	    hasfixed |= flat_mval(n);
     }
     return hasfixed;

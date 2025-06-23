@@ -407,7 +407,7 @@ void mark_lowclusters(Agraph_t * root)
 	ND_clust(n) = NULL;
 	for (orig = agfstout(root, n); orig; orig = agnxtout(root, orig)) {
 	    if ((e = ED_to_virt(orig))) {
-		while (e && (ND_node_type(vn = aghead(e))) == VIRTUAL) {
+		while (e && ND_node_type(vn = aghead(e)) == VIRTUAL) {
 		    ND_clust(vn) = NULL;
 		    e = ND_out(aghead(e)).list[0];
 		}
@@ -436,7 +436,7 @@ static void mark_lowcluster_basic(Agraph_t * g)
 	    ND_clust(n) = g;
 	for (orig = agfstout(g, n); orig; orig = agnxtout(g, orig)) {
 	    if ((e = ED_to_virt(orig))) {
-		while (e && (ND_node_type(vn = aghead(e))) == VIRTUAL) {
+		while (e && ND_node_type(vn = aghead(e)) == VIRTUAL) {
 		    if (ND_clust(vn) == NULL)
 			ND_clust(vn) = g;
 		    e = ND_out(aghead(e)).list[0];
