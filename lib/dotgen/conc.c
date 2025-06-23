@@ -115,8 +115,7 @@ static void mergevirtual(graph_t * g, int r, int lpos, int rpos, int dir)
     }
     k = lpos + 1;
     for (int i = rpos + 1; i < GD_rank(g)[r].n; ++i) {
-	node_t *n;
-	n = GD_rank(g)[r].v[k] = GD_rank(g)[r].v[i];
+	node_t *const n = GD_rank(g)[r].v[k] = GD_rank(g)[r].v[i];
 	ND_order(n) = k;
 	k++;
     }
