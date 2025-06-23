@@ -81,11 +81,32 @@ cleanup1(graph_t * g)
 
     for (size_t c = 0; c < GD_comp(g).size; c++) {
 	    GD_nlist(g) = GD_comp(g).list[c];
-	    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
+	    for (node_t *n = GD_nlist(g), *next, *prev = NULL; n; n = next) {
+	        next = ND_next(n);
 	        // out edges are owning, so only track their removal
 	        renewlist(&ND_in(n), NULL);
 	        renewlist(&ND_out(n), &to_free);
 	        ND_mark(n) = false;
+	        // If this is a slack node, it exists _only_ in the component lists
+	        // that we are about to drop. Remove and deallocate slack nodes now to
+	        // avoid leaking these.
+	        if (ND_node_type(n) == SLACKNODE) {
+                if (prev == NULL) {
+                    GD_comp(g).list[c] = next;
+                    GD_nlist(g) = next;
+                } else {
+                    ND_next(prev) = next;
+                }
+                if (next != NULL) {
+                    ND_prev(next) = prev;
+                }
+                free_list(ND_in(n));
+                free_list(ND_out(n));
+                free(n->base.data);
+                free(n);
+	        } else {
+                prev = n;
+	        }
 	    }
     }
     for (node_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
