@@ -69,16 +69,15 @@ safe_list_append(edge_t * e, elist * L)
 edge_t *fast_edge(edge_t * e)
 {
 #ifdef DEBUG
-    int i;
     edge_t *f;
-    for (i = 0; (f = ND_out(agtail(e)).list[i]); i++) {
+    for (int i = 0; (f = ND_out(agtail(e)).list[i]); i++) {
 	if (e == f) {
 	    fprintf(stderr, "duplicate fast edge\n");
 	    return 0;
 	}
 	assert(aghead(e) != aghead(f));
     }
-    for (i = 0; (f = ND_in(aghead(e)).list[i]); i++) {
+    for (int i = 0; (f = ND_in(aghead(e)).list[i]); i++) {
 	if (e == f) {
 	    fprintf(stderr, "duplicate fast edge\n");
 	    return 0;
