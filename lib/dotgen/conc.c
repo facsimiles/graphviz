@@ -75,13 +75,13 @@ static bool bothupcandidates(node_t * u, node_t * v)
 
 static void mergevirtual(graph_t * g, int r, int lpos, int rpos, int dir)
 {
-    int i, k;
+    int k;
     node_t *left, *right;
     edge_t *e, *f, *e0;
 
     left = GD_rank(g)[r].v[lpos];
     /* merge all right nodes into the leftmost one */
-    for (i = lpos + 1; i <= rpos; i++) {
+    for (int i = lpos + 1; i <= rpos; i++) {
 	right = GD_rank(g)[r].v[i];
 	if (dir == DOWN) {
 	    while ((e = ND_out(right).list[0])) {
@@ -114,13 +114,11 @@ static void mergevirtual(graph_t * g, int r, int lpos, int rpos, int dir)
 	delete_fast_node(g, right);
     }
     k = lpos + 1;
-    i = rpos + 1;
-    while (i < GD_rank(g)[r].n) {
+    for (int i = rpos + 1; i < GD_rank(g)[r].n; ++i) {
 	node_t *n;
 	n = GD_rank(g)[r].v[k] = GD_rank(g)[r].v[i];
 	ND_order(n) = k;
 	k++;
-	i++;
     }
     GD_rank(g)[r].n = k;
     GD_rank(g)[r].v[k] = NULL;
