@@ -23,7 +23,7 @@ def run(
 ) -> None:
     """run a command, echoing it beforehand"""
 
-    print(f"+ {shlex.join(str(x) for x in args)}")
+    print(f"+ {shlex.join(str(x) for x in args)}", flush=True)
     p = subprocess.run(
         args,
         stdout=subprocess.PIPE,
@@ -148,7 +148,7 @@ def main(args: list[str]) -> int:
     warning_count = log.getvalue().count(" warning ")
     metrics = Path("metrics.txt")
     summary = f"{os.environ['CI_JOB_NAME']}-warnings {warning_count}"
-    print(summary)
+    print(summary, flush=True)
     metrics.write_text(f"{summary}\n", encoding="utf-8")
 
     # derive Graphviz version
@@ -207,7 +207,7 @@ def main(args: list[str]) -> int:
     )
     packages.mkdir(parents=True)
     for src in itertools.chain(build.glob("*.exe"), build.glob("*.zip")):
-        print(f"+ mv {shlex.join(str(a) for a in [src, packages])}")
+        print(f"+ mv {shlex.join(str(a) for a in [src, packages])}", flush=True)
         shutil.move(src, packages)
 
     return 0
