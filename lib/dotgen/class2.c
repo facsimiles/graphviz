@@ -20,9 +20,7 @@
 static node_t*
 label_vnode(graph_t * g, edge_t * orig)
 {
-    pointf dimen;
-
-    dimen = ED_label(orig)->dimen;
+    const pointf dimen = ED_label(orig)->dimen;
     node_t *const v = virtual_node(g);
     ND_label(v) = ED_label(orig);
     ND_lw(v) = GD_nodesep(agroot(v));
