@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Inter-cluster edges are no longer spuriously duplicated. #162, #258, #2615
+- When using the CMake build system, configuration no longer fails with syntax
+  errors when PangoCairo is unavailable. This was a regression in Graphviz
+  13.0.0. #2697
 
 ## [13.0.1] – 2025-06-15
 
