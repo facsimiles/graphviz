@@ -78,8 +78,6 @@ void glmotion_pan(ViewInfo * v)
     } else {
 	gldx = GetOGLDistance(v->mouse.dragX) / v->cameras[v->active_camera]->r;
 	gldy = GetOGLDistance(v->mouse.dragY) / v->cameras[v->active_camera]->r;
-	v->cameras[v->active_camera]->x -= gldx;
-	v->cameras[v->active_camera]->y -= gldy;
 	v->cameras[v->active_camera]->targetx -= gldx;
 	v->cameras[v->active_camera]->targety += gldy;
     }

@@ -131,9 +131,6 @@ enum {SCHEMACOUNT = 4}; // number of colors
     }mouse_action_t;
 
     typedef struct {
-	float x;
-	float y;
-
 	float targetx;
 	float targety;
 
@@ -326,11 +323,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 
 	/*labelling properties */
 	void *glutfont;
-	glCompColor nodelabelcolor;
-	glCompColor edgelabelcolor;
 	int labelnumberofnodes;
-	int labelshownodes;
-	int labelshowedges;
 
 	glCompSet *widgets;	//for novice user open gl menu
 	char *initFileName;	//file name from command line
