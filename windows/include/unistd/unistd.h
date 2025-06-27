@@ -25,6 +25,5 @@
 #define ssize_t SSIZE_T
 
 #define STDIN_FILENO 0
-#define STDERR_FILENO 2
 
 #endif /* unistd.h  */
