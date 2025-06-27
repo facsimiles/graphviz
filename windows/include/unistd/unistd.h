@@ -1,5 +1,4 @@
-#ifndef _UNISTD_H
-#define _UNISTD_H    1
+#pragma once
 
 /* This file intended to serve as a drop-in replacement for 
  * unistd.h on Windows
@@ -25,5 +24,3 @@
 #define ssize_t SSIZE_T
 
 #define STDIN_FILENO 0
-
-#endif /* unistd.h  */
