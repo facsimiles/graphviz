@@ -290,9 +290,6 @@ static void limitBoxes(boxf *boxes, size_t boxn, const pointf *pps, size_t pn,
  * cases, the function returns an array of the computed control points. The number
  * of these points is given in npoints.
  *
- * Note that the returned points are stored in a single array, so the points must be
- * used before another call to this function.
- *
  * During cleanup, the function determines the x-extent of the spline in the box, so
  * the box can be shrunk to the minimum width. The extra space can then be used by other
  * edges. 
