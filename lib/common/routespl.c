@@ -282,13 +282,13 @@ static void limitBoxes(boxf *boxes, size_t boxn, const pointf *pps, size_t pn,
 #define LOOP_TRIES 15  /* number of times to try to limiting boxes to regain space, using smaller divisions */
 
 /** Route a path using the path info in pp. This includes start and end points
- * plus a collection of contiguous boxes contain the terminal points. The boxes
- * are converted into a containing polygon. A shortest path is constructed within
- * the polygon from between the terminal points. If polyline is true, this path
- * is converted to a spline representation. Otherwise, we call the path planner to
- * convert the polyline into a smooth spline staying within the polygon. In both
- * cases, the function returns an array of the computed control points. The number
- * of these points is given in npoints.
+ * plus a collection of contiguous boxes containing the terminal points. The
+ * boxes are converted into a containing polygon. A shortest path is constructed
+ * within the polygon from between the terminal points. If polyline is true,
+ * this path is converted to a spline representation. Otherwise, we call the
+ * path planner to convert the polyline into a smooth spline staying within the
+ * polygon. In both cases, the function returns an array of the computed control
+ * points. The number of these points is given in npoints.
  *
  * During cleanup, the function determines the x-extent of the spline in the box, so
  * the box can be shrunk to the minimum width. The extra space can then be used by other
