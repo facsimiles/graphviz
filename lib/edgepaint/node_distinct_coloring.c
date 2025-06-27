@@ -39,7 +39,6 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   static const int iter_max = 100;
   double cspace_size = 0.7;
   double red[3], black[3], min;
-  int imin;
 
   assert(accuracy > 0);
   max_level = MAX(1, -log(accuracy)/log(2.));
@@ -55,7 +54,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   if (n == 1){
     if (scheme == COLOR_LAB){
       assert(qt);
-      QuadTree_get_nearest(qt, black, colors, &imin, &min);
+      QuadTree_get_nearest(qt, black, colors, &(int){0}, &min);
       LAB2RGB_real_01(colors);
       *color_diff0 = 1000; *color_diff_sum0 = 1000;
     } else {
@@ -66,10 +65,10 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   } else if (n == 2){
     if (scheme == COLOR_LAB){
       assert(qt);
-      QuadTree_get_nearest(qt, black, colors, &imin, &min);
+      QuadTree_get_nearest(qt, black, colors, &(int){0}, &min);
       LAB2RGB_real_01(colors);
 
-      QuadTree_get_nearest(qt, red, colors+cdim, &imin, &min);
+      QuadTree_get_nearest(qt, red, colors+cdim, &(int){0}, &min);
       LAB2RGB_real_01(colors+cdim);
       *color_diff0 = 1000; *color_diff_sum0 = 1000;
 
