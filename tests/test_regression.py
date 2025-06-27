@@ -371,9 +371,6 @@ def test_218():
 
 
 @pytest.mark.parametrize("test_case", ("241_0.dot", "241_1.dot"))
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/241"
-)
 def test_241(test_case: str):
     """
     processing a graph with a `splines=…` setting should not causes warnings

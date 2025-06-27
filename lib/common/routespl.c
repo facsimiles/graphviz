@@ -24,6 +24,7 @@
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_math.h>
 #include <util/list.h>
 #include <util/prisize_t.h>
@@ -514,7 +515,48 @@ static pointf *routesplines_(path *pp, size_t *npoints, int polyline) {
 	ps[splinepi] = spl.ps[splinepi];
     }
 
+    {
+	// does the spline go straight left/right?
+	bool is_horizontal = spl.pn > 0;
+	for (size_t i = 0; i < spl.pn; ++i) {
+	    if (fabs(ps[0].y - ps[i].y) > FUDGE) {
+		is_horizontal = false;
+		break;
+	    }
+	}
+	if (is_horizontal) {
+	    GV_INFO("spline [%.03f, %.03f] -- [%.03f, %.03f] is horizontal;"
+	            " will be trivially bounded", ps[0].x, ps[0].y, ps[spl.pn - 1].x,
+	            ps[spl.pn - 1].y);
+	}
+
+	// does the spline go straight up/down?
+	bool is_vertical = spl.pn > 0;
+	for (size_t i = 0; i < spl.pn; ++i) {
+	    if (fabs(ps[0].x - ps[i].x) > FUDGE) {
+		is_vertical = false;
+		break;
+	    }
+	}
+	if (is_vertical) {
+	    GV_INFO("spline [%.03f, %.03f] -- [%.03f, %.03f] is vertical;"
+	            " will be trivially bounded", ps[0].x, ps[0].y, ps[spl.pn - 1].x,
+	            ps[spl.pn - 1].y);
+	}
+
+	// if the spline is horizontal or vertical, the `limitBoxes` loop will not
+	// converge, but we know the expected outcome trivially
+	if (is_horizontal || is_vertical) {
+	    for (size_t i = 0; i < boxn; ++i) {
+		boxes[i].LL.x = ps[0].x;
+		boxes[i].UR.x = ps[0].x;
+	    }
+	    unbounded = false;
+	}
+    }
+
     double delta = INIT_DELTA;
+
     for (loopcnt = 0; unbounded && loopcnt < LOOP_TRIES; loopcnt++) {
 	limitBoxes(boxes, boxn, ps, spl.pn, delta);
 
