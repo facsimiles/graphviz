@@ -21,7 +21,6 @@ import pytest
 # Test specifications
 GRAPHDIR = Path(__file__).parent / "graphs"
 # Directory of input graphs and data
-OUTDIR = Path("ndata")  # Directory for test output
 OUTHTML = Path("nhtml")  # Directory for html test report
 
 
@@ -322,16 +321,18 @@ TESTS: list[Case] = [
 ]
 
 
-def doDiff(OUTFILE, testname, fmt):
+def doDiff(output: Path, reference: Path, testname, fmt):
     """
     Compare old and new output and report if different.
-     Args: testname index fmt
+
+    Args:
+        output: File generated during this test run
+        reference: Golden copy to compare against
     """
-    FILE1 = OUTDIR / OUTFILE
-    FILE2 = REFDIR / OUTFILE
+    OUTFILE = reference.name
     F = fmt.split(":")[0]
     if F in ["ps", "ps2"]:
-        with open(FILE1, "rt", encoding="latin-1") as src:
+        with open(output, "rt", encoding="latin-1") as src:
             dst1 = io.StringIO()
             done_setup = False
             for line in src:
@@ -340,7 +341,7 @@ def doDiff(OUTFILE, testname, fmt):
                 else:
                     done_setup = re.match(r"%%End.*Setup", line) is not None
 
-        with open(FILE2, "rt", encoding="latin-1") as src:
+        with open(reference, "rt", encoding="latin-1") as src:
             dst2 = io.StringIO()
             done_setup = False
             for line in src:
@@ -351,29 +352,29 @@ def doDiff(OUTFILE, testname, fmt):
 
         returncode = 0 if dst1.getvalue() == dst2.getvalue() else -1
     elif F == "svg":
-        with open(FILE1, "rt", encoding="utf-8") as f:
+        with open(output, "rt", encoding="utf-8") as f:
             a = re.sub(r"^<!--.*-->$", "", f.read(), flags=re.MULTILINE)
-        with open(FILE2, "rt", encoding="utf-8") as f:
+        with open(reference, "rt", encoding="utf-8") as f:
             b = re.sub(r"^<!--.*-->$", "", f.read(), flags=re.MULTILINE)
         returncode = 0 if a.strip() == b.strip() else -1
     elif F == "png":
         OUTHTML.mkdir(exist_ok=True)
         returncode = subprocess.call(
-            ["diffimg", FILE1, FILE2, OUTHTML / f"dif_{OUTFILE}"],
+            ["diffimg", output, reference, OUTHTML / f"dif_{reference.name}"],
         )
         if returncode != 0:
             with open(OUTHTML / "index.html", "at", encoding="utf-8") as fd:
                 fd.write("<p>\n")
-                shutil.copyfile(FILE2, OUTHTML / f"old_{OUTFILE}")
+                shutil.copyfile(reference, OUTHTML / f"old_{OUTFILE}")
                 fd.write(f'<img src="old_{OUTFILE}" width="192" height="192">\n')
-                shutil.copyfile(FILE1, OUTHTML / f"new_{OUTFILE}")
+                shutil.copyfile(output, OUTHTML / f"new_{OUTFILE}")
                 fd.write(f'<img src="new_{OUTFILE}" width="192" height="192">\n')
                 fd.write(f'<img src="dif_{OUTFILE}" width="192" height="192">\n')
         else:
             (OUTHTML / f"dif_{OUTFILE}").unlink()
     else:
-        with open(FILE2, "rt", encoding="utf-8") as a:
-            with open(FILE1, "rt", encoding="utf-8") as b:
+        with open(reference, "rt", encoding="utf-8") as a:
+            with open(output, "rt", encoding="utf-8") as b:
                 returncode = 0 if a.read().strip() == b.read().strip() else -1
     if returncode != 0:
         # FIXME: pytest.fail when all tests pass on all platforms
@@ -410,18 +411,26 @@ def genOutname(name, alg, fmt, index: int):
     ((c.name, c.input, c.algorithm, c.format, c.flags, c.index) for c in TESTS),
 )
 def test_graph(
-    name: str, input: Path, algorithm: str, format: str, flags: list[str], index: int
+    name: str,
+    input: Path,
+    algorithm: str,
+    format: str,
+    flags: list[str],
+    index: int,
+    tmp_path: Path,
 ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
     """
     Run a single test.
+
+    Args:
+        tmp_path: Transient working directory, created by Pytest
     """
     if input.suffix != ".gv":
         pytest.skip(f"Unknown graph spec, test {name} - ignoring")
     INFILE = GRAPHDIR / input
 
     OUTFILE = genOutname(name, algorithm, format, index)
-    OUTDIR.mkdir(exist_ok=True)
-    OUTPATH = OUTDIR / OUTFILE
+    OUTPATH = tmp_path / OUTFILE
     testcmd = ["dot", f"-K{algorithm}", f"-T{format}"] + flags + ["-o", OUTPATH, INFILE]
     # FIXME: Remove when https://gitlab.com/graphviz/graphviz/-/issues/1790 is
     # fixed
@@ -437,7 +446,7 @@ def test_graph(
         pytest.fail(
             f'Test {name}: == Layout failed ==\n  {" ".join(str(a) for a in testcmd)}'
         )
-    doDiff(OUTFILE, name, format)
+    doDiff(OUTPATH, REFDIR / OUTFILE, name, format)
 
 
 # Set REFDIR

@@ -190,7 +190,6 @@ contrib/diffimg/diffimg
 contrib/prune/prune
 
 # Files generated during make check
-tests/ndata
 tests/nhtml
 tests/tmp*
 tests/**/*.log
