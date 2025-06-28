@@ -376,9 +376,7 @@ def doDiff(output: Path, reference: Path, testname, fmt):
         with open(reference, "rt", encoding="utf-8") as a:
             with open(output, "rt", encoding="utf-8") as b:
                 returncode = 0 if a.read().strip() == b.read().strip() else -1
-    if returncode != 0:
-        # FIXME: pytest.fail when all tests pass on all platforms
-        print(f"Test {testname}: == Failed == {OUTFILE}", file=sys.stderr)
+    assert returncode == 0, f"Test {testname}: == Failed == {OUTFILE}"
 
 
 def genOutname(name, alg, fmt, index: int):
@@ -410,6 +408,7 @@ def genOutname(name, alg, fmt, index: int):
     "name,input,algorithm,format,flags,index",
     ((c.name, c.input, c.algorithm, c.format, c.flags, c.index) for c in TESTS),
 )
+@pytest.mark.xfail(strict=True)
 def test_graph(
     name: str,
     input: Path,
