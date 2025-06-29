@@ -60,7 +60,6 @@ Makefile
 doc/Makefile
 doc/info/Makefile
 doc/schema/Makefile
-!rtest2/Makefile
 !windows/build/Makefile
 !windows/prebuild/Makefile
 *.pc
