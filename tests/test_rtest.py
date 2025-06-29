@@ -12,7 +12,7 @@ import platform
 import re
 import shutil
 import subprocess
-import sys
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -424,6 +424,17 @@ def test_graph(
     Args:
         tmp_path: Transient working directory, created by Pytest
     """
+    MY_DIR = Path(__file__).resolve().parent
+    if platform.system() == "Linux":
+        REFDIR = MY_DIR / "linux.x86"
+    elif platform.system() == "Darwin":
+        REFDIR = MY_DIR / "macosx"
+    elif platform.system() == "Windows":
+        REFDIR = MY_DIR / "nshare"
+    else:
+        warnings.warn(f'Unrecognized system "{platform.system()}"')
+        REFDIR = MY_DIR / "nshare"
+
     if input.suffix != ".gv":
         pytest.skip(f"Unknown graph spec, test {name} - ignoring")
     INFILE = GRAPHDIR / input
@@ -446,16 +457,3 @@ def test_graph(
             f'Test {name}: == Layout failed ==\n  {" ".join(str(a) for a in testcmd)}'
         )
     doDiff(OUTPATH, REFDIR / OUTFILE, name, format)
-
-
-# Set REFDIR
-MY_DIR = Path(__file__).resolve().parent
-if platform.system() == "Linux":
-    REFDIR = MY_DIR / "linux.x86"
-elif platform.system() == "Darwin":
-    REFDIR = MY_DIR / "macosx"
-elif platform.system() == "Windows":
-    REFDIR = MY_DIR / "nshare"
-else:
-    print(f'Unrecognized system "{platform.system()}"', file=sys.stderr)
-    REFDIR = MY_DIR / "nshare"
