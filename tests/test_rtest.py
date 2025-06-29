@@ -409,7 +409,6 @@ def genOutname(name, alg, fmt, index: int):
     "name,input,algorithm,format,flags,index",
     ((c.name, c.input, c.algorithm, c.format, c.flags, c.index) for c in TESTS),
 )
-@pytest.mark.xfail(strict=True)
 def test_graph(
     name: str, input: Path, algorithm: str, format: str, flags: list[str], index: int
 ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -442,12 +441,13 @@ def test_graph(
 
 
 # Set REFDIR
+MY_DIR = Path(__file__).resolve().parent
 if platform.system() == "Linux":
-    REFDIR = Path("linux.x86")
+    REFDIR = MY_DIR / "linux.x86"
 elif platform.system() == "Darwin":
-    REFDIR = Path("macosx")
+    REFDIR = MY_DIR / "macosx"
 elif platform.system() == "Windows":
-    REFDIR = Path("nshare")
+    REFDIR = MY_DIR / "nshare"
 else:
     print(f'Unrecognized system "{platform.system()}"', file=sys.stderr)
-    REFDIR = Path("nshare")
+    REFDIR = MY_DIR / "nshare"
