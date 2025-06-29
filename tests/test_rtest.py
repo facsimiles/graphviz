@@ -293,7 +293,7 @@ TESTS: list[Case] = [
     Case("cairo", Path("cairo.gv"), "dot", "png:cairo", []),
     Case("cairo", Path("cairo.gv"), "dot", "svg:cairo", []),
     Case("flatedge", Path("flatedge.gv"), "dot", "gv", []),
-    Case("nestedclust", Path("nestedclust"), "dot", "gv", []),
+    Case("nestedclust", Path("nestedclust.gv"), "dot", "gv", []),
     Case("rd_rules", Path("rd_rules.gv"), "dot", "png", []),
     Case("sq_rules", Path("sq_rules.gv"), "dot", "png", []),
     Case("fdp_clus", Path("fdp.gv"), "fdp", "png", []),
