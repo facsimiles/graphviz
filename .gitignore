@@ -205,7 +205,6 @@ build/**
 *.lib
 *.pdb
 graphviz.sdf
-lib/color_lib
 
 # User specific Visual Studio folders and files
 .vs/**
