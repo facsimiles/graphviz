@@ -7,7 +7,6 @@ TODO:
  Report differences with shared version and with new output.
 """
 
-import hashlib
 import io
 import platform
 import re
@@ -35,6 +34,7 @@ class Case:
     algorithm: str
     format: str
     flags: list[str]
+    index: int = 0
 
 
 TESTS: list[Case] = [
@@ -90,6 +90,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=r"],
+        1,
     ),
     Case(
         "clustlabel",
@@ -97,6 +98,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=t", "-Glabeljust=l"],
+        2,
     ),
     Case(
         "clustlabel",
@@ -104,6 +106,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=l"],
+        3,
     ),
     Case(
         "clustlabel",
@@ -111,6 +114,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=t", "-Glabeljust=c"],
+        4,
     ),
     Case(
         "clustlabel",
@@ -118,9 +122,10 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=c"],
+        5,
     ),
-    Case("clustlabel", Path("clustlabel.gv"), "dot", "ps", ["-Glabelloc=t"]),
-    Case("clustlabel", Path("clustlabel.gv"), "dot", "ps", ["-Glabelloc=b"]),
+    Case("clustlabel", Path("clustlabel.gv"), "dot", "ps", ["-Glabelloc=t"], 6),
+    Case("clustlabel", Path("clustlabel.gv"), "dot", "ps", ["-Glabelloc=b"], 7),
     Case(
         "rootlabel",
         Path("rootlabel.gv"),
@@ -134,6 +139,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=r"],
+        1,
     ),
     Case(
         "rootlabel",
@@ -141,6 +147,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=t", "-Glabeljust=l"],
+        2,
     ),
     Case(
         "rootlabel",
@@ -148,6 +155,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=l"],
+        3,
     ),
     Case(
         "rootlabel",
@@ -155,6 +163,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=t", "-Glabeljust=c"],
+        4,
     ),
     Case(
         "rootlabel",
@@ -162,17 +171,23 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=c"],
+        5,
     ),
-    Case("rootlabel", Path("rootlabel.gv"), "dot", "ps", ["-Glabelloc=t"]),
-    Case("rootlabel", Path("rootlabel.gv"), "dot", "ps", ["-Glabelloc=b"]),
+    Case("rootlabel", Path("rootlabel.gv"), "dot", "ps", ["-Glabelloc=t"], 6),
+    Case("rootlabel", Path("rootlabel.gv"), "dot", "ps", ["-Glabelloc=b"], 7),
     Case("layers", Path("layers.gv"), "dot", "ps", []),
     # check mode=hier
     Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=KK"]),
-    Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=hier"]),
-    Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=hier", "-Glevelsgap=1"]),
+    Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=hier"], 1),
+    Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=hier", "-Glevelsgap=1"], 2),
     Case("model", Path("mode.gv"), "neato", "ps", ["-Gmodel=circuit"]),
     Case(
-        "model", Path("mode.gv"), "neato", "ps", ["-Goverlap=false", "-Gmodel=subset"]
+        "model",
+        Path("mode.gv"),
+        "neato",
+        "ps",
+        ["-Goverlap=false", "-Gmodel=subset"],
+        1,
     ),
     # cairo versions have problems
     Case("nojustify", Path("nojustify.gv"), "dot", "png", []),
@@ -181,15 +196,15 @@ TESTS: list[Case] = [
     Case("nojustify", Path("nojustify.gv"), "dot", "ps:cairo", []),
     # bug
     Case("ordering", Path("ordering.gv"), "dot", "gv", ["-Gordering=in"]),
-    Case("ordering", Path("ordering.gv"), "dot", "gv", ["-Gordering=out"]),
+    Case("ordering", Path("ordering.gv"), "dot", "gv", ["-Gordering=out"], 1),
     Case("overlap", Path("overlap.gv"), "neato", "gv", ["-Goverlap=false"]),
-    Case("overlap", Path("overlap.gv"), "neato", "gv", ["-Goverlap=scale"]),
+    Case("overlap", Path("overlap.gv"), "neato", "gv", ["-Goverlap=scale"], 1),
     Case("pack", Path("pack.gv"), "neato", "gv", []),
-    Case("pack", Path("pack.gv"), "neato", "gv", ["-Gpack=20"]),
-    Case("pack", Path("pack.gv"), "neato", "gv", ["-Gpackmode=graph"]),
+    Case("pack", Path("pack.gv"), "neato", "gv", ["-Gpack=20"], 1),
+    Case("pack", Path("pack.gv"), "neato", "gv", ["-Gpackmode=graph"], 2),
     Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11"]),
-    Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11", "-Gpagedir=TL"]),
-    Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11", "-Gpagedir=TR"]),
+    Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11", "-Gpagedir=TL"], 1),
+    Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11", "-Gpagedir=TR"], 2),
     # pencolor, fontcolor, fillcolor
     Case("colors", Path("colors.gv"), "dot", "ps", []),
     Case("polypoly", Path("polypoly.gv"), "dot", "ps", []),
@@ -197,11 +212,11 @@ TESTS: list[Case] = [
     Case("ports", Path("ports.gv"), "dot", "gv", []),
     Case("rotate", Path("crazy.gv"), "dot", "png", ["-Glandscape"]),
     Case("rotate", Path("crazy.gv"), "dot", "ps", ["-Glandscape"]),
-    Case("rotate", Path("crazy.gv"), "dot", "png", ["-Grotate=90"]),
-    Case("rotate", Path("crazy.gv"), "dot", "ps", ["-Grotate=90"]),
+    Case("rotate", Path("crazy.gv"), "dot", "png", ["-Grotate=90"], 1),
+    Case("rotate", Path("crazy.gv"), "dot", "ps", ["-Grotate=90"], 1),
     Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=LR"]),
-    Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=BT"]),
-    Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=RL"]),
+    Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=BT"], 1),
+    Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=RL"], 2),
     Case("url", Path("url.gv"), "dot", "ps2", []),
     Case("url", Path("url.gv"), "dot", "svg", ["-Gstylesheet=stylesheet"]),
     Case("url", Path("url.gv"), "dot", "imap", []),
@@ -218,6 +233,7 @@ TESTS: list[Case] = [
         "neato",
         "png",
         ["-Gviewport=300,300,1,200,620", "-n2"],
+        1,
     ),
     Case(
         "viewport",
@@ -225,6 +241,7 @@ TESTS: list[Case] = [
         "neato",
         "ps",
         ["-Gviewport=300,300,1,200,620", "-n2"],
+        1,
     ),
     Case(
         "viewport",
@@ -232,6 +249,7 @@ TESTS: list[Case] = [
         "neato",
         "png",
         ["-Gviewport=300,300,2,200,620", "-n2"],
+        2,
     ),
     Case(
         "viewport",
@@ -239,16 +257,17 @@ TESTS: list[Case] = [
         "neato",
         "ps",
         ["-Gviewport=300,300,2,200,620", "-n2"],
+        2,
     ),
     Case("rowcolsep", Path("rowcolsep.gv"), "dot", "gv", ["-Gnodesep=0.5"]),
-    Case("rowcolsep", Path("rowcolsep.gv"), "dot", "gv", ["-Granksep=1.5"]),
+    Case("rowcolsep", Path("rowcolsep.gv"), "dot", "gv", ["-Granksep=1.5"], 1),
     Case("size", Path("mode.gv"), "neato", "ps", ["-Gsize=5,5"]),
     Case("size", Path("mode.gv"), "neato", "png", ["-Gsize=5,5"]),
     # size with !
     Case("size_ex", Path("root.gv"), "dot", "ps", ["-Gsize=6,6!"]),
     Case("size_ex", Path("root.gv"), "dot", "png", ["-Gsize=6,6!"]),
     Case("dotsplines", Path("size.gv"), "dot", "gv", ["-Gsplines=line"]),
-    Case("dotsplines", Path("size.gv"), "dot", "gv", ["-Gsplines=polyline"]),
+    Case("dotsplines", Path("size.gv"), "dot", "gv", ["-Gsplines=polyline"], 1),
     Case(
         "neatosplines",
         Path("overlap.gv"),
@@ -262,6 +281,7 @@ TESTS: list[Case] = [
         "neato",
         "gv",
         ["-Goverlap=false", "-Gsplines=polyline"],
+        1,
     ),
     Case("style", Path("style.gv"), "dot", "ps", []),
     Case("style", Path("style.gv"), "dot", "png", []),
@@ -360,12 +380,16 @@ def doDiff(OUTFILE, testname, fmt):
         print(f"Test {testname}: == Failed == {OUTFILE}", file=sys.stderr)
 
 
-def genOutname(name, alg, fmt, flags: list[str]):
+def genOutname(name, alg, fmt, index: int):
     """
-    Generate output file name given 4 parameters.
-      testname layout format flags
-    If format ends in :*, remove this, change the colons to underscores,
-    and append to basename
+    Generate output file name
+
+    Args:
+        name: Name of the current test case.
+        alg: Algorithm (-K).
+        fmt: Format (-T). If format ends in :*, remove this, change the colons to
+            underscores, and append to basename.
+        index: A number to discriminate test cases that are otherwise indistinguishable.
     """
     fmt_split = fmt.split(":")
     if len(fmt_split) >= 2:
@@ -375,20 +399,20 @@ def genOutname(name, alg, fmt, flags: list[str]):
         F = fmt
         XFMT = ""
 
-    suffix = hashlib.sha256()
-    for flag in flags:
-        suffix.update(f"{flag} ".encode("utf-8"))
+    suffix = "" if index == 0 else str(index)
 
-    OUTFILE = f"{name}_{alg}{XFMT}_{suffix.hexdigest()}.{F}"
+    OUTFILE = f"{name}_{alg}{XFMT}{suffix}.{F}"
     return OUTFILE
 
 
 @pytest.mark.parametrize(
-    "name,input,algorithm,format,flags",
-    ((c.name, c.input, c.algorithm, c.format, c.flags) for c in TESTS),
+    "name,input,algorithm,format,flags,index",
+    ((c.name, c.input, c.algorithm, c.format, c.flags, c.index) for c in TESTS),
 )
 @pytest.mark.xfail(strict=True)
-def test_graph(name: str, input: Path, algorithm: str, format: str, flags: list[str]):
+def test_graph(
+    name: str, input: Path, algorithm: str, format: str, flags: list[str], index: int
+):  # pylint: disable=too-many-arguments,too-many-positional-arguments
     """
     Run a single test.
     """
@@ -396,7 +420,7 @@ def test_graph(name: str, input: Path, algorithm: str, format: str, flags: list[
         pytest.skip(f"Unknown graph spec, test {name} - ignoring")
     INFILE = GRAPHDIR / input
 
-    OUTFILE = genOutname(name, algorithm, format, flags)
+    OUTFILE = genOutname(name, algorithm, format, index)
     OUTDIR.mkdir(exist_ok=True)
     OUTPATH = OUTDIR / OUTFILE
     testcmd = ["dot", f"-K{algorithm}", f"-T{format}"] + flags + ["-o", OUTPATH, INFILE]
