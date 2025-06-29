@@ -8,15 +8,20 @@ TODO:
 """
 
 import io
+import os
 import platform
 import re
 import shutil
 import subprocess
+import sys
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
+
+sys.path.append(os.path.dirname(__file__))
+from gvtest import run  # pylint: disable=wrong-import-position
 
 # Test specifications
 GRAPHDIR = Path(__file__).parent / "graphs"
@@ -450,10 +455,5 @@ def test_graph(
             "because it fails with Windows builds (#1790)"
         )
 
-    RVAL = subprocess.call(testcmd, stderr=subprocess.STDOUT)
-
-    if RVAL != 0 or not OUTPATH.exists():
-        pytest.fail(
-            f'Test {name}: == Layout failed ==\n  {" ".join(str(a) for a in testcmd)}'
-        )
+    run(testcmd)
     doDiff(OUTPATH, REFDIR / OUTFILE, name, format)
