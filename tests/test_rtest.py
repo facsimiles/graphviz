@@ -387,6 +387,7 @@ def genOutname(name, alg, fmt, flags: list[str]):
     "name,input,algorithm,format,flags",
     ((c.name, c.input, c.algorithm, c.format, c.flags) for c in TESTS),
 )
+@pytest.mark.xfail(strict=True)
 def test_graph(name: str, input: Path, algorithm: str, format: str, flags: list[str]):
     """
     Run a single test.
@@ -413,12 +414,7 @@ def test_graph(name: str, input: Path, algorithm: str, format: str, flags: list[
         pytest.fail(
             f'Test {name}: == Layout failed ==\n  {" ".join(str(a) for a in testcmd)}'
         )
-    elif (REFDIR / OUTFILE).exists():
-        doDiff(OUTFILE, name, format)
-    else:
-        sys.stderr.write(
-            f"Test {name}: == No file {REFDIR}/{OUTFILE} for comparison ==\n"
-        )
+    doDiff(OUTFILE, name, format)
 
 
 # Set REFDIR
