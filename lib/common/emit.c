@@ -50,6 +50,12 @@
 #define FUZZ 3
 #define EPSILON .0001
 
+#ifdef DEBUG
+enum { debug = 1 };
+#else
+enum { debug = 0 };
+#endif
+
 typedef struct {
     xdot_op op;
     boxf bb;
@@ -66,19 +72,16 @@ void* init_xdot (Agraph_t* g)
 	    return NULL;
 	}
     }
-#ifdef DEBUG
-    if (Verbose) {
+    if (debug && Verbose) {
 	start_timer();
     }
-#endif
     xd = parseXDotF (p, NULL, sizeof (exdot_op));
 
     if (!xd) {
 	agwarningf("Could not parse \"_background\" attribute in graph %s\n", agnameof(g));
 	agerr(AGPREV, "  \"%s\"\n", p);
     }
-#ifdef DEBUG
-    if (Verbose) {
+    if (debug && Verbose) {
 	xdot_stats stats;
 	double et = elapsed_sec();
 	statXDot (xd, &stats);
@@ -92,7 +95,6 @@ void* init_xdot (Agraph_t* g)
 	fprintf(stderr, "%" PRISIZE_T " ellipses\n", stats.n_ellipse);
 	fprintf(stderr, "%" PRISIZE_T " texts\n", stats.n_text);
     }
-#endif
     return xd;
 }
 
@@ -3967,23 +3969,21 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	init_job_pagination(job, g);
 
 	if (! (job->flags & GVDEVICE_EVENTS)) {
-#ifdef DEBUG
-    		/* Show_boxes is not defined, if at all, 
-                 * until splines are generated in dot 
-                 */
-	    show_boxes_append(&Show_boxes, NULL);
-	    show_boxes_sync(&Show_boxes);
+	    if (debug) {
+		// Show_boxes is not defined, if at all, until splines are generated in dot
+		show_boxes_append(&Show_boxes, NULL);
+		show_boxes_sync(&Show_boxes);
 // FIXME: remove the cast and change `show_boxes` to a `char **` at the next API
 // break
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-qual"
 #endif
-	    job->common->show_boxes = (const char **)show_boxes_front(&Show_boxes);
+		job->common->show_boxes = (const char **)show_boxes_front(&Show_boxes);
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-#endif
+	    }
 	    emit_graph(job, g);
 	}
 
