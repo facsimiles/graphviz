@@ -82,12 +82,15 @@ void* init_xdot (Agraph_t* g)
 	xdot_stats stats;
 	double et = elapsed_sec();
 	statXDot (xd, &stats);
-	fprintf (stderr, "%d ops %.2f sec\n", stats.cnt, et);
-	fprintf (stderr, "%d polygons %d points\n", stats.n_polygon, stats.n_polygon_pts);
-	fprintf (stderr, "%d polylines %d points\n", stats.n_polyline, stats.n_polyline_pts);
-	fprintf (stderr, "%d beziers %d points\n", stats.n_bezier, stats.n_bezier_pts);
-	fprintf (stderr, "%d ellipses\n", stats.n_ellipse);
-	fprintf (stderr, "%d texts\n", stats.n_text);
+	fprintf(stderr, "%" PRISIZE_T " ops %.2f sec\n", stats.cnt, et);
+	fprintf(stderr, "%" PRISIZE_T " polygons %" PRISIZE_T " points\n",
+	        stats.n_polygon, stats.n_polygon_pts);
+	fprintf(stderr, "%" PRISIZE_T " polylines %" PRISIZE_T " points\n",
+	        stats.n_polyline, stats.n_polyline_pts);
+	fprintf(stderr, "%" PRISIZE_T " beziers %" PRISIZE_T " points\n",
+	        stats.n_bezier, stats.n_bezier_pts);
+	fprintf(stderr, "%" PRISIZE_T " ellipses\n", stats.n_ellipse);
+	fprintf(stderr, "%" PRISIZE_T " texts\n", stats.n_text);
     }
 #endif
     return xd;
