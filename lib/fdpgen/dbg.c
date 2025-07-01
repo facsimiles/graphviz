@@ -92,7 +92,6 @@ static void dumpSG(graph_t * g)
  */
 void dump(graph_t *g, int level) {
     node_t *n;
-    boxf bb;
     double w, h;
     pointf pos;
 
