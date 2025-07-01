@@ -108,7 +108,8 @@ printArr (vararr_t* arr, FILE* fp)
     fprintf(fp, "size %" PRISIZE_T "\n", vararr_size(arr));
     for (size_t i = 0; i < vararr_size(arr); i++) {
 	pathpoint pt = vararr_get(arr, i);
-	fprintf (fp, "  [%d] x %.02f y  %.02f d %.02f\n", i, pt.x, pt.y, pt.lengthsofar);
+	fprintf(fp, "  [%" PRISIZE_T "] x %.02f y  %.02f d %.02f\n", i, pt.x, pt.y,
+	        pt.lengthsofar);
     }
 }
 #endif
