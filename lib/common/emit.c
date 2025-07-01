@@ -3973,7 +3973,16 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
                  */
 	    show_boxes_append(&Show_boxes, NULL);
 	    show_boxes_sync(&Show_boxes);
-	    job->common->show_boxes = show_boxes_front(&Show_boxes);
+// FIXME: remove the cast and change `show_boxes` to a `char **` at the next API
+// break
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
+#endif
+	    job->common->show_boxes = (const char **)show_boxes_front(&Show_boxes);
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #endif
 	    emit_graph(job, g);
 	}
