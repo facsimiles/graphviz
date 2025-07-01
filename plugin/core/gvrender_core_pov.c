@@ -392,8 +392,7 @@ static void pov_begin_graph(GVJ_t * job)
 	gvprintf(job, "// pageSize.x,y = %.3f,%.3f\n", job->pageSize.x,
 		 job->pageSize.y);
 	gvprintf(job, "// focus.x,y = %.3f,%.3f\n", job->focus.x, job->focus.y);
-	gvprintf(job, "// zoom = %.3f, rotation = %d\n", job->zoom,
-		 (float)job->rotation);
+	gvprintf(job, "// zoom = %.3f, rotation = %d\n", job->zoom, job->rotation);
 	gvprintf(job, "// view port.x,y = %.3f,%.3f\n", job->view.x,
 		 job->view.y);
 	gvprintf(job, "// canvasBox LL,UR = %.3f,%.3f, %.3f,%.3f\n",
