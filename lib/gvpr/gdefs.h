@@ -73,15 +73,6 @@ static char* typenames[] = {
 #undef X
 };
 
-#ifdef DEBUG
-static char* gprnames[] = {
-  "",
-#define X(prefix, name, str, type, subtype, ...) str,
-#include <gvpr/gprdata.inc>
-#undef X
-};
-#endif
-
 typedef unsigned short tctype;
 
 static tctype tchk[][2] = {
