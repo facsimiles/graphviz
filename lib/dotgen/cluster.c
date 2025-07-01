@@ -57,12 +57,9 @@ make_slots(graph_t * root, int r, int pos, int d)
 static node_t* 
 clone_vn(graph_t * g, node_t * vn)
 {
-    node_t *rv;
-    int r;
-
-    r = ND_rank(vn);
+    const int r = ND_rank(vn);
     make_slots(g, r, ND_order(vn), 2);
-    rv = virtual_node(g);
+    node_t *const rv = virtual_node(g);
     ND_lw(rv) = ND_lw(vn);
     ND_rw(rv) = ND_rw(vn);
     ND_rank(rv) = ND_rank(vn);
@@ -410,7 +407,7 @@ void mark_lowclusters(Agraph_t * root)
 	ND_clust(n) = NULL;
 	for (orig = agfstout(root, n); orig; orig = agnxtout(root, orig)) {
 	    if ((e = ED_to_virt(orig))) {
-		while (e && (ND_node_type(vn = aghead(e))) == VIRTUAL) {
+		while (e && ND_node_type(vn = aghead(e)) == VIRTUAL) {
 		    ND_clust(vn) = NULL;
 		    e = ND_out(aghead(e)).list[0];
 		}
@@ -439,7 +436,7 @@ static void mark_lowcluster_basic(Agraph_t * g)
 	    ND_clust(n) = g;
 	for (orig = agfstout(g, n); orig; orig = agnxtout(g, orig)) {
 	    if ((e = ED_to_virt(orig))) {
-		while (e && (ND_node_type(vn = aghead(e))) == VIRTUAL) {
+		while (e && ND_node_type(vn = aghead(e)) == VIRTUAL) {
 		    if (ND_clust(vn) == NULL)
 			ND_clust(vn) = g;
 		    e = ND_out(aghead(e)).list[0];

@@ -372,8 +372,7 @@ static graph_t *mkConstraintG(Dt_t * list, intersectfn intersect, distfn dist) {
 
 static void closeGraph(graph_t * cg)
 {
-    node_t *n;
-    for (n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
+    for (node_t *n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
 	free_list(ND_in(n));
 	free_list(ND_out(n));
     }

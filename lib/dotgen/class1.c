@@ -32,7 +32,6 @@ interclust1(graph_t * g, node_t * t, node_t * h, edge_t * e)
 {
     node_t *v, *t0, *h0;
     int offset, t_len, h_len, t_rank, h_rank;
-    edge_t *rt, *rh;
 
     if (ND_clust(agtail(e)))
 	t_rank = ND_rank(agtail(e)) - ND_rank(GD_leader(ND_clust(agtail(e))));
@@ -55,8 +54,8 @@ interclust1(graph_t * g, node_t * t, node_t * h, edge_t * e)
     ND_node_type(v) = SLACKNODE;
     t0 = UF_find(t);
     h0 = UF_find(h);
-    rt = make_aux_edge(v, t0, t_len, CL_BACK * ED_weight(e));
-    rh = make_aux_edge(v, h0, h_len, ED_weight(e));
+    edge_t *const rt = make_aux_edge(v, t0, t_len, CL_BACK * ED_weight(e));
+    edge_t *const rh = make_aux_edge(v, h0, h_len, ED_weight(e));
     ED_to_orig(rt) = ED_to_orig(rh) = e;
 }
 void class1(graph_t * g)

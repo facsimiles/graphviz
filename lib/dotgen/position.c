@@ -175,13 +175,11 @@ static bool canreach(node_t *u, node_t *v) {
 
 edge_t *make_aux_edge(node_t * u, node_t * v, double len, int wt)
 {
-    edge_t *e;
-
     Agedgepair_t* e2 = gv_alloc(sizeof(Agedgepair_t));
     AGTYPE(&e2->in) = AGINEDGE;
     AGTYPE(&e2->out) = AGOUTEDGE;
     e2->out.base.data = gv_alloc(sizeof(Agedgeinfo_t));
-    e = &e2->out;
+    edge_t *const e = &e2->out;
 
     agtail(e) = u;
     aghead(e) = v;
@@ -556,12 +554,14 @@ static void remove_aux_edges(graph_t * g)
 		ND_next(nprev) = nnext;
 	    else
 		GD_nlist(g) = nnext;
+	    if (nnext != NULL) {
+		ND_prev(nnext) = nprev;
+	    }
 	    free(n->base.data);
 	    free(n);
 	} else
 	    nprev = n;
     }
-    ND_prev(GD_nlist(g)) = NULL;
 }
 
 /// Set x coords of nodes.

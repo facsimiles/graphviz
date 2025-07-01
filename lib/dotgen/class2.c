@@ -20,11 +20,8 @@
 static node_t*
 label_vnode(graph_t * g, edge_t * orig)
 {
-    node_t *v;
-    pointf dimen;
-
-    dimen = ED_label(orig)->dimen;
-    v = virtual_node(g);
+    const pointf dimen = ED_label(orig)->dimen;
+    node_t *const v = virtual_node(g);
     ND_label(v) = ED_label(orig);
     ND_lw(v) = GD_nodesep(agroot(v));
     if (!ED_label_ontop(orig)) {
@@ -48,8 +45,7 @@ incr_width(graph_t * g, node_t * v)
 }
 
 static node_t *plain_vnode(graph_t *g) {
-    node_t *v;
-    v = virtual_node(g);
+    node_t *const v = virtual_node(g);
     incr_width(g, v);
     return v;
 }
