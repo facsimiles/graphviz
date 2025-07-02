@@ -24,6 +24,7 @@
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_math.h>
 #include <util/list.h>
 #include <util/prisize_t.h>
@@ -281,16 +282,13 @@ static void limitBoxes(boxf *boxes, size_t boxn, const pointf *pps, size_t pn,
 #define LOOP_TRIES 15  /* number of times to try to limiting boxes to regain space, using smaller divisions */
 
 /** Route a path using the path info in pp. This includes start and end points
- * plus a collection of contiguous boxes contain the terminal points. The boxes
- * are converted into a containing polygon. A shortest path is constructed within
- * the polygon from between the terminal points. If polyline is true, this path
- * is converted to a spline representation. Otherwise, we call the path planner to
- * convert the polyline into a smooth spline staying within the polygon. In both
- * cases, the function returns an array of the computed control points. The number
- * of these points is given in npoints.
- *
- * Note that the returned points are stored in a single array, so the points must be
- * used before another call to this function.
+ * plus a collection of contiguous boxes containing the terminal points. The
+ * boxes are converted into a containing polygon. A shortest path is constructed
+ * within the polygon from between the terminal points. If polyline is true,
+ * this path is converted to a spline representation. Otherwise, we call the
+ * path planner to convert the polyline into a smooth spline staying within the
+ * polygon. In both cases, the function returns an array of the computed control
+ * points. The number of these points is given in npoints.
  *
  * During cleanup, the function determines the x-extent of the spline in the box, so
  * the box can be shrunk to the minimum width. The extra space can then be used by other
@@ -514,7 +512,48 @@ static pointf *routesplines_(path *pp, size_t *npoints, int polyline) {
 	ps[splinepi] = spl.ps[splinepi];
     }
 
+    {
+	// does the spline go straight left/right?
+	bool is_horizontal = spl.pn > 0;
+	for (size_t i = 0; i < spl.pn; ++i) {
+	    if (fabs(ps[0].y - ps[i].y) > FUDGE) {
+		is_horizontal = false;
+		break;
+	    }
+	}
+	if (is_horizontal) {
+	    GV_INFO("spline [%.03f, %.03f] -- [%.03f, %.03f] is horizontal;"
+	            " will be trivially bounded", ps[0].x, ps[0].y, ps[spl.pn - 1].x,
+	            ps[spl.pn - 1].y);
+	}
+
+	// does the spline go straight up/down?
+	bool is_vertical = spl.pn > 0;
+	for (size_t i = 0; i < spl.pn; ++i) {
+	    if (fabs(ps[0].x - ps[i].x) > FUDGE) {
+		is_vertical = false;
+		break;
+	    }
+	}
+	if (is_vertical) {
+	    GV_INFO("spline [%.03f, %.03f] -- [%.03f, %.03f] is vertical;"
+	            " will be trivially bounded", ps[0].x, ps[0].y, ps[spl.pn - 1].x,
+	            ps[spl.pn - 1].y);
+	}
+
+	// if the spline is horizontal or vertical, the `limitBoxes` loop will not
+	// converge, but we know the expected outcome trivially
+	if (is_horizontal || is_vertical) {
+	    for (size_t i = 0; i < boxn; ++i) {
+		boxes[i].LL.x = ps[0].x;
+		boxes[i].UR.x = ps[0].x;
+	    }
+	    unbounded = false;
+	}
+    }
+
     double delta = INIT_DELTA;
+
     for (loopcnt = 0; unbounded && loopcnt < LOOP_TRIES; loopcnt++) {
 	limitBoxes(boxes, boxn, ps, spl.pn, delta);
 

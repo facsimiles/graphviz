@@ -1,5 +1,4 @@
-#ifndef _UNISTD_H
-#define _UNISTD_H    1
+#pragma once
 
 /* This file intended to serve as a drop-in replacement for 
  * unistd.h on Windows
@@ -19,15 +18,9 @@
 #define F_OK    0       /* Test for existence.  */
 
 #define access _access
-#define ftruncate _chsize
 #define fileno _fileno
-#define getcwd _getcwd
 /* read, write, and close are NOT being #defined here, because while there are file handle specific versions for Windows, they probably don't work for sockets. You need to look at your app and consider whether to call e.g. closesocket(). */
 
 #define ssize_t SSIZE_T
 
 #define STDIN_FILENO 0
-#define STDOUT_FILENO 1
-#define STDERR_FILENO 2
-
-#endif /* unistd.h  */
