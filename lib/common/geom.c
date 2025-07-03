@@ -179,10 +179,8 @@ pointf ccwrotatepf(pointf p, int ccwrot)
 
 boxf flip_rec_boxf(boxf b, pointf p)
 {
-    boxf r;
     /* flip box */
-    r.UR = exch_xyf(b.UR);
-    r.LL = exch_xyf(b.LL);
+    boxf r = {.LL = exch_xyf(b.LL), .UR = exch_xyf(b.UR)};
     /* move box */
     r.LL = add_pointf(r.LL, p);
     r.UR = add_pointf(r.UR, p);
