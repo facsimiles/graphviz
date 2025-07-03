@@ -130,22 +130,15 @@ void rect2poly(pointf *p)
 pointf cwrotatepf(pointf p, int cwrot)
 {
     assert(cwrot == 0 || cwrot == 90 || cwrot == 180 || cwrot == 270);
-    double x = p.x, y = p.y;
     switch (cwrot) {
     case 0:
 	break;
     case 90:
-	p.x = y;
-	p.y = -x;
-	break;
+	return (pointf){.x = p.y, .y = -p.x};
     case 180:
-	p.x = x;
-	p.y = -y;
-	break;
+	return (pointf){.x = p.x, .y = -p.y};
     case 270:
-	p.x = y;
-	p.y = x;
-	break;
+	return exch_xyf(p);
     default:
 	UNREACHABLE();
     }
