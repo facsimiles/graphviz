@@ -38,6 +38,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_asan_instrumented,
     is_autotools,
     is_cmake,
+    is_fedora,
     is_macos,
     is_mingw,
     is_rocky,
@@ -5457,6 +5458,31 @@ def test_2646():
 
     # run this through Graphviz
     dot("pdf", input)
+
+
+@pytest.mark.xfail(
+    (is_fedora() or is_rocky()) and is_cmake(),
+    strict=True,
+    reason="exceeds stack limits on Fedora/Rocky+CMake",
+)
+def test_2646_1():
+    """
+    It was observed that `test_2646` could crash early on when minor changes subtly
+    affected the stack depth of functions in lib/common/ns.c. Because `test_2646` is
+    expensive, this tries to validate the lack of such crashes with something quicker.
+    https://gitlab.com/graphviz/graphviz/-/issues/2646
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2646.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # Run this through Graphviz. We expect this long running process to timeout, not
+    # crash.
+    try:
+        run(["dot", "-Tpdf", "-o", os.devnull, input], timeout=10)
+    except subprocess.TimeoutExpired:
+        pass
 
 
 def test_2647():
