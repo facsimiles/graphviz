@@ -12,7 +12,7 @@ else
     cat /etc/os-release
     . /etc/os-release
 fi
-GV_VERSION=$( cat GRAPHVIZ_VERSION )
+GV_VERSION=$(python3 gen_version.py)
 DIR=Packages/${ID}/${VERSION_ID}
 ARCH=$( uname -m )
 

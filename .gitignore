@@ -7,7 +7,6 @@ CMakeCache.txt
 
 # product of: make dist
 /graphviz-*.tar.gz
-/GRAPHVIZ_VERSION
 
 # product of: make pkg
 /graphviz-*/

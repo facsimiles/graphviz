@@ -66,7 +66,6 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - GRAPHVIZ_VERSION
             - graphviz-*.tar.gz
             - graphviz-*.tar.xz
     except:
@@ -89,7 +88,6 @@ portable-source:
             - Packages/*/*/*.tar.xz
             - Packages/*/*/*.rpm
             - Metadata/*/*/configure.log
-            - GRAPHVIZ_VERSION
         reports:
             metrics: metrics.txt
     except:
@@ -114,7 +112,6 @@ portable-source:
             - Packages/*/*/*.tar.xz
             - Packages/*/*/*deb
             - Metadata/*/*/configure.log
-            - GRAPHVIZ_VERSION
         reports:
             metrics: metrics.txt
     except:
@@ -138,7 +135,6 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - GRAPHVIZ_VERSION
             - Packages/*/*/*.zip
             - Packages/*/*/*.tar.gz
         reports:
@@ -313,7 +309,6 @@ ubuntu-24.04-static-build:
         expire_in: 1 week
         paths:
             - Metadata/*/*/configure.log
-            - GRAPHVIZ_VERSION
         reports:
             metrics: metrics.txt
     tags:
@@ -400,11 +395,6 @@ windows-mingw64-build:
         - $Env:build_system = "autotools"
         - $Env:use_autogen = "yes"
         - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-build.sh'
-    artifacts:
-        when: always
-        expire_in: 1 week
-        paths:
-            - GRAPHVIZ_VERSION
     tags:
         - saas-windows-medium-amd64
     except:
@@ -429,11 +419,6 @@ windows-mingw64-static-build:
         - $Env:CONFIGURE_OPTIONS = "--disable-shared --enable-static"
         - $Env:use_autogen = "yes"
         - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-build.sh'
-    artifacts:
-        when: always
-        expire_in: 1 week
-        paths:
-            - GRAPHVIZ_VERSION
     tags:
         - saas-windows-medium-amd64
     except:
@@ -468,7 +453,6 @@ windows-cygwin-build:
         when: always
         expire_in: 1 week
         paths:
-            - GRAPHVIZ_VERSION
             - Packages/*/*/*.xz
     tags:
         - saas-windows-medium-amd64
@@ -494,7 +478,6 @@ windows-cygwin-build-using-autogen:
         - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
         - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
         - $Env:Path = "C:\cygwin64\bin;" + $Env:Path
-        - python gen_version.py --output GRAPHVIZ_VERSION
         - $Env:build_system = "autotools"
         - $Env:use_autogen = "yes"
         # change line endings from crlf to lf
@@ -627,7 +610,6 @@ ubuntu-24.10-cmake-ASan-build-and-test-including-ctest:
         - ci/linux-build-job-script.sh
         - echo 'leak:*libfontconfig*' > suppressions.txt
         - export LSAN_OPTIONS=suppressions=$(pwd)/suppressions.txt
-        - python gen_version.py --output GRAPHVIZ_VERSION
         - ci/linux-test-including-ctest-job-script.sh
     # enable test coverage visualization in MR diff view
     coverage: '/  lines\.{6}: \d+\.\d+%/'
@@ -1076,7 +1058,6 @@ ubuntu-22.04-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "ubuntu-22.04-cmake-build"
           artifacts: true
@@ -1089,7 +1070,6 @@ ubuntu-24.04-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "ubuntu-24.04-cmake-build"
           artifacts: true
@@ -1102,7 +1082,6 @@ ubuntu-24.10-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "ubuntu-24.10-cmake-build"
           artifacts: true
@@ -1115,7 +1094,6 @@ ubuntu-25.04-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "ubuntu-25.04-cmake-build"
           artifacts: true
@@ -1128,7 +1106,6 @@ rocky8-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "rocky8-cmake-build"
           artifacts: true
@@ -1141,7 +1118,6 @@ rocky9-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "rocky9-cmake-build"
           artifacts: true
@@ -1154,7 +1130,6 @@ fedora41-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "fedora41-cmake-build"
           artifacts: true
@@ -1167,7 +1142,6 @@ fedora42-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "fedora42-cmake-build"
           artifacts: true
@@ -1181,7 +1155,6 @@ macos-cmake-test:
     before_script:
         - source ci/macos-install-runtime-dependencies.sh
         - export build_system="cmake"
-        - python3 gen_version.py --output GRAPHVIZ_VERSION
     needs:
         - job: "macos-cmake-build"
           artifacts: true

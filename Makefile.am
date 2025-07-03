@@ -17,9 +17,6 @@ SUBDIRS = $(subdirs) lib plugin cmd tclpkg doc contrib share graphs tests
 doxygen:
 	doxygen
 
-dist-hook:
-	echo "$(VERSION)" >GRAPHVIZ_VERSION
-
 BUILT_SOURCES = $(top_builddir)/graphviz_version.h
 
 $(top_builddir)/graphviz_version.h: config.h

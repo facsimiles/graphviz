@@ -8,7 +8,7 @@ set -u
 set -x
 
 # build and install Graphviz, which will be used by Doxygen
-GV_VERSION=$( cat GRAPHVIZ_VERSION )
+GV_VERSION=$(python3 gen_version.py)
 tar xfz graphviz-${GV_VERSION}.tar.gz
 mkdir build
 cd build

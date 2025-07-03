@@ -12,7 +12,7 @@ set -x
 uname -rms
 cat /etc/os-release
 
-GV_VERSION=$(cat GRAPHVIZ_VERSION)
+GV_VERSION=$(python3 gen_version.py)
 
 # unpack the portable source tarball
 tar xfz graphviz-${GV_VERSION}.tar.gz
