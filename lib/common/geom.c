@@ -181,15 +181,11 @@ boxf flip_rec_boxf(boxf b, pointf p)
 {
     boxf r;
     /* flip box */
-    r.UR.x = b.UR.y;
-    r.UR.y = b.UR.x;
-    r.LL.x = b.LL.y;
-    r.LL.y = b.LL.x;
+    r.UR = exch_xyf(b.UR);
+    r.LL = exch_xyf(b.LL);
     /* move box */
-    r.LL.x += p.x;
-    r.LL.y += p.y;
-    r.UR.x += p.x;
-    r.UR.y += p.y;
+    r.LL = add_pointf(r.LL, p);
+    r.UR = add_pointf(r.UR, p);
     return r;
 }
 
