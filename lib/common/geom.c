@@ -155,22 +155,15 @@ pointf cwrotatepf(pointf p, int cwrot)
 pointf ccwrotatepf(pointf p, int ccwrot)
 {
     assert(ccwrot == 0 || ccwrot == 90 || ccwrot == 180 || ccwrot == 270);
-    double x = p.x, y = p.y;
     switch (ccwrot) {
     case 0:
 	break;
     case 90:
-	p.x = -y;
-	p.y = x;
-	break;
+	return perp(p);
     case 180:
-	p.x = x;
-	p.y = -y;
-	break;
+	return (pointf){.x = p.x, .y = -p.y};
     case 270:
-	p.x = y;
-	p.y = x;
-	break;
+	return exch_xyf(p);
     default:
 	UNREACHABLE();
     }
