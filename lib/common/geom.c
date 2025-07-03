@@ -68,17 +68,12 @@ int lineToBox(pointf p, pointf q, boxf b)
      */
 
     if (p.x == q.x) {
-        /*
-         * Vertical line.
-         */
-
+        // vertical line
         if (((p.y >= b.LL.y) ^ (q.y >= b.LL.y)) && BETWEEN(b.LL.x, p.x, b.UR.x)) {
             return 0;
         }
     } else if (p.y == q.y) {
-        /*
-         * Horizontal line.
-         */
+        // horizontal line
         if (((p.x >= b.LL.x) ^ (q.x >= b.LL.x)) && BETWEEN(b.LL.y, p.y, b.UR.y)) {
             return 0;
         }
@@ -95,28 +90,19 @@ int lineToBox(pointf p, pointf q, boxf b)
         double low = fmin(p.x, q.x);
         double high = fmax(p.x, q.x);
 
-        /*
-         * Left edge.
-         */
-
+        // left edge
         y = p.y + (b.LL.x - p.x)*m;
         if (BETWEEN(low, b.LL.x, high) && BETWEEN(b.LL.y, y, b.UR.y)) {
             return 0;
         }
 
-        /*
-         * Right edge.
-         */
-
+        // right edge
         y += (b.UR.x - b.LL.x)*m;
         if (BETWEEN(b.LL.y, y, b.UR.y) && BETWEEN(low, b.UR.x, high)) {
             return 0;
         }
 
-        /*
-         * Bottom edge.
-         */
-
+        // bottom edge
         low = fmin(p.y, q.y);
         high = fmax(p.y, q.y);
         x = p.x + (b.LL.y - p.y)/m;
@@ -124,10 +110,7 @@ int lineToBox(pointf p, pointf q, boxf b)
             return 0;
         }
 
-        /*
-         * Top edge.
-         */
-
+        // top edge
         x += (b.UR.y - b.LL.y)/m;
         if (BETWEEN(b.LL.x, x, b.UR.x) && BETWEEN(low, b.UR.y, high)) {
             return 0;
