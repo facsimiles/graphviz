@@ -2,23 +2,8 @@
 /// @brief Base64 encoding
 #pragma once
 
-/// hide the symbols this header declares by default
-///
-/// The expectation is that users of this header (applications, shared
-/// libraries, or static libraries) want to call `gv_base64` but not re-export
-/// it to their users. This annotation is only correct while the containing
-/// library is built statically. If it were built as a shared library,
-/// `gv_base64` would need to have `default` visibility (and thus be unavoidably
-/// re-exported) in order to be callable.
-#ifndef UTIL_API
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define UTIL_API __attribute__((visibility("hidden")))
-#else
-#define UTIL_API /* nothing */
-#endif
-#endif
-
 #include <stddef.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
