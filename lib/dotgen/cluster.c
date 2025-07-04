@@ -281,9 +281,7 @@ int expand_cluster(graph_t *subg) {
     GD_comp(subg).size = 1;
     GD_comp(subg).list[0] = GD_nlist(subg);
     allocate_ranks(subg);
-    ints_t scratch = {0};
-    const int rc = build_ranks(subg, 0, &scratch);
-    ints_free(&scratch);
+    const int rc = build_ranks(subg, 0);
     if (rc != 0) {
         return rc;
     }
