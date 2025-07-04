@@ -60,7 +60,6 @@ Makefile
 doc/Makefile
 doc/info/Makefile
 doc/schema/Makefile
-!rtest2/Makefile
 !windows/build/Makefile
 !windows/prebuild/Makefile
 *.pc
@@ -190,7 +189,6 @@ contrib/diffimg/diffimg
 contrib/prune/prune
 
 # Files generated during make check
-tests/ndata
 tests/nhtml
 tests/tmp*
 tests/**/*.log
@@ -207,7 +205,6 @@ build/**
 *.lib
 *.pdb
 graphviz.sdf
-lib/color_lib
 
 # User specific Visual Studio folders and files
 .vs/**

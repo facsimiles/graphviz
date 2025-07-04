@@ -7,22 +7,25 @@ TODO:
  Report differences with shared version and with new output.
 """
 
-import hashlib
 import io
+import os
 import platform
 import re
 import shutil
 import subprocess
 import sys
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
 
+sys.path.append(os.path.dirname(__file__))
+from gvtest import run  # pylint: disable=wrong-import-position
+
 # Test specifications
 GRAPHDIR = Path(__file__).parent / "graphs"
 # Directory of input graphs and data
-OUTDIR = Path("ndata")  # Directory for test output
 OUTHTML = Path("nhtml")  # Directory for html test report
 
 
@@ -35,6 +38,7 @@ class Case:
     algorithm: str
     format: str
     flags: list[str]
+    index: int = 0
 
 
 TESTS: list[Case] = [
@@ -90,6 +94,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=r"],
+        1,
     ),
     Case(
         "clustlabel",
@@ -97,6 +102,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=t", "-Glabeljust=l"],
+        2,
     ),
     Case(
         "clustlabel",
@@ -104,6 +110,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=l"],
+        3,
     ),
     Case(
         "clustlabel",
@@ -111,6 +118,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=t", "-Glabeljust=c"],
+        4,
     ),
     Case(
         "clustlabel",
@@ -118,9 +126,10 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=c"],
+        5,
     ),
-    Case("clustlabel", Path("clustlabel.gv"), "dot", "ps", ["-Glabelloc=t"]),
-    Case("clustlabel", Path("clustlabel.gv"), "dot", "ps", ["-Glabelloc=b"]),
+    Case("clustlabel", Path("clustlabel.gv"), "dot", "ps", ["-Glabelloc=t"], 6),
+    Case("clustlabel", Path("clustlabel.gv"), "dot", "ps", ["-Glabelloc=b"], 7),
     Case(
         "rootlabel",
         Path("rootlabel.gv"),
@@ -134,6 +143,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=r"],
+        1,
     ),
     Case(
         "rootlabel",
@@ -141,6 +151,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=t", "-Glabeljust=l"],
+        2,
     ),
     Case(
         "rootlabel",
@@ -148,6 +159,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=l"],
+        3,
     ),
     Case(
         "rootlabel",
@@ -155,6 +167,7 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=t", "-Glabeljust=c"],
+        4,
     ),
     Case(
         "rootlabel",
@@ -162,17 +175,23 @@ TESTS: list[Case] = [
         "dot",
         "ps",
         ["-Glabelloc=b", "-Glabeljust=c"],
+        5,
     ),
-    Case("rootlabel", Path("rootlabel.gv"), "dot", "ps", ["-Glabelloc=t"]),
-    Case("rootlabel", Path("rootlabel.gv"), "dot", "ps", ["-Glabelloc=b"]),
+    Case("rootlabel", Path("rootlabel.gv"), "dot", "ps", ["-Glabelloc=t"], 6),
+    Case("rootlabel", Path("rootlabel.gv"), "dot", "ps", ["-Glabelloc=b"], 7),
     Case("layers", Path("layers.gv"), "dot", "ps", []),
     # check mode=hier
     Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=KK"]),
-    Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=hier"]),
-    Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=hier", "-Glevelsgap=1"]),
+    Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=hier"], 1),
+    Case("mode", Path("mode.gv"), "neato", "ps", ["-Gmode=hier", "-Glevelsgap=1"], 2),
     Case("model", Path("mode.gv"), "neato", "ps", ["-Gmodel=circuit"]),
     Case(
-        "model", Path("mode.gv"), "neato", "ps", ["-Goverlap=false", "-Gmodel=subset"]
+        "model",
+        Path("mode.gv"),
+        "neato",
+        "ps",
+        ["-Goverlap=false", "-Gmodel=subset"],
+        1,
     ),
     # cairo versions have problems
     Case("nojustify", Path("nojustify.gv"), "dot", "png", []),
@@ -181,15 +200,15 @@ TESTS: list[Case] = [
     Case("nojustify", Path("nojustify.gv"), "dot", "ps:cairo", []),
     # bug
     Case("ordering", Path("ordering.gv"), "dot", "gv", ["-Gordering=in"]),
-    Case("ordering", Path("ordering.gv"), "dot", "gv", ["-Gordering=out"]),
+    Case("ordering", Path("ordering.gv"), "dot", "gv", ["-Gordering=out"], 1),
     Case("overlap", Path("overlap.gv"), "neato", "gv", ["-Goverlap=false"]),
-    Case("overlap", Path("overlap.gv"), "neato", "gv", ["-Goverlap=scale"]),
+    Case("overlap", Path("overlap.gv"), "neato", "gv", ["-Goverlap=scale"], 1),
     Case("pack", Path("pack.gv"), "neato", "gv", []),
-    Case("pack", Path("pack.gv"), "neato", "gv", ["-Gpack=20"]),
-    Case("pack", Path("pack.gv"), "neato", "gv", ["-Gpackmode=graph"]),
+    Case("pack", Path("pack.gv"), "neato", "gv", ["-Gpack=20"], 1),
+    Case("pack", Path("pack.gv"), "neato", "gv", ["-Gpackmode=graph"], 2),
     Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11"]),
-    Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11", "-Gpagedir=TL"]),
-    Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11", "-Gpagedir=TR"]),
+    Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11", "-Gpagedir=TL"], 1),
+    Case("page", Path("mode.gv"), "neato", "ps", ["-Gpage=8.5,11", "-Gpagedir=TR"], 2),
     # pencolor, fontcolor, fillcolor
     Case("colors", Path("colors.gv"), "dot", "ps", []),
     Case("polypoly", Path("polypoly.gv"), "dot", "ps", []),
@@ -197,11 +216,11 @@ TESTS: list[Case] = [
     Case("ports", Path("ports.gv"), "dot", "gv", []),
     Case("rotate", Path("crazy.gv"), "dot", "png", ["-Glandscape"]),
     Case("rotate", Path("crazy.gv"), "dot", "ps", ["-Glandscape"]),
-    Case("rotate", Path("crazy.gv"), "dot", "png", ["-Grotate=90"]),
-    Case("rotate", Path("crazy.gv"), "dot", "ps", ["-Grotate=90"]),
+    Case("rotate", Path("crazy.gv"), "dot", "png", ["-Grotate=90"], 1),
+    Case("rotate", Path("crazy.gv"), "dot", "ps", ["-Grotate=90"], 1),
     Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=LR"]),
-    Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=BT"]),
-    Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=RL"]),
+    Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=BT"], 1),
+    Case("rankdir", Path("crazy.gv"), "dot", "gv", ["-Grankdir=RL"], 2),
     Case("url", Path("url.gv"), "dot", "ps2", []),
     Case("url", Path("url.gv"), "dot", "svg", ["-Gstylesheet=stylesheet"]),
     Case("url", Path("url.gv"), "dot", "imap", []),
@@ -218,6 +237,7 @@ TESTS: list[Case] = [
         "neato",
         "png",
         ["-Gviewport=300,300,1,200,620", "-n2"],
+        1,
     ),
     Case(
         "viewport",
@@ -225,6 +245,7 @@ TESTS: list[Case] = [
         "neato",
         "ps",
         ["-Gviewport=300,300,1,200,620", "-n2"],
+        1,
     ),
     Case(
         "viewport",
@@ -232,6 +253,7 @@ TESTS: list[Case] = [
         "neato",
         "png",
         ["-Gviewport=300,300,2,200,620", "-n2"],
+        2,
     ),
     Case(
         "viewport",
@@ -239,16 +261,17 @@ TESTS: list[Case] = [
         "neato",
         "ps",
         ["-Gviewport=300,300,2,200,620", "-n2"],
+        2,
     ),
     Case("rowcolsep", Path("rowcolsep.gv"), "dot", "gv", ["-Gnodesep=0.5"]),
-    Case("rowcolsep", Path("rowcolsep.gv"), "dot", "gv", ["-Granksep=1.5"]),
+    Case("rowcolsep", Path("rowcolsep.gv"), "dot", "gv", ["-Granksep=1.5"], 1),
     Case("size", Path("mode.gv"), "neato", "ps", ["-Gsize=5,5"]),
     Case("size", Path("mode.gv"), "neato", "png", ["-Gsize=5,5"]),
     # size with !
     Case("size_ex", Path("root.gv"), "dot", "ps", ["-Gsize=6,6!"]),
     Case("size_ex", Path("root.gv"), "dot", "png", ["-Gsize=6,6!"]),
     Case("dotsplines", Path("size.gv"), "dot", "gv", ["-Gsplines=line"]),
-    Case("dotsplines", Path("size.gv"), "dot", "gv", ["-Gsplines=polyline"]),
+    Case("dotsplines", Path("size.gv"), "dot", "gv", ["-Gsplines=polyline"], 1),
     Case(
         "neatosplines",
         Path("overlap.gv"),
@@ -262,6 +285,7 @@ TESTS: list[Case] = [
         "neato",
         "gv",
         ["-Goverlap=false", "-Gsplines=polyline"],
+        1,
     ),
     Case("style", Path("style.gv"), "dot", "ps", []),
     Case("style", Path("style.gv"), "dot", "png", []),
@@ -274,7 +298,7 @@ TESTS: list[Case] = [
     Case("cairo", Path("cairo.gv"), "dot", "png:cairo", []),
     Case("cairo", Path("cairo.gv"), "dot", "svg:cairo", []),
     Case("flatedge", Path("flatedge.gv"), "dot", "gv", []),
-    Case("nestedclust", Path("nestedclust"), "dot", "gv", []),
+    Case("nestedclust", Path("nestedclust.gv"), "dot", "gv", []),
     Case("rd_rules", Path("rd_rules.gv"), "dot", "png", []),
     Case("sq_rules", Path("sq_rules.gv"), "dot", "png", []),
     Case("fdp_clus", Path("fdp.gv"), "fdp", "png", []),
@@ -302,16 +326,18 @@ TESTS: list[Case] = [
 ]
 
 
-def doDiff(OUTFILE, testname, fmt):
+def doDiff(output: Path, reference: Path, testname, fmt):
     """
     Compare old and new output and report if different.
-     Args: testname index fmt
+
+    Args:
+        output: File generated during this test run
+        reference: Golden copy to compare against
     """
-    FILE1 = OUTDIR / OUTFILE
-    FILE2 = REFDIR / OUTFILE
+    OUTFILE = reference.name
     F = fmt.split(":")[0]
     if F in ["ps", "ps2"]:
-        with open(FILE1, "rt", encoding="latin-1") as src:
+        with open(output, "rt", encoding="latin-1") as src:
             dst1 = io.StringIO()
             done_setup = False
             for line in src:
@@ -320,7 +346,7 @@ def doDiff(OUTFILE, testname, fmt):
                 else:
                     done_setup = re.match(r"%%End.*Setup", line) is not None
 
-        with open(FILE2, "rt", encoding="latin-1") as src:
+        with open(reference, "rt", encoding="latin-1") as src:
             dst2 = io.StringIO()
             done_setup = False
             for line in src:
@@ -331,41 +357,43 @@ def doDiff(OUTFILE, testname, fmt):
 
         returncode = 0 if dst1.getvalue() == dst2.getvalue() else -1
     elif F == "svg":
-        with open(FILE1, "rt", encoding="utf-8") as f:
+        with open(output, "rt", encoding="utf-8") as f:
             a = re.sub(r"^<!--.*-->$", "", f.read(), flags=re.MULTILINE)
-        with open(FILE2, "rt", encoding="utf-8") as f:
+        with open(reference, "rt", encoding="utf-8") as f:
             b = re.sub(r"^<!--.*-->$", "", f.read(), flags=re.MULTILINE)
         returncode = 0 if a.strip() == b.strip() else -1
     elif F == "png":
         OUTHTML.mkdir(exist_ok=True)
         returncode = subprocess.call(
-            ["diffimg", FILE1, FILE2, OUTHTML / f"dif_{OUTFILE}"],
+            ["diffimg", output, reference, OUTHTML / f"dif_{reference.name}"],
         )
         if returncode != 0:
             with open(OUTHTML / "index.html", "at", encoding="utf-8") as fd:
                 fd.write("<p>\n")
-                shutil.copyfile(FILE2, OUTHTML / f"old_{OUTFILE}")
+                shutil.copyfile(reference, OUTHTML / f"old_{OUTFILE}")
                 fd.write(f'<img src="old_{OUTFILE}" width="192" height="192">\n')
-                shutil.copyfile(FILE1, OUTHTML / f"new_{OUTFILE}")
+                shutil.copyfile(output, OUTHTML / f"new_{OUTFILE}")
                 fd.write(f'<img src="new_{OUTFILE}" width="192" height="192">\n')
                 fd.write(f'<img src="dif_{OUTFILE}" width="192" height="192">\n')
         else:
             (OUTHTML / f"dif_{OUTFILE}").unlink()
     else:
-        with open(FILE2, "rt", encoding="utf-8") as a:
-            with open(FILE1, "rt", encoding="utf-8") as b:
+        with open(reference, "rt", encoding="utf-8") as a:
+            with open(output, "rt", encoding="utf-8") as b:
                 returncode = 0 if a.read().strip() == b.read().strip() else -1
-    if returncode != 0:
-        # FIXME: pytest.fail when all tests pass on all platforms
-        print(f"Test {testname}: == Failed == {OUTFILE}", file=sys.stderr)
+    assert returncode == 0, f"Test {testname}: == Failed == {OUTFILE}"
 
 
-def genOutname(name, alg, fmt, flags: list[str]):
+def genOutname(name, alg, fmt, index: int):
     """
-    Generate output file name given 4 parameters.
-      testname layout format flags
-    If format ends in :*, remove this, change the colons to underscores,
-    and append to basename
+    Generate output file name
+
+    Args:
+        name: Name of the current test case.
+        alg: Algorithm (-K).
+        fmt: Format (-T). If format ends in :*, remove this, change the colons to
+            underscores, and append to basename.
+        index: A number to discriminate test cases that are otherwise indistinguishable.
     """
     fmt_split = fmt.split(":")
     if len(fmt_split) >= 2:
@@ -375,29 +403,49 @@ def genOutname(name, alg, fmt, flags: list[str]):
         F = fmt
         XFMT = ""
 
-    suffix = hashlib.sha256()
-    for flag in flags:
-        suffix.update(f"{flag} ".encode("utf-8"))
+    suffix = "" if index == 0 else str(index)
 
-    OUTFILE = f"{name}_{alg}{XFMT}_{suffix.hexdigest()}.{F}"
+    OUTFILE = f"{name}_{alg}{XFMT}{suffix}.{F}"
     return OUTFILE
 
 
 @pytest.mark.parametrize(
-    "name,input,algorithm,format,flags",
-    ((c.name, c.input, c.algorithm, c.format, c.flags) for c in TESTS),
+    "name,input,algorithm,format,flags,index",
+    ((c.name, c.input, c.algorithm, c.format, c.flags, c.index) for c in TESTS),
 )
-def test_graph(name: str, input: Path, algorithm: str, format: str, flags: list[str]):
+@pytest.mark.xfail(strict=True)
+def test_graph(
+    name: str,
+    input: Path,
+    algorithm: str,
+    format: str,
+    flags: list[str],
+    index: int,
+    tmp_path: Path,
+):  # pylint: disable=too-many-arguments,too-many-positional-arguments
     """
     Run a single test.
+
+    Args:
+        tmp_path: Transient working directory, created by Pytest
     """
+    MY_DIR = Path(__file__).resolve().parent
+    if platform.system() == "Linux":
+        REFDIR = MY_DIR / "linux.x86"
+    elif platform.system() == "Darwin":
+        REFDIR = MY_DIR / "macosx"
+    elif platform.system() == "Windows":
+        REFDIR = MY_DIR / "nshare"
+    else:
+        warnings.warn(f'Unrecognized system "{platform.system()}"')
+        REFDIR = MY_DIR / "nshare"
+
     if input.suffix != ".gv":
         pytest.skip(f"Unknown graph spec, test {name} - ignoring")
     INFILE = GRAPHDIR / input
 
-    OUTFILE = genOutname(name, algorithm, format, flags)
-    OUTDIR.mkdir(exist_ok=True)
-    OUTPATH = OUTDIR / OUTFILE
+    OUTFILE = genOutname(name, algorithm, format, index)
+    OUTPATH = tmp_path / OUTFILE
     testcmd = ["dot", f"-K{algorithm}", f"-T{format}"] + flags + ["-o", OUTPATH, INFILE]
     # FIXME: Remove when https://gitlab.com/graphviz/graphviz/-/issues/1790 is
     # fixed
@@ -407,27 +455,5 @@ def test_graph(name: str, input: Path, algorithm: str, format: str, flags: list[
             "because it fails with Windows builds (#1790)"
         )
 
-    RVAL = subprocess.call(testcmd, stderr=subprocess.STDOUT)
-
-    if RVAL != 0 or not OUTPATH.exists():
-        pytest.fail(
-            f'Test {name}: == Layout failed ==\n  {" ".join(str(a) for a in testcmd)}'
-        )
-    elif (REFDIR / OUTFILE).exists():
-        doDiff(OUTFILE, name, format)
-    else:
-        sys.stderr.write(
-            f"Test {name}: == No file {REFDIR}/{OUTFILE} for comparison ==\n"
-        )
-
-
-# Set REFDIR
-if platform.system() == "Linux":
-    REFDIR = Path("linux.x86")
-elif platform.system() == "Darwin":
-    REFDIR = Path("macosx")
-elif platform.system() == "Windows":
-    REFDIR = Path("nshare")
-else:
-    print(f'Unrecognized system "{platform.system()}"', file=sys.stderr)
-    REFDIR = Path("nshare")
+    run(testcmd)
+    doDiff(OUTPATH, REFDIR / OUTFILE, name, format)
