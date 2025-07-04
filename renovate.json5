@@ -25,4 +25,8 @@
     "python": "3.8"
   },
   "constraintsFiltering": "strict",
+  // Rebasing concurrent renovate branches so we can merge them serially chews
+  // up our CI quota. Better to make renovate only propose changes serially in
+  // the first place.
+  "prConcurrentLimit": 1,
 }
