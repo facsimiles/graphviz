@@ -460,22 +460,6 @@
     return value;                                                              \
   }                                                                            \
                                                                                \
-  /** create a new list from a bare array and element count                    \
-   *                                                                           \
-   * This can be useful when receiving data from a caller who does not use     \
-   * this API, but the callee wants to. Note that the backing data for the     \
-   * array must have been heap-allocated.                                      \
-   *                                                                           \
-   * \param data Array of existing elements                                    \
-   * \param size Number of elements pointed to by `data`                       \
-   * \return A managed list containing the provided elements                   \
-   */                                                                          \
-  static inline UNUSED name##_t name##_attach(type *data, size_t size) {       \
-    assert(data != NULL || size == 0);                                         \
-    name##_t list = {data, 0, size, size};                                     \
-    return list;                                                               \
-  }                                                                            \
-                                                                               \
   /** transform a managed list into a bare array                               \
    *                                                                           \
    * This can be useful when needing to pass data to a callee who does not     \

@@ -469,7 +469,7 @@ static void test_large(void) {
   ints_free(&xs);
 }
 
-static void test_attach_detach(void) {
+static void test_detach(void) {
   ints_t xs = {0};
   for (size_t i = 0; i < 10; ++i) {
     ints_append(&xs, (int)i);
@@ -483,14 +483,7 @@ static void test_attach_detach(void) {
     assert(ys[i] == (int)i);
   }
 
-  ints_t zs = ints_attach(ys, 10);
-  assert(ints_size(&zs) == 10);
-
-  for (size_t i = 0; i < 10; ++i) {
-    assert(ints_get(&zs, i) == (int)i);
-  }
-
-  ints_free(&zs);
+  free(ys);
 }
 
 DEFINE_LIST_WITH_DTOR(strs, char *, free)
@@ -566,7 +559,7 @@ int main(void) {
   RUN(push_back);
   RUN(pop_back);
   RUN(large);
-  RUN(attach_detach);
+  RUN(detach);
   RUN(dtor);
   RUN(remove_with_dtor);
 
