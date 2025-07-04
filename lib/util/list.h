@@ -272,31 +272,6 @@
     list->capacity = capacity;                                                 \
   }                                                                            \
                                                                                \
-  /** shrink or grow the list to the given size                                \
-   *                                                                           \
-   * \param list List to operate on                                            \
-   * \param size New size of the list                                          \
-   * \param value Default to assign to any new elements                        \
-   */                                                                          \
-  static inline UNUSED void name##_resize(name##_t *list, size_t size,         \
-                                          type value) {                        \
-    assert(list != NULL);                                                      \
-                                                                               \
-    if (list->size < size) {                                                   \
-      /* we are expanding the list */                                          \
-      while (list->size < size) {                                              \
-        name##_append(list, value);                                            \
-      }                                                                        \
-    } else if (list->size > size) {                                            \
-      /* we are shrinking the list */                                          \
-      while (list->size > size) {                                              \
-        dtor(name##_get(list, list->size - 1));                                \
-        ASAN_POISON(name##_at(list, list->size - 1), sizeof(type));            \
-        --list->size;                                                          \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
   /** is the given element in the list? */                                     \
   static inline UNUSED bool name##_contains(                                   \
       const name##_t *haystack, const type needle,                             \
