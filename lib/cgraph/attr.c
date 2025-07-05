@@ -155,9 +155,7 @@ const char AgDataRecName[] = "_AG_strdata";
 
 static int topdictsize(Agobj_t * obj)
 {
-    Dict_t *d;
-
-    d = agdictof(agroot(agraphof(obj)), AGTYPE(obj));
+    Dict_t *const d = agdictof(agroot(agraphof(obj)), AGTYPE(obj));
     return d ? dtsize(d) : 0;
 }
 
