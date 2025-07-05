@@ -55,9 +55,7 @@ Agdatadict_t *agdatadict(Agraph_t *g, bool cflag) {
 
 static Dict_t *agdictof(Agraph_t * g, int kind)
 {
-    Agdatadict_t *dd;
-
-    dd = agdatadict(g, false);
+    Agdatadict_t *const dd = agdatadict(g, false);
     if (dd)
 	switch (kind) {
 	case AGRAPH:
