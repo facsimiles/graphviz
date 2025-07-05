@@ -86,12 +86,11 @@ static Agsym_t *agnewsym(Agraph_t * g, const char *name, const char *value,
 
 static void agcopydict(Dict_t * src, Dict_t * dest, Agraph_t * g, int kind)
 {
-    Agsym_t *sym, *newsym;
-
     assert(dtsize(dest) == 0);
-    for (sym = dtfirst(src); sym; sym = dtnext(src, sym)) {
+    for (Agsym_t *sym = dtfirst(src); sym; sym = dtnext(src, sym)) {
 	const bool is_html = aghtmlstr(sym->defval);
-	newsym = agnewsym(g, sym->name, sym->defval, is_html, sym->id, kind);
+	Agsym_t *const newsym = agnewsym(g, sym->name, sym->defval, is_html, sym->id,
+	                                 kind);
 	newsym->print = sym->print;
 	newsym->fixed = sym->fixed;
 	dtinsert(dest, newsym);
