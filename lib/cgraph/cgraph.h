@@ -296,7 +296,7 @@ struct Agdesc_s {         /* graph descriptor */
  *  (This section is not intended for casual users.)
  *
  *  Programmer-defined disciplines customize certain resources:
- *  ID namespace, memory, and I/O - needed by Libcgraph.
+ *  ID namespace and I/O - needed by Libcgraph.
  *  A discipline struct (or NULL) is passed at graph creation time.
  *  @{
  */
@@ -441,7 +441,7 @@ CGRAPH_API Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t *disc);
  * A strict graph cannot have multi-edges or self-arcs.
  *
  * @param disc - discipline structure which can be used
- * to tailor I/O, memory allocation, and ID allocation. Typically, a NULL
+ * to tailor I/O and ID allocation. Typically, a NULL
  * value will be used to indicate the default discipline @ref AgDefaultDisc.
  */
 
