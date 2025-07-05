@@ -162,19 +162,16 @@ static int topdictsize(Agobj_t * obj)
 /* g can be either the enclosing graph, or ProtoGraph */
 static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
 {
-    Agattr_t *rec;
-    Agsym_t *sym;
-    Dict_t *datadict;
-
-    rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t), false);
-    datadict = agdictof(context, AGTYPE(obj));
+    Agattr_t *const rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t),
+                                    false);
+    Dict_t *const datadict = agdictof(context, AGTYPE(obj));
     assert(datadict);
     if (rec->dict == NULL) {
 	rec->dict = agdictof(agroot(context), AGTYPE(obj));
 	const int sz = topdictsize(obj);
 	rec->str = gv_calloc((size_t)sz, sizeof(char *));
 	/* doesn't call agxset() so no obj-modified callbacks occur */
-	for (sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym)) {
+	for (Agsym_t *sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym)) {
 	    if (aghtmlstr(sym->defval)) {
 	        rec->str[sym->id] = agstrdup_html(agraphof(obj), sym->defval);
 	    } else {
