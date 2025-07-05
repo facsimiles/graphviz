@@ -100,14 +100,14 @@ static void agcopydict(Dict_t * src, Dict_t * dest, Agraph_t * g, int kind)
 static Agdatadict_t *agmakedatadict(Agraph_t * g)
 {
     Agraph_t *par;
-    Agdatadict_t *parent_dd, *dd;
 
-    dd = agbindrec(g, DataDictName, sizeof(Agdatadict_t), false);
+    Agdatadict_t *const dd = agbindrec(g, DataDictName, sizeof(Agdatadict_t),
+                                       false);
     dd->dict.n = agdtopen(&AgDataDictDisc, Dttree);
     dd->dict.e = agdtopen(&AgDataDictDisc, Dttree);
     dd->dict.g = agdtopen(&AgDataDictDisc, Dttree);
     if ((par = agparent(g))) {
-	parent_dd = agdatadict(par, false);
+	Agdatadict_t *const parent_dd = agdatadict(par, false);
 	assert(dd != parent_dd);
 	dtview(dd->dict.n, parent_dd->dict.n);
 	dtview(dd->dict.e, parent_dd->dict.e);
@@ -116,7 +116,7 @@ static Agdatadict_t *agmakedatadict(Agraph_t * g)
 	if (ProtoGraph && g != ProtoGraph) {
 	    /* it's not ok to dtview here for several reasons. the proto
 	       graph could change, and the sym indices don't match */
-	    parent_dd = agdatadict(ProtoGraph, false);
+	    Agdatadict_t *const parent_dd = agdatadict(ProtoGraph, false);
 	    agcopydict(parent_dd->dict.n, dd->dict.n, g, AGNODE);
 	    agcopydict(parent_dd->dict.e, dd->dict.e, g, AGEDGE);
 	    agcopydict(parent_dd->dict.g, dd->dict.g, g, AGRAPH);
