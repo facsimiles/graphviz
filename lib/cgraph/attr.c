@@ -56,28 +56,22 @@ Agdatadict_t *agdatadict(Agraph_t *g, bool cflag) {
 static Dict_t *agdictof(Agraph_t * g, int kind)
 {
     Agdatadict_t *dd;
-    Dict_t *dict;
 
     dd = agdatadict(g, false);
     if (dd)
 	switch (kind) {
 	case AGRAPH:
-	    dict = dd->dict.g;
-	    break;
+	    return dd->dict.g;
 	case AGNODE:
-	    dict = dd->dict.n;
-	    break;
+	    return dd->dict.n;
 	case AGINEDGE:
 	case AGOUTEDGE:
-	    dict = dd->dict.e;
-	    break;
+	    return dd->dict.e;
 	default:
 	    agerrorf("agdictof: unknown kind %d\n", kind);
-	    dict = NULL;
 	    break;
-    } else
-	dict = NULL;
-    return dict;
+    }
+    return NULL;
 }
 
 /// @param is_html Is `value` an HTML-like string?
