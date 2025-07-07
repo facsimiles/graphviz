@@ -1366,6 +1366,80 @@ def test_1648(fmt: str, layerselect: int):
     run(["dot", f"-Glayerselect={layerselect}", f"-T{fmt}", "-o", os.devnull, input])
 
 
+@pytest.mark.parametrize(
+    "fmt",
+    (
+        "bmp",
+        "canon",
+        "cmap",
+        "cmapx",
+        "cmapx_np",
+        "dot",
+        "dot_json",
+        "eps",
+        "fig",
+        "gv",
+        "ico",
+        "imap",
+        "imap_np",
+        "ismap",
+        "jpe",
+        "jpeg",
+        "jpg",
+        "json",
+        "json0",
+        "kitty",
+        "kittyz",
+        "pdf",
+        "pic",
+        "plain",
+        "plain-ext",
+        "png",
+        "pov",
+        "ps",
+        "ps2",
+        "svg",
+        "svg_inline",
+        "svgz",
+        "tif",
+        "tiff",
+        "tk",
+        "vt",
+        "vt-24bit",
+        "vt-4up",
+        "vt-6up",
+        "vt-8up",
+        "x11",
+        "xdot",
+        "xdot1.2",
+        "xdot1.4",
+        "xdot_json",
+        "xlib",
+    ),
+)
+@pytest.mark.xfail(
+    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/1648"
+)
+def test_1648_1(fmt: str):
+    """
+    `layerselect` should not cause crashes
+    https://gitlab.com/graphviz/graphviz/-/issues/1648
+    https://forum.graphviz.org/t/segmentation-fault-when-using-layerselect/3077
+
+    Args:
+        fmt: output format (`-T…`) to test
+    """
+
+    # a simple arbitrary graph
+    source = "graph {}"
+
+    # run this through Graphviz
+    run(
+        ["dot", f"-T{fmt}", "-Glayers=a, b", "-Glayerselect=b", "-o", os.devnull],
+        input=source,
+    )
+
+
 def test_1658():
     """
     the graph associated with this test case should not crash Graphviz
