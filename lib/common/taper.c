@@ -29,6 +29,12 @@
 #include <util/list.h>
 #include <util/prisize_t.h>
 
+#ifdef DEBUG
+enum { debug = 1 };
+#else
+enum { debug = 0 };
+#endif
+
   /* sample point size; should be dynamic based on dpi or under user control */
 #define BEZIERSUBDIVISION 20
 
@@ -101,17 +107,16 @@ insertArr (vararr_t* arr, pointf p, double l)
   vararr_append(arr, pt);
 }
 
-#ifdef DEBUG
 static void
 printArr (vararr_t* arr, FILE* fp)
 {
     fprintf(fp, "size %" PRISIZE_T "\n", vararr_size(arr));
     for (size_t i = 0; i < vararr_size(arr); i++) {
 	pathpoint pt = vararr_get(arr, i);
-	fprintf (fp, "  [%d] x %.02f y  %.02f d %.02f\n", i, pt.x, pt.y, pt.lengthsofar);
+	fprintf(fp, "  [%" PRISIZE_T "] x %.02f y  %.02f d %.02f\n", i, pt.x, pt.y,
+	        pt.lengthsofar);
     }
 }
-#endif
 
 static double l2dist (pointf p0, pointf p1)
 {
@@ -152,9 +157,9 @@ static vararr_t pathtolines(bezier *bez) {
 	    p0 = p1;
 	}
     }
-#ifdef DEBUG
-    printArr(&arr, stderr);
-#endif
+    if (debug) {
+	printArr(&arr, stderr);
+    }
     return arr;
 }
 

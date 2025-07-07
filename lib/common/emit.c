@@ -50,6 +50,12 @@
 #define FUZZ 3
 #define EPSILON .0001
 
+#ifdef DEBUG
+enum { debug = 1 };
+#else
+enum { debug = 0 };
+#endif
+
 typedef struct {
     xdot_op op;
     boxf bb;
@@ -66,30 +72,29 @@ void* init_xdot (Agraph_t* g)
 	    return NULL;
 	}
     }
-#ifdef DEBUG
-    if (Verbose) {
+    if (debug && Verbose) {
 	start_timer();
     }
-#endif
     xd = parseXDotF (p, NULL, sizeof (exdot_op));
 
     if (!xd) {
 	agwarningf("Could not parse \"_background\" attribute in graph %s\n", agnameof(g));
 	agerr(AGPREV, "  \"%s\"\n", p);
     }
-#ifdef DEBUG
-    if (Verbose) {
+    if (debug && Verbose) {
 	xdot_stats stats;
 	double et = elapsed_sec();
 	statXDot (xd, &stats);
-	fprintf (stderr, "%d ops %.2f sec\n", stats.cnt, et);
-	fprintf (stderr, "%d polygons %d points\n", stats.n_polygon, stats.n_polygon_pts);
-	fprintf (stderr, "%d polylines %d points\n", stats.n_polyline, stats.n_polyline_pts);
-	fprintf (stderr, "%d beziers %d points\n", stats.n_bezier, stats.n_bezier_pts);
-	fprintf (stderr, "%d ellipses\n", stats.n_ellipse);
-	fprintf (stderr, "%d texts\n", stats.n_text);
+	fprintf(stderr, "%" PRISIZE_T " ops %.2f sec\n", stats.cnt, et);
+	fprintf(stderr, "%" PRISIZE_T " polygons %" PRISIZE_T " points\n",
+	        stats.n_polygon, stats.n_polygon_pts);
+	fprintf(stderr, "%" PRISIZE_T " polylines %" PRISIZE_T " points\n",
+	        stats.n_polyline, stats.n_polyline_pts);
+	fprintf(stderr, "%" PRISIZE_T " beziers %" PRISIZE_T " points\n",
+	        stats.n_bezier, stats.n_bezier_pts);
+	fprintf(stderr, "%" PRISIZE_T " ellipses\n", stats.n_ellipse);
+	fprintf(stderr, "%" PRISIZE_T " texts\n", stats.n_text);
     }
-#endif
     return xd;
 }
 
@@ -3964,14 +3969,21 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	init_job_pagination(job, g);
 
 	if (! (job->flags & GVDEVICE_EVENTS)) {
-#ifdef DEBUG
-    		/* Show_boxes is not defined, if at all, 
-                 * until splines are generated in dot 
-                 */
-	    show_boxes_append(&Show_boxes, NULL);
-	    show_boxes_sync(&Show_boxes);
-	    job->common->show_boxes = show_boxes_front(&Show_boxes);
+	    if (debug) {
+		// Show_boxes is not defined, if at all, until splines are generated in dot
+		show_boxes_append(&Show_boxes, NULL);
+		show_boxes_sync(&Show_boxes);
+// FIXME: remove the cast and change `show_boxes` to a `char **` at the next API
+// break
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 #endif
+		job->common->show_boxes = (const char **)show_boxes_front(&Show_boxes);
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+	    }
 	    emit_graph(job, g);
 	}
 
