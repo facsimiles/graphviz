@@ -37,6 +37,9 @@ IMPORT extern gvplugin_library_t gvplugin_webp_LTX_library;
 #endif
 IMPORT extern gvplugin_library_t gvplugin_core_LTX_library;
 IMPORT extern gvplugin_library_t gvplugin_vt_LTX_library;
+#if defined(_WIN32) && !defined(__MINGW32__)
+IMPORT extern gvplugin_library_t gvplugin_gdiplus_LTX_library;
+#endif
 
 
 lt_symlist_t lt_preloaded_symbols[] = {
@@ -57,6 +60,9 @@ lt_symlist_t lt_preloaded_symbols[] = {
 #endif
 	{ "gvplugin_core_LTX_library", &gvplugin_core_LTX_library },
 	{ "gvplugin_vt_LTX_library", &gvplugin_vt_LTX_library },
+#if defined(_WIN32) && !defined(__MINGW32__)
+	{ "gvplugin_gdiplus_LTX_library", &gvplugin_gdiplus_LTX_library },
+#endif
 	{ 0, 0 }
 };
 

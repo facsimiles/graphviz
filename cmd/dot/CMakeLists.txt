@@ -66,6 +66,10 @@ if(BUILD_SHARED_LIBS)
     xdot
   )
 
+  if(WIN32)
+    target_link_libraries(dot_builtins PRIVATE gvplugin_gdiplus)
+  endif()
+
   if(APPLE)
     set_target_properties(dot_builtins PROPERTIES
       LINK_FLAGS -Wl,-stack_size,0x2000000)
@@ -131,6 +135,10 @@ else()
     pathplan
     xdot
   )
+
+  if(WIN32)
+    target_link_libraries(dot PRIVATE gvplugin_gdiplus)
+  endif()
 
   if(APPLE)
     set_target_properties(dot PROPERTIES LINK_FLAGS -Wl,-stack_size,0x2000000)
