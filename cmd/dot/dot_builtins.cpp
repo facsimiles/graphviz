@@ -30,6 +30,7 @@ IMPORT extern gvplugin_library_t gvplugin_gd_LTX_library;
 #endif
 #ifdef HAVE_PANGOCAIRO
 IMPORT extern gvplugin_library_t gvplugin_pango_LTX_library;
+IMPORT extern gvplugin_library_t gvplugin_kitty_LTX_library;
 #ifdef HAVE_WEBP
 IMPORT extern gvplugin_library_t gvplugin_webp_LTX_library;
 #endif
@@ -46,6 +47,7 @@ lt_symlist_t lt_preloaded_symbols[] = {
 #endif
 #ifdef HAVE_PANGOCAIRO
 	{ "gvplugin_pango_LTX_library", &gvplugin_pango_LTX_library },
+	{ "gvplugin_kitty_LTX_library", &gvplugin_kitty_LTX_library },
 #ifdef HAVE_WEBP
 	{ "gvplugin_webp_LTX_library", &gvplugin_webp_LTX_library },
 #endif

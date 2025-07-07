@@ -59,6 +59,7 @@ if(BUILD_SHARED_LIBS)
     gvc
     gvplugin_core
     gvplugin_dot_layout
+    gvplugin_kitty
     gvplugin_neato_layout
     gvplugin_vt
     pathplan
@@ -124,6 +125,7 @@ else()
     gvc
     gvplugin_core
     gvplugin_dot_layout
+    gvplugin_kitty
     gvplugin_neato_layout
     gvplugin_vt
     pathplan
