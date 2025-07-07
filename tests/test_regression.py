@@ -1343,6 +1343,29 @@ def test_1644():
         assert ref == out, "repeated rendering changed output"
 
 
+@pytest.mark.parametrize("fmt", ("dot", "gif", "svg", "xdot"))
+@pytest.mark.parametrize("layerselect", range(1, 6))
+@pytest.mark.xfail(
+    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/1648"
+)
+def test_1648(fmt: str, layerselect: int):
+    """
+    `layerselect` should not cause crashes
+    https://gitlab.com/graphviz/graphviz/-/issues/1648
+
+    Args:
+        fmt: output format (`-T…`) to test
+        layerselect: which layer to choose
+    """
+
+    # a graph with layers
+    input = Path(__file__).parent / "graphs/layer.gv"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    run(["dot", f"-Glayerselect={layerselect}", f"-T{fmt}", "-o", os.devnull, input])
+
+
 def test_1658():
     """
     the graph associated with this test case should not crash Graphviz
