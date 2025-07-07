@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Spline routing can now deal with horizontal and vertical lines. This removes
   some instances of the “Something is probably seriously wrong” warning. #241
+- Using `layerselect` beyond layer 1 no longer causes crashes. #1648
 
 ## [13.1.0] – 2025-07-01
 

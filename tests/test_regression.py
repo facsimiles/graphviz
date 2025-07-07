@@ -1345,9 +1345,6 @@ def test_1644():
 
 @pytest.mark.parametrize("fmt", ("dot", "gif", "svg", "xdot"))
 @pytest.mark.parametrize("layerselect", range(1, 6))
-@pytest.mark.xfail(
-    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/1648"
-)
 def test_1648(fmt: str, layerselect: int):
     """
     `layerselect` should not cause crashes
@@ -1379,7 +1376,13 @@ def test_1648(fmt: str, layerselect: int):
         "eps",
         "fig",
         "gv",
-        "ico",
+        pytest.param(
+            "ico",
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows",
+                reason="no 'ico'-supporting plugin available on Windows",
+            ),
+        ),
         "imap",
         "imap_np",
         "ismap",
@@ -1409,16 +1412,25 @@ def test_1648(fmt: str, layerselect: int):
         "vt-4up",
         "vt-6up",
         "vt-8up",
-        "x11",
+        pytest.param(
+            "x11",
+            marks=pytest.mark.skipif(
+                platform.system() != "Linux",
+                reason="xlib plugin only available on Linux",
+            ),
+        ),
         "xdot",
         "xdot1.2",
         "xdot1.4",
         "xdot_json",
-        "xlib",
+        pytest.param(
+            "xlib",
+            marks=pytest.mark.skipif(
+                platform.system() != "Linux",
+                reason="xlib plugin only available on Linux",
+            ),
+        ),
     ),
-)
-@pytest.mark.xfail(
-    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/1648"
 )
 def test_1648_1(fmt: str):
     """
