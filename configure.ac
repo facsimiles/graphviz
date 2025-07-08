@@ -1741,7 +1741,6 @@ if test "$with_gdiplus" != "yes"; then
 else
   if test -f "$PLATFORMSDKINCLUDE\GdiPlus.h" -a -f "$PLATFORMSDKLIB\GdiPlus.lib"; then
     use_gdiplus="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_GDIPLUS,1,[Define if you have the GDI+ framework for Windows])
     GDIPLUS_HEADS=`cd "$PLATFORMSDKINCLUDE" && echo GdiPlus*.h`
     GDIPLUS_CFLAGS=''
     GDIPLUS_LIBS=''
