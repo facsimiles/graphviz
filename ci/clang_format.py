@@ -317,7 +317,6 @@ EXCLUDE = (
     "lib/label/rectangle.c",
     "lib/label/split.q.c",
     "lib/label/split.q.h",
-    "lib/label/xlabels.c",
     "lib/label/xlabels.h",
     "lib/mingle/agglomerative_bundling.cpp",
     "lib/mingle/edge_bundling.cpp",
