@@ -55,7 +55,7 @@ typedef struct {
     int Low, Lim, Slack;
 } network_simplex_ctx_t;
 
-#define SEARCHSIZE 30
+enum { SEARCHSIZE = 30 };
 
 static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
 {

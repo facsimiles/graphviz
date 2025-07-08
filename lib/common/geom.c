@@ -68,17 +68,12 @@ int lineToBox(pointf p, pointf q, boxf b)
      */
 
     if (p.x == q.x) {
-        /*
-         * Vertical line.
-         */
-
+        // vertical line
         if (((p.y >= b.LL.y) ^ (q.y >= b.LL.y)) && BETWEEN(b.LL.x, p.x, b.UR.x)) {
             return 0;
         }
     } else if (p.y == q.y) {
-        /*
-         * Horizontal line.
-         */
+        // horizontal line
         if (((p.x >= b.LL.x) ^ (q.x >= b.LL.x)) && BETWEEN(b.LL.y, p.y, b.UR.y)) {
             return 0;
         }
@@ -95,28 +90,19 @@ int lineToBox(pointf p, pointf q, boxf b)
         double low = fmin(p.x, q.x);
         double high = fmax(p.x, q.x);
 
-        /*
-         * Left edge.
-         */
-
+        // left edge
         y = p.y + (b.LL.x - p.x)*m;
         if (BETWEEN(low, b.LL.x, high) && BETWEEN(b.LL.y, y, b.UR.y)) {
             return 0;
         }
 
-        /*
-         * Right edge.
-         */
-
+        // right edge
         y += (b.UR.x - b.LL.x)*m;
         if (BETWEEN(b.LL.y, y, b.UR.y) && BETWEEN(low, b.UR.x, high)) {
             return 0;
         }
 
-        /*
-         * Bottom edge.
-         */
-
+        // bottom edge
         low = fmin(p.y, q.y);
         high = fmax(p.y, q.y);
         x = p.x + (b.LL.y - p.y)/m;
@@ -124,10 +110,7 @@ int lineToBox(pointf p, pointf q, boxf b)
             return 0;
         }
 
-        /*
-         * Top edge.
-         */
-
+        // top edge
         x += (b.UR.y - b.LL.y)/m;
         if (BETWEEN(b.LL.x, x, b.UR.x) && BETWEEN(low, b.UR.y, high)) {
             return 0;
@@ -147,22 +130,15 @@ void rect2poly(pointf *p)
 pointf cwrotatepf(pointf p, int cwrot)
 {
     assert(cwrot == 0 || cwrot == 90 || cwrot == 180 || cwrot == 270);
-    double x = p.x, y = p.y;
     switch (cwrot) {
     case 0:
 	break;
     case 90:
-	p.x = y;
-	p.y = -x;
-	break;
+	return (pointf){.x = p.y, .y = -p.x};
     case 180:
-	p.x = x;
-	p.y = -y;
-	break;
+	return (pointf){.x = p.x, .y = -p.y};
     case 270:
-	p.x = y;
-	p.y = x;
-	break;
+	return exch_xyf(p);
     default:
 	UNREACHABLE();
     }
@@ -172,22 +148,15 @@ pointf cwrotatepf(pointf p, int cwrot)
 pointf ccwrotatepf(pointf p, int ccwrot)
 {
     assert(ccwrot == 0 || ccwrot == 90 || ccwrot == 180 || ccwrot == 270);
-    double x = p.x, y = p.y;
     switch (ccwrot) {
     case 0:
 	break;
     case 90:
-	p.x = -y;
-	p.y = x;
-	break;
+	return perp(p);
     case 180:
-	p.x = x;
-	p.y = -y;
-	break;
+	return (pointf){.x = p.x, .y = -p.y};
     case 270:
-	p.x = y;
-	p.y = x;
-	break;
+	return exch_xyf(p);
     default:
 	UNREACHABLE();
     }
@@ -196,17 +165,11 @@ pointf ccwrotatepf(pointf p, int ccwrot)
 
 boxf flip_rec_boxf(boxf b, pointf p)
 {
-    boxf r;
     /* flip box */
-    r.UR.x = b.UR.y;
-    r.UR.y = b.UR.x;
-    r.LL.x = b.LL.y;
-    r.LL.y = b.LL.x;
+    boxf r = {.LL = exch_xyf(b.LL), .UR = exch_xyf(b.UR)};
     /* move box */
-    r.LL.x += p.x;
-    r.LL.y += p.y;
-    r.UR.x += p.x;
-    r.UR.y += p.y;
+    r.LL = add_pointf(r.LL, p);
+    r.UR = add_pointf(r.UR, p);
     return r;
 }
 
