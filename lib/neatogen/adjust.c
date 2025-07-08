@@ -23,7 +23,7 @@
 #include <neatogen/edges.h>
 #include <neatogen/site.h>
 #include <neatogen/digcola.h>
-#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
+#if defined(HAVE_GTS) && defined(SFDP)
 #include <neatogen/overlap.h>
 #endif
 #include <stdbool.h>
@@ -597,7 +597,7 @@ SparseMatrix makeMatrix(Agraph_t *g) {
     return A;
 }
 
-#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
+#if defined(HAVE_GTS) && defined(SFDP)
 static void fdpAdjust(graph_t *g, adjust_data *am) {
     SparseMatrix A0 = makeMatrix(g);
     SparseMatrix A = A0;
@@ -789,7 +789,7 @@ typedef struct {
  */
 static const lookup_t adjustMode[] = {
     {AM_NONE, "", "none"},
-#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
+#if defined(HAVE_GTS) && defined(SFDP)
     {AM_PRISM, "prism", "prism"},
 #endif
     {AM_VOR, "voronoi", "Voronoi"},
@@ -807,7 +807,7 @@ static const lookup_t adjustMode[] = {
     {AM_PORTHO_YX, "portho_yx", "pseudo-orthogonal constraints"},
     {AM_PORTHOXY, "porthoxy", "xy pseudo-orthogonal constraints"},
     {AM_PORTHOYX, "porthoyx", "yx pseudo-orthogonal constraints"},
-#if !((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
+#if !(defined(HAVE_GTS) && defined(SFDP))
     {AM_PRISM, "prism", 0},
 #endif
     {0}
@@ -954,7 +954,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	case AM_COMPRESS:
 	    ret = scAdjust(G, -1);
 	    break;
-#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
+#if defined(HAVE_GTS) && defined(SFDP)
 	case AM_PRISM:
 	    fdpAdjust(G, am);
 	    ret = 0;
