@@ -1741,9 +1741,7 @@ if test "$with_gdiplus" != "yes"; then
 else
   if test -f "$PLATFORMSDKINCLUDE\GdiPlus.h" -a -f "$PLATFORMSDKLIB\GdiPlus.lib"; then
     use_gdiplus="Yes"
-    GDIPLUS_CFLAGS=''
     GDIPLUS_LIBS=''
-    AC_SUBST([GDIPLUS_CFLAGS])
     AC_SUBST([GDIPLUS_LIBS])
   else
     use_gdiplus="No (missing headers)"
