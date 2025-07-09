@@ -60,7 +60,7 @@ if [ "${build_system}" = "cmake" ]; then
         exit 1
     fi
 elif [[ "${CONFIGURE_OPTIONS:-}" =~ "--enable-static" ]]; then
-    GV_VERSION=$( cat GRAPHVIZ_VERSION )
+    GV_VERSION=$(python3 gen_version.py)
     if [ "${use_autogen:-no}" = "yes" ]; then
         ./autogen.sh
         ./configure ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
@@ -76,7 +76,7 @@ elif [[ "${CONFIGURE_OPTIONS:-}" =~ "--enable-static" ]]; then
         popd
     fi
 else
-    GV_VERSION=$( cat GRAPHVIZ_VERSION )
+    GV_VERSION=$(python3 gen_version.py)
     if [[ ${id} == ubuntu* ]]; then
         tar xfz graphviz-${GV_VERSION}.tar.gz
         (cd graphviz-${GV_VERSION}; fakeroot make -f debian/rules binary) | tee >(ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)

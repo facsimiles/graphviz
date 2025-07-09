@@ -143,9 +143,12 @@ def main() -> int:
         return -1
 
     # retrieve version name left by prior CI tasks
-    log.info("reading GRAPHVIZ_VERSION")
-    version = Path("GRAPHVIZ_VERSION").read_text(encoding="utf-8").strip()
-    log.info(f"GRAPHVIZ_VERSION == {version}")
+    log.info("deriving Graphviz version")
+    root = Path(__file__).resolve().parent
+    version = subprocess.check_output(
+        [sys.executable, "gen_version.py"], cwd=root, text=True
+    ).strip()
+    log.info(f"Graphviz version == {version}")
 
     # the generic package version has to be \d+.\d+.\d+ but it does not need to
     # correspond to the release version (which may not conform to this pattern if

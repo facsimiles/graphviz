@@ -29,5 +29,4 @@ elif [ "${ID_LIKE:-}" = "debian" ]; then
   export TCLLIBPATH=/usr/lib/tcltk/graphviz/tcl
 fi
 
-export GV_VERSION=$( cat GRAPHVIZ_VERSION )
 python3 -m pytest -m "not slow" --junit-xml=report.xml ci/tests.py tests
