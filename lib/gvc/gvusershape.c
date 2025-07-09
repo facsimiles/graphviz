@@ -21,14 +21,6 @@
 #include <util/gv_fopen.h>
 #include <util/optional.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#define GLOB_NOSPACE 1 /* Ran out of memory.  */
-#define GLOB_ABORTED 2 /* Read error.  */
-#define GLOB_NOMATCH 3 /* No matches found.  */
-#define GLOB_NOSORT 4
-#endif
-
 #include <common/types.h>
 #include <common/usershape.h>
 #include <common/utils.h>
