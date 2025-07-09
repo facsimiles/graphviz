@@ -21,6 +21,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 #include <util/unreachable.h>
 #include <util/xml.h>
 
@@ -288,10 +289,9 @@ static void InsertImage(xdot_op *op, int param) {
 static int put(void *buffer, const char *s) {
   char **b = buffer;
 
-  for (; *s != '\0'; ++s) {
-    **b = *s;
-    ++(*b);
-  }
+  const size_t len = strlen(s);
+  memcpy(*b, s, len);
+  *b += len;
 
   return 0;
 }

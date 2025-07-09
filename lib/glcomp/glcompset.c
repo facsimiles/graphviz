@@ -16,6 +16,7 @@
 
 #include <glcomp/glutils.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <util/alloc.h>
 
@@ -43,8 +44,8 @@ static glCompObj *glCompGetObjByMouse(glCompSet s, const glCompMouse m) {
     return rv;
 }
 
-static void glCompMouseMove(void *obj, float x, float y) {
-  glCompSet *o = obj;
+static void glCompMouseMove(glCompObj *obj, float x, float y) {
+  glCompSet *o = (glCompSet *)((char *)obj - offsetof(glCompSet, base));
   o->mouse.x = x;
   o->mouse.y = o->base.common.height - y;
   o->mouse.dragY = o->mouse.y - startY;
@@ -180,7 +181,7 @@ glCompSet *glCompSetNew(int w, int h)
     glDeleteFont(&s->base.common.font);
     s->base.common.font = glNewFontFromParent(&s->base, NULL);
     s->base.common.compset = s;
-    s->base.common.functions.mouseover = (glcompmouseoverfunc_t)glCompMouseMove;
+    s->base.common.functions.mouseover = glCompMouseMove;
     s->base.common.functions.mousedown = (glcompmousedownfunc_t)glCompSetMouseDown;
     s->base.common.functions.mouseup = (glcompmouseupfunc_t)glCompSetMouseUp;
     glCompMouseInit(&s->mouse);

@@ -11,9 +11,7 @@
 #pragma once
 
 #ifdef _WIN32
-#ifndef NO_WIN_HEADER
 #include "windows.h"
-#endif
 #endif
 
 #include <stdbool.h>

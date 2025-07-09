@@ -129,7 +129,7 @@ DEFINE_LIST(glCompPoly, glCompPoint)
 	glCompTexType type;
 	int userCount;
 	int fontSize;
-	unsigned char *data;	/*data */
+	unsigned char *data;
     } glCompTex;
 
 
@@ -168,7 +168,7 @@ typedef struct glCompSet_ glCompSet;
 	glCompColor color;
 	int enabled;
 	int visible;
-	glCompSet *compset; ///< compset
+	glCompSet *compset;
 	void *parent;		/*parent widget */
 	int data;
 	glCompFont font; ///< font to use
