@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
 #include <util/optional.h>
 
@@ -248,11 +249,11 @@ static int find_attribute(const char *s, match_t *result) {
 
   // look for an attribute string matching ([a-z][a-zA-Z]*)="([^"]*)"
   for (size_t i = 0; s[i] != '\0';) {
-    if (s[i] >= 'a' && s[i] <= 'z') {
+    if (gv_islower(s[i])) {
       result->key.data = &s[i];
       result->key.size = 1;
       ++i;
-      while ((s[i] >= 'a' && s[i] <= 'z') || (s[i] >= 'A' && s[i] <= 'Z')) {
+      while (gv_isalpha(s[i])) {
         ++i;
         ++result->key.size;
       }
