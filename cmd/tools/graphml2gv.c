@@ -69,7 +69,8 @@ static void popString(strs_t *stk) {
     graphviz_exit(EXIT_FAILURE);
   }
 
-  strs_resize(stk, strs_size(stk) - 1, NULL);
+  char *const popped = strs_pop_back(stk);
+  free(popped);
 }
 
 static char *topString(strs_t *stk) {

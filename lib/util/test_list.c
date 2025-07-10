@@ -243,46 +243,6 @@ static void test_push_pop_interleaved(void) {
   ints_free(&s);
 }
 
-static void test_resize_empty_1(void) {
-  ints_t xs = {0};
-  ints_resize(&xs, 0, 0);
-  assert(ints_is_empty(&xs));
-  ints_free(&xs);
-}
-
-static void test_resize_empty_2(void) {
-  ints_t xs = {0};
-  ints_resize(&xs, 10, 42);
-  for (size_t i = 0; i < 10; ++i) {
-    assert(ints_get(&xs, i) == 42);
-  }
-  ints_free(&xs);
-}
-
-static void test_resize_down(void) {
-  ints_t xs = {0};
-  for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
-  }
-
-  ints_resize(&xs, 4, 0);
-  assert(ints_size(&xs) == 4);
-
-  ints_free(&xs);
-}
-
-static void test_resize_to_0(void) {
-  ints_t xs = {0};
-  for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
-  }
-
-  ints_resize(&xs, 0, 0);
-  assert(ints_is_empty(&xs));
-
-  ints_free(&xs);
-}
-
 /// an int comparer
 static int cmp_int(const int *a, const int *b) {
   if (*a < *b) {
@@ -545,10 +505,6 @@ int main(void) {
   RUN(push_then_pop_ten);
   RUN(push_then_pop_many);
   RUN(push_pop_interleaved);
-  RUN(resize_empty_1);
-  RUN(resize_empty_2);
-  RUN(resize_down);
-  RUN(resize_to_0);
   RUN(sort_empty);
   RUN(sort);
   RUN(sort_sorted);

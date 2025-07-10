@@ -18,13 +18,12 @@ extern "C" {
 #include <stdbool.h>
 #include <util/list.h>
 
-DEFINE_LIST(ints, int)
 DEFINE_LIST(node_queue, Agnode_t *)
 
     extern void acyclic(Agraph_t *);
     extern void allocate_ranks(Agraph_t *);
     /// @return 0 on success
-    extern int build_ranks(Agraph_t *, int, ints_t *);
+    extern int build_ranks(Agraph_t *, int);
     extern void build_skeleton(Agraph_t *, Agraph_t *);
     extern void checkLabelOrder (graph_t* g);
     extern void class1(Agraph_t *);

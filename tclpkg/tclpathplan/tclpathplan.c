@@ -289,7 +289,7 @@ static bool remove_poly(vgpane_t *vgp, int id) {
 	    for (size_t j = i++; i < polys_size(&vgp->poly); i++, j++) {
 		polys_set(&vgp->poly, j, polys_get(&vgp->poly, i));
 	    }
-	    polys_resize(&vgp->poly, polys_size(&vgp->poly) - 1, (poly){0});
+	    (void)polys_pop_back(&vgp->poly);
 	    vc_stale(vgp);
 	    return true;
 	}
