@@ -950,6 +950,34 @@ def test_1444():
     assert stdout1 == stdout2, "swapping edge attributes altered the output graph"
 
 
+def test_1447():
+    """
+    graphs should not fail assertions in maze.c
+    https://gitlab.com/graphviz/graphviz/-/issues/1447
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1447.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run it through Graphviz
+    dot("svg", input)
+
+
+def test_1447_1():
+    """
+    graphs should not fail assertions in maze.c
+    https://gitlab.com/graphviz/graphviz/-/issues/1447
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "1447_1.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run it through Graphviz
+    dot("png", input)
+
+
 def test_1449():
     """
     using the SVG color scheme should not cause warnings
