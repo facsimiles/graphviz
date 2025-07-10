@@ -3,6 +3,11 @@
 # this script does something close to the work flow end users may follow when
 # building Graphviz
 
+if [ -z ${CI+x} ]; then
+  echo "this script is only intended to run in CI" >&2
+  exit 1
+fi
+
 set -e
 set -o pipefail
 set -u
