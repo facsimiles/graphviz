@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
-#include "gui.h"
+#include "gui/gui.h"
 #include "viewport.h"
 #include "gltemplate.h"
 #include <glcomp/glutils.h>
@@ -23,7 +23,7 @@
 #include "viewportcamera.h"
 #include "gui/menucallbacks.h"
 #include "arcball.h"
-#include "appmouse.h"
+#include "gui/appmouse.h"
 static float begin_x = 0.0;
 static float begin_y = 0.0;
 

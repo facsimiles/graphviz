@@ -11,9 +11,9 @@
 #include "glutrender.h"
 #include "viewport.h"
 #include "arcball.h"
-#include "appmouse.h"
+#include "gui/appmouse.h"
 #include "glexpose.h"
-#include "glcompui.h"
+#include "gui/glcompui.h"
 #include <util/exit.h>
 
     /*call backs */

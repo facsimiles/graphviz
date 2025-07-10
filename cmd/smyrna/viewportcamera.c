@@ -9,7 +9,7 @@
  *************************************************************************/
 
 #include "viewportcamera.h"
-#include "gui.h"
+#include "gui/gui.h"
 #include <math.h>
 #include <glcomp/glcompbutton.h>
 #include <glcomp/glcomplabel.h>

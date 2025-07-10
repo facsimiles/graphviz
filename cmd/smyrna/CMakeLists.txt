@@ -78,7 +78,6 @@ if(WITH_SMYRNA)
     ../../lib/gvc
     ../../lib/gvpr
     ../../lib/pathplan
-    gui
   )
 
   target_include_directories(smyrna SYSTEM PRIVATE

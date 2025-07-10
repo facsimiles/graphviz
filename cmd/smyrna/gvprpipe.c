@@ -18,8 +18,8 @@
 #include <glade/glade.h>
 #include <gtk/gtk.h>
 #include "draw.h"
-#include "gui.h"
-#include "topviewsettings.h"
+#include "gui/gui.h"
+#include "gui/topviewsettings.h"
 #include <util/agxbuf.h>
 #include <viewport.h>
 

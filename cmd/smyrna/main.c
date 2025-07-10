@@ -15,13 +15,13 @@
 #include <windows.h>
 #include <windowsx.h>
 #endif
-#include "frmobjectui.h"
 #include "glexpose.h"
 #include "gltemplate.h"
 #include "glutrender.h"
-#include "gui.h"
+#include "gui/frmobjectui.h"
+#include "gui/gui.h"
+#include "gui/menucallbacks.h"
 #include "gvprpipe.h"
-#include "menucallbacks.h"
 #include "viewport.h"
 #include <assert.h>
 #include <glade/glade.h>
