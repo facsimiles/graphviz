@@ -55,29 +55,21 @@ Agdatadict_t *agdatadict(Agraph_t *g, bool cflag) {
 
 static Dict_t *agdictof(Agraph_t * g, int kind)
 {
-    Agdatadict_t *dd;
-    Dict_t *dict;
-
-    dd = agdatadict(g, false);
+    Agdatadict_t *const dd = agdatadict(g, false);
     if (dd)
 	switch (kind) {
 	case AGRAPH:
-	    dict = dd->dict.g;
-	    break;
+	    return dd->dict.g;
 	case AGNODE:
-	    dict = dd->dict.n;
-	    break;
+	    return dd->dict.n;
 	case AGINEDGE:
 	case AGOUTEDGE:
-	    dict = dd->dict.e;
-	    break;
+	    return dd->dict.e;
 	default:
 	    agerrorf("agdictof: unknown kind %d\n", kind);
-	    dict = NULL;
 	    break;
-    } else
-	dict = NULL;
-    return dict;
+    }
+    return NULL;
 }
 
 /// @param is_html Is `value` an HTML-like string?
@@ -94,12 +86,11 @@ static Agsym_t *agnewsym(Agraph_t * g, const char *name, const char *value,
 
 static void agcopydict(Dict_t * src, Dict_t * dest, Agraph_t * g, int kind)
 {
-    Agsym_t *sym, *newsym;
-
     assert(dtsize(dest) == 0);
-    for (sym = dtfirst(src); sym; sym = dtnext(src, sym)) {
+    for (Agsym_t *sym = dtfirst(src); sym; sym = dtnext(src, sym)) {
 	const bool is_html = aghtmlstr(sym->defval);
-	newsym = agnewsym(g, sym->name, sym->defval, is_html, sym->id, kind);
+	Agsym_t *const newsym = agnewsym(g, sym->name, sym->defval, is_html, sym->id,
+	                                 kind);
 	newsym->print = sym->print;
 	newsym->fixed = sym->fixed;
 	dtinsert(dest, newsym);
@@ -109,14 +100,14 @@ static void agcopydict(Dict_t * src, Dict_t * dest, Agraph_t * g, int kind)
 static Agdatadict_t *agmakedatadict(Agraph_t * g)
 {
     Agraph_t *par;
-    Agdatadict_t *parent_dd, *dd;
 
-    dd = agbindrec(g, DataDictName, sizeof(Agdatadict_t), false);
+    Agdatadict_t *const dd = agbindrec(g, DataDictName, sizeof(Agdatadict_t),
+                                       false);
     dd->dict.n = agdtopen(&AgDataDictDisc, Dttree);
     dd->dict.e = agdtopen(&AgDataDictDisc, Dttree);
     dd->dict.g = agdtopen(&AgDataDictDisc, Dttree);
     if ((par = agparent(g))) {
-	parent_dd = agdatadict(par, false);
+	Agdatadict_t *const parent_dd = agdatadict(par, false);
 	assert(dd != parent_dd);
 	dtview(dd->dict.n, parent_dd->dict.n);
 	dtview(dd->dict.e, parent_dd->dict.e);
@@ -125,7 +116,7 @@ static Agdatadict_t *agmakedatadict(Agraph_t * g)
 	if (ProtoGraph && g != ProtoGraph) {
 	    /* it's not ok to dtview here for several reasons. the proto
 	       graph could change, and the sym indices don't match */
-	    parent_dd = agdatadict(ProtoGraph, false);
+	    Agdatadict_t *const parent_dd = agdatadict(ProtoGraph, false);
 	    agcopydict(parent_dd->dict.n, dd->dict.n, g, AGNODE);
 	    agcopydict(parent_dd->dict.e, dd->dict.e, g, AGEDGE);
 	    agcopydict(parent_dd->dict.g, dd->dict.g, g, AGRAPH);
@@ -164,28 +155,23 @@ const char AgDataRecName[] = "_AG_strdata";
 
 static int topdictsize(Agobj_t * obj)
 {
-    Dict_t *d;
-
-    d = agdictof(agroot(agraphof(obj)), AGTYPE(obj));
+    Dict_t *const d = agdictof(agroot(agraphof(obj)), AGTYPE(obj));
     return d ? dtsize(d) : 0;
 }
 
 /* g can be either the enclosing graph, or ProtoGraph */
 static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
 {
-    Agattr_t *rec;
-    Agsym_t *sym;
-    Dict_t *datadict;
-
-    rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t), false);
-    datadict = agdictof(context, AGTYPE(obj));
+    Agattr_t *const rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t),
+                                    false);
+    Dict_t *const datadict = agdictof(context, AGTYPE(obj));
     assert(datadict);
     if (rec->dict == NULL) {
 	rec->dict = agdictof(agroot(context), AGTYPE(obj));
 	const int sz = topdictsize(obj);
 	rec->str = gv_calloc((size_t)sz, sizeof(char *));
 	/* doesn't call agxset() so no obj-modified callbacks occur */
-	for (sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym)) {
+	for (Agsym_t *sym = dtfirst(datadict); sym; sym = dtnext(datadict, sym)) {
 	    if (aghtmlstr(sym->defval)) {
 	        rec->str[sym->id] = agstrdup_html(agraphof(obj), sym->defval);
 	    } else {

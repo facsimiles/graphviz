@@ -874,10 +874,8 @@ traps_t construct_trapezoids(int nseg, segment_t *seg, int *permute) {
     int h;
     int segi = 0;
 
-    // We will append later nodes by expanding this on-demand. First node is a
-    // sentinel.
+    // we will append later nodes by expanding this on-demand
     qnodes_t qs = {0};
-    qnodes_append(&qs, (qnode_t){0});
 
     // First trapezoid is reserved as a sentinel. We will append later
     // trapezoids by expanding this on-demand.
