@@ -4019,6 +4019,9 @@ def test_2429():
 
 
 @pytest.mark.skipif(which("nop") is None, reason="nop not available")
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2436"
+)
 def test_2436():
     """
     nop should preserve empty labels
@@ -4037,9 +4040,8 @@ def test_2436():
     assert re.search(r'\blabel\s*=\s*""', output), "empty label was not preserved"
 
 
-@pytest.mark.skipif(
-    is_static_build(),
-    reason="dynamic libraries are unavailable to link against in static builds",
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2434"
 )
 def test_2434():
     """
@@ -5883,9 +5885,6 @@ def test_2683():
     dot("dot", input)
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2705"
-)
 def test_2705(tmp_path: Path):
     """
     round tripping a graph through a file should not alter its node defaults
