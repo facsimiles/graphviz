@@ -5883,6 +5883,36 @@ def test_2683():
     dot("dot", input)
 
 
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2705"
+)
+def test_2705(tmp_path: Path):
+    """
+    round tripping a graph through a file should not alter its node defaults
+    https://gitlab.com/graphviz/graphviz/-/issues/2705
+    """
+
+    # find co-located test source
+    c_src = (Path(__file__).parent / "2705.c").resolve()
+    assert c_src.exists(), "missing test case"
+
+    from_memory = tmp_path / "memory.dot"
+    from_file = tmp_path / "file.dot"
+
+    # run it
+    link = ["cgraph"]
+    if is_static_build():
+        # in static builds, we also need transitive dependencies
+        link += ["cdt"]
+    run_c(c_src, [from_memory, from_file], link=link)
+
+    original = from_memory.read_text(encoding="utf-8")
+    round_tripped = from_file.read_text(encoding="utf-8")
+    assert (
+        original == round_tripped
+    ), "round tripping graph through file was not idempotent"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
