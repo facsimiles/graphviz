@@ -69,7 +69,7 @@ cellOf (snode* p, snode* q)
 {
     cell* cp = p->cells[0];
     if (cp == q->cells[0] || cp == q->cells[1]) return cp;
-    else return p->cells[1];
+    return p->cells[1];
 }
 
 static pointf
