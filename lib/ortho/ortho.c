@@ -739,15 +739,10 @@ add_edges_in_G(channel* cp)
 static int
 add_np_edges (Dt_t* chans)
 {
-    Dt_t* lp;
-    Dtlink_t* l1;
-    Dtlink_t* l2;
-    channel* cp;
-
-    for (l1 = dtflatten (chans); l1; l1 = dtlink(chans,l1)) {
-	lp = ((chanItem*)l1)->chans;
-	for (l2 = dtflatten (lp); l2; l2 = dtlink(lp,l2)) {
-	    cp = (channel*)l2;
+    for (Dtlink_t *l1 = dtflatten(chans); l1; l1 = dtlink(chans, l1)) {
+	Dt_t *const lp = ((chanItem*)l1)->chans;
+	for (Dtlink_t *l2 = dtflatten(lp); l2; l2 = dtlink(lp, l2)) {
+	    channel *const cp = (channel*)l2;
 	    if (!seg_list_is_empty(&cp->seg_list))
 		if (add_edges_in_G(cp)) {
 		  return -1;
