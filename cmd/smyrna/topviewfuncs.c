@@ -347,24 +347,16 @@ static void renderNodes(Agraph_t * g)
 
 static void renderSelectedEdges(Agraph_t * g)
 {
-
-    Agedge_t *e;
-    Agnode_t *v;
-    xdot * x;
-    glCompPoint posT;	/*Tail position*/
-    glCompPoint posH;	/*Head position*/
     /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-    {
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-	{
+    for (Agnode_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	for (Agedge_t *e = agfstout(g, v); e; e = agnxtout(g, e)) {
 	    if(!ED_selected(e))
 		continue;
 	    if (!object_color(e, &(glCompColor){0}))
 		continue;
 
-	    x=parseXdotwithattrs(e);
+	    xdot *const x = parseXdotwithattrs(e);
 	    draw_xdot(x,0);
 	    if(x)
 		freeXDot (x);
@@ -372,18 +364,16 @@ static void renderSelectedEdges(Agraph_t * g)
     }
 
     glBegin(GL_LINES);
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-    {
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-	{
+    for (Agnode_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	for (Agedge_t *e = agfstout(g, v); e; e = agnxtout(g, e)) {
 	    if(!ED_selected(e))
 		continue;
 
 	    if (!object_color(e, &(glCompColor){0}))
 		continue;
 	    glColor4f(1,0,0,1);	    
-	    posT = ED_posTail(e);
-	    posH = ED_posHead(e);
+	    glCompPoint posT = ED_posTail(e); // tail position
+	    glCompPoint posH = ED_posHead(e); // head position
 	    posT.z +=0.01f;
 	    posH.z +=0.01f;
 	    draw_edge(posT, posH);
