@@ -1385,28 +1385,20 @@ static char* epilog2 =
 %%%%BoundingBox: %.f %.f %.f %.f\n";
 
 static pointf coordOf(cell *cp, snode *np) {
-    pointf p;
     if (cp->sides[M_TOP] == np) {
-	p.x = (cp->bb.LL.x + cp->bb.UR.x)/2;
-	p.y = cp->bb.UR.y;
+	return (pointf){.x = (cp->bb.LL.x + cp->bb.UR.x) / 2, .y = cp->bb.UR.y};
     }
-    else if (cp->sides[M_BOTTOM] == np) {
-	p.x = (cp->bb.LL.x + cp->bb.UR.x)/2;
-	p.y = cp->bb.LL.y;
+    if (cp->sides[M_BOTTOM] == np) {
+	return (pointf){.x = (cp->bb.LL.x + cp->bb.UR.x) / 2, .y = cp->bb.LL.y};
     }
-    else if (cp->sides[M_LEFT] == np) {
-	p.y = (cp->bb.LL.y + cp->bb.UR.y)/2;
-	p.x = cp->bb.LL.x;
+    if (cp->sides[M_LEFT] == np) {
+	return (pointf){.x = cp->bb.LL.x, .y = (cp->bb.LL.y + cp->bb.UR.y) / 2};
     }
-    else if (cp->sides[M_RIGHT] == np) {
-	p.y = (cp->bb.LL.y + cp->bb.UR.y)/2;
-	p.x = cp->bb.UR.x;
+    if (cp->sides[M_RIGHT] == np) {
+	return (pointf){.x = cp->bb.UR.x, .y = (cp->bb.LL.y + cp->bb.UR.y) / 2};
     }
-    else {
-	agerrorf("Node not adjacent to cell -- Aborting\n");
-	graphviz_exit(EXIT_FAILURE);
-    }
-    return p;
+    agerrorf("Node not adjacent to cell -- Aborting\n");
+    graphviz_exit(EXIT_FAILURE);
 }
 
 static boxf
