@@ -22,8 +22,8 @@
 #include <common/colorprocs.h>
 #include <util/alloc.h>
 
-static int get_temp_coords(topview * t, int level, int v, double *coord_x,
-			   double *coord_y);
+static int get_temp_coords(topview *t, int level, int v, float *coord_x,
+                           float *coord_y);
 
 static int color_interpolation(glCompColor srcColor, glCompColor tarColor,
 				glCompColor * color, int levelcount,
@@ -207,7 +207,7 @@ static void drawtopfishnodes(topview * t)
     glBegin(GL_POINTS);
     for (level = 0; level < hp->nlevels; level++) {
 	for (v = 0; v < hp->nvtxs[level]; v++) {
-	    double x0, y0;
+	    float x0, y0;
 	    if (get_temp_coords(t, level, v, &x0, &y0)) {
 
 		if (!(-x0 / view->zoom > view->clipX1 && -x0 / view->zoom < view->clipX2 &&
@@ -222,7 +222,7 @@ static void drawtopfishnodes(topview * t)
 		}
 		glColor4f(color.R, color.G, color.B, view->defaultnodealpha);
 
-		glVertex3f((float)x0, (float)y0, 0.0f);
+		glVertex3f(x0, y0, 0.0f);
 	    }
 	}
     }
@@ -245,10 +245,10 @@ static void drawtopfishedges(topview * t)
     for (level = 0; level < hp->nlevels; level++) {
 	for (v = 0; v < hp->nvtxs[level]; v++) {
 	    v_data *g = hp->graphs[level];
-	    double x0, y0;
+	    float x0, y0;
 	    if (get_temp_coords(t, level, v, &x0, &y0)) {
 		for (i = 1; i < g[v].nedges; i++) {
-		    double x, y;
+		    float x, y;
 		    n = g[v].edges[i];
 
 
@@ -261,8 +261,8 @@ static void drawtopfishedges(topview * t)
 		    glColor4f(color.R, color.G, color.B, view->defaultnodealpha);
 
 		    if (get_temp_coords(t, level, n, &x, &y)) {
-			glVertex3f((float)x0, (float)y0, 0.0f);
-			glVertex3f((float)x, (float)y, 0.0f);
+			glVertex3f(x0, y0, 0.0f);
+			glVertex3f(x, y, 0.0f);
 		    } else
 		    {
 			int levell, nodee;
@@ -281,9 +281,8 @@ static void drawtopfishedges(topview * t)
 
 				continue;
 
-
-			    glVertex3f((float)x0, (float)y0, 0.0f);
-			    glVertex3f((float)x, (float)y, 0.0f);
+			    glVertex3f(x0, y0, 0.0f);
+			    glVertex3f(x, y, 0.0f);
 			}
 		    }
 		}
@@ -315,16 +314,14 @@ void drawtopologicalfisheye(topview * t)
     drawtopfishedges(t);
 }
 
-static void get_interpolated_coords(double x0, double y0, double x1, double y1,
-			     int fr, int total_fr, double *x, double *y)
-{
-    *x = x0 + (x1 - x0) / (double) total_fr *(double) (fr + 1);
-    *y = y0 + (y1 - y0) / (double) total_fr *(double) (fr + 1);
+static void get_interpolated_coords(float x0, float y0, float x1, float y1,
+                                    int fr, int total_fr, float *x, float *y) {
+  *x = x0 + (x1 - x0) / (float)total_fr * (float)(fr + 1);
+  *y = y0 + (y1 - y0) / (float)total_fr * (float)(fr + 1);
 }
 
-static int get_temp_coords(topview * t, int level, int v, double *coord_x,
-		    double *coord_y)
-{
+static int get_temp_coords(topview *t, int level, int v, float *coord_x,
+                           float *coord_y) {
     Hierarchy *hp = t->fisheyeParams.h;
     ex_vtx_data *gg = hp->geom_graphs[level];
 
@@ -337,13 +334,12 @@ static int get_temp_coords(topview * t, int level, int v, double *coord_x,
     } else {
 
 
-	double x0, y0, x1, y1;
 	int OAL, AL;
 
-	x0 = 0;
-	y0 = 0;
-	x1 = 0;
-	y1 = 0;
+	float x0 = 0;
+	float y0 = 0;
+	float x1 = 0;
+	float y1 = 0;
 	AL = gg[v].active_level;
 	OAL = gg[v].old_active_level;
 
