@@ -1125,32 +1125,27 @@ DEFINE_LIST(points, pointf)
 static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
                              splineInfo *sinfo, epair_t es[], bool doLbls) {
     points_t ispline = {0};
-    pointf p, p1, q1;
-    route rte;
-    segment* seg;
-    Agedge_t* e;
     textlabel_t* lbl;
 
     for (size_t irte = 0; irte < n_edges; irte++) {
-	e = es[irte].e;
-	p1 = add_pointf(ND_coord(agtail(e)), ED_tail_port(e).p);
-	q1 = add_pointf(ND_coord(aghead(e)), ED_head_port(e).p);
+	Agedge_t *const e = es[irte].e;
+	const pointf p1 = add_pointf(ND_coord(agtail(e)), ED_tail_port(e).p);
+	const pointf q1 = add_pointf(ND_coord(aghead(e)), ED_head_port(e).p);
 
-	rte = route_list[irte];
+	route rte = route_list[irte];
 	size_t npts = 1 + 3*rte.n;
 	points_reserve(&ispline, npts);
 	    
-	seg = rte.segs;
+	segment *seg = rte.segs;
 	if (seg == NULL) {
 		continue;
 	}
+	pointf p;
 	if (seg->isVert) {
-		p.x = vtrack(seg, mp);
-		p.y = p1.y;
+		p = (pointf){.x = vtrack(seg, mp), .y = p1.y};
 	}
 	else {
-		p.y = htrack(seg, mp);
-		p.x = p1.x;
+		p = (pointf){.x = p1.x, .y = htrack(seg, mp)};
 	}
 	points_append(&ispline, p);
 	points_append(&ispline, p);
@@ -1167,12 +1162,10 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 	}
 
 	if (seg->isVert) {
-		p.x = vtrack(seg, mp);
-		p.y = q1.y;
+		p = (pointf){.x = vtrack(seg, mp), .y = q1.y};
 	}
 	else {
-		p.y = htrack(seg, mp);
-		p.x = q1.x;
+		p = (pointf){.x = q1.x, .y = htrack(seg, mp)};
 	}
 	points_append(&ispline, p);
 	points_append(&ispline, p);
