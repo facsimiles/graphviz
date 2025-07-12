@@ -1465,17 +1465,13 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
  */
 
 static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg) {
-    cell* cp;
-    snode* np;
-    sedge* ep;
     pointf p;
-    int i;
     fputs ("graph G {\n", fp);
     fputs (" node[shape=point]\n", fp);
     fputs (" layout=neato\n", fp);
-    for (i = 0; i < sg->nnodes; i++) {
-	np = sg->nodes+i;
-	cp = np->cells[0];
+    for (int i = 0; i < sg->nnodes; i++) {
+	snode *const np = sg->nodes+i;
+	cell *cp = np->cells[0];
 	if (cp == np->cells[1]) {
 	    p = midPt(cp);
 	}
@@ -1485,8 +1481,8 @@ static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg) {
 	}
 	fprintf (fp, "  %d [pos=\"%.0f,%.0f!\"]\n", i, p.x, p.y);
     }
-    for (i = 0; i < sg->nedges; i++) {
-	ep = sg->edges+i;
+    for (int i = 0; i < sg->nedges; i++) {
+	sedge *const ep = sg->edges+i;
 	fprintf (fp, "  %d -- %d[label=\"%f\"]\n", ep->v1, ep->v2, ep->weight);
     }
     fputs ("}\n", fp);
