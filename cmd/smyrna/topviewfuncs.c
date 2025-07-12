@@ -556,15 +556,11 @@ static xdot* makeXDotSpline (char* pos)
 typedef void (*edgefn) (Agraph_t *, Agedge_t*, glCompColor);
 
 static void renderEdgesFn(Agraph_t *g, edgefn ef, bool skipSelected) {
-    Agedge_t *e;
-    Agnode_t *v;
     glCompColor c;
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-    {
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-	{
-	    if ((ND_visible(agtail(e))==0) || (ND_visible(aghead(e))==0))
+    for (Agnode_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	for (Agedge_t *e = agfstout(g, v); e; e = agnxtout(g, e)) {
+	    if (ND_visible(agtail(e)) == 0 || ND_visible(aghead(e)) == 0)
 		continue;
 
 	    if(!object_color(e,&c)) {
