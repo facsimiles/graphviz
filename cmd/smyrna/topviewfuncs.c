@@ -555,8 +555,7 @@ static xdot* makeXDotSpline (char* pos)
 
 typedef void (*edgefn) (Agraph_t *, Agedge_t*, glCompColor);
 
-static void renderEdgesFn (Agraph_t * g, edgefn ef, int skipSelected)
-{
+static void renderEdgesFn(Agraph_t *g, edgefn ef, bool skipSelected) {
     Agedge_t *e;
     Agnode_t *v;
     glCompColor c;
@@ -622,15 +621,15 @@ static void renderEdges(Agraph_t * g)
     int drawSegs = !(pos_attr_e && view->drawSplines);
     /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
 
-    renderEdgesFn (g, edge_xdot, 0);
+    renderEdgesFn(g, edge_xdot, false);
 
     if (drawSegs) {
 	glBegin(GL_LINES);
-	renderEdgesFn (g, edge_seg, 1);
+	renderEdgesFn(g, edge_seg, true);
 	glEnd();
     }
     else
-	renderEdgesFn (g, edge_spline, 1);
+	renderEdgesFn(g, edge_spline, true);
 }
 
 static void renderNodeLabels(Agraph_t * g)
