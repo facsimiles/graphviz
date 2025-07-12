@@ -3365,24 +3365,22 @@ def test_gvmap_fclose():
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
-def test_gvpr_usage():
+def test_gvpr_usage(tmp_path: Path):
     """
     gvpr usage information should be included when erroring on a malformed command
     """
 
-    # create a temporary directory, under which we know no files will exist
-    with tempfile.TemporaryDirectory() as tmp:
-        # ask GVPR to process a non-existent file
-        gvprbin = which("gvpr")
-        with subprocess.Popen(
-            [gvprbin, "-f", "nofile"],
-            stderr=subprocess.PIPE,
-            cwd=tmp,
-            text=True,
-        ) as p:
-            _, stderr = p.communicate()
+    # ask GVPR to process a non-existent file
+    gvprbin = which("gvpr")
+    with subprocess.Popen(
+        [gvprbin, "-f", "nofile"],
+        stderr=subprocess.PIPE,
+        cwd=tmp_path,
+        text=True,
+    ) as p:
+        _, stderr = p.communicate()
 
-            assert p.returncode != 0, "GVPR accepted a non-existent file"
+        assert p.returncode != 0, "GVPR accepted a non-existent file"
 
     # the stderr output should have contained full usage instructions
     assert (
