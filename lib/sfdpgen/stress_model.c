@@ -6,10 +6,11 @@
 #include <stdbool.h>
 #include <util/alloc.h>
 
-void stress_model(int dim, SparseMatrix B, double **x, int maxit_sm, int *flag) {
+int stress_model(int dim, SparseMatrix B, double **x, int maxit_sm) {
   int m;
   int i;
   SparseMatrix A = B;
+  int rc = 0;
 
   if (!SparseMatrix_is_symmetric(A, false) || A->type != MATRIX_TYPE_REAL){
     if (A->type == MATRIX_TYPE_REAL){
@@ -21,7 +22,6 @@ void stress_model(int dim, SparseMatrix B, double **x, int maxit_sm, int *flag) 
   }
   A = SparseMatrix_remove_diagonal(A);
 
-  *flag = 0;
   m = A->m;
   if (!x) {
     *x = gv_calloc(m * dim, sizeof(double));
@@ -33,7 +33,7 @@ void stress_model(int dim, SparseMatrix B, double **x, int maxit_sm, int *flag) 
     SparseStressMajorizationSmoother_new(A, dim, *x);/* weight the long distances */
 
   if (!sm) {
-    *flag = -1;
+    rc = -1;
     goto RETURN;
   }
 
@@ -48,4 +48,5 @@ void stress_model(int dim, SparseMatrix B, double **x, int maxit_sm, int *flag) 
 
  RETURN:
   if (A != B) SparseMatrix_delete(A);
+  return rc;
 }

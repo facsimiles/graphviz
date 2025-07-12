@@ -56,6 +56,7 @@ target_link_libraries(test_common PUBLIC
   gvplugin_core
   gvplugin_dot_layout
   gvplugin_gd
+  gvplugin_kitty
   gvplugin_neato_layout
   gvplugin_pango
   gvplugin_vt

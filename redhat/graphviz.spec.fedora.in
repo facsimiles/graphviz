@@ -399,6 +399,28 @@ LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 %dir %{_libdir}/graphviz
 %{_libdir}/graphviz/libgvplugin_gd.so.*
 
+#-- graphviz-plugins-kitty rpm --------------------------------------------------
+%package plugins-kitty
+Group:            Applications/Multimedia
+Summary:          Graphviz plugin for kitty format
+Requires:         %{name}-x = %{version}-%{release}
+Provides:         %{name}-kitty = %{version}-%{release}
+
+%description plugins-kitty
+Graphviz plugin for Kitty terminal rendering.
+
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
+%post plugins-kitty
+LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
+
+%postun plugins-kitty
+[ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
+
+%files plugins-kitty
+%defattr(-,root,root,-)
+%dir %{_libdir}/graphviz
+%{_libdir}/graphviz/libgvplugin_kitty.so.*
+
 #-- graphviz-plugins-vt rpm --------------------------------------------------
 %package plugins-vt
 Group:            Applications/Multimedia

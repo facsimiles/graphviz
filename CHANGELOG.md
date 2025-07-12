@@ -6,10 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (13.1.1)]
 
+### Changed
+
+- When built with PangoCairo, the Kitty plugin is now available in Graphviz
+  static builds. Previously it was only available in shared library (on-demand
+  plugin loading) builds.
+- The distributed Fedora and Rocky Linux packages now include the Kitty plugin.
+  #2704
+- On Windows, the GDI+ plugin is now available in Graphviz static builds.
+  Previously it was only available in shared library (on-demand plugin loading)
+  builds.
+
 ### Fixed
 
 - Spline routing can now deal with horizontal and vertical lines. This removes
   some instances of the “Something is probably seriously wrong” warning. #241
+- Using `layerselect` beyond layer 1 no longer causes crashes. #1648
 
 ## [13.1.0] – 2025-07-01
 

@@ -83,6 +83,7 @@ dot_static_SOURCES = dot.c dot_builtins.cpp
 dot_static_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
 dot_static_LDADD = \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
+	$(top_builddir)/plugin/kitty/libgvplugin_kitty_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
 	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
 	$(top_builddir)/plugin/vt/libgvplugin_vt_C.la \
@@ -98,6 +99,7 @@ dot_builtins_SOURCES = dot.c dot_builtins.cpp
 dot_builtins_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 dot_builtins_LDADD = \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
+	$(top_builddir)/plugin/kitty/libgvplugin_kitty.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
 	$(top_builddir)/plugin/core/libgvplugin_core.la \
 	$(top_builddir)/plugin/vt/libgvplugin_vt.la \

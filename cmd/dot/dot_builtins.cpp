@@ -30,12 +30,16 @@ IMPORT extern gvplugin_library_t gvplugin_gd_LTX_library;
 #endif
 #ifdef HAVE_PANGOCAIRO
 IMPORT extern gvplugin_library_t gvplugin_pango_LTX_library;
+IMPORT extern gvplugin_library_t gvplugin_kitty_LTX_library;
 #ifdef HAVE_WEBP
 IMPORT extern gvplugin_library_t gvplugin_webp_LTX_library;
 #endif
 #endif
 IMPORT extern gvplugin_library_t gvplugin_core_LTX_library;
 IMPORT extern gvplugin_library_t gvplugin_vt_LTX_library;
+#if defined(_WIN32) && !defined(__MINGW32__)
+IMPORT extern gvplugin_library_t gvplugin_gdiplus_LTX_library;
+#endif
 
 
 lt_symlist_t lt_preloaded_symbols[] = {
@@ -46,6 +50,7 @@ lt_symlist_t lt_preloaded_symbols[] = {
 #endif
 #ifdef HAVE_PANGOCAIRO
 	{ "gvplugin_pango_LTX_library", &gvplugin_pango_LTX_library },
+	{ "gvplugin_kitty_LTX_library", &gvplugin_kitty_LTX_library },
 #ifdef HAVE_WEBP
 	{ "gvplugin_webp_LTX_library", &gvplugin_webp_LTX_library },
 #endif
@@ -55,6 +60,9 @@ lt_symlist_t lt_preloaded_symbols[] = {
 #endif
 	{ "gvplugin_core_LTX_library", &gvplugin_core_LTX_library },
 	{ "gvplugin_vt_LTX_library", &gvplugin_vt_LTX_library },
+#if defined(_WIN32) && !defined(__MINGW32__)
+	{ "gvplugin_gdiplus_LTX_library", &gvplugin_gdiplus_LTX_library },
+#endif
 	{ 0, 0 }
 };
 

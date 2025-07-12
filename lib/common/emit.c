@@ -192,7 +192,7 @@ bool initMapData(GVJ_t *job, char *lbl, char *url, char *tooltip, char *target,
 static void
 layerPagePrefix (GVJ_t* job, agxbuf* xb)
 {
-    if (job->layerNum > 1 && (job->flags & GVDEVICE_DOES_LAYERS)) {
+    if (job->layerNum > 1) {
 	agxbprint (xb, "%s_", job->gvc->layerIDs[job->layerNum]);
     }
     if (job->pagesArrayElem.x > 0 || job->pagesArrayElem.y > 0) {
@@ -3290,11 +3290,13 @@ static void emit_page(GVJ_t * job, graph_t * g)
     /* For the first page, we can use the values generated in emit_begin_graph. 
      * For multiple pages, we need to generate a new id.
      */
+    bool obj_id_needs_restore = false;
     if (NotFirstPage(job)) {
 	saveid = obj->id;
 	layerPagePrefix (job, &xb);
-	agxbput (&xb, saveid);
+	agxbput(&xb, saveid == NULL ? "layer" : saveid);
 	obj->id = agxbuse(&xb);
+	obj_id_needs_restore = true;
     }
     else
 	saveid = NULL;
@@ -3344,7 +3346,7 @@ static void emit_page(GVJ_t * job, graph_t * g)
 	gvrender_end_anchor(job);
     emit_view(job,g,flags);
     gvrender_end_page(job);
-    if (saveid) {
+    if (obj_id_needs_restore) {
 	obj->id = saveid;
     }
     agxbfree(&xb);

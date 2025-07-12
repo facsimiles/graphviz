@@ -122,7 +122,7 @@ void improve_contiguity(int n, int dim, int *grouping, SparseMatrix poly_point_m
   int i, j, *ia, *ja, u, v;
   SparseMatrix point_poly_map, D;
   double dist;
-  int nbad = 0, flag;
+  int nbad = 0;
   int maxit = 10;
 
   D = SparseMatrix_get_real_adjacency_matrix_symmetrized(graph);
@@ -152,7 +152,7 @@ void improve_contiguity(int n, int dim, int *grouping, SparseMatrix poly_point_m
   }
 
   GV_INFO("ratio (edges among discontiguous regions vs total edges)=%f", (double)nbad / ia[n]);
-  stress_model(dim, D, &x, maxit, &flag);
+  const int flag = stress_model(dim, D, &x, maxit);
 
   assert(!flag);
 

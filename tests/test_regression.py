@@ -1343,6 +1343,115 @@ def test_1644():
         assert ref == out, "repeated rendering changed output"
 
 
+@pytest.mark.parametrize("fmt", ("dot", "gif", "svg", "xdot"))
+@pytest.mark.parametrize("layerselect", range(1, 6))
+def test_1648(fmt: str, layerselect: int):
+    """
+    `layerselect` should not cause crashes
+    https://gitlab.com/graphviz/graphviz/-/issues/1648
+
+    Args:
+        fmt: output format (`-T…`) to test
+        layerselect: which layer to choose
+    """
+
+    # a graph with layers
+    input = Path(__file__).parent / "graphs/layer.gv"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    run(["dot", f"-Glayerselect={layerselect}", f"-T{fmt}", "-o", os.devnull, input])
+
+
+@pytest.mark.parametrize(
+    "fmt",
+    (
+        "bmp",
+        "canon",
+        "cmap",
+        "cmapx",
+        "cmapx_np",
+        "dot",
+        "dot_json",
+        "eps",
+        "fig",
+        "gv",
+        pytest.param(
+            "ico",
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows",
+                reason="no 'ico'-supporting plugin available on Windows",
+            ),
+        ),
+        "imap",
+        "imap_np",
+        "ismap",
+        "jpe",
+        "jpeg",
+        "jpg",
+        "json",
+        "json0",
+        "kitty",
+        "kittyz",
+        "pdf",
+        "pic",
+        "plain",
+        "plain-ext",
+        "png",
+        "pov",
+        "ps",
+        "ps2",
+        "svg",
+        "svg_inline",
+        "svgz",
+        "tif",
+        "tiff",
+        "tk",
+        "vt",
+        "vt-24bit",
+        "vt-4up",
+        "vt-6up",
+        "vt-8up",
+        pytest.param(
+            "x11",
+            marks=pytest.mark.skipif(
+                platform.system() != "Linux",
+                reason="xlib plugin only available on Linux",
+            ),
+        ),
+        "xdot",
+        "xdot1.2",
+        "xdot1.4",
+        "xdot_json",
+        pytest.param(
+            "xlib",
+            marks=pytest.mark.skipif(
+                platform.system() != "Linux",
+                reason="xlib plugin only available on Linux",
+            ),
+        ),
+    ),
+)
+def test_1648_1(fmt: str):
+    """
+    `layerselect` should not cause crashes
+    https://gitlab.com/graphviz/graphviz/-/issues/1648
+    https://forum.graphviz.org/t/segmentation-fault-when-using-layerselect/3077
+
+    Args:
+        fmt: output format (`-T…`) to test
+    """
+
+    # a simple arbitrary graph
+    source = "graph {}"
+
+    # run this through Graphviz
+    run(
+        ["dot", f"-T{fmt}", "-Glayers=a, b", "-Glayerselect=b", "-o", os.devnull],
+        input=source,
+    )
+
+
 def test_1658():
     """
     the graph associated with this test case should not crash Graphviz
