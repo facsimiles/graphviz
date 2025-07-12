@@ -273,25 +273,19 @@ static void renderSelectedNodes(Agraph_t * g)
 
 static void renderNodes(Agraph_t * g)
 {
-    Agnode_t *v;
-    glCompPoint pos;
     Agsym_t* pos_attr = GN_pos(g);
     Agsym_t* size_attr = GN_size(g);
     Agsym_t* selected_attr = GN_selected(g);
-    float nodeSize;
     glCompColor c;
-    xdot * x;
-    int ind;
 
     const int defaultNodeShape=getAttrInt(g, g, "defaultnodeshape", 0);
 
-    x=parseXdotwithattrs(g);
+    xdot *x = parseXdotwithattrs(g);
     if (x) {
 	draw_xdot(x, -0.2);
 	freeXDot (x);
     }
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-    {
+    for (Agnode_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	    if (!object_color(v, &(glCompColor){0}))
 		continue;
 	    x=parseXdotwithattrs(v);
@@ -304,10 +298,9 @@ static void renderNodes(Agraph_t * g)
     if(defaultNodeShape==0)
 	glBegin(GL_POINTS);
 
-    ind=0;
+    int ind = 0;
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-    {
+    for (Agnode_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	ND_TVref(v) = ind;
 	if(!object_color(v,&c))
 	{
@@ -322,13 +315,13 @@ static void renderNodes(Agraph_t * g)
 	    ND_selected(v) = 1;
 	}
 	glColor4f(c.R,c.G,c.B,c.A);	    
-	pos=getPointFromStr(agxget(v, pos_attr));
-	nodeSize = l_float(v, size_attr, 0);
+	const glCompPoint pos = getPointFromStr(agxget(v, pos_attr));
+	float nodeSize = l_float(v, size_attr, 0);
 
 	ND_A(v) = pos;
 
         if (nodeSize > 0)
-	    nodeSize=nodeSize*view->nodeScale;
+	    nodeSize *= view->nodeScale;
 	else
 	    nodeSize=view->nodeScale;
 	if(defaultNodeShape==0)
