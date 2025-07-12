@@ -283,13 +283,13 @@ static int chancmpid(void *k1, void *k2) {
   const paird *key2 = k2;
   if (key1->p1 > key2->p1) {
     if (key1->p2 <= key2->p2) return 0;
-    else return 1;
+    return 1;
   }
-  else if (key1->p1 < key2->p1) {
+  if (key1->p1 < key2->p1) {
     if (key1->p2 >= key2->p2) return 0;
-    else return -1;
+    return -1;
   }
-  else return 0;
+  return 0;
 }   
 
 static int dcmpid(void *k1, void *k2) {
