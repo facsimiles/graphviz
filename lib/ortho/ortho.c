@@ -1220,17 +1220,7 @@ static splineInfo sinfo = { swap_ends_p, spline_merge, true, true };
  * and set label pos for those edges for which this info is not available.
  */
 void orthoEdges(Agraph_t *g, bool useLbls) {
-    sgraph* sg;
-    maze* mp;
-    route* route_list;
-    int gstart;
-    Agnode_t* n;
-    Agedge_t* e;
-    snode* sn;
-    snode* dn;
     epair_t* es = gv_calloc(agnedges(g), sizeof(epair_t));
-    cell* start;
-    cell* dest;
     PointSet* ps = NULL;
     textlabel_t* lbl;
 
@@ -1271,27 +1261,27 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
 	agwarningf("Orthogonal edges do not currently handle edge labels. Try using xlabels.\n");
 	useLbls = false;
     }
-    mp = mkMaze(g);
-    sg = mp->sg;
+    maze *const mp = mkMaze(g);
+    sgraph *const sg = mp->sg;
 #ifdef DEBUG
     if (odb_flags & ODB_SGRAPH) emitSearchGraph (stderr, sg);
 #endif
 
     /* store edges to be routed in es, along with their lengths */
     size_t n_edges = 0;
-    for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
-        for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
+    for (Agnode_t *n = agfstnode (g); n; n = agnxtnode(g, n)) {
+        for (Agedge_t *e = agfstout(g, n); e; e = agnxtout(g,e)) {
 	    if (Nop == 2 && ED_spl(e)) continue;
 	    if (Concentrate) {
 		int ti = AGSEQ(agtail(e));
 		int hi = AGSEQ(aghead(e));
 		if (ti <= hi) {
 		    if (isInPS (ps,ti,hi)) continue;
-		    else addPS (ps,ti,hi);
+		    addPS(ps,ti,hi);
 		}
 		else {
 		    if (isInPS (ps,hi,ti)) continue;
-		    else addPS (ps,hi,ti);
+		    addPS(ps,hi,ti);
 		}
 	    }
 	    es[n_edges].e = e;
@@ -1300,21 +1290,21 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
 	}
     }
 
-    route_list = gv_calloc(n_edges, sizeof(route));
+    route *const route_list = gv_calloc(n_edges, sizeof(route));
 
     qsort(es, n_edges, sizeof(epair_t), edgecmp);
 
-    gstart = sg->nnodes;
+    const int gstart = sg->nnodes;
     PQgen (sg->nnodes+2);
-    sn = &sg->nodes[gstart];
-    dn = &sg->nodes[gstart+1];
+    snode *const sn = &sg->nodes[gstart];
+    snode *const dn = &sg->nodes[gstart+1];
     for (size_t i = 0; i < n_edges; i++) {
 #ifdef DEBUG
 	if (i > 0 && (odb_flags & ODB_IGRAPH)) emitSearchGraph (stderr, sg);
 #endif
-	e = es[i].e;
-        start = CELL(agtail(e));
-        dest = CELL(aghead(e));
+	Agedge_t *const e = es[i].e;
+        cell *const start = CELL(agtail(e));
+        cell *const dest = CELL(aghead(e));
 
 	if (useLbls && (lbl = ED_label(e)) && lbl->set) {
 	}
