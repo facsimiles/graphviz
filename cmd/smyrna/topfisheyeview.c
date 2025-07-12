@@ -47,34 +47,27 @@ static int color_interpolation(glCompColor srcColor, glCompColor tarColor,
 
 static v_data *makeGraph(Agraph_t* gg, int *nedges)
 {
-    int i;
     int ne = agnedges(gg);
     int nv = agnnodes(gg);
     v_data *graph = gv_calloc(nv, sizeof(v_data));
     int *edges = gv_calloc(2 * ne + nv, sizeof(int));	/* reserve space for self loops */
     float *ewgts = gv_calloc(2 * ne + nv, sizeof(float));
-    Agnode_t *np;
-    Agedge_t *ep;
     Agraph_t *g = NULL;
-    int i_nedges;
     ne = 0;
-    i=0;
-    for (np = agfstnode(gg); np; np = agnxtnode(gg, np))
-    {
+    int i = 0;
+    for (Agnode_t *np = agfstnode(gg); np; np = agnxtnode(gg, np)) {
 	graph[i].edges = edges++;	/* reserve space for the self loop */
 	graph[i].ewgts = ewgts++;
-	i_nedges = 1;		/* one for the self */
+	int i_nedges = 1; // one for the self
 
 	if (!g)
 	    g = agraphof(np);
-	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np))
-	{
-	    Agnode_t *vp;
+	for (Agedge_t *ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) {
 	    Agnode_t *tp = agtail(ep);
 	    Agnode_t *hp = aghead(ep);
 	    assert(hp != tp);
 	    /* FIX: handle multiedges */
-	    vp = tp == np ? hp : tp;
+	    Agnode_t *const vp = tp == np ? hp : tp;
 	    ne++;
 	    i_nedges++;
 	    *edges++ = ND_TVref(vp);
