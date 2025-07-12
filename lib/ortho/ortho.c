@@ -1119,14 +1119,6 @@ static double htrack(segment *seg, maze *m) {
   return round(lo + f * (hi - lo));
 }
 
-static pointf
-addPoints(pointf p0, pointf p1)
-{
-    p0.x += p1.x;
-    p0.y += p1.y;
-    return p0;
-}
-
 static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
                              splineInfo *sinfo, epair_t es[], bool doLbls) {
     int ipt;
@@ -1140,8 +1132,8 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 
     for (size_t irte = 0; irte < n_edges; irte++) {
 	e = es[irte].e;
-	p1 = addPoints(ND_coord(agtail(e)), ED_tail_port(e).p);
-	q1 = addPoints(ND_coord(aghead(e)), ED_head_port(e).p);
+	p1 = add_pointf(ND_coord(agtail(e)), ED_tail_port(e).p);
+	q1 = add_pointf(ND_coord(aghead(e)), ED_head_port(e).p);
 
 	rte = route_list[irte];
 	size_t npts = 1 + 3*rte.n;
