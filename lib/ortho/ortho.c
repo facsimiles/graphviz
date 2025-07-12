@@ -597,13 +597,13 @@ overlapSeg (segment* S1, segment* S2, bend T1, bend T2)
 {
 	if(S1->p.p2<S2->p.p2) {
 		if (S1->l2 == T1 && S2->l1 == T2) return -1;
-		else if (S1->l2 == T2 && S2->l1 == T1) return 1;
-		else return 0;
+		if (S1->l2 == T2 && S2->l1 == T1) return 1;
+		return 0;
 	}
 	if (S1->p.p2 > S2->p.p2) {
 		if (S2->l1 == T2 && S2->l2 == T2) return -1;
-		else if (S2->l1 == T1 && S2->l2 == T1) return 1;
-		else return 0;
+		if (S2->l1 == T1 && S2->l2 == T1) return 1;
+		return 0;
 	}
 	if (S2->l1 == T2) return eqEndSeg (S1->l2, S2->l2, T1, T2);
 	return -1 * eqEndSeg(S2->l2, S1->l2, T1, T2);
