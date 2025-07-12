@@ -584,8 +584,7 @@ static void edge_xdot (Agraph_t* g, Agedge_t* e, glCompColor c)
     (void)g;
     (void)c;
 
-    xdot * x;
-    x=parseXdotwithattrs(e);
+    xdot *const x = parseXdotwithattrs(e);
     draw_xdot(x,0);
     if(x)
 	freeXDot (x);
