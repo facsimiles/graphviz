@@ -296,23 +296,18 @@ static void drawtopfishedges(topview * t)
 
 static int get_active_frame(void)
 {
-    int fr;
     gdouble seconds = g_timer_elapsed(view->timer, NULL);
-    fr = (int)(seconds * 1000.0);
+    const int fr = (int)(seconds * 1000.0);
     if (fr < view->total_frames) {
 
 	if (fr == view->active_frame)
 	    return 0;
-	else {
-	    view->active_frame = fr;
-	    return 1;
-	}
-    } else {
-	g_timer_stop(view->timer);
-	view->Topview->fisheyeParams.animate = 0;
-	return 0;
+	view->active_frame = fr;
+	return 1;
     }
-
+    g_timer_stop(view->timer);
+    view->Topview->fisheyeParams.animate = 0;
+    return 0;
 }
 
 void drawtopologicalfisheye(topview * t)
