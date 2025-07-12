@@ -36,6 +36,7 @@
 #include <common/pointset.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/list.h>
 #include <util/unused.h>
 
 typedef struct {
@@ -1119,11 +1120,11 @@ static double htrack(segment *seg, maze *m) {
   return round(lo + f * (hi - lo));
 }
 
+DEFINE_LIST(points, pointf)
+
 static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
                              splineInfo *sinfo, epair_t es[], bool doLbls) {
-    int ipt;
-    pointf* ispline = 0;
-    size_t splsz = 0;
+    points_t ispline = {0};
     pointf p, p1, q1;
     route rte;
     segment* seg;
@@ -1137,11 +1138,7 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 
 	rte = route_list[irte];
 	size_t npts = 1 + 3*rte.n;
-	if (npts > splsz) {
-		free (ispline);
-		ispline = gv_calloc(npts, sizeof(pointf));
-		splsz = npts;
-	}
+	points_reserve(&ispline, npts);
 	    
 	seg = rte.segs;
 	if (seg == NULL) {
@@ -1155,8 +1152,8 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 		p.y = htrack(seg, mp);
 		p.x = p1.x;
 	}
-	ispline[0] = ispline[1] = p;
-	ipt = 2;
+	points_append(&ispline, p);
+	points_append(&ispline, p);
 
 	for (size_t i = 1;i<rte.n;i++) {
 		seg = rte.segs+i;
@@ -1164,8 +1161,9 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 		    p.x = vtrack(seg, mp);
 		else
 		    p.y = htrack(seg, mp);
-		ispline[ipt+2] = ispline[ipt+1] = ispline[ipt] = p;
-		ipt += 3;
+		points_append(&ispline, p);
+		points_append(&ispline, p);
+		points_append(&ispline, p);
 	}
 
 	if (seg->isVert) {
@@ -1176,14 +1174,17 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 		p.y = htrack(seg, mp);
 		p.x = q1.x;
 	}
-	ispline[ipt] = ispline[ipt+1] = p;
+	points_append(&ispline, p);
+	points_append(&ispline, p);
 	if (Verbose > 1)
 	    fprintf(stderr, "ortho %s %s\n", agnameof(agtail(e)),agnameof(aghead(e)));
-	clip_and_install(e, aghead(e), ispline, npts, sinfo);
+	clip_and_install(e, aghead(e), points_front(&ispline), points_size(&ispline),
+	                 sinfo);
 	if (doLbls && (lbl = ED_label(e)) && !lbl->set)
 	    addEdgeLabels(e);
+	points_clear(&ispline);
     }
-    free(ispline);
+    points_free(&ispline);
 }
 
 static int
