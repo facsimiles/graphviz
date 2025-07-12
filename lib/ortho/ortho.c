@@ -296,8 +296,8 @@ static int dcmpid(void *k1, void *k2) {
   const double *key1 = k1;
   const double *key2 = k2;
   if (*key1 > *key2) return 1;
-  else if (*key1 < *key2) return -1;
-  else return 0;
+  if (*key1 < *key2) return -1;
+  return 0;
 }   
 
 static Dtdisc_t chanDisc = {
