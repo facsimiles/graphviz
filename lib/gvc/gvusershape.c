@@ -17,16 +17,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/agxbuf.h>
+#include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
 #include <util/optional.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#define GLOB_NOSPACE 1 /* Ran out of memory.  */
-#define GLOB_ABORTED 2 /* Read error.  */
-#define GLOB_NOMATCH 3 /* No matches found.  */
-#define GLOB_NOSORT 4
-#endif
 
 #include <common/types.h>
 #include <common/usershape.h>
@@ -248,11 +242,11 @@ static int find_attribute(const char *s, match_t *result) {
 
   // look for an attribute string matching ([a-z][a-zA-Z]*)="([^"]*)"
   for (size_t i = 0; s[i] != '\0';) {
-    if (s[i] >= 'a' && s[i] <= 'z') {
+    if (gv_islower(s[i])) {
       result->key.data = &s[i];
       result->key.size = 1;
       ++i;
-      while ((s[i] >= 'a' && s[i] <= 'z') || (s[i] >= 'A' && s[i] <= 'Z')) {
+      while (gv_isalpha(s[i])) {
         ++i;
         ++result->key.size;
       }
@@ -539,32 +533,21 @@ static void ps_size(usershape_t *us) {
   }
 }
 
-#define KEY "/MediaBox"
-
 typedef struct {
-  char *s;
-  char *buf;
   FILE *fp;
+  agxbuf scratch;
 } stream_t;
 
-static char nxtc(stream_t *str) {
-  if (fgets(str->buf, BUFSIZ, str->fp)) {
-    str->s = str->buf;
-    return *(str->s);
-  }
-  return '\0';
-}
-
-#define strc(x) (*(x->s) ? *(x->s) : nxtc(x))
-#define stradv(x) (x->s++)
-
 static void skipWS(stream_t *str) {
-  char c;
-  while ((c = strc(str))) {
-    if (gv_isspace(c))
-      stradv(str);
-    else
-      return;
+  while (true) {
+    const int c = getc(str->fp);
+    if (gv_isspace(c)) {
+      continue;
+    }
+    if (c != EOF) {
+      (void)ungetc(c, str->fp);
+    }
+    break;
   }
 }
 
@@ -578,55 +561,91 @@ static int scanNum(char *tok, double *dp) {
   return 0;
 }
 
-static void getNum(stream_t *str, char *buf) {
-  int len = 0;
-  char c;
+static char *getNum(stream_t *str) {
   skipWS(str);
-  while ((c = strc(str)) && (gv_isdigit(c) || (c == '.'))) {
-    buf[len++] = c;
-    stradv(str);
-    if (len == BUFSIZ - 1)
-      break;
+  while (true) {
+    const int c = getc(str->fp);
+    if (gv_isdigit(c) || c == '.') {
+      agxbputc(&str->scratch, (char)c);
+      continue;
+    }
+    if (c != EOF) {
+      (void)ungetc(c, str->fp);
+    }
+    break;
   }
-  buf[len] = '\0';
-
-  return;
+  return agxbuse(&str->scratch);
 }
 
 static int boxof(stream_t *str, boxf *bp) {
-  char tok[BUFSIZ];
-
   skipWS(str);
-  if (strc(str) != '[')
+  if (getc(str->fp) != '[')
     return 1;
-  stradv(str);
-  getNum(str, tok);
+  char *tok = getNum(str);
   if (scanNum(tok, &bp->LL.x))
     return 1;
-  getNum(str, tok);
+  tok = getNum(str);
   if (scanNum(tok, &bp->LL.y))
     return 1;
-  getNum(str, tok);
+  tok = getNum(str);
   if (scanNum(tok, &bp->UR.x))
     return 1;
-  getNum(str, tok);
+  tok = getNum(str);
   if (scanNum(tok, &bp->UR.y))
     return 1;
   return 0;
 }
 
-static int bboxPDF(FILE *fp, boxf *bp) {
-  stream_t str;
-  char *s;
-  char buf[BUFSIZ];
-  while (fgets(buf, BUFSIZ, fp)) {
-    if ((s = strstr(buf, KEY))) {
-      str.buf = buf;
-      str.s = s + (sizeof(KEY) - 1);
-      str.fp = fp;
-      return boxof(&str, bp);
+/// scan a file until a string is found
+///
+/// This is essentially `strstr`, but taking a `FILE *` as the haystack instead
+/// of a `char *`. Note that the position of `f` will be immediately after the
+/// given string if this function returns `true`.
+///
+/// @param f File to seek
+/// @param needle Substring to look for
+/// @return True if the substring was found
+static bool fstr(FILE *f, const char *needle) {
+  assert(f != NULL);
+  assert(needle != NULL);
+
+  // the algorithm in this function only works if the needle’s characters are
+  // distinct
+  for (size_t i = 0; needle[i] != '\0'; ++i) {
+    for (size_t j = i + 1; needle[j] != '\0'; ++j) {
+      assert(needle[i] != needle[j]);
     }
   }
+
+  for (size_t offset = 0;;) {
+    if (needle[offset] == '\0') {
+      return true;
+    }
+    const int c = getc(f);
+    if (c == EOF) {
+      break;
+    }
+    if (needle[offset] == c) {
+      ++offset;
+    } else if (needle[0] == c) {
+      offset = 1;
+    } else {
+      offset = 0;
+    }
+  }
+
+  return false;
+}
+
+static int bboxPDF(FILE *fp, boxf *bp) {
+  static const char KEY[] = "/MediaBox";
+  if (fstr(fp, KEY)) {
+    stream_t str = {.fp = fp};
+    const int rc = boxof(&str, bp);
+    agxbfree(&str.scratch);
+    return rc;
+  }
+
   return 1;
 }
 
