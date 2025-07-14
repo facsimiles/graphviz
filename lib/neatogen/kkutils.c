@@ -60,7 +60,7 @@ static DistType **compute_apsp_dijkstra(vtx_data * graph, int n)
 	dij[i] = storage + i * n;
 
     for (i = 0; i < n; i++) {
-	dijkstra(i, graph, n, dij[i]);
+	ngdijkstra(i, graph, n, dij[i]);
     }
     return dij;
 }

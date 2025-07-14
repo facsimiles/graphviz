@@ -17,7 +17,7 @@ extern "C" {
 #include <neatogen/defs.h>
 #include <neatogen/sgd.h>
 
-    extern void dijkstra(int, vtx_data *, int, DistType *);
+    extern void ngdijkstra(int, vtx_data *, int, DistType *);
     extern void dijkstra_f(int, vtx_data *, int, float *);
     extern int dijkstra_sgd(graph_sgd *, int, term_sgd *);
 

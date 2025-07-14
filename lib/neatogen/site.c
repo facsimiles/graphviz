@@ -31,7 +31,7 @@ Site *getsite(void)
     return getfree(&sfl);
 }
 
-double dist(Site * s, Site * t)
+double ngdist(Site * s, Site * t)
 {
     double ans;
     double dx, dy;

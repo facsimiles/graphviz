@@ -46,13 +46,13 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(lbnd, bisector)) != NULL) {
 		PQdelete(pq, lbnd);
-		PQinsert(pq, lbnd, p, dist(p, newsite));
+		PQinsert(pq, lbnd, p, ngdist(p, newsite));
 	    }
 	    lbnd = bisector;
 	    bisector = HEcreate(e, re);
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(bisector, rbnd)) != NULL)
-		PQinsert(pq, bisector, p, dist(p, newsite));
+		PQinsert(pq, bisector, p, ngdist(p, newsite));
 	    newsite = nextsite(context);
 	} else if (!PQempty(pq)) {
 	    /* intersection is smallest */
@@ -83,10 +83,10 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    deref(v);
 	    if ((p = hintersect(llbnd, bisector)) != NULL) {
 		PQdelete(pq, llbnd);
-		PQinsert(pq, llbnd, p, dist(p, bot));
+		PQinsert(pq, llbnd, p, ngdist(p, bot));
 	    }
 	    if ((p = hintersect(bisector, rrbnd)) != NULL) {
-		PQinsert(pq, bisector, p, dist(p, bot));
+		PQinsert(pq, bisector, p, ngdist(p, bot));
 	    }
 	} else
 	    break;

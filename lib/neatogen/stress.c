@@ -349,7 +349,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
     invCenterIndex[0] = node;
 
     if (reweight_graph) {
-	dijkstra(node, graph, n, Dij[0]);
+	ngdijkstra(node, graph, n, Dij[0]);
     } else {
 	bfs(node, graph, n, Dij[0]);
     }
@@ -368,7 +368,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 	CenterIndex[node] = i;
 	invCenterIndex[i] = node;
 	if (reweight_graph) {
-	    dijkstra(node, graph, n, Dij[i]);
+	    ngdijkstra(node, graph, n, Dij[i]);
 	} else {
 	    bfs(node, graph, n, Dij[i]);
 	}
