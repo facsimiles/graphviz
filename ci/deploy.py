@@ -144,7 +144,7 @@ def main() -> int:
 
     # retrieve version name left by prior CI tasks
     log.info("deriving Graphviz version")
-    root = Path(__file__).resolve().parent
+    root = Path(__file__).resolve().parents[1]
     version = subprocess.check_output(
         [sys.executable, "gen_version.py"], cwd=root, text=True
     ).strip()
