@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "gui.h"
+#include "gui/gui.h"
 
 void tv_show_all(void);
 void tv_hide_all(void);

@@ -738,13 +738,13 @@ else
 	        for l in "$lua_suffix" "" "54" "5.4" "53" "5.3" "52" "5.2" "51" "5.1" ; do
 	            pkgconfig_lua_found=`$PKG_CONFIG --exists lua$l 2>/dev/null`
 	            if test "$?" = "0" ; then
-                        LUA_INCLUDES="$LUA_CFLAGS "`$PKG_CONFIG --cflags lua$l`
+                        LUA_INCLUDES="$LUA_CFLAGS "`$PKG_CONFIG --cflags-only-I lua$l`
                         LUA_LIBS="$LUA_LFLAGS "`$PKG_CONFIG --libs lua$l`
 		        LUA_INSTALL_DIR="`$PKG_CONFIG --variable=libdir lua$l`/lua"
 
 		        pkgconfig_lualib_found=`$PKG_CONFIG --exists lualib$l 2>/dev/null`
 		        if test  "$?" = "0"; then
-		           LUA_INCLUDES="$LUA_CFLAGS "`$PKG_CONFIG --cflags lualib$l`
+		           LUA_INCLUDES="$LUA_CFLAGS "`$PKG_CONFIG --cflags-only-I lualib$l`
 		           LUA_LIBS="$LUA_LFLAGS "`$PKG_CONFIG --libs lualib$l`
 		        fi
                         break

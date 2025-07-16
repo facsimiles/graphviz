@@ -14,7 +14,7 @@
 #include "smyrna_utils.h"
 #include <common/colorprocs.h>
 #include "draw.h"
-#include "frmobjectui.h"
+#include "gui/frmobjectui.h"
 #include <xdot/xdot.h>
 #include <glcomp/glutils.h>
 #include "selectionfuncs.h"

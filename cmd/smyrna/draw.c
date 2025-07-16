@@ -28,7 +28,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include <xdot/xdot.h>
 #include "viewport.h"
 #include "topfisheyeview.h"
-#include "appmouse.h"
+#include "gui/appmouse.h"
 #include "hotkeymap.h"
 #include "polytess.h"
 #include <glcomp/glcompimage.h>
