@@ -1049,10 +1049,8 @@ set_active_physical_coords(Hierarchy * hierarchy, int node, int level,
 /* find_physical_coords:
  * find the 'physical_coords' of the active-ancestor of 'node'
  */
-void
-find_physical_coords(Hierarchy * hierarchy, int level, int node, double *x,
-		     double *y)
-{
+void find_physical_coords(Hierarchy *hierarchy, int level, int node, float *x,
+                          float *y) {
     int active_level = hierarchy->geom_graphs[level][node].active_level;
     while (active_level > level) {
 	node = hierarchy->v2cv[level][node];
@@ -1082,10 +1080,8 @@ find_active_ancestor_info(Hierarchy * hierarchy, int level, int node, int *level
 /* find_old_physical_coords:
  * find the 'old_physical_coords' of the old active-ancestor of 'node'
  */
-void
-find_old_physical_coords(Hierarchy * hierarchy, int level, int node, double *x,
-		     double *y)
-{
+void find_old_physical_coords(Hierarchy *hierarchy, int level, int node,
+                              float *x, float *y) {
     int active_level = hierarchy->geom_graphs[level][node].old_active_level;
     while (active_level > level) {
 	node = hierarchy->v2cv[level][node];

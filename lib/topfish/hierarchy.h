@@ -81,8 +81,9 @@ void rescale_layout_polar(double * x_coords, double * y_coords,
     double * x_foci, double * y_foci, int num_foci, size_t n, int interval,
     double width, double height, double distortion);
 
-void find_physical_coords(Hierarchy*, int, int, double *x, double *y);
-void find_old_physical_coords(Hierarchy * hierarchy, int level, int node, double *x,double *y);
+void find_physical_coords(Hierarchy *, int, int, float *x, float *y);
+void find_old_physical_coords(Hierarchy *hierarchy, int level, int node,
+                              float *x, float *y);
 
 
 int find_active_ancestor(Hierarchy*, int, int);
