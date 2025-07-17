@@ -35,6 +35,7 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
+#include <util/gv_find_me.h>
 #include <util/list.h>
 #include <util/path.h>
 #include <util/unreachable.h>
@@ -182,6 +183,52 @@ static char *concat(char *pfx, char *sfx) {
   return agxbdisown(&sp);
 }
 
+/// get gvpr’s default paths to search for scripts
+///
+/// The content returned is a list of paths separated by the platform’s native
+/// `$PATH` separator, either ':' or ';'. The caller is responsible for freeing
+/// the returned string.
+///
+/// @return Search path for scripts or `NULL` on failure
+static char *dflt_gvprpath(void) {
+
+  // find our containing executable
+  char *const exe = gv_find_me();
+  if (exe == NULL) {
+    return NULL;
+  }
+
+  // assume it is of the form …/bin/foo[.exe] and construct
+  // .:…/share/graphviz/gvpr
+
+  char *slash = strrchr(exe, PATH_SEPARATOR);
+  if (slash == NULL) {
+    free(exe);
+    return NULL;
+  }
+
+  *slash = '\0';
+  slash = strrchr(exe, PATH_SEPARATOR);
+  if (slash == NULL) {
+    free(exe);
+    return NULL;
+  }
+
+  *slash = '\0';
+  const size_t share_len =
+      strlen(".:") + strlen(exe) + strlen("/share/graphviz/gvpr") + 1;
+  char *const share = malloc(share_len);
+  if (share == NULL) {
+    free(exe);
+    return NULL;
+  }
+  snprintf(share, share_len, ".%c%s%cshare%cgraphviz%cgvpr", LISTSEP, exe,
+           PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR);
+  free(exe);
+
+  return share;
+}
+
 /* resolve:
  * Translate -f arg parameter into a pathname.
  * If arg contains '/', return arg.
@@ -200,17 +247,24 @@ static char *resolve(char *arg, int verbose) {
   if (strchr(arg, PATH_SEPARATOR))
     return gv_strdup(arg);
 
+  char *const dflt = dflt_gvprpath();
+  if (dflt == NULL) {
+    error(ERROR_ERROR, "Could not determine DFLT_GVPRPATH");
+  }
+
   path = getenv("GVPRPATH");
   if (!path)
     path = getenv("GPRPATH"); // deprecated
-  if (path && (c = *path)) {
+  if (dflt == NULL) {
+    // do not use `dflt` at all
+  } else if (path && (c = *path)) {
     if (c == LISTSEP) {
-      pathp = path = concat(DFLT_GVPRPATH, path);
+      pathp = path = concat(dflt, path);
     } else if ((c = path[strlen(path) - 1]) == LISTSEP) {
-      pathp = path = concat(path, DFLT_GVPRPATH);
+      pathp = path = concat(path, dflt);
     }
   } else
-    path = DFLT_GVPRPATH;
+    path = dflt;
   if (verbose)
     fprintf(stderr, "PATH: %s\n", path);
   agxbuf fp = {0};
@@ -236,6 +290,8 @@ static char *resolve(char *arg, int verbose) {
       fname = gv_strdup(s);
     }
   }
+
+  free(dflt);
 
   if (!fname)
     error(ERROR_ERROR, "Could not find file \"%s\" in GVPRPATH", arg);

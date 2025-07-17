@@ -6,12 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (13.1.2)]
 
+### Changed
+
+- `DFLT_GVPRPATH`, a `$PATH`-like variable that gvpr uses to locate
+  user-referenced files, is now computed at runtime instead of build time. This
+  removes a barrier to relocating a Graphviz installation from one directory to
+  another.
+
 ### Fixed
 
 - Gvedit and Smyrna on MinGW can now correctly locate their supporting runtime
   data directories.
 - The gvpr options `-v` for printing verbose messages is documented. This has
   been supported since Graphviz 2.30 but undocumented.
+- When using the CMake build system, `DFLT_GVPRPATH` is no longer incorrectly
+  missing a ".:" prefix.
 
 ## [13.1.1] – 2025-07-20
 
