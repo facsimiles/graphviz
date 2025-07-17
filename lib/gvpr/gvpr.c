@@ -243,7 +243,8 @@ static char *resolve(char *arg, int verbose) {
   agxbfree(&fp);
   free(pathp);
   if (verbose)
-    fprintf(stderr, "file %s resolved to %s\n", arg, fname);
+    fprintf(stderr, "file %s resolved to %s\n", arg,
+            fname == NULL ? "<null>" : fname);
   return fname;
 }
 
