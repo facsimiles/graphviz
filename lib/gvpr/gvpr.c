@@ -36,6 +36,7 @@
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/list.h>
+#include <util/path.h>
 #include <util/unreachable.h>
 
 static char *Info[] = {
@@ -169,10 +170,8 @@ static int parseArgs(char *s, int argc, char ***argv) {
 }
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-#define PATHSEP '\\'
 #define LISTSEP ';'
 #else
-#define PATHSEP '/'
 #define LISTSEP ':'
 #endif
 
@@ -197,7 +196,7 @@ static char *resolve(char *arg, int verbose) {
   char *pathp = NULL;
   size_t sz;
 
-  if (strchr(arg, PATHSEP))
+  if (strchr(arg, PATH_SEPARATOR))
     return gv_strdup(arg);
 
   path = getenv("GVPRPATH");
@@ -229,7 +228,7 @@ static char *resolve(char *arg, int verbose) {
       sz = agxbput(&fp, path);
       path += sz;
     }
-    agxbprint(&fp, "%c%s", PATHSEP, arg);
+    agxbprint(&fp, "%c%s", PATH_SEPARATOR, arg);
     s = agxbuse(&fp);
 
     if (access(s, R_OK) == 0) {

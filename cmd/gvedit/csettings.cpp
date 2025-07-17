@@ -23,6 +23,7 @@
 #include <qfile.h>
 #include <string>
 #include <util/gv_find_me.h>
+#include <util/path.h>
 
 extern int errorPipe(char *errMsg);
 
@@ -38,12 +39,6 @@ static std::string find_me() {
 
 /// find an absolute path to where Gvedit auxiliary files are stored
 static std::string find_share(void) {
-
-#if defined(_WIN32) && !defined(__MINGW32__)
-  const char PATH_SEPARATOR = '\\';
-#else
-  const char PATH_SEPARATOR = '/';
-#endif
 
   // find the path to the `gvedit` binary
   std::string gvedit_exe = find_me();
