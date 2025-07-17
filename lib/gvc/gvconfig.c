@@ -27,6 +27,7 @@
 #include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
 #include <util/list.h>
+#include <util/path.h>
 #include <util/startswith.h>
 
 #ifdef ENABLE_LTDL
@@ -507,7 +508,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     libdir = gvconfig_libdir(gvc);
 
     agxbuf config_glob = {0};
-    agxbprint(&config_glob, "%s%s%s", libdir, DIRSEP, plugin_glob);
+    agxbprint(&config_glob, "%s%c%s", libdir, PATH_SEPARATOR, plugin_glob);
 
     /* load all libraries even if can't save config */
 
@@ -530,7 +531,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 	    if (is_plugin(globbuf.gl_pathv[i])) {
 		library = gvplugin_library_load(gvc, globbuf.gl_pathv[i]);
 		if (library) {
-		    char *p = strrchr(globbuf.gl_pathv[i], DIRSEP[0]);
+		    char *p = strrchr(globbuf.gl_pathv[i], PATH_SEPARATOR);
 		    if (p)
 			p++;
 		    if (f && p)
@@ -656,18 +657,28 @@ glob (GVC_t* gvc, char* pattern, int flags, int (*errfunc)(const char *, int), g
     
     pglob->gl_pathc = 0;
     pglob->gl_pathv = NULL;
+
+    // the Windows APIs use '\'-separated directory components, but MinGW uses
+    // '/' as the canonical directory separator, so convert these
+#ifdef __MINGW32__
+    for (size_t i = 0; pattern[i] != '\0'; ++i) {
+      if (pattern[i] == '/') {
+        pattern[i] = '\\';
+      }
+    }
+#endif
     
     h = FindFirstFile (pattern, &wfd);
     if (h == INVALID_HANDLE_VALUE) return GLOB_NOMATCH;
     libdir = gvconfig_libdir(gvc);
     do {
       const size_t size =
-        strlen(libdir) + strlen(DIRSEP) + strlen(wfd.cFileName) + 1;
+        strlen(libdir) + 1 /* path separator */ + strlen(wfd.cFileName) + 1;
       char *const entry = malloc(size);
       if (!entry) {
         goto oom;
       }
-      snprintf(entry, size, "%s%s%s", libdir, DIRSEP, wfd.cFileName);
+      snprintf(entry, size, "%s%c%s", libdir, PATH_SEPARATOR, wfd.cFileName);
       if (strs_try_append(&strs, entry) != 0) {
         free(entry);
         goto oom;
