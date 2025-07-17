@@ -398,7 +398,7 @@ def has_sandbox() -> bool:
 
 def run_c(
     src: Path,
-    args: list[str] = None,
+    args: list[Union[Path, str]] = None,
     input: str = "",
     cflags: list[str] = None,
     link: list[Union[Path, str]] = None,

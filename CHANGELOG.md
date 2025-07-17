@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - On Windows, the GDI+ plugin is now available in Graphviz static builds.
   Previously it was only available in shared library (on-demand plugin loading)
   builds.
+- Processing a graph with GVPR no longer makes explicit the default `"\N"` label
+  for nodes. This undoes a change from Graphviz 13.0.1. #2705
+- `nop` no longer preserves empty string labels. This undoes a change from
+  Graphviz 13.0.1. #2436, #2705
+- The order of programmatic calls to `gvContext`/`gvContextPlugin` and
+  `agmemread` once again affects default node labels. This undoes a change from
+  Graphviz 13.0.1. #2434, #2705
 
 ### Fixed
 
@@ -24,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Using `layerselect` beyond layer 1 no longer causes crashes. #1648
 - Correct parsing of a PDF file’s `/MediaBox` section no longer depends on the
   internal `BUFSIZ` constant.
+- Round tripping a graph through a file no longer causes it to acquire a default
+  node label `\N`. #2705
 
 ## [13.1.0] – 2025-07-01
 
