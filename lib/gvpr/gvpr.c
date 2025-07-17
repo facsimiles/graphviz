@@ -378,7 +378,6 @@ static int doFlags(char *arg, int argi, int argc, char **argv, options *opts) {
     case 'V':
       fprintf(stderr, "%s version %s (%s)\n", Info[0], Info[1], Info[2]);
       return 0;
-      break;
     case '?':
       if (optopt == '\0' || optopt == '?')
         fprintf(stderr, "Usage: gvpr%s", usage);
@@ -386,7 +385,6 @@ static int doFlags(char *arg, int argi, int argc, char **argv, options *opts) {
         error(ERROR_USAGE | ERROR_WARNING, "%s", usage);
       }
       return 0;
-      break;
     default:
       error(ERROR_WARNING, "option -%c unrecognized", c);
       break;
