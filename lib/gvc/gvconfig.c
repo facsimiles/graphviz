@@ -577,7 +577,7 @@ void gvconfig(GVC_t * gvc, bool rescan)
     
         if (! gvc->config_path) {
             agxbuf xb = {0};
-            agxbprint(&xb, "%s%s%s", libdir, DIRSEP, config_file_name);
+            agxbprint(&xb, "%s%c%s", libdir, PATH_SEPARATOR, config_file_name);
             gvc->config_path = agxbdisown(&xb);
         }
     	
