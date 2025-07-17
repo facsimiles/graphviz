@@ -17,6 +17,7 @@
 #include "config.h"
 #include <assert.h>
 #include <float.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -466,7 +467,7 @@ static double getSegLen(strview_t *s) {
 static int parseSegs(const char *clrs, colorsegs_t *psegs) {
     colorsegs_t segs = {0};
     double v, left = 1;
-    static int doWarn = 1;
+    static atomic_flag warned;
     int rval = 0;
 
     for (tok_t t = tok(clrs, ":"); !tok_end(&t); tok_next(&t)) {
@@ -474,9 +475,8 @@ static int parseSegs(const char *clrs, colorsegs_t *psegs) {
 	if ((v = getSegLen(&color)) >= 0) {
 	    double del = v - left;
 	    if (del > 0) {
-		if (doWarn && !AEQ0(del)) {
+		if (!AEQ0(del) && !atomic_flag_test_and_set(&warned)) {
 		    agwarningf("Total size > 1 in \"%s\" color spec ", clrs);
-		    doWarn = 0;
 		    rval = 3;
 		}
 		v = left;
@@ -488,10 +488,9 @@ static int parseSegs(const char *clrs, colorsegs_t *psegs) {
 	    colorsegs_append(&segs, s);
 	}
 	else {
-	    if (doWarn) {
+	    if (!atomic_flag_test_and_set(&warned)) {
 		agerrorf("Illegal value in \"%s\" color attribute; float expected after ';'\n",
                     clrs);
-		doWarn = 0;
 		rval = 2;
 	    }
 	    else rval = 1;
