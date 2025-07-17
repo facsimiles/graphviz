@@ -163,7 +163,7 @@ static void windowedMode(int argc, char *argv[]) {
 /// find an absolute path to where Smyrna auxiliary files are stored
 static char *find_share(void) {
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
   const char PATH_SEPARATOR = '\\';
 #else
   const char PATH_SEPARATOR = '/';

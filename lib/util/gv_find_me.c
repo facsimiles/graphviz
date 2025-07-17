@@ -122,6 +122,16 @@ char *gv_find_me(void) {
 
     } while ((DWORD)rc == path_size);
 
+    // the Windows APIs return '\'-separated directory components, but MinGW
+    // uses '/' as the canonical directory separator, so convert these
+#ifdef __MINGW32__
+    for (size_t i = 0; path[i] != '\0'; ++i) {
+      if (path[i] == '\\') {
+        path[i] = '/';
+      }
+    }
+#endif
+
     return path;
   }
 #else

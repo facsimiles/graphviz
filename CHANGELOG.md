@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (13.1.2)]
 
+### Fixed
+
+- Gvedit and Smyrna on MinGW can now correctly locate their supporting runtime
+  data directories.
+
 ## [13.1.1] – 2025-07-20
 
 ### Changed
