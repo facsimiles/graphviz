@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Gvedit and Smyrna on MinGW can now correctly locate their supporting runtime
   data directories.
+- The gvpr options `-v` for printing verbose messages is documented. This has
+  been supported since Graphviz 2.30 but undocumented.
 
 ## [13.1.1] – 2025-07-20
 

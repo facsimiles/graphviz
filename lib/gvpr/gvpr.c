@@ -54,6 +54,7 @@ static const char *usage =
    -o <ofile> - write output to <ofile>; stdout by default\n\
    -n         - no read-ahead of input graphs\n\
    -q         - turn off warning messages\n\
+   -v         - enable verbose messages\n\
    -V         - print version info\n\
    -?         - print usage info\n\
 If no files are specified, stdin is used\n";
