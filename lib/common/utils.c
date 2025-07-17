@@ -26,6 +26,7 @@
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
+#include <util/path.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
 #include <util/streq.h>
@@ -249,7 +250,8 @@ static char *findPath(const strview_t *dirs, const char *str) {
     static agxbuf safefilename;
 
     for (const strview_t *dp = dirs; dp != NULL && dp->data != NULL; dp++) {
-	agxbprint(&safefilename, "%.*s%s%s", (int)dp->size, dp->data, DIRSEP, str);
+	agxbprint(&safefilename, "%.*s%c%s", (int)dp->size, dp->data, PATH_SEPARATOR,
+	          str);
 	char *filename = agxbuse(&safefilename);
 	if (access(filename, R_OK) == 0)
 	    return filename;
@@ -302,7 +304,7 @@ const char *safefile(const char *filename)
 	    dirs = mkDirlist(pathlist);
     }
 
-    if (*filename == DIRSEP[0] || !dirs)
+    if (*filename == PATH_SEPARATOR || !dirs)
 	return filename;
 
     return findPath(dirs, filename);
