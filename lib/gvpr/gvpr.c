@@ -260,7 +260,7 @@ static char *resolve(char *arg, int verbose) {
   } else if (path && (c = *path)) {
     if (c == LISTSEP) {
       pathp = path = concat(dflt, path);
-    } else if ((c = path[strlen(path) - 1]) == LISTSEP) {
+    } else if (path[strlen(path) - 1] == LISTSEP) {
       pathp = path = concat(path, dflt);
     }
   } else
