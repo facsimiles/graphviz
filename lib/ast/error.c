@@ -16,7 +16,6 @@
 #include <ast/error.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <string.h>
 #include <errno.h>
 #include <util/exit.h>
 
@@ -73,8 +72,6 @@ void errorv(const char *id, int level, const char *s, va_list ap)
 	}
     }
     vfprintf(stderr, s, ap);
-    if (flags & ERROR_SYSTEM)
-	fprintf(stderr, "\n%s", strerror(errno));
     fprintf(stderr, "\n");
     if (level >= ERROR_FATAL)
 	graphviz_exit(level - ERROR_FATAL + 1);
