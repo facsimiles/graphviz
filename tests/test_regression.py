@@ -3373,7 +3373,7 @@ def test_gvpr_usage(tmp_path: Path):
     # ask GVPR to process a non-existent file
     gvprbin = which("gvpr")
     with subprocess.Popen(
-        [gvprbin, "-f", "nofile"],
+        [gvprbin, "-v", "-f", "nofile"],
         stderr=subprocess.PIPE,
         cwd=tmp_path,
         text=True,
