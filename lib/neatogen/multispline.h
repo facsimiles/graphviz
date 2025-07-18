@@ -13,8 +13,16 @@
 #include <render.h>
 #include <pathutil.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 typedef struct router_s router_t;
 
-extern void freeRouter (router_t* rtr);
-extern router_t* mkRouter (Ppoly_t** obs, int npoly);
-extern int makeMultiSpline(edge_t* e, router_t * rtr, int);
+INTERNAL void freeRouter (router_t* rtr);
+INTERNAL router_t* mkRouter (Ppoly_t** obs, int npoly);
+INTERNAL int makeMultiSpline(edge_t* e, router_t * rtr, int);
+
+#undef INTERNAL

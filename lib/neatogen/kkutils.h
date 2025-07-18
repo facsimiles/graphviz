@@ -18,19 +18,27 @@ extern "C" {
 
 #include <neatogen/defs.h>
 
-    extern void fill_neighbors_vec_unweighted(vtx_data *, int vtx,
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
+INTERNAL void fill_neighbors_vec_unweighted(vtx_data *, int vtx,
 					      int *vtx_vec);
-    extern size_t common_neighbors(vtx_data *, int u, int *);
-    extern void empty_neighbors_vec(vtx_data * graph, int vtx,
+INTERNAL size_t common_neighbors(vtx_data *, int u, int *);
+INTERNAL void empty_neighbors_vec(vtx_data * graph, int vtx,
 				    int *vtx_vec);
-    extern DistType **compute_apsp(vtx_data *, int);
-    extern DistType **compute_apsp_artificial_weights(vtx_data *, int);
-    extern double distance_kD(double **, int, int, int);
-    extern void quicksort_place(double *, int *, int);
-    extern void quicksort_placef(float *, int *, int, int);
-    extern void compute_new_weights(vtx_data * graph, int n);
-    extern void restore_old_weights(vtx_data * graph, int n,
+INTERNAL DistType **compute_apsp(vtx_data *, int);
+INTERNAL DistType **compute_apsp_artificial_weights(vtx_data *, int);
+INTERNAL double distance_kD(double **, int, int, int);
+INTERNAL void quicksort_place(double *, int *, int);
+INTERNAL void quicksort_placef(float *, int *, int, int);
+INTERNAL void compute_new_weights(vtx_data * graph, int n);
+INTERNAL void restore_old_weights(vtx_data * graph, int n,
 				    float *old_weights);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

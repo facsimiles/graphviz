@@ -7,6 +7,12 @@
 extern "C" {
 #endif
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 typedef struct {
     int i, j;
     float d, w;
@@ -21,7 +27,9 @@ typedef struct graph_sgd {
     float *weights; // weights of edges (length sources[n])
 } graph_sgd;
 
-extern void sgd(graph_t *, int);
+INTERNAL void sgd(graph_t *, int);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

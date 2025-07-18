@@ -15,12 +15,19 @@ extern "C" {
 #endif
 
 #include <neatogen/defs.h>
+
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 #ifdef DIGCOLA
-extern int compute_y_coords(vtx_data*, int, double*, int);
-extern int compute_hierarchy(vtx_data*, int, double, double, 
-                                double*, int**, int**, int*); 
-extern int IMDS_given_dim(vtx_data*, int, double*, double*, double);
-extern int stress_majorization_with_hierarchy(vtx_data*, int, double**, 
+INTERNAL int compute_y_coords(vtx_data*, int, double*, int);
+INTERNAL int compute_hierarchy(vtx_data*, int, double, double, 
+                         double*, int**, int**, int*); 
+INTERNAL int IMDS_given_dim(vtx_data*, int, double*, double*, double);
+INTERNAL int stress_majorization_with_hierarchy(vtx_data*, int, double**, 
                                               node_t**, int, int, int, int, double);
 #ifdef IPSEPCOLA
 typedef struct ipsep_options {
@@ -37,9 +44,11 @@ typedef struct ipsep_options {
 } ipsep_options;
 
  /* stress majorization, for Constraint Layout */
-extern int stress_majorization_cola(vtx_data*, int, double**, node_t**, int, int, int, ipsep_options*);
+INTERNAL int stress_majorization_cola(vtx_data*, int, double**, node_t**, int, int, int, ipsep_options*);
 #endif
 #endif
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

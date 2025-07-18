@@ -16,6 +16,12 @@ extern "C" {
 
 #include <stddef.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
     /* Support for freelists */
 
     typedef struct freelist {
@@ -24,9 +30,11 @@ extern "C" {
 	int nodesize;		/* Size of node */
     } Freelist;
 
-    extern void *getfree(Freelist *);
-    extern void freeinit(Freelist *, int);
-    extern void makefree(void *, Freelist *);
+INTERNAL void *getfree(Freelist *);
+INTERNAL void freeinit(Freelist *, int);
+INTERNAL void makefree(void *, Freelist *);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

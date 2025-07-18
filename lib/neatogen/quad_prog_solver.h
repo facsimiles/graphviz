@@ -14,6 +14,12 @@
 extern "C" {
 #endif
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 #ifdef DIGCOLA
 
 typedef struct {
@@ -28,15 +34,17 @@ typedef struct {
 	int num_levels;
 }CMajEnv;
 
-extern CMajEnv* initConstrainedMajorization(float *, int, int*, int*, int);
+INTERNAL CMajEnv* initConstrainedMajorization(float *, int, int*, int*, int);
 
-extern void constrained_majorization_new_with_gaps(CMajEnv*, float*, float**, 
-                                                   int, int, float);
-extern void deleteCMajEnv(CMajEnv *e);
+INTERNAL void constrained_majorization_new_with_gaps(CMajEnv*, float*, float**, 
+                                            int, int, float);
+INTERNAL void deleteCMajEnv(CMajEnv *e);
 
-extern float** unpackMatrix(float * packedMat, int n);
+INTERNAL float** unpackMatrix(float * packedMat, int n);
 
 #endif 
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

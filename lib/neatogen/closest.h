@@ -16,7 +16,15 @@ extern "C" {
 
 #include <neatogen/defs.h>
 
-    extern void closest_pairs2graph(double *, int, int, vtx_data **);
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
+INTERNAL void closest_pairs2graph(double *, int, int, vtx_data **);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

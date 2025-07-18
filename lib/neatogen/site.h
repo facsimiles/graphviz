@@ -18,6 +18,12 @@ extern "C" {
 
 #include <neatogen/geometry.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
     /* Sites are also used as vertices on line segments */
     typedef struct Site {
 	Point coord;
@@ -28,12 +34,14 @@ extern "C" {
     extern int siteidx;
     extern Site *bottomsite;
 
-    extern void siteinit(void);
-    extern Site *getsite(void);
-    extern double ngdist(Site *, Site *);	/* Distance between two sites */
-    extern void deref(Site *);	/* Increment refcnt of site  */
-    extern void ref(Site *);	/* Decrement refcnt of site  */
-    extern void makevertex(Site *);	/* Transform a site into a vertex */
+INTERNAL void siteinit(void);
+INTERNAL Site *getsite(void);
+INTERNAL double ngdist(Site *, Site *);	/* Distance between two sites */
+INTERNAL void deref(Site *);	/* Increment refcnt of site  */
+INTERNAL void ref(Site *);	/* Decrement refcnt of site  */
+INTERNAL void makevertex(Site *);	/* Transform a site into a vertex */
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

@@ -18,36 +18,42 @@ extern "C" {
 
 #include <neatogen/sparsegraph.h>
 
-    extern void scadd(double *, int, double, double *);
-    extern double norm(double *, int);
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
 
-    extern void orthog1(int n, double *vec);
-    extern void init_vec_orth1(int n, double *vec);
-    extern void right_mult_with_vector(vtx_data *, int, double *,
+INTERNAL void scadd(double *, int, double, double *);
+INTERNAL double norm(double *, int);
+
+INTERNAL void orthog1(int n, double *vec);
+INTERNAL void init_vec_orth1(int n, double *vec);
+INTERNAL void right_mult_with_vector(vtx_data *, int, double *,
 				       double *);
-    extern void right_mult_with_vector_f(float **, int, double *,
+INTERNAL void right_mult_with_vector_f(float **, int, double *,
 					 double *);
-    extern void vectors_subtraction(int, double *, double *, double *);
-    extern void vectors_addition(int, double *, double *, double *);
-    extern void vectors_scalar_mult(int, const double *, double, double *);
-    extern void copy_vector(int n, const double *source, double *dest);
-    extern double vectors_inner_product(int n, const double *vector1,
+INTERNAL void vectors_subtraction(int, double *, double *, double *);
+INTERNAL void vectors_addition(int, double *, double *, double *);
+INTERNAL void vectors_scalar_mult(int, const double *, double, double *);
+INTERNAL void copy_vector(int n, const double *source, double *dest);
+INTERNAL double vectors_inner_product(int n, const double *vector1,
 					const double *vector2);
-    extern double max_abs(int n, double *vector);
+INTERNAL double max_abs(int n, double *vector);
 
     /* sparse matrix extensions: */
 
-    extern void right_mult_with_vector_transpose
+INTERNAL void right_mult_with_vector_transpose
 	(double **, int, int, double *, double *);
-    extern void right_mult_with_vector_d(double **, int, int, double *,
+INTERNAL void right_mult_with_vector_d(double **, int, int, double *,
 					 double *);
-    extern void mult_dense_mat(double **, float **, int, int, int,
+INTERNAL void mult_dense_mat(double **, float **, int, int, int,
 			       float ***C);
-    extern void mult_dense_mat_d(double **, float **, int, int, int,
+INTERNAL void mult_dense_mat_d(double **, float **, int, int, int,
 				 double ***CC);
-    extern void mult_sparse_dense_mat_transpose(vtx_data *, double **, int,
+INTERNAL void mult_sparse_dense_mat_transpose(vtx_data *, double **, int,
 						int, float ***);
-    extern bool power_iteration(double **, int, int, double **, double *);
+INTERNAL bool power_iteration(double **, int, int, double **, double *);
 
 
 /*****************************
@@ -55,23 +61,25 @@ extern "C" {
 ** version                  **
 *****************************/
 
-    extern void orthog1f(int n, float *vec);
-    extern void right_mult_with_vector_ff(float *, int, float *, float *);
-    extern void vectors_subtractionf(int, float *, float *, float *);
-    extern void vectors_additionf(int n, float *vector1, float *vector2,
+INTERNAL void orthog1f(int n, float *vec);
+INTERNAL void right_mult_with_vector_ff(float *, int, float *, float *);
+INTERNAL void vectors_subtractionf(int, float *, float *, float *);
+INTERNAL void vectors_additionf(int n, float *vector1, float *vector2,
 				  float *result);
-    extern void vectors_mult_additionf(int n, float *vector1, float alpha,
+INTERNAL void vectors_mult_additionf(int n, float *vector1, float alpha,
 				       float *vector2);
-    extern void copy_vectorf(int n, float *source, float *dest);
-    extern double vectors_inner_productf(int n, float *vector1,
+INTERNAL void copy_vectorf(int n, float *source, float *dest);
+INTERNAL double vectors_inner_productf(int n, float *vector1,
 					 float *vector2);
-    extern void set_vector_val(int n, double val, double *result);
-    extern void set_vector_valf(int n, float val, float * result);
-    extern double max_absf(int n, float *vector);
-    extern void square_vec(int n, float *vec);
-    extern void invert_vec(int n, float *vec);
-    extern void sqrt_vecf(int n, float *source, float *target);
-    extern void invert_sqrt_vec(int n, float *vec);
+INTERNAL void set_vector_val(int n, double val, double *result);
+INTERNAL void set_vector_valf(int n, float val, float * result);
+INTERNAL double max_absf(int n, float *vector);
+INTERNAL void square_vec(int n, float *vec);
+INTERNAL void invert_vec(int n, float *vec);
+INTERNAL void sqrt_vecf(int n, float *source, float *target);
+INTERNAL void invert_sqrt_vec(int n, float *vec);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }
