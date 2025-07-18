@@ -347,7 +347,6 @@ EXCLUDE = (
     "lib/neatogen/edges.c",
     "lib/neatogen/edges.h",
     "lib/neatogen/embed_graph.c",
-    "lib/neatogen/embed_graph.h",
     "lib/neatogen/fPQ.h",
     "lib/neatogen/geometry.c",
     "lib/neatogen/geometry.h",
