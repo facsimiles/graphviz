@@ -36,6 +36,7 @@
 #include <common/pointset.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/list.h>
 #include <util/unused.h>
 
 typedef struct {
@@ -68,7 +69,7 @@ cellOf (snode* p, snode* q)
 {
     cell* cp = p->cells[0];
     if (cp == q->cells[0] || cp == q->cells[1]) return cp;
-    else return p->cells[1];
+    return p->cells[1];
 }
 
 static pointf
@@ -282,21 +283,21 @@ static int chancmpid(void *k1, void *k2) {
   const paird *key2 = k2;
   if (key1->p1 > key2->p1) {
     if (key1->p2 <= key2->p2) return 0;
-    else return 1;
+    return 1;
   }
-  else if (key1->p1 < key2->p1) {
+  if (key1->p1 < key2->p1) {
     if (key1->p2 >= key2->p2) return 0;
-    else return -1;
+    return -1;
   }
-  else return 0;
+  return 0;
 }   
 
 static int dcmpid(void *k1, void *k2) {
   const double *key1 = k1;
   const double *key2 = k2;
   if (*key1 > *key2) return 1;
-  else if (*key1 < *key2) return -1;
-  else return 0;
+  if (*key1 < *key2) return -1;
+  return 0;
 }   
 
 static Dtdisc_t chanDisc = {
@@ -595,14 +596,14 @@ static int
 overlapSeg (segment* S1, segment* S2, bend T1, bend T2)
 {
 	if(S1->p.p2<S2->p.p2) {
-		if(S1->l2==T1&&S2->l1==T2) return(-1);
-		else if(S1->l2==T2&&S2->l1==T1) return(1);
-		else return(0);
+		if (S1->l2 == T1 && S2->l1 == T2) return -1;
+		if (S1->l2 == T2 && S2->l1 == T1) return 1;
+		return 0;
 	}
 	if (S1->p.p2 > S2->p.p2) {
-		if(S2->l1==T2&&S2->l2==T2) return(-1);
-		else if (S2->l1==T1&&S2->l2==T1) return(1);
-		else return(0);
+		if (S2->l1 == T2 && S2->l2 == T2) return -1;
+		if (S2->l1 == T1 && S2->l2 == T1) return 1;
+		return 0;
 	}
 	if (S2->l1 == T2) return eqEndSeg (S1->l2, S2->l2, T1, T2);
 	return -1 * eqEndSeg(S2->l2, S1->l2, T1, T2);
@@ -613,9 +614,9 @@ ellSeg (bend S1l1, bend S1l2, bend T)
 {
     if (S1l1 == T) {
 	if (S1l2== T) return -1;
-	else return 0;
+	return 0;
     }
-    else return 1;
+    return 1;
 }
 
 static int
@@ -738,15 +739,10 @@ add_edges_in_G(channel* cp)
 static int
 add_np_edges (Dt_t* chans)
 {
-    Dt_t* lp;
-    Dtlink_t* l1;
-    Dtlink_t* l2;
-    channel* cp;
-
-    for (l1 = dtflatten (chans); l1; l1 = dtlink(chans,l1)) {
-	lp = ((chanItem*)l1)->chans;
-	for (l2 = dtflatten (lp); l2; l2 = dtlink(lp,l2)) {
-	    cp = (channel*)l2;
+    for (Dtlink_t *l1 = dtflatten(chans); l1; l1 = dtlink(chans, l1)) {
+	Dt_t *const lp = ((chanItem*)l1)->chans;
+	for (Dtlink_t *l2 = dtflatten(lp); l2; l2 = dtlink(lp, l2)) {
+	    channel *const cp = (channel*)l2;
 	    if (!seg_list_is_empty(&cp->seg_list))
 		if (add_edges_in_G(cp)) {
 		  return -1;
@@ -1055,13 +1051,9 @@ addPEdges (channel* cp, maze* mp)
 static int
 add_p_edges (Dt_t* chans, maze* mp)
 {
-    Dt_t* lp;
-    Dtlink_t* l1;
-    Dtlink_t* l2;
-
-    for (l1 = dtflatten (chans); l1; l1 = dtlink(chans,l1)) {
-	lp = ((chanItem*)l1)->chans;
-	for (l2 = dtflatten (lp); l2; l2 = dtlink(lp,l2)) {
+    for (Dtlink_t *l1 = dtflatten(chans); l1; l1 = dtlink(chans, l1)) {
+	Dt_t *const lp = ((chanItem*)l1)->chans;
+	for (Dtlink_t *l2 = dtflatten(lp); l2; l2 = dtlink(lp, l2)) {
 	    if (addPEdges((channel*)l2, mp) != 0) {
 	        return -1;
 	    }
@@ -1119,52 +1111,35 @@ static double htrack(segment *seg, maze *m) {
   return round(lo + f * (hi - lo));
 }
 
-static pointf
-addPoints(pointf p0, pointf p1)
-{
-    p0.x += p1.x;
-    p0.y += p1.y;
-    return p0;
-}
+DEFINE_LIST(points, pointf)
 
 static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
                              splineInfo *sinfo, epair_t es[], bool doLbls) {
-    int ipt;
-    pointf* ispline = 0;
-    size_t splsz = 0;
-    pointf p, p1, q1;
-    route rte;
-    segment* seg;
-    Agedge_t* e;
+    points_t ispline = {0};
     textlabel_t* lbl;
 
     for (size_t irte = 0; irte < n_edges; irte++) {
-	e = es[irte].e;
-	p1 = addPoints(ND_coord(agtail(e)), ED_tail_port(e).p);
-	q1 = addPoints(ND_coord(aghead(e)), ED_head_port(e).p);
+	Agedge_t *const e = es[irte].e;
+	const pointf p1 = add_pointf(ND_coord(agtail(e)), ED_tail_port(e).p);
+	const pointf q1 = add_pointf(ND_coord(aghead(e)), ED_head_port(e).p);
 
-	rte = route_list[irte];
+	route rte = route_list[irte];
 	size_t npts = 1 + 3*rte.n;
-	if (npts > splsz) {
-		free (ispline);
-		ispline = gv_calloc(npts, sizeof(pointf));
-		splsz = npts;
-	}
+	points_reserve(&ispline, npts);
 	    
-	seg = rte.segs;
+	segment *seg = rte.segs;
 	if (seg == NULL) {
 		continue;
 	}
+	pointf p;
 	if (seg->isVert) {
-		p.x = vtrack(seg, mp);
-		p.y = p1.y;
+		p = (pointf){.x = vtrack(seg, mp), .y = p1.y};
 	}
 	else {
-		p.y = htrack(seg, mp);
-		p.x = p1.x;
+		p = (pointf){.x = p1.x, .y = htrack(seg, mp)};
 	}
-	ispline[0] = ispline[1] = p;
-	ipt = 2;
+	points_append(&ispline, p);
+	points_append(&ispline, p);
 
 	for (size_t i = 1;i<rte.n;i++) {
 		seg = rte.segs+i;
@@ -1172,26 +1147,28 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
 		    p.x = vtrack(seg, mp);
 		else
 		    p.y = htrack(seg, mp);
-		ispline[ipt+2] = ispline[ipt+1] = ispline[ipt] = p;
-		ipt += 3;
+		points_append(&ispline, p);
+		points_append(&ispline, p);
+		points_append(&ispline, p);
 	}
 
 	if (seg->isVert) {
-		p.x = vtrack(seg, mp);
-		p.y = q1.y;
+		p = (pointf){.x = vtrack(seg, mp), .y = q1.y};
 	}
 	else {
-		p.y = htrack(seg, mp);
-		p.x = q1.x;
+		p = (pointf){.x = q1.x, .y = htrack(seg, mp)};
 	}
-	ispline[ipt] = ispline[ipt+1] = p;
+	points_append(&ispline, p);
+	points_append(&ispline, p);
 	if (Verbose > 1)
 	    fprintf(stderr, "ortho %s %s\n", agnameof(agtail(e)),agnameof(aghead(e)));
-	clip_and_install(e, aghead(e), ispline, npts, sinfo);
+	clip_and_install(e, aghead(e), points_front(&ispline), points_size(&ispline),
+	                 sinfo);
 	if (doLbls && (lbl = ED_label(e)) && !lbl->set)
 	    addEdgeLabels(e);
+	points_clear(&ispline);
     }
-    free(ispline);
+    points_free(&ispline);
 }
 
 static int
@@ -1234,17 +1211,7 @@ static splineInfo sinfo = { swap_ends_p, spline_merge, true, true };
  * and set label pos for those edges for which this info is not available.
  */
 void orthoEdges(Agraph_t *g, bool useLbls) {
-    sgraph* sg;
-    maze* mp;
-    route* route_list;
-    int gstart;
-    Agnode_t* n;
-    Agedge_t* e;
-    snode* sn;
-    snode* dn;
     epair_t* es = gv_calloc(agnedges(g), sizeof(epair_t));
-    cell* start;
-    cell* dest;
     PointSet* ps = NULL;
     textlabel_t* lbl;
 
@@ -1285,27 +1252,27 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
 	agwarningf("Orthogonal edges do not currently handle edge labels. Try using xlabels.\n");
 	useLbls = false;
     }
-    mp = mkMaze(g);
-    sg = mp->sg;
+    maze *const mp = mkMaze(g);
+    sgraph *const sg = mp->sg;
 #ifdef DEBUG
     if (odb_flags & ODB_SGRAPH) emitSearchGraph (stderr, sg);
 #endif
 
     /* store edges to be routed in es, along with their lengths */
     size_t n_edges = 0;
-    for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
-        for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
+    for (Agnode_t *n = agfstnode (g); n; n = agnxtnode(g, n)) {
+        for (Agedge_t *e = agfstout(g, n); e; e = agnxtout(g,e)) {
 	    if (Nop == 2 && ED_spl(e)) continue;
 	    if (Concentrate) {
 		int ti = AGSEQ(agtail(e));
 		int hi = AGSEQ(aghead(e));
 		if (ti <= hi) {
 		    if (isInPS (ps,ti,hi)) continue;
-		    else addPS (ps,ti,hi);
+		    addPS(ps,ti,hi);
 		}
 		else {
 		    if (isInPS (ps,hi,ti)) continue;
-		    else addPS (ps,hi,ti);
+		    addPS(ps,hi,ti);
 		}
 	    }
 	    es[n_edges].e = e;
@@ -1314,21 +1281,21 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
 	}
     }
 
-    route_list = gv_calloc(n_edges, sizeof(route));
+    route *const route_list = gv_calloc(n_edges, sizeof(route));
 
     qsort(es, n_edges, sizeof(epair_t), edgecmp);
 
-    gstart = sg->nnodes;
+    const int gstart = sg->nnodes;
     PQgen (sg->nnodes+2);
-    sn = &sg->nodes[gstart];
-    dn = &sg->nodes[gstart+1];
+    snode *const sn = &sg->nodes[gstart];
+    snode *const dn = &sg->nodes[gstart+1];
     for (size_t i = 0; i < n_edges; i++) {
 #ifdef DEBUG
 	if (i > 0 && (odb_flags & ODB_IGRAPH)) emitSearchGraph (stderr, sg);
 #endif
-	e = es[i].e;
-        start = CELL(agtail(e));
-        dest = CELL(aghead(e));
+	Agedge_t *const e = es[i].e;
+        cell *const start = CELL(agtail(e));
+        cell *const dest = CELL(aghead(e));
 
 	if (useLbls && (lbl = ED_label(e)) && lbl->set) {
 	}
@@ -1409,28 +1376,20 @@ static char* epilog2 =
 %%%%BoundingBox: %.f %.f %.f %.f\n";
 
 static pointf coordOf(cell *cp, snode *np) {
-    pointf p;
     if (cp->sides[M_TOP] == np) {
-	p.x = (cp->bb.LL.x + cp->bb.UR.x)/2;
-	p.y = cp->bb.UR.y;
+	return (pointf){.x = (cp->bb.LL.x + cp->bb.UR.x) / 2, .y = cp->bb.UR.y};
     }
-    else if (cp->sides[M_BOTTOM] == np) {
-	p.x = (cp->bb.LL.x + cp->bb.UR.x)/2;
-	p.y = cp->bb.LL.y;
+    if (cp->sides[M_BOTTOM] == np) {
+	return (pointf){.x = (cp->bb.LL.x + cp->bb.UR.x) / 2, .y = cp->bb.LL.y};
     }
-    else if (cp->sides[M_LEFT] == np) {
-	p.y = (cp->bb.LL.y + cp->bb.UR.y)/2;
-	p.x = cp->bb.LL.x;
+    if (cp->sides[M_LEFT] == np) {
+	return (pointf){.x = cp->bb.LL.x, .y = (cp->bb.LL.y + cp->bb.UR.y) / 2};
     }
-    else if (cp->sides[M_RIGHT] == np) {
-	p.y = (cp->bb.LL.y + cp->bb.UR.y)/2;
-	p.x = cp->bb.UR.x;
+    if (cp->sides[M_RIGHT] == np) {
+	return (pointf){.x = cp->bb.UR.x, .y = (cp->bb.LL.y + cp->bb.UR.y) / 2};
     }
-    else {
-	agerrorf("Node not adjacent to cell -- Aborting\n");
-	graphviz_exit(EXIT_FAILURE);
-    }
-    return p;
+    agerrorf("Node not adjacent to cell -- Aborting\n");
+    graphviz_exit(EXIT_FAILURE);
 }
 
 static boxf
@@ -1497,17 +1456,13 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
  */
 
 static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg) {
-    cell* cp;
-    snode* np;
-    sedge* ep;
     pointf p;
-    int i;
     fputs ("graph G {\n", fp);
     fputs (" node[shape=point]\n", fp);
     fputs (" layout=neato\n", fp);
-    for (i = 0; i < sg->nnodes; i++) {
-	np = sg->nodes+i;
-	cp = np->cells[0];
+    for (int i = 0; i < sg->nnodes; i++) {
+	snode *const np = sg->nodes+i;
+	cell *cp = np->cells[0];
 	if (cp == np->cells[1]) {
 	    p = midPt(cp);
 	}
@@ -1517,8 +1472,8 @@ static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg) {
 	}
 	fprintf (fp, "  %d [pos=\"%.0f,%.0f!\"]\n", i, p.x, p.y);
     }
-    for (i = 0; i < sg->nedges; i++) {
-	ep = sg->edges+i;
+    for (int i = 0; i < sg->nedges; i++) {
+	sedge *const ep = sg->edges+i;
 	fprintf (fp, "  %d -- %d[label=\"%f\"]\n", ep->v1, ep->v2, ep->weight);
     }
     fputs ("}\n", fp);
