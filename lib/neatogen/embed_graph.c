@@ -57,7 +57,7 @@ void embed_graph(vtx_data * graph, int n, int dim, DistType *** Coords,
     node = rand() % n;
 
     if (reweight_graph) {
-	dijkstra(node, graph, n, coords[0]);
+	ngdijkstra(node, graph, n, coords[0]);
     } else {
 	bfs(node, graph, n, coords[0]);
     }
@@ -73,7 +73,7 @@ void embed_graph(vtx_data * graph, int n, int dim, DistType *** Coords,
     /* select other dim-1 nodes as pivots */
     for (i = 1; i < dim; i++) {
 	if (reweight_graph) {
-	    dijkstra(node, graph, n, coords[i]);
+	    ngdijkstra(node, graph, n, coords[i]);
 	} else {
 	    bfs(node, graph, n, coords[i]);
 	}

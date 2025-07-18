@@ -137,7 +137,7 @@ increaseKey(heap * h, int increasedVertex, Word newDist, int index[],
     index[increasedVertex] = i;
 }
 
-void dijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
+void ngdijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
 {
     heap H;
     int closestVertex, neighbor;

@@ -30,7 +30,7 @@ extern "C" {
 
     extern void siteinit(void);
     extern Site *getsite(void);
-    extern double dist(Site *, Site *);	/* Distance between two sites */
+    extern double ngdist(Site *, Site *);	/* Distance between two sites */
     extern void deref(Site *);	/* Increment refcnt of site  */
     extern void ref(Site *);	/* Decrement refcnt of site  */
     extern void makevertex(Site *);	/* Transform a site into a vertex */
