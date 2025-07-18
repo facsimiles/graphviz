@@ -373,7 +373,6 @@ EXCLUDE = (
     "lib/neatogen/overlap.c",
     "lib/neatogen/overlap.h",
     "lib/neatogen/pca.c",
-    "lib/neatogen/pca.h",
     "lib/neatogen/poly.c",
     "lib/neatogen/poly.h",
     "lib/neatogen/quad_prog_solve.c",
