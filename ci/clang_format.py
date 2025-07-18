@@ -333,7 +333,6 @@ EXCLUDE = (
     "lib/neatogen/call_tri.h",
     "lib/neatogen/circuit.c",
     "lib/neatogen/closest.c",
-    "lib/neatogen/closest.h",
     "lib/neatogen/compute_hierarchy.c",
     "lib/neatogen/conjgrad.c",
     "lib/neatogen/conjgrad.h",
