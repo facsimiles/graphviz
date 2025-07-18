@@ -1,5 +1,5 @@
 # Digest from https://hub.docker.com/_/ubuntu/tags?name=25.04
-FROM ubuntu:25.04@sha256:1b22f90d817e4616488d5cfe2f56d8f0262e96d6d6cc06794844c32328e9264c
+FROM ubuntu:25.04@sha256:dec2d4d65481a2f551e7212d7da620548272a5fa923a27c3f2f0394e1e461d38
 
 ARG DEBIAN_FRONTEND=noninteractive
 
