@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,22 +24,22 @@ extern "C" {
 #define INTERNAL /* nothing */
 #endif
 
-    /* Sites are also used as vertices on line segments */
-    typedef struct Site {
-	Point coord;
-	size_t sitenbr;
-	unsigned refcnt;
-    } Site;
+// sites are also used as vertices on line segments
+typedef struct Site {
+  Point coord;
+  size_t sitenbr;
+  unsigned refcnt;
+} Site;
 
-    extern int siteidx;
-    extern Site *bottomsite;
+extern int siteidx;
+extern Site *bottomsite;
 
 INTERNAL void siteinit(void);
 INTERNAL Site *getsite(void);
-INTERNAL double ngdist(Site *, Site *);	/* Distance between two sites */
-INTERNAL void deref(Site *);	/* Increment refcnt of site  */
-INTERNAL void ref(Site *);	/* Decrement refcnt of site  */
-INTERNAL void makevertex(Site *);	/* Transform a site into a vertex */
+INTERNAL double ngdist(Site *, Site *); /* Distance between two sites */
+INTERNAL void deref(Site *);            /* Increment refcnt of site  */
+INTERNAL void ref(Site *);              /* Decrement refcnt of site  */
+INTERNAL void makevertex(Site *);       /* Transform a site into a vertex */
 
 #undef INTERNAL
 
