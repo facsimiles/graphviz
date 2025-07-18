@@ -345,7 +345,6 @@ EXCLUDE = (
     "lib/neatogen/delaunay.h",
     "lib/neatogen/digcola.h",
     "lib/neatogen/dijkstra.c",
-    "lib/neatogen/dijkstra.h",
     "lib/neatogen/edges.c",
     "lib/neatogen/edges.h",
     "lib/neatogen/embed_graph.c",
