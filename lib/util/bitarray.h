@@ -27,6 +27,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <util/alloc.h>
 
 /// a compressed array of boolean values
@@ -38,7 +39,7 @@ typedef struct {
   union {
     uint8_t block[sizeof(uint8_t *)]; ///< inline storage for small arrays
     uint8_t *base; ///< start of the underlying allocated buffer
-  } u;
+  };
   size_t size_bits; ///< extent in bits
 } bitarray_t;
 
@@ -48,13 +49,13 @@ static inline bitarray_t bitarray_new(size_t size_bits) {
   bitarray_t ba = {.size_bits = size_bits};
 
   // if the array is small enough, we can use inline storage
-  if (size_bits <= sizeof(ba.u.block) * 8) {
+  if (size_bits <= sizeof(ba.block) * 8) {
     // nothing to be done
 
     // otherwise we need to heap-allocate
   } else {
     size_t capacity = size_bits / 8 + (size_bits % 8 == 0 ? 0 : 1);
-    ba.u.base = gv_calloc(capacity, sizeof(uint8_t));
+    ba.base = gv_calloc(capacity, sizeof(uint8_t));
   }
 
   return ba;
@@ -66,10 +67,10 @@ static inline bool bitarray_get(bitarray_t self, size_t index) {
 
   // determine if this array is stored inline or not
   const uint8_t *base;
-  if (self.size_bits <= sizeof(self.u.block) * 8) {
-    base = self.u.block;
+  if (self.size_bits <= sizeof(self.block) * 8) {
+    base = self.block;
   } else {
-    base = self.u.base;
+    base = self.base;
   }
 
   return (base[index / 8] >> (index % 8)) & 1;
@@ -81,10 +82,10 @@ static inline void bitarray_set(bitarray_t *self, size_t index, bool value) {
 
   // determine if this array is stored inline or not
   uint8_t *base;
-  if (self->size_bits <= sizeof(self->u.block) * 8) {
-    base = self->u.block;
+  if (self->size_bits <= sizeof(self->block) * 8) {
+    base = self->block;
   } else {
-    base = self->u.base;
+    base = self->base;
   }
 
   if (value) {
@@ -94,13 +95,28 @@ static inline void bitarray_set(bitarray_t *self, size_t index, bool value) {
   }
 }
 
+/// clear all bits in a bit array
+static inline void bitarray_clear(bitarray_t *self) {
+  assert(self != NULL);
+
+  // determine if this array is stored inline or not
+  uint8_t *const base =
+      self->size_bits <= sizeof(self->block) * 8 ? self->block : self->base;
+
+  // calculate byte extent covering the array
+  const size_t size = self->size_bits / 8 + (self->size_bits % 8 == 0 ? 0 : 1);
+
+  // zero all bits
+  memset(base, 0, size);
+}
+
 /// free underlying resources and leave a bit array empty
 static inline void bitarray_reset(bitarray_t *self) {
   assert(self != NULL);
 
   // is this array stored out of line?
-  if (self->size_bits > sizeof(self->u.block) * 8)
-    free(self->u.base);
+  if (self->size_bits > sizeof(self->block) * 8)
+    free(self->base);
 
   *self = (bitarray_t){0};
 }

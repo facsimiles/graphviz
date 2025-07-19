@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/bitarray.h>
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/itos.h>
@@ -1022,28 +1023,26 @@ void rec_reset_vlists(graph_t * g)
  * are laid out one component at a time and these will necessarily have a
  * node on each rank from source to sink levels.
  */
-static Agraph_t*
-realFillRanks (Agraph_t* g, int rnks[], int rnks_sz, Agraph_t* sg)
-{
+static Agraph_t *realFillRanks(Agraph_t *g, bitarray_t *ranks, Agraph_t* sg) {
     int i, c;
     Agedge_t* e;
     Agnode_t* n;
 
     for (c = 1; c <= GD_n_cluster(g); c++)
-	sg = realFillRanks (GD_clust(g)[c], rnks, rnks_sz, sg);
+	sg = realFillRanks(GD_clust(g)[c], ranks, sg);
 
     if (dot_root(g) == g)
 	return sg;
-    memset (rnks, 0, sizeof(int)*rnks_sz);
+    bitarray_clear(ranks);
     for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
-	rnks[ND_rank(n)] = 1;
+	bitarray_set(ranks, ND_rank(n), true);
 	for (e = agfstout(g,n); e; e = agnxtout(g,e)) {
 	    for (i = ND_rank(n)+1; i <= ND_rank(aghead(e)); i++) 
-		rnks[i] = 1;
+		bitarray_set(ranks, i, true);
 	}
     }
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
-	if (rnks[i] == 0) {
+	if (!bitarray_get(*ranks, i)) {
 	    if (!sg) {
 		sg = agsubg (dot_root(g), "_new_rank", 1);
 	    }
@@ -1065,9 +1064,9 @@ static void
 fillRanks (Agraph_t* g)
 {
     int rnks_sz = GD_maxrank(g) + 2;
-    int *rnks = gv_calloc(rnks_sz, sizeof(int));
-    realFillRanks (g, rnks, rnks_sz, NULL);
-    free (rnks);
+    bitarray_t rnks = bitarray_new(rnks_sz);
+    realFillRanks(g, &rnks, NULL);
+    bitarray_reset(&rnks);
 }
 
 static void init_mincross(graph_t * g)
