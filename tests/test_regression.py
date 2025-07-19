@@ -91,7 +91,8 @@ def test_42():
     assert input.exists(), "unexpectedly missing test case"
 
     # process it with Graphviz
-    run_raw(["neato", "-n2", "-Tpng", input], stdout=subprocess.DEVNULL)
+    neato = which("neato")
+    run_raw([neato, "-n2", "-Tpng", input], stdout=subprocess.DEVNULL)
 
 
 def test_56():
@@ -651,7 +652,8 @@ def test_1276():
     src = 'digraph test {\n  x[label=<"Label">];\n}'
 
     # process this to GML
-    gml = run(["gv2gml"], input=src)
+    gv2gml = which("gv2gml")
+    gml = run([gv2gml], input=src)
 
     # the unescaped label should not appear in the output
     assert '""Label""' not in gml, "quotes not escaped in label"
@@ -1225,8 +1227,9 @@ def test_1594():
     input = Path(__file__).parent / "1594.gvpr"
 
     # run GVPR with our (malformed) input program
+    gvprbin = which("gvpr")
     with subprocess.Popen(
-        ["gvpr", "-f", input],
+        [gvprbin, "-f", input],
         stdin=subprocess.PIPE,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
@@ -1335,11 +1338,12 @@ def test_1644():
     # get our baseline reference
     input = Path(__file__).parent / "1644.dot"
     assert input.exists(), "unexpectedly missing test case"
-    ref = run(["neato", input])
+    neato = which("neato")
+    ref = run([neato, input])
 
     # now repeat this, expecting it not to change
     for _ in range(20):
-        out = run(["neato", input])
+        out = run([neato, input])
         assert ref == out, "repeated rendering changed output"
 
 
@@ -1601,7 +1605,8 @@ def test_1813():
 
     environ_copy = os.environ.copy()
     environ_copy.pop("DISPLAY", None)
-    output = run(["gvedit", "-?"], env=environ_copy)
+    gvedit = which("gvedit")
+    output = run([gvedit, "-?"], env=environ_copy)
 
     assert "Usage" in output, "gvedit -? did not show usage"
 
@@ -1690,7 +1695,8 @@ def test_1865():
     assert input.exists(), "unexpectedly missing test case"
 
     # fdp should not crash when processing this file
-    run_raw(["fdp", "-o", os.devnull, input])
+    fdp = which("fdp")
+    run_raw([fdp, "-o", os.devnull, input])
 
 
 @pytest.mark.skipif(which("gv2gml") is None, reason="gv2gml not available")
@@ -1709,10 +1715,12 @@ def test_1871(penwidth: str):
     input = f"graph {{ a [penwidth={penwidth}] }}"
 
     # pass it through gv2gml
-    gv = run(["gv2gml"], input=input)
+    gv2gml = which("gv2gml")
+    gv = run([gv2gml], input=input)
 
     # pass this through gml2gv
-    gml = run(["gml2gv"], input=gv)
+    gml2gv = which("gml2gv")
+    gml = run([gml2gv], input=gv)
 
     # the result should have a `penwidth` of 1
     has_1 = re.search(r"\bpenwidth\s*=\s*1[^\.]", gml) is not None
@@ -1733,8 +1741,9 @@ def test_1876():
     input = "graph { a }"
 
     # process this with fdp
+    fdp = which("fdp")
     try:
-        output = run(["fdp"], input=input)
+        output = run([fdp], input=input)
     except subprocess.CalledProcessError as e:
         raise RuntimeError("fdp failed to process trivial graph") from e
 
@@ -1753,7 +1762,8 @@ def test_1877():
     input = "graph {subgraph cluster_a {}; cluster_a -- b}"
 
     # fdp should be able to process this
-    run(["fdp", "-o", os.devnull], input=input)
+    fdp = which("fdp")
+    run([fdp, "-o", os.devnull], input=input)
 
 
 def test_1880():
@@ -1893,7 +1903,8 @@ def test_1869(variant: int):
     assert input.exists(), "unexpectedly missing test case"
 
     # ask gml2gv to translate it to DOT
-    output = run(["gml2gv", input])
+    gml2gv = which("gml2gv")
+    output = run([gml2gv, input])
 
     assert "style=dashed" in output, "style=dashed not found in DOT output"
     assert "penwidth=2" in output, "penwidth=2 not found in DOT output"
@@ -1974,7 +1985,8 @@ def test_1907():
     input = "digraph { A -> B -> C }"
 
     # generate an SVG from this input with twopi
-    output = run(["twopi", "-Tsvg"], input=input)
+    twopi = which("twopi")
+    output = run([twopi, "-Tsvg"], input=input)
 
     assert "<title>A&#45;&gt;B</title>" in output, "element title not found in SVG"
 
@@ -1991,7 +2003,8 @@ def test_1909():
     graph = Path(__file__).parent / "1909.dot"
 
     # run GVPR with the given input
-    output = run(["gvpr", "-c", "-f", prog, graph])
+    gvprbin = which("gvpr")
+    output = run([gvprbin, "-c", "-f", prog, graph])
 
     # we should have produced this graph without names like "%2" in it
     assert re.search(r"%\d+\b", output) is None
@@ -2213,7 +2226,7 @@ def test_1971():
 
     # run edgepaint with an invalid option, `-rabbit`, that happens to have the
     # same first character as valid options
-    args = ["edgepaint", "-rabbit"]
+    args = [which("edgepaint"), "-rabbit"]
     with subprocess.Popen(args, stdin=subprocess.PIPE, text=True) as p:
         p.communicate(input)
 
@@ -2231,7 +2244,8 @@ def test_1990():
     assert input.exists(), "unexpectedly missing test case"
 
     # process it with Graphviz
-    run_raw(["circo", "-Tsvg", "-o", os.devnull, input])
+    circo = which("circo")
+    run_raw([circo, "-Tsvg", "-o", os.devnull, input])
 
 
 @pytest.mark.skipif(
@@ -2382,7 +2396,8 @@ def test_2092():
     an empty node ID should not cause a dot2gxl NULL pointer dereference
     https://gitlab.com/graphviz/graphviz/-/issues/2092
     """
-    p = subprocess.run(["dot2gxl", "-d"], input='<node id="">', check=False, text=True)
+    dot2gxl = which("dot2gxl")
+    p = subprocess.run([dot2gxl, "-d"], input='<node id="">', check=False, text=True)
 
     assert p.returncode != 0, "dot2gxl accepted invalid input"
 
@@ -2395,7 +2410,8 @@ def test_2093():
     dot2gxl should handle elements with no ID
     https://gitlab.com/graphviz/graphviz/-/issues/2093
     """
-    with subprocess.Popen(["dot2gxl", "-d"], stdin=subprocess.PIPE, text=True) as p:
+    dot2gxl = which("dot2gxl")
+    with subprocess.Popen([dot2gxl, "-d"], stdin=subprocess.PIPE, text=True) as p:
         p.communicate('<graph x="">')
 
         assert p.returncode == 1, "dot2gxl did not reject missing ID"
@@ -2467,8 +2483,9 @@ def test_2131():
     input = "digraph { a -> b; }"
 
     # ask gv2gml what it thinks of this
+    gv2gml = which("gv2gml")
     try:
-        run(["gv2gml"], input=input)
+        run([gv2gml], input=input)
     except subprocess.CalledProcessError as e:
         raise RuntimeError("gv2gml rejected a basic graph") from e
 
@@ -2486,7 +2503,8 @@ def test_2138(examine: str):
     assert script.exists(), "missing test case"
 
     # run it with NUL input
-    out = run_raw(["gvpr", "-f", script], stdin=subprocess.DEVNULL)
+    gvprbin = which("gvpr")
+    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
 
     # Decode into text. We do this instead of `text=True` above because the trailing
     # garbage can contain invalid UTF-8 data causing cryptic failures. We want to
@@ -2587,7 +2605,8 @@ def test_2168():
     input = Path(__file__).parent / "2168.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    run_raw(["fdp", "-o", os.devnull, input], timeout=5)
+    fdp = which("fdp")
+    run_raw([fdp, "-o", os.devnull, input], timeout=5)
 
 
 def test_2168_1():
@@ -2600,7 +2619,8 @@ def test_2168_1():
     input = Path(__file__).parent / "2168_1.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    run_raw(["fdp", "-o", os.devnull, input], timeout=5)
+    fdp = which("fdp")
+    run_raw([fdp, "-o", os.devnull, input], timeout=5)
 
 
 def test_2168_2():
@@ -2613,7 +2633,8 @@ def test_2168_2():
     input = Path(__file__).parent / "2168_2.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    run_raw(["fdp", "-o", os.devnull, input], timeout=5)
+    fdp = which("fdp")
+    run_raw([fdp, "-o", os.devnull, input], timeout=5)
 
 
 def test_2168_3():
@@ -2626,7 +2647,8 @@ def test_2168_3():
     input = Path(__file__).parent / "2168_3.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    run_raw(["fdp", "-o", os.devnull, input], timeout=5)
+    fdp = which("fdp")
+    run_raw([fdp, "-o", os.devnull, input], timeout=5)
 
 
 def test_2168_4():
@@ -2639,7 +2661,8 @@ def test_2168_4():
     input = Path(__file__).parent / "2168_4.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    run_raw(["fdp", "-o", os.devnull, input], timeout=5)
+    fdp = which("fdp")
+    run_raw([fdp, "-o", os.devnull, input], timeout=5)
 
 
 def test_2168_5():
@@ -2652,7 +2675,8 @@ def test_2168_5():
     input = Path(__file__).parent / "2168_5.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    out = run(["fdp", "-o", os.devnull, input], stderr=subprocess.STDOUT)
+    fdp = which("fdp")
+    out = run([fdp, "-o", os.devnull, input], stderr=subprocess.STDOUT)
 
     assert (
         "Warning: the bounding boxes of some nodes touch - falling back to straight line edges"
@@ -2734,7 +2758,8 @@ def test_2184_1():
     # run `nop` on a sample with a labelled graph node at the end
     source = Path(__file__).parent / "2184.dot"
     assert source.exists(), "missing test case"
-    nopped = run(["nop", source])
+    nop = which("nop")
+    nopped = run([nop, source])
 
     # the normalized output should have a graph with no label within
     # `clusterSurround1`
@@ -2790,7 +2815,8 @@ def test_2185_2():
     assert script.exists(), "missing test case"
 
     # run this with NUL input
-    out = run_raw(["gvpr", "-f", script], stdin=subprocess.DEVNULL)
+    gvprbin = which("gvpr")
+    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
 
     # decode output in a separate step to gracefully cope with garbage unicode
     out = out.decode("utf-8", "replace")
@@ -2814,7 +2840,8 @@ def test_2185_3():
     assert script.exists(), "missing test case"
 
     # run this with NUL input
-    out = run_raw(["gvpr", "-f", script], stdin=subprocess.DEVNULL)
+    gvprbin = which("gvpr")
+    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
 
     # decode output in a separate step to gracefully cope with garbage unicode
     out = out.decode("utf-8", "replace")
@@ -2838,7 +2865,8 @@ def test_2185_4():
     assert script.exists(), "missing test case"
 
     # run this with NUL input
-    out = run_raw(["gvpr", "-f", script], stdin=subprocess.DEVNULL)
+    gvprbin = which("gvpr")
+    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
 
     # decode output in a separate step to gracefully cope with garbage unicode
     out = out.decode("utf-8", "replace")
@@ -2862,7 +2890,8 @@ def test_2185_5():
     assert script.exists(), "missing test case"
 
     # run this with NUL input
-    out = run_raw(["gvpr", "-f", script], stdin=subprocess.DEVNULL)
+    gvprbin = which("gvpr")
+    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
 
     # decode output in a separate step to gracefully cope with garbage unicode
     out = out.decode("utf-8", "replace")
@@ -3329,29 +3358,29 @@ def test_gvmap_fclose():
     )
 
     # pass this through gvmap
-    proc = subprocess.run(["gvmap"], input=input.encode("utf-8"), check=False)
+    gvmap = which("gvmap")
+    proc = subprocess.run([gvmap], input=input.encode("utf-8"), check=False)
 
     assert proc.returncode in (0, 1), "gvmap crashed"
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
-def test_gvpr_usage():
+def test_gvpr_usage(tmp_path: Path):
     """
     gvpr usage information should be included when erroring on a malformed command
     """
 
-    # create a temporary directory, under which we know no files will exist
-    with tempfile.TemporaryDirectory() as tmp:
-        # ask GVPR to process a non-existent file
-        with subprocess.Popen(
-            ["gvpr", "-f", "nofile"],
-            stderr=subprocess.PIPE,
-            cwd=tmp,
-            text=True,
-        ) as p:
-            _, stderr = p.communicate()
+    # ask GVPR to process a non-existent file
+    gvprbin = which("gvpr")
+    with subprocess.Popen(
+        [gvprbin, "-f", "nofile"],
+        stderr=subprocess.PIPE,
+        cwd=tmp_path,
+        text=True,
+    ) as p:
+        _, stderr = p.communicate()
 
-            assert p.returncode != 0, "GVPR accepted a non-existent file"
+        assert p.returncode != 0, "GVPR accepted a non-existent file"
 
     # the stderr output should have contained full usage instructions
     assert (
@@ -3370,8 +3399,9 @@ def test_2225():
     assert input.exists(), "unexpectedly missing test case"
 
     # run this through sfdp
+    sfdp = which("sfdp")
     p = subprocess.run(
-        ["sfdp", "-Gsplines=curved", "-o", os.devnull, input],
+        [sfdp, "-Gsplines=curved", "-o", os.devnull, input],
         stderr=subprocess.PIPE,
         check=False,
         text=True,
@@ -3639,7 +3669,8 @@ def test_2300_1():
     assert input.exists(), "unexpectedly missing test case"
 
     # ask `gxl2gv` to process this
-    run_raw(["gxl2gv", input])
+    gxl2gv = which("gxl2gv")
+    run_raw([gxl2gv, input])
 
 
 def test_2307():
@@ -4129,8 +4160,9 @@ def test_2454():
 
     # run it through gvpr
     program = Path(__file__).parent / "2454.gvpr"
+    gvprbin = which("gvpr")
     with subprocess.Popen(
-        ["gvpr", "-cf", program], stdin=subprocess.PIPE, text=True
+        [gvprbin, "-cf", program], stdin=subprocess.PIPE, text=True
     ) as p:
         p.communicate(output)
         assert p.returncode == 0, "gvpr failed"
@@ -4157,8 +4189,9 @@ def test_2457():
     env["SOURCE_DATE_EPOCH"] = "0"
 
     # generate PDFs
-    pdf1 = run_raw(["twopi", "-Tpdf", case1], env=env)
-    pdf2 = run_raw(["twopi", "-Tpdf", case2], env=env)
+    twopi = which("twopi")
+    pdf1 = run_raw([twopi, "-Tpdf", case1], env=env)
+    pdf2 = run_raw([twopi, "-Tpdf", case2], env=env)
 
     assert pdf1 == pdf2, "node definition order affected PDF generation"
 
@@ -4382,7 +4415,8 @@ def test_2493():
     src = 'graph { a -- b[label="foo", fontcolor="red"]; }'
 
     # pass this through `gv2gml`
-    gml = run(["gv2gml", "-y"], input=src)
+    gv2gml = which("gv2gml")
+    gml = run([gv2gml, "-y"], input=src)
 
     assert (
         re.search(r"\bfontcolor\b", gml) is None
@@ -5338,7 +5372,8 @@ def test_2619_1(images: str, output: str, source: str, tmp_path: Path):
     positioned = sh(["dot", "-Tdot", destination])
 
     # use this to render with neato
-    neato_result = sh(["neato", "-n2", f"-T{output}"], stdin=positioned)
+    neato = which("neato")
+    neato_result = sh([neato, "-n2", f"-T{output}"], stdin=positioned)
 
     assert neato_result.strip() != b"", "an empty file was rendered"
 
@@ -6651,7 +6686,7 @@ def test_lock_graph():
     assert output == "0\n1\n", "locking a graph did not work"
 
     # now try this with a large integer for the locking operation
-    output = run(["gvpr", "-f", program2], input=src)
+    output = run([gvpr_bin, "-f", program2], input=src)
     assert output == "0\n1\n", "locking a graph using a large integer did not work"
 
 
