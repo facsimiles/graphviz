@@ -59,7 +59,6 @@ int odb_flags;
 
 #define CELL(n) ((cell*)ND_alg(n))
 #define MID(a,b) (((a)+(b))/2.0)
-#define SC 1
 
 /* cellOf:
  * Given 2 snodes sharing a cell, return the cell.
@@ -1406,11 +1405,11 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
 	y = htrack(seg, m);
 	x = (n.UR.x + n.LL.x)/2;
     }
-    bb.LL.x = fmin(bb.LL.x, SC * x);
-    bb.LL.y = fmin(bb.LL.y, SC * y);
-    bb.UR.x = fmax(bb.UR.x, SC * x);
-    bb.UR.y = fmax(bb.UR.y, SC * y);
-    fprintf(fp, "newpath %.0f %.0f moveto\n", SC * x, SC * y);
+    bb.LL.x = fmin(bb.LL.x, x);
+    bb.LL.y = fmin(bb.LL.y, y);
+    bb.UR.x = fmax(bb.UR.x, x);
+    bb.UR.y = fmax(bb.UR.y, y);
+    fprintf(fp, "newpath %.0f %.0f moveto\n", x, y);
 
     for (size_t i = 1;i<rte.n;i++) {
 	seg = rte.segs+i;
@@ -1420,11 +1419,11 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
 	else {
 	    y = htrack(seg, m);
 	}
-	bb.LL.x = fmin(bb.LL.x, SC * x);
-	bb.LL.y = fmin(bb.LL.y, SC * y);
-	bb.UR.x = fmax(bb.UR.x, SC * x);
-	bb.UR.y = fmax(bb.UR.y, SC * y);
-	fprintf(fp, "%.0f %.0f lineto\n", SC * x, SC * y);
+	bb.LL.x = fmin(bb.LL.x, x);
+	bb.LL.y = fmin(bb.LL.y, y);
+	bb.UR.x = fmax(bb.UR.x, x);
+	bb.UR.y = fmax(bb.UR.y, y);
+	fprintf(fp, "%.0f %.0f lineto\n", x, y);
     }
 
     n = CELL(aghead(e))->bb;
@@ -1436,11 +1435,11 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
 	y = htrack(seg, m);
 	x = (n.LL.x + n.UR.x)/2;
     }
-    bb.LL.x = fmin(bb.LL.x, SC * x);
-    bb.LL.y = fmin(bb.LL.y, SC * y);
-    bb.UR.x = fmax(bb.UR.x, SC * x);
-    bb.UR.y = fmax(bb.UR.y, SC * y);
-    fprintf(fp, "%.0f %.0f lineto stroke\n", SC * x, SC * y);
+    bb.LL.x = fmin(bb.LL.x, x);
+    bb.LL.y = fmin(bb.LL.y, y);
+    bb.UR.x = fmax(bb.UR.x, x);
+    bb.UR.y = fmax(bb.UR.y, y);
+    fprintf(fp, "%.0f %.0f lineto stroke\n", x, y);
 
     return bb;
 }
