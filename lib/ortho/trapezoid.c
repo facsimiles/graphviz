@@ -862,7 +862,7 @@ static int math_N(int n, int h)
   int i;
   double v;
 
-  for (i = 0, v = (double) n; i < h; i++)
+  for (i = 0, v = n; i < h; i++)
       v = log2(v);
 
   return (int)ceil(n / v);
