@@ -851,7 +851,7 @@ static int math_logstar_n(int n)
   int i;
   double v;
 
-  for (i = 0, v = (double) n; v >= 1; i++)
+  for (i = 0, v = n; v >= 1; i++)
       v = log2(v);
 
   return i - 1;
