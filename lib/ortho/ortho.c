@@ -442,10 +442,9 @@ assignSegs (size_t nrtes, route* route_list, maze* mp)
 static void
 addLoop (sgraph* sg, cell* cp, snode* dp, snode* sp)
 {
-    int i;
     int onTop;
 
-    for (i = 0; i < cp->nsides; i++) {
+    for (size_t i = 0; i < cp->nsides; i++) {
 	snode* onp = cp->sides[i];
 
 	if (onp->isVert) continue;
@@ -470,9 +469,7 @@ addLoop (sgraph* sg, cell* cp, snode* dp, snode* sp)
 static void
 addNodeEdges (sgraph* sg, cell* cp, snode* np)
 {
-    int i;
-
-    for (i = 0; i < cp->nsides; i++) {
+    for (size_t i = 0; i < cp->nsides; i++) {
 	snode* onp = cp->sides[i];
 
 	createSEdge (sg, np, onp, 0);  /* FIX weight */

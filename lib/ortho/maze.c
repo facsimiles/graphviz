@@ -198,12 +198,11 @@ updateWts (sgraph* g, cell* cp, sedge* ep)
 static void
 markSmall (cell* cp)
 {
-    int i;
     snode* onp;
     cell* ocp;
 
     if (IS_SMALL(cp->bb.UR.y-cp->bb.LL.y)) {
-	for (i = 0; i < cp->nsides; i++) {
+	for (size_t i = 0; i < cp->nsides; i++) {
 	    onp = cp->sides[i];
 	    if (!onp->isVert) continue;
 	    if (onp->cells[0] == cp) {  /* onp on the right of cp */
@@ -226,7 +225,7 @@ markSmall (cell* cp)
     }
 
     if (IS_SMALL(cp->bb.UR.x-cp->bb.LL.x)) {
-	for (i = 0; i < cp->nsides; i++) {
+	for (size_t i = 0; i < cp->nsides; i++) {
 	    onp = cp->sides[i];
 	    if (onp->isVert) continue;
 	    if (onp->cells[0] == cp) {  /* onp on the top of cp */
@@ -333,7 +332,6 @@ DEFINE_LIST(snodes, snode *)
 static sgraph*
 mkMazeGraph (maze* mp, boxf bb)
 {
-    int maxdeg;
     const size_t bound = 4 * mp->ncells;
     sgraph* g = createSGraph (bound + 2);
     Dt_t* vdict = dtopen(&vdictDisc,Dtoset);
@@ -382,7 +380,7 @@ mkMazeGraph (maze* mp, boxf bb)
     /* For each gcell, corresponding to a node in the input graph,
      * connect it to its corresponding search nodes.
      */
-    maxdeg = 0;
+    size_t maxdeg = 0;
     for (size_t i = 0; i < mp->ngcells; i++) {
 	cell *cp = &mp->gcells[i];
         pointf pt; 
@@ -413,8 +411,7 @@ mkMazeGraph (maze* mp, boxf bb)
 	    snodes_append(&cp_sides, np->np);
 	    np->np->cells[0] = cp;
 	}
-	assert(snodes_size(&cp_sides) <= INT_MAX);
-	cp->nsides = (int)snodes_size(&cp_sides);
+	cp->nsides = snodes_size(&cp_sides);
 	cp->sides = snodes_detach(&cp_sides);
         if (cp->nsides > maxdeg) maxdeg = cp->nsides;
     }
