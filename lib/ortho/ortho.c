@@ -442,18 +442,11 @@ assignSegs (size_t nrtes, route* route_list, maze* mp)
 static void
 addLoop (sgraph* sg, cell* cp, snode* dp, snode* sp)
 {
-    int onTop;
-
     for (size_t i = 0; i < cp->nsides; i++) {
 	snode* onp = cp->sides[i];
 
 	if (onp->isVert) continue;
-	if (onp->cells[0] == cp) {
-	    onTop = 1;
-	}
-	else {
-	    onTop = 0;
-	}
+	const bool onTop = onp->cells[0] == cp;
 	if (onTop)
 	    createSEdge (sg, sp, onp, 0);  /* FIX weight */
 	else
