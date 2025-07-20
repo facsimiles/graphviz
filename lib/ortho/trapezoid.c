@@ -859,10 +859,8 @@ static int math_logstar_n(int n)
 
 static int math_N(int n, int h)
 {
-  int i;
-  double v;
-
-  for (i = 0, v = n; i < h; i++)
+  double v = n;
+  for (int i = 0; i < h; i++)
       v = log2(v);
 
   return (int)ceil(n / v);
