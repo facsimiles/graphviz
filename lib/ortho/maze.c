@@ -334,8 +334,7 @@ static sgraph*
 mkMazeGraph (maze* mp, boxf bb)
 {
     int maxdeg;
-    assert(INT_MAX / 4 < mp->ncells);
-    int bound = (int)(4 * mp->ncells);
+    const size_t bound = 4 * mp->ncells;
     sgraph* g = createSGraph (bound + 2);
     Dt_t* vdict = dtopen(&vdictDisc,Dtoset);
     Dt_t* hdict = dtopen(&hdictDisc,Dtoset);

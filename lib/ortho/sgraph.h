@@ -57,7 +57,7 @@ typedef struct {
 
 extern void reset(sgraph*);
 extern void gsave(sgraph*);
-extern sgraph* createSGraph(int);
+extern sgraph *createSGraph(size_t);
 extern void freeSGraph (sgraph*);
 extern void initSEdges (sgraph* g, int maxdeg);
 extern int shortPath (sgraph* g, snode* from, snode* to);

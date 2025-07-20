@@ -53,9 +53,7 @@ initSEdges (sgraph* g, int maxdeg)
     }
 }
 
-sgraph*
-createSGraph (int nnodes)
-{
+sgraph *createSGraph(size_t nnodes) {
     sgraph* g = gv_alloc(sizeof(sgraph));
 
 	/* create the nodes vector in the search graph */
