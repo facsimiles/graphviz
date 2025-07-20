@@ -44,15 +44,9 @@ typedef struct {
     Agedge_t* e;
 } epair_t;
 
-#ifdef DEBUG
-#define DEBUG_FN /* nothing */
-#else
-#define DEBUG_FN UNUSED
-#endif
-
-static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg);
-static DEBUG_FN void emitGraph(FILE *fp, maze *mp, size_t n_edges,
-                               route *route_list, epair_t[]);
+static UNUSED void emitSearchGraph(FILE *fp, sgraph *sg);
+static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
+                             route *route_list, epair_t[]);
 #ifdef DEBUG
 int odb_flags;
 #endif
@@ -525,7 +519,7 @@ static void putSeg (FILE* fp, segment* seg)
       seg->p.p2, seg->comm_coord, bendToStr (seg->l1), bendToStr (seg->l2));
 }
 
-static DEBUG_FN void dumpChanG(channel *cp, double v) {
+static UNUSED void dumpChanG(channel *cp, double v) {
   if (seg_list_size(&cp->seg_list) < 2) return;
   fprintf (stderr, "channel %.0f (%f,%f)\n", v, cp->p.p1, cp->p.p2);
   for (size_t k = 0; k < seg_list_size(&cp->seg_list); ++k) {
@@ -1454,7 +1448,7 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
  * specified graph layout engine.
  */
 
-static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg) {
+static UNUSED void emitSearchGraph(FILE *fp, sgraph *sg) {
     pointf p;
     fputs ("graph G {\n", fp);
     fputs (" node[shape=point]\n", fp);
@@ -1478,8 +1472,8 @@ static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg) {
     fputs ("}\n", fp);
 }
 
-static DEBUG_FN void emitGraph(FILE *fp, maze *mp, size_t n_edges,
-                               route *route_list, epair_t es[]) {
+static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
+                             route *route_list, epair_t es[]) {
     boxf absbb = {.LL = {.x = DBL_MAX, .y = DBL_MAX},
                   .UR = {.x = -DBL_MAX, .y = -DBL_MAX}};
 
