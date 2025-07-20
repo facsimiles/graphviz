@@ -334,7 +334,8 @@ static sgraph*
 mkMazeGraph (maze* mp, boxf bb)
 {
     int maxdeg;
-    int bound = 4*mp->ncells;
+    assert(INT_MAX / 4 < mp->ncells);
+    int bound = (int)(4 * mp->ncells);
     sgraph* g = createSGraph (bound + 2);
     Dt_t* vdict = dtopen(&vdictDisc,Dtoset);
     Dt_t* hdict = dtopen(&hdictDisc,Dtoset);
@@ -346,7 +347,7 @@ mkMazeGraph (maze* mp, boxf bb)
      * a pointer to the cell.
      */
     sides = gv_calloc(4 * mp->ncells, sizeof(snode*));
-    for (int i = 0; i < mp->ncells; i++) {
+    for (size_t i = 0; i < mp->ncells; i++) {
 	cell* cp = mp->cells+i;
         snode* np;
 	pointf pt;
@@ -437,7 +438,7 @@ mkMazeGraph (maze* mp, boxf bb)
      * can have at most degree maxdeg.
      */
     initSEdges (g, maxdeg);
-    for (int i = 0; i < mp->ncells; i++) {
+    for (size_t i = 0; i < mp->ncells; i++) {
 	cell* cp = mp->cells+i;
 	createSEdges (cp, g);
     }

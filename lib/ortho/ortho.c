@@ -330,11 +330,10 @@ addChan (Dt_t* chdict, channel* cp, double j)
 static Dt_t*
 extractHChans (maze* mp)
 {
-    int i;
     snode* np;
     Dt_t* hchans = dtopen (&chanItemDisc, Dtoset);
 
-    for (i = 0; i < mp->ncells; i++) {
+    for (size_t i = 0; i < mp->ncells; i++) {
 	channel* chp;
 	cell* cp = mp->cells+i;
 	cell* nextcp;
@@ -367,11 +366,10 @@ extractHChans (maze* mp)
 static Dt_t*
 extractVChans (maze* mp)
 {
-    int i;
     snode* np;
     Dt_t* vchans = dtopen (&chanItemDisc, Dtoset);
 
-    for (i = 0; i < mp->ncells; i++) {
+    for (size_t i = 0; i < mp->ncells; i++) {
 	channel* chp;
 	cell* cp = mp->cells+i;
 	cell* nextcp;
@@ -1491,7 +1489,7 @@ static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
     }
     
     fputs ("0.8 0.8 0.8 setrgbcolor\n", fp);
-    for (int i = 0; i < mp->ncells; i++) {
+    for (size_t i = 0; i < mp->ncells; i++) {
       const boxf bb = mp->cells[i].bb;
       fprintf (fp, "%f %f %f %f cell\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
       absbb.LL.x = fmin(absbb.LL.x, bb.LL.x);

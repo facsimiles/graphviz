@@ -64,7 +64,7 @@ typedef struct cell {
  */
 
 typedef struct {
-  int ncells;
+  size_t ncells;
   size_t ngcells;
   cell* cells;     ///< @brief cells not corresponding to graph nodes
   cell* gcells;    ///< @brief cells corresponding to graph nodes
