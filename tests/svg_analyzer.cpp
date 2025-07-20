@@ -341,7 +341,5 @@ void SVGAnalyzer::set_graphviz_build_date(std::string_view build_date) {
 }
 
 std::string SVGAnalyzer::svg_string(std::size_t indent_size) const {
-  std::string output{};
-  output += m_svg.to_string(indent_size);
-  return output;
+  return m_svg.to_string(indent_size);
 }
