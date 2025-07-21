@@ -44,7 +44,6 @@ INTERNAL void ELinsert(Halfedge *, Halfedge *);
 INTERNAL Halfedge *ELleftbnd(Point *);
 INTERNAL void ELdelete(Halfedge *);
 INTERNAL Halfedge *ELleft(Halfedge *), *ELright(Halfedge *);
-INTERNAL Halfedge *ELleftbnd(Point *);
 INTERNAL Site *leftreg(Halfedge *), *rightreg(Halfedge *);
 
 #undef INTERNAL
