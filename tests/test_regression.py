@@ -5921,9 +5921,6 @@ def test_2683():
 
 
 @pytest.mark.skipif(shutil.which("ps2pdf") is None, reason="ps2pdf not available")
-@pytest.mark.xfail(
-    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/2699"
-)
 def test_2699():
     """
     `showboxes` should generate a valid PS file
