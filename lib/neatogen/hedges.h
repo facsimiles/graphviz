@@ -37,7 +37,6 @@ extern "C" {
 
 INTERNAL void ELinitialize(void);
 INTERNAL void ELcleanup(void);
-INTERNAL int right_of(Halfedge *, Point *);
 INTERNAL Site *hintersect(Halfedge *, Halfedge *);
 INTERNAL Halfedge *HEcreate(Edge *, char);
 INTERNAL void ELinsert(Halfedge *, Halfedge *);

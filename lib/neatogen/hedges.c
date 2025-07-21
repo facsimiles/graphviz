@@ -93,8 +93,7 @@ Site *hintersect(Halfedge * el1, Halfedge * el2)
 }
 
 /* returns 1 if p is to right of halfedge e */
-int right_of(Halfedge * el, Point * p)
-{
+static int right_of(Halfedge *el, Point *p) {
     Edge *e;
     Site *topsite;
     int above, fast;
