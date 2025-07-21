@@ -1,0 +1,4 @@
+graph {
+  showboxes=2;
+  a -- b;
+}

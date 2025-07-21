@@ -5920,6 +5920,28 @@ def test_2683():
     dot("dot", input)
 
 
+@pytest.mark.skipif(shutil.which("ps2pdf") is None, reason="ps2pdf not available")
+@pytest.mark.xfail(
+    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/2699"
+)
+def test_2699():
+    """
+    `showboxes` should generate a valid PS file
+    https://gitlab.com/graphviz/graphviz/-/issues/2699
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2699.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run it through Graphviz
+    ps = dot("ps", input)
+
+    # run this through `ps2pdf`, an arbitrary PS-consuming program to validate what
+    # Graphviz gave us
+    run_raw(["ps2pdf", "-", os.devnull], input=ps)
+
+
 def test_2705(tmp_path: Path):
     """
     round tripping a graph through a file should not alter its node defaults
