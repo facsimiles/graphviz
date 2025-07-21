@@ -1,6 +1,6 @@
 if(with_sfdp)
 
-add_definitions(-DNEATOGEN_EXPORTS)
+add_definitions(-DNEATOGEN_EXPORTS=1)
 
 add_library(sfdpgen STATIC
   # Header files

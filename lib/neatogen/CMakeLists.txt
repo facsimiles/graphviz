@@ -1,4 +1,4 @@
-add_definitions(-DNEATOGEN_EXPORTS)
+add_definitions(-DNEATOGEN_EXPORTS=1)
 
 set(SOURCES
   # Header files

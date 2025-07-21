@@ -3,24 +3,7 @@
 
 #pragma once
 
-/// hide the symbols this header declares by default
-///
-/// The expectation is that, while other libraries may not want to call
-/// `gv_xml_escape`, they may end up linking against it in order to use other
-/// libutil functionality. They almost certainly do not want to re-export
-/// `gv_xml_escape`.
-///
-/// This annotation is only correct while the containing library is built
-/// statically. If it were built as a shared library, `gv_xml_escape` would need
-/// to have `default` visibility (and thus be unavoidably re-exported) in order
-/// to be callable.
-#ifndef UTIL_API
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define UTIL_API __attribute__((visibility("hidden")))
-#else
-#define UTIL_API /* nothing */
-#endif
-#endif
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
