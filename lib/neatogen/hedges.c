@@ -238,6 +238,6 @@ Site *leftreg(Halfedge * he)
 Site *rightreg(Halfedge * he)
 {
     if (he->ELedge == NULL)
-	return (bottomsite);
+	return bottomsite;
     return he->ELpm == le ? he->ELedge->reg[re] : he->ELedge->reg[le];
 }
