@@ -211,8 +211,8 @@ Halfedge *ELleftbnd(el_state_t *st, Point *p) {
    table may be present.   */
 void ELdelete(Halfedge * he)
 {
-    (he->ELleft)->ELright = he->ELright;
-    (he->ELright)->ELleft = he->ELleft;
+    he->ELleft->ELright = he->ELright;
+    he->ELright->ELleft = he->ELleft;
     he->ELedge = (Edge *) DELETED;
 }
 
