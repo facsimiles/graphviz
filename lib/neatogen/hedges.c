@@ -231,7 +231,7 @@ Halfedge *ELleft(Halfedge * he)
 Site *leftreg(Halfedge * he)
 {
     if (he->ELedge == NULL)
-	return (bottomsite);
+	return bottomsite;
     return he->ELpm == le ? he->ELedge->reg[le] : he->ELedge->reg[re];
 }
 
