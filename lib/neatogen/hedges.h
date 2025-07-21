@@ -26,21 +26,27 @@ extern "C" {
     typedef struct Halfedge {
 	struct Halfedge *ELleft, *ELright;
 	Edge *ELedge;
-	int ELrefcnt;
 	char ELpm;
 	Site *vertex;
 	double ystar;
 	struct Halfedge *PQnext;
+	struct Halfedge *previous_allocated; ///< used for final clean up
     } Halfedge;
 
-    extern Halfedge *ELleftend, *ELrightend;
+typedef struct {
+  Halfedge *allocated; ///< outstanding live Halfedges
+  int hashsize;
+  Halfedge **hash;
+  Halfedge *leftend;
+  Halfedge *rightend;
+} el_state_t;
 
-INTERNAL void ELinitialize(void);
-INTERNAL void ELcleanup(void);
+INTERNAL void ELinitialize(el_state_t *);
+INTERNAL void ELcleanup(el_state_t *);
 INTERNAL Site *hintersect(Halfedge *, Halfedge *);
-INTERNAL Halfedge *HEcreate(Edge *, char);
+INTERNAL Halfedge *HEcreate(el_state_t *, Edge *, char);
 INTERNAL void ELinsert(Halfedge *, Halfedge *);
-INTERNAL Halfedge *ELleftbnd(Point *);
+INTERNAL Halfedge *ELleftbnd(el_state_t *, Point *);
 INTERNAL void ELdelete(Halfedge *);
 INTERNAL Halfedge *ELleft(Halfedge *), *ELright(Halfedge *);
 INTERNAL Site *leftreg(Halfedge *), *rightreg(Halfedge *);

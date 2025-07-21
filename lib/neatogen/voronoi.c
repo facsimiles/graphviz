@@ -27,7 +27,8 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     siteinit();
     pq_t *pq = PQinitialize();
     bottomsite = nextsite(context);
-    ELinitialize();
+    el_state_t st = {0};
+    ELinitialize(&st);
 
     newsite = nextsite(context);
     while (1) {
@@ -38,18 +39,18 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
       (PQempty(pq) || newsite->coord.y < newintstar.y ||
        (newsite->coord.y ==newintstar.y && newsite->coord.x < newintstar.x))) {
 	    /* new site is smallest */
-	    lbnd = ELleftbnd(&newsite->coord);
+	    lbnd = ELleftbnd(&st, &newsite->coord);
 	    rbnd = ELright(lbnd);
 	    bot = rightreg(lbnd);
 	    e = gvbisect(bot, newsite);
-	    bisector = HEcreate(e, le);
+	    bisector = HEcreate(&st, e, le);
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(lbnd, bisector)) != NULL) {
 		PQdelete(pq, lbnd);
 		PQinsert(pq, lbnd, p, ngdist(p, newsite));
 	    }
 	    lbnd = bisector;
-	    bisector = HEcreate(e, re);
+	    bisector = HEcreate(&st, e, re);
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(bisector, rbnd)) != NULL)
 		PQinsert(pq, bisector, p, ngdist(p, newsite));
@@ -77,7 +78,7 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 		pm = re;
 	    }
 	    e = gvbisect(bot, top);
-	    bisector = HEcreate(e, pm);
+	    bisector = HEcreate(&st, e, pm);
 	    ELinsert(llbnd, bisector);
 	    endpoint(e, re - pm, v);
 	    deref(v);
@@ -92,10 +93,13 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    break;
     }
 
-    for (lbnd = ELright(ELleftend); lbnd != ELrightend; lbnd = ELright(lbnd)) {
+    for (lbnd = ELright(st.leftend); lbnd != st.rightend;
+         lbnd = ELright(lbnd)) {
 	e = lbnd->ELedge;
 	clip_line(e);
     }
+
+    ELcleanup(&st);
 
     // `PQcleanup` relies on the number of sites, so should be discarded and
     // at least every time we use `vAdjust`. See note in adjust.c:cleanup().

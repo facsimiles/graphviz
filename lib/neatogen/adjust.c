@@ -22,7 +22,6 @@
 #include <neatogen/info.h>
 #include <neatogen/edges.h>
 #include <neatogen/site.h>
-#include <neatogen/hedges.h>
 #include <neatogen/digcola.h>
 #if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 #include <neatogen/overlap.h>
@@ -422,7 +421,6 @@ static void newPos(const state_t *st, bool doAll) {
  */
 static void cleanup(void)
 {
-    ELcleanup();
     siteinit();			/* free memory */
     edgeinit();			/* free memory */
 }
