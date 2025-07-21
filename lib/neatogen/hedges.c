@@ -148,7 +148,7 @@ void ELinsert(Halfedge * lb, Halfedge * new)
 {
     new->ELleft = lb;
     new->ELright = lb->ELright;
-    (lb->ELright)->ELleft = new;
+    lb->ELright->ELleft = new;
     lb->ELright = new;
 }
 
