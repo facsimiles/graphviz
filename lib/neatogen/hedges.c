@@ -168,17 +168,31 @@ static Halfedge *ELgethash(el_state_t *st, int b) {
     return NULL;
 }
 
+/// convert a `double` to an `int`, between bounds
+///
+/// @param lower Lower bound to limit to
+/// @param v Value to convert
+/// @param upper Upper bound to limit to
+/// @return A converted value in the range [lower, upper]
+static int clamp(int lower, double v, int upper) {
+  assert(upper >= lower);
+  if (v < lower) {
+    return lower;
+  }
+  if (v > upper) {
+    return upper;
+  }
+  return (int)v;
+}
+
 Halfedge *ELleftbnd(el_state_t *st, Point *p) {
     assert(st != NULL);
-    int i, bucket;
+    int i;
     Halfedge *he;
 
 /* Use hash table to get close to desired halfedge */
-    bucket = (p->x - xmin) / deltax * st->hashsize;
-    if (bucket < 0)
-	bucket = 0;
-    if (bucket >= st->hashsize)
-	bucket = st->hashsize - 1;
+    const int bucket =
+      clamp(0, (p->x - xmin) / deltax * st->hashsize, st->hashsize - 1);
     he = ELgethash(st, bucket);
     if (he == NULL) {
 	for (i = 1; ; ++i) {
