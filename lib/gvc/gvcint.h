@@ -158,12 +158,6 @@ extern "C" {
 GVCINT_API GVC_t* gvCloneGVC (GVC_t *);
 GVCINT_API void gvFreeCloneGVC (GVC_t *);
 
-#ifdef _WIN32
-#define DIRSEP "\\"
-#else
-#define DIRSEP "/"
-#endif
-
 #undef GVCINT_API
 
 #ifdef __cplusplus

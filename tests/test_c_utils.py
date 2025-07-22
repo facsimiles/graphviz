@@ -74,6 +74,4 @@ def test_gv_find_me(tmp_path: Path):
     # run this
     output = run([exe])
 
-    assert os.path.normpath(output) == os.path.normpath(
-        f"{exe}\n"
-    ), "gv_find_me did not determine executable absolute path"
+    assert output == f"{exe}\n", "gv_find_me did not determine executable absolute path"

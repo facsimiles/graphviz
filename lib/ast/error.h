@@ -38,7 +38,6 @@ extern "C" {
 #define ERROR_PANIC	ERROR_LEVEL	/* panic message with err_exit  */
 
 #define ERROR_LEVEL	0x00ff	/* level portion of status      */
-#define ERROR_SYSTEM	0x0100	/* report system errno message  */
 #define ERROR_USAGE	0x0800	/* usage message                */
 
 /* support for extra API misuse warnings if available */

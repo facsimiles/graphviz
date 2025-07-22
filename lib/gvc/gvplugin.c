@@ -32,6 +32,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/list.h>
+#include <util/path.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
 #include <util/strview.h>
@@ -171,7 +172,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, const char *pathname) {
 #endif
         agxbput(&fullpath, pathname);
     } else {
-        agxbprint(&fullpath, "%s%s%s", libdir, DIRSEP, pathname);
+        agxbprint(&fullpath, "%s%c%s", libdir, PATH_SEPARATOR, pathname);
     }
 
     if (lt_dlinit()) {
@@ -194,7 +195,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, const char *pathname) {
     if (gvc->common.verbose >= 2)
         fprintf(stderr, "Loading %s\n", p);
 
-    s = strrchr(p, DIRSEP[0]);
+    s = strrchr(p, PATH_SEPARATOR);
     len = strlen(s);
 #if defined(_WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     if (len < strlen("/gvplugin_x")) {

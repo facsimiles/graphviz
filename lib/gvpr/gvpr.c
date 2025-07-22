@@ -35,7 +35,9 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
+#include <util/gv_find_me.h>
 #include <util/list.h>
+#include <util/path.h>
 #include <util/unreachable.h>
 
 static char *Info[] = {
@@ -53,6 +55,7 @@ static const char *usage =
    -o <ofile> - write output to <ofile>; stdout by default\n\
    -n         - no read-ahead of input graphs\n\
    -q         - turn off warning messages\n\
+   -v         - enable verbose messages\n\
    -V         - print version info\n\
    -?         - print usage info\n\
 If no files are specified, stdin is used\n";
@@ -169,10 +172,8 @@ static int parseArgs(char *s, int argc, char ***argv) {
 }
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-#define PATHSEP '\\'
 #define LISTSEP ';'
 #else
-#define PATHSEP '/'
 #define LISTSEP ':'
 #endif
 
@@ -180,6 +181,52 @@ static char *concat(char *pfx, char *sfx) {
   agxbuf sp = {0};
   agxbprint(&sp, "%s%s", pfx, sfx);
   return agxbdisown(&sp);
+}
+
+/// get gvpr’s default paths to search for scripts
+///
+/// The content returned is a list of paths separated by the platform’s native
+/// `$PATH` separator, either ':' or ';'. The caller is responsible for freeing
+/// the returned string.
+///
+/// @return Search path for scripts or `NULL` on failure
+static char *dflt_gvprpath(void) {
+
+  // find our containing executable
+  char *const exe = gv_find_me();
+  if (exe == NULL) {
+    return NULL;
+  }
+
+  // assume it is of the form …/bin/foo[.exe] and construct
+  // .:…/share/graphviz/gvpr
+
+  char *slash = strrchr(exe, PATH_SEPARATOR);
+  if (slash == NULL) {
+    free(exe);
+    return NULL;
+  }
+
+  *slash = '\0';
+  slash = strrchr(exe, PATH_SEPARATOR);
+  if (slash == NULL) {
+    free(exe);
+    return NULL;
+  }
+
+  *slash = '\0';
+  const size_t share_len =
+      strlen(".:") + strlen(exe) + strlen("/share/graphviz/gvpr") + 1;
+  char *const share = malloc(share_len);
+  if (share == NULL) {
+    free(exe);
+    return NULL;
+  }
+  snprintf(share, share_len, ".%c%s%cshare%cgraphviz%cgvpr", LISTSEP, exe,
+           PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR);
+  free(exe);
+
+  return share;
 }
 
 /* resolve:
@@ -197,20 +244,27 @@ static char *resolve(char *arg, int verbose) {
   char *pathp = NULL;
   size_t sz;
 
-  if (strchr(arg, PATHSEP))
+  if (strchr(arg, PATH_SEPARATOR))
     return gv_strdup(arg);
+
+  char *const dflt = dflt_gvprpath();
+  if (dflt == NULL) {
+    error(ERROR_ERROR, "Could not determine DFLT_GVPRPATH");
+  }
 
   path = getenv("GVPRPATH");
   if (!path)
     path = getenv("GPRPATH"); // deprecated
-  if (path && (c = *path)) {
+  if (dflt == NULL) {
+    // do not use `dflt` at all
+  } else if (path && (c = *path)) {
     if (c == LISTSEP) {
-      pathp = path = concat(DFLT_GVPRPATH, path);
-    } else if ((c = path[strlen(path) - 1]) == LISTSEP) {
-      pathp = path = concat(path, DFLT_GVPRPATH);
+      pathp = path = concat(dflt, path);
+    } else if (path[strlen(path) - 1] == LISTSEP) {
+      pathp = path = concat(path, dflt);
     }
   } else
-    path = DFLT_GVPRPATH;
+    path = dflt;
   if (verbose)
     fprintf(stderr, "PATH: %s\n", path);
   agxbuf fp = {0};
@@ -229,7 +283,7 @@ static char *resolve(char *arg, int verbose) {
       sz = agxbput(&fp, path);
       path += sz;
     }
-    agxbprint(&fp, "%c%s", PATHSEP, arg);
+    agxbprint(&fp, "%c%s", PATH_SEPARATOR, arg);
     s = agxbuse(&fp);
 
     if (access(s, R_OK) == 0) {
@@ -237,13 +291,16 @@ static char *resolve(char *arg, int verbose) {
     }
   }
 
+  free(dflt);
+
   if (!fname)
     error(ERROR_ERROR, "Could not find file \"%s\" in GVPRPATH", arg);
 
   agxbfree(&fp);
   free(pathp);
   if (verbose)
-    fprintf(stderr, "file %s resolved to %s\n", arg, fname);
+    fprintf(stderr, "file %s resolved to %s\n", arg,
+            fname == NULL ? "<null>" : fname);
   return fname;
 }
 
@@ -321,7 +378,6 @@ static int doFlags(char *arg, int argi, int argc, char **argv, options *opts) {
     case 'V':
       fprintf(stderr, "%s version %s (%s)\n", Info[0], Info[1], Info[2]);
       return 0;
-      break;
     case '?':
       if (optopt == '\0' || optopt == '?')
         fprintf(stderr, "Usage: gvpr%s", usage);
@@ -329,7 +385,6 @@ static int doFlags(char *arg, int argi, int argc, char **argv, options *opts) {
         error(ERROR_USAGE | ERROR_WARNING, "%s", usage);
       }
       return 0;
-      break;
     default:
       error(ERROR_WARNING, "option -%c unrecognized", c);
       break;

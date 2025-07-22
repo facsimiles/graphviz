@@ -19,6 +19,7 @@ noinst_HEADERS = \
   lockfile.h \
   optional.h \
   overflow.h \
+  path.h \
   prisize_t.h \
   random.h \
   sort.h \

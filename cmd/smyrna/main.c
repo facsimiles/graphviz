@@ -34,6 +34,7 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_find_me.h>
+#include <util/path.h>
 
 static char *smyrnaDir; ///< path to directory containing smyrna data files
 static char *smyrnaGlade;
@@ -162,12 +163,6 @@ static void windowedMode(int argc, char *argv[]) {
 
 /// find an absolute path to where Smyrna auxiliary files are stored
 static char *find_share(void) {
-
-#ifdef _WIN32
-  const char PATH_SEPARATOR = '\\';
-#else
-  const char PATH_SEPARATOR = '/';
-#endif
 
   // find the path to the `smyrna` binary
   char *smyrna_exe = gv_find_me();

@@ -19,9 +19,6 @@ add_library(gvpr
   parse.c
 )
 
-target_compile_definitions(gvpr PRIVATE
-  DFLT_GVPRPATH="${DATA_INSTALL_DIR}/graphviz/gvpr")
-
 target_include_directories(gvpr
   PUBLIC
     $<INSTALL_INTERFACE:include/graphviz>
@@ -51,6 +48,7 @@ target_link_libraries(gvpr PRIVATE
   $<TARGET_OBJECTS:ast>
   cgraph
   gvc
+  util
   $<TARGET_OBJECTS:expr>
   $<TARGET_OBJECTS:sfio>
   $<TARGET_OBJECTS:vmalloc>
