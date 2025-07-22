@@ -21,13 +21,7 @@
 int
 main (int argc, char* argv[])
 {
-    gvpropts opts;
-    opts.ingraphs = 0;
-    opts.out = 0;
-    opts.err = 0;
-    opts.flags = GV_USE_EXIT;
-    opts.bindings = 0;
-    
+    gvpropts opts = {.flags = GV_USE_EXIT};
     graphviz_exit(gvpr(argc, argv, &opts));
 }
 
