@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,6 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
-
 
 /*
  * gvpr: graph pattern recognizer
@@ -18,11 +17,9 @@
 #include <gvpr/gvpr.h>
 #include <util/exit.h>
 
-int
-main (int argc, char* argv[])
-{
-    gvpropts opts = {.flags = GV_USE_EXIT};
-    graphviz_exit(gvpr(argc, argv, &opts));
+int main(int argc, char *argv[]) {
+  gvpropts opts = {.flags = GV_USE_EXIT};
+  graphviz_exit(gvpr(argc, argv, &opts));
 }
 
 /**
