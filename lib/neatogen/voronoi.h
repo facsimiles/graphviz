@@ -16,7 +16,15 @@ extern "C" {
 
 #include <neatogen/site.h>
 
-void voronoi(Site *(*)(void *), void *);
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
+INTERNAL void voronoi(Site *(*)(void *), void *);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

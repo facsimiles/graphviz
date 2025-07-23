@@ -16,6 +16,12 @@ extern "C" {
 
 #include <neatogen/geometry.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
     typedef struct {
 	Point origin;
 	Point corner;
@@ -24,11 +30,13 @@ extern "C" {
 	int kind;
     } Poly;
 
-    extern void polyFree(void);
-    extern int polyOverlap(Point, Poly *, Point, Poly *);
-int makePoly(Poly *, Agnode_t *, double, double);
-int makeAddPoly(Poly *, Agnode_t *, double, double);
-    extern void breakPoly(Poly *);
+INTERNAL void polyFree(void);
+INTERNAL int polyOverlap(Point, Poly *, Point, Poly *);
+INTERNAL int makePoly(Poly *, Agnode_t *, double, double);
+INTERNAL int makeAddPoly(Poly *, Agnode_t *, double, double);
+INTERNAL void breakPoly(Poly *);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

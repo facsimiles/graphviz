@@ -10,5 +10,13 @@
 
 #pragma once
 
-SparseMatrix call_tri(int n, double * x);
-SparseMatrix call_tri2(int n, int dim, double * x);
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
+INTERNAL SparseMatrix call_tri(int n, double * x);
+INTERNAL SparseMatrix call_tri2(int n, int dim, double * x);
+
+#undef INTERNAL

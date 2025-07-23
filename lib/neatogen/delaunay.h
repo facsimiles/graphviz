@@ -12,6 +12,12 @@
 
 #include <neatogen/sparsegraph.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 typedef struct {
     int  nedges; /* no. of edges in triangulation */
     int* edges;  /* 2*nsegs indices of points */
@@ -20,12 +26,14 @@ typedef struct {
     int* neigh;  /* 3*nfaces indices of neighbor triangles */ 
 } surface_t;
 
-int *delaunay_tri (double *x, double *y, int n, int* nedges);
+INTERNAL int *delaunay_tri (double *x, double *y, int n, int* nedges);
 
-int *get_triangles (double *x, int n, int* ntris);
+INTERNAL int *get_triangles (double *x, int n, int* ntris);
 
-v_data *UG_graph(double *x, double *y, int n);
+INTERNAL v_data *UG_graph(double *x, double *y, int n);
 
-surface_t* mkSurface (double *x, double *y, int n, int* segs, int nsegs);
+INTERNAL surface_t* mkSurface (double *x, double *y, int n, int* segs, int nsegs);
 
-void freeSurface (surface_t* s);
+INTERNAL void freeSurface (surface_t* s);
+
+#undef INTERNAL

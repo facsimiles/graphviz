@@ -13,13 +13,19 @@
 #include <sfdpgen/post_process.h>
 #include <stdbool.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 typedef  StressMajorizationSmoother OverlapSmoother;
 
 #define OverlapSmoother_struct StressMajorizationSmoother_struct
 
-void OverlapSmoother_delete(OverlapSmoother sm);
+INTERNAL void OverlapSmoother_delete(OverlapSmoother sm);
 
-OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, int dim, double *x,
+INTERNAL OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, int dim, double *x,
                                     double *width, bool neighborhood_only,
                                     double *max_overlap, double *min_overlap,
                                     int edge_labeling_scheme,
@@ -48,9 +54,11 @@ struct relative_position_constraints_struct{
 
 typedef struct relative_position_constraints_struct*  relative_position_constraints;
 
-double OverlapSmoother_smooth(OverlapSmoother sm, int dim, double *x);
+INTERNAL double OverlapSmoother_smooth(OverlapSmoother sm, int dim, double *x);
 
-void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes,
+INTERNAL void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes,
                     int ntry, double initial_scaling, int edge_labeling_scheme,
                     int n_constr_nodes, int *constr_nodes,
                     SparseMatrix A_constr, bool doShrink);
+
+#undef INTERNAL

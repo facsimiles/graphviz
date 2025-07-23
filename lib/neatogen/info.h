@@ -20,6 +20,12 @@ extern "C" {
 #include <neatogen/poly.h>
 #include <neatogen/voronoi.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 /// info concerning site
 typedef struct {
   Agnode_t *node; ///< libgraph node
@@ -34,7 +40,9 @@ typedef struct {
 extern Info_t *nodeInfo;
 
 /// insert vertex into sorted list
-void addVertex(Site *, double, double);
+INTERNAL void addVertex(Site *, double, double);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

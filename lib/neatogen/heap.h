@@ -17,16 +17,24 @@ extern "C" {
 #include <neatogen/hedges.h>
 #include <stdbool.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 /// priority queue heap
 typedef struct pq pq_t;
 
-pq_t *PQinitialize(void);
-void PQcleanup(pq_t *pq);
-Halfedge *PQextractmin(pq_t *pq);
-Point PQ_min(pq_t *pq);
-bool PQempty(const pq_t *pq);
-void PQdelete(pq_t *pq, Halfedge *);
-void PQinsert(pq_t *pq, Halfedge *, Site *, double);
+INTERNAL pq_t *PQinitialize(void);
+INTERNAL void PQcleanup(pq_t *pq);
+INTERNAL Halfedge *PQextractmin(pq_t *pq);
+INTERNAL Point PQ_min(pq_t *pq);
+INTERNAL bool PQempty(const pq_t *pq);
+INTERNAL void PQdelete(pq_t *pq, Halfedge *);
+INTERNAL void PQinsert(pq_t *pq, Halfedge *, Site *, double);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

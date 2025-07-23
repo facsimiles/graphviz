@@ -17,22 +17,30 @@ extern "C" {
 #include <neatogen/defs.h>
 #include <stdbool.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 /*************************
  * C.G. method - SPARSE  *
  ************************/
 
-    extern int conjugate_gradient(vtx_data *, double *, double *, int,
+INTERNAL int conjugate_gradient(vtx_data *, double *, double *, int,
 				   double, int);
 
 /*************************
  * C.G. method - DENSE   *
  ************************/
 
-    extern int conjugate_gradient_f(float **, double *, double *, int,
+INTERNAL int conjugate_gradient_f(float **, double *, double *, int,
 				     double, int, bool);
 
-    extern int conjugate_gradient_mkernel(float *, float *, float *, int,
+INTERNAL int conjugate_gradient_mkernel(float *, float *, float *, int,
 					   double, int);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

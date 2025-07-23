@@ -31,6 +31,12 @@ extern "C" {
 #include <neatogen/digcola.h>
 #include <stdbool.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 typedef struct CMajEnvVPSC {
 	float **A;
 	int nv;   /* number of actual vars */
@@ -48,12 +54,12 @@ typedef struct CMajEnvVPSC {
 	float *fArray3;
 } CMajEnvVPSC;
 
-extern CMajEnvVPSC* initCMajVPSC(int n, float *packedMat, vtx_data* graph, ipsep_options *opt, int diredges);
+INTERNAL CMajEnvVPSC* initCMajVPSC(int n, float *packedMat, vtx_data* graph, ipsep_options *opt, int diredges);
 
-extern int constrained_majorization_vpsc(CMajEnvVPSC*, float*, float*, int);
+INTERNAL int constrained_majorization_vpsc(CMajEnvVPSC*, float*, float*, int);
 
-extern void deleteCMajEnvVPSC(CMajEnvVPSC *e);
-extern void generateNonoverlapConstraints(
+INTERNAL void deleteCMajEnvVPSC(CMajEnvVPSC *e);
+INTERNAL void generateNonoverlapConstraints(
         CMajEnvVPSC* e,
         float nsizeScale,
         float** coords,
@@ -62,7 +68,7 @@ extern void generateNonoverlapConstraints(
 	ipsep_options* opt
 );
 
-extern void removeoverlaps(int,float**,ipsep_options*);
+INTERNAL void removeoverlaps(int,float**,ipsep_options*);
 
 typedef struct {
 	int *nodes;
@@ -72,8 +78,11 @@ typedef struct {
 /*
  * unpack the "ordering" array into an array of DigColaLevel (as defined above)
  */
-extern DigColaLevel* assign_digcola_levels(int *ordering, int n, int *level_inds, int num_divisions);
-int get_num_digcola_constraints(DigColaLevel *levels, int num_levels);
+INTERNAL DigColaLevel* assign_digcola_levels(int *ordering, int n, int *level_inds, int num_divisions);
+INTERNAL int get_num_digcola_constraints(DigColaLevel *levels, int num_levels);
+
+#undef INTERNAL
+
 #endif 
 
 #ifdef __cplusplus

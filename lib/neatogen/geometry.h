@@ -12,6 +12,12 @@
 
 #include <stddef.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,13 +36,15 @@ extern "C" {
     extern size_t nsites; // Number of sites
     extern int sqrt_nsites;
 
-    extern void geominit(void);
-    extern double dist_2(Point, Point); ///< distance squared between two points
-    extern void subpt(Point * a, Point b, Point c);
-    extern void addpt(Point * a, Point b, Point c);
-    extern double area_2(Point a, Point b, Point c);
-    extern int leftOf(Point a, Point b, Point c);
-    extern int intersection(Point a, Point b, Point c, Point d, Point * p);
+INTERNAL void geominit(void);
+INTERNAL double dist_2(Point, Point); ///< distance squared between two points
+INTERNAL void subpt(Point * a, Point b, Point c);
+INTERNAL void addpt(Point * a, Point b, Point c);
+INTERNAL double area_2(Point a, Point b, Point c);
+INTERNAL int leftOf(Point a, Point b, Point c);
+INTERNAL int intersection(Point a, Point b, Point c, Point d, Point * p);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

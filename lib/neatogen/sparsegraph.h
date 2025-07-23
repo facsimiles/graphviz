@@ -18,6 +18,12 @@ extern "C" {
 
 #include "config.h"
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
     typedef struct {
 	int nedges;		/* no. of neighbors, including self */
 	int *edges;		/* edges[0..(nedges-1)] are neighbors; edges[0] is self */
@@ -36,8 +42,10 @@ extern "C" {
 
     typedef int DistType;	/* must be signed!! */
 
-extern void freeGraphData(vtx_data * graph);
-extern void freeGraph(v_data * graph);
+INTERNAL void freeGraphData(vtx_data * graph);
+INTERNAL void freeGraph(v_data * graph);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

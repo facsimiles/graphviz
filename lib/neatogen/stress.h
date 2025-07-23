@@ -16,6 +16,12 @@ extern "C" {
 
 #include <neatogen/defs.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
 #define tolerance_cg 1e-3
 
 #define DFLT_ITERATIONS 200
@@ -30,7 +36,7 @@ extern "C" {
 
     /* Full dense stress optimization (equivalent to Kamada-Kawai's energy) */
     /* Slowest and most accurate optimization */
-    extern int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse representation */
+INTERNAL int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse representation */
 					      int n,	/* Number of nodes */
 					      double **coords,	/* coordinates of nodes (output layout)  */
 					      node_t **nodes,	/* original nodes  */
@@ -40,11 +46,13 @@ extern "C" {
 					      int maxi	/* max iterations */
 	);
 
-extern float *compute_apsp_packed(vtx_data * graph, int n);
-extern float *compute_apsp_artificial_weights_packed(vtx_data *graph, int n);
-extern float* circuitModel(vtx_data * graph, int nG);
-extern float* mdsModel (vtx_data * graph, int nG);
-extern int initLayout(int n, int dim, double **coords, node_t **nodes);
+INTERNAL float *compute_apsp_packed(vtx_data * graph, int n);
+INTERNAL float *compute_apsp_artificial_weights_packed(vtx_data *graph, int n);
+INTERNAL float* circuitModel(vtx_data * graph, int nG);
+INTERNAL float* mdsModel (vtx_data * graph, int nG);
+INTERNAL int initLayout(int n, int dim, double **coords, node_t **nodes);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }

@@ -17,6 +17,12 @@ extern "C" {
 #include <neatogen/site.h>
 #include <neatogen/edges.h>
 
+#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
+#define INTERNAL __attribute__((visibility("hidden")))
+#else
+#define INTERNAL /* nothing */
+#endif
+
     typedef struct Halfedge {
 	struct Halfedge *ELleft, *ELright;
 	Edge *ELedge;
@@ -29,17 +35,19 @@ extern "C" {
 
     extern Halfedge *ELleftend, *ELrightend;
 
-    extern void ELinitialize(void);
-    extern void ELcleanup(void);
-    extern int right_of(Halfedge *, Point *);
-    extern Site *hintersect(Halfedge *, Halfedge *);
-    extern Halfedge *HEcreate(Edge *, char);
-    extern void ELinsert(Halfedge *, Halfedge *);
-    extern Halfedge *ELleftbnd(Point *);
-    extern void ELdelete(Halfedge *);
-    extern Halfedge *ELleft(Halfedge *), *ELright(Halfedge *);
-    extern Halfedge *ELleftbnd(Point *);
-    extern Site *leftreg(Halfedge *), *rightreg(Halfedge *);
+INTERNAL void ELinitialize(void);
+INTERNAL void ELcleanup(void);
+INTERNAL int right_of(Halfedge *, Point *);
+INTERNAL Site *hintersect(Halfedge *, Halfedge *);
+INTERNAL Halfedge *HEcreate(Edge *, char);
+INTERNAL void ELinsert(Halfedge *, Halfedge *);
+INTERNAL Halfedge *ELleftbnd(Point *);
+INTERNAL void ELdelete(Halfedge *);
+INTERNAL Halfedge *ELleft(Halfedge *), *ELright(Halfedge *);
+INTERNAL Halfedge *ELleftbnd(Point *);
+INTERNAL Site *leftreg(Halfedge *), *rightreg(Halfedge *);
+
+#undef INTERNAL
 
 #ifdef __cplusplus
 }
