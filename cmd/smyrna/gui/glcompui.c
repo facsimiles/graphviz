@@ -282,7 +282,7 @@ glCompSet *glcreate_gl_topview_menu(void)
     p->base.common.borderWidth = 1;
     p->shadowwidth = 0;
 
-    const glCompColor c = {.R = 0.80f, .G = 0.6f, .B = 0.6f, .A = 1.6f};
+    const glCompColor c = {.R = 0.8, .G = 0.6, .B = 0.6, .A = 1.6};
 
     y = 1;
 

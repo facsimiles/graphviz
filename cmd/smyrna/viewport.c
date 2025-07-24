@@ -86,22 +86,20 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
     gvcolor_t cl;
     colorxlate(get_attribute_value("bordercolor", vi, g), &cl,
 	       RGBA_DOUBLE);
-    vi->borderColor.R = (float)cl.u.RGBA[0];
-    vi->borderColor.G = (float)cl.u.RGBA[1];
-    vi->borderColor.B = (float)cl.u.RGBA[2];
+    vi->borderColor.R = cl.u.RGBA[0];
+    vi->borderColor.G = cl.u.RGBA[1];
+    vi->borderColor.B = cl.u.RGBA[2];
 
-    vi->borderColor.A =
-	(float)atof(get_attribute_value("bordercoloralpha", vi, g));
+    vi->borderColor.A = atof(get_attribute_value("bordercoloralpha", vi, g));
 
     vi->bdVisible = atoi(get_attribute_value("bordervisible", vi, g));
 
     const char *buf = get_attribute_value("gridcolor", vi, g);
     colorxlate(buf, &cl, RGBA_DOUBLE);
-    vi->gridColor.R = (float)cl.u.RGBA[0];
-    vi->gridColor.G = (float)cl.u.RGBA[1];
-    vi->gridColor.B = (float)cl.u.RGBA[2];
-    vi->gridColor.A =
-	(float) atof(get_attribute_value("gridcoloralpha", vi, g));
+    vi->gridColor.R = cl.u.RGBA[0];
+    vi->gridColor.G = cl.u.RGBA[1];
+    vi->gridColor.B = cl.u.RGBA[2];
+    vi->gridColor.A = atof(get_attribute_value("gridcoloralpha", vi, g));
 
     vi->gridSize = (float)atof(buf = get_attribute_value("gridsize", vi, g));
 
@@ -110,18 +108,18 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
     //background color , default white
     colorxlate(get_attribute_value("bgcolor", vi, g), &cl, RGBA_DOUBLE);
 
-    vi->bgColor.R = (float)cl.u.RGBA[0];
-    vi->bgColor.G = (float)cl.u.RGBA[1];
-    vi->bgColor.B = (float)cl.u.RGBA[2];
-    vi->bgColor.A = 1.0f;
+    vi->bgColor.R = cl.u.RGBA[0];
+    vi->bgColor.G = cl.u.RGBA[1];
+    vi->bgColor.B = cl.u.RGBA[2];
+    vi->bgColor.A = 1.0;
 
     //selected nodes are drawn with this color
     colorxlate(get_attribute_value("selectednodecolor", vi, g), &cl,
 	       RGBA_DOUBLE);
-    vi->selectedNodeColor.R = (float)cl.u.RGBA[0];
-    vi->selectedNodeColor.G = (float)cl.u.RGBA[1];
-    vi->selectedNodeColor.B = (float)cl.u.RGBA[2];
-    vi->selectedNodeColor.A = (float)
+    vi->selectedNodeColor.R = cl.u.RGBA[0];
+    vi->selectedNodeColor.G = cl.u.RGBA[1];
+    vi->selectedNodeColor.B = cl.u.RGBA[2];
+    vi->selectedNodeColor.A =
 	atof(get_attribute_value("selectednodecoloralpha", vi, g));
 
     vi->defaultnodealpha = (float)
@@ -146,7 +144,8 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
 			   (get_attribute_value("colortheme", vi, g)));
 
     if (vi->graphCount > 0)
-	glClearColor(vi->bgColor.R, vi->bgColor.G, vi->bgColor.B, vi->bgColor.A);	//background color
+	glClearColor((float)vi->bgColor.R, (float)vi->bgColor.G, (float)vi->bgColor.B,
+	             (float)vi->bgColor.A); // background color
 }
 
 static gboolean gl_main_expose(void *data) {
@@ -524,8 +523,8 @@ void glexpose(void)
     expose_event(view->drawing_area, NULL, NULL);
 }
 
-static float interpol(float minv, float maxv, float minc, float maxc, float x)
-{
+static double interpol(double minv, double maxv, double minc, double maxc,
+                       double x) {
     return (x - minv) * (maxc - minc) / (maxv - minv) + minc;
 }
 

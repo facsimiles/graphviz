@@ -108,10 +108,10 @@ extern "C" {
 DEFINE_LIST(glCompPoly, glCompPoint)
 
     typedef struct {
-	float R;
-	float G;
-	float B;
-	float A;		//Alpha
+	double R;
+	double G;
+	double B;
+	double A;		//Alpha
     } glCompColor;
 
     typedef struct {

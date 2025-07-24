@@ -245,7 +245,7 @@ static void renderSelectedNodes(Agraph_t * g)
     {
 	if(!ND_selected(v))
 	    continue;
-	glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,view->selectedNodeColor.B, view->selectedNodeColor.A);
+	glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,view->selectedNodeColor.B, view->selectedNodeColor.A);
 	pos = ND_A(v);
 	nodeSize = ND_size(v);
 
@@ -263,7 +263,7 @@ static void renderSelectedNodes(Agraph_t * g)
 	if (ND_printLabel(v)==1)
 	{
 	    pos = ND_A(v);
-	    glColor4f(c.R, c.G,c.B, c.A);
+	    glColor4d(c.R, c.G,c.B, c.A);
 	    glprintfglut(view->glutfont, pos.x, pos.y, pos.z + 0.002f, labelOf(g, v));
 	}
     }
@@ -314,7 +314,7 @@ static void renderNodes(Agraph_t * g)
 	{
 	    ND_selected(v) = 1;
 	}
-	glColor4f(c.R,c.G,c.B,c.A);	    
+	glColor4d(c.R,c.G,c.B,c.A);	    
 	const glCompPoint pos = getPointFromStr(agxget(v, pos_attr));
 	float nodeSize = l_float(v, size_attr, 0);
 
@@ -582,7 +582,7 @@ static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
 {
     Agsym_t* pos_attr = GN_pos(g);
 
-    glColor4f(c.R,c.G,c.B,c.A);	   
+    glColor4d(c.R,c.G,c.B,c.A);	   
     // tail position
     const glCompPoint posT = getPointFromStr(agxget(agtail(e), pos_attr));
     // head position
@@ -596,7 +596,7 @@ static void edge_spline (Agraph_t* g, Agedge_t* e, glCompColor c)
 {
     Agsym_t* pos_attr_e = GE_pos(g);
 
-    glColor4f(c.R,c.G,c.B,c.A);	   
+    glColor4d(c.R,c.G,c.B,c.A);	   
     xdot *const x = makeXDotSpline(agxget(e, pos_attr_e));
     if (x) {
 	draw_xdot(x,0);
@@ -639,7 +639,7 @@ static void renderNodeLabels(Agraph_t * g)
 	    continue;
 
 	pos = ND_A(v);
-	glColor4f(c.R,c.G,c.B,c.A);
+	glColor4d(c.R,c.G,c.B,c.A);
 	if(!data_attr)
             glprintfglut(view->glutfont,pos.x,pos.y,pos.z,agnameof(v));
 	else
@@ -672,7 +672,7 @@ static void renderEdgeLabels(Agraph_t * g)
 
 	    posT = ED_posTail(e);
 	    posH = ED_posHead(e);
-	    glColor4f(c.R,c.G,c.B,c.A);
+	    glColor4d(c.R,c.G,c.B,c.A);
 	    float x = posH.x + (posT.x - posH.x) / 2;
 	    float y = posH.y + (posT.y - posH.y) / 2;
 	    float z = posH.z + (posT.z - posH.z) / 2;

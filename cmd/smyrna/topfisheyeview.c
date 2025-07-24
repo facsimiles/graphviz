@@ -32,16 +32,12 @@ static int color_interpolation(glCompColor srcColor, glCompColor tarColor,
     if (levelcount <= 0)
 	return -1;
 
-
-    color->R =
-	((float) level * tarColor.R - (float) level * srcColor.R +
-	 (float) levelcount * srcColor.R) / (float) levelcount;
-    color->G =
-	((float) level * tarColor.G - (float) level * srcColor.G +
-	 (float) levelcount * srcColor.G) / (float) levelcount;
-    color->B =
-	((float) level * tarColor.B - (float) level * srcColor.B +
-	 (float) levelcount * srcColor.B) / (float) levelcount;
+    color->R = (level * tarColor.R - level * srcColor.R +
+	 levelcount * srcColor.R) / levelcount;
+    color->G = (level * tarColor.G - level * srcColor.G +
+	 levelcount * srcColor.G) / levelcount;
+    color->B = (level * tarColor.B - level * srcColor.B +
+	 levelcount * srcColor.B) / levelcount;
     return 0;
 }
 
@@ -157,16 +153,15 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
     colorxlate(get_attribute_value
 	       ("topologicalfisheyefinestcolor", view,
 		view->g[view->activeGraph]), &cl, RGBA_DOUBLE);
-    view->Topview->fisheyeParams.srcColor.R = (float) cl.u.RGBA[0];
-    view->Topview->fisheyeParams.srcColor.G = (float) cl.u.RGBA[1];
-    view->Topview->fisheyeParams.srcColor.B = (float) cl.u.RGBA[2];
+    view->Topview->fisheyeParams.srcColor.R = cl.u.RGBA[0];
+    view->Topview->fisheyeParams.srcColor.G = cl.u.RGBA[1];
+    view->Topview->fisheyeParams.srcColor.B = cl.u.RGBA[2];
     colorxlate(get_attribute_value
 	       ("topologicalfisheyecoarsestcolor", view,
 		view->g[view->activeGraph]), &cl, RGBA_DOUBLE);
-    view->Topview->fisheyeParams.tarColor.R = (float) cl.u.RGBA[0];
-    view->Topview->fisheyeParams.tarColor.G = (float) cl.u.RGBA[1];
-    view->Topview->fisheyeParams.tarColor.B = (float) cl.u.RGBA[2];
-
+    view->Topview->fisheyeParams.tarColor.R = cl.u.RGBA[0];
+    view->Topview->fisheyeParams.tarColor.G = cl.u.RGBA[1];
+    view->Topview->fisheyeParams.tarColor.B = cl.u.RGBA[2];
 
     sscanf(agget
 	   (view->g[view->activeGraph],
@@ -220,7 +215,7 @@ static void drawtopfishnodes(topview * t)
 		    != 0) {
 		    continue;
 		}
-		glColor4f(color.R, color.G, color.B, view->defaultnodealpha);
+		glColor4d(color.R, color.G, color.B, view->defaultnodealpha);
 
 		glVertex3f(x0, y0, 0.0f);
 	    }
@@ -258,7 +253,7 @@ static void drawtopfishedges(topview * t)
 		        level) != 0) {
 			continue;
 		    }
-		    glColor4f(color.R, color.G, color.B, view->defaultnodealpha);
+		    glColor4d(color.R, color.G, color.B, view->defaultnodealpha);
 
 		    if (get_temp_coords(t, level, n, &x, &y)) {
 			glVertex3f(x0, y0, 0.0f);
@@ -406,17 +401,15 @@ void changetopfishfocus(topview * t, float *x, float *y, int num_foci)
     colorxlate(get_attribute_value
 	       ("topologicalfisheyefinestcolor", view,
 		view->g[view->activeGraph]), &cl, RGBA_DOUBLE);
-    view->Topview->fisheyeParams.srcColor.R = (float) cl.u.RGBA[0];
-    view->Topview->fisheyeParams.srcColor.G = (float) cl.u.RGBA[1];
-    view->Topview->fisheyeParams.srcColor.B = (float) cl.u.RGBA[2];
+    view->Topview->fisheyeParams.srcColor.R = cl.u.RGBA[0];
+    view->Topview->fisheyeParams.srcColor.G = cl.u.RGBA[1];
+    view->Topview->fisheyeParams.srcColor.B = cl.u.RGBA[2];
     colorxlate(get_attribute_value
 	       ("topologicalfisheyecoarsestcolor", view,
 		view->g[view->activeGraph]), &cl, RGBA_DOUBLE);
-    view->Topview->fisheyeParams.tarColor.R = (float) cl.u.RGBA[0];
-    view->Topview->fisheyeParams.tarColor.G = (float) cl.u.RGBA[1];
-    view->Topview->fisheyeParams.tarColor.B = (float) cl.u.RGBA[2];
-
-
+    view->Topview->fisheyeParams.tarColor.R = cl.u.RGBA[0];
+    view->Topview->fisheyeParams.tarColor.G = cl.u.RGBA[1];
+    view->Topview->fisheyeParams.tarColor.B = cl.u.RGBA[2];
 
     sscanf(agget
 	   (view->g[view->activeGraph],
