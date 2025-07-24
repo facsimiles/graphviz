@@ -122,8 +122,7 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
     vi->selectedNodeColor.A =
 	atof(get_attribute_value("selectednodecoloralpha", vi, g));
 
-    vi->defaultnodealpha = (float)
-	atof(get_attribute_value("defaultnodealpha", vi, g));
+    vi->defaultnodealpha = atof(get_attribute_value("defaultnodealpha", vi, g));
 
     /*default line width */
     vi->LineWidth =
