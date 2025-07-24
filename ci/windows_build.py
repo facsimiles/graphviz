@@ -24,17 +24,13 @@ def run(
     """run a command, echoing it beforehand"""
 
     print(f"+ {shlex.join(str(x) for x in args)}", flush=True)
-    p = subprocess.run(
-        args,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        cwd=cwd,
-        check=False,
-        text=True,
-        env=env,
-    )
-    sys.stderr.write(p.stdout)
+    kwargs = {}
     if out is not None:
+        kwargs["stdout"] = subprocess.PIPE
+        kwargs["stderr"] = subprocess.STDOUT
+    p = subprocess.run(args, cwd=cwd, check=False, text=True, env=env, **kwargs)
+    if out is not None:
+        sys.stderr.write(p.stdout)
         out.write(p.stdout)
     p.check_returncode()
 
