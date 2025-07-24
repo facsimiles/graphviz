@@ -199,7 +199,6 @@ typedef union {
 
 #define Quat4fT     Tuple4fT	//A 4 element unit quaternion represented by single precision floating point x,y,z,w coordinates.
 
-#define Vector2fT   Tuple2fT	//A 2-element vector that is represented by single-precision floating point x,y coordinates.
 #define Vector3fT   Tuple3fT	//A 3-element vector that is represented by single-precision floating point x,y,z coordinates.
 
 //Custom math, or speed overrides
