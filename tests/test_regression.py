@@ -5947,6 +5947,26 @@ def test_2705(tmp_path: Path):
     ), "round tripping graph through file was not idempotent"
 
 
+@pytest.mark.skipif(shutil.which("gvpr") is None, reason="gvpr is not available")
+@pytest.mark.xfail(
+    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/2707"
+)
+def test_2707():
+    """
+    gvpr should not perform a double-free while processing this example
+    https://gitlab.com/graphviz/graphviz/-/issues/2707
+    """
+
+    # find our test sources
+    program = (Path(__file__).parent / "2707.gvpr").resolve()
+    assert program.exists(), "missing test case"
+    graph = (Path(__file__).parent / "share/unix.gv").resolve()
+    assert graph.exists(), "missing test case"
+
+    gvpr_bin = which("gvpr")
+    run([gvpr_bin, "-f", program, graph])
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
