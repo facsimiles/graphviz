@@ -59,7 +59,6 @@ enum { SEARCHSIZE = 30 };
 
 static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
 {
-    node_t *n;
     if (TREE_EDGE(e)) {
 	agerrorf("add_tree_edge: missing tree edge\n");
 	return -1;
@@ -67,7 +66,7 @@ static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
     assert(edge_list_size(&ctx->Tree_edge) <= INT_MAX);
     ED_tree_index(e) = (int)edge_list_size(&ctx->Tree_edge);
     edge_list_append(&ctx->Tree_edge, e);
-    n = agtail(e);
+    node_t *n = agtail(e);
     ND_mark(n) = true;
     ND_tree_out(n).list[ND_tree_out(n).size++] = e;
     ND_tree_out(n).list[ND_tree_out(n).size] = NULL;
