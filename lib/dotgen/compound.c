@@ -31,11 +31,9 @@ static pointf boxIntersectf(pointf pp, pointf cp, boxf * bp)
     double ppy = pp.y;
     double cpx = cp.x;
     double cpy = cp.y;
-    pointf ll;
-    pointf ur;
 
-    ll = bp->LL;
-    ur = bp->UR;
+    const pointf ll = bp->LL;
+    const pointf ur = bp->UR;
     if (cp.x < ll.x) {
 	ipp.x = ll.x;
 	ipp.y = pp.y + round((ipp.x - ppx) * (ppy - cpy) / (ppx - cpx));
