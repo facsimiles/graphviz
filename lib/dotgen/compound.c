@@ -13,6 +13,7 @@
  */
 
 #include	<dotgen/dot.h>
+#include	<math.h>
 #include	<stdbool.h>
 #include	<stddef.h>
 #include	<util/agxbuf.h>
@@ -37,25 +38,25 @@ static pointf boxIntersectf(pointf pp, pointf cp, boxf * bp)
     ur = bp->UR;
     if (cp.x < ll.x) {
 	ipp.x = ll.x;
-	ipp.y = pp.y + (int) ((ipp.x - ppx) * (ppy - cpy) / (ppx - cpx));
+	ipp.y = pp.y + round((ipp.x - ppx) * (ppy - cpy) / (ppx - cpx));
 	if (ipp.y >= ll.y && ipp.y <= ur.y)
 	    return ipp;
     }
     if (cp.x > ur.x) {
 	ipp.x = ur.x;
-	ipp.y = pp.y + (int) ((ipp.x - ppx) * (ppy - cpy) / (ppx - cpx));
+	ipp.y = pp.y + round((ipp.x - ppx) * (ppy - cpy) / (ppx - cpx));
 	if (ipp.y >= ll.y && ipp.y <= ur.y)
 	    return ipp;
     }
     if (cp.y < ll.y) {
 	ipp.y = ll.y;
-	ipp.x = pp.x + (int) ((ipp.y - ppy) * (ppx - cpx) / (ppy - cpy));
+	ipp.x = pp.x + round((ipp.y - ppy) * (ppx - cpx) / (ppy - cpy));
 	if (ipp.x >= ll.x && ipp.x <= ur.x)
 	    return ipp;
     }
     if (cp.y > ur.y) {
 	ipp.y = ur.y;
-	ipp.x = pp.x + (int) ((ipp.y - ppy) * (ppx - cpx) / (ppy - cpy));
+	ipp.x = pp.x + round((ipp.y - ppy) * (ppx - cpx) / (ppy - cpy));
 	if (ipp.x >= ll.x && ipp.x <= ur.x)
 	    return ipp;
     }
