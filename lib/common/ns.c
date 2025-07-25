@@ -116,14 +116,12 @@ static void invalidate_path(node_t *lca, node_t *to_node) {
 
 static void exchange_tree_edges(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 {
-    node_t *n;
-
     ED_tree_index(f) = ED_tree_index(e);
     assert(ED_tree_index(e) >= 0);
     edge_list_set(&ctx->Tree_edge, (size_t)ED_tree_index(e), f);
     ED_tree_index(e) = -1;
 
-    n = agtail(e);
+    node_t *n = agtail(e);
     size_t i = --ND_tree_out(n).size;
     size_t j;
     for (j = 0; j <= i; j++)
