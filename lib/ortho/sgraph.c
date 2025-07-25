@@ -37,9 +37,7 @@ reset(sgraph* G)
 	G->nodes[i].n_adj = 0;
 }
 
-void
-initSEdges (sgraph* g, int maxdeg)
-{
+void initSEdges(sgraph *g, size_t maxdeg) {
     int i;
     int* adj = gv_calloc(6 * g->nnodes + 2 * maxdeg, sizeof(int));
     g->edges = gv_calloc(3 * g->nnodes + maxdeg, sizeof(sedge));
@@ -53,9 +51,7 @@ initSEdges (sgraph* g, int maxdeg)
     }
 }
 
-sgraph*
-createSGraph (int nnodes)
-{
+sgraph *createSGraph(size_t nnodes) {
     sgraph* g = gv_alloc(sizeof(sgraph));
 
 	/* create the nodes vector in the search graph */

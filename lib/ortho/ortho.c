@@ -44,22 +44,15 @@ typedef struct {
     Agedge_t* e;
 } epair_t;
 
-#ifdef DEBUG
-#define DEBUG_FN /* nothing */
-#else
-#define DEBUG_FN UNUSED
-#endif
-
-static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg);
-static DEBUG_FN void emitGraph(FILE *fp, maze *mp, size_t n_edges,
-                               route *route_list, epair_t[]);
+static UNUSED void emitSearchGraph(FILE *fp, sgraph *sg);
+static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
+                             route *route_list, epair_t[]);
 #ifdef DEBUG
 int odb_flags;
 #endif
 
 #define CELL(n) ((cell*)ND_alg(n))
 #define MID(a,b) (((a)+(b))/2.0)
-#define SC 1
 
 /* cellOf:
  * Given 2 snodes sharing a cell, return the cell.
@@ -337,11 +330,10 @@ addChan (Dt_t* chdict, channel* cp, double j)
 static Dt_t*
 extractHChans (maze* mp)
 {
-    int i;
     snode* np;
     Dt_t* hchans = dtopen (&chanItemDisc, Dtoset);
 
-    for (i = 0; i < mp->ncells; i++) {
+    for (size_t i = 0; i < mp->ncells; i++) {
 	channel* chp;
 	cell* cp = mp->cells+i;
 	cell* nextcp;
@@ -374,11 +366,10 @@ extractHChans (maze* mp)
 static Dt_t*
 extractVChans (maze* mp)
 {
-    int i;
     snode* np;
     Dt_t* vchans = dtopen (&chanItemDisc, Dtoset);
 
-    for (i = 0; i < mp->ncells; i++) {
+    for (size_t i = 0; i < mp->ncells; i++) {
 	channel* chp;
 	cell* cp = mp->cells+i;
 	cell* nextcp;
@@ -451,19 +442,11 @@ assignSegs (size_t nrtes, route* route_list, maze* mp)
 static void
 addLoop (sgraph* sg, cell* cp, snode* dp, snode* sp)
 {
-    int i;
-    int onTop;
-
-    for (i = 0; i < cp->nsides; i++) {
+    for (size_t i = 0; i < cp->nsides; i++) {
 	snode* onp = cp->sides[i];
 
 	if (onp->isVert) continue;
-	if (onp->cells[0] == cp) {
-	    onTop = 1;
-	}
-	else {
-	    onTop = 0;
-	}
+	const bool onTop = onp->cells[0] == cp;
 	if (onTop)
 	    createSEdge (sg, sp, onp, 0);  /* FIX weight */
 	else
@@ -479,9 +462,7 @@ addLoop (sgraph* sg, cell* cp, snode* dp, snode* sp)
 static void
 addNodeEdges (sgraph* sg, cell* cp, snode* np)
 {
-    int i;
-
-    for (i = 0; i < cp->nsides; i++) {
+    for (size_t i = 0; i < cp->nsides; i++) {
 	snode* onp = cp->sides[i];
 
 	createSEdge (sg, np, onp, 0);  /* FIX weight */
@@ -526,7 +507,7 @@ static void putSeg (FILE* fp, segment* seg)
       seg->p.p2, seg->comm_coord, bendToStr (seg->l1), bendToStr (seg->l2));
 }
 
-static DEBUG_FN void dumpChanG(channel *cp, double v) {
+static UNUSED void dumpChanG(channel *cp, double v) {
   if (seg_list_size(&cp->seg_list) < 2) return;
   fprintf (stderr, "channel %.0f (%f,%f)\n", v, cp->p.p1, cp->p.p2);
   for (size_t k = 0; k < seg_list_size(&cp->seg_list); ++k) {
@@ -1406,11 +1387,11 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
 	y = htrack(seg, m);
 	x = (n.UR.x + n.LL.x)/2;
     }
-    bb.LL.x = fmin(bb.LL.x, SC * x);
-    bb.LL.y = fmin(bb.LL.y, SC * y);
-    bb.UR.x = fmax(bb.UR.x, SC * x);
-    bb.UR.y = fmax(bb.UR.y, SC * y);
-    fprintf(fp, "newpath %.0f %.0f moveto\n", SC * x, SC * y);
+    bb.LL.x = fmin(bb.LL.x, x);
+    bb.LL.y = fmin(bb.LL.y, y);
+    bb.UR.x = fmax(bb.UR.x, x);
+    bb.UR.y = fmax(bb.UR.y, y);
+    fprintf(fp, "newpath %.0f %.0f moveto\n", x, y);
 
     for (size_t i = 1;i<rte.n;i++) {
 	seg = rte.segs+i;
@@ -1420,11 +1401,11 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
 	else {
 	    y = htrack(seg, m);
 	}
-	bb.LL.x = fmin(bb.LL.x, SC * x);
-	bb.LL.y = fmin(bb.LL.y, SC * y);
-	bb.UR.x = fmax(bb.UR.x, SC * x);
-	bb.UR.y = fmax(bb.UR.y, SC * y);
-	fprintf(fp, "%.0f %.0f lineto\n", SC * x, SC * y);
+	bb.LL.x = fmin(bb.LL.x, x);
+	bb.LL.y = fmin(bb.LL.y, y);
+	bb.UR.x = fmax(bb.UR.x, x);
+	bb.UR.y = fmax(bb.UR.y, y);
+	fprintf(fp, "%.0f %.0f lineto\n", x, y);
     }
 
     n = CELL(aghead(e))->bb;
@@ -1436,11 +1417,11 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
 	y = htrack(seg, m);
 	x = (n.LL.x + n.UR.x)/2;
     }
-    bb.LL.x = fmin(bb.LL.x, SC * x);
-    bb.LL.y = fmin(bb.LL.y, SC * y);
-    bb.UR.x = fmax(bb.UR.x, SC * x);
-    bb.UR.y = fmax(bb.UR.y, SC * y);
-    fprintf(fp, "%.0f %.0f lineto stroke\n", SC * x, SC * y);
+    bb.LL.x = fmin(bb.LL.x, x);
+    bb.LL.y = fmin(bb.LL.y, y);
+    bb.UR.x = fmax(bb.UR.x, x);
+    bb.UR.y = fmax(bb.UR.y, y);
+    fprintf(fp, "%.0f %.0f lineto stroke\n", x, y);
 
     return bb;
 }
@@ -1455,7 +1436,7 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, boxf bb)
  * specified graph layout engine.
  */
 
-static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg) {
+static UNUSED void emitSearchGraph(FILE *fp, sgraph *sg) {
     pointf p;
     fputs ("graph G {\n", fp);
     fputs (" node[shape=point]\n", fp);
@@ -1479,8 +1460,8 @@ static DEBUG_FN void emitSearchGraph(FILE *fp, sgraph *sg) {
     fputs ("}\n", fp);
 }
 
-static DEBUG_FN void emitGraph(FILE *fp, maze *mp, size_t n_edges,
-                               route *route_list, epair_t es[]) {
+static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
+                             route *route_list, epair_t es[]) {
     boxf absbb = {.LL = {.x = DBL_MAX, .y = DBL_MAX},
                   .UR = {.x = -DBL_MAX, .y = -DBL_MAX}};
 
@@ -1498,7 +1479,7 @@ static DEBUG_FN void emitGraph(FILE *fp, maze *mp, size_t n_edges,
     }
     
     fputs ("0.8 0.8 0.8 setrgbcolor\n", fp);
-    for (int i = 0; i < mp->ncells; i++) {
+    for (size_t i = 0; i < mp->ncells; i++) {
       const boxf bb = mp->cells[i].bb;
       fprintf (fp, "%f %f %f %f cell\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
       absbb.LL.x = fmin(absbb.LL.x, bb.LL.x);

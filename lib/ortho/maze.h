@@ -51,7 +51,7 @@ typedef struct cell {
                             5. │ top — bottom
                             6. ─ left — right
                     */
-  int nsides;
+  size_t nsides;
   snode** sides; ///< @brief up to four sides: @ref M_RIGHT, @ref M_TOP, @ref M_LEFT, @ref M_BOTTOM
   boxf  bb;
 } cell;
@@ -64,7 +64,7 @@ typedef struct cell {
  */
 
 typedef struct {
-  int ncells;
+  size_t ncells;
   size_t ngcells;
   cell* cells;     ///< @brief cells not corresponding to graph nodes
   cell* gcells;    ///< @brief cells corresponding to graph nodes
