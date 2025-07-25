@@ -70,8 +70,7 @@ static pointf boxIntersectf(pointf pp, pointf cp, boxf * bp)
 }
 
 /// returns true if p is on or in box bb
-static int inBoxf(pointf p, boxf * bb)
-{
+static bool inBoxf(pointf p, boxf *bb) {
     return INSIDE(p, *bb);
 }
 
