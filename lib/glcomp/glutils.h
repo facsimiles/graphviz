@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 void GetOGLPosRef(int x, int y, float *X, float *Y);
-    float GetOGLDistance(float l);
+double GetOGLDistance(double l);
 void to3D(int x, int y, float *X, float *Y, float *Z);
     double point_to_lineseg_dist(glCompPoint p, glCompPoint a, glCompPoint b);
     extern void glCompCalcWidget(glCompCommon * parent,
@@ -32,7 +32,7 @@ void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b, float d,
                          glCompColor *c, bool bumped);
 void glCompSetColor(glCompColor c);
 
-float distBetweenPts(glCompPoint A, glCompPoint B, float R);
+double distBetweenPts(glCompPoint A, glCompPoint B, double R);
     extern int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,float RH);
 
 #ifdef __cplusplus

@@ -107,7 +107,7 @@ static void pick_objects_in_rect(Agraph_t *g, float x1, float y1, float x2,
 static void* pick_object(Agraph_t* g,glCompPoint p)
 {
     double dist = DBL_MAX;
-    float nodeSize=0;
+    double nodeSize = 0;
     void *rv = NULL;
 
     const int defaultNodeShape = getAttrBool(g, g, "defaultnodeshape", 0);
@@ -125,7 +125,7 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
 	}
 
 	// node distance to point
-	const float nd = distBetweenPts(posN , p, nodeSize);
+	const double nd = distBetweenPts(posN , p, nodeSize);
 	if( nd < dist )
 	{
 	    rv=v;dist=nd;
@@ -222,7 +222,7 @@ void deselect_all(Agraph_t* g)
 
 static int close_poly(glCompPoly_t *selPoly, glCompPoint pt) {
     /* int i=0; */
-    const float EPS = GetOGLDistance(3.0f);
+    const double EPS = GetOGLDistance(3.0);
     if (glCompPoly_size(selPoly) < 2)
 	return 0;
     if (glCompPoly_front(selPoly)->x - pt.x < EPS &&

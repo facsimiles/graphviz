@@ -27,14 +27,14 @@ void btnToolZoomFit_clicked(GtkWidget *widget, void *user_data) {
     (void)widget;
     (void)user_data;
 
-    float z = view->active_camera != SIZE_MAX
-            ? view->cameras[view->active_camera]->r
-            : -view->zoom;
+    const double z = view->active_camera != SIZE_MAX
+                   ? view->cameras[view->active_camera]->r
+                   : -view->zoom;
 
-    float GDX = view->bdxRight / z - view->bdxLeft / z;
-    float SDX = view->clipX2 - view->clipX1;
-    float GDY = view->bdyTop / z - view->bdyBottom / z;
-    float SDY = view->clipY2 - view->clipY1;
+    const double GDX = view->bdxRight / z - view->bdxLeft / z;
+    const double SDX = view->clipX2 - view->clipX1;
+    const double GDY = view->bdyTop / z - view->bdyBottom / z;
+    const double SDY = view->clipY2 - view->clipY1;
 
     if (SDX / GDX <= SDY / GDY) {
         if (view->active_camera != SIZE_MAX) {
@@ -57,16 +57,14 @@ void btnToolFit_clicked(GtkWidget *widget, void *user_data) {
     (void)widget;
     (void)user_data;
 
-    float scx, scy, gcx, gcy, z;
+    const double z = view->active_camera != SIZE_MAX
+                   ? view->cameras[view->active_camera]->r
+                   : view->zoom * -1;
 
-    (view->active_camera != SIZE_MAX)
-	? (z = view->cameras[view->active_camera]->r) : (z =
-							 view->zoom * -1);
-
-    gcx = view->bdxLeft / z + (view->bdxRight / z - view->bdxLeft / z) / 2.0f;
-    scx = view->clipX1 + (view->clipX2 - view->clipX1) / 2.0f;
-    gcy = view->bdyBottom / z + (view->bdyTop / z - view->bdyBottom / z) / 2.0f;
-    scy = view->clipY1 + (view->clipY2 - view->clipY1) / 2.0f;
+    const double gcx = view->bdxLeft / z + (view->bdxRight / z - view->bdxLeft / z) / 2.0;
+    const double scx = view->clipX1 + (view->clipX2 - view->clipX1) / 2.0;
+    const double gcy = view->bdyBottom / z + (view->bdyTop / z - view->bdyBottom / z) / 2.0;
+    const double scy = view->clipY1 + (view->clipY2 - view->clipY1) / 2.0;
 
     if (view->active_camera != SIZE_MAX) {
 	view->cameras[view->active_camera]->targetx += gcx - scx;

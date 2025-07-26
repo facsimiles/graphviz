@@ -132,7 +132,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	double targetx;
 	double targety;
 
-	float r;
+	double r;
     } viewport_camera;
 
     typedef struct {
@@ -228,7 +228,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 
 	graph_data Graphdata;
 	float maxedgelen;
-	float fitin_zoom;
+	double fitin_zoom;
 	xdot* xDot;
 	double global_z;
 	attr_list* attributes;/*attribute list*/
@@ -249,7 +249,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	/*view variables */
 	double panx;
 	double pany;
-	float zoom;
+	double zoom;
 
 	/*clipping coordinates, to avoid unnecesarry rendering */
 	float clipX1, clipX2, clipY1, clipY2;

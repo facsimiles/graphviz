@@ -826,19 +826,19 @@ void renderSmGraph(topview* t)
         glCallList(t->cache.seledge_id);
         if(view->drawedgelabels)
 	{
-	    if(view->zoom*-1 <	t->fitin_zoom /(float)view->labelnumberofnodes*-1) 
+	    if (view->zoom * -1 < t->fitin_zoom / view->labelnumberofnodes * -1)
 		    glCallList(t->cache.edgelabel_id);
 
 	}
     }
     if(view->drawnodes)
     {
-	glPointSize(view->nodeScale*t->fitin_zoom/view->zoom);
+	glPointSize((float)(view->nodeScale * t->fitin_zoom / view->zoom));
 	glCallList(t->cache.node_id);
         glCallList(t->cache.selnode_id);
         if(view->drawnodelabels)
 	{
-	    if(view->zoom*-1 <	t->fitin_zoom /(float)view->labelnumberofnodes*-1) 
+	    if (view->zoom * -1 < t->fitin_zoom / view->labelnumberofnodes * -1)
 		glCallList(t->cache.nodelabel_id);
 	}
     }
