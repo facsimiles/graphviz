@@ -112,10 +112,8 @@ static void glexpose_grid(ViewInfo * vi)
 	glBegin(GL_POINTS);
 	glColor4d(vi->gridColor.R, vi->gridColor.G, vi->gridColor.B,
 		  vi->gridColor.A);
-	for (double x = vi->bdxLeft; x <= vi->bdxRight;
-	     x = x + vi->gridSize) {
-	    for (double y = vi->bdyBottom; y <= vi->bdyTop;
-		 y = y + vi->gridSize) {
+	for (double x = vi->bdxLeft; x <= vi->bdxRight; x += vi->gridSize) {
+	    for (double y = vi->bdyBottom; y <= vi->bdyTop; y += vi->gridSize) {
 		glVertex3d(x, y, 0);
 	    }
 	}
