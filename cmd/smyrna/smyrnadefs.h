@@ -281,8 +281,8 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	int bdVisible;		//if borders are visible (boundries of the drawing,
 	/*border coordinates, needs to be calculated for each graph */
 
-	float bdxLeft, bdyTop;
-	float bdxRight, bdyBottom;
+	double bdxLeft, bdyTop;
+	double bdxRight, bdyBottom;
 
 	/*screen window size in 2d */
 	int w, h;

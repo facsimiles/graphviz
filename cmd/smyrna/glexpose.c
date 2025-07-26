@@ -107,17 +107,16 @@ static int glupdatecamera(ViewInfo * vi)
 static void glexpose_grid(ViewInfo * vi)
 {
     //drawing grids
-    float x, y;
     if (vi->gridVisible) {
 	glPointSize(1);
 	glBegin(GL_POINTS);
 	glColor4d(vi->gridColor.R, vi->gridColor.G, vi->gridColor.B,
 		  vi->gridColor.A);
-	for (x = vi->bdxLeft; x <= vi->bdxRight;
+	for (double x = vi->bdxLeft; x <= vi->bdxRight;
 	     x = x + vi->gridSize) {
-	    for (y = vi->bdyBottom; y <= vi->bdyTop;
+	    for (double y = vi->bdyBottom; y <= vi->bdyTop;
 		 y = y + vi->gridSize) {
-		glVertex3f(x, y, 0);
+		glVertex3d(x, y, 0);
 	    }
 	}
 	glEnd();
