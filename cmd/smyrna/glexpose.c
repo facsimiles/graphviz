@@ -71,7 +71,7 @@ static void drawRotatingAxis(void)
 static int glupdatecamera(ViewInfo * vi)
 {
     if (vi->active_camera == SIZE_MAX)
-	glTranslatef(-vi->panx, -vi->pany, 0);
+	glTranslated(-vi->panx, -vi->pany, 0);
 
 
     /*toggle to active camera */

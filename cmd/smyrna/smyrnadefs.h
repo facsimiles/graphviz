@@ -247,8 +247,8 @@ enum {SCHEMACOUNT = 4}; // number of colors
     typedef struct _ViewInfo {
 	systemgraphs systemGraphs;
 	/*view variables */
-	float panx;
-	float pany;
+	double panx;
+	double pany;
 	float zoom;
 
 	/*clipping coordinates, to avoid unnecesarry rendering */
