@@ -221,9 +221,9 @@ static void DrawPolyline(xdot_op *op, int param) {
     glLineWidth(view->LineWidth);
     glBegin(GL_LINE_STRIP);
     for (size_t i = 0; i < op->u.polyline.cnt; ++i) {
-	glVertex3f((float)op->u.polyline.pts[i].x - dx,
-		   (float)op->u.polyline.pts[i].y - dy,
-		   (float)(op->u.polyline.pts[i].z + view->Topview->global_z));
+	glVertex3d(op->u.polyline.pts[i].x - dx,
+		   op->u.polyline.pts[i].y - dy,
+		   op->u.polyline.pts[i].z + view->Topview->global_z);
     }
     glEnd();
 }
