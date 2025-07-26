@@ -84,8 +84,8 @@ static int glupdatecamera(ViewInfo * vi)
     vi->clipX2=0;
     vi->clipY1=0;
     vi->clipY2=0;
-    GetOGLPosRef(1, vi->h - 5, &(vi->clipX1), &(vi->clipY1));
-    GetOGLPosRef(vi->w - 1, 1, &(vi->clipX2), &(vi->clipY2));
+    GetOGLPosRef(1, vi->h - 5, &vi->clipX1, &vi->clipY1);
+    GetOGLPosRef(vi->w - 1, 1, &vi->clipX2, &vi->clipY2);
 
     if (vi->active_camera == SIZE_MAX) {
 	glScaled(1 / vi->zoom * -1, 1 / vi->zoom * -1, 1 / vi->zoom * -1);
