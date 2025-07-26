@@ -358,15 +358,14 @@ void drawBorders(ViewInfo * vi)
     }
 }
 
-void drawCircle(float x, float y, float radius, float zdepth)
-{
+void drawCircle(double x, double y, double radius, double zdepth) {
     if (radius < 0.3)
-	radius = 0.4f;
+	radius = 0.4;
     glBegin(GL_POLYGON);
     for (int i = 0; i < 360; i += 36) {
-	float degInRad = (float) (i * DEG2RAD);
-	glVertex3f(x + cosf(degInRad) * radius, y + sinf(degInRad) * radius,
-		   (float)(zdepth + view->Topview->global_z));
+	const double degInRad = i * DEG2RAD;
+	glVertex3d(x + cos(degInRad) * radius, y + sin(degInRad) * radius,
+		   zdepth + view->Topview->global_z);
     }
 
     glEnd();
