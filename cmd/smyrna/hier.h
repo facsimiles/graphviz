@@ -21,7 +21,7 @@
     } focus_t;
 
     typedef struct {
-  // All 5 must be set
+  // all must be set
 	double width; ///< viewport width
 	double height; ///< viewport height
 	double distortion;	/* default of 1.0 */
