@@ -69,8 +69,8 @@ void btnToolFit_clicked(GtkWidget *widget, void *user_data) {
     scy = view->clipY1 + (view->clipY2 - view->clipY1) / 2.0f;
 
     if (view->active_camera != SIZE_MAX) {
-	view->cameras[view->active_camera]->targetx += (gcx - scx);
-	view->cameras[view->active_camera]->targety += (gcx - scy);
+	view->cameras[view->active_camera]->targetx += gcx - scx;
+	view->cameras[view->active_camera]->targety += gcx - scy;
     } else {
 	view->panx += gcx - scx;
 	view->pany += gcy - scy;
