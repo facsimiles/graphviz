@@ -172,9 +172,9 @@ static void DrawEllipse(xdot_op *op, int param) {
 	glBegin(GL_POLYGON);
     for (int i = 0; i < 360; ++i) {
 	//convert degrees into radians
-	float degInRad = (float) (i * DEG2RAD);
-	glVertex3f((float)(x + cos(degInRad) * xradius),
-		   (float)(y + sin(degInRad) * yradius), (float)view->Topview->global_z);
+	const double degInRad = i * DEG2RAD;
+	glVertex3d(x + cos(degInRad) * xradius,
+		   y + sin(degInRad) * yradius, view->Topview->global_z);
     }
     glEnd();
 }
