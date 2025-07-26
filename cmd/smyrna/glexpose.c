@@ -77,7 +77,7 @@ static int glupdatecamera(ViewInfo * vi)
     /*toggle to active camera */
     else {
 	glMultMatrixf(vi->arcball->Transform.M);	/*arcball transformations , experimental */
-	glTranslatef(-vi->cameras[vi->active_camera]->targetx,
+	glTranslated(-vi->cameras[vi->active_camera]->targetx,
 		     -vi->cameras[vi->active_camera]->targety, 0);
     }
     vi->clipX1=0;
