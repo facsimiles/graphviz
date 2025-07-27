@@ -5967,9 +5967,6 @@ def test_2707():
     run([gvpr_bin, "-f", program, graph])
 
 
-@pytest.mark.xfail(
-    is_macos(), reason="https://gitlab.com/graphviz/graphviz/-/issues/2712", strict=True
-)
 def test_2712():
     """
     Graphviz on macOS should not crash while processing this graph
