@@ -1123,8 +1123,6 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 			if (x->type == STRING)
 			{
 				v.string = vmstrdup(ex->vm, v.string);
-				if ((e = assoc ? assoc->value.string : x->data.variable.symbol->value->data.constant.value.string))
-					vmfree(ex->vm, e);
 			}
 			if (assoc)
 				assoc->value = v;
