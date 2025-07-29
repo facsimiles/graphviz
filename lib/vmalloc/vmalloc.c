@@ -10,6 +10,7 @@
 
 #include <vmalloc/vmalloc.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -76,5 +77,6 @@ void vmfree(Vmalloc_t *vm, void *data) {
     }
   }
 
-  // we did not find this pointer; free() of something we did not allocate
+  fprintf(stderr, "vmfree of %p that vmalloc did not allocate\n", data);
+  abort();
 }
