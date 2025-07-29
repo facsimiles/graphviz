@@ -67,19 +67,19 @@ static void DrawBezier(xdot_point* pts, int filled, int param)
     if (!filled) {
 
 	if (param == 0)
-	    glColor4f(view->penColor.R, view->penColor.G, view->penColor.B,
+	    glColor4d(view->penColor.R, view->penColor.G, view->penColor.B,
 		      view->penColor.A);
 	else if (param == 1)		//selected
-	    glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
+	    glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		      view->selectedNodeColor.B,
 		      view->selectedNodeColor.A);
 	glBegin(GL_LINE_STRIP);
     } else {
 	if (param == 0)
-	    glColor4f(view->fillColor.R, view->fillColor.G,
+	    glColor4d(view->fillColor.R, view->fillColor.G,
 		      view->fillColor.B, view->penColor.A);
 	else if (param == 1)		//selected
-	    glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
+	    glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		      view->selectedNodeColor.B,
 		      view->selectedNodeColor.A);
 	glBegin(GL_POLYGON);
@@ -146,20 +146,20 @@ static void DrawEllipse(xdot_op *op, int param) {
     double yradius = op->u.ellipse.h;
     if (op->kind == xd_filled_ellipse) {
 	if (param == 0)
-	    glColor4f(view->fillColor.R, view->fillColor.G,
+	    glColor4d(view->fillColor.R, view->fillColor.G,
 		      view->fillColor.B, view->fillColor.A);
 	if (param == 1)		//selected
-	    glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
+	    glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		      view->selectedNodeColor.B,
 		      view->selectedNodeColor.A);
 
 	filled = 1;
     } else {
 	if (param == 0)
-	    glColor4f(view->penColor.R, view->penColor.G, view->penColor.B,
+	    glColor4d(view->penColor.R, view->penColor.G, view->penColor.B,
 		      view->penColor.A);
 	if (param == 1)		//selected
-	    glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
+	    glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		      view->selectedNodeColor.B,
 		      view->selectedNodeColor.A);
 
@@ -187,18 +187,18 @@ static void DrawPolygon(xdot_op *op, int param) {
 
     if (op->kind == xd_filled_polygon) {
 	if (param == 0)
-	    glColor4f(view->fillColor.R, view->fillColor.G,
+	    glColor4d(view->fillColor.R, view->fillColor.G,
 		      view->fillColor.B, view->fillColor.A);
 	if (param == 1)		//selected
-	    glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
+	    glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		      view->selectedNodeColor.B,
 		      view->selectedNodeColor.A);
     } else {
 	if (param == 0)
-	    glColor4f(view->penColor.R, view->penColor.G, view->penColor.B,
+	    glColor4d(view->penColor.R, view->penColor.G, view->penColor.B,
 		      view->penColor.A);
 	if (param == 1)		//selected
-	    glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
+	    glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		      view->selectedNodeColor.B,
 		      view->selectedNodeColor.A);
 
@@ -212,10 +212,10 @@ static void DrawPolyline(xdot_op *op, int param) {
     view->Topview->global_z += o->layer * LAYER_DIFF;
 
     if (param == 0)
-	glColor4f(view->penColor.R, view->penColor.G, view->penColor.B,
+	glColor4d(view->penColor.R, view->penColor.G, view->penColor.B,
 		  view->penColor.A);
     if (param == 1)		//selected
-	glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
+	glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		  view->selectedNodeColor.B, view->selectedNodeColor.A);
     set_options(param);
     glLineWidth(view->LineWidth);
@@ -233,10 +233,10 @@ static glCompColor GetglCompColor(const char *color) {
     glCompColor c;
     if (color != NULL) {
 	colorxlate(color, &cl, RGBA_DOUBLE);
-	c.R = (float) cl.u.RGBA[0];
-	c.G = (float) cl.u.RGBA[1];
-	c.B = (float) cl.u.RGBA[2];
-	c.A = (float) cl.u.RGBA[3];
+	c.R = cl.u.RGBA[0];
+	c.G = cl.u.RGBA[1];
+	c.B = cl.u.RGBA[2];
+	c.A = cl.u.RGBA[3];
     } else {
 	c = view->penColor;
     }
@@ -301,7 +301,7 @@ static void EmbedText(xdot_op *op, int param) {
 	(void)param;
 
 	float x, y;
-	glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
+	glColor4d(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 	view->Topview->global_z += o->layer * LAYER_DIFF + 0.05;
 	switch (o->op.u.text.align)
 	{
@@ -344,7 +344,7 @@ static void EmbedText(xdot_op *op, int param) {
 void drawBorders(ViewInfo * vi)
 {
     if (vi->bdVisible) {
-	glColor4f(vi->borderColor.R, vi->borderColor.G,
+	glColor4d(vi->borderColor.R, vi->borderColor.G,
 		  vi->borderColor.B, vi->borderColor.A);
 	glLineWidth(2);
 	glBegin(GL_LINE_STRIP);

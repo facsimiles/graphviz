@@ -112,7 +112,7 @@ static void glexpose_grid(ViewInfo * vi)
     if (vi->gridVisible) {
 	glPointSize(1);
 	glBegin(GL_POINTS);
-	glColor4f(vi->gridColor.R, vi->gridColor.G, vi->gridColor.B,
+	glColor4d(vi->gridColor.R, vi->gridColor.G, vi->gridColor.B,
 		  vi->gridColor.A);
 	for (x = vi->bdxLeft; x <= vi->bdxRight;
 	     x = x + vi->gridSize) {

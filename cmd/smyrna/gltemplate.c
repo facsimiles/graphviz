@@ -66,7 +66,8 @@ static void realize(GtkWidget *widget, void *data) {
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
 	return;
 
-    glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
+    glClearColor((float)view->bgColor.R, (float)view->bgColor.G,
+                 (float)view->bgColor.B, (float)view->bgColor.A); // background color
     glClearDepth(1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 

@@ -267,7 +267,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	/*selected node color */
 	glCompColor selectedNodeColor;
 	/*default node alpha */
-	float defaultnodealpha;
+	double defaultnodealpha;
 
 	/*default line width */
 	float LineWidth;

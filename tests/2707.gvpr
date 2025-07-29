@@ -1,0 +1,47 @@
+/********************************************************************
+  a reduced version of gvlint.gvpr 
+
+********************************************************************/
+BEGIN{
+  graph_t Root;
+  int     Ni, Ei;
+  string  tok[int],   gType[];
+  string  thisAttr  ;  
+  string  theEngine;
+
+  string  caret="^", bar="|";
+  string  Engines[], Objects[], Types[], Minimums[];
+  obj_t   objC[], objS[], objG[], objN[], objE[];
+
+  string lintVal[];
+ 
+  lintVal["target"] = "ALL^E|N|G|C^escString|string^^";
+  lintVal["voro_margin"] = "neato|fdp|sfdp|twopi|circo^G^double^0.0^";
+  lintVal["weight"] = "ALL^E^int|double^0(dot,twopi)|1(neato,fdp)^";
+  lintVal["width"] = "ALL^N^double^0.01^";
+ 
+} 
+BEG_G{
+
+  Root=$G;
+  gType[$G]="G";
+  objG[1]=$G;
+  theEngine="dot";
+ 
+  for (lintVal[thisAttr]) {
+    split(lintVal[thisAttr], tok, caret);
+    Engines[thisAttr]= bar + tok[0] + bar;
+    Objects[thisAttr]= bar + tok[1] + bar;
+    Types[thisAttr]=   bar + tok[2] + bar;
+    Minimums[thisAttr]=bar + tok[3] + bar;
+  }
+
+  for (Engines[thisAttr]) {
+    if (match(Engines[thisAttr],"ALL")<0 && match(Engines[thisAttr], theEngine)<0) {
+      unset(Engines,  thisAttr);
+      unset(Objects,  thisAttr);
+      unset(Types,    thisAttr);
+      unset(Minimums, thisAttr);
+    }
+  }
+}
