@@ -108,7 +108,6 @@ static int evaldyn(Expr_t *ex, Exnode_t *exnode, void *env, int delete) {
 	}
 	if (delete) {
 		dtdelete(exnode->data.variable.symbol->local, b);
-		free (b);
 	}
 	return 1;
 }

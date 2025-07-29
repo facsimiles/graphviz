@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - On macOS, processing graphs involving URLs with the Quartz plugin is once
   again possible. Previously this would crash. This was a regression in Graphviz
   13.0.1. #2712
+- In gvpr, updating a map or deleting items from the map no longer triggers a
+  use-after-free. #2707
 
 ## [13.1.1] – 2025-07-20
 
