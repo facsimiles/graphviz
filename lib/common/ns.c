@@ -59,7 +59,6 @@ enum { SEARCHSIZE = 30 };
 
 static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
 {
-    node_t *n;
     if (TREE_EDGE(e)) {
 	agerrorf("add_tree_edge: missing tree edge\n");
 	return -1;
@@ -67,7 +66,7 @@ static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
     assert(edge_list_size(&ctx->Tree_edge) <= INT_MAX);
     ED_tree_index(e) = (int)edge_list_size(&ctx->Tree_edge);
     edge_list_append(&ctx->Tree_edge, e);
-    n = agtail(e);
+    node_t *n = agtail(e);
     ND_mark(n) = true;
     ND_tree_out(n).list[ND_tree_out(n).size++] = e;
     ND_tree_out(n).list[ND_tree_out(n).size] = NULL;
@@ -117,14 +116,12 @@ static void invalidate_path(node_t *lca, node_t *to_node) {
 
 static void exchange_tree_edges(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 {
-    node_t *n;
-
     ED_tree_index(f) = ED_tree_index(e);
     assert(ED_tree_index(e) >= 0);
     edge_list_set(&ctx->Tree_edge, (size_t)ED_tree_index(e), f);
     ED_tree_index(e) = -1;
 
-    n = agtail(e);
+    node_t *n = agtail(e);
     size_t i = --ND_tree_out(n).size;
     size_t j;
     for (j = 0; j <= i; j++)
@@ -153,33 +150,31 @@ DEFINE_LIST(node_queue, node_t *)
 static
 void init_rank(network_simplex_ctx_t *ctx)
 {
-    int i;
-    node_t *v;
     edge_t *e;
 
     node_queue_t Q = {0};
     node_queue_reserve(&Q, ctx->N_nodes);
     size_t ctr = 0;
 
-    for (v = GD_nlist(ctx->G); v; v = ND_next(v)) {
+    for (node_t *v = GD_nlist(ctx->G); v; v = ND_next(v)) {
 	if (ND_priority(v) == 0)
 	    node_queue_push_back(&Q, v);
     }
 
     while (!node_queue_is_empty(&Q)) {
-	v = node_queue_pop_front(&Q);
+	node_t *const v = node_queue_pop_front(&Q);
 	ND_rank(v) = 0;
 	ctr++;
-	for (i = 0; (e = ND_in(v).list[i]); i++)
+	for (int i = 0; (e = ND_in(v).list[i]); i++)
 	    ND_rank(v) = MAX(ND_rank(v), ND_rank(agtail(e)) + ED_minlen(e));
-	for (i = 0; (e = ND_out(v).list[i]); i++) {
+	for (int i = 0; (e = ND_out(v).list[i]); i++) {
 	    if (--ND_priority(aghead(e)) <= 0)
 		node_queue_push_back(&Q, aghead(e));
 	}
     }
     if (ctr != ctx->N_nodes) {
 	agerrorf("trouble in init_rank\n");
-	for (v = GD_nlist(ctx->G); v; v = ND_next(v))
+	for (node_t *v = GD_nlist(ctx->G); v; v = ND_next(v))
 	    if (ND_priority(v))
 		agerr(AGPREV, "\t%s %d\n", agnameof(v), ND_priority(v));
     }
