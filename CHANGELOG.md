@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   been supported since Graphviz 2.30 but undocumented.
 - When using the CMake build system, `DFLT_GVPRPATH` is no longer incorrectly
   missing a ".:" prefix.
+- On macOS, processing graphs involving URLs with the Quartz plugin is once
+  again possible. Previously this would crash. This was a regression in Graphviz
+  13.0.1. #2712
 
 ## [13.1.1] – 2025-07-20
 

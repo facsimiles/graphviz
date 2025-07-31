@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <string.h>
 #include <TargetConditionals.h>
 #include <util/gv_math.h>
 
@@ -249,17 +250,6 @@ static void quartzgen_end_page(GVJ_t * job)
     CGContextEndPage(context);
 }
 
-/// create a Core Foundation URL from a C string
-static CFURLRef make_url(const char *url) {
-  assert(url != NULL);
-  CFStringRef u = CFStringCreateWithCStringNoCopy(NULL, url,
-                                                  kCFStringEncodingUTF8,
-                                                  kCFAllocatorNull);
-  CFURLRef res = CFURLCreateWithString(NULL, u, NULL);
-  CFRelease(u);
-  return res;
-}
-
 static void quartzgen_begin_anchor(GVJ_t * job, char *url, char *tooltip,
 				   char *target, char *id)
 {
@@ -271,7 +261,8 @@ static void quartzgen_begin_anchor(GVJ_t * job, char *url, char *tooltip,
     if (url && url_map) {
 	/* set up the hyperlink to the given url */
 	CGContextRef context = job->context;
-	CFURLRef uri = make_url(url);
+	CFURLRef uri = CFURLCreateWithBytes(NULL, (const UInt8 *)url,
+				 strlen(url), kCFStringEncodingUTF8, NULL);
 	CGPDFContextSetURLForRect(context, uri,
 				  /* need to reverse the CTM on the area to get it to work */
 				  CGRectApplyAffineTransform(CGRectMake

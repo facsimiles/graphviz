@@ -5967,6 +5967,18 @@ def test_2707():
     run([gvpr_bin, "-f", program, graph])
 
 
+def test_2712():
+    """
+    Graphviz on macOS should not crash while processing this graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2712
+    """
+
+    source = 'digraph G { abc [URL=" "]; }'
+
+    # process this to a JPEG
+    dot("jpe", source=source)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
