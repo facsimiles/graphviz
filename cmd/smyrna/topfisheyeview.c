@@ -144,9 +144,9 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
     fs->y_foci[0] = hp->geom_graphs[cur_level][closest_fine_node].y_coord;
 
     view->Topview->fisheyeParams.repos.width =
-	(int) (view->bdxRight - view->bdxLeft);
+	round(view->bdxRight - view->bdxLeft);
     view->Topview->fisheyeParams.repos.height =
-	(int) (view->bdyTop - view->bdyBottom);
+	round(view->bdyTop - view->bdyBottom);
 
     //topological fisheye
 

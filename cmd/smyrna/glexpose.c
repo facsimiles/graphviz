@@ -71,27 +71,26 @@ static void drawRotatingAxis(void)
 static int glupdatecamera(ViewInfo * vi)
 {
     if (vi->active_camera == SIZE_MAX)
-	glTranslatef(-vi->panx, -vi->pany, 0);
+	glTranslated(-vi->panx, -vi->pany, 0);
 
 
     /*toggle to active camera */
     else {
 	glMultMatrixf(vi->arcball->Transform.M);	/*arcball transformations , experimental */
-	glTranslatef(-vi->cameras[vi->active_camera]->targetx,
+	glTranslated(-vi->cameras[vi->active_camera]->targetx,
 		     -vi->cameras[vi->active_camera]->targety, 0);
     }
     vi->clipX1=0;
     vi->clipX2=0;
     vi->clipY1=0;
     vi->clipY2=0;
-    GetOGLPosRef(1, vi->h - 5, &(vi->clipX1), &(vi->clipY1));
-    GetOGLPosRef(vi->w - 1, 1, &(vi->clipX2), &(vi->clipY2));
+    GetOGLPosRef(1, vi->h - 5, &vi->clipX1, &vi->clipY1);
+    GetOGLPosRef(vi->w - 1, 1, &vi->clipX2, &vi->clipY2);
 
     if (vi->active_camera == SIZE_MAX) {
-	glScalef(1 / vi->zoom * -1, 1 / vi->zoom * -1,
-		 1 / vi->zoom * -1);
+	glScaled(1 / vi->zoom * -1, 1 / vi->zoom * -1, 1 / vi->zoom * -1);
     } else {
-	glScalef(1 / vi->cameras[vi->active_camera]->r,
+	glScaled(1 / vi->cameras[vi->active_camera]->r,
 		 1 / vi->cameras[vi->active_camera]->r,
 		 1 / vi->cameras[vi->active_camera]->r);
     }
@@ -108,17 +107,14 @@ static int glupdatecamera(ViewInfo * vi)
 static void glexpose_grid(ViewInfo * vi)
 {
     //drawing grids
-    float x, y;
     if (vi->gridVisible) {
 	glPointSize(1);
 	glBegin(GL_POINTS);
 	glColor4d(vi->gridColor.R, vi->gridColor.G, vi->gridColor.B,
 		  vi->gridColor.A);
-	for (x = vi->bdxLeft; x <= vi->bdxRight;
-	     x = x + vi->gridSize) {
-	    for (y = vi->bdyBottom; y <= vi->bdyTop;
-		 y = y + vi->gridSize) {
-		glVertex3f(x, y, 0);
+	for (double x = vi->bdxLeft; x <= vi->bdxRight; x += vi->gridSize) {
+	    for (double y = vi->bdyBottom; y <= vi->bdyTop; y += vi->gridSize) {
+		glVertex3d(x, y, 0);
 	    }
 	}
 	glEnd();

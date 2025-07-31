@@ -23,6 +23,6 @@
  * topview drawings are not here
  */
 extern drawfunc_t OpFns[];
-extern void drawCircle(float x, float y, float radius, float zdepth);
+void drawCircle(double x, double y, double radius, double zdepth);
 extern void drawBorders(ViewInfo * view);
 extern void draw_selpoly(glCompPoly_t *selPoly);

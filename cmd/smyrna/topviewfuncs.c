@@ -252,7 +252,7 @@ static void renderSelectedNodes(Agraph_t * g)
 	if (defaultNodeShape == 0) 
 	    glVertex3f(pos.x, pos.y, pos.z + 0.001f);
 	else if (defaultNodeShape == 1) 
-	    drawCircle(pos.x, pos.y, nodeSize, pos.z + 0.001f);
+	    drawCircle(pos.x, pos.y, nodeSize, pos.z + 0.001);
     }
     if(defaultNodeShape==0)
 	glEnd();
@@ -826,19 +826,19 @@ void renderSmGraph(topview* t)
         glCallList(t->cache.seledge_id);
         if(view->drawedgelabels)
 	{
-	    if(view->zoom*-1 <	t->fitin_zoom /(float)view->labelnumberofnodes*-1) 
+	    if (view->zoom * -1 < t->fitin_zoom / view->labelnumberofnodes * -1)
 		    glCallList(t->cache.edgelabel_id);
 
 	}
     }
     if(view->drawnodes)
     {
-	glPointSize(view->nodeScale*t->fitin_zoom/view->zoom);
+	glPointSize((float)(view->nodeScale * t->fitin_zoom / view->zoom));
 	glCallList(t->cache.node_id);
         glCallList(t->cache.selnode_id);
         if(view->drawnodelabels)
 	{
-	    if(view->zoom*-1 <	t->fitin_zoom /(float)view->labelnumberofnodes*-1) 
+	    if (view->zoom * -1 < t->fitin_zoom / view->labelnumberofnodes * -1)
 		glCallList(t->cache.nodelabel_id);
 	}
     }

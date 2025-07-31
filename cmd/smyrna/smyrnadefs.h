@@ -129,10 +129,10 @@ enum {SCHEMACOUNT = 4}; // number of colors
     }mouse_action_t;
 
     typedef struct {
-	float targetx;
-	float targety;
+	double targetx;
+	double targety;
 
-	float r;
+	double r;
     } viewport_camera;
 
     typedef struct {
@@ -228,7 +228,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 
 	graph_data Graphdata;
 	float maxedgelen;
-	float fitin_zoom;
+	double fitin_zoom;
 	xdot* xDot;
 	double global_z;
 	attr_list* attributes;/*attribute list*/
@@ -247,9 +247,9 @@ enum {SCHEMACOUNT = 4}; // number of colors
     typedef struct _ViewInfo {
 	systemgraphs systemGraphs;
 	/*view variables */
-	float panx;
-	float pany;
-	float zoom;
+	double panx;
+	double pany;
+	double zoom;
 
 	/*clipping coordinates, to avoid unnecesarry rendering */
 	float clipX1, clipX2, clipY1, clipY2;
@@ -281,8 +281,8 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	int bdVisible;		//if borders are visible (boundries of the drawing,
 	/*border coordinates, needs to be calculated for each graph */
 
-	float bdxLeft, bdyTop;
-	float bdxRight, bdyBottom;
+	double bdxLeft, bdyTop;
+	double bdxRight, bdyBottom;
 
 	/*screen window size in 2d */
 	int w, h;

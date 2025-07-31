@@ -44,7 +44,7 @@ void GetOGLPosRef(int x, int y, float *X, float *Y) {
     *Y = (float) posY;
 }
 
-float GetOGLDistance(float l) {
+double GetOGLDistance(double l) {
     double wwinZ;
     double posX;
     double posXX;
@@ -65,18 +65,18 @@ float GetOGLDistance(float l) {
     glEnd();
     gluProject(10.0, 10.0, 1.0, modelview, projection, viewport, &(double){0},
                &(double){0}, &wwinZ);
-    float x = 50.0f;
-    const float y = 50.0f;
+    double x = 50.0;
+    const double y = 50.0;
     double winX = x;
-    double winY = (double)viewport[3] - y;
+    double winY = viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
                  &(double){0}, &(double){0});
     x += l;
     winX = x;
-    winY = (double)viewport[3] - y;
+    winY = viewport[3] - y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport,
                  &posXX, &(double){0}, &(double){0});
-    return (float)(posXX - posX);
+    return posXX - posX;
 }
 
 /*
@@ -343,9 +343,9 @@ void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b, float d,
 
 }
 
-float distBetweenPts(glCompPoint A, glCompPoint B, float R) {
-    float rv = (A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y) + (A.z - B.z) * (A.z - B.z);
-    rv=sqrtf(rv);
+double distBetweenPts(glCompPoint A, glCompPoint B, double R) {
+    double rv = (A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y) + (A.z - B.z) * (A.z - B.z);
+    rv = sqrt(rv);
     if (rv <=R)
 	return 0;
     return rv;

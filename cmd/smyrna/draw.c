@@ -172,9 +172,9 @@ static void DrawEllipse(xdot_op *op, int param) {
 	glBegin(GL_POLYGON);
     for (int i = 0; i < 360; ++i) {
 	//convert degrees into radians
-	float degInRad = (float) (i * DEG2RAD);
-	glVertex3f((float)(x + cos(degInRad) * xradius),
-		   (float)(y + sin(degInRad) * yradius), (float)view->Topview->global_z);
+	const double degInRad = i * DEG2RAD;
+	glVertex3d(x + cos(degInRad) * xradius,
+		   y + sin(degInRad) * yradius, view->Topview->global_z);
     }
     glEnd();
 }
@@ -221,9 +221,9 @@ static void DrawPolyline(xdot_op *op, int param) {
     glLineWidth(view->LineWidth);
     glBegin(GL_LINE_STRIP);
     for (size_t i = 0; i < op->u.polyline.cnt; ++i) {
-	glVertex3f((float)op->u.polyline.pts[i].x - dx,
-		   (float)op->u.polyline.pts[i].y - dy,
-		   (float)(op->u.polyline.pts[i].z + view->Topview->global_z));
+	glVertex3d(op->u.polyline.pts[i].x - dx,
+		   op->u.polyline.pts[i].y - dy,
+		   op->u.polyline.pts[i].z + view->Topview->global_z);
     }
     glEnd();
 }
@@ -358,15 +358,14 @@ void drawBorders(ViewInfo * vi)
     }
 }
 
-void drawCircle(float x, float y, float radius, float zdepth)
-{
+void drawCircle(double x, double y, double radius, double zdepth) {
     if (radius < 0.3)
-	radius = 0.4f;
+	radius = 0.4;
     glBegin(GL_POLYGON);
     for (int i = 0; i < 360; i += 36) {
-	float degInRad = (float) (i * DEG2RAD);
-	glVertex3f(x + cosf(degInRad) * radius, y + sinf(degInRad) * radius,
-		   (float)(zdepth + view->Topview->global_z));
+	const double degInRad = i * DEG2RAD;
+	glVertex3d(x + cos(degInRad) * radius, y + sin(degInRad) * radius,
+		   zdepth + view->Topview->global_z);
     }
 
     glEnd();

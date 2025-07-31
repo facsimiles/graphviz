@@ -19,9 +19,8 @@
 #include <stdint.h>
 
 /*real zoom in out is done here, all other functions send this one what they desire, it is not guranteed,*/
-static void graph_zoom(float real_zoom)
-{
-    float old_zoom;
+static void graph_zoom(double real_zoom) {
+    double old_zoom;
 
     if (view->active_camera == SIZE_MAX)
 		old_zoom = view->zoom;
@@ -44,16 +43,16 @@ static void graph_zoom(float real_zoom)
 void glmotion_zoom_inc(int zoomin)
 {
     if (zoomin)			/*zooming in , zoom value should be decreased */
-	graph_zoom(view->zoom - view->zoom * 0.25f);
+	graph_zoom(view->zoom - view->zoom * 0.25);
     else
-	graph_zoom(view->zoom + view->zoom * 0.25f);	/*zoom out */
+	graph_zoom(view->zoom + view->zoom * 0.25);	/*zoom out */
     glexpose();
 
 }
 
 void glmotion_zoom(void)
 {
-    float real_zoom;
+    double real_zoom;
     if (view->active_camera == SIZE_MAX) {
 	real_zoom =
 	    view->zoom + view->mouse.dragX / 10 * (view->zoom * -1 / 20);
@@ -69,15 +68,14 @@ void glmotion_zoom(void)
 
 void glmotion_pan(ViewInfo * v)
 {
-    float gldx, gldy;
     if (v->active_camera == SIZE_MAX) {
-	gldx = GetOGLDistance(v->mouse.dragX) / v->zoom * -1;
-	gldy = GetOGLDistance(v->mouse.dragY) / v->zoom * -1;
+	const double gldx = GetOGLDistance(v->mouse.dragX) / v->zoom * -1;
+	const double gldy = GetOGLDistance(v->mouse.dragY) / v->zoom * -1;
 	v->panx = v->panx - gldx;
 	v->pany = v->pany + gldy;
     } else {
-	gldx = GetOGLDistance(v->mouse.dragX) / v->cameras[v->active_camera]->r;
-	gldy = GetOGLDistance(v->mouse.dragY) / v->cameras[v->active_camera]->r;
+	const double gldx = GetOGLDistance(v->mouse.dragX) / v->cameras[v->active_camera]->r;
+	const double gldy = GetOGLDistance(v->mouse.dragY) / v->cameras[v->active_camera]->r;
 	v->cameras[v->active_camera]->targetx -= gldx;
 	v->cameras[v->active_camera]->targety += gldy;
     }
