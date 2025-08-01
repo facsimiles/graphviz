@@ -234,9 +234,7 @@ routesplinesinit(void)
 void routesplinesterm(void)
 {
     if (--routeinit > 0) return;
-    if (Verbose)
-	fprintf(stderr,
-		"routesplines: %d edges, %" PRISIZE_T " boxes %.2f sec\n",
+    GV_DEBUG("routesplines: %d edges, %" PRISIZE_T " boxes %.2f sec",
 		nedges, nboxes, elapsed_sec());
 }
 
