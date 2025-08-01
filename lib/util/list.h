@@ -127,7 +127,7 @@
   }                                                                            \
                                                                                \
   /** add an item to the beginning of a list */                                \
-  static inline void name##_prepend(name##_t *list, type item) {               \
+  static inline UNUSED void name##_prepend(name##_t *list, type item) {        \
     assert(list != NULL);                                                      \
                                                                                \
     /* do we need to expand the backing storage? */                            \
