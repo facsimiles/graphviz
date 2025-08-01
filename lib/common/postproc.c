@@ -681,7 +681,7 @@ void gv_postprocess(Agraph_t * g, int allowTranslation)
 	else
 	    agxbprint(&buf, M1, Offset.y, Offset.x, Offset.y, Offset.x,
 		    -Offset.x, -Offset.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	show_boxes_prepend(&Show_boxes, agxbdisown(&buf));
     }
 }
 

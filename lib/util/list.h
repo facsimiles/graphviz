@@ -126,6 +126,66 @@
     }                                                                          \
   }                                                                            \
                                                                                \
+  /** add an item to the beginning of a list */                                \
+  static inline void name##_prepend(name##_t *list, type item) {               \
+    assert(list != NULL);                                                      \
+                                                                               \
+    /* do we need to expand the backing storage? */                            \
+    if (list->size == list->capacity) {                                        \
+      const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);         \
+                                                                               \
+      /* will the calculation of the new size overflow? */                     \
+      if (SIZE_MAX / c < sizeof(type)) {                                       \
+        fprintf(stderr, "integer overflow during list prepend\n");             \
+        graphviz_exit(EXIT_FAILURE);                                           \
+      }                                                                        \
+                                                                               \
+      type *base =                                                             \
+          (type *)gv_recalloc(list->base, list->capacity, c, sizeof(type));    \
+                                                                               \
+      /* zero the new memory */                                                \
+      memset(&base[list->capacity], 0, (c - list->capacity) * sizeof(type));   \
+                                                                               \
+      /* poison the new (conceptually unallocated) memory */                   \
+      ASAN_POISON(&base[list->capacity], (c - list->capacity) * sizeof(type)); \
+                                                                               \
+      /* Do we need to shuffle the prefix upwards? E.g. */                     \
+      /*                                                */                     \
+      /*        ┌───┬───┬───┬───┐                       */                     \
+      /*   old: │ 3 │ 4 │ 1 │ 2 │                       */                     \
+      /*        └───┴───┴─┼─┴─┼─┘                       */                     \
+      /*                  │   └───────────────┐         */                     \
+      /*                  └───────────────┐   │         */                     \
+      /*                                  ▼   ▼         */                     \
+      /*        ┌───┬───┬───┬───┬───┬───┬───┬───┐       */                     \
+      /*   new: │ 3 │ 4 │   │   │   │   │ 1 │ 2 │       */                     \
+      /*        └───┴───┴───┴───┴───┴───┴───┴───┘       */                     \
+      /*          a   b   c   d   e   f   g   h         */                     \
+      if (list->head + list->size > list->capacity) {                          \
+        const size_t prefix = list->capacity - list->head;                     \
+        const size_t new_head = c - prefix;                                    \
+        /* unpoison target range, slots [g, h] in example */                   \
+        ASAN_UNPOISON(&base[new_head], prefix * sizeof(type));                 \
+        memmove(&base[new_head], &base[list->head], prefix * sizeof(type));    \
+        /* (re-)poison new gap, slots [c, f] in example */                     \
+        ASAN_POISON(&base[list->size - prefix],                                \
+                    (list->capacity - list->size) * sizeof(type));             \
+        list->head = new_head;                                                 \
+      }                                                                        \
+                                                                               \
+      list->base = base;                                                       \
+      list->capacity = c;                                                      \
+    }                                                                          \
+                                                                               \
+    assert(list->size < list->capacity);                                       \
+    const size_t new_slot =                                                    \
+        (list->head + (list->capacity - 1)) % list->capacity;                  \
+    ASAN_UNPOISON(&list->base[new_slot], sizeof(type));                        \
+    list->base[new_slot] = item;                                               \
+    list->head = (list->head + (list->capacity - 1)) % list->capacity;         \
+    ++list->size;                                                              \
+  }                                                                            \
+                                                                               \
   /** retrieve an element from a list                                          \
    *                                                                           \
    * \param list List to operate on                                            \

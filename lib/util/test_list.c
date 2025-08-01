@@ -46,6 +46,44 @@ static void test_append(void) {
   ints_free(&xs);
 }
 
+/// prepend to an empty list
+static void test_prepend_0(void) {
+  ints_t xs = {0};
+
+  ints_prepend(&xs, 42);
+  assert(ints_size(&xs) == 1);
+  assert(ints_get(&xs, 0) == 42);
+
+  ints_free(&xs);
+}
+
+/// interleaved append and prepend
+static void test_append_prepend(void) {
+  ints_t xs = {0};
+
+  for (size_t i = 0; i < 10; ++i) {
+    if (i % 2 == 0) {
+      ints_append(&xs, (int)i);
+    } else {
+      ints_prepend(&xs, (int)i);
+    }
+  }
+
+  assert(ints_size(&xs) == 10);
+  assert(ints_get(&xs, 0) == 9);
+  assert(ints_get(&xs, 1) == 7);
+  assert(ints_get(&xs, 2) == 5);
+  assert(ints_get(&xs, 3) == 3);
+  assert(ints_get(&xs, 4) == 1);
+  assert(ints_get(&xs, 5) == 0);
+  assert(ints_get(&xs, 6) == 2);
+  assert(ints_get(&xs, 7) == 4);
+  assert(ints_get(&xs, 8) == 6);
+  assert(ints_get(&xs, 9) == 8);
+
+  ints_free(&xs);
+}
+
 static void test_get(void) {
   ints_t xs = {0};
   for (size_t i = 0; i < 10; ++i) {
@@ -494,6 +532,8 @@ int main(void) {
   RUN(init);
   RUN(init_reset);
   RUN(append);
+  RUN(prepend_0);
+  RUN(append_prepend);
   RUN(get);
   RUN(set);
   RUN(remove_empty);
