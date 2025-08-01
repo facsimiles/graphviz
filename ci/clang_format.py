@@ -29,7 +29,6 @@ EXCLUDE = (
     "cmd/gvmap/make_map.c",
     "cmd/gvmap/make_map.h",
     "cmd/gvmap/power.c",
-    "cmd/gvpr/gvprmain.c",
     "cmd/mingle/minglemain.cpp",
     "cmd/smyrna/arcball.c",
     "cmd/smyrna/arcball.h",
