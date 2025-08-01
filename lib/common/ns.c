@@ -214,49 +214,72 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
     return rv;
 }
 
-static edge_t *dfs_enter_outedge(node_t *v, edge_t *Enter, int *Slack, int Low,
-                                 int Lim) {
+static edge_t *dfs_enter_outedge(node_t *v, int Low, int Lim) {
     int i, slack;
     edge_t *e;
+    edge_t *Enter = NULL;
+    int Slack = INT_MAX;
 
-    for (i = 0; (e = ND_out(v).list[i]); i++) {
-	if (!TREE_EDGE(e)) {
-	    if (!SEQ(Low, ND_lim(aghead(e)), Lim)) {
-		slack = SLACK(e);
-		if (slack < *Slack || Enter == NULL) {
-		    Enter = e;
-		    *Slack = slack;
+    node_list_t todo = {0};
+    node_list_append(&todo, v);
+
+    while (!node_list_is_empty(&todo)) {
+	v = node_list_pop_back(&todo);
+
+	for (i = 0; (e = ND_out(v).list[i]); i++) {
+	    if (!TREE_EDGE(e)) {
+		if (!SEQ(Low, ND_lim(aghead(e)), Lim)) {
+		    slack = SLACK(e);
+		    if (slack < Slack || Enter == NULL) {
+			Enter = e;
+			Slack = slack;
+		    }
 		}
-	    }
-	} else if (ND_lim(aghead(e)) < ND_lim(v))
-	    Enter = dfs_enter_outedge(aghead(e), Enter, Slack, Low, Lim);
+	    } else if (ND_lim(aghead(e)) < ND_lim(v))
+		node_list_append(&todo, aghead(e));
+	}
+	for (i = 0; (e = ND_tree_in(v).list[i]) && Slack > 0; i++)
+	    if (ND_lim(agtail(e)) < ND_lim(v))
+		node_list_append(&todo, agtail(e));
+
     }
-    for (i = 0; (e = ND_tree_in(v).list[i]) && *Slack > 0; i++)
-	if (ND_lim(agtail(e)) < ND_lim(v))
-	    Enter = dfs_enter_outedge(agtail(e), Enter, Slack, Low, Lim);
+    node_list_free(&todo);
+
     return Enter;
 }
 
-static edge_t *dfs_enter_inedge(node_t *v, edge_t *Enter, int *Slack, int Low,
-                                int Lim) {
+static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
     int i, slack;
     edge_t *e;
 
-    for (i = 0; (e = ND_in(v).list[i]); i++) {
-	if (!TREE_EDGE(e)) {
-	    if (!SEQ(Low, ND_lim(agtail(e)), Lim)) {
-		slack = SLACK(e);
-		if (slack < *Slack || Enter == NULL) {
-		    Enter = e;
-		    *Slack = slack;
+    edge_t *Enter = NULL;
+    int Slack = INT_MAX;
+
+    node_list_t todo = {0};
+    node_list_append(&todo, v);
+
+    while (!node_list_is_empty(&todo)) {
+	v = node_list_pop_back(&todo);
+
+	for (i = 0; (e = ND_in(v).list[i]); i++) {
+	    if (!TREE_EDGE(e)) {
+		if (!SEQ(Low, ND_lim(agtail(e)), Lim)) {
+		    slack = SLACK(e);
+		    if (slack < Slack || Enter == NULL) {
+			Enter = e;
+			Slack = slack;
+		    }
 		}
-	    }
-	} else if (ND_lim(agtail(e)) < ND_lim(v))
-	    Enter = dfs_enter_inedge(agtail(e), Enter, Slack, Low, Lim);
+	    } else if (ND_lim(agtail(e)) < ND_lim(v))
+		node_list_append(&todo, agtail(e));
+	}
+	for (i = 0; (e = ND_tree_out(v).list[i]) && Slack > 0; i++)
+	    if (ND_lim(aghead(e)) < ND_lim(v))
+		node_list_append(&todo, aghead(e));
+
     }
-    for (i = 0; (e = ND_tree_out(v).list[i]) && *Slack > 0; i++)
-	if (ND_lim(aghead(e)) < ND_lim(v))
-	    Enter = dfs_enter_inedge(aghead(e), Enter, Slack, Low, Lim);
+    node_list_free(&todo);
+
     return Enter;
 }
 
@@ -273,8 +296,8 @@ static edge_t *enter_edge(edge_t *e) {
 	outsearch = true;
     }
     if (outsearch)
-	return dfs_enter_outedge(v, NULL, &(int){INT_MAX}, ND_low(v), ND_lim(v));
-    return dfs_enter_inedge(v, NULL, &(int){INT_MAX}, ND_low(v), ND_lim(v));
+	return dfs_enter_outedge(v, ND_low(v), ND_lim(v));
+    return dfs_enter_inedge(v, ND_low(v), ND_lim(v));
 }
 
 static void init_cutvalues(network_simplex_ctx_t *ctx)

@@ -38,7 +38,6 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_asan_instrumented,
     is_autotools,
     is_cmake,
-    is_fedora,
     is_macos,
     is_mingw,
     is_rocky,
@@ -5611,11 +5610,6 @@ def test_2646():
     dot("pdf", input)
 
 
-@pytest.mark.xfail(
-    (is_fedora() or is_rocky()) and is_cmake(),
-    strict=True,
-    reason="exceeds stack limits on Fedora/Rocky+CMake",
-)
 def test_2646_1():
     """
     It was observed that `test_2646` could crash early on when minor changes subtly
