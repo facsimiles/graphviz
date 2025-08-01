@@ -11,6 +11,7 @@
 #include <circogen/blocktree.h>
 #include <stdbool.h>
 #include <util/agxbuf.h>
+#include <util/debug.h>
 #include <util/gv_math.h>
 
 static void addNode(block_t * bp, Agnode_t * n)
@@ -126,8 +127,7 @@ static void find_blocks(Agraph_t * g, circ_state * state)
 
     if (!root)
 	root = agfstnode(g);
-    if (Verbose)
-	fprintf (stderr, "root = %s\n", agnameof(root));
+    GV_DEBUG("root = %s", agnameof(root));
     estack_t stk = {0};
     dfs(g, root, state, true, &stk);
     estack_free(&stk);
