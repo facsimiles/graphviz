@@ -25,6 +25,7 @@
 #include    "openFile.h"
 #include    <util/agxbuf.h>
 #include    <util/alloc.h>
+#include    <util/debug.h>
 #include    <util/exit.h>
 #include    <util/gv_ctype.h>
 #include    <util/list.h>
@@ -244,10 +245,7 @@ startElementHandler(void *userData, const char *name, const char **atts)
 	    } else if (strcmp(edgeMode, "undirected") == 0) {
 		dir = Agundirected;
 	    } else {
-		if (Verbose) {
-		    fprintf(stderr,
-			"Warning: graph has no edgedefault attribute - assume directed\n");
-		}
+		GV_INFO("Warning: graph has no edgedefault attribute - assume directed");
 		dir = Agdirected;
 	    }
 	    g = agopen((char *) id, dir, &AgDefaultDisc);
@@ -494,9 +492,8 @@ int main(int argc, char **argv)
 	    if (prev)
 		agclose(prev);
 	    prev = graph;
-	    if (Verbose) 
-		fprintf (stderr, "%s: %d nodes %d edges\n",
-		    agnameof(graph), agnnodes(graph), agnedges(graph));
+	    GV_INFO("%s: %d nodes %d edges", agnameof(graph), agnnodes(graph),
+	            agnedges(graph));
 	    agwrite(graph, outFile);
 	    fflush(outFile);
 	}
