@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/random.h>
 
 static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
@@ -129,7 +130,8 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
       }
     }
 
-    if (Verbose) fprintf(stderr,"iter ---- %d ---, color_diff = %f, color_diff_sum = %f\n", iter, color_diff, color_diff_sum);
+    GV_DEBUG("iter ---- %d ---, color_diff = %f, color_diff_sum = %f", iter,
+             color_diff, color_diff_sum);
   }
 
   if (scheme == COLOR_LAB){
