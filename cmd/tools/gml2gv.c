@@ -17,6 +17,7 @@
 #include <getopt.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <util/unreachable.h>
 
@@ -140,9 +141,7 @@ int main(int argc, char **argv) {
     while ((G = gml_to_gv(nameOf(&buf, gname, gcnt), inFile, cnt, &rv))) {
       cnt++;
       gcnt++;
-      if (Verbose)
-        fprintf(stderr, "%s: %d nodes %d edges\n", agnameof(G), agnnodes(G),
-                agnedges(G));
+      GV_INFO("%s: %d nodes %d edges", agnameof(G), agnnodes(G), agnedges(G));
       agwrite(G, outFile);
       agclose(G);
       fflush(outFile);
