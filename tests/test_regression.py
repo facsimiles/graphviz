@@ -727,6 +727,28 @@ def test_1318():
     dot("svg", source=source)
 
 
+@pytest.mark.parametrize("testcase", ("1323.dot", "1323_1.dot"))
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1323"
+)
+def test_1323(testcase: str):
+    """
+    these graphs should not generate triangulation warnings/errors
+    https://gitlab.com/graphviz/graphviz/-/issues/1323
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / testcase
+    assert input.exists(), "unexpectedly missing test case"
+
+    stderr = run(["dot", "-Tpng", "-o", os.devnull, input], stderr=subprocess.STDOUT)
+
+    assert (
+        re.search(r"\btriangulation failed\b", stderr) is None
+    ), "triangulation warnings were produced"
+    assert re.search(r"\bError\b", stderr) is None, "error messages were produced"
+
+
 def test_1328():
     """
     a node with conflicting rank constraints should not cause a crash
