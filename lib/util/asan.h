@@ -14,10 +14,14 @@
 #ifndef ASAN_POISON
 #define ASAN_POISON(addr, size)                                                \
   do {                                                                         \
+    (void)(addr);                                                              \
+    (void)(size);                                                              \
   } while (0)
 #endif
 #ifndef ASAN_UNPOISON
 #define ASAN_UNPOISON(addr, size)                                              \
   do {                                                                         \
+    (void)(addr);                                                              \
+    (void)(size);                                                              \
   } while (0)
 #endif

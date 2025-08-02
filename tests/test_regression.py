@@ -5189,11 +5189,7 @@ def test_2604():
     ), "duplicate formats listed in guidance"
 
 
-@pytest.mark.skipif(shutil.which("convert") is None, reason="ImageMagick not available")
 @pytest.mark.skipif(which("neato") is None, reason="neato not available")
-@pytest.mark.skipif(
-    platform.system() == "Windows", reason="`convert` on Windows is not ImageMagick"
-)
 def test_2609(tmp_path: Path):
     """
     GIFs should not be blank
@@ -5209,34 +5205,15 @@ def test_2609(tmp_path: Path):
     gif = tmp_path / "2609.gif"
     run_raw([neato, "-Tgif", input, "-o", gif])
 
-    # translate this into the simplest format we can parse to validate
-    ppm = tmp_path / "2609.ppm"
-    run_raw(["convert", gif, ppm])
-
-    with open(ppm, "rb") as f:
-
-        # we should have the PPM header
-        assert f.read(3) == b"P6\n"
-
-        # skip the dimensions line
-        while True:
-            if f.read(1) in (b"", b"\n"):
-                break
-
-        # skip maximum intensity line
-        while True:
-            if f.read(1) in (b"", b"\n"):
-                break
-
-        # read the first pixel as a reference color
-        reference = f.read(3)
-
-        # the remaining pixels should not all be identical if we have an actual image
-        while True:
-            pixel = f.read(3)
-            if len(pixel) < 3:
-                break
-            if pixel != reference:
+    # load the image and scan its pixels
+    img = Image.open(gif)
+    reference = None
+    for x in range(img.width):
+        for y in range(img.height):
+            pixel = img.getpixel((x, y))
+            if reference is None:
+                reference = pixel
+            elif reference != pixel:
                 # found a different pixel
                 return
 

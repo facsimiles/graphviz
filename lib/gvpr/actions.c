@@ -39,8 +39,8 @@
  * NULL otherwise
  */
 Agraph_t *sameG(void *p1, void *p2, char *fn, char *msg) {
-  Agobj_t *obj1 = OBJ(p1);
-  Agobj_t *obj2 = OBJ(p2);
+  Agobj_t *obj1 = p1;
+  Agobj_t *obj2 = p2;
   Agraph_t *root;
 
   root = agroot(agraphof(obj1));

@@ -292,9 +292,6 @@ static void get_active_frame(void) {
     gdouble seconds = g_timer_elapsed(view->timer, NULL);
     const int fr = (int)(seconds * 1000.0);
     if (fr < view->total_frames) {
-
-	if (fr == view->active_frame)
-	    return;
 	view->active_frame = fr;
 	return;
     }

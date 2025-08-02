@@ -130,7 +130,8 @@ static inline void argb2rgba(size_t width, size_t height, unsigned char *data) {
 /// Both `a` and `b` are expected to be pure expressions.
 #define SWAP(a, b)                                                             \
   do {                                                                         \
-    /* trigger a compiler error if `a` and `b` have differing types */         \
+    /* trigger a -Wcompare-distinct-pointer-types compiler warning if `a` */   \
+    /* and `b` have differing types                                       */   \
     (void)((a) == (b));                                                        \
                                                                                \
     /* Swap their targets. Contemporary compilers will optimize the `memcpy`s  \

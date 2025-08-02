@@ -15,6 +15,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/list.h>
 #include <util/prisize_t.h>
 
@@ -140,10 +141,7 @@ void furtherest_point(int k, int dim, double *wgt, double *pts, double *center, 
       }/* finish checking every of the 2^dim siblings */
     }/* finish checking all the candidates */
 
-    /* sawp the two lists */
-    qt_list_t ctmp = candidates;
-    candidates = candidates2;
-    candidates2 = ctmp;
+    SWAP(&candidates, &candidates2);
 
   }/* continue down the quadtree */
 
@@ -244,10 +242,7 @@ void furtherest_point_in_list(int k, int dim, double *wgt, double *pts, QuadTree
       }/* finish checking every of the 2^dim siblings */
     }/* finish checking all the candidates */
 
-    /* sawp the two lists */
-    qt_list_t ctmp = candidates;
-    candidates = candidates2;
-    candidates2 = ctmp;
+    SWAP(&candidates, &candidates2);
 
   }/* continue down the quadtree */
 
