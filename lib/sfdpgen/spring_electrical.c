@@ -47,7 +47,7 @@ static const double cool = 0.90;
 
 spring_electrical_control spring_electrical_control_new(void){
   spring_electrical_control ctrl = {0};
-  ctrl.p = AUTOP;/*a negativve number default to -1. repulsive force = dist^p */
+  ctrl.p = AUTOP; ///< a negative number default to -1. repulsive force = distᵖ
   ctrl.random_start = true; // whether to apply SE from a random layout, or from existing layout
   ctrl.K = -1;/* the natural distance. If K < 0, K will be set to the average distance of an edge */
   ctrl.multilevels = 0;/* if <=1, single level */

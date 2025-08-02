@@ -25,7 +25,7 @@ enum {QUAD_TREE_HYBRID_SIZE = 10000};
 enum {QUAD_TREE_NONE = 0, QUAD_TREE_NORMAL, QUAD_TREE_FAST, QUAD_TREE_HYBRID};
 
 typedef struct {
-  double p;/*a negativve real number default to -1. repulsive force = dist^p */
+  double p; ///< a negative real number default to -1. repulsive force = distᵖ
   double K;/* the natural distance. If K < 0, K will be set to the average distance of an edge */
   int multilevels;/* if <=1, single level */
   int max_qtree_level;/* max level of quadtree */
