@@ -347,7 +347,7 @@ collapse_sets(graph_t *rg, graph_t *g)
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	c = rank_set_class(subg);
 	if (c) {
-	    if ((c == CLUSTER) && CL_type == LOCAL)
+	    if (c == CLUSTER && CL_type == LOCAL)
 		collapse_cluster(rg, subg);
 	    else
 		collapse_rankset(rg, subg, c);
@@ -389,7 +389,7 @@ minmax_edges(graph_t * g)
     point  slen;
 
     slen.x = slen.y = 0;
-    if ((GD_maxset(g) == NULL) && (GD_minset(g) == NULL))
+    if (GD_maxset(g) == NULL && GD_minset(g) == NULL)
 	return slen;
     if (GD_minset(g) != NULL)
 	GD_minset(g) = UF_find(GD_minset(g));
@@ -397,14 +397,14 @@ minmax_edges(graph_t * g)
 	GD_maxset(g) = UF_find(GD_maxset(g));
 
     if ((n = GD_maxset(g))) {
-	slen.y = (ND_ranktype(GD_maxset(g)) == SINKRANK);
+	slen.y = ND_ranktype(GD_maxset(g)) == SINKRANK;
 	while ((e = ND_out(n).list[0])) {
 	    assert(aghead(e) == UF_find(aghead(e)));
 	    reverse_edge(e);
 	}
     }
     if ((n = GD_minset(g))) {
-	slen.x = (ND_ranktype(GD_minset(g)) == SOURCERANK);
+	slen.x = ND_ranktype(GD_minset(g)) == SOURCERANK;
 	while ((e = ND_in(n).list[0])) {
 	    assert(agtail(e) == UF_find(agtail(e)));
 	    reverse_edge(e);
@@ -419,23 +419,23 @@ minmax_edges2(graph_t * g, point slen)
     node_t *n;
     edge_t *e = 0;
 
-    if ((GD_maxset(g)) || (GD_minset(g))) {
+    if (GD_maxset(g) || GD_minset(g)) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    if (n != UF_find(n))
 		continue;
-	    if ((ND_out(n).size == 0) && GD_maxset(g) && (n != GD_maxset(g))) {
+	    if (ND_out(n).size == 0 && GD_maxset(g) && n != GD_maxset(g)) {
 		e = virtual_edge(n, GD_maxset(g), NULL);
 		ED_minlen(e) = slen.y;
 		ED_weight(e) = 0;
 	    }
-	    if ((ND_in(n).size == 0) && GD_minset(g) && (n != GD_minset(g))) {
+	    if (ND_in(n).size == 0 && GD_minset(g) && n != GD_minset(g)) {
 		e = virtual_edge(GD_minset(g), n, NULL);
 		ED_minlen(e) = slen.x;
 		ED_weight(e) = 0;
 	    }
 	}
     }
-    return (e != 0);
+    return e != 0;
 }
 
 /* Run the network simplex algorithm on each component. */
@@ -448,7 +448,7 @@ void rank1(graph_t * g)
 	maxiter = scale_clamp(agnnodes(g), atof(s));
     for (size_t c = 0; c < GD_comp(g).size; c++) {
 	GD_nlist(g) = GD_comp(g).list[c];
-	rank(g, (GD_n_cluster(g) == 0 ? 1 : 0), maxiter);	/* TB balance */
+	rank(g, GD_n_cluster(g) == 0 ? 1 : 0, maxiter); // TB balance
     }
 }
 
@@ -785,7 +785,7 @@ static void weak(graph_t * g, node_t * t, node_t * h, edge_t * orig)
     for (e = agfstin(g, t); e; e = agnxtin(g, e)) {
 	/* merge with existing weak edge (e,f) */
 	v = agtail(e);
-	if ((f = agfstout(g, v)) && (aghead(f) == h)) {
+	if ((f = agfstout(g, v)) && aghead(f) == h) {
 	    return;
 	}
     }
