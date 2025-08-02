@@ -372,7 +372,7 @@ void diffeq_model(graph_t * G, int nG)
 	for (j = 0; j < i; j++) {
 	    f = Spring_coeff / (D[i][j] * D[i][j]);
 	    if ((e = agfindedge(G, GD_neato_nlist(G)[i], GD_neato_nlist(G)[j])))
-		f = f * ED_factor(e);
+		f *= ED_factor(e);
 	    K[i][j] = K[j][i] = f;
 	}
     }
