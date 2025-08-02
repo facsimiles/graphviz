@@ -464,7 +464,6 @@ static void update_arrays(graph_t * G, int nG, int i)
 	vj = GD_neato_nlist(G)[j];
 	dist = distvec(ND_pos(vi), ND_pos(vj), del);
 	for (k = 0; k < Ndim; k++) {
-	    old = GD_t(G)[i][j][k];
 	    GD_t(G)[i][j][k] =
 		GD_spring(G)[i][j] * (del[k] -
 				      GD_dist(G)[i][j] * del[k] / dist);
