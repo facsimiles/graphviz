@@ -705,13 +705,8 @@ def test_1314():
     assert input.exists(), "unexpectedly missing test case"
 
     # ask Graphviz to process it, which should fail
-    try:
+    with pytest.raises(subprocess.CalledProcessError):
         dot("svg", input)
-    except subprocess.CalledProcessError:
-        return
-
-    # the execution did not fail as expected
-    pytest.fail("dot incorrectly exited with success")
 
 
 def test_1318():
