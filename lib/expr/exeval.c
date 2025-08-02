@@ -108,7 +108,6 @@ static int evaldyn(Expr_t *ex, Exnode_t *exnode, void *env, int delete) {
 	}
 	if (delete) {
 		dtdelete(exnode->data.variable.symbol->local, b);
-		free (b);
 	}
 	return 1;
 }
@@ -132,10 +131,9 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 		if (exnode->data.variable.symbol->index_type == INTEGER) {
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, &v)))
 			{
-				b = calloc(1, sizeof(Exassoc_t));
-				if (b == NULL) {
+				if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t))))
 					exnospace();
-				}
+				*b = (Exassoc_t){0};
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
 			}
@@ -152,10 +150,9 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 				keyname = v.string;
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, keyname)))
 			{
-				b = calloc(1, sizeof(Exassoc_t) + strlen(keyname));
-				if (b == NULL) {
+				if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t) + strlen(keyname))))
 					exnospace();
-				}
+				*b = (Exassoc_t){0};
 				strcpy(b->name, keyname);
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
@@ -794,14 +791,13 @@ static void replace(agxbuf *s, char *base, char *repl, int ng, size_t *sub) {
   }
 }
 
-static void addItem(Dt_t *arr, Extype_t v, char *tok) {
+static void addItem(Expr_t *ex, Dt_t *arr, Extype_t v, char *tok) {
 	Exassoc_t* b;
 
 	if (!(b = dtmatch(arr, &v))) {
-		b = calloc(1, sizeof(Exassoc_t));
-		if (b == NULL) {
+		if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t))))
 	    	exerror("out of space [assoc]");
-		}
+		*b = (Exassoc_t){0};
 		b->key = v;
 		dtinsert(arr, b);
 	}
@@ -831,17 +827,17 @@ static Extype_t exsplit(Expr_t *ex, Exnode_t *exnode, void *env) {
 		sz = strspn (str, seps);
 	    if (sz) {
 			if (v.integer == 0) {  /* initial separator => empty field */
-	    		addItem(arr, v, "");
+	    		addItem(ex, arr, v, "");
 	    		v.integer++;
 			}
 			for (size_t i = 1; i < sz; i++) {
-	    		addItem(arr, v, "");
+	    		addItem(ex, arr, v, "");
 	    		v.integer++;
 			}
 		}
 		str += sz;
 		if (*str == '\0') { /* terminal separator => empty field */
-			addItem(arr, v, "");
+			addItem(ex, arr, v, "");
 			v.integer++;
 	    	break;
 		}
@@ -853,7 +849,7 @@ static Extype_t exsplit(Expr_t *ex, Exnode_t *exnode, void *env) {
 			memcpy(tok, str, sz);
 			tok[sz] = '\0';
 		}
-		addItem(arr, v, tok);
+		addItem(ex, arr, v, tok);
 		v.integer++;
 		str += sz;
 	}
@@ -895,7 +891,7 @@ static Extype_t extokens(Expr_t *ex, Exnode_t *exnode, void *env) {
 			memcpy(tok, str, sz);
 			tok[sz] = '\0';
 		}
-		addItem(arr, v, tok);
+		addItem(ex, arr, v, tok);
 		v.integer++;
 		str += sz;
 	}
@@ -1123,8 +1119,6 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 			if (x->type == STRING)
 			{
 				v.string = vmstrdup(ex->vm, v.string);
-				if ((e = assoc ? assoc->value.string : x->data.variable.symbol->value->data.constant.value.string))
-					vmfree(ex->vm, e);
 			}
 			if (assoc)
 				assoc->value = v;
@@ -1138,8 +1132,7 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 			else
 				i.integer = EX_SCALAR;
 			if (x->data.variable.dyna) {
-				Extype_t locv;
-				locv = getdyn(ex, x->data.variable.dyna, env, &assoc);
+				Extype_t locv = getdyn(ex, x->data.variable.dyna, env, &assoc);
 				x->data.variable.dyna->data.variable.dyna->data.constant.value = locv;
 			}
 			if (ex->disc->setf(ex, x, x->data.variable.symbol,

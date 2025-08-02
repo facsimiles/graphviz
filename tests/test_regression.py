@@ -5944,9 +5944,6 @@ def test_2705(tmp_path: Path):
 
 
 @pytest.mark.skipif(shutil.which("gvpr") is None, reason="gvpr is not available")
-@pytest.mark.xfail(
-    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/2707"
-)
 def test_2707():
     """
     gvpr should not perform a double-free while processing this example
