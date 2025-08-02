@@ -230,8 +230,7 @@ make_LR_constraints(graph_t * g)
     }
     /* make edges to constrain left-to-right ordering */
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
-	double last;
-	last = ND_rank(rank[i].v[0]) = 0;
+	double last = ND_rank(rank[i].v[0]) = 0;
 	nodesep = sep[i & 1];
 	for (j = 0; j < rank[i].n; j++) {
 	    u = rank[i].v[j];
