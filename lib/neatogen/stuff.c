@@ -495,7 +495,7 @@ static void D2E(graph_t * G, int nG, int n, double *M)
 	sq = 0.0;
 	for (k = 0; k < Ndim; k++) {
 	    t[k] = ND_pos(vn)[k] - ND_pos(vi)[k];
-	    sq += (t[k] * t[k]);
+	    sq += t[k] * t[k];
 	}
 	scale = 1 / fpow32(sq);
 	for (k = 0; k < Ndim; k++) {
@@ -604,8 +604,7 @@ static void heapdown(node_t * v)
     i = ND_heapindex(v);
     while ((left = 2 * i + 1) < Heapsize) {
 	right = left + 1;
-	if ((right < Heapsize)
-	    && (ND_dist(Heap[right]) < ND_dist(Heap[left])))
+	if (right < Heapsize && ND_dist(Heap[right]) < ND_dist(Heap[left]))
 	    c = right;
 	else
 	    c = left;
