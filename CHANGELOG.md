@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   user-referenced files, is now computed at runtime instead of build time. This
   removes a barrier to relocating a Graphviz installation from one directory to
   another.
+- In the CMake build system, whether GDK-dependent components are built or not
+  can now be controlled by the `-DWITH_GDK={AUTO|ON|OFF}` option. #2714
 
 ### Fixed
 
