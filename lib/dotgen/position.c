@@ -216,7 +216,7 @@ make_LR_constraints(graph_t * g)
     double width;
     int sep[2];
     int nodesep;      /* separation between nodes on same rank */
-    edge_t *e, *e0, *e1, *ff;
+    edge_t *e, *e0, *e1;
     node_t *u, *v, *t0, *h0;
     rank_t *rank = GD_rank(g);
 
@@ -265,9 +265,7 @@ make_LR_constraints(graph_t * g)
 		e0 = ND_save_out(u).list[0];
 		e1 = ND_save_out(u).list[1];
 		if (ND_order(aghead(e0)) > ND_order(aghead(e1))) {
-		    ff = e0;
-		    e0 = e1;
-		    e1 = ff;
+		    SWAP(&e0, &e1);
 		}
 		m0 = ED_minlen(e) * GD_nodesep(g) / 2;
 		double m1 = m0 + ND_rw(aghead(e0)) + ND_lw(agtail(e0));
