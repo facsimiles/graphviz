@@ -171,8 +171,6 @@ portable-source:
         - $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
         - python --version
         - if (-not $?) { throw "command failed" }
-        - python -m pip install --requirement requirements.txt
-        - if (-not $?) { throw "command failed" }
         # Install and set PATH
         - $Env:graphviz_install_dir = "C:\Graphviz"
         # Build

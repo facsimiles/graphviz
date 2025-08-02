@@ -90,6 +90,13 @@ def main(args: list[str]) -> int:
     # find the repository root directory
     root = Path(__file__).resolve().parent.parent
 
+    # install Python dependencies
+    run(
+        [sys.executable, "-m", "pip", "install", "--requirement", "requirements.txt"],
+        root,
+        None,
+    )
+
     # retrieve submodules, dependencies are stored there
     run(["git", "submodule", "update", "--init", "--depth=1"], root, None)
 
