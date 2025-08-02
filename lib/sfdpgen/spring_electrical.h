@@ -32,7 +32,7 @@ typedef struct {
   int maxiter;
   double step;/* initial step size */
   int random_seed;
-  bool random_start : 1; ///< whether to apply SE from a random layout, or from exisiting layout
+  bool random_start : 1; ///< whether to apply SE from a random layout, or from existing layout
   bool adaptive_cooling : 1;
   bool beautify_leaves : 1;
   int smoothing;
