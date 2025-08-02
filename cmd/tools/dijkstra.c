@@ -16,6 +16,7 @@
 #include "config.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -61,15 +62,15 @@ static double getlength(Agedge_t * e)
 
 static double getdist(Agnode_t * n)
 {
-    nodedata_t *data;
-    data = (nodedata_t *) (n->base.data);
+    nodedata_t *const data =
+      (nodedata_t *)((char *)n->base.data - offsetof(nodedata_t, hdr));
     return data->dist;
 }
 
 static void setdist(Agnode_t * n, double dist)
 {
-    nodedata_t *data;
-    data = (nodedata_t *) (n->base.data);
+    nodedata_t *const data =
+      (nodedata_t *)((char *)n->base.data - offsetof(nodedata_t, hdr));
     data->dist = dist;
 }
 
