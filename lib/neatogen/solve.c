@@ -86,5 +86,4 @@ bad:
   printf("ill-conditioned\n");
   free(asave);
   free(csave);
-  return;
 }
