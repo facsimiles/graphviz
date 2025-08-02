@@ -1,0 +1,30 @@
+digraph G {
+	graph [compound=true,
+		concentrate=true
+	];
+	node [color="#909090",
+		fontsize=8,
+		height=0.1,
+		label="\N",
+		shape=box
+	];
+	edge [arrowsize=0.5,
+		color="#808080",
+		fontsize=8,
+		style=dashed
+	];
+
+	{
+		graph [rank=same];
+		76;
+		376;
+		256;
+		196;
+		316;
+	}
+	376 -> 76	[label=to1];
+	376 -> 256	[style=invis];
+	376 -> 196	[label=to2];
+	256 -> 376	[label=to1];
+	316 -> 76	[style=invis];
+}

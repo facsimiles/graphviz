@@ -3807,15 +3807,16 @@ def test_2355():
     dot("svg", source=graph.getvalue())
 
 
+@pytest.mark.parametrize("testcase", ("2368.dot", "2368_1.dot"))
 @pytest.mark.xfail(strict=True)  # FIXME
-def test_2368():
+def test_2368(testcase: str):
     """
     routesplines should not corrupt its `prev` and `next` indices
     https://gitlab.com/graphviz/graphviz/-/issues/2368
     """
 
     # locate our associated test case in this directory
-    input = Path(__file__).parent / "2368.dot"
+    input = Path(__file__).parent / testcase
     assert input.exists(), "unexpectedly missing test case"
 
     # run it through Graphviz
