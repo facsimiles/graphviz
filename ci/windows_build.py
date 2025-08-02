@@ -91,8 +91,17 @@ def main(args: list[str]) -> int:
     root = Path(__file__).resolve().parent.parent
 
     # install Python dependencies
+    run([sys.executable, "-m", "pip", "install", "uv"], root, None)
     run(
-        [sys.executable, "-m", "pip", "install", "--requirement", "requirements.txt"],
+        [
+            sys.executable,
+            "-m",
+            "uv",
+            "pip",
+            "install",
+            "--requirement",
+            "requirements.txt",
+        ],
         root,
         None,
     )
