@@ -26,12 +26,6 @@ static Agnode_t *choose_node(graph_t *, int);
 static void make_spring(graph_t *, Agnode_t *, Agnode_t *, double);
 static void move_node(graph_t *, int, Agnode_t *);
 
-static double fpow32(double x)
-{
-    x = sqrt(x);
-    return x * x * x;
-}
-
 static double distvec(double *p0, double *p1, double *vec)
 {
     int k;
@@ -497,7 +491,7 @@ static void D2E(graph_t * G, int nG, int n, double *M)
 	    t[k] = ND_pos(vn)[k] - ND_pos(vi)[k];
 	    sq += t[k] * t[k];
 	}
-	scale = 1 / fpow32(sq);
+	scale = 1 / pow(sq, 1.5);
 	for (k = 0; k < Ndim; k++) {
 	    for (l = 0; l < k; l++)
 		Msub(l, k) += K[n][i] * D[n][i] * t[k] * t[l] * scale;
