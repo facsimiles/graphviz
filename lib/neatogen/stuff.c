@@ -452,7 +452,7 @@ void solve_model(graph_t * G, int nG)
 static void update_arrays(graph_t * G, int nG, int i)
 {
     int j, k;
-    double del[MAXDIM], dist, old;
+    double del[MAXDIM], dist;
     node_t *vi, *vj;
 
     vi = GD_neato_nlist(G)[i];
@@ -468,7 +468,7 @@ static void update_arrays(graph_t * G, int nG, int i)
 		GD_spring(G)[i][j] * (del[k] -
 				      GD_dist(G)[i][j] * del[k] / dist);
 	    GD_sum_t(G)[i][k] += GD_t(G)[i][j][k];
-	    old = GD_t(G)[j][i][k];
+	    const double old = GD_t(G)[j][i][k];
 	    GD_t(G)[j][i][k] = -GD_t(G)[i][j][k];
 	    GD_sum_t(G)[j][k] += GD_t(G)[j][i][k] - old;
 	}
