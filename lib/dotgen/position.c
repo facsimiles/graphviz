@@ -458,9 +458,7 @@ static void separate_subclust(graph_t * g)
 	    low = GD_clust(g)[i];
 	    high = GD_clust(g)[j];
 	    if (GD_minrank(low) > GD_minrank(high)) {
-		graph_t *temp = low;
-		low = high;
-		high = temp;
+		SWAP(&low, &high);
 	    }
 	    if (GD_maxrank(low) < GD_minrank(high))
 		continue;
