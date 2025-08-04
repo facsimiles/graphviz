@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/list.h>
 #include <util/sort.h>
 
@@ -82,12 +83,6 @@ typedef struct {
 #define greaterPriority(h,i,j) \
   (LT(h->data[i],h->data[j]) || ((EQ(h->data[i],h->data[j])) && (rand()%2)))
 
-#define exchange(h,i,j) {Pair temp; \
-        temp=h->data[i]; \
-        h->data[i]=h->data[j]; \
-        h->data[j]=temp; \
-}
-
 static void heapify(PairHeap *h, size_t i) {
     size_t largest;
     while (1) {
@@ -102,7 +97,7 @@ static void heapify(PairHeap *h, size_t i) {
 	if (largest == i)
 	    break;
 
-	exchange(h, largest, i);
+	SWAP(&h->data[largest], &h->data[i]);
 	i = largest;
     }
 }
@@ -153,7 +148,7 @@ static void insert(PairHeap * h, Pair edge)
     h->heapSize++;
     h->data[i] = edge;
     while (i > 0 && greaterPriority(h, i, parent(i))) {
-	exchange(h, i, parent(i));
+	SWAP(&h->data[i], &h->data[parent(i)]);
 	i = parent(i);
     }
 }
