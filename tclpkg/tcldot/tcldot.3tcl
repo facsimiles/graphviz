@@ -240,7 +240,7 @@ e.g.
 Clusters, as described in
 .B dot(1),
 are created by giving the subgraph a name that begins with the string:
-"cluster".  Cluster can be labelled by using the \fIlabel\fR attibute.
+"cluster".  Cluster can be labelled by using the \fIlabel\fR attribute.
 e.g.
 .nf
 
