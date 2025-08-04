@@ -25,6 +25,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/bitarray.h>
 
 typedef DistType Word;
@@ -41,10 +42,8 @@ typedef DistType Word;
 #define insideHeap(h,i) ((i)<h->heapSize)
 #define greaterPriority(h,i,j,dist) (dist[h->data[i]]<dist[h->data[j]])
 #define assign(h,i,j,index) {h->data[i]=h->data[j]; index[h->data[i]]=i;}
-#define exchange(h,i,j,index) {int temp; \
-		temp=h->data[i]; \
-		h->data[i]=h->data[j]; \
-		h->data[j]=temp; \
+#define exchange(h,i,j,index) { \
+		SWAP(&h->data[i], &h->data[j]); \
 		index[h->data[i]]=i; \
 		index[h->data[j]]=j; \
 }
