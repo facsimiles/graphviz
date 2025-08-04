@@ -827,9 +827,7 @@ static void compile_edges(graph_t * ug, graph_t * Xg)
 		/* determine if graph requires reversed edge */
 		if ((clust_tail != NULL && find(agtail(e)) == GD_maxrep(clust_tail))
 		    || (clust_head != NULL && find(aghead(e)) == GD_minrep(clust_head))) {
-		    node_t *temp = Xt;
-		    Xt = Xh;
-		    Xh = temp;
+		    SWAP(&Xt, &Xh);
 		}
 		strong(Xg, Xt, Xh, e);
 	    } else {
