@@ -35,11 +35,11 @@
 #include <common/render.h>
 #include <neatogen/neato.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 
 int matinv(double **A, double **Ainv, int n)
 {
     int i, j;
-    double temp;
 
     /* Decompose matrix into L and U triangular matrices */
     if (lu_decompose(A, n) == 0)
@@ -58,9 +58,7 @@ int matinv(double **A, double **Ainv, int n)
     /* Transpose matrix */
     for (i = 0; i < n; i++) {
 	for (j = 0; j < i; j++) {
-	    temp = Ainv[i][j];
-	    Ainv[i][j] = Ainv[j][i];
-	    Ainv[j][i] = temp;
+	    SWAP(&Ainv[i][j], &Ainv[j][i]);
 	}
     }
 
