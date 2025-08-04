@@ -57,7 +57,7 @@ static char **Files;
 static const char use_msg[] =
 "Usage: mingle <options> <file>\n\
     -a t - max. turning angle [0-180] (40)\n\
-    -c i - compatability measure; 0 : distance, 1: full (default)\n\
+    -c i - compatibility measure; 0 : distance, 1: full (default)\n\
     -i iter: number of outer iterations/subdivisions (4)\n\
     -k k - number of neighbors in the nearest neighbor graph of edges (10)\n\
     -K k - the force constant\n\
