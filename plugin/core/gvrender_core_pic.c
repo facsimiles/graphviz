@@ -25,6 +25,7 @@
 
 #include <common/const.h>
 #include <util/agxbuf.h>
+#include <util/gv_math.h>
 #include <util/strview.h>
 
 /* Number of points to split splines into */
@@ -186,9 +187,7 @@ static void pic_begin_page(GVJ_t * job)
     double height = PS2INCH((double)pbr.UR.y - (double)pbr.LL.y);
     double width = PS2INCH((double)pbr.UR.x - (double)pbr.LL.x);
     if (job->rotation == 90) {
-        double temp = width;
-        width = height;
-        height = temp;
+        SWAP(&width, &height);
     }
     gvprintf(job, ".PS %.5f %.5f\n", width, height);
     gvprintf(job,
