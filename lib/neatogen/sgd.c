@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
+#include <util/gv_math.h>
 #include <util/unreachable.h>
 
 static double calculate_stress(double *pos, term_sgd *terms, int n_terms) {
@@ -28,9 +29,7 @@ static void fisheryates_shuffle(term_sgd *terms, int n_terms,
   for (int i = n_terms - 1; i >= 1; i--) {
     int j = rk_interval(i, rstate);
 
-    term_sgd temp = terms[i];
-    terms[i] = terms[j];
-    terms[j] = temp;
+    SWAP(&terms[i], &terms[j]);
   }
 }
 
