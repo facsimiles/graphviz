@@ -14,9 +14,10 @@
 #include <neatogen/hedges.h>
 #include <neatogen/heap.h>
 #include <neatogen/voronoi.h>
+#include <util/gv_math.h>
 
 void voronoi(Site *(*nextsite)(void *context), void *context) {
-    Site *newsite, *bot, *top, *temp, *p;
+    Site *newsite, *bot, *top, *p;
     Site *v;
     Point newintstar = {0};
     char pm;
@@ -72,9 +73,7 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    ELdelete(rbnd);
 	    pm = le;
 	    if (bot->coord.y > top->coord.y) {
-		temp = bot;
-		bot = top;
-		top = temp;
+		SWAP(&bot, &top);
 		pm = re;
 	    }
 	    e = gvbisect(bot, top);
