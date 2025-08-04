@@ -11,6 +11,7 @@
 #include "config.h"
 #include <assert.h>
 #include <common/boxes.h>
+#include <common/geomprocs.h>
 #include <limits.h>
 #include <ortho/partition.h>
 #include <ortho/trap.h>
@@ -109,9 +110,7 @@ convert (boxf bb, int flip, int ccw, pointf* pts)
     if (flip) {
 	int i;
 	for (i = 0; i < NPOINTS; i++) {
-	    double tmp = pts[i].y;
-	    pts[i].y = pts[i].x;
-	    pts[i].x = -tmp;
+	    pts[i] = perp(pts[i]);
 	}
     }
 }
