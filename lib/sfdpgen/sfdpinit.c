@@ -126,7 +126,7 @@ late_smooth (graph_t* g, Agsym_t* sym, int dflt)
     if (!sym) return dflt;
     s = agxget (g, sym);
     if (gv_isdigit(*s)) {
-#if (defined(HAVE_GTS) || defined(HAVE_TRIANGLE))
+#if defined(HAVE_GTS)
 	if ((v = atoi (s)) <= SMOOTHING_RNG)
 #else
 	if ((v = atoi (s)) <= SMOOTHING_SPRING)
@@ -144,13 +144,13 @@ late_smooth (graph_t* g, Agsym_t* sym, int dflt)
 	    rv = SMOOTHING_NONE;
 	else if (!strcasecmp(s, "power_dist"))
 	    rv = SMOOTHING_STRESS_MAJORIZATION_POWER_DIST;
-#if (defined(HAVE_GTS) || defined(HAVE_TRIANGLE))
+#if defined(HAVE_GTS)
 	else if (!strcasecmp(s, "rng"))
 	    rv = SMOOTHING_RNG;
 #endif
 	else if (!strcasecmp(s, "spring"))
 	    rv = SMOOTHING_SPRING;
-#if (defined(HAVE_GTS) || defined(HAVE_TRIANGLE))
+#if defined(HAVE_GTS)
 	else if (!strcasecmp(s, "triangle"))
 	    rv = SMOOTHING_TRIANGLE;
 #endif
@@ -238,7 +238,7 @@ void sfdp_layout(graph_t * g)
 	spring_electrical_control ctrl = spring_electrical_control_new();
 
 	tuneControl(g, &ctrl);
-#if (defined(HAVE_GTS) || defined(HAVE_TRIANGLE))
+#if defined(HAVE_GTS)
 	graphAdjustMode(g, &am, "prism0");
 #else
 	graphAdjustMode(g, &am, 0);

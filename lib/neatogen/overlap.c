@@ -13,7 +13,7 @@
 #include <stdatomic.h>
 #include <util/alloc.h>
 
-#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
+#if defined(HAVE_GTS) && defined(SFDP)
 
 #include <sparse/SparseMatrix.h>
 #include <neatogen/call_tri.h>

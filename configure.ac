@@ -1741,13 +1741,6 @@ if test "$with_gdiplus" != "yes"; then
 else
   if test -f "$PLATFORMSDKINCLUDE\GdiPlus.h" -a -f "$PLATFORMSDKLIB\GdiPlus.lib"; then
     use_gdiplus="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_GDIPLUS,1,[Define if you have the GDI+ framework for Windows])
-    GDIPLUS_HEADS=`cd "$PLATFORMSDKINCLUDE" && echo GdiPlus*.h`
-    GDIPLUS_CFLAGS=''
-    GDIPLUS_LIBS=''
-    AC_SUBST([GDIPLUS_HEADS])
-    AC_SUBST([GDIPLUS_CFLAGS])
-    AC_SUBST([GDIPLUS_LIBS])
   else
     use_gdiplus="No (missing headers)"
     AC_MSG_WARN(--with-gdiplus requires valid --with-platformsdkincludedir and --with-platformsdklibdir.)
@@ -1926,15 +1919,6 @@ fi
 fi
 fi
 AC_SUBST([TCLINT_INCLUDES])
-
-# ------------------------------------
-# triangle.[ch]
-
-if test -f "lib/sfdpgen/triangle.c"; then
-if test -f "lib/sfdpgen/triangle.h"; then
-    AC_DEFINE_UNQUOTED(HAVE_TRIANGLE,1,[Define if triangle.[ch] are available.])
-fi
-fi
 
 # ----------------------------------
 # tcl/tk pkgIndex.tcl generation
