@@ -1292,7 +1292,8 @@ int make_map_from_rectangle_groups(bool include_OK_points,
   */
   double *X;
   int N, nmax, i, j, k, igrp;
-  int *groups, K = *nart;/* average number of points added per side of rectangle */
+  int *groups;
+  double K = *nart; // average number of points added per side of rectangle
 
   double avgsize[2],  avgsz, h[2], p1, p0;
   double point[2];
@@ -1301,7 +1302,7 @@ int make_map_from_rectangle_groups(bool include_OK_points,
   double bbox[4];
 
   if (K < 0){
-    K = (int) 10/(1+n/400.);/* 0 if n > 3600*/
+    K = round(10 / (1 + n / 400.0)); // 0 if n > 3600
   }
   *nart = 0;
   if (Verbose){
