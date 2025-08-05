@@ -60,6 +60,11 @@ static GVertex *downcast(GtsVertex *base) {
   return (GVertex *)((char *)base - offsetof(GVertex, v));
 }
 
+/// convert a `GVertex` pointer to a pointer to its base class
+static GtsVertex *upcast(GVertex *derived) {
+  return &derived->v;
+}
+
 typedef struct {
     GtsVertexClass parent_class;
 } GVertexClass;
@@ -168,8 +173,8 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
      */
     for (i = 0; i < nsegs; i++) {
 	edges[i] = gts_edge_new(ecl,
-		 (GtsVertex *)vertices[segs[2 * i]],
-		 (GtsVertex *)vertices[segs[2 * i + 1]]);
+		 upcast(vertices[segs[2 * i]]),
+		 upcast(vertices[segs[2 * i + 1]]));
     }
 
     for (i = 0; i < npt; i++)
@@ -185,7 +190,7 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
 					       t->e1, t->e2, t->e3));
 
     for (i = 0; i < npt; i++) {
-	GtsVertex *v4 = (GtsVertex *)vertices[i];
+	GtsVertex *v4 = upcast(vertices[i]);
 	GtsVertex *v = gts_delaunay_add_vertex(surface, v4, NULL);
 
 	/* if v != NULL, it is a previously added pt with the same
