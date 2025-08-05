@@ -1060,7 +1060,7 @@ static void make_lrvn(graph_t * g)
     ND_node_type(rn) = SLACKNODE;
 
     if (GD_label(g) && g != dot_root(g) && !GD_flip(agroot(g))) {
-	int w = MAX(GD_border(g)[BOTTOM_IX].x, GD_border(g)[TOP_IX].x);
+	const double w = fmax(GD_border(g)[BOTTOM_IX].x, GD_border(g)[TOP_IX].x);
 	make_aux_edge(ln, rn, w, 0);
     }
 
