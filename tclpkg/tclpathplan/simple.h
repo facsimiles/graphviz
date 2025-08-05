@@ -20,7 +20,7 @@
 #define prior(v) (((v)==((v)->poly->start))?((v)->poly->finish):((v)-1))
 
     struct position {
-	float x, y;
+	double x, y;
     };
 
 
@@ -37,7 +37,7 @@
     struct intersection {
 	struct vertex *firstv, *secondv;
 	struct polygon *firstp, *secondp;
-	float x, y;
+	double x, y;
     };
 
     struct active_edge {

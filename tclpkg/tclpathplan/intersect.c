@@ -28,16 +28,15 @@ static int sign(double v) {
   also find the sign of their product  */
 static void sgnarea(struct vertex *l, struct vertex *m, int i[])
 {
-    float a, b, c, d, e, f, g, h, t;
-    a = l->pos.x;
-    b = l->pos.y;
-    c = after(l)->pos.x - a;
-    d = after(l)->pos.y - b;
-    e = m->pos.x - a;
-    f = m->pos.y - b;
-    g = after(m)->pos.x - a;
-    h = after(m)->pos.y - b;
-    t = c * f - d * e;
+    const double a = l->pos.x;
+    const double b = l->pos.y;
+    const double c = after(l)->pos.x - a;
+    const double d = after(l)->pos.y - b;
+    const double e = m->pos.x - a;
+    const double f = m->pos.y - b;
+    const double g = after(m)->pos.x - a;
+    const double h = after(m)->pos.y - b;
+    double t = c * f - d * e;
     i[0] = sign(t);
     t = c * h - d * g;
     i[1] = sign(t);
@@ -90,10 +89,9 @@ static int online(struct vertex *l, struct vertex *m, int i)
 }
 
 /* determine point of detected intersections  */
-static int intpoint(struct vertex *l, struct vertex *m, float *x, float *y, int cond)
-{
+static int intpoint(struct vertex *l, struct vertex *m, double *x, double *y,
+                    int cond) {
     struct position ls, le, ms, me, pt1, pt2;
-    float m1, m2, c1, c2;
 
     if (cond <= 0)
 	return (0);
@@ -112,10 +110,10 @@ static int intpoint(struct vertex *l, struct vertex *m, float *x, float *y, int 
 	    *x = ms.x;
 	    *y = le.y + SLOPE(ls, le) * (*x - le.x);
 	} else {
-	    m1 = SLOPE(ms, me);
-	    m2 = SLOPE(ls, le);
-	    c1 = ms.y - m1 * ms.x;
-	    c2 = ls.y - m2 * ls.x;
+	    const double m1 = SLOPE(ms, me);
+	    const double m2 = SLOPE(ls, le);
+	    const double c1 = ms.y - m1 * ms.x;
+	    const double c2 = ls.y - m2 * ls.x;
 	    *x = (c2 - c1) / (m1 - m2);
 	    *y = (m1 * c2 - c1 * m2) / (m1 - m2);
 	}
@@ -160,7 +158,7 @@ void find_intersection(struct vertex *l,
 		  struct vertex *m,
 		  struct intersection ilist[], struct data *input)
 {
-    float x, y;
+    double x, y;
     int i[3];
     sgnarea(l, m, i);
 
