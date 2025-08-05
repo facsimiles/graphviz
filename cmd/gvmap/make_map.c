@@ -1353,7 +1353,6 @@ int make_map_from_rectangle_groups(bool include_OK_points,
       const double area = (bbox[1] - bbox[0]) * (bbox[3] - bbox[2]);
       shore_depth_tol = sqrt(area / n);
       GV_INFO("setting shore length ======%f", shore_depth_tol);
-    } else {
     }
 
     /* add artificial points in an anti-clockwise fashion */
