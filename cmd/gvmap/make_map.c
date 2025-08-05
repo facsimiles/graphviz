@@ -1367,7 +1367,7 @@ int make_map_from_rectangle_groups(bool include_OK_points,
       igrp = grouping[i];
       double nadded[2] = {0};
       for (j = 0; j < 2; j++) {
-	if (avgsz != 0){
+	if (avgsz > 0){
 	  nadded[j] = round(K * sizes[i * dim + j] / avgsz);
 	}
       }
