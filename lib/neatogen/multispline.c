@@ -1114,7 +1114,7 @@ static void resetGraph(tgraph *g, int ncnt, int ecnt,
 }
 
 #define PQTYPE int
-#define PQVTYPE float
+#define PQVTYPE double
 
 #define PQ_TYPES
 #include <neatogen/fPQ.h>
