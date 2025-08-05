@@ -1297,7 +1297,6 @@ int make_map_from_rectangle_groups(bool include_OK_points,
 
   double avgsize[2],  avgsz, h[2], p1, p0;
   double point[2];
-  double delta[2];
   double bbox[4];
 
   if (K < 0){
@@ -1357,10 +1356,9 @@ int make_map_from_rectangle_groups(bool include_OK_points,
 
     /* add artificial points in an anti-clockwise fashion */
 
+    double delta[2] = {0};
     if (K > 0){
       delta[0] = .5*avgsize[0]/K; delta[1] = .5*avgsize[1]/K;/* small perturbation to make boundary between labels looks more fractal */
-    } else {
-      delta[0] = delta[1] = 0.;
     }
     for (i = 0; i < n; i++){
       igrp = grouping[i];
