@@ -23,18 +23,27 @@ struct pq {
   int min;        ///< index of minimum element
 };
 
-static int PQbucket(pq_t *pq, Halfedge *he) {
-    int bucket;
-    double b;
+/// convert a `double` to an `int`, between bounds
+///
+/// @param lower Lower bound to limit to
+/// @param v Value to convert
+/// @param upper Upper bound to limit to
+/// @return A converted value in the range [lower, upper]
+static int clamp(int lower, double v, int upper) {
+  assert(upper >= lower);
+  if (v < lower) {
+    return lower;
+  }
+  if (v > upper) {
+    return upper;
+  }
+  return (int)v;
+}
 
+static int PQbucket(pq_t *pq, Halfedge *he) {
     const double deltay = ymax - ymin;
-    b = (he->ystar - ymin) / deltay * pq->hashsize;
-    if (b < 0)
-	bucket = 0;
-    else if (b >= pq->hashsize)
-	bucket = pq->hashsize - 1;
-    else
-	bucket = b;
+    const int bucket =
+      clamp(0, (he->ystar - ymin) / deltay * pq->hashsize, pq->hashsize - 1);
     if (bucket < pq->min)
 	pq->min = bucket;
     return bucket;
