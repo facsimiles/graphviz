@@ -768,20 +768,6 @@ windows-cmake-x64-debug-build:
             metrics: metrics.txt
             junit: report.xml
 
-windows-cmake-Win32-asan-release-build:
-    <<: *windows_build_without_artifacts_definition
-    before_script:
-        - $Env:project_platform = "Win32"
-        - $Env:configuration = "Release"
-        - $Env:BUILD_SHARED_LIBS = "ON"
-        - $Env:CFLAGS = "-fsanitize=address"
-        - $Env:CXXFLAGS = "-fsanitize=address"
-        # Ensure `clang_rt.asan_dynamic-i386.dll` is found
-        - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
-        - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
-        - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x86"
-    timeout: 2 hours
-
 windows-cmake-Win32-asan-debug-build:
     <<: *windows_build_without_artifacts_definition
     before_script:
@@ -794,20 +780,6 @@ windows-cmake-Win32-asan-debug-build:
         - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
         - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x86"
-    timeout: 2 hours
-
-windows-cmake-x64-asan-release-build:
-    <<: *windows_build_without_artifacts_definition
-    before_script:
-        - $Env:project_platform = "x64"
-        - $Env:configuration = "Release"
-        - $Env:BUILD_SHARED_LIBS = "ON"
-        - $Env:CFLAGS = "-fsanitize=address"
-        - $Env:CXXFLAGS = "-fsanitize=address"
-        # Ensure `clang_rt.asan_dynamic-x86_64.dll` is found
-        - $msvc_path = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
-        - $msvc_version = & invoke-Expression "Get-ChildItem -Path '$msvc_path' -Name"
-        - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x64"
     timeout: 2 hours
 
 windows-cmake-x64-asan-debug-build:
