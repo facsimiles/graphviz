@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/itos.h>
 #include <util/streq.h>
 
@@ -299,17 +300,13 @@ static int dotLayout(Agraph_t *g) {
     dot_init_subg(g,g);
     dot_init_node_edge(g);
 
-    if (Verbose) {
-        fputs("Starting phase 1 [dot_rank]\n", stderr);
-    }
+    GV_INFO("Starting phase 1 [dot_rank]");
     dot_rank(g);
     if (maxphase == 1) {
         attach_phase_attrs (g, 1);
         return 0;
     }
-    if (Verbose) {
-        fputs("Starting phase 2 [dot_mincross]\n", stderr);
-    }
+    GV_INFO("Starting phase 2 [dot_mincross]");
     const int rc = dot_mincross(g);
     if (rc != 0) {
         return rc;
@@ -318,9 +315,7 @@ static int dotLayout(Agraph_t *g) {
         attach_phase_attrs (g, 2);
         return 0;
     }
-    if (Verbose) {
-        fputs("Starting phase 3 [dot_position]\n", stderr);
-    }
+    GV_INFO("Starting phase 3 [dot_position]");
     dot_position(g);
     if (maxphase == 3) {
         attach_phase_attrs (g, 2);  /* positions will be attached on output */

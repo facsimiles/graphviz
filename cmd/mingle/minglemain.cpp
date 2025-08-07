@@ -19,6 +19,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <utility>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <vector>
 
@@ -433,8 +434,7 @@ static int bundle(Agraph_t *g, const opts_t &opts) {
 			}
 		}
 	}
-	if (Verbose)
-		std::cerr << "n = " << A->m << " nz = " << nz << '\n';
+	GV_DEBUG("n = %d nz = %d", A->m, nz);
 
 	SparseMatrix B = nearest_neighbor_graph(nz, std::min(opts.nneighbors, nz), xx);
 
@@ -472,8 +472,7 @@ int main(int argc, char *argv[])
 		    agclose(prev);
 		prev = g;
 		fname = fileName(&ig);
-		if (Verbose)
-		    std::cerr << "Process graph " << agnameof(g) << " in file " << fname << '\n';
+		GV_INFO("Process graph %s in file %s", agnameof(g), fname);
 		rv |= bundle(g, opts);
 	}
 

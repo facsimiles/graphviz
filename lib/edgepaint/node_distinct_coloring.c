@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/random.h>
 
 static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
@@ -129,7 +130,8 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
       }
     }
 
-    if (Verbose) fprintf(stderr,"iter ---- %d ---, color_diff = %f, color_diff_sum = %f\n", iter, color_diff, color_diff_sum);
+    GV_DEBUG("iter ---- %d ---, color_diff = %f, color_diff_sum = %f", iter,
+             color_diff, color_diff_sum);
   }
 
   if (scheme == COLOR_LAB){
@@ -192,7 +194,7 @@ int node_distinct_coloring(const char *color_scheme, int *lightness,
 
   cdim = *cdim0 = 3;
   if (strcmp(color_scheme, "lab") == 0){
-    if (Verbose) fprintf(stderr,"lab\n");
+    GV_DEBUG("lab");
     scheme =  COLOR_LAB;
     qt = lab_gamut_quadtree(lightness, max_qtree_level);
     if (!qt){
@@ -200,7 +202,7 @@ int node_distinct_coloring(const char *color_scheme, int *lightness,
       return -1;
     }
   } else if (strcmp(color_scheme, "rgb") == 0){
-    if (Verbose) fprintf(stderr,"rgb\n");
+    GV_DEBUG("rgb");
     scheme = COLOR_RGB;
   } else if (strcmp(color_scheme, "gray") == 0){
     scheme = COLOR_GRAY;

@@ -33,6 +33,7 @@
 #include <pathplan/pathgeom.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
 #include <util/list.h>
@@ -3874,7 +3875,8 @@ void gv_fixLocale (int set)
 }
 
 
-#define FINISH() if (Verbose) fprintf(stderr,"gvRenderJobs %s: %.2f secs.\n", agnameof(g), elapsed_sec())
+#define FINISH()                                                               \
+  GV_DEBUG("gvRenderJobs %s: %.2f secs.", agnameof(g), elapsed_sec())
 
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
