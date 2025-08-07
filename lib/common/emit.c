@@ -3904,7 +3904,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    job->input_filename = NULL;
 	    job->graph_index = 0;
 	}
-	job->common = &(gvc->common);
+	job->common = &gvc->common;
 	job->layout_type = gvc->layout.type;
 	job->keybindings = gvevent_key_binding;
 	job->numkeys = gvevent_key_binding_size;

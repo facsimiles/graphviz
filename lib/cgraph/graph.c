@@ -137,14 +137,12 @@ int agclose(Agraph_t * g)
 	agdelsubg(par, g);
 	free(g);
     } else {
-	void *clos;
 	while (g->clos->cb)
 	    agpopdisc(g, g->clos->cb->f);
 	AGDISC(g, id)->close(AGCLOS(g, id));
 	if (agstrclose(g)) return FAILURE;
-	clos = g->clos;
+	free(g->clos);
 	free(g);
-	free(clos);
     }
     return SUCCESS;
 }

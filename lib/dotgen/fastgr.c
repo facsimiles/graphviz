@@ -107,8 +107,8 @@ void zapinlist(elist * L, edge_t * e)
 void delete_fast_edge(edge_t * e)
 {
     assert(e != NULL);
-    zapinlist(&(ND_out(agtail(e))), e);
-    zapinlist(&(ND_in(aghead(e))), e);
+    zapinlist(&ND_out(agtail(e)), e);
+    zapinlist(&ND_in(aghead(e)), e);
 }
 
 void other_edge(edge_t * e)

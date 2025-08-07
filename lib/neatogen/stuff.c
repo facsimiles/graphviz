@@ -26,12 +26,6 @@ static Agnode_t *choose_node(graph_t *, int);
 static void make_spring(graph_t *, Agnode_t *, Agnode_t *, double);
 static void move_node(graph_t *, int, Agnode_t *);
 
-static double fpow32(double x)
-{
-    x = sqrt(x);
-    return x * x * x;
-}
-
 static double distvec(double *p0, double *p1, double *vec)
 {
     int k;
@@ -372,7 +366,7 @@ void diffeq_model(graph_t * G, int nG)
 	for (j = 0; j < i; j++) {
 	    f = Spring_coeff / (D[i][j] * D[i][j]);
 	    if ((e = agfindedge(G, GD_neato_nlist(G)[i], GD_neato_nlist(G)[j])))
-		f = f * ED_factor(e);
+		f *= ED_factor(e);
 	    K[i][j] = K[j][i] = f;
 	}
     }
@@ -452,7 +446,7 @@ void solve_model(graph_t * G, int nG)
 static void update_arrays(graph_t * G, int nG, int i)
 {
     int j, k;
-    double del[MAXDIM], dist, old;
+    double del[MAXDIM], dist;
     node_t *vi, *vj;
 
     vi = GD_neato_nlist(G)[i];
@@ -464,12 +458,11 @@ static void update_arrays(graph_t * G, int nG, int i)
 	vj = GD_neato_nlist(G)[j];
 	dist = distvec(ND_pos(vi), ND_pos(vj), del);
 	for (k = 0; k < Ndim; k++) {
-	    old = GD_t(G)[i][j][k];
 	    GD_t(G)[i][j][k] =
 		GD_spring(G)[i][j] * (del[k] -
 				      GD_dist(G)[i][j] * del[k] / dist);
 	    GD_sum_t(G)[i][k] += GD_t(G)[i][j][k];
-	    old = GD_t(G)[j][i][k];
+	    const double old = GD_t(G)[j][i][k];
 	    GD_t(G)[j][i][k] = -GD_t(G)[i][j][k];
 	    GD_sum_t(G)[j][k] += GD_t(G)[j][i][k] - old;
 	}
@@ -496,9 +489,9 @@ static void D2E(graph_t * G, int nG, int n, double *M)
 	sq = 0.0;
 	for (k = 0; k < Ndim; k++) {
 	    t[k] = ND_pos(vn)[k] - ND_pos(vi)[k];
-	    sq += (t[k] * t[k]);
+	    sq += t[k] * t[k];
 	}
-	scale = 1 / fpow32(sq);
+	scale = 1 / pow(sq, 1.5);
 	for (k = 0; k < Ndim; k++) {
 	    for (l = 0; l < k; l++)
 		Msub(l, k) += K[n][i] * D[n][i] * t[k] * t[l] * scale;
@@ -605,8 +598,7 @@ static void heapdown(node_t * v)
     i = ND_heapindex(v);
     while ((left = 2 * i + 1) < Heapsize) {
 	right = left + 1;
-	if ((right < Heapsize)
-	    && (ND_dist(Heap[right]) < ND_dist(Heap[left])))
+	if (right < Heapsize && ND_dist(Heap[right]) < ND_dist(Heap[left]))
 	    c = right;
 	else
 	    c = left;

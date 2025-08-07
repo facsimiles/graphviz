@@ -105,9 +105,9 @@ static char *gettok(char **sp) {
   if ((c = *rs) == '\0')
     return NULL;
   while ((c = *rs)) {
-    if (q && (q == c)) { /* end quote */
+    if (q && q == c) { /* end quote */
       q = '\0';
-    } else if (!q && ((c == '"') || (c == '\''))) {
+    } else if (!q && (c == '"' || c == '\'')) {
       q = c;
     } else if (c == '\\') {
       rs++;
@@ -632,7 +632,7 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
     seed.out.node = n;
     seed.in.node = 0;
     curn = n;
-    entry = &(seed.out);
+    entry = &seed.out;
     state->tvedge = cure = 0;
     MARK(nd);
     PUSH(nd, 0);
@@ -676,7 +676,7 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
         POP(nd);
         cure = entry;
         entry = edge_stack_is_empty(&stk) ? NULL : edge_stack_pop_back(&stk);
-        if (entry == &(seed.out))
+        if (entry == &seed.out)
           state->tvedge = 0;
         else
           state->tvedge = entry;
