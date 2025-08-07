@@ -27,11 +27,13 @@
 
 #include <assert.h>
 #include <expr/exop.h>
+#include <stdalign.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ast/ast.h>
+#include <util/arena.h>
 #include <util/gv_ctype.h>
 #include <util/streq.h>
 
@@ -416,9 +418,10 @@ switch_item	:	case_list statement_list
 				sw->lastcase = $$;
 				const size_t n = sw->cap;
 				sw->cur = 0;
-				$$->data.select.constant = exalloc(expr.program, (n + 1) * sizeof(Extype_t*));
+				$$->data.select.constant = gv_arena_alloc(&expr.program->vm,
+				                                          alignof(Extype_t *),
+				                                          (n + 1) * sizeof(Extype_t*));
 				memcpy($$->data.select.constant, sw->base, n * sizeof(Extype_t*));
-				$$->data.select.constant[n] = 0;
 			}
 			else
 				$$->data.select.constant = 0;
@@ -594,7 +597,7 @@ expr		:	'(' expr ')'
 				 */
 				if ($$->type == STRING) {
 					$$->data.constant.value.string =
-						vmstrdup(expr.program->vm, $$->data.constant.value.string);
+						gv_arena_strdup(&expr.program->vm, $$->data.constant.value.string);
 				}
 				$$->binary = false;
 				$$->op = CONSTANT;
@@ -1147,8 +1150,7 @@ members	:	/* empty */
 		{
 			Exref_t*	r;
 
-			r = ALLOCATE(expr.program, Exref_t);
-			*r = (Exref_t){0};
+			r = ARENA_NEW(&expr.program->vm, Exref_t);
 			r->symbol = $1;
 			expr.refs = r;
 			r->next = 0;
@@ -1160,13 +1162,11 @@ members	:	/* empty */
 			Exref_t*	r;
 			Exref_t*	l;
 
-			r = ALLOCATE(expr.program, Exref_t);
-			*r = (Exref_t){0};
+			r = ARENA_NEW(&expr.program->vm, Exref_t);
 			r->symbol = $3;
 			r->index = 0;
 			r->next = 0;
-			l = ALLOCATE(expr.program, Exref_t);
-			*l = (Exref_t){0};
+			l = ARENA_NEW(&expr.program->vm, Exref_t);
 			l->symbol = $2;
 			l->index = 0;
 			l->next = r;

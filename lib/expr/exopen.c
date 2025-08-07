@@ -43,10 +43,7 @@ exopen(Exdisc_t* disc)
 	if (!(program = calloc(1, sizeof(Expr_t))))
 		return 0;
 	static Dtdisc_t symdisc = {.key = offsetof(Exid_t, name), .freef = free_exid};
-	if (!(program->symbols = dtopen(&symdisc, Dtset)) ||
-	    !(program->vm = vmopen()) ||
-	    !(program->ve = vmopen()))
-	{
+	if (!(program->symbols = dtopen(&symdisc, Dtset))) {
 		exclose(program);
 		return 0;
 	}

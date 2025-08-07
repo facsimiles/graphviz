@@ -17,11 +17,13 @@
 
 #include "config.h"
 #include <expr/exlib.h>
+#include <stdalign.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <util/agxbuf.h>
+#include <util/arena.h>
 #include <util/gv_ctype.h>
 #include <util/streq.h>
 #include <util/unreachable.h>
@@ -506,8 +508,7 @@ extoken_fn(Expr_t* ex)
 			s = agxbuse(&ex->tmp);
 			if (q == '"' || (ex->disc->flags & EX_CHARSTRING))
 			{
-				if (!(ex_lval.string = vmstrdup(ex->vm, s)))
-					goto eof;
+				ex_lval.string = gv_arena_strdup(&ex->vm, s);
 				stresc(ex_lval.string);
 				return STRING;
 			}
@@ -614,11 +615,7 @@ extoken_fn(Expr_t* ex)
 				if (!ex_lval.id)
 				{
 					const size_t size = sizeof(Exid_t) + strlen(s) - EX_NAMELEN + 1;
-					if (!(ex_lval.id = vmalloc(ex->vm, size))) {
-						exnospace();
-						goto eof;
-					}
-					memset(ex_lval.id, 0, size);
+					ex_lval.id = gv_arena_alloc(&ex->vm, alignof(Exid_t), size);
 					strcpy(ex_lval.id->name, s);
 					ex_lval.id->lex = NAME;
 

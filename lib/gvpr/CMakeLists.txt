@@ -51,7 +51,6 @@ target_link_libraries(gvpr PRIVATE
   util
   $<TARGET_OBJECTS:expr>
   $<TARGET_OBJECTS:sfio>
-  $<TARGET_OBJECTS:vmalloc>
 )
 
 if(NOT HAVE_GETOPT_H)

@@ -42,7 +42,6 @@ gvpr_static_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
 	$(top_builddir)/lib/util/libutil_C.la \
-	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
 	$(MATH_LIBS)
 
 EXTRA_DIST = lib
