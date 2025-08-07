@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <util/arena.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,11 +32,10 @@ extern "C" {
 	Site *vertex;
 	double ystar;
 	struct Halfedge *PQnext;
-	struct Halfedge *previous_allocated; ///< used for final clean up
     } Halfedge;
 
 typedef struct {
-  Halfedge *allocated; ///< outstanding live Halfedges
+  arena_t allocated; ///< outstanding live Halfedges
   int hashsize;
   Halfedge **hash;
   Halfedge *leftend;
