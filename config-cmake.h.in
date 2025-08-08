@@ -36,7 +36,6 @@ typedef SSIZE_T ssize_t;
 #cmakedefine HAVE_GD_GIF
 #cmakedefine HAVE_LASI
 #cmakedefine HAVE_LIBZ
-#cmakedefine HAVE_GS
 #cmakedefine HAVE_GTS
 #cmakedefine HAVE_PANGOCAIRO
 #cmakedefine HAVE_POPPLER
