@@ -34,8 +34,6 @@ typedef SSIZE_T ssize_t;
 #cmakedefine HAVE_GD_FONTCONFIG
 #cmakedefine HAVE_GD_FREETYPE
 #cmakedefine HAVE_GD_GIF
-#cmakedefine HAVE_GDK
-#cmakedefine HAVE_GDK_PIXBUF
 #cmakedefine HAVE_LASI
 #cmakedefine HAVE_LIBZ
 #cmakedefine HAVE_GS
