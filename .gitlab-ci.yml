@@ -1448,7 +1448,6 @@ lint_python:
     - python3 --version
     - cat /etc/os-release
     - uname -rms
-    - python3 -m pip install --requirement doc/infosrc/requirements.txt
     - git ls-files -z -- cmd/dot/dot_sandbox '**.py' | xargs -0 -- python3 -m pylint --rcfile=.pylintrc --disable=fixme
     - git ls-files -z -- cmd/dot/dot_sandbox '**.py' | xargs -0 -- python3 -m black --check
     - git ls-files -z -- cmd/dot/dot_sandbox '**.py' | xargs -0 -- python3 -m isort --profile=black --check
