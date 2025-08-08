@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -33,7 +34,7 @@ typedef struct {
 
 typedef struct {
     boxf bb;			/* Bounding box of all objects */
-    unsigned char force;	/* If true, all labels must be placed */
+    bool force; ///< if true, all labels must be placed
 } label_params_t;
 
 int placeLabels(object_t *objs, size_t n_objs, xlabel_t *lbls, size_t n_lbls,

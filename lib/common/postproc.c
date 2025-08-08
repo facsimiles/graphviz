@@ -216,7 +216,7 @@ static void printData(object_t *objs, size_t n_objs, xlabel_t *lbls,
   xlabel_t* xp;
   fprintf (stderr, "%" PRISIZE_T " objs %" PRISIZE_T
 	   " xlabels force=%d bb=(%.02f,%.02f) (%.02f,%.02f)\n",
-	   n_objs, n_lbls, params->force, params->bb.LL.x, params->bb.LL.y,
+	   n_objs, n_lbls, (int)params->force, params->bb.LL.x, params->bb.LL.y,
 	   params->bb.UR.x, params->bb.UR.y);
   if (Verbose < 2) return;
   fprintf(stderr, "objects\n");
@@ -409,7 +409,6 @@ static void addXLabels(Agraph_t * gp)
     size_t n_clbls = 0; // # of set cluster labels
     boxf bb;
     textlabel_t* lp;
-    label_params_t params;
     object_t* objs;
     xlabel_t* lbls;
     Agsym_t* force;
@@ -560,8 +559,7 @@ static void addXLabels(Agraph_t * gp)
 
     force = agfindgraphattr(gp, "forcelabels");
 
-    params.force = late_bool(gp, force, true);
-    params.bb = bb;
+    label_params_t params = {.bb = bb, .force = late_bool(gp, force, true)};
     placeLabels(objs, n_objs, lbls, n_lbls, &params);
     if (Verbose)
 	printData(objs, n_objs, lbls, n_lbls, &params);

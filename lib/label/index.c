@@ -15,20 +15,15 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <util/alloc.h>
 
-LeafList_t *RTreeNewLeafList(Leaf_t * lp)
-{
-    LeafList_t *llp;
-
-    if ((llp = calloc(1, sizeof(LeafList_t)))) {
-	llp->leaf = lp;
-	llp->next = 0;
-    }
+static LeafList_t *RTreeNewLeafList(Leaf_t *lp) {
+    LeafList_t *llp = gv_alloc(sizeof(LeafList_t));
+    *llp = (LeafList_t){.leaf = lp};
     return llp;
 }
 
-LeafList_t *RTreeLeafListAdd(LeafList_t * llp, Leaf_t * lp)
-{
+static LeafList_t *RTreeLeafListAdd(LeafList_t *llp, Leaf_t *lp) {
     if (!lp)
 	return llp;
 
@@ -50,10 +45,8 @@ void RTreeLeafListFree(LeafList_t * llp)
 
 RTree_t *RTreeOpen(void)
 {
-    RTree_t *rtp;
-
-    if ((rtp = calloc(1, sizeof(RTree_t))))
-	rtp->root = RTreeNewIndex();
+    RTree_t *rtp = gv_alloc(sizeof(RTree_t));
+    rtp->root = RTreeNewIndex();
     return rtp;
 }
 
@@ -64,16 +57,14 @@ Node_t *RTreeNewIndex(void ) {
     return x;
 }
 
-static int RTreeClose2(RTree_t * rtp, Node_t * n)
-{
+static void RTreeClose2(RTree_t *rtp, Node_t *n) {
     if (n->level > 0) {
 	for (int i = 0; i < NODECARD; i++) {
 	    if (!n->branch[i].child)
 		continue;
-	    if (!RTreeClose2(rtp, n->branch[i].child)) {
-		free(n->branch[i].child);
-		DisconBranch(n, i);
-	    }
+	    RTreeClose2(rtp, n->branch[i].child);
+	    free(n->branch[i].child);
+	    DisconBranch(n, i);
 	}
     } else {
 	for (int i = 0; i < NODECARD; i++) {
@@ -82,16 +73,13 @@ static int RTreeClose2(RTree_t * rtp, Node_t * n)
 	    DisconBranch(n, i);
 	}
     }
-    return 0;
 }
 
 
-int RTreeClose(RTree_t * rtp)
-{
+void RTreeClose(RTree_t *rtp) {
     RTreeClose2(rtp, rtp->root);
     free(rtp->root);
     free(rtp);
-    return 0;
 }
 
 #ifdef RTDEBUG
