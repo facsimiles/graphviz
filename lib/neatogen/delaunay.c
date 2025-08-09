@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +54,16 @@ typedef struct {
     GtsVertex v;
     int idx;
 } GVertex;
+
+/// convert a `GtsVertex` pointer to a pointer to its derived class
+static GVertex *downcast(GtsVertex *base) {
+  return (GVertex *)((char *)base - offsetof(GVertex, v));
+}
+
+/// convert a `GVertex` pointer to a pointer to its base class
+static GtsVertex *upcast(GVertex *derived) {
+  return &derived->v;
+}
 
 typedef struct {
     GtsVertexClass parent_class;
@@ -143,14 +154,14 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
 
     if (sepArr) {
 	for (i = 0; i < npt; i++) {
-	    GVertex *p = (GVertex *) gts_vertex_new(vcl, x[i], y[i], 0);
+	    GVertex *p = downcast(gts_vertex_new(vcl, x[i], y[i], 0));
 	    p->idx = i;
 	    vertices[i] = p;
 	}
     }
     else {
 	for (i = 0; i < npt; i++) {
-	    GVertex *p = (GVertex *) gts_vertex_new(vcl, x[2*i], x[2*i+1], 0);
+	    GVertex *p = downcast(gts_vertex_new(vcl, x[2*i], x[2*i+1], 0));
 	    p->idx = i;
 	    vertices[i] = p;
 	}
@@ -162,8 +173,8 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
      */
     for (i = 0; i < nsegs; i++) {
 	edges[i] = gts_edge_new(ecl,
-		 (GtsVertex *)vertices[segs[2 * i]],
-		 (GtsVertex *)vertices[segs[2 * i + 1]]);
+		 upcast(vertices[segs[2 * i]]),
+		 upcast(vertices[segs[2 * i + 1]]));
     }
 
     for (i = 0; i < npt; i++)
@@ -179,7 +190,7 @@ tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
 					       t->e1, t->e2, t->e3));
 
     for (i = 0; i < npt; i++) {
-	GtsVertex *v4 = (GtsVertex *)vertices[i];
+	GtsVertex *v4 = upcast(vertices[i]);
 	GtsVertex *v = gts_delaunay_add_vertex(surface, v4, NULL);
 
 	/* if v != NULL, it is a previously added pt with the same
@@ -222,8 +233,8 @@ static int cnt_edge(void *edge, void *stats) {
 
     sp->n++;
     if (sp->delaunay) {
-	sp->delaunay[((GVertex*)e->v1)->idx].nedges++;
-	sp->delaunay[((GVertex*)e->v2)->idx].nedges++;
+	sp->delaunay[downcast(e->v1)->idx].nedges++;
+	sp->delaunay[downcast(e->v2)->idx].nedges++;
     }
 
     return 0;
@@ -239,8 +250,8 @@ static int add_edge(void *edge, void *data) {
     GtsSegment *e = edge;
     v_data *delaunay = data;
 
-    int source = ((GVertex*)e->v1)->idx;
-    int dest = ((GVertex*)e->v2)->idx;
+    int source = downcast(e->v1)->idx;
+    int dest = downcast(e->v2)->idx;
 
     delaunay[source].edges[delaunay[source].nedges++] = dest;
     delaunay[dest].edges[delaunay[dest].nedges++] = source;
@@ -290,8 +301,8 @@ static int addEdge(void *edge, void *state) {
     GtsSegment *e = edge;
     estate *es = state;
 
-    int source = ((GVertex*)e->v1)->idx;
-    int dest = ((GVertex*)e->v2)->idx;
+    int source = downcast(e->v1)->idx;
+    int dest = downcast(e->v2)->idx;
 
     es->edges[2 * es->n] = source;
     es->edges[2 * es->n + 1] = dest;
@@ -416,9 +427,9 @@ static int addFace(void *face, void *state) {
     GtsVertex *v1, *v2, *v3;
 
     gts_triangle_vertices (&f->v.triangle, &v1, &v2, &v3);
-    *ip++ = ((GVertex*)v1)->idx;
-    *ip++ = ((GVertex*)v2)->idx;
-    *ip++ = ((GVertex*)v3)->idx;
+    *ip++ = downcast(v1)->idx;
+    *ip++ = downcast(v2)->idx;
+    *ip++ = downcast(v3)->idx;
 
     ni.nneigh = 0;
     ni.neigh = neigh;
@@ -438,9 +449,9 @@ static int addTri(void *face, void *state) {
     GtsVertex *v1, *v2, *v3;
 
     gts_triangle_vertices (&f->v.triangle, &v1, &v2, &v3);
-    *ip++ = ((GVertex*)v1)->idx;
-    *ip++ = ((GVertex*)v2)->idx;
-    *ip++ = ((GVertex*)v3)->idx;
+    *ip++ = downcast(v1)->idx;
+    *ip++ = downcast(v2)->idx;
+    *ip++ = downcast(v3)->idx;
 
     return 0;
 }

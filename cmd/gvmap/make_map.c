@@ -1291,17 +1291,16 @@ int make_map_from_rectangle_groups(bool include_OK_points,
      
   */
   double *X;
-  int N, nmax, i, j, k, igrp;
-  int *groups, K = *nart;/* average number of points added per side of rectangle */
+  int N, nmax, i, j, igrp;
+  int *groups;
+  double K = *nart; // average number of points added per side of rectangle
 
   double avgsize[2],  avgsz, h[2], p1, p0;
   double point[2];
-  int nadded[2];
-  double delta[2];
   double bbox[4];
 
   if (K < 0){
-    K = (int) 10/(1+n/400.);/* 0 if n > 3600*/
+    K = round(10 / (1 + n / 400.0)); // 0 if n > 3600
   }
   *nart = 0;
   if (Verbose){
@@ -1353,23 +1352,20 @@ int make_map_from_rectangle_groups(bool include_OK_points,
       const double area = (bbox[1] - bbox[0]) * (bbox[3] - bbox[2]);
       shore_depth_tol = sqrt(area / n);
       GV_INFO("setting shore length ======%f", shore_depth_tol);
-    } else {
     }
 
     /* add artificial points in an anti-clockwise fashion */
 
+    double delta[2] = {0};
     if (K > 0){
       delta[0] = .5*avgsize[0]/K; delta[1] = .5*avgsize[1]/K;/* small perturbation to make boundary between labels looks more fractal */
-    } else {
-      delta[0] = delta[1] = 0.;
     }
     for (i = 0; i < n; i++){
       igrp = grouping[i];
+      double nadded[2] = {0};
       for (j = 0; j < 2; j++) {
-	if (avgsz == 0){
-	  nadded[j] = 0;
-	} else {
-	  nadded[j] = (int) K*sizes[i*dim+j]/avgsz;
+	if (avgsz > 0){
+	  nadded[j] = round(K * sizes[i * dim + j] / avgsz);
 	}
       }
 
@@ -1379,7 +1375,7 @@ int make_map_from_rectangle_groups(bool include_OK_points,
 	point[0] = x[i*dim] - sizes[i*dim]/2;
 	p1 = point[1] = x[i*dim+1] + sizes[i*dim + 1]/2;
 	add_point(&N, igrp, &X, &nmax, point, &groups);
-	for (k = 0; k < nadded[0] - 1; k++){
+	for (double k = 0; k < nadded[0] - 1; k++){
 	  point[0] += h[0];
 	  point[1] = p1 + (0.5-drand())*delta[1];
 	  add_point(&N, igrp, &X, &nmax, point, &groups);
@@ -1389,7 +1385,7 @@ int make_map_from_rectangle_groups(bool include_OK_points,
 	point[0] = x[i*dim] + sizes[i*dim]/2;
 	p1 = point[1] = x[i*dim+1] - sizes[i*dim + 1]/2;
 	add_point(&N, igrp, &X, &nmax, point, &groups);
-	for (k = 0; k < nadded[0] - 1; k++){
+	for (double k = 0; k < nadded[0] - 1; k++){
 	  point[0] -= h[0];
 	  point[1] = p1 + (0.5-drand())*delta[1];
 	  add_point(&N, igrp, &X, &nmax, point, &groups);
@@ -1402,7 +1398,7 @@ int make_map_from_rectangle_groups(bool include_OK_points,
 	p0 = point[0] = x[i*dim] - sizes[i*dim]/2;
 	point[1] = x[i*dim+1] - sizes[i*dim + 1]/2;
 	add_point(&N, igrp, &X, &nmax, point, &groups);
-	for (k = 0; k < nadded[1] - 1; k++){
+	for (double k = 0; k < nadded[1] - 1; k++){
 	  point[0] = p0 + (0.5-drand())*delta[0];
 	  point[1] += h[1];
 	  add_point(&N, igrp, &X, &nmax, point, &groups);
@@ -1412,7 +1408,7 @@ int make_map_from_rectangle_groups(bool include_OK_points,
 	p0 = point[0] = x[i*dim] + sizes[i*dim]/2;
 	point[1] = x[i*dim+1] + sizes[i*dim + 1]/2;
 	add_point(&N, igrp, &X, &nmax, point, &groups);
-	for (k = 0; k < nadded[1] - 1; k++){
+	for (double k = 0; k < nadded[1] - 1; k++){
 	  point[0] = p0 + (0.5-drand())*delta[0];
 	  point[1] -= h[1];
 	  add_point(&N, igrp, &X, &nmax, point, &groups);

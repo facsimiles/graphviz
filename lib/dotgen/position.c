@@ -458,9 +458,7 @@ static void separate_subclust(graph_t * g)
 	    low = GD_clust(g)[i];
 	    high = GD_clust(g)[j];
 	    if (GD_minrank(low) > GD_minrank(high)) {
-		graph_t *temp = low;
-		low = high;
-		high = temp;
+		SWAP(&low, &high);
 	    }
 	    if (GD_maxrank(low) < GD_minrank(high))
 		continue;
@@ -1062,7 +1060,7 @@ static void make_lrvn(graph_t * g)
     ND_node_type(rn) = SLACKNODE;
 
     if (GD_label(g) && g != dot_root(g) && !GD_flip(agroot(g))) {
-	int w = MAX(GD_border(g)[BOTTOM_IX].x, GD_border(g)[TOP_IX].x);
+	const double w = fmax(GD_border(g)[BOTTOM_IX].x, GD_border(g)[TOP_IX].x);
 	make_aux_edge(ln, rn, w, 0);
     }
 

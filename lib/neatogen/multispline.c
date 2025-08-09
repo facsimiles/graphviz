@@ -1114,7 +1114,7 @@ static void resetGraph(tgraph *g, int ncnt, int ecnt,
 }
 
 #define PQTYPE int
-#define PQVTYPE float
+#define PQVTYPE double
 
 #define PQ_TYPES
 #include <neatogen/fPQ.h>
@@ -1174,7 +1174,7 @@ triPath(tgraph * g, int n, int v0, int v1, PQ * pq)
 		adjn = e->t;
 	    if (N_VAL(pq, adjn) < 0) {
 		d = -(N_VAL(pq, i) + E_WT(e));
-		if (N_VAL(pq, adjn) == UNSEEN) {
+		if (is_exactly_equal(N_VAL(pq, adjn), UNSEEN)) {
 		    N_VAL(pq, adjn) = d;
 		    N_DAD(adjn) = i;
 		    if (PQinsert(pq, adjn)) {

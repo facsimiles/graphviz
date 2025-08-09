@@ -65,6 +65,7 @@ struct aagextra_s {
 #include <cghdr.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/streq.h>
 #include <util/unreachable.h>
 
@@ -559,8 +560,7 @@ static void newedge(aagscan_t scanner, Agnode_t *t, char *tport, Agnode_t *h, ch
 		char    *hp = hport;
 		if (agtail(e) != aghead(e) && aghead(e) == t) {
 			/* could happen with an undirected edge */
-			char    *temp;
-			temp = tp; tp = hp; hp = temp;
+			SWAP(&tp, &hp);
 		}
 		mkport(scanner, e,TAILPORT_ID,tp);
 		mkport(scanner, e,HEADPORT_ID,hp);

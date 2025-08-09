@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/gv_math.h>
 #include <util/list.h>
 #include <util/overflow.h>
 #include <util/prisize_t.h>
@@ -509,10 +510,7 @@ static void STheapify(STheap_t *heap, size_t i) {
         if (left < heap->size && elt[left]->size < elt[smallest]->size) smallest = left;
         if (right < heap->size && elt[right]->size < elt[smallest]->size) smallest = right;
         if (smallest != i) {
-            subtree_t *temp;
-            temp = elt[i];
-            elt[i] = elt[smallest];
-            elt[smallest] = temp;
+            SWAP(&elt[i], &elt[smallest]);
             elt[i]->heap_index = i;
             elt[smallest]->heap_index = smallest;
             i = smallest;
