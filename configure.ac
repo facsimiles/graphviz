@@ -1512,8 +1512,6 @@ if test "$with_gtkgl" != "yes"; then
 else
   PKG_CHECK_MODULES(GTKGL, [gtkgl-2.0],[
     use_gtkgl="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_GTKGL,1,
-      [Define if you have the gtkgl library])
     AC_SUBST([GTKGL_CFLAGS])
     AC_SUBST([GTKGL_LIBS])
   ],[
