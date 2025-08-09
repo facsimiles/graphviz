@@ -705,13 +705,8 @@ def test_1314():
     assert input.exists(), "unexpectedly missing test case"
 
     # ask Graphviz to process it, which should fail
-    try:
+    with pytest.raises(subprocess.CalledProcessError):
         dot("svg", input)
-    except subprocess.CalledProcessError:
-        return
-
-    # the execution did not fail as expected
-    pytest.fail("dot incorrectly exited with success")
 
 
 def test_1318():
@@ -725,6 +720,28 @@ def test_1318():
 
     # processing this should succeed
     dot("svg", source=source)
+
+
+@pytest.mark.parametrize("testcase", ("1323.dot", "1323_1.dot"))
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1323"
+)
+def test_1323(testcase: str):
+    """
+    these graphs should not generate triangulation warnings/errors
+    https://gitlab.com/graphviz/graphviz/-/issues/1323
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / testcase
+    assert input.exists(), "unexpectedly missing test case"
+
+    stderr = run(["dot", "-Tpng", "-o", os.devnull, input], stderr=subprocess.STDOUT)
+
+    assert (
+        re.search(r"\btriangulation failed\b", stderr) is None
+    ), "triangulation warnings were produced"
+    assert re.search(r"\bError\b", stderr) is None, "error messages were produced"
 
 
 def test_1328():
@@ -3807,15 +3824,16 @@ def test_2355():
     dot("svg", source=graph.getvalue())
 
 
+@pytest.mark.parametrize("testcase", ("2368.dot", "2368_1.dot"))
 @pytest.mark.xfail(strict=True)  # FIXME
-def test_2368():
+def test_2368(testcase: str):
     """
     routesplines should not corrupt its `prev` and `next` indices
     https://gitlab.com/graphviz/graphviz/-/issues/2368
     """
 
     # locate our associated test case in this directory
-    input = Path(__file__).parent / "2368.dot"
+    input = Path(__file__).parent / testcase
     assert input.exists(), "unexpectedly missing test case"
 
     # run it through Graphviz

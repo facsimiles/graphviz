@@ -1,0 +1,40 @@
+digraph vfs {
+	graph [color=lightgray];
+	node [fontsize=10,
+		label="\N",
+		shape=record,
+		style=filled
+	];
+	subgraph cluster_mnt_namespace {
+		graph [fontsize=10,
+			label=mnt_namespace
+		];
+		namespace1	[label="{
+       <f0>struct vfsmount * root       |{<f1>struct list_head list|{<f2>*next|<f3>*prev}}}
+        "];
+	}
+	subgraph cluster_vfsmount {
+		graph [fontsize=10,
+			label="struct vfsmount"
+		];
+		subgraph cluster_mount1 {
+			vfsmount1	[label="{
+       {<f0>struct list_head\nmnt_hash|{<f1>*next|<f2>*prev}}        |<f3>struct vfsmount *mnt_parent        |<f4>struct dentry * \
+mnt_mountpoint       |<f5>struct dentry * mnt_root        |<f6>struct super_block * mnt_sb        |{<f7>struct list_head\nmnt_mounts|{<\
+f8>*next|<f9>*prev}}        |{<f10>struct list_head\nmnt_child|{<f11>*next|<f12>*prev}}        |{<f13>struct list_head\nmnt_list|{<\
+f14>*next|<f15>*prev}}        |<f16>struct namespace * mnt_namespace}
+        "];
+		}
+		subgraph cluster_mount2 {
+			vfsmount2	[label="{
+       {<f0>struct list_head\nmnt_hash|{<f1>*next|<f2>*prev}}        |<f3>struct vfsmount *mnt_parent        |<f4>struct dentry * \
+mnt_mountpoint       |<f5>struct dentry * mnt_root        |<f6>struct super_block * mnt_sb        |{<f7>struct list_head\nmnt_mounts|{<\
+f8>*next|<f9>*prev}}        |{<f10>struct list_head\nmnt_child|{<f11>*next|<f12>*prev}}        |{<f13>struct list_head\nmnt_list|{<\
+f14>*next|<f15>*prev}}        |<f16>struct namespace * mnt_namespace}
+        "];
+		}
+	}
+	namespace1:f2 -> vfsmount1:f13;
+	vfsmount2:f14 -> namespace1:f1;
+	vfsmount2:f15 -> vfsmount1:f13;
+}
