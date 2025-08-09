@@ -48,7 +48,7 @@ static const unsigned char *setclass(const unsigned char *form, bool *accept) {
 
     for (; fmt != ']'; fmt = *form++) {	/* done */
 	if (!fmt)
-	    return (form - 1);
+	    return form - 1;
 
 	/* interval */
 	if (fmt != '-' || form[0] == ']' || form[-2] > form[0])
