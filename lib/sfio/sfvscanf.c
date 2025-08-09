@@ -531,7 +531,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    if (size < 0)
 		size = MAXWIDTH;
 	    if (value) {
-		argv.s = (char *) value;
+		argv.s = value;
 		if (fmt != 'c')
 		    size -= 1;
 	    } else
