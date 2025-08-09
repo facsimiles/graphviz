@@ -467,12 +467,12 @@ static void jpeg_size(usershape_t *us) {
     if (marker == 0xc0) {
       /* Skip length and 2 lengths. */
       if (fseek(us->f, 3, SEEK_CUR) == 0 &&
-          get_int_msb_first(us->f, 2, &size_x) &&
-          get_int_msb_first(us->f, 2, &size_y)) {
+          get_int_msb_first(us->f, 2, &size_y) &&
+          get_int_msb_first(us->f, 2, &size_x)) {
 
         /* Store length. */
-        us->h = size_x;
-        us->w = size_y;
+        us->h = size_y;
+        us->w = size_x;
       }
       return;
     }
@@ -484,10 +484,10 @@ static void jpeg_size(usershape_t *us) {
         return;
 
       /* Get length and store. */
-      if (get_int_msb_first(us->f, 2, &size_x) &&
-          get_int_msb_first(us->f, 2, &size_y)) {
-        us->h = size_x;
-        us->w = size_y;
+      if (get_int_msb_first(us->f, 2, &size_y) &&
+          get_int_msb_first(us->f, 2, &size_x)) {
+        us->h = size_y;
+        us->w = size_x;
       }
       return;
     }
