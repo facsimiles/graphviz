@@ -18,7 +18,7 @@ int main(void) {
   assert(agxbuf_is_inline(&xb));
 
   // construct a string that should fit in the `agxbuf` inline storage
-  char content[sizeof(xb.u.store) + 1] = {0};
+  char content[sizeof(xb.store) + 1] = {0};
   for (size_t i = 0; i < sizeof(content) - 1; ++i) {
     content[i] = 'A' + (char)i;
   }

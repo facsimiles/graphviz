@@ -3548,7 +3548,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
         	gvrender_set_fillcolor(job, fillcolor);
 	}
 
-	if (G_penwidth && ((s=ag_xget(sg,G_penwidth)) && s[0])) {
+	if (G_penwidth && ((s = agxget(sg, G_penwidth)) && s[0])) {
 	    penwidth = late_double(sg, G_penwidth, 1.0, 0.0);
             gvrender_set_penwidth(job, penwidth);
 	}

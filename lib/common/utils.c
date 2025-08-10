@@ -36,7 +36,7 @@
 int late_int(void *obj, attrsym_t *attr, int defaultValue, int minimum) {
     if (attr == NULL)
         return defaultValue;
-    char *p = ag_xget(obj, attr);
+    char *p = agxget(obj, attr);
     if (!p || p[0] == '\0')
         return defaultValue;
     char *endp;
@@ -52,7 +52,7 @@ double late_double(void *obj, attrsym_t *attr, double defaultValue,
                    double minimum) {
     if (!attr || !obj)
         return defaultValue;
-    char *p = ag_xget(obj, attr);
+    char *p = agxget(obj, attr);
     if (!p || p[0] == '\0')
         return defaultValue;
     char *endp;

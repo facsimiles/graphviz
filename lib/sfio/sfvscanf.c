@@ -48,7 +48,7 @@ static const unsigned char *setclass(const unsigned char *form, bool *accept) {
 
     for (; fmt != ']'; fmt = *form++) {	/* done */
 	if (!fmt)
-	    return (form - 1);
+	    return form - 1;
 
 	/* interval */
 	if (fmt != '-' || form[0] == ']' || form[-2] > form[0])
@@ -531,7 +531,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    if (size < 0)
 		size = MAXWIDTH;
 	    if (value) {
-		argv.s = (char *) value;
+		argv.s = value;
 		if (fmt != 'c')
 		    size -= 1;
 	    } else

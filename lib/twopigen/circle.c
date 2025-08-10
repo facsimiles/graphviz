@@ -127,7 +127,7 @@ static void setNStepsToCenter(Agraph_t * g, Agnode_t * n)
 	n = node_queue_pop_front(&q);
 	uint64_t nsteps = SCENTER(n) + 1;
 	for (Agedge_t *ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
-	    if (wt && streq(ag_xget(ep,wt),"0")) continue;
+	    if (wt && streq(agxget(ep,wt), "0")) continue;
 	    if ((next = agtail(ep)) == n)
 		next = aghead(ep);
 	    if (nsteps < SCENTER(next)) {
