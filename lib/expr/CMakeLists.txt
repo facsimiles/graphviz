@@ -33,7 +33,6 @@ target_include_directories(expr PRIVATE
   ..
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}/.. # needed to find generated expr/exparse.h
-  ../vmalloc
   ../sfio
   ../cdt
 )

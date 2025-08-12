@@ -18,6 +18,7 @@
 #include <expr/exlib.h>
 #include <expr/exop.h>
 #include <inttypes.h>
+#include <stdalign.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -28,6 +29,7 @@
 #include <time.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/arena.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/gv_ftell.h>
@@ -131,9 +133,7 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 		if (exnode->data.variable.symbol->index_type == INTEGER) {
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, &v)))
 			{
-				if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t))))
-					exnospace();
-				*b = (Exassoc_t){0};
+				b = ARENA_NEW(&ex->vm, Exassoc_t);
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
 			}
@@ -150,9 +150,7 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 				keyname = v.string;
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, keyname)))
 			{
-				if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t) + strlen(keyname))))
-					exnospace();
-				*b = (Exassoc_t){0};
+				b = gv_arena_alloc(&ex->vm, alignof(Exassoc_t), sizeof(Exassoc_t) + strlen(keyname));
 				strcpy(b->name, keyname);
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
@@ -240,16 +238,14 @@ prformat(void* vp, Sffmt_t* dp)
 			node = excast(fmt->expr, node, to, NULL, 0);
 			fmt->value = exeval(fmt->expr, node, fmt->env);
 			node->data.operand.left = 0;
-			vmfree(fmt->expr->vm, node);
+			gv_arena_free(&fmt->expr->vm, node, sizeof(*node));
 			if (to == STRING)
 			{
 				if (fmt->value.string)
 				{
-					char *const copy = vmstrdup(fmt->expr->vm, fmt->value.string);
-					if (copy == NULL) {
-						exerror("printf: out of memory");
-					}
-					vmfree(fmt->expr->vm, fmt->value.string);
+					char *const copy = gv_arena_strdup(&fmt->expr->vm, fmt->value.string);
+					gv_arena_free(&fmt->expr->vm, fmt->value.string,
+					              strlen(fmt->value.string) + 1);
 					fmt->value.string = copy;
 				}
 				if (!fmt->value.string)
@@ -283,11 +279,8 @@ prformat(void* vp, Sffmt_t* dp)
 	case 'Q': {
 		s = *(char**)vp;
 		char *quoted = fmtquote(s, "$'", "'");
-		*(char**)vp = vmstrdup(fmt->expr->vm, quoted);
+		*(char**)vp = gv_arena_strdup(&fmt->expr->vm, quoted);
 		free(quoted);
-		if (*(char**)vp == NULL) {
-			exerror("printf: out of memory");
-		}
 		dp->fmt = 's';
 		dp->size = -1;
 		break;
@@ -338,11 +331,11 @@ prformat(void* vp, Sffmt_t* dp)
         if (txt.data == NULL) {
             exerror("printf: no time format provided");
         } else {
-            s = vmalloc(fmt->expr->vm, TIME_LEN);
+            s = gv_arena_alloc(&fmt->expr->vm, 1, TIME_LEN);
             stm = localtime(&tm);
             char *format = malloc(sizeof(char) * (txt.size + 1));
-            if (s == NULL || format == NULL) {
-                vmfree(fmt->expr->vm, s);
+            if (format == NULL) {
+                gv_arena_free(&fmt->expr->vm, s, TIME_LEN);
                 exerror("printf: out of memory");
             } else {
                 strncpy(format, txt.data, txt.size);
@@ -465,9 +458,8 @@ scformat(void* vp, Sffmt_t* dp)
 			node->data.variable.symbol->value->data.constant.value.string = 0;
 		fmt->fmt.size = 1024;
 		char *s = node->data.variable.symbol->value->data.constant.value.string;
-		vmfree(fmt->expr->vm, s);
-		s = vmalloc(fmt->expr->vm, sizeof(char) * (size_t)fmt->fmt.size);
-		memset(s, 0, sizeof(char) * (size_t)fmt->fmt.size);
+		gv_arena_free(&fmt->expr->vm, s, strlen(s) + 1);
+		s = gv_arena_alloc(&fmt->expr->vm, 1, (size_t)fmt->fmt.size);
 		memcpy(vp, &s, sizeof(s));
 		node->data.variable.symbol->value->data.constant.value.string = s;
 		break;
@@ -559,10 +551,7 @@ static char*
 str_add(Expr_t* ex, char* l, char* r)
 {
 	size_t sz = strlen(l) + strlen(r) + 1;
-	char *s = vmalloc(ex->ve, sz);
-	if (s == NULL) {
-		return exnospace();
-	}
+	char *const s = gv_arena_alloc(&ex->ve, 1, sz);
 	snprintf(s, sz, "%s%s", l, r);
 	return s;
 }
@@ -587,10 +576,7 @@ static char *str_ior(Expr_t *ex, const char *l, const char *r) {
   }
 
   // allocate a buffer to store this
-  char *result = vmalloc(ex->ve, len);
-  if (result == NULL) {
-    return exnospace();
-  }
+  char *const result = gv_arena_alloc(&ex->ve, 1, len);
 
   // write the result
   size_t i = 0;
@@ -609,7 +595,6 @@ static char *str_ior(Expr_t *ex, const char *l, const char *r) {
     }
   }
   assert(i + 1 == len && "incorrect preceding length computation");
-  result[i] = '\0';
 
   return result;
 }
@@ -629,10 +614,7 @@ static char *str_and(Expr_t *ex, const char *l, const char *r) {
   }
 
   // allocate a buffer to store this
-  char *result = vmalloc(ex->ve, len);
-  if (result == NULL) {
-    return exnospace();
-  }
+  char *const result = gv_arena_alloc(&ex->ve, 1, len);
 
   // write the result
   size_t i = 0;
@@ -644,7 +626,6 @@ static char *str_and(Expr_t *ex, const char *l, const char *r) {
     }
   }
   assert(i + 1 == len && "incorrect preceding length computation");
-  result[i] = '\0';
 
   return result;
 }
@@ -669,10 +650,7 @@ static char *str_xor(Expr_t *ex, const char *l, const char *r) {
   }
 
   // allocate a buffer to store this
-  char *result = vmalloc(ex->ve, len);
-  if (result == NULL) {
-    return exnospace();
-  }
+  char *const result = gv_arena_alloc(&ex->ve, 1, len);
 
   // write the result
   size_t i = 0;
@@ -691,7 +669,6 @@ static char *str_xor(Expr_t *ex, const char *l, const char *r) {
     }
   }
   assert(i + 1 == len && "incorrect preceding length computation");
-  result[i] = '\0';
 
   return result;
 }
@@ -711,10 +688,7 @@ static char *str_mod(Expr_t *ex, const char *l, const char *r) {
   }
 
   // allocate a buffer to store this
-  char *result = vmalloc(ex->ve, len);
-  if (result == NULL) {
-    return exnospace();
-  }
+  char *const result = gv_arena_alloc(&ex->ve, 1, len);
 
   // write the result
   size_t i = 0;
@@ -726,7 +700,6 @@ static char *str_mod(Expr_t *ex, const char *l, const char *r) {
     }
   }
   assert(i + 1 == len && "incorrect preceding length computation");
-  result[i] = '\0';
 
   return result;
 }
@@ -748,10 +721,7 @@ static char *str_mpy(Expr_t *ex, const char *l, const char *r) {
   ++len; // 1 for NUL terminator
 
   // allocate a buffer to store this
-  char *result = vmalloc(ex->ve, len);
-  if (result == NULL) {
-    return exnospace();
-  }
+  char *const result = gv_arena_alloc(&ex->ve, 1, len);
 
   // write the result
   size_t i = 0;
@@ -760,7 +730,6 @@ static char *str_mpy(Expr_t *ex, const char *l, const char *r) {
     result[i] = l[i] == r[i] ? l[i] : ' ';
   }
   assert(i + 1 == len && "incorrect preceding length computation");
-  result[i] = '\0';
 
   return result;
 }
@@ -795,9 +764,7 @@ static void addItem(Expr_t *ex, Dt_t *arr, Extype_t v, char *tok) {
 	Exassoc_t* b;
 
 	if (!(b = dtmatch(arr, &v))) {
-		if (!(b = vmalloc(ex->vm, sizeof(Exassoc_t))))
-	    	exerror("out of space [assoc]");
-		*b = (Exassoc_t){0};
+		b = ARENA_NEW(&ex->vm, Exassoc_t);
 		b->key = v;
 		dtinsert(arr, b);
 	}
@@ -842,13 +809,8 @@ static Extype_t exsplit(Expr_t *ex, Exnode_t *exnode, void *env) {
 	    	break;
 		}
 		sz = strcspn (str, seps);
-		tok = vmalloc(ex->vm, sz + 1);
-		if (tok == NULL) {
-			tok = exnospace();
-		} else {
-			memcpy(tok, str, sz);
-			tok[sz] = '\0';
-		}
+		tok = gv_arena_alloc(&ex->vm, 1, sz + 1);
+		memcpy(tok, str, sz);
 		addItem(ex, arr, v, tok);
 		v.integer++;
 		str += sz;
@@ -884,13 +846,8 @@ static Extype_t extokens(Expr_t *ex, Exnode_t *exnode, void *env) {
 
 		sz = strcspn (str, seps);
 		assert (sz);
-		tok = vmalloc(ex->vm, sz + 1);
-		if (tok == NULL) {
-			tok = exnospace();
-		} else {
-			memcpy(tok, str, sz);
-			tok[sz] = '\0';
-		}
+		tok = gv_arena_alloc(&ex->vm, 1, sz + 1);
+		memcpy(tok, str, sz);
 		addItem(ex, arr, v, tok);
 		v.integer++;
 		str += sz;
@@ -941,18 +898,18 @@ static Extype_t exsub(Expr_t *ex, Exnode_t *exnode, void *env, bool global) {
 		}
 	}
 	if (*pat == '\0') {
-		v.string = vmstrdup(ex->ve, str);
+		v.string = gv_arena_strdup(&ex->ve, str);
 		return v;
 	}
 
 	ng = strgrpmatch(str, pat, sub, sizeof(sub) / (sizeof(sub[0]) * 2), flags);
 	if (ng == 0) {
-		v.string = vmstrdup(ex->ve, str);
+		v.string = gv_arena_strdup(&ex->ve, str);
 		return v;
 	}
     if (sub[0] == sub[1]) {
 		exwarn("pattern match of empty string - ill-specified pattern \"%s\"?", pat);
-		v.string = vmstrdup(ex->ve, str);
+		v.string = gv_arena_strdup(&ex->ve, str);
 		return v;
     } 
 
@@ -977,7 +934,7 @@ static Extype_t exsub(Expr_t *ex, Exnode_t *exnode, void *env, bool global) {
 
 	agxbput(&buffer, s);
 
-	v.string = vmstrdup(ex->ve, agxbuse(&buffer));
+	v.string = gv_arena_strdup(&ex->ve, agxbuse(&buffer));
 	agxbfree(&buffer);
 	return v;
 }
@@ -1005,10 +962,9 @@ static Extype_t exsubstr(Expr_t *ex, Exnode_t *exnode, void *env) {
 	} else
 		l.integer = len - i.integer;
 
-	v.string = vmalloc(ex->ve, l.integer + 1);
+	v.string = gv_arena_alloc(&ex->ve, 1, l.integer + 1);
 	if (exnode->data.string.repl) {
 		strncpy(v.string, s.string + i.integer, l.integer);
-		v.string[l.integer] = '\0';
 	} else
 		strcpy(v.string, s.string + i.integer);
 	return v;
@@ -1118,7 +1074,7 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 		{
 			if (x->type == STRING)
 			{
-				v.string = vmstrdup(ex->vm, v.string);
+				v.string = gv_arena_strdup(&ex->vm, v.string);
 			}
 			if (assoc)
 				assoc->value = v;
@@ -1436,15 +1392,10 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 		print(ex, exnode, env, buffer);
 		const size_t size = gv_ftell(buffer);
 		rewind(buffer);
-		v.string = vmalloc(ex->ve, size + 1);
-		if (v.string == NULL) {
-			v.string = exnospace();
-		} else {
-			if (fread(v.string, size, 1, buffer) < 1) {
-				fprintf(stderr, "failed to read back temporary file\n");
-				graphviz_exit(EXIT_FAILURE);
-			}
-			v.string[size] = '\0';
+		v.string = gv_arena_alloc(&ex->ve, 1, size + 1);
+		if (fread(v.string, size, 1, buffer) < 1) {
+			fprintf(stderr, "failed to read back temporary file\n");
+			graphviz_exit(EXIT_FAILURE);
 		}
 		fclose(buffer);
 		return v;
@@ -1644,10 +1595,10 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 			tmp.data.constant.value = v;
 			if (exnode->data.operand.left->op != DYNAMIC && exnode->data.operand.left->op != ID)
 			{
-				tmp.data.constant.value.string = exprintf(ex->ve, "%g", v.floating);
+				tmp.data.constant.value.string = exprintf(&ex->ve, "%g", v.floating);
 			}
 			else if (ex->disc->convertf(&tmp, STRING, 0)) {
-				tmp.data.constant.value.string = exprintf(ex->ve, "%g", v.floating);
+				tmp.data.constant.value.string = exprintf(&ex->ve, "%g", v.floating);
 			}
 			tmp.type = STRING;
 			return tmp.data.constant.value;
@@ -1792,17 +1743,17 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 			{
 				char *str;
 				if (exnode->data.operand.left->type == UNSIGNED)
-					str = exprintf(ex->ve, "%llu", (unsigned long long)v.integer);
+					str = exprintf(&ex->ve, "%llu", (unsigned long long)v.integer);
 				else
-					str = exprintf(ex->ve, "%lld", v.integer);
+					str = exprintf(&ex->ve, "%lld", v.integer);
 				tmp.data.constant.value.string = str;
 			}
 			else if (ex->disc->convertf(&tmp, STRING, 0)) {
 				char *str = NULL;
 				if (exnode->data.operand.left->type == UNSIGNED)
-					str = exprintf(ex->ve, "%llu", (unsigned long long)v.integer);
+					str = exprintf(&ex->ve, "%llu", (unsigned long long)v.integer);
 				else
-					str = exprintf(ex->ve, "%lld", v.integer);
+					str = exprintf(&ex->ve, "%lld", v.integer);
 				tmp.data.constant.value.string = str;
 			}
 			tmp.type = STRING;
@@ -2018,7 +1969,7 @@ Extype_t exeval(Expr_t *ex, Exnode_t *exnode, void *env) {
  */
 char *exstring(Expr_t * ex, char *s)
 {
-    return vmstrdup(ex->ve, s);
+    return gv_arena_strdup(&ex->ve, s);
 }
 
 /* exstralloc:
@@ -2026,5 +1977,5 @@ char *exstring(Expr_t * ex, char *s)
  */
 void *exstralloc(Expr_t * ex, size_t sz)
 {
-    return vmalloc(ex->ve, sz);
+    return gv_arena_alloc(&ex->ve, 1, sz);
 }

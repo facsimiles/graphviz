@@ -38,7 +38,6 @@ libgvpr_la_LIBADD = $(libgvpr_C_la_LIBADD) \
 	$(top_builddir)/lib/expr/libexpr_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/util/libutil_C.la \
 	$(MATH_LIBS)
 EXTRA_libgvpr_la_DEPENDENCIES = $(libgvpr_C_la_DEPENDENCIES)
 

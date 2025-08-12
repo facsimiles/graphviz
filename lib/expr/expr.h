@@ -33,7 +33,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdio.h>
 #include <util/agxbuf.h>
-#include <vmalloc/vmalloc.h>
+#include <util/arena.h>
 
 #define EX_VERSION	20000101L
 
@@ -75,8 +75,6 @@ extern "C" {
 #define TMASK		((1<<TBITS)-1)
 #define A(n,t)		((t)<<((n)*TBITS))	/* function arg n is type t     */
 #define N(t)		((t)>>=TBITS)	/* shift for next arg           */
-
-#define exalloc(p,n)		vmalloc((p)->vm, (n))
 
 typedef EX_STYPE Extype_t;
 
@@ -221,7 +219,7 @@ struct Expr_s				/* ex program state		*/
 	const char*	id;		/* library id			*/
 	Dt_t*		symbols;	/* symbol table			*/
 	FILE*		file[10];	/* io streams			*/
-	Vmalloc_t*	vm;		/* program store		*/
+	arena_t		vm;		/* program store		*/
 
 #ifdef _EX_PROG_PRIVATE_
 	_EX_PROG_PRIVATE_
@@ -276,7 +274,7 @@ extern void		exinit(void);
 extern char *extypename(Expr_t *p, long);
 extern int		exisAssign(Exnode_t *);
 
-/** Construct a vmalloc-backed string.
+/** Construct an arena-backed string.
  *
  * \param vm Allocator to use.
  * \param fmt printf-style format sting.
@@ -286,7 +284,7 @@ extern int		exisAssign(Exnode_t *);
 #ifdef __GNUC__
 __attribute__((format(printf, 2, 3)))
 #endif
-static inline char *exprintf(Vmalloc_t *vm, const char *fmt, ...) {
+static inline char *exprintf(arena_t *vm, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
 
@@ -298,12 +296,8 @@ static inline char *exprintf(Vmalloc_t *vm, const char *fmt, ...) {
   ++len; // for NUL terminator
   va_end(ap2);
 
-  // ask vmalloc for enough space for this
-  char *s = vmalloc(vm, (size_t)len);
-  if (s == NULL) {
-    va_end(ap);
-    return exnospace();
-  }
+  // ask arena for enough space for this
+  char *const s = gv_arena_alloc(vm, 1, (size_t)len);
 
   // construct the output string
   (void)vsnprintf(s, (size_t)len, fmt, ap);

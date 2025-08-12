@@ -105,6 +105,7 @@ target_link_libraries(neatogen PRIVATE
   pathplan
   sparse
   rbtree
+  util
 )
 
 if(with_ipsepcola)

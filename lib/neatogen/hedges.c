@@ -14,15 +14,12 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/arena.h>
 
 #define DELETED -2
 
 void ELcleanup(el_state_t *st) {
-    while (st->allocated != NULL) {
-	Halfedge *const previous = st->allocated->previous_allocated;
-	free(st->allocated);
-	st->allocated = previous;
-    }
+    gv_arena_reset(&st->allocated);
     free(st->hash);
 }
 
@@ -133,13 +130,11 @@ static int right_of(Halfedge *el, Point *p) {
 }
 
 Halfedge *HEcreate(el_state_t *st, Edge *e, char pm) {
-    Halfedge *answer = gv_alloc(sizeof(*answer));
+    Halfedge *answer = ARENA_NEW(&st->allocated, Halfedge);
     answer->ELedge = e;
     answer->ELpm = pm;
     answer->PQnext = NULL;
     answer->vertex = NULL;
-    answer->previous_allocated = st->allocated;
-    st->allocated = answer;
     return answer;
 }
 

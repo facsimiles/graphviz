@@ -27,11 +27,10 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/agxbuf.h>
+#include <util/arena.h>
 #include <util/gv_ctype.h>
 
 #define ex_lex()		extoken_fn(expr.program)
-
-#define ALLOCATE(p,x)	exalloc(p,sizeof(x))
 
 static int		a2t[] = { 0, FLOATING, INTEGER, STRING };
 
@@ -52,8 +51,7 @@ Exnode_t *exnewnode(Expr_t *p, long op, bool binary, long type, Exnode_t *left,
                     Exnode_t *right) {
 	Exnode_t*	x;
 
-	x = ALLOCATE(p, Exnode_t);
-	*x = (Exnode_t){0};
+	x = ARENA_NEW(&p->vm, Exnode_t);
 	x->op = op;
 	x->type = type;
 	x->binary = binary;
@@ -120,7 +118,7 @@ exfreenode(Expr_t* p, Exnode_t* x)
 		while ((r = rn))
 		{
 			rn = r->next;
-			vmfree(p->vm, r);
+			gv_arena_free(&p->vm, r, sizeof(*r));
 		}
 		if (x->data.variable.index)
 			exfreenode(p, x->data.variable.index);
@@ -159,7 +157,7 @@ exfreenode(Expr_t* p, Exnode_t* x)
 			if (pr->arg)
 				exfreenode(p, pr->arg);
 			pn = pr->next;
-			vmfree(p->vm, pr);
+			gv_arena_free(&p->vm, pr, sizeof(*pr));
 		}
 		break;
 	case PROCEDURE:
@@ -175,7 +173,7 @@ exfreenode(Expr_t* p, Exnode_t* x)
 			exfreenode(p, x->data.operand.right);
 		break;
 	}
-	vmfree(p->vm, x);
+	gv_arena_free(&p->vm, x, sizeof(*x));
 }
 
 /* extract:
@@ -351,11 +349,11 @@ static Exnode_t *exstringOf(Expr_t * p, Exnode_t * x) {
 	    switch (type) {
 	    case FLOATING:
 		x->data.constant.value.string =
-		  exprintf(p->vm, "%g", x->data.constant.value.floating);
+		  exprintf(&p->vm, "%g", x->data.constant.value.floating);
 		break;
 	    case INTEGER:
 		x->data.constant.value.string =
-		  exprintf(p->vm, "%lld", x->data.constant.value.integer);
+		  exprintf(&p->vm, "%lld", x->data.constant.value.integer);
 		break;
 	    default:
 		exerror("internal error: %ld: unknown type", type);
@@ -491,14 +489,14 @@ Exnode_t *excast(Expr_t *p, Exnode_t *x, long type, Exnode_t *xref, int arg) {
 			break;
 		case F2S:
 			x->data.constant.value.string =
-			  exprintf(p->vm, "%g", x->data.constant.value.floating);
+			  exprintf(&p->vm, "%g", x->data.constant.value.floating);
 			break;
 		case I2F:
 			x->data.constant.value.floating = x->data.constant.value.integer;
 			break;
 		case I2S:
 			x->data.constant.value.string =
-			  exprintf(p->vm, "%lld", x->data.constant.value.integer);
+			  exprintf(&p->vm, "%lld", x->data.constant.value.integer);
 			break;
 		case S2F:
 			s =  x->data.constant.value.string;
@@ -579,8 +577,7 @@ preprint(Exnode_t* args)
 		exerror("format string argument expected");
 	if (args->data.operand.left->op != CONSTANT)
 	{
-		x = ALLOCATE(expr.program, Print_t);
-		*x = (Print_t){0};
+		x = ARENA_NEW(&expr.program->vm, Print_t);
 		x->arg = args;
 		return x;
 	}
@@ -602,7 +599,7 @@ preprint(Exnode_t* args)
 	x = 0;
 	for (;;)
 	{
-		q = ALLOCATE(expr.program, Print_t);
+		q = ARENA_NEW(&expr.program->vm, Print_t);
 		if (x)
 			x->next = q;
 		else
@@ -742,7 +739,7 @@ preprint(Exnode_t* args)
 					{
 						if (expr.program->disc->convertf(x->arg, STRING, 0) < 0)
 							exerror("cannot convert string format argument");
-						else x->arg->data.constant.value.string = vmstrdup(expr.program->vm, x->arg->data.constant.value.string);
+						else x->arg->data.constant.value.string = gv_arena_strdup(&expr.program->vm, x->arg->data.constant.value.string);
 					}
 					else if (!expr.program->disc->convertf || (x->arg->op != ID && x->arg->op != DYNAMIC && x->arg->op != F2X && x->arg->op != I2X && x->arg->op != S2X))
 						exerror("string format argument expected");
@@ -756,10 +753,7 @@ preprint(Exnode_t* args)
 			}
 			args = args->data.operand.right;
 		}
-		x->format = vmstrdup(expr.program->vm, agxbuse(&expr.program->tmp));
-		if (x->format == NULL) {
-			x->format = exnospace();
-		}
+		x->format = gv_arena_strdup(&expr.program->vm, agxbuse(&expr.program->tmp));
 		if (!*s)
 			break;
 		f = s;
@@ -795,7 +789,7 @@ int expush(Expr_t *p, const char *name, int line, FILE *fp) {
 		}
 		else
 		{
-			name = vmstrdup(p->vm, name);
+			name = gv_arena_strdup(&p->vm, name);
 			in->close = 1;
 		}
 	}
@@ -897,10 +891,8 @@ void exclose(Expr_t *p) {
 				fclose(p->file[i]);
 		if (p->symbols)
 			dtclose(p->symbols);
-		if (p->vm)
-			vmclose(p->vm);
-		if (p->ve)
-			vmclose(p->ve);
+		gv_arena_reset(&p->vm);
+		gv_arena_reset(&p->ve);
 		agxbfree(&p->tmp);
 		while ((in = p->input))
 		{

@@ -27,6 +27,7 @@ extern "C" {
 #include <sfio/sfio.h>
 #include <stdio.h>
 #include <util/agxbuf.h>
+#include <util/arena.h>
 
 typedef struct Exinput_s		/* input stack			*/
 {
@@ -99,7 +100,7 @@ typedef struct Print_s			/* compiled printf arg node	*/
 	int	subop;		/* operator qualifier		*/
 
 #define _EX_PROG_PRIVATE_ \
-	Vmalloc_t*	ve;		/* eval tmp region		*/ \
+	arena_t		ve;		/* eval tmp region		*/ \
 	Dt_t*		frame;		/* frame symbol table		*/ \
 	Exdisc_t*	disc;		/* user discipline		*/ \
 	Exinput_t*	input;		/* input stack			*/ \

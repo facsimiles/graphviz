@@ -32,7 +32,6 @@ add_subdirectory(sfdpgen)
 add_subdirectory(topfish)
 add_subdirectory(twopigen)
 add_subdirectory(util)
-add_subdirectory(vmalloc)
 add_subdirectory(vpsc)
 add_subdirectory(xdot)
 
