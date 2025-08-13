@@ -22,7 +22,7 @@
   },
   // We need to support an older version of python that not all PyPI packages support.
   "constraints": {
-    "python": "3.8"
+    "python": "3.9"
   },
   "constraintsFiltering": "strict",
   // Rebasing concurrent renovate branches so we can merge them serially chews
