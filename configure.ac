@@ -1356,8 +1356,6 @@ else
         AC_CHECK_LIB(gs, main, GS_LIBS="-lgs", use_ghostscript="No (missing lib)")
         if test "$use_ghostscript" = ""; then
           use_ghostscript="Yes"
-          AC_DEFINE_UNQUOTED(HAVE_GS,1,
-            [Define if you have the gs library])
           AC_SUBST([GS_CFLAGS])
           AC_SUBST([GS_LIBS])
         fi

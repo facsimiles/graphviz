@@ -36,6 +36,7 @@
 #include <common/pointset.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/gv_math.h>
 #include <util/list.h>
 #include <util/unused.h>
 
@@ -52,7 +53,10 @@ int odb_flags;
 #endif
 
 #define CELL(n) ((cell*)ND_alg(n))
-#define MID(a,b) (((a)+(b))/2.0)
+
+static double MID(double a, double b) {
+  return (a + b) / 2.0;
+}
 
 /* cellOf:
  * Given 2 snodes sharing a cell, return the cell.
@@ -65,13 +69,8 @@ cellOf (snode* p, snode* q)
     return p->cells[1];
 }
 
-static pointf
-midPt (cell* cp)
-{
-    pointf p;
-    p.x = MID(cp->bb.LL.x,cp->bb.UR.x);
-    p.y = MID(cp->bb.LL.y,cp->bb.UR.y);
-    return p;
+static pointf midPt(const cell *cp) {
+  return mid_pointf(cp->bb.LL, cp->bb.UR);
 }
 
 /* sidePt:
@@ -288,9 +287,7 @@ static int chancmpid(void *k1, void *k2) {
 static int dcmpid(void *k1, void *k2) {
   const double *key1 = k1;
   const double *key2 = k2;
-  if (*key1 > *key2) return 1;
-  if (*key1 < *key2) return -1;
-  return 0;
+  return fcmp(*key1, *key2);
 }   
 
 static Dtdisc_t chanDisc = {
@@ -612,47 +609,46 @@ segCmp (segment* S1, segment* S2, bend T1, bend T2)
     if (S2->p.p1 < S1->p.p1 && S1->p.p1 < S2->p.p2)
 	return -1*overlapSeg (S2, S1, T1, T2);
     if (S1->p.p1 == S2->p.p1) {
-	if(S1->p.p2==S2->p.p2) {
-	    if (S1->l1 == S2->l1 && S1->l2 == S2->l2)
-		return 0;
-	    if (S2->l1 == S2->l2) {
-		if (S2->l1 == T1) return 1;
-		if (S2->l1 == T2) return -1;
-		if (S1->l1 != T1 && S1->l2 != T1) return 1;
-		if (S1->l1 != T2 && S1->l2 != T2) return -1;
-		return 0;
-	    }
-	    if (S2->l1 == T1 && S2->l2 == T2) {
-		if (S1->l1 != T1 && S1->l2 == T2) return 1;
-		if (S1->l1 == T1 && S1->l2 != T2) return -1;
-		return 0;
-	    }
-	    if (S2->l2 == T1 && S2->l1 == T2) {
-		if (S1->l2 != T1 && S1->l1 == T2) return 1;
-		if (S1->l2 == T1 && S1->l1 != T2) return -1;
-		return 0;
-	    }
-	    if (S2->l1 == B_NODE && S2->l2 == T1) {
-		return ellSeg (S1->l1, S1->l2, T1);
-	    }
-	    if (S2->l1 == B_NODE && S2->l2 == T2) {
-		return -1*ellSeg (S1->l1, S1->l2, T2);
-	    }
-	    if (S2->l1 == T1 && S2->l2 == B_NODE) {
-		return ellSeg (S1->l2, S1->l1, T1);
-	    }
-	    /* ((S2->l1==T2)&&(S2->l2==B_NODE)) */
-	    return -1 * ellSeg(S1->l2, S1->l1, T2);
-	}
 	if (S1->p.p2 < S2->p.p2) {
 	    if(S1->l2==T1)
 		return eqEndSeg (S2->l1, S1->l1, T1, T2);
 	    return -1 * eqEndSeg(S2->l1, S1->l1, T1, T2);
 	}
-	/* S1->p.p2>S2->p.p2 */
-	if (S2->l2 == T2)
-	    return eqEndSeg(S1->l1, S2->l1, T1, T2);
-	return -1 * eqEndSeg(S1->l1, S2->l1, T1, T2);
+	if (S1->p.p2 > S2->p.p2) {
+	    if (S2->l2 == T2)
+		return eqEndSeg(S1->l1, S2->l1, T1, T2);
+	    return -1 * eqEndSeg(S1->l1, S2->l1, T1, T2);
+	}
+	if (S1->l1 == S2->l1 && S1->l2 == S2->l2)
+	    return 0;
+	if (S2->l1 == S2->l2) {
+	    if (S2->l1 == T1) return 1;
+	    if (S2->l1 == T2) return -1;
+	    if (S1->l1 != T1 && S1->l2 != T1) return 1;
+	    if (S1->l1 != T2 && S1->l2 != T2) return -1;
+	    return 0;
+	}
+	if (S2->l1 == T1 && S2->l2 == T2) {
+	    if (S1->l1 != T1 && S1->l2 == T2) return 1;
+	    if (S1->l1 == T1 && S1->l2 != T2) return -1;
+	    return 0;
+	}
+	if (S2->l2 == T1 && S2->l1 == T2) {
+	    if (S1->l2 != T1 && S1->l1 == T2) return 1;
+	    if (S1->l2 == T1 && S1->l1 != T2) return -1;
+	    return 0;
+	}
+	if (S2->l1 == B_NODE && S2->l2 == T1) {
+	    return ellSeg (S1->l1, S1->l2, T1);
+	}
+	if (S2->l1 == B_NODE && S2->l2 == T2) {
+	    return -1*ellSeg (S1->l1, S1->l2, T2);
+	}
+	if (S2->l1 == T1 && S2->l2 == B_NODE) {
+	    return ellSeg (S1->l2, S1->l1, T1);
+	}
+	/* ((S2->l1==T2)&&(S2->l2==B_NODE)) */
+	return -1 * ellSeg(S1->l2, S1->l1, T2);
     }
     if (S1->p.p2 == S2->p.p1) {
 	if (S1->l2 == S2->l1) return 0;
@@ -1078,15 +1074,14 @@ static double
 vtrack (segment* seg, maze* m)
 {
   channel* chp = chanSearch(m->vchans, seg);
-  const double f = (double)seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
-  double left = chp->cp->bb.LL.x;
-  double right = chp->cp->bb.UR.x;
-  return left + f*(right-left);
+  const double f = seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
+  const pointf interp = interpolate_pointf(f, chp->cp->bb.LL, chp->cp->bb.UR);
+  return interp.x;
 }
 
 static double htrack(segment *seg, maze *m) {
   channel* chp = chanSearch(m->hchans, seg);
-  double f = 1.0 - (double)seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
+  double f = 1.0 - seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
   double lo = chp->cp->bb.LL.y;
   double hi = chp->cp->bb.UR.y;
   return round(lo + f * (hi - lo));
