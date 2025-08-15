@@ -53,7 +53,6 @@ java-devel \
 lua-devel \
 # Language extension gv_perl
 perl \
-perl-ExtUtils-Embed \
 # Language extension gv_php
 php-devel \
 openssl-devel \
