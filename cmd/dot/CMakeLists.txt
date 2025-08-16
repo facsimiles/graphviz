@@ -173,7 +173,10 @@ else()
 endif()
 
 # Aliases to the dot executable (not including '.exe' suffix)
-list(APPEND dot_aliases circo fdp neato osage patchwork sfdp twopi)
+list(APPEND dot_aliases circo fdp neato osage patchwork twopi)
+if(with_sfdp)
+  list(APPEND dot_aliases sfdp)
+endif()
 
 # We use copying instead of symlinking for Cygwin to avoid
 # https://gitlab.com/graphviz/graphviz/-/issues/2123

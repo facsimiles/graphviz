@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The CMake build system now includes man pages for the `circo`, `fdp`, `neato`,
   `sfdp`, and `twopi` aliases. #1753, #2530
 
+### Fixed
+
+- The CMake build system no longer installs an `sfdp` alias when SFDP is
+  disabled (`-Dwith_sfdp=OFF`).
+
 ## [13.1.2] – 2025-08-09
 
 ### Changed
