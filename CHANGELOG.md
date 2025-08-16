@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (13.1.3)]
 
+### Changed
+
+- In the CMake build system, whether GTK-dependent components are built or not
+  can now be controlled by the `-DWITH_GTK={AUTO|ON|OFF}` option. #2714
+
 ## [13.1.2] – 2025-08-09
 
 ### Changed

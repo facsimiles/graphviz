@@ -1492,8 +1492,6 @@ if test "$with_gtk" != "yes"; then
 else
   PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],[
     use_gtk="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_GTK,1,
-      [Define if you have the gtk library])
     AC_SUBST([GTK_CFLAGS])
     AC_SUBST([GTK_LIBS])
   ],[
@@ -1514,8 +1512,6 @@ if test "$with_gtkgl" != "yes"; then
 else
   PKG_CHECK_MODULES(GTKGL, [gtkgl-2.0],[
     use_gtkgl="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_GTKGL,1,
-      [Define if you have the gtkgl library])
     AC_SUBST([GTKGL_CFLAGS])
     AC_SUBST([GTKGL_LIBS])
   ],[
