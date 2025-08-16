@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - In the CMake build system, whether GTK-dependent components are built or not
   can now be controlled by the `-DWITH_GTK={AUTO|ON|OFF}` option. #2714
 - The CMake build system now includes man pages for the `circo`, `dot2gxl`,
-  `fdp`, `gv2gml`, `gv2gxl`, `gxl2dot`, `neato`, `sfdp`, and `twopi` aliases.
-  #1753, #2530
+  `fdp`, `gv2gml`, `gv2gxl`, `gvmap.sh`, `gxl2dot`, `neato`, `sfdp`, and `twopi`
+  aliases. #1753, #2530
 
 ### Fixed
 

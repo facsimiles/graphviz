@@ -133,4 +133,27 @@ if(with_sfdp)
       WORLD_READ WORLD_EXECUTE
   )
 
+  if(GZIP)
+    add_custom_target(man-gvmap-sh ALL
+      DEPENDS gvmap.sh.1.gz
+      COMMENT "gvmap.sh man page"
+    )
+    add_custom_command(
+      OUTPUT gvmap.sh.1.gz
+      COMMAND ${GZIP} -9 --no-name --to-stdout gvmap.sh.1
+        >"${CMAKE_CURRENT_BINARY_DIR}/gvmap.sh.1.gz"
+      MAIN_DEPENDENCY gvmap.sh.1
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMENT "compress gvmap.sh man page"
+    )
+    install(
+      FILES ${CMAKE_CURRENT_BINARY_DIR}/gvmap.sh.1.gz
+      DESTINATION ${MAN_INSTALL_DIR}/man1
+    )
+  else()
+    install(
+      FILES gvmap.sh.1
+      DESTINATION ${MAN_INSTALL_DIR}/man1
+    )
+  endif()
 endif()
