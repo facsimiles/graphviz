@@ -55,7 +55,6 @@ if(PANGOCAIRO_FOUND AND X11_FOUND AND XRENDER_FOUND)
     RENAME vimdot
   )
 
-  find_program(GZIP gzip)
   if(GZIP)
     add_custom_target(man-vimdot ALL DEPENDS vimdot.1.gz
                       COMMENT "vimdot man page")

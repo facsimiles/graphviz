@@ -99,7 +99,6 @@ if(with_sfdp)
     target_link_libraries(gvmap PRIVATE ${GETOPT_LINK_LIBRARIES})
   endif()
 
-  find_program(GZIP gzip)
   if(GZIP)
     add_custom_target(man-gvmap ALL DEPENDS gvmap.1.gz
                       COMMENT "gvmap man page")
