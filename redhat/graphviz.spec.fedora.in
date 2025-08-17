@@ -64,7 +64,7 @@ BuildRequires: gmp-devel gd gd-devel librsvg2-devel
 BuildRequires: ghostscript ghostscript-devel poppler-glib-devel libtool-ltdl libtool-ltdl-devel
 BuildRequires: qt5-qtbase-devel
 BuildRequires: ruby ruby-devel lua-devel
-BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed tcl tcl-devel tk tk-devel
+BuildRequires: perl-devel perl-libs tcl tcl-devel tk tk-devel
 BuildRequires: python3 python3-devel
 
 %if %{ANN}
