@@ -18,9 +18,7 @@ find_package(SVGPP REQUIRED)
 
 enable_testing()
 
-# for convenience, make a library that depends on everything so each
-# separate test can be as small as possible
-add_library(test_common SHARED
+add_library(test_common STATIC
             graphviz_edge.cpp
             graphviz_edge.h
             graphviz_graph.cpp
