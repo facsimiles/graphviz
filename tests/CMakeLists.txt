@@ -63,6 +63,7 @@ target_link_libraries(test_common PUBLIC
   cgraph++
   gvc
   gvc++
+  Catch2::Catch2
 )
 
 # common steps for creating a test case
