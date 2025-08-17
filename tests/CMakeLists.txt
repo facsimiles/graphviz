@@ -12,7 +12,7 @@ else()
   find_package(Boost REQUIRED)
 endif()
 
-find_package(Catch2 REQUIRED)
+find_package(Catch2 3 REQUIRED)
 find_package(RAPIDXML REQUIRED)
 find_package(SVGPP REQUIRED)
 
