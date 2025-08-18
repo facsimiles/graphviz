@@ -32,7 +32,7 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
-#include <util/list.h>
+#include <util/list2.h>
 #include <util/prisize_t.h>
 #include <util/strview.h>
 #include <util/unreachable.h>
@@ -210,19 +210,18 @@ static void init(int argc, char *argv[]) {
     Inputs = argv;
 }
 
-DEFINE_LIST(node_stack, Agnode_t *)
-static node_stack_t Stk;
+static LIST(Agnode_t *) Stk;
 
 static void push(Agnode_t *np) {
   Node_mark(np) = -1;
-  node_stack_push_back(&Stk, np);
+  LIST_PUSH_BACK(&Stk, np);
 }
 
 static Agnode_t *pop(void) {
-  if (node_stack_is_empty(&Stk)) {
+  if (LIST_IS_EMPTY(&Stk)) {
     return NULL;
   }
-  return node_stack_pop_back(&Stk);
+  return LIST_POP_BACK(&Stk);
 }
 
 static int dfs(Agraph_t *g, Agnode_t *n, Agraph_t *out) {
@@ -739,7 +738,7 @@ int main(int argc, char *argv[]) {
     agclose(g);
   }
 
-  node_stack_free(&Stk);
+  LIST_FREE(&Stk);
 
   graphviz_exit(r);
 }
