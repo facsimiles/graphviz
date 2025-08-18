@@ -107,6 +107,7 @@ endif()
 target_link_libraries(gc_bin PRIVATE
   cgraph
   gvc
+  util
 )
 
 install(
