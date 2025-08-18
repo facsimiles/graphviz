@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <stdlib.h>
 #include <util/list.h>
+#include <util/list2.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,12 +27,7 @@ extern "C" {
 	char *action;
     } case_info;
 
-static inline void free_case_info(case_info c) {
-  free(c.guard);
-  free(c.action);
-}
-
-DEFINE_LIST_WITH_DTOR(case_infos, case_info, free_case_info)
+typedef LIST(case_info) case_infos_t;
 
     typedef struct {
 	int l_beging;

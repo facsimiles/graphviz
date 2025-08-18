@@ -2215,10 +2215,10 @@ static case_stmt *mkStmts(Expr_t *prog, char *src, case_infos_t cases,
                           const char *lbl) {
   agxbuf tmp = {0};
 
-  case_stmt *cs = gv_calloc(case_infos_size(&cases), sizeof(case_stmt));
+  case_stmt *cs = gv_calloc(LIST_SIZE(&cases), sizeof(case_stmt));
 
-  for (size_t i = 0; i < case_infos_size(&cases); i++) {
-    case_info *sp = case_infos_at(&cases, i);
+  for (size_t i = 0; i < LIST_SIZE(&cases); i++) {
+    case_info *sp = LIST_AT(&cases, i);
     if (sp->guard) {
       agxbprint(&tmp, "%s_g%" PRISIZE_T, lbl, i);
       cs[i].guard =
@@ -2270,12 +2270,12 @@ static bool mkBlock(comp_block *bp, Expr_t *prog, char *src, parse_block *inp,
   }
 
   codePhase = 2;
-  if (!case_infos_is_empty(&inp->node_stmts)) {
+  if (!LIST_IS_EMPTY(&inp->node_stmts)) {
     static const char PREFIX[] = "_nd";
     agxbuf label = {0};
     symbols[0].type = T_node;
     tchk[V_this][1] = Y(V);
-    bp->n_nstmts = case_infos_size(&inp->node_stmts);
+    bp->n_nstmts = LIST_SIZE(&inp->node_stmts);
     agxbprint(&label, "%s%" PRISIZE_T, PREFIX, i);
     bp->node_stmts = mkStmts(prog, src, inp->node_stmts, agxbuse(&label));
     agxbfree(&label);
@@ -2285,12 +2285,12 @@ static bool mkBlock(comp_block *bp, Expr_t *prog, char *src, parse_block *inp,
   }
 
   codePhase = 3;
-  if (!case_infos_is_empty(&inp->edge_stmts)) {
+  if (!LIST_IS_EMPTY(&inp->edge_stmts)) {
     static const char PREFIX[] = "_eg";
     agxbuf label = {0};
     symbols[0].type = T_edge;
     tchk[V_this][1] = Y(E);
-    bp->n_estmts = case_infos_size(&inp->edge_stmts);
+    bp->n_estmts = LIST_SIZE(&inp->edge_stmts);
     agxbprint(&label, "%s%" PRISIZE_T, PREFIX, i);
     bp->edge_stmts = mkStmts(prog, src, inp->edge_stmts, agxbuse(&label));
     agxbfree(&label);
