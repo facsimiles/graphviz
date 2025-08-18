@@ -26,6 +26,7 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/list.h>
+#include <util/list2.h>
 
 static gmlgraph* G;
 static gmlnode* N;
@@ -56,13 +57,12 @@ void free_edge(gmledge *p) {
     free (p);
 }
 
-void free_graph(gmlgraph *p) {
+static void free_graph(gmlgraph *p) {
     if (!p) return;
     nodes_free(&p->nodelist);
     edges_free(&p->edgelist);
     attrs_free(&p->attrlist);
-    graphs_free(p->graphlist);
-    free(p->graphlist);
+    LIST_FREE(&p->graphlist);
     free (p);
 }
 
@@ -121,12 +121,12 @@ pushG (void)
 {
     gmlgraph* g = gv_alloc(sizeof(gmlgraph));
 
-    g->graphlist = gv_alloc(sizeof(graphs_t));
+    g->graphlist.dtor = free_graph;
     g->parent = G;
     g->directed = -1;
 
     if (G)
-	graphs_append(G->graphlist, g);
+	LIST_APPEND(&G->graphlist, g);
 
     G = g;
 }
@@ -662,8 +662,8 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
 	e = agedge (g, n, h, NULL, 1);
 	addAttrs((Agobj_t*)e, &ep->attrlist, xb, unk);
     }
-    for (size_t i = 0; i < graphs_size(graph->graphlist); ++i) {
-	gmlgraph *const gp = graphs_get(graph->graphlist, i);
+    for (size_t i = 0; i < LIST_SIZE(&graph->graphlist); ++i) {
+	gmlgraph *const gp = LIST_GET(&graph->graphlist, i);
 	mkGraph (gp, g, NULL, xb, unk);
     }
 

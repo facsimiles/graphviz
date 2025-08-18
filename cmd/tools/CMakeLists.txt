@@ -210,6 +210,7 @@ endif()
 
 target_link_libraries(gml2gv PRIVATE
   cgraph
+  util
 )
 
 tool_defaults(gml2gv)

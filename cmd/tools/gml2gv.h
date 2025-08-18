@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <cgraph/cgraph.h>
 #include <util/list.h>
+#include <util/list2.h>
 
 typedef struct {
     unsigned short kind;
@@ -46,12 +47,8 @@ typedef struct gmlgraph {
     attrs_t attrlist;  
     nodes_t nodelist;
     edges_t edgelist;
-    void *graphlist; ///< actually a `graphs_t *`
+    LIST(struct gmlgraph *) graphlist;
 } gmlgraph;
-
-void free_graph(gmlgraph *p);
-
-DEFINE_LIST_WITH_DTOR(graphs, gmlgraph *, free_graph)
 
 extern int gmllex(void);
 extern void gmllexeof(void);
