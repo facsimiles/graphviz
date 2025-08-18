@@ -63,7 +63,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <util/alloc.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 static double get_mq(SparseMatrix A, int *assignment, int *ncluster0, double *mq_in0, double *mq_out0, double **dout0){
   /* given a symmetric matrix representation of a graph and an assignment of nodes into clusters, calculate the modularity quality.
@@ -222,8 +222,6 @@ static void Multilevel_MQ_Clustering_delete(Multilevel_MQ_Clustering grid){
   free(grid);
 }
 
-DEFINE_LIST(ints, int)
-
 static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ_Clustering grid, int maxcluster){
   int *matching = grid->matching;
   SparseMatrix A = grid->A;
@@ -237,7 +235,7 @@ static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ
   double maxgain = 0;
   double total_gain = 0;
 
-  ints_t *neighbors = gv_calloc(n, sizeof(ints_t));
+  LIST(int) *neighbors = gv_calloc(n, sizeof(neighbors[0]));
 
   mq = grid->mq;
   mq_in = grid->mq_in;
@@ -372,8 +370,8 @@ static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ
       jc = matching[jmax];
       if (jc == UNMATCHED){
 	fprintf(stderr, "maxgain=%f, merge %d, %d\n",maxgain, i, jmax);
-	ints_append(&neighbors[nc], jmax);
-	ints_append(&neighbors[nc], i);
+	LIST_APPEND(&neighbors[nc], jmax);
+	LIST_APPEND(&neighbors[nc], i);
 	dout_new[nc] = dout_i + dout_max;
 	matching[i] = matching[jmax] = nc;
 	wgt_new[nc] = wgt[i] + wgt[jmax];
@@ -381,7 +379,7 @@ static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ
 	nc++;
       } else {	
 	fprintf(stderr,"maxgain=%f, merge with existing cluster %d, %d\n",maxgain, i, jc);
-	ints_append(&neighbors[jc], i);
+	LIST_APPEND(&neighbors[jc], i);
 	dout_new[jc] = dout_i + dout_max;
 	wgt_new[jc] += wgt[i];
 	matching[i] = jc;
@@ -394,7 +392,7 @@ static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ
     } else {
       fprintf(stderr,"gain: %f -- no gain, skip merging node %d\n", maxgain, i);
       assert(maxgain <= 0);
-      ints_append(&neighbors[nc], i);
+      LIST_APPEND(&neighbors[nc], i);
       matching[i] = nc;
       deg_intra_new[nc] = deg_intra[i];
       wgt_new[nc] = wgt[i];
@@ -404,12 +402,12 @@ static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ
 
     /* update scaled outdegree of neighbors of i and its merged node/cluster jmax */
     jc = matching[i];
-    for (size_t l = ints_size(&neighbors[jc]) - 1; l != SIZE_MAX; --l) {
-      mask[ints_get(&neighbors[jc], l)] = n + i;
+    for (size_t l = LIST_SIZE(&neighbors[jc]) - 1; l != SIZE_MAX; --l) {
+      mask[LIST_GET(&neighbors[jc], l)] = n + i;
     }
 
-    for (size_t l = ints_size(&neighbors[jc]) - 1; l != SIZE_MAX; --l) {
-      k = ints_get(&neighbors[jc], l);
+    for (size_t l = LIST_SIZE(&neighbors[jc]) - 1; l != SIZE_MAX; --l) {
+      k = LIST_GET(&neighbors[jc], l);
       for (j = ia[k]; j < ia[k+1]; j++){
 	jj = ja[j]; 
 	if (mask[jj] == n+i) continue;/* link to within cluster */
@@ -499,7 +497,7 @@ static Multilevel_MQ_Clustering Multilevel_MQ_Clustering_establish(Multilevel_MQ
   }
 
  RETURN:
-  for (i = 0; i < n; i++) ints_free(&neighbors[i]);
+  for (i = 0; i < n; i++) LIST_FREE(&neighbors[i]);
   free(neighbors);
 
   free(deg_inter);
