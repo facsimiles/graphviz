@@ -30,6 +30,8 @@ target_include_directories(pathplan
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
+target_link_libraries(pathplan PRIVATE util)
+
 # Installation location of library files
 install(
   TARGETS pathplan

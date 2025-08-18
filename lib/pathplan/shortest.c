@@ -15,7 +15,7 @@
 #include <math.h>
 #include <pathplan/pathutil.h>
 #include <pathplan/tri.h>
-#include <util/list.h>
+#include <util/list2.h>
 #include <util/prisize_t.h>
 
 #define DQ_FRONT 1
@@ -45,14 +45,12 @@ typedef struct triangle_t {
     tedge_t e[3];
 } triangle_t;
 
-DEFINE_LIST(triangles, triangle_t)
-
 typedef struct deque_t {
     pointnlink_t **pnlps;
     size_t pnlpn, fpnlpi, lpnlpi, apex;
 } deque_t;
 
-static triangles_t tris;
+static LIST(triangle_t) tris;
 
 static Ppoint_t *ops;
 static size_t opn;
@@ -103,7 +101,7 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
 	return -2;
     }
     size_t pnll = 0;
-    triangles_clear(&tris);
+    LIST_CLEAR(&tris);
 
     deque_t dq = {.pnlpn = polyp->pn * 2};
     dq.pnlps = calloc(dq.pnlpn, POINTNLINKPSIZE);
@@ -163,23 +161,23 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
     }
 
 #if defined(DEBUG) && DEBUG >= 2
-    fprintf(stderr, "triangles\n%" PRISIZE_T "\n", triangles_size(&tris));
-    for (trii = 0; trii < triangles_size(&tris); trii++)
+    fprintf(stderr, "triangles\n%" PRISIZE_T "\n", LIST_SIZE(&tris));
+    for (trii = 0; trii < LIST_SIZE(&tris); trii++)
 	for (ei = 0; ei < 3; ei++)
-	    fprintf(stderr, "%f %f\n", triangles_get(&tris, trii).e[ei].pnl0p->pp->x,
-		    triangles_get(&tris, trii).e[ei].pnl0p->pp->y);
+	    fprintf(stderr, "%f %f\n", LIST_GET(&tris, trii).e[ei].pnl0p->pp->x,
+		    LIST_GET(&tris, trii).e[ei].pnl0p->pp->y);
 #endif
 
     /* connect all pairs of triangles that share an edge */
-    for (trii = 0; trii < triangles_size(&tris); trii++)
-	for (trij = trii + 1; trij < triangles_size(&tris); trij++)
+    for (trii = 0; trii < LIST_SIZE(&tris); trii++)
+	for (trij = trii + 1; trij < LIST_SIZE(&tris); trij++)
 	    connecttris(trii, trij);
 
     /* find first and last triangles */
-    for (trii = 0; trii < triangles_size(&tris); trii++)
+    for (trii = 0; trii < LIST_SIZE(&tris); trii++)
 	if (pointintri(trii, &eps[0]))
 	    break;
-    if (trii == triangles_size(&tris)) {
+    if (trii == LIST_SIZE(&tris)) {
 	prerror("source point not in any triangle");
 	free(dq.pnlps);
 	free(pnlps);
@@ -187,10 +185,10 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
 	return -1;
     }
     ftrii = trii;
-    for (trii = 0; trii < triangles_size(&tris); trii++)
+    for (trii = 0; trii < LIST_SIZE(&tris); trii++)
 	if (pointintri(trii, &eps[1]))
 	    break;
-    if (trii == triangles_size(&tris)) {
+    if (trii == LIST_SIZE(&tris)) {
 	prerror("destination point not in any triangle");
 	free(dq.pnlps);
 	free(pnlps);
@@ -234,12 +232,12 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
     dq.apex = dq.fpnlpi;
     trii = ftrii;
     while (trii != SIZE_MAX) {
-	trip = triangles_at(&tris, trii);
+	trip = LIST_AT(&tris, trii);
 	trip->mark = 2;
 
 	/* find the left and right points of the exiting edge */
 	for (ei = 0; ei < 3; ei++)
-	    if (trip->e[ei].right_index != SIZE_MAX && triangles_get(&tris, trip->e[ei].right_index).mark == 1)
+	    if (trip->e[ei].right_index != SIZE_MAX && LIST_GET(&tris, trip->e[ei].right_index).mark == 1)
 		break;
 	if (ei == 3) {		/* in last triangle */
 	    if (ccw(eps[1], *dq.pnlps[dq.fpnlpi]->pp,
@@ -282,7 +280,7 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
 	}
 	trii = SIZE_MAX;
 	for (ei = 0; ei < 3; ei++)
-	    if (trip->e[ei].right_index != SIZE_MAX && triangles_get(&tris, trip->e[ei].right_index).mark == 1) {
+	    if (trip->e[ei].right_index != SIZE_MAX && LIST_GET(&tris, trip->e[ei].right_index).mark == 1) {
 		trii = trip->e[ei].right_index;
 		break;
 	    }
@@ -349,7 +347,7 @@ static int loadtriangle(pointnlink_t * pnlap, pointnlink_t * pnlbp,
     trip.e[1].pnl0p = pnlbp, trip.e[1].pnl1p = pnlcp, trip.e[1].right_index = SIZE_MAX;
     trip.e[2].pnl0p = pnlcp, trip.e[2].pnl1p = pnlap, trip.e[2].right_index = SIZE_MAX;
 
-    if (triangles_try_append(&tris, trip) != 0) {
+    if (!LIST_TRY_APPEND(&tris, trip)) {
 	prerror("cannot realloc tris");
 	return -1;
     }
@@ -364,8 +362,8 @@ static void connecttris(size_t tri1, size_t tri2) {
 
     for (ei = 0; ei < 3; ei++) {
 	for (ej = 0; ej < 3; ej++) {
-	    tri1p = triangles_at(&tris, tri1);
-	    tri2p = triangles_at(&tris, tri2);
+	    tri1p = LIST_AT(&tris, tri1);
+	    tri2p = LIST_AT(&tris, tri2);
 	    if ((tri1p->e[ei].pnl0p->pp == tri2p->e[ej].pnl0p->pp &&
 		 tri1p->e[ei].pnl1p->pp == tri2p->e[ej].pnl1p->pp) ||
 		(tri1p->e[ei].pnl0p->pp == tri2p->e[ej].pnl1p->pp &&
@@ -379,16 +377,16 @@ static void connecttris(size_t tri1, size_t tri2) {
 static bool marktripath(size_t trii, size_t trij) {
     int ei;
 
-    if (triangles_get(&tris, trii).mark)
+    if (LIST_GET(&tris, trii).mark)
 	return false;
-    triangles_at(&tris, trii)->mark = 1;
+    LIST_AT(&tris, trii)->mark = 1;
     if (trii == trij)
 	return true;
     for (ei = 0; ei < 3; ei++)
-	if (triangles_get(&tris, trii).e[ei].right_index != SIZE_MAX &&
-	    marktripath(triangles_get(&tris, trii).e[ei].right_index, trij))
+	if (LIST_GET(&tris, trii).e[ei].right_index != SIZE_MAX &&
+	    marktripath(LIST_GET(&tris, trii).e[ei].right_index, trij))
 	    return true;
-    triangles_at(&tris, trii)->mark = 0;
+    LIST_AT(&tris, trii)->mark = 0;
     return false;
 }
 
@@ -428,8 +426,8 @@ static int pointintri(size_t trii, Ppoint_t *pp) {
     int ei, sum;
 
     for (ei = 0, sum = 0; ei < 3; ei++)
-	if (ccw(*triangles_get(&tris, trii).e[ei].pnl0p->pp,
-	        *triangles_get(&tris, trii).e[ei].pnl1p->pp, *pp) != ISCW)
+	if (ccw(*LIST_GET(&tris, trii).e[ei].pnl0p->pp,
+	        *LIST_GET(&tris, trii).e[ei].pnl1p->pp, *pp) != ISCW)
 	    sum++;
     return sum == 3 || sum == 0;
 }
