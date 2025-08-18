@@ -25,7 +25,6 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_math.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/overflow.h>
 #include <util/prisize_t.h>
@@ -142,31 +141,29 @@ static void exchange_tree_edges(network_simplex_ctx_t *ctx, edge_t * e, edge_t *
     ND_tree_in(n).list[ND_tree_in(n).size] = NULL;
 }
 
-DEFINE_LIST(node_queue, node_t *)
-
 static
 void init_rank(network_simplex_ctx_t *ctx)
 {
     edge_t *e;
 
-    node_queue_t Q = {0};
-    node_queue_reserve(&Q, ctx->N_nodes);
+    LIST(node_t *) Q = {0};
+    LIST_RESERVE(&Q, ctx->N_nodes);
     size_t ctr = 0;
 
     for (node_t *v = GD_nlist(ctx->G); v; v = ND_next(v)) {
 	if (ND_priority(v) == 0)
-	    node_queue_push_back(&Q, v);
+	    LIST_PUSH_BACK(&Q, v);
     }
 
-    while (!node_queue_is_empty(&Q)) {
-	node_t *const v = node_queue_pop_front(&Q);
+    while (!LIST_IS_EMPTY(&Q)) {
+	node_t *const v = LIST_POP_FRONT(&Q);
 	ND_rank(v) = 0;
 	ctr++;
 	for (int i = 0; (e = ND_in(v).list[i]); i++)
 	    ND_rank(v) = MAX(ND_rank(v), ND_rank(agtail(e)) + ED_minlen(e));
 	for (int i = 0; (e = ND_out(v).list[i]); i++) {
 	    if (--ND_priority(aghead(e)) <= 0)
-		node_queue_push_back(&Q, aghead(e));
+		LIST_PUSH_BACK(&Q, aghead(e));
 	}
     }
     if (ctr != ctx->N_nodes) {
@@ -175,7 +172,7 @@ void init_rank(network_simplex_ctx_t *ctx)
 	    if (ND_priority(v))
 		agerr(AGPREV, "\t%s %d\n", agnameof(v), ND_priority(v));
     }
-    node_queue_free(&Q);
+    LIST_FREE(&Q);
 }
 
 static edge_t *leave_edge(network_simplex_ctx_t *ctx)
@@ -590,7 +587,7 @@ subtree_t *merge_trees(network_simplex_ctx_t *ctx, Agedge_t *e)   /* entering tr
 
 /* Construct initial tight tree. Graph must be connected, feasible.
  * Adjust ND_rank(v) as needed.  add_tree_edge() on tight tree edges.
- * trees are basically lists of nodes stored in `node_queue_t`s.
+ * trees are basically lists of nodes stored in `LIST(node_t *)`s.
  * Return 1 if input graph is not connected; 0 on success.
  */
 static
