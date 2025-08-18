@@ -36,7 +36,6 @@
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/gv_find_me.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/path.h>
 #include <util/unreachable.h>
@@ -405,8 +404,6 @@ static void freeOpts(options opts) {
   free(opts.argv);
 }
 
-DEFINE_LIST(strs, char *)
-
 /* scanArgs:
  * Parse command line options.
  */
@@ -420,7 +417,7 @@ static options scanArgs(int argc, char **argv) {
   setErrorId(opts.cmdName);
   opts.verbose = 0;
 
-  strs_t input_filenames = {0};
+  LIST(char *) input_filenames = {0};
 
   /* loop over arguments */
   for (int i = 1; i < argc;) {
@@ -432,24 +429,24 @@ static options scanArgs(int argc, char **argv) {
         goto opts_done;
       }
     } else if (arg)
-      strs_append(&input_filenames, arg);
+      LIST_APPEND(&input_filenames, arg);
   }
 
   /* Handle additional semantics */
   if (opts.useFile == 0) {
-    if (strs_is_empty(&input_filenames)) {
+    if (LIST_IS_EMPTY(&input_filenames)) {
       error(ERROR_ERROR, "No program supplied via argument or -f option");
       opts.state = -1;
     } else {
-      opts.program = strs_pop_front(&input_filenames);
+      opts.program = LIST_POP_FRONT(&input_filenames);
     }
   }
-  if (strs_is_empty(&input_filenames)) {
+  if (LIST_IS_EMPTY(&input_filenames)) {
     opts.inFiles = 0;
-    strs_free(&input_filenames);
+    LIST_FREE(&input_filenames);
   } else {
-    strs_append(&input_filenames, NULL);
-    opts.inFiles = strs_detach(&input_filenames);
+    LIST_APPEND(&input_filenames, NULL);
+    LIST_DETACH(&input_filenames, &opts.inFiles, &(size_t){0});
   }
 
   if (!opts.outFile)
@@ -459,7 +456,7 @@ opts_done:
   if (opts.state <= 0) {
     if (opts.state < 0)
       error(ERROR_USAGE | ERROR_ERROR, "%s", usage);
-    strs_free(&input_filenames);
+    LIST_FREE(&input_filenames);
   }
 
   return opts;
