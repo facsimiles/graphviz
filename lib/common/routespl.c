@@ -26,7 +26,6 @@
 #include <util/alloc.h>
 #include <util/debug.h>
 #include <util/gv_math.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/prisize_t.h>
 
@@ -794,7 +793,7 @@ static void nodes_delete(nodes_t *pvec) {
   free(pvec);
 }
 
-DEFINE_LIST_WITH_DTOR(cycles, nodes_t *, nodes_delete)
+typedef LIST(nodes_t *) cycles_t;
 
 static bool cycle_contains_edge(nodes_t *cycle, edge_t *edge) {
 	node_t* start = agtail(edge);
@@ -820,8 +819,8 @@ static bool is_cycle_unique(cycles_t *cycles, nodes_t *cycle) {
 
 	bool all_items_match;
 
-	for (size_t c = 0; c < cycles_size(cycles); ++c) {
-		nodes_t *cur_cycle = cycles_get(cycles, c);
+	for (size_t c = 0; c < LIST_SIZE(cycles); ++c) {
+		nodes_t *cur_cycle = LIST_GET(cycles, c);
 		const size_t cur_cycle_len = LIST_SIZE(cur_cycle);
 
 		//if all the items match in equal length cycles then we're not unique
@@ -852,7 +851,7 @@ static void dfs(graph_t *g, node_t *search, nodes_t *visited, node_t *end,
 			if (is_cycle_unique(cycles, visited)) {
 				nodes_t *cycle = gv_alloc(sizeof(nodes_t));
 				LIST_COPY(cycle, visited);
-				cycles_append(cycles, cycle);
+				LIST_APPEND(cycles, cycle);
 			}
 		}
 	} else {
@@ -872,18 +871,18 @@ static cycles_t find_all_cycles(graph_t *g) {
     node_t *n;
 
     // vector of vectors of nodes -- AKA cycles to delete
-    cycles_t alloced_cycles = {0};
-    cycles_t cycles = {0}; // vector of vectors of nodes AKA a vector of cycles
+    cycles_t alloced_cycles = {.dtor = nodes_delete};
+    cycles_t cycles = {.dtor = nodes_delete}; // vector of vectors of nodes AKA a vector of cycles
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		nodes_t *cycle = gv_alloc(sizeof(nodes_t));
 		// keep track of all items we allocate to clean up at the end of this function
-		cycles_append(&alloced_cycles, cycle);
+		LIST_APPEND(&alloced_cycles, cycle);
 		
 		dfs(g, n, cycle, n, &cycles);
 	}
 	
-	cycles_free(&alloced_cycles); // cycles contains copied vecs
+	LIST_FREE(&alloced_cycles); // cycles contains copied vecs
     return cycles;
 }
 
@@ -891,8 +890,8 @@ static nodes_t *find_shortest_cycle_with_edge(cycles_t *cycles, edge_t *edge,
                                               size_t min_size) {
 	nodes_t *shortest = NULL;
 
-	for (size_t c = 0; c < cycles_size(cycles); ++c) {
-		nodes_t *cycle = cycles_get(cycles, c);
+	for (size_t c = 0; c < LIST_SIZE(cycles); ++c) {
+		nodes_t *cycle = LIST_GET(cycles, c);
 		size_t cycle_len = LIST_SIZE(cycle);
 
 		if (cycle_len < min_size)
@@ -917,7 +916,7 @@ static pointf get_cycle_centroid(graph_t *g, edge_t* edge)
     pointf sum = {0.0, 0.0};
 
 	if (cycle == NULL) {
-		cycles_free(&cycles);
+		LIST_FREE(&cycles);
 		return get_centroid(g);
 	}
 
@@ -929,7 +928,7 @@ static pointf get_cycle_centroid(graph_t *g, edge_t* edge)
         cnt++;
 	}
 
-	cycles_free(&cycles);
+	LIST_FREE(&cycles);
 
 	sum.x /= cnt;
     sum.y /= cnt;
