@@ -17,12 +17,12 @@
 #include    <pack/pack.h>
 #include    <neatogen/neatoprocs.h>
 #include    <stdbool.h>
-#include    <util/list.h>
+#include    <util/list2.h>
 
 /* the following code shamelessly copied from lib/fdpgen/layout.c
 and should be extracted and made into a common function */
 
-DEFINE_LIST(clist, graph_t*)
+typedef LIST(graph_t *) clist_t;
 
 /* mkClusters:
  * Attach list of immediate child clusters.
@@ -40,7 +40,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 
     if (pclist == NULL) {
         // [0] is empty. The clusters are in [1..cnt].
-        clist_append(&list, NULL);
+        LIST_APPEND(&list, NULL);
         clist = &list;
     }
     else
@@ -49,7 +49,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
         if (is_a_cluster(subg)) {
 	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
-            clist_append(clist, subg);
+            LIST_APPEND(clist, subg);
             mkClusters(subg, NULL, subg);
         }
         else {
@@ -57,13 +57,13 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
         }
     }
     if (pclist == NULL) {
-        assert(clist_size(&list) - 1 <= INT_MAX);
-        GD_n_cluster(g) = (int)(clist_size(&list) - 1);
-        if (clist_size(&list) > 1) {
-            clist_shrink_to_fit(&list);
-            GD_clust(g) = clist_detach(&list);
+        assert(LIST_SIZE(&list) - 1 <= INT_MAX);
+        GD_n_cluster(g) = (int)(LIST_SIZE(&list) - 1);
+        if (LIST_SIZE(&list) > 1) {
+            LIST_SHRINK_TO_FIT(&list);
+            LIST_DETACH(&list, &GD_clust(g), &(size_t){0});
         } else {
-            clist_free(&list);
+            LIST_FREE(&list);
         }
     }
 }
