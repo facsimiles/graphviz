@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 #define UNSCANNED 0
 #define SCANNING  1
@@ -56,7 +56,7 @@ bool edge_exists(rawgraph *g, size_t v1, size_t v2) {
   return adj_list_contains(&g->vertices[v1].adj_list, v2, zeq);
 }
 
-DEFINE_LIST(int_stack, size_t)
+typedef LIST(size_t) int_stack_t;
 
 static int DFS_visit(rawgraph *g, size_t v, int time, int_stack_t *sp) {
     vertex* vp;
@@ -72,7 +72,7 @@ static int DFS_visit(rawgraph *g, size_t v, int time, int_stack_t *sp) {
             time = DFS_visit(g, id, time, sp);
     }
     vp->color = SCANNED;
-    int_stack_push_back(sp, v);
+    LIST_PUSH_BACK(sp, v);
     return time + 1;
 }
 
@@ -89,15 +89,15 @@ top_sort(rawgraph* g)
 	}
 
     int_stack_t sp = {0};
-    int_stack_reserve(&sp, g->nvs);
+    LIST_RESERVE(&sp, g->nvs);
     for(size_t i = 0; i < g->nvs; ++i) {
         if(g->vertices[i].color == UNSCANNED)
             time = DFS_visit(g, i, time, &sp);
     }
-    while (!int_stack_is_empty(&sp)) {
-        const size_t v = int_stack_pop_back(&sp);
+    while (!LIST_IS_EMPTY(&sp)) {
+        const size_t v = LIST_POP_BACK(&sp);
         g->vertices[v].topsort_order = count;
         count++;
     }
-    int_stack_free(&sp);
+    LIST_FREE(&sp);
 }
