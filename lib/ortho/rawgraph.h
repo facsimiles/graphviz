@@ -12,9 +12,9 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <util/list.h>
+#include <util/list2.h>
 
-DEFINE_LIST(adj_list, size_t)
+typedef LIST(size_t) adj_list_t;
 
 typedef struct {
   int color;

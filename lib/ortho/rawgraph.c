@@ -9,7 +9,6 @@
  *************************************************************************/
 
 #include <ortho/rawgraph.h>
-#include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
 #include <util/list2.h>
@@ -32,28 +31,24 @@ void
 free_graph(rawgraph* g)
 {
     for(size_t i = 0; i < g->nvs; ++i)
-        adj_list_free(&g->vertices[i].adj_list);
+        LIST_FREE(&g->vertices[i].adj_list);
     free (g->vertices);
     free (g);
 }
  
 void insert_edge(rawgraph *g, size_t v1, size_t v2) {
     if (!edge_exists(g, v1, v2)) {
-      adj_list_append(&g->vertices[v1].adj_list, v2);
+      LIST_APPEND(&g->vertices[v1].adj_list, v2);
     }
 }
 
 void remove_redge(rawgraph *g, size_t v1, size_t v2) {
-    adj_list_remove(&g->vertices[v1].adj_list, v2);
-    adj_list_remove(&g->vertices[v2].adj_list, v1);
-}
-
-static bool zeq(size_t a, size_t b) {
-  return a == b;
+    LIST_REMOVE(&g->vertices[v1].adj_list, v2);
+    LIST_REMOVE(&g->vertices[v2].adj_list, v1);
 }
 
 bool edge_exists(rawgraph *g, size_t v1, size_t v2) {
-  return adj_list_contains(&g->vertices[v1].adj_list, v2, zeq);
+  return LIST_CONTAINS(&g->vertices[v1].adj_list, v2);
 }
 
 typedef LIST(size_t) int_stack_t;
@@ -66,8 +61,8 @@ static int DFS_visit(rawgraph *g, size_t v, int time, int_stack_t *sp) {
     const adj_list_t adj = vp->adj_list;
     time = time + 1;
 
-    for (size_t i = 0; i < adj_list_size(&adj); ++i) {
-        const size_t id = adj_list_get(&adj, i);
+    for (size_t i = 0; i < LIST_SIZE(&adj); ++i) {
+        const size_t id = LIST_GET(&adj, i);
         if(g->vertices[id].color == UNSCANNED)
             time = DFS_visit(g, id, time, sp);
     }

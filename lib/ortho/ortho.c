@@ -509,12 +509,12 @@ static UNUSED void dumpChanG(channel *cp, double v) {
   fprintf (stderr, "channel %.0f (%f,%f)\n", v, cp->p.p1, cp->p.p2);
   for (size_t k = 0; k < seg_list_size(&cp->seg_list); ++k) {
     const adj_list_t adj = cp->G->vertices[k].adj_list;
-    if (adj_list_is_empty(&adj)) continue;
+    if (LIST_IS_EMPTY(&adj)) continue;
     putSeg(stderr, seg_list_get(&cp->seg_list, k));
     fputs (" ->\n", stderr);
-    for (size_t i = 0; i < adj_list_size(&adj); ++i) {
+    for (size_t i = 0; i < LIST_SIZE(&adj); ++i) {
       fputs ("     ", stderr);
-      putSeg(stderr, seg_list_get(&cp->seg_list, adj_list_get(&adj, i)));
+      putSeg(stderr, seg_list_get(&cp->seg_list, LIST_GET(&adj, i)));
       fputs ("\n", stderr);
     }
   }
