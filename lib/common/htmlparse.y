@@ -30,12 +30,11 @@
 #include <gvc/gvcext.h>
 #include <util/agxbuf.h>
 #include <util/list.h>
+#include <util/list2.h>
 #include <util/strview.h>
 }
 
 %code provides {
-
-DEFINE_LIST(sfont, textfont_t *)
 
 static inline void free_ti(textspan_t item) {
   free(item.str);
@@ -58,7 +57,7 @@ struct htmlparserstate_s {
   textspans_t  fitemList;
   htextspans_t fspanList;
   agxbuf*      str;       /* Buffer for text */
-  sfont_t      fontstack;
+  LIST(textfont_t *)      fontstack;
   GVC_t*       gvc;
 };
 
@@ -297,7 +296,7 @@ table : opt_space T_table {
           $2->u.p.prev = scanner->parser.tblstack;
           $2->u.p.rows = (rows_t){0};
           scanner->parser.tblstack = $2;
-          $2->font = *sfont_back(&scanner->parser.fontstack);
+          $2->font = *LIST_BACK(&scanner->parser.fontstack);
           $<tbl>$ = $2;
         }
         rows T_end_table opt_space {
@@ -360,7 +359,7 @@ static void
 appendFItemList (htmlparserstate_t *html_state, agxbuf *ag)
 {
     const textspan_t ti = {.str = agxbdisown(ag),
-                           .font = *sfont_back(&html_state->fontstack)};
+                           .font = *LIST_BACK(&html_state->fontstack)};
     textspans_append(&html_state->fitemList, ti);
 }
 
@@ -387,7 +386,7 @@ appendFLineList (htmlparserstate_t *html_state, int v)
 	lp.items = gv_alloc(sizeof(textspan_t));
 	lp.nitems = 1;
 	lp.items[0].str = gv_strdup("");
-	lp.items[0].font = *sfont_back(&html_state->fontstack);
+	lp.items[0].font = *LIST_BACK(&html_state->fontstack);
     }
 
     textspans_clear(ilist);
@@ -471,13 +470,13 @@ static void cleanup (htmlparserstate_t *html_state)
   textspans_clear(&html_state->fitemList);
   htextspans_clear(&html_state->fspanList);
 
-  sfont_free(&html_state->fontstack);
+  LIST_FREE(&html_state->fontstack);
 }
 
 static void
 pushFont (htmlparserstate_t *html_state, textfont_t *fp)
 {
-    textfont_t* curfont = *sfont_back(&html_state->fontstack);
+    textfont_t* curfont = *LIST_BACK(&html_state->fontstack);
     textfont_t  f = *fp;
 
     if (curfont) {
@@ -492,13 +491,13 @@ pushFont (htmlparserstate_t *html_state, textfont_t *fp)
     }
 
     textfont_t *const ft = dtinsert(html_state->gvc->textfont_dt, &f);
-    sfont_push_back(&html_state->fontstack, ft);
+    LIST_PUSH_BACK(&html_state->fontstack, ft);
 }
 
 static void
 popFont (htmlparserstate_t *html_state)
 {
-    (void)sfont_pop_back(&html_state->fontstack);
+    (void)LIST_POP_BACK(&html_state->fontstack);
 }
 
 /* Return parsed label or NULL if failure.
@@ -512,7 +511,7 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
   htmllabel_t*  l = NULL;
   htmlscan_t    scanner = {0};
 
-  sfont_push_back(&scanner.parser.fontstack, NULL);
+  LIST_PUSH_BACK(&scanner.parser.fontstack, NULL);
   scanner.parser.gvc = GD_gvc(env->g);
   scanner.parser.str = &str;
 
@@ -528,7 +527,7 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
   textspans_free(&scanner.parser.fitemList);
   htextspans_free(&scanner.parser.fspanList);
 
-  sfont_free(&scanner.parser.fontstack);
+  LIST_FREE(&scanner.parser.fontstack);
 
   agxbfree (&str);
 
