@@ -208,7 +208,7 @@ setDir (char* d)
 %token STYLE LINE POINT
 %token TEXT FONTSIZE FONTNAME COLOR
 %token <str> INTEGER REAL STRING ID NAME
-%token <list> LIST
+%token <list> GML_LIST
 
 %type <np> node
 %type <ep> edge
@@ -287,15 +287,15 @@ alist  : alist alistitem  { attrs_append(L, $2); }
 alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
           | NAME REAL    { $$ = mkAttr ($1, 0, REAL, $2, 0); }
           | NAME STRING  { $$ = mkAttr ($1, 0, STRING, $2, 0); }
-          | NAME attrlist  { $$ = mkAttr ($1, 0, LIST, 0, $2); }
+          | NAME attrlist  { $$ = mkAttr ($1, 0, GML_LIST, 0, $2); }
           | XVAL REAL  { $$ = mkAttr (0, XVAL, REAL, $2, 0); }
           | XVAL INTEGER  { $$ = mkAttr (0, XVAL, REAL, $2, 0); }
           | YVAL REAL  { $$ = mkAttr (0, YVAL, REAL, $2, 0); }
           | WVAL REAL  { $$ = mkAttr (0, WVAL, REAL, $2, 0); }
           | HVAL REAL  { $$ = mkAttr (0, HVAL, REAL, $2, 0); }
           | LABEL STRING  { $$ = mkAttr (0, LABEL, STRING, $2, 0); }
-          | GRAPHICS attrlist  { $$ = mkAttr (0, GRAPHICS, LIST, 0, $2); }
-          | LABELGRAPHICS attrlist  { $$ = mkAttr (0, LABELGRAPHICS, LIST, 0, $2); }
+          | GRAPHICS attrlist  { $$ = mkAttr (0, GRAPHICS, GML_LIST, 0, $2); }
+          | LABELGRAPHICS attrlist  { $$ = mkAttr (0, LABELGRAPHICS, GML_LIST, 0, $2); }
           | TYPE STRING  { $$ = mkAttr (0, TYPE, STRING, $2, 0); }
           | FILL STRING  { $$ = mkAttr (0, FILL, STRING, $2, 0); }
           | OUTLINE STRING  { $$ = mkAttr (0, OUTLINE, STRING, $2, 0); }
@@ -304,9 +304,9 @@ alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
           | WIDTH REAL  { $$ = mkAttr (0, WIDTH, REAL, $2, 0); }
           | WIDTH INTEGER  { $$ = mkAttr (0, WIDTH, INTEGER, $2, 0); }
           | STYLE STRING  { $$ = mkAttr (0, STYLE, STRING, $2, 0); }
-          | STYLE attrlist  { $$ = mkAttr (0, STYLE, LIST, 0, $2); }
-          | LINE attrlist  { $$ = mkAttr (0, LINE, LIST, 0, $2); }
-          | POINT attrlist  { $$ = mkAttr (0, POINT, LIST, 0, $2); }
+          | STYLE attrlist  { $$ = mkAttr (0, STYLE, GML_LIST, 0, $2); }
+          | LINE attrlist  { $$ = mkAttr (0, LINE, GML_LIST, 0, $2); }
+          | POINT attrlist  { $$ = mkAttr (0, POINT, GML_LIST, 0, $2); }
           | TEXT STRING  { $$ = mkAttr (0, TEXT, STRING, $2, 0); }
           | FONTNAME STRING  { $$ = mkAttr (0, FONTNAME, STRING, $2, 0); }
           | FONTSIZE INTEGER  { $$ = mkAttr (0, FONTNAME, INTEGER, $2, 0); }
@@ -317,7 +317,7 @@ alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
 
 void free_attr(gmlattr *p) {
     if (!p) return;
-    if (p->kind == LIST && p->u.lp)
+    if (p->kind == GML_LIST && p->u.lp)
 	free_attrs(p->u.lp);
     else
 	free (p->u.value);
@@ -330,7 +330,7 @@ static void deparseList(attrs_t *alist, agxbuf *xb);
 static void
 deparseAttr (gmlattr* ap, agxbuf* xb)
 {
-    if (ap->kind == LIST) {
+    if (ap->kind == GML_LIST) {
 	agxbprint (xb, "%s ", ap->name);
 	deparseList (ap->u.lp, xb);
     }
@@ -358,7 +358,7 @@ unknown (Agobj_t* obj, gmlattr* ap, agxbuf* xb)
 {
     char* str;
 
-    if (ap->kind == LIST) {
+    if (ap->kind == GML_LIST) {
 	deparseList (ap->u.lp, xb);
 	str = agxbuse (xb);
     }
@@ -770,7 +770,7 @@ static char *sortToStr(unsigned short sort) {
 	s = "string"; break;
     case NAME : 
 	s = "name"; break;
-    case LIST : 
+    case GML_LIST : 
 	s = "list"; break;
     case '[' : 
 	s = "["; break;
