@@ -18,7 +18,6 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/prisize_t.h>
 
@@ -109,8 +108,6 @@ static void setPrefix(agxbuf *xb, const char *pfx) {
   agxbput(xb, pfx);
 }
 
-DEFINE_LIST(Agraphs, Agraph_t *)
-
 /* pccomps:
  * Return an array of subgraphs consisting of the connected
  * components of graph g. The number of components is returned in ncc.
@@ -135,7 +132,7 @@ Agraph_t **pccomps(Agraph_t *g, size_t *ncc, char *pfx, bool *pinned) {
     return NULL;
   }
 
-  Agraphs_t ccs = {0};
+  LIST(Agraph_t *) ccs = {0};
 
   initStk(&stk, insertFn, markFn);
   for (n = agfstnode(g); n; n = agnxtnode(g, n))
@@ -147,11 +144,11 @@ Agraph_t **pccomps(Agraph_t *g, size_t *ncc, char *pfx, bool *pinned) {
       continue;
     if (!out) {
       setPrefix(&name, pfx);
-      agxbprint(&name, "%" PRISIZE_T, Agraphs_size(&ccs));
+      agxbprint(&name, "%" PRISIZE_T, LIST_SIZE(&ccs));
       out = agsubg(g, agxbuse(&name), 1);
       agbindrec(out, "Agraphinfo_t", sizeof(Agraphinfo_t),
                 true); // node custom data
-      Agraphs_append(&ccs, out);
+      LIST_APPEND(&ccs, out);
       pin = true;
     }
     dfs(g, n, out, &stk);
@@ -162,18 +159,19 @@ Agraph_t **pccomps(Agraph_t *g, size_t *ncc, char *pfx, bool *pinned) {
     if (marked(&stk, n))
       continue;
     setPrefix(&name, pfx);
-    agxbprint(&name, "%" PRISIZE_T, Agraphs_size(&ccs));
+    agxbprint(&name, "%" PRISIZE_T, LIST_SIZE(&ccs));
     out = agsubg(g, agxbuse(&name), 1);
     agbindrec(out, "Agraphinfo_t", sizeof(Agraphinfo_t),
               true); // node custom data
     dfs(g, n, out, &stk);
-    Agraphs_append(&ccs, out);
+    LIST_APPEND(&ccs, out);
   }
   freeStk(&stk);
   agxbfree(&name);
-  *ncc = Agraphs_size(&ccs);
   *pinned = pin;
-  return Agraphs_detach(&ccs);
+  Agraph_t **ret;
+  LIST_DETACH(&ccs, &ret, ncc);
+  return ret;
 }
 
 /* ccomps:
@@ -196,7 +194,7 @@ Agraph_t **ccomps(Agraph_t *g, size_t *ncc, char *pfx) {
     return NULL;
   }
 
-  Agraphs_t ccs = {0};
+  LIST(Agraph_t *) ccs = {0};
   initStk(&stk, insertFn, markFn);
   for (n = agfstnode(g); n; n = agnxtnode(g, n))
     unmark(&stk, n);
@@ -205,17 +203,18 @@ Agraph_t **ccomps(Agraph_t *g, size_t *ncc, char *pfx) {
     if (marked(&stk, n))
       continue;
     setPrefix(&name, pfx);
-    agxbprint(&name, "%" PRISIZE_T, Agraphs_size(&ccs));
+    agxbprint(&name, "%" PRISIZE_T, LIST_SIZE(&ccs));
     out = agsubg(g, agxbuse(&name), 1);
     agbindrec(out, "Agraphinfo_t", sizeof(Agraphinfo_t),
               true); // node custom data
     dfs(g, n, out, &stk);
-    Agraphs_append(&ccs, out);
+    LIST_APPEND(&ccs, out);
   }
   freeStk(&stk);
   agxbfree(&name);
-  *ncc = Agraphs_size(&ccs);
-  return Agraphs_detach(&ccs);
+  Agraph_t **ret;
+  LIST_DETACH(&ccs, &ret, ncc);
+  return ret;
 }
 
 typedef struct {
@@ -461,15 +460,15 @@ Agraph_t **cccomps(Agraph_t *g, size_t *ncc, char *pfx) {
   dg = deriveGraph(g);
 
   size_t ccs_length = (size_t)agnnodes(dg);
-  Agraphs_t ccs = {0};
-  Agraphs_reserve(&ccs, ccs_length);
+  LIST(Agraph_t *) ccs = {0};
+  LIST_RESERVE(&ccs, ccs_length);
   initStk(&stk, insertFn, clMarkFn);
 
   for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
     if (marked(&stk, dn))
       continue;
     setPrefix(&name, pfx);
-    agxbprint(&name, "%" PRISIZE_T, Agraphs_size(&ccs));
+    agxbprint(&name, "%" PRISIZE_T, LIST_SIZE(&ccs));
     char *name_str = agxbuse(&name);
     dout = agsubg(dg, name_str, 1);
     out = agsubg(g, name_str, 1);
@@ -479,26 +478,27 @@ Agraph_t **cccomps(Agraph_t *g, size_t *ncc, char *pfx) {
     unionNodes(dout, out);
     e_cnt = graphviz_node_induce(out, NULL);
     subGInduce(g, out);
-    Agraphs_append(&ccs, out);
+    LIST_APPEND(&ccs, out);
     agdelete(dg, dout);
     if (Verbose)
       fprintf(stderr,
               "(%4" PRISIZE_T ") %7" PRISIZE_T " nodes %7" PRISIZE_T " edges\n",
-              Agraphs_size(&ccs) - 1, n_cnt, e_cnt);
+              LIST_SIZE(&ccs) - 1, n_cnt, e_cnt);
   }
 
   if (Verbose)
     fprintf(stderr,
             "       %7d nodes %7d edges %7" PRISIZE_T " components %s\n",
-            agnnodes(g), agnedges(g), Agraphs_size(&ccs), agnameof(g));
+            agnnodes(g), agnedges(g), LIST_SIZE(&ccs), agnameof(g));
 
   agclose(dg);
   agclean(g, AGRAPH, GRECNAME);
   agclean(g, AGNODE, NRECNAME);
   freeStk(&stk);
   agxbfree(&name);
-  *ncc = Agraphs_size(&ccs);
-  return Agraphs_detach(&ccs);
+  Agraph_t **ret;
+  LIST_DETACH(&ccs, &ret, ncc);
+  return ret;
 }
 
 /* isConnected:
