@@ -30,7 +30,6 @@
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/itos.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/streq.h>
 
@@ -1372,7 +1371,7 @@ static bool constraining_flat_edge(Agraph_t *g, Agedge_t *e) {
   return true;
 }
 
-DEFINE_LIST(nodes, node_t *)
+typedef LIST(node_t *) nodes_t;
 
 /* construct nodes reachable from 'here' in post-order.
 * This is the same as doing a topological sort in reverse order.
@@ -1390,7 +1389,7 @@ static void postorder(graph_t *g, node_t *v, nodes_t *list, int r) {
 	}
     }
     assert(ND_rank(v) == r);
-    nodes_append(list, v);
+    LIST_APPEND(list, v);
 }
 
 static void flat_reorder(graph_t * g)
@@ -1407,7 +1406,7 @@ static void flat_reorder(graph_t * g)
 	base_order = ND_order(GD_rank(g)[r].v[0]);
 	for (i = 0; i < GD_rank(g)[r].n; i++)
 	    MARK(GD_rank(g)[r].v[i]) = false;
-	nodes_clear(&temprank);
+	LIST_CLEAR(&temprank);
 
 	/* construct reverse topological sort order in temprank */
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
@@ -1424,7 +1423,7 @@ static void flat_reorder(graph_t * g)
 		if (constraining_flat_edge(g, flat_e)) local_out_cnt++;
 	    }
 	    if (local_in_cnt == 0 && local_out_cnt == 0)
-		nodes_append(&temprank, v);
+		LIST_APPEND(&temprank, v);
 	    else {
 		if (!MARK(v) && local_in_cnt == 0) {
 		    postorder(g, v, &temprank, r);
@@ -1432,12 +1431,12 @@ static void flat_reorder(graph_t * g)
 	    }
 	}
 
-	if (nodes_size(&temprank) > 0) {
+	if (!LIST_IS_EMPTY(&temprank)) {
 	    if (!GD_flip(g)) {
-		nodes_reverse(&temprank);
+		LIST_REVERSE(&temprank);
 	    }
 	    for (i = 0; i < GD_rank(g)[r].n; i++) {
-		v = GD_rank(g)[r].v[i] = nodes_get(&temprank, (size_t)i);
+		v = GD_rank(g)[r].v[i] = LIST_GET(&temprank, (size_t)i);
 		ND_order(v) = i + base_order;
 	    }
 
@@ -1461,7 +1460,7 @@ static void flat_reorder(graph_t * g)
 	/* else do no harm! */
 	GD_rank(Root)[r].valid = false;
     }
-    nodes_free(&temprank);
+    LIST_FREE(&temprank);
 }
 
 static void reorder(graph_t * g, int r, bool reverse, bool hasfixed)
