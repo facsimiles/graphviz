@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <cgraph/cgraph.h>
-#include <util/list.h>
 #include <util/list2.h>
 
 typedef struct {
@@ -18,9 +17,7 @@ typedef struct {
     }u;
 } gmlattr;
 
-void free_attr(gmlattr *p);
-
-DEFINE_LIST_WITH_DTOR(attrs, gmlattr *, free_attr)
+typedef LIST(gmlattr *) attrs_t;
 
 typedef struct {
     char* id;
