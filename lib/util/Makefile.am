@@ -17,6 +17,8 @@ noinst_HEADERS = \
   gv_math.h \
   itos.h \
   list.h \
+  list2.h \
+  list-private.h \
   lockfile.h \
   optional.h \
   overflow.h \
@@ -34,7 +36,8 @@ noinst_HEADERS = \
   xml.h
 noinst_LTLIBRARIES = libutil_C.la
 
-libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c random.c xml.c
+libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c list.c \
+	random.c xml.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 EXTRA_DIST = README
