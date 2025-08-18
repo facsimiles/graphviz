@@ -788,13 +788,13 @@ void update_bb_bz(boxf *bb, pointf *cp)
     }
 }
 
-DEFINE_LIST(points, pointf)
+typedef LIST(pointf) points_t;
 
 static UNUSED void psmapOutput(const points_t *ps, size_t start, size_t n) {
-   const pointf first = points_get(ps, start);
+   const pointf first = LIST_GET(ps, start);
    fprintf(stdout, "newpath %f %f moveto\n", first.x, first.y);
    for (size_t i = start + 1; i < start + n; ++i) {
-        const pointf pt = points_get(ps, i);
+        const pointf pt = LIST_GET(ps, i);
         fprintf(stdout, "%f %f lineto\n", pt.x, pt.y);
    }
    fprintf (stdout, "closepath stroke\n");
@@ -826,12 +826,12 @@ static void map_bspline_poly(points_t *pbs_p, pbs_size_t *pbs_n, size_t n,
                              pointf *p1, pointf *p2) {
     pbs_size_append(pbs_n, 2 * n);
 
-    const UNUSED size_t nump = points_size(pbs_p);
+    const UNUSED size_t nump = LIST_SIZE(pbs_p);
     for (size_t i = 0; i < n; i++) {
-        points_append(pbs_p, p1[i]);
+        LIST_APPEND(pbs_p, p1[i]);
     }
     for (size_t i = 0; i < n; i++) {
-        points_append(pbs_p, p2[n - i - 1]);
+        LIST_APPEND(pbs_p, p2[n - i - 1]);
     }
 #if defined(DEBUG) && DEBUG == 2
     psmapOutput(pbs_p, nump, 2 * n);
@@ -2557,11 +2557,11 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
         for (size_t i = 0; i < pbs_size_size(&pbs_n); ++i) {
           nump += pbs_size_get(&pbs_n, i);
         }
-        gvrender_ptf_A(job, points_front(&pbs), points_front(&pbs), nump);
+        gvrender_ptf_A(job, LIST_FRONT(&pbs), LIST_FRONT(&pbs), nump);
       }
-      obj->url_bsplinemap_p = points_front(&pbs);
+      obj->url_bsplinemap_p = LIST_FRONT(&pbs);
       obj->url_map_shape = MAP_POLYGON;
-      obj->url_map_p = points_detach(&pbs);
+      LIST_DETACH(&pbs, &obj->url_map_p, &(size_t){0});
       obj->url_map_n = *pbs_size_front(&pbs_n);
       obj->url_bsplinemap_poly_n = pbs_size_size(&pbs_n);
       obj->url_bsplinemap_n = pbs_size_detach(&pbs_n);
