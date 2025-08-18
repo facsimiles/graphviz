@@ -35,4 +35,5 @@ target_link_libraries(fdpgen PRIVATE
   cgraph
   gvc
   pathplan
+  util
 )

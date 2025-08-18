@@ -28,9 +28,9 @@
 #include <pack/pack.h>
 #include <stdbool.h>
 #include <util/alloc.h>
-#include <util/list.h>
+#include <util/list2.h>
 
-DEFINE_LIST(objlist, Ppoly_t*)
+typedef LIST(Ppoly_t *) objlist_t;
 
 #if defined(DEBUG) && DEBUG > 1
 static void dumpObj(Ppoly_t * p)
@@ -44,8 +44,8 @@ static void dumpObj(Ppoly_t * p)
 }
 
 static void dumpObjlist(const objlist_t *l) {
-    for (size_t i = 0; i < objlist_size(l); i++) {
-	dumpObj(objlist_get(l, i));
+    for (size_t i = 0; i < LIST_SIZE(l); i++) {
+	dumpObj(LIST_GET(l, i));
     }
 }
 #endif
@@ -109,13 +109,13 @@ addGraphObjs(objlist_t *l, graph_t *g, void *tex, void *hex, expand_t *pm) {
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (PARENT(n) == g && n != tex && n != hex && !IS_CLUST_NODE(n)) {
-	    objlist_append(l, makeObstacle(n, pm, false));
+	    LIST_APPEND(l, makeObstacle(n, pm, false));
 	}
     }
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	sg = GD_clust(g)[i];
 	if (sg != tex && sg != hex) {
-	    objlist_append(l, makeClustObs(sg, pm));
+	    LIST_APPEND(l, makeClustObs(sg, pm));
 	}
     }
 }
@@ -222,14 +222,14 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 		makeSelfArcs(e, GD_nodesep(g));
 	    } else if (ED_count(e)) {
 		objlist_t objl = objectList(e, pm);
-		assert(objlist_size(&objl) <= INT_MAX);
-		objlist_sync(&objl);
-		if (Plegal_arrangement(objlist_front(&objl), (int)objlist_size(&objl))) {
-		    vconfig = Pobsopen(objlist_front(&objl), (int)objlist_size(&objl));
+		assert(LIST_SIZE(&objl) <= INT_MAX);
+		LIST_SYNC(&objl);
+		if (Plegal_arrangement(LIST_FRONT(&objl), (int)LIST_SIZE(&objl))) {
+		    vconfig = Pobsopen(LIST_FRONT(&objl), (int)LIST_SIZE(&objl));
 		    if (!vconfig) {
 			agwarningf("compoundEdges: could not construct obstacles - falling back to straight line edges\n");
 			rv = 1;
-			objlist_free(&objl);
+			LIST_FREE(&objl);
 			continue;
 		    }
 		}
@@ -245,7 +245,7 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 				margin.x, margin.y, pm->x, pm->y);
 			rv = 1;
 		    }
-		    objlist_free(&objl);
+		    LIST_FREE(&objl);
 		    continue;
 		}
 
@@ -255,11 +255,11 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 		 */
 		for (e0 = e; e0; e0 = ED_to_virt(e0)) {
 		    ED_path(e0) = getPath(e0, vconfig, false);
-		    assert(objlist_size(&objl) <= INT_MAX);
-		    objlist_sync(&objl);
-		    makeSpline(e0, objlist_front(&objl), (int)objlist_size(&objl), false);
+		    assert(LIST_SIZE(&objl) <= INT_MAX);
+		    LIST_SYNC(&objl);
+		    makeSpline(e0, LIST_FRONT(&objl), (int)LIST_SIZE(&objl), false);
 		}
-		objlist_free(&objl);
+		LIST_FREE(&objl);
 	    }
 	}
     }
