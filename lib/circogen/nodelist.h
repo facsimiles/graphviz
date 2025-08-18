@@ -16,9 +16,9 @@ extern "C" {
 
 #include  <render.h>
 #include  <stddef.h>
-#include  <util/list.h>
+#include  <util/list2.h>
 
-    DEFINE_LIST(nodelist, node_t*)
+typedef LIST(node_t *) nodelist_t;
 
     /// Add node after one.
     extern void appendNodelist(nodelist_t*, size_t, Agnode_t *n);

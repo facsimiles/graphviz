@@ -13,6 +13,7 @@
 #include <circogen/circular.h>
 #include <circogen/block.h>
 #include <util/alloc.h>
+#include <util/list2.h>
 
 void initBlocklist(blocklist_t * bl)
 {
@@ -32,7 +33,7 @@ void freeBlock(block_t * sp)
 {
     if (!sp)
 	return;
-    nodelist_free(&sp->circle_list);
+    LIST_FREE(&sp->circle_list);
     free(sp);
 }
 
