@@ -18,7 +18,7 @@
 #include <stdbool.h>
 #include <util/alloc.h>
 #include <util/itos.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 /* For precision, scale up before algorithms, then scale down */
 #define SCALE 10   
@@ -676,14 +676,12 @@ static double compress(info * nl, int nn)
     return sc;
 }
 
-DEFINE_LIST(points, pointf)
-
 static pointf *mkOverlapSet(info *nl, size_t nn, size_t *cntp) {
     info *p = nl;
     info *q;
-    points_t S = {0};
+    LIST(pointf) S = {0};
 
-    points_append(&S, (pointf){0});
+    LIST_APPEND(&S, (pointf){0});
 
     for (size_t i = 0; i < nn; i++) {
 	q = p + 1;
@@ -704,16 +702,17 @@ static pointf *mkOverlapSet(info *nl, size_t nn, size_t *cntp) {
 		    if (pt.y < 1)
 			pt.y = 1;
 		}
-		points_append(&S, pt);
+		LIST_APPEND(&S, pt);
 	    }
 	    q++;
 	}
 	p++;
     }
 
-    points_shrink_to_fit(&S);
-    *cntp = points_size(&S);
-    return points_detach(&S);
+    LIST_SHRINK_TO_FIT(&S);
+    pointf *ret;
+    LIST_DETACH(&S, &ret, cntp);
+    return ret;
 }
 
 static pointf computeScaleXY(pointf *aarr, size_t m) {
