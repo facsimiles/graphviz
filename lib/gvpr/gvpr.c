@@ -37,6 +37,7 @@
 #include <util/gv_ctype.h>
 #include <util/gv_find_me.h>
 #include <util/list.h>
+#include <util/list2.h>
 #include <util/path.h>
 #include <util/unreachable.h>
 
@@ -564,11 +565,9 @@ static trav_fns DFSfns = {agfstedge, agnxtedge, 1, 0};
 static trav_fns FWDfns = {agfstout, agnxtout_, 0, 0};
 static trav_fns REVfns = {agfstin, agnxtin_, 0, 0};
 
-DEFINE_LIST(node_queue, Agnode_t *)
-
 static void travBFS(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
   nodestream nodes;
-  node_queue_t q = {0};
+  LIST(Agnode_t *) q = {0};
   ndata *nd;
   Agnode_t *n;
   Agedge_t *cure;
@@ -582,9 +581,9 @@ static void travBFS(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
     if (MARKED(nd))
       continue;
     PUSH(nd, 0);
-    node_queue_push_back(&q, n);
-    while (!node_queue_is_empty(&q)) {
-      n = node_queue_pop_front(&q);
+    LIST_PUSH_BACK(&q, n);
+    while (!LIST_IS_EMPTY(&q)) {
+      n = LIST_POP_FRONT(&q);
       nd = nData(n);
       MARK(nd);
       POP(nd);
@@ -599,14 +598,14 @@ static void travBFS(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
         if (!evalEdge(state, prog, xprog, cure))
           continue;
         if (!ONSTACK(nd)) {
-          node_queue_push_back(&q, cure->node);
+          LIST_PUSH_BACK(&q, cure->node);
           PUSH(nd, cure);
         }
       }
     }
   }
   state->tvedge = 0;
-  node_queue_free(&q);
+  LIST_FREE(&q);
 }
 
 DEFINE_LIST(edge_stack, Agedge_t *)
