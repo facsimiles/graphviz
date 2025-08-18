@@ -37,6 +37,7 @@
 #include <util/alloc.h>
 #include <util/itos.h>
 #include <util/list.h>
+#include <util/list2.h>
 #include <util/prisize_t.h>
 
 #if (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION >= 6) || TCL_MAJOR_VERSION > 8
@@ -53,13 +54,11 @@ typedef struct poly_s {
     Ppoly_t boundary;
 } poly;
 
-DEFINE_LIST(polys, poly)
-
 /// printf format for TCL handles
 #define HANDLE_FORMAT ("vgpane%" PRISIZE_T)
 
 typedef struct {
-    polys_t poly; // set of polygons
+    LIST(poly) poly; // set of polygons
     vconfig_t *vc;		/* visibility graph handle */
     Tcl_Interp *interp;		/* interpreter that owns the binding */
     char *triangle_cmd;		/* why is this here any more */
@@ -74,8 +73,8 @@ static vgpanes_t vgpaneTable;
 static int polyid = 0;		/* unique and unchanging id for each poly */
 
 static poly *allocpoly(vgpane_t *vgp, int id, Tcl_Size npts) {
-    polys_append(&vgp->poly, (poly){.id = id});
-    poly *rv = polys_back(&vgp->poly);
+    LIST_APPEND(&vgp->poly, (poly){.id = id});
+    poly *rv = LIST_BACK(&vgp->poly);
     rv->boundary.pn = 0;
     rv->boundary.ps = gv_calloc(npts, sizeof(point));
     return rv;
@@ -92,13 +91,13 @@ static void vc_stale(vgpane_t * vgp)
 static int vc_refresh(vgpane_t * vgp)
 {
     if (vgp->vc == NULL) {
-	Ppoly_t **obs = gv_calloc(polys_size(&vgp->poly), sizeof(Ppoly_t*));
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++)
-	    obs[i] = &polys_at(&vgp->poly, i)->boundary;
-	if (!Plegal_arrangement(obs, polys_size(&vgp->poly)))
+	Ppoly_t **obs = gv_calloc(LIST_SIZE(&vgp->poly), sizeof(Ppoly_t*));
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++)
+	    obs[i] = &LIST_AT(&vgp->poly, i)->boundary;
+	if (!Plegal_arrangement(obs, LIST_SIZE(&vgp->poly)))
 	    fprintf(stderr, "bad arrangement\n");
 	else
-	    vgp->vc = Pobsopen(obs, (int)polys_size(&vgp->poly));
+	    vgp->vc = Pobsopen(obs, (int)LIST_SIZE(&vgp->poly));
 	free(obs);
     }
     return vgp->vc != NULL;
@@ -283,13 +282,13 @@ static point scale(point c, point p, double gain)
 }
 
 static bool remove_poly(vgpane_t *vgp, int id) {
-    for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	if (polys_get(&vgp->poly, i).id == id) {
-	    free(polys_get(&vgp->poly, i).boundary.ps);
-	    for (size_t j = i++; i < polys_size(&vgp->poly); i++, j++) {
-		polys_set(&vgp->poly, j, polys_get(&vgp->poly, i));
+    for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	if (LIST_GET(&vgp->poly, i).id == id) {
+	    free(LIST_GET(&vgp->poly, i).boundary.ps);
+	    for (size_t j = i++; i < LIST_SIZE(&vgp->poly); i++, j++) {
+		LIST_SET(&vgp->poly, j, LIST_GET(&vgp->poly, i));
 	    }
-	    (void)polys_pop_back(&vgp->poly);
+	    (void)LIST_POP_BACK(&vgp->poly);
 	    vc_stale(vgp);
 	    return true;
 	}
@@ -318,26 +317,26 @@ static void make_barriers(vgpane_t *vgp, int pp, int qp, Pedge_t **barriers,
                           size_t *n_barriers) {
 
     size_t n = 0;
-    for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	if (polys_get(&vgp->poly, i).id == pp)
+    for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	if (LIST_GET(&vgp->poly, i).id == pp)
 	    continue;
-	if (polys_get(&vgp->poly, i).id == qp)
+	if (LIST_GET(&vgp->poly, i).id == qp)
 	    continue;
-	n += polys_get(&vgp->poly, i).boundary.pn;
+	n += LIST_GET(&vgp->poly, i).boundary.pn;
     }
     Pedge_t *bar = gv_calloc(n, sizeof(Pedge_t));
     size_t b = 0;
-    for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	if (polys_get(&vgp->poly, i).id == pp)
+    for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	if (LIST_GET(&vgp->poly, i).id == pp)
 	    continue;
-	if (polys_get(&vgp->poly, i).id == qp)
+	if (LIST_GET(&vgp->poly, i).id == qp)
 	    continue;
-	for (size_t j = 0; j < polys_get(&vgp->poly, i).boundary.pn; j++) {
+	for (size_t j = 0; j < LIST_GET(&vgp->poly, i).boundary.pn; j++) {
 	    size_t k = j + 1;
-	    if (k >= polys_get(&vgp->poly, i).boundary.pn)
+	    if (k >= LIST_GET(&vgp->poly, i).boundary.pn)
 		k = 0;
-	    bar[b].a = polys_get(&vgp->poly, i).boundary.ps[j];
-	    bar[b].b = polys_get(&vgp->poly, i).boundary.ps[k];
+	    bar[b].a = LIST_GET(&vgp->poly, i).boundary.ps[j];
+	    bar[b].b = LIST_GET(&vgp->poly, i).boundary.ps[k];
 	    b++;
 	}
     }
@@ -446,11 +445,11 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	}
 	if (argc == 3) {
 	    /* find poly and return its coordinates */
-	    for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-		if (polys_get(&vgp->poly, i).id == polyid) {
-		    const size_t n = polys_get(&vgp->poly, i).boundary.pn;
+	    for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+		if (LIST_GET(&vgp->poly, i).id == polyid) {
+		    const size_t n = LIST_GET(&vgp->poly, i).boundary.pn;
 		    for (size_t j = 0; j < n; j++) {
-			appendpoint(interp, polys_get(&vgp->poly, i).boundary.ps[j]);
+			appendpoint(interp, LIST_GET(&vgp->poly, i).boundary.ps[j]);
 		    }
 		    return TCL_OK;
 		}
@@ -508,7 +507,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	free(vgp->triangle_cmd);
 	if (vgp->vc)
 	    Pobsclose(vgp->vc);
-	polys_free(&vgp->poly);
+	LIST_FREE(&vgp->poly);
 	Tcl_DeleteCommand(interp, argv[0]);
 	vgp->valid = false;
 	garbage_collect_vgpanes(&vgpaneTable);
@@ -541,9 +540,9 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return result;
 
 	/* determine the polygons (if any) that contain the point */
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    if (in_poly(polys_get(&vgp->poly, i).boundary, p)) {
-		Tcl_AppendElement(interp, ITOS(polys_get(&vgp->poly, i).id));
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	    if (in_poly(LIST_GET(&vgp->poly, i).boundary, p)) {
+		Tcl_AppendElement(interp, ITOS(LIST_GET(&vgp->poly, i).id));
 	    }
 	}
 	return TCL_OK;
@@ -594,8 +593,8 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 
     } else if (strcmp(argv[1], "list") == 0) {
 	/* return list of polygon ids */
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    Tcl_AppendElement(interp, ITOS(polys_get(&vgp->poly, i).id));
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	    Tcl_AppendElement(interp, ITOS(LIST_GET(&vgp->poly, i).id));
 	}
 	return TCL_OK;
 
@@ -721,8 +720,8 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	/* determine the polygons (if any) that contain the endpoints */
 	int pp = POLYID_NONE;
 	int qp = POLYID_NONE;
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    const poly tpp = polys_get(&vgp->poly, i);
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	    const poly tpp = LIST_GET(&vgp->poly, i);
 	    if (pp == POLYID_NONE && in_poly(tpp.boundary, p))
 		pp = (int)i;
 	    if (qp == POLYID_NONE && in_poly(tpp.boundary, q))
@@ -753,9 +752,9 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    Tcl_AppendResult(interp, "not an integer: ", argv[2], NULL);
 	    return TCL_ERROR;
 	}
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    if (polys_get(&vgp->poly, i).id == polyid) {
-		Ppoly_t pp = polys_get(&vgp->poly, i).boundary;
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	    if (LIST_GET(&vgp->poly, i).id == polyid) {
+		Ppoly_t pp = LIST_GET(&vgp->poly, i).boundary;
 		point LL, UR;
 		LL = UR = pp.ps[0];
 		for (size_t j = 1; j < pp.pn; j++) {
@@ -783,10 +782,10 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    Tcl_AppendResult(interp, "not an integer: ", argv[2], NULL);
 	    return TCL_ERROR;
 	}
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    if (polys_get(&vgp->poly, i).id == polyid) {
-		appendpoint(interp, center(polys_get(&vgp->poly, i).boundary.ps,
-					   polys_get(&vgp->poly, i).boundary.pn));
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	    if (LIST_GET(&vgp->poly, i).id == polyid) {
+		appendpoint(interp, center(LIST_GET(&vgp->poly, i).boundary.ps,
+					   LIST_GET(&vgp->poly, i).boundary.pn));
 		return TCL_OK;
 	    }
 	}
@@ -805,9 +804,9 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    if (polys_get(&vgp->poly, i).id == polyid) {
-		Ppoly_t *polygon = &polys_at(&vgp->poly, i)->boundary;
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	    if (LIST_GET(&vgp->poly, i).id == polyid) {
+		Ppoly_t *polygon = &LIST_AT(&vgp->poly, i)->boundary;
 		if (polygon->pn < 3) {
 		    Tcl_AppendResult(interp, "polygon ", argv[2], " has fewer than 3 points "
 		                     "and thus cannot be triangulated", NULL);
@@ -833,10 +832,10 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    Tcl_AppendResult(interp, "not an angle in radians: ", argv[3], NULL);
 	    return TCL_ERROR;
 	}
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    if (polys_get(&vgp->poly, i).id == polyid) {
-		const size_t n = polys_get(&vgp->poly, i).boundary.pn;
-		ps = polys_get(&vgp->poly, i).boundary.ps;
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	    if (LIST_GET(&vgp->poly, i).id == polyid) {
+		const size_t n = LIST_GET(&vgp->poly, i).boundary.pn;
+		ps = LIST_GET(&vgp->poly, i).boundary.ps;
 		p = center(ps, n);
 		for (size_t j = 0; j < n; j++) {
 		    appendpoint(interp, rotate(p, ps[j], alpha));
@@ -861,10 +860,10 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    Tcl_AppendResult(interp, "not a number: ", argv[3], NULL);
 	    return TCL_ERROR;
 	}
-	for (size_t i = 0; i < polys_size(&vgp->poly); i++) {
-	    if (polys_get(&vgp->poly, i).id == polyid) {
-		const size_t n = polys_get(&vgp->poly, i).boundary.pn;
-		ps = polys_get(&vgp->poly, i).boundary.ps;
+	for (size_t i = 0; i < LIST_SIZE(&vgp->poly); i++) {
+	    if (LIST_GET(&vgp->poly, i).id == polyid) {
+		const size_t n = LIST_GET(&vgp->poly, i).boundary.pn;
+		ps = LIST_GET(&vgp->poly, i).boundary.ps;
 		p = center(ps, n);
 		for (size_t j = 0; j < n; j++) {
 		    appendpoint(interp, scale(p, ps[j], gain));
