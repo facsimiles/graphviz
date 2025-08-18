@@ -97,8 +97,8 @@ static void cleanTbl(htmltbl_t *tp) {
   rows_t *rows = &tp->u.p.rows;
   for (size_t r = 0; r < rows_size(rows); ++r) {
     row_t *rp = rows_get(rows, r);
-    for (size_t c = 0; c < cells_size(&rp->rp); ++c) {
-      cleanCell(cells_get(&rp->rp, c));
+    for (size_t c = 0; c < LIST_SIZE(&rp->rp); ++c) {
+      cleanCell(LIST_GET(&rp->rp, c));
     }
   }
   rows_free(rows);
@@ -429,8 +429,7 @@ static void addRow(htmlparserstate_t *html_state) {
 static void setCell(htmlparserstate_t *html_state, htmlcell_t *cp, void *obj, label_type_t kind) {
   htmltbl_t* tbl = html_state->tblstack;
   row_t *rp = *rows_back(&tbl->u.p.rows);
-  cells_t *row = &rp->rp;
-  cells_append(row, cp);
+  LIST_APPEND(&rp->rp, cp);
   cp->child.kind = kind;
   if (tbl->vrule) {
     cp->vruled = true;

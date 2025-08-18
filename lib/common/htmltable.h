@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <util/list.h>
+#include <util/list2.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -108,16 +109,14 @@ typedef enum { HTML_UNSET = 0, HTML_TBL, HTML_TEXT, HTML_IMAGE } label_type_t;
  * Rows is a list of rows.
  */
 
-DEFINE_LIST(cells, htmlcell_t *)
-
 typedef struct {
-  cells_t rp;
+  LIST(htmlcell_t *) rp;
   bool ruled;
 } row_t;
 
 /// Free row. This closes and frees row’s list, then the item itself is freed.
 static inline void free_ritem(row_t *p) {
-  cells_free(&p->rp);
+  LIST_FREE(&p->rp);
   free (p);
 }
 

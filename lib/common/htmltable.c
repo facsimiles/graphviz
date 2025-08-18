@@ -1190,7 +1190,7 @@ static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
     size_t cnt = 0;
     for (uint16_t r = 0; r < rows_size(&rows); ++r) {
 	row_t *rp = rows_get(&rows, r);
-	cnt += cells_size(&rp->rp);
+	cnt += LIST_SIZE(&rp->rp);
 	if (rp->ruled) {
 	    bitarray_set(&is, r + 1, true);
 	}
@@ -1200,8 +1200,8 @@ static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
     for (uint16_t r = 0; r < rows_size(&rows); ++r) {
 	row_t *rp = rows_get(&rows, r);
 	uint16_t c = 0;
-	for (size_t i = 0; i < cells_size(&rp->rp); ++i) {
-	    htmlcell_t *cellp = cells_get(&rp->rp, i);
+	for (size_t i = 0; i < LIST_SIZE(&rp->rp); ++i) {
+	    htmlcell_t *cellp = LIST_GET(&rp->rp, i);
 	    *cells++ = cellp;
 	    rv |= size_html_cell(g, cellp, tbl, env);
 	    c = findCol(ps, r, c, cellp);
