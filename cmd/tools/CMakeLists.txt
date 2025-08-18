@@ -513,6 +513,7 @@ endif()
 
 target_link_libraries(sccmap PRIVATE
   cgraph
+  util
 )
 
 tool_defaults(sccmap)

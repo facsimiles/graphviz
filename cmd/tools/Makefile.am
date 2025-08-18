@@ -78,8 +78,8 @@ SUFFIXES = .1 .1.pdf
 sccmap_SOURCES = sccmap.c
 
 sccmap_LDADD = \
-	$(top_builddir)/lib/cgraph/libcgraph.la $(EXPAT_LIBS)
-
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/util/libutil_C.la $(EXPAT_LIBS)
 
 ccomps_SOURCES = ccomps.c
 
