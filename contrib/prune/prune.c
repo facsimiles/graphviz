@@ -20,6 +20,7 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/list.h>
+#include <util/list2.h>
 
 /* structure to hold an attribute specified on the commandline */
 typedef struct {
@@ -32,7 +33,7 @@ static void free_strattr(strattr_t s) {
   free(s.v);
 }
 
-DEFINE_LIST_WITH_DTOR(attrs, strattr_t, free_strattr)
+typedef LIST(strattr_t) attrs_t;
 DEFINE_LIST_WITH_DTOR(nodes, char*, free)
 
 static int remove_child(Agraph_t * graph, Agnode_t * node);
@@ -82,7 +83,7 @@ int main(int argc, char **argv)
 	progname++;		/* character after last '/' */
     }
 
-    attrs_t attr_list = {0};
+    attrs_t attr_list = {.dtor = free_strattr};
     nodes_t node_list = {0};
 
     while ((c = getopt(argc, argv, "hvn:N:")) != -1) {
@@ -165,22 +166,22 @@ int main(int argc, char **argv)
 		UNMARK(node);	/* Unmark so that it can be removed in later passes */
 
 		/* Change attribute (e.g. border style) to show that node has been pruneed */
-		for (size_t j = 0; j < attrs_size(&attr_list); ++j) {
+		for (size_t j = 0; j < LIST_SIZE(&attr_list); ++j) {
 		    /* create attribute if it doesn't exist and set it */
-		    attr = agattr_text(graph, AGNODE, attrs_get(&attr_list, j).n, "");
+		    attr = agattr_text(graph, AGNODE, LIST_GET(&attr_list, j).n, "");
 		    if (attr == NULL) {
 			fprintf(stderr, "Couldn't create attribute: %s\n",
-				attrs_get(&attr_list, j).n);
+				LIST_GET(&attr_list, j).n);
 			graphviz_exit(EXIT_FAILURE);
 		    }
-		    agxset(node, attr, attrs_get(&attr_list, j).v);
+		    agxset(node, attr, LIST_GET(&attr_list, j).v);
 		}
 	    }
 	}
 	agwrite(graph, stdout);
 	agclose(graph);
     }
-    attrs_free(&attr_list);
+    LIST_FREE(&attr_list);
     nodes_free(&node_list);
     graphviz_exit(EXIT_SUCCESS);
 }
@@ -251,7 +252,7 @@ static void addattr(attrs_t *l, char *a) {
     /* pointer to argument value */
     sp.v = gv_strdup(p);
 
-    attrs_append(l, sp);
+    LIST_APPEND(l, sp);
 }
 
 /* add element to node list */
