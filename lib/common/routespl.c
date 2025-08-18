@@ -27,6 +27,7 @@
 #include <util/debug.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/list2.h>
 #include <util/prisize_t.h>
 
 static int nedges; ///< total no. of edges used in routing
@@ -784,11 +785,11 @@ static pointf get_centroid(Agraph_t *g)
     return sum;
 }
 
-DEFINE_LIST(nodes, node_t *)
+typedef LIST(node_t *) nodes_t;
 
 static void nodes_delete(nodes_t *pvec) {
   if (pvec != NULL) {
-    nodes_free(pvec);
+    LIST_FREE(pvec);
   }
   free(pvec);
 }
@@ -799,11 +800,11 @@ static bool cycle_contains_edge(nodes_t *cycle, edge_t *edge) {
 	node_t* start = agtail(edge);
 	node_t* end = aghead(edge);
 
-	const size_t cycle_len = nodes_size(cycle);
+	const size_t cycle_len = LIST_SIZE(cycle);
 
 	for (size_t i=0; i < cycle_len; ++i) {
-		const node_t *c_start = nodes_get(cycle, i == 0 ? cycle_len - 1 : i - 1);
-		const node_t *c_end = nodes_get(cycle, i);
+		const node_t *c_start = LIST_GET(cycle, i == 0 ? cycle_len - 1 : i - 1);
+		const node_t *c_end = LIST_GET(cycle, i);
 
 		if (c_start == start && c_end == end)
 			return true;
@@ -813,24 +814,22 @@ static bool cycle_contains_edge(nodes_t *cycle, edge_t *edge) {
 	return false;
 }
 
-static bool eq(const node_t *a, const node_t *b) { return a == b; }
-
 static bool is_cycle_unique(cycles_t *cycles, nodes_t *cycle) {
-	const size_t cycle_len = nodes_size(cycle);
+	const size_t cycle_len = LIST_SIZE(cycle);
 	size_t i; //node counter
 
 	bool all_items_match;
 
 	for (size_t c = 0; c < cycles_size(cycles); ++c) {
 		nodes_t *cur_cycle = cycles_get(cycles, c);
-		const size_t cur_cycle_len = nodes_size(cur_cycle);
+		const size_t cur_cycle_len = LIST_SIZE(cur_cycle);
 
 		//if all the items match in equal length cycles then we're not unique
 		if (cur_cycle_len == cycle_len) {
 			all_items_match = true;
 			for (i=0; i < cur_cycle_len; ++i) {
-				node_t *cur_cycle_item = nodes_get(cur_cycle, i);
-				if (!nodes_contains(cycle, cur_cycle_item, eq)) {
+				node_t *cur_cycle_item = LIST_GET(cur_cycle, i);
+				if (!LIST_CONTAINS(cycle, cur_cycle_item)) {
 					all_items_match = false;
 					break;
 				}
@@ -848,22 +847,22 @@ static void dfs(graph_t *g, node_t *search, nodes_t *visited, node_t *end,
 	edge_t* e;
 	node_t* n;
 
-	if (nodes_contains(visited, search, eq)) {
+	if (LIST_CONTAINS(visited, search)) {
 		if (search == end) {
 			if (is_cycle_unique(cycles, visited)) {
 				nodes_t *cycle = gv_alloc(sizeof(nodes_t));
-				*cycle = nodes_copy(visited);
+				LIST_COPY(cycle, visited);
 				cycles_append(cycles, cycle);
 			}
 		}
 	} else {
-		nodes_append(visited, search);
+		LIST_APPEND(visited, search);
 		for (e = agfstout(g, search); e; e = agnxtout(g, e)) {
 			n = aghead(e);
 			dfs(g, n, visited, end, cycles);
 		}
-		if (!nodes_is_empty(visited)) {
-			(void)nodes_pop_back(visited);
+		if (!LIST_IS_EMPTY(visited)) {
+			(void)LIST_POP_BACK(visited);
 		}
 	}
 }
@@ -894,12 +893,12 @@ static nodes_t *find_shortest_cycle_with_edge(cycles_t *cycles, edge_t *edge,
 
 	for (size_t c = 0; c < cycles_size(cycles); ++c) {
 		nodes_t *cycle = cycles_get(cycles, c);
-		size_t cycle_len = nodes_size(cycle);
+		size_t cycle_len = LIST_SIZE(cycle);
 
 		if (cycle_len < min_size)
 			continue;
 
-		if (shortest == NULL || nodes_size(shortest) > cycle_len) {
+		if (shortest == NULL || LIST_SIZE(shortest) > cycle_len) {
 			if (cycle_contains_edge(cycle, edge)) {
 				shortest = cycle;
 			}
@@ -923,8 +922,8 @@ static pointf get_cycle_centroid(graph_t *g, edge_t* edge)
 	}
 
 	double cnt = 0;
-	for (size_t idx = 0; idx < nodes_size(cycle); ++idx) {
-		node_t *n = nodes_get(cycle, idx);
+	for (size_t idx = 0; idx < LIST_SIZE(cycle); ++idx) {
+		node_t *n = LIST_GET(cycle, idx);
 		sum.x += ND_coord(n).x;
         sum.y += ND_coord(n).y;
         cnt++;
