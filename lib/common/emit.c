@@ -36,7 +36,6 @@
 #include <util/debug.h>
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/streq.h>
 #include <util/strview.h>
@@ -817,14 +816,14 @@ static segitem_t* appendSeg (pointf p, segitem_t* lp)
     return s;
 }
 
-DEFINE_LIST(pbs_size, size_t)
+typedef LIST(size_t) pbs_size_t;
 
 /* Output the polygon determined by the n points in p1, followed
  * by the n points in p2 in reverse order. Assumes n <= 50.
  */
 static void map_bspline_poly(points_t *pbs_p, pbs_size_t *pbs_n, size_t n,
                              pointf *p1, pointf *p2) {
-    pbs_size_append(pbs_n, 2 * n);
+    LIST_APPEND(pbs_n, 2 * n);
 
     const UNUSED size_t nump = LIST_SIZE(pbs_p);
     for (size_t i = 0; i < n; i++) {
@@ -2554,17 +2553,16 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
         map_output_bspline(&pbs, &pbs_n, spl->list + i, w2);
       if (!(flags & GVRENDER_DOES_TRANSFORM)) {
         size_t nump = 0;
-        for (size_t i = 0; i < pbs_size_size(&pbs_n); ++i) {
-          nump += pbs_size_get(&pbs_n, i);
+        for (size_t i = 0; i < LIST_SIZE(&pbs_n); ++i) {
+          nump += LIST_GET(&pbs_n, i);
         }
         gvrender_ptf_A(job, LIST_FRONT(&pbs), LIST_FRONT(&pbs), nump);
       }
       obj->url_bsplinemap_p = LIST_FRONT(&pbs);
       obj->url_map_shape = MAP_POLYGON;
       LIST_DETACH(&pbs, &obj->url_map_p, &(size_t){0});
-      obj->url_map_n = *pbs_size_front(&pbs_n);
-      obj->url_bsplinemap_poly_n = pbs_size_size(&pbs_n);
-      obj->url_bsplinemap_n = pbs_size_detach(&pbs_n);
+      obj->url_map_n = *LIST_FRONT(&pbs_n);
+      LIST_DETACH(&pbs_n, &obj->url_bsplinemap_n, &obj->url_bsplinemap_poly_n);
     }
   }
 
