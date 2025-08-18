@@ -31,7 +31,6 @@
 #include <ortho/trap.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/unreachable.h>
 
@@ -61,12 +60,12 @@ typedef struct {
 } qnode_t;
 
 /// an array of qnodes
-DEFINE_LIST(qnodes, qnode_t)
+typedef LIST(qnode_t) qnodes_t;
 
 /* Return a new node to be added into the query tree */
 static size_t newnode(qnodes_t *qs) {
-  qnodes_append(qs, (qnode_t){0});
-  return qnodes_size(qs) - 1;
+  LIST_APPEND(qs, (qnode_t){0});
+  return LIST_SIZE(qs) - 1;
 }
 
 /* Return a free trapezoid */
@@ -125,53 +124,53 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   segment_t *s = &seg[segnum];
 
   const size_t i1 = newnode(qs);
-  qnodes_at(qs, i1)->nodetype = T_Y;
-  qnodes_at(qs, i1)->yval = max_(s->v0, s->v1); // root
+  LIST_AT(qs, i1)->nodetype = T_Y;
+  LIST_AT(qs, i1)->yval = max_(s->v0, s->v1); // root
   const size_t root = i1;
 
   const size_t i2 = newnode(qs);
-  qnodes_at(qs, i1)->right = i2;
-  qnodes_at(qs, i2)->nodetype = T_SINK;
-  qnodes_at(qs, i2)->parent = i1;
+  LIST_AT(qs, i1)->right = i2;
+  LIST_AT(qs, i2)->nodetype = T_SINK;
+  LIST_AT(qs, i2)->parent = i1;
 
   const size_t i3 = newnode(qs);
-  qnodes_at(qs, i1)->left = i3;
-  qnodes_at(qs, i3)->nodetype = T_Y;
-  qnodes_at(qs, i3)->yval = min_(s->v0, s->v1); // root
-  qnodes_at(qs, i3)->parent = i1;
+  LIST_AT(qs, i1)->left = i3;
+  LIST_AT(qs, i3)->nodetype = T_Y;
+  LIST_AT(qs, i3)->yval = min_(s->v0, s->v1); // root
+  LIST_AT(qs, i3)->parent = i1;
 
   const size_t i4 = newnode(qs);
-  qnodes_at(qs, i3)->left = i4;
-  qnodes_at(qs, i4)->nodetype = T_SINK;
-  qnodes_at(qs, i4)->parent = i3;
+  LIST_AT(qs, i3)->left = i4;
+  LIST_AT(qs, i4)->nodetype = T_SINK;
+  LIST_AT(qs, i4)->parent = i3;
 
   const size_t i5 = newnode(qs);
-  qnodes_at(qs, i3)->right = i5;
-  qnodes_at(qs, i5)->nodetype = T_X;
-  qnodes_at(qs, i5)->segnum = segnum;
-  qnodes_at(qs, i5)->parent = i3;
+  LIST_AT(qs, i3)->right = i5;
+  LIST_AT(qs, i5)->nodetype = T_X;
+  LIST_AT(qs, i5)->segnum = segnum;
+  LIST_AT(qs, i5)->parent = i3;
 
   const size_t i6 = newnode(qs);
-  qnodes_at(qs, i5)->left = i6;
-  qnodes_at(qs, i6)->nodetype = T_SINK;
-  qnodes_at(qs, i6)->parent = i5;
+  LIST_AT(qs, i5)->left = i6;
+  LIST_AT(qs, i6)->nodetype = T_SINK;
+  LIST_AT(qs, i6)->parent = i5;
 
   const size_t i7 = newnode(qs);
-  qnodes_at(qs, i5)->right = i7;
-  qnodes_at(qs, i7)->nodetype = T_SINK;
-  qnodes_at(qs, i7)->parent = i5;
+  LIST_AT(qs, i5)->right = i7;
+  LIST_AT(qs, i7)->nodetype = T_SINK;
+  LIST_AT(qs, i7)->parent = i5;
 
   const size_t t1 = newtrap(tr); // middle left
   const size_t t2 = newtrap(tr); // middle right
   const size_t t3 = newtrap(tr); // bottom-most
   const size_t t4 = newtrap(tr); // topmost
 
-  LIST_AT(tr, t1)->hi = qnodes_get(qs, i1).yval;
-  LIST_AT(tr, t2)->hi = qnodes_get(qs, i1).yval;
-  LIST_AT(tr, t4)->lo = qnodes_get(qs, i1).yval;
-  LIST_AT(tr, t1)->lo = qnodes_get(qs, i3).yval;
-  LIST_AT(tr, t2)->lo = qnodes_get(qs, i3).yval;
-  LIST_AT(tr, t3)->hi = qnodes_get(qs, i3).yval;
+  LIST_AT(tr, t1)->hi = LIST_GET(qs, i1).yval;
+  LIST_AT(tr, t2)->hi = LIST_GET(qs, i1).yval;
+  LIST_AT(tr, t4)->lo = LIST_GET(qs, i1).yval;
+  LIST_AT(tr, t1)->lo = LIST_GET(qs, i3).yval;
+  LIST_AT(tr, t2)->lo = LIST_GET(qs, i3).yval;
+  LIST_AT(tr, t3)->hi = LIST_GET(qs, i3).yval;
   LIST_AT(tr, t4)->hi.y = DBL_MAX;
   LIST_AT(tr, t4)->hi.x = DBL_MAX;
   LIST_AT(tr, t3)->lo.y = -DBL_MAX;
@@ -197,10 +196,10 @@ static size_t init_query_structure(int segnum, segment_t *seg, traps_t *tr,
   LIST_AT(tr, t3)->is_valid = true;
   LIST_AT(tr, t4)->is_valid = true;
 
-  qnodes_at(qs, i2)->trnum = t4;
-  qnodes_at(qs, i4)->trnum = t3;
-  qnodes_at(qs, i6)->trnum = t1;
-  qnodes_at(qs, i7)->trnum = t2;
+  LIST_AT(qs, i2)->trnum = t4;
+  LIST_AT(qs, i4)->trnum = t3;
+  LIST_AT(qs, i6)->trnum = t1;
+  LIST_AT(qs, i7)->trnum = t2;
 
   s->is_inserted = true;
   return root;
@@ -269,7 +268,7 @@ static bool inserted (int segnum, segment_t* seg, int whichpt)
  */
 static size_t locate_endpoint(pointf *v, pointf *vo, size_t r, segment_t *seg,
                            qnodes_t *qs) {
-  qnode_t *rptr = qnodes_at(qs, r);
+  qnode_t *rptr = LIST_AT(qs, r);
 
   switch (rptr->nodetype) {
     case T_SINK:
@@ -336,12 +335,12 @@ static void merge_trapezoids(int segnum, size_t tfirst, size_t tlast, int side,
 	    {			              /* merge them */
 	      /* Use the upper node as the new node i.e. t */
 
-	      const size_t ptnext = qnodes_get(qs, LIST_GET(tr, tnext).sink).parent;
+	      const size_t ptnext = LIST_GET(qs, LIST_GET(tr, tnext).sink).parent;
 
-	      if (qnodes_get(qs, ptnext).left == LIST_GET(tr, tnext).sink)
-		qnodes_at(qs, ptnext)->left = LIST_GET(tr, t).sink;
+	      if (LIST_GET(qs, ptnext).left == LIST_GET(tr, tnext).sink)
+		LIST_AT(qs, ptnext)->left = LIST_GET(tr, t).sink;
 	      else
-		qnodes_at(qs, ptnext)->right = LIST_GET(tr, t).sink; // redirect parent
+		LIST_AT(qs, ptnext)->right = LIST_GET(tr, t).sink; // redirect parent
 
 
 	      /* Change the upper neighbours of the lower trapezoids */
@@ -494,19 +493,19 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       const size_t i2 = newnode(qs); // Lower trapezoid sink
       const size_t sk = LIST_GET(tr, tu).sink;
 
-      qnodes_at(qs, sk)->nodetype = T_Y;
-      qnodes_at(qs, sk)->yval = s.v0;
-      qnodes_at(qs, sk)->segnum = segnum; // not really required … maybe later
-      qnodes_at(qs, sk)->left = i2;
-      qnodes_at(qs, sk)->right = i1;
+      LIST_AT(qs, sk)->nodetype = T_Y;
+      LIST_AT(qs, sk)->yval = s.v0;
+      LIST_AT(qs, sk)->segnum = segnum; // not really required … maybe later
+      LIST_AT(qs, sk)->left = i2;
+      LIST_AT(qs, sk)->right = i1;
 
-      qnodes_at(qs, i1)->nodetype = T_SINK;
-      qnodes_at(qs, i1)->trnum = tu;
-      qnodes_at(qs, i1)->parent = sk;
+      LIST_AT(qs, i1)->nodetype = T_SINK;
+      LIST_AT(qs, i1)->trnum = tu;
+      LIST_AT(qs, i1)->parent = sk;
 
-      qnodes_at(qs, i2)->nodetype = T_SINK;
-      qnodes_at(qs, i2)->trnum = tl;
-      qnodes_at(qs, i2)->parent = sk;
+      LIST_AT(qs, i2)->nodetype = T_SINK;
+      LIST_AT(qs, i2)->trnum = tl;
+      LIST_AT(qs, i2)->parent = sk;
 
       LIST_AT(tr, tu)->sink = i1;
       LIST_AT(tr, tl)->sink = i2;
@@ -551,19 +550,19 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       const size_t i2 = newnode(qs); // Lower trapezoid sink
       const size_t sk = LIST_GET(tr, tu).sink;
 
-      qnodes_at(qs, sk)->nodetype = T_Y;
-      qnodes_at(qs, sk)->yval = s.v1;
-      qnodes_at(qs, sk)->segnum = segnum; // not really required … maybe later
-      qnodes_at(qs, sk)->left = i2;
-      qnodes_at(qs, sk)->right = i1;
+      LIST_AT(qs, sk)->nodetype = T_Y;
+      LIST_AT(qs, sk)->yval = s.v1;
+      LIST_AT(qs, sk)->segnum = segnum; // not really required … maybe later
+      LIST_AT(qs, sk)->left = i2;
+      LIST_AT(qs, sk)->right = i1;
 
-      qnodes_at(qs, i1)->nodetype = T_SINK;
-      qnodes_at(qs, i1)->trnum = tu;
-      qnodes_at(qs, i1)->parent = sk;
+      LIST_AT(qs, i1)->nodetype = T_SINK;
+      LIST_AT(qs, i1)->trnum = tu;
+      LIST_AT(qs, i1)->parent = sk;
 
-      qnodes_at(qs, i2)->nodetype = T_SINK;
-      qnodes_at(qs, i2)->trnum = tl;
-      qnodes_at(qs, i2)->parent = sk;
+      LIST_AT(qs, i2)->nodetype = T_SINK;
+      LIST_AT(qs, i2)->trnum = tl;
+      LIST_AT(qs, i2)->parent = sk;
 
       LIST_AT(tr, tu)->sink = i1;
       LIST_AT(tr, tl)->sink = i2;
@@ -589,20 +588,20 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
       const size_t i1 = newnode(qs); // left trapezoid sink
       const size_t i2 = newnode(qs); // right trapezoid sink
 
-      qnodes_at(qs, sk)->nodetype = T_X;
-      qnodes_at(qs, sk)->segnum = segnum;
-      qnodes_at(qs, sk)->left = i1;
-      qnodes_at(qs, sk)->right = i2;
+      LIST_AT(qs, sk)->nodetype = T_X;
+      LIST_AT(qs, sk)->segnum = segnum;
+      LIST_AT(qs, sk)->left = i1;
+      LIST_AT(qs, sk)->right = i2;
 
-      qnodes_at(qs, i1)->nodetype = T_SINK; // left trapezoid (use existing one)
-      qnodes_at(qs, i1)->trnum = t;
-      qnodes_at(qs, i1)->parent = sk;
+      LIST_AT(qs, i1)->nodetype = T_SINK; // left trapezoid (use existing one)
+      LIST_AT(qs, i1)->trnum = t;
+      LIST_AT(qs, i1)->parent = sk;
 
-      qnodes_at(qs, i2)->nodetype = T_SINK; // right trapezoid (allocate new)
+      LIST_AT(qs, i2)->nodetype = T_SINK; // right trapezoid (allocate new)
       const size_t tn = newtrap(tr);
-      qnodes_at(qs, i2)->trnum = tn;
+      LIST_AT(qs, i2)->trnum = tn;
       LIST_AT(tr, tn)->is_valid = true;
-      qnodes_at(qs, i2)->parent = sk;
+      LIST_AT(qs, i2)->parent = sk;
 
       if (t == tfirst)
 	tfirstr = tn;
@@ -900,6 +899,6 @@ traps_t construct_trapezoids(int nseg, segment_t *seg, int *permute) {
     for (i = math_N(nseg, logstar) + 1; i <= nseg; i++)
 	add_segment(permute[segi++], seg, &tr, &qs);
 
-    qnodes_free(&qs);
+    LIST_FREE(&qs);
     return tr;
 }
