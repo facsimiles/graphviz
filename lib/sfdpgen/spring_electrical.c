@@ -26,7 +26,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 /// another parameter
 /// fₐ(i, j) = C × dist(i , j)² ÷ K × dᵢⱼ, fᵣ(i, j) = K³⁻ᵖ ÷ dist(i, j)⁻ᵖ
@@ -189,8 +189,6 @@ static void set_leaves(double *x, int dim, double dist, double ang, int i, int j
   x[dim*j+1] = sin(ang)*dist + x[dim*i+1];
 }
 
-DEFINE_LIST(ints, int)
-
 static void beautify_leaves(int dim, SparseMatrix A, double *x){
   int m = A->m, i, j, *ia = A->ia, *ja = A->ja;
   int p;
@@ -208,16 +206,16 @@ static void beautify_leaves(int dim, SparseMatrix A, double *x){
     if (!bitarray_get(checked, p)) {
       bitarray_set(&checked, p, true);
       dist = 0;
-      ints_t leaves = {0};
+      LIST(int) leaves = {0};
       for (j = ia[p]; j < ia[p+1]; j++){
 	if (node_degree(ja[j]) == 1){
 	  bitarray_set(&checked, ja[j], true);
 	  dist += distance(x, dim, p, ja[j]);
-	  ints_append(&leaves, ja[j]);
+	  LIST_APPEND(&leaves, ja[j]);
 	}
       }
-      assert(!ints_is_empty(&leaves));
-      dist /= (double)ints_size(&leaves);
+      assert(!LIST_IS_EMPTY(&leaves));
+      dist /= (double)LIST_SIZE(&leaves);
       double ang1 = 0;
       double ang2 = 2 * M_PI;
       const double pad = 0.1; // fudge factor to account for the size and
@@ -226,12 +224,12 @@ static void beautify_leaves(int dim, SparseMatrix A, double *x){
       ang2 -= pad;
       assert(ang2 >= ang1);
       step = 0.;
-      if (ints_size(&leaves) > 1) step = (ang2 - ang1) / (double)ints_size(&leaves);
-      for (size_t k = 0; k < ints_size(&leaves); k++) {
-	set_leaves(x, dim, dist, ang1, p, ints_get(&leaves, k));
+      if (LIST_SIZE(&leaves) > 1) step = (ang2 - ang1) / (double)LIST_SIZE(&leaves);
+      for (size_t k = 0; k < LIST_SIZE(&leaves); k++) {
+	set_leaves(x, dim, dist, ang1, p, LIST_GET(&leaves, k));
 	ang1 += step;
       }
-      ints_free(&leaves);
+      LIST_FREE(&leaves);
     }
   }
 
