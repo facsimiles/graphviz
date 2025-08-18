@@ -26,6 +26,7 @@
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/list2.h>
 #include <util/overflow.h>
 #include <util/prisize_t.h>
 #include <util/streq.h>
@@ -791,19 +792,9 @@ static void LR_balance(network_simplex_ctx_t *ctx)
     freeTreeList(ctx, ctx->G);
 }
 
-static int decreasingrankcmpf(const node_t **x, const node_t **y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  node_t **n0 = (node_t**)x;
-  node_t **n1 = (node_t**)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+static int decreasingrankcmpf(const void *x, const void *y) {
+  node_t *const *n0 = x;
+  node_t *const *n1 = y;
   if (ND_rank(*n1) < ND_rank(*n0)) {
     return -1;
   }
@@ -813,7 +804,7 @@ static int decreasingrankcmpf(const node_t **x, const node_t **y) {
   return 0;
 }
 
-static int increasingrankcmpf(const node_t **x, const node_t **y) {
+static int increasingrankcmpf(const void *x, const void *y) {
   return -decreasingrankcmpf(x, y);
 }
 
@@ -844,20 +835,19 @@ static void TB_balance(network_simplex_ctx_t *ctx)
                 }
               }
     }
-    node_list_t Tree_node = {0};
-    node_list_reserve(&Tree_node, ctx->N_nodes);
+    LIST(node_t *) Tree_node = {0};
+    LIST_RESERVE(&Tree_node, ctx->N_nodes);
     for (n = GD_nlist(ctx->G); n; n = ND_next(n)) {
-      node_list_append(&Tree_node, n);
+      LIST_APPEND(&Tree_node, n);
     }
-    node_list_sort(&Tree_node,
-                   adj > 1 ? decreasingrankcmpf: increasingrankcmpf);
-    for (size_t i = 0; i < node_list_size(&Tree_node); i++) {
-        n = node_list_get(&Tree_node, i);
+    LIST_SORT(&Tree_node, adj > 1 ? decreasingrankcmpf: increasingrankcmpf);
+    for (size_t i = 0; i < LIST_SIZE(&Tree_node); i++) {
+        n = LIST_GET(&Tree_node, i);
         if (ND_node_type(n) == NORMAL)
           nrank[ND_rank(n)]++;
     }
-    for (size_t ii = 0; ii < node_list_size(&Tree_node); ii++) {
-      n = node_list_get(&Tree_node, ii);
+    for (size_t ii = 0; ii < LIST_SIZE(&Tree_node); ii++) {
+      n = LIST_GET(&Tree_node, ii);
       if (ND_node_type(n) != NORMAL)
         continue;
       inweight = outweight = 0;
@@ -892,7 +882,7 @@ static void TB_balance(network_simplex_ctx_t *ctx)
       free_list(ND_tree_out(n));
       ND_mark(n) = false;
     }
-    node_list_free(&Tree_node);
+    LIST_FREE(&Tree_node);
     free(nrank);
 }
 
