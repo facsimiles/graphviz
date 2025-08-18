@@ -608,12 +608,10 @@ static void travBFS(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
   LIST_FREE(&q);
 }
 
-DEFINE_LIST(edge_stack, Agedge_t *)
-
 static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
                     trav_fns *fns) {
   Agnode_t *n;
-  edge_stack_t stk = {0};
+  LIST(Agedge_t *) stk = {0};
   Agnode_t *curn;
   Agedge_t *cure;
   Agedge_t *entry;
@@ -659,7 +657,7 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
             evalEdge(state, prog, xprog, cure);
         } else {
           evalEdge(state, prog, xprog, cure);
-          edge_stack_push_back(&stk, entry);
+          LIST_PUSH_BACK(&stk, entry);
           state->tvedge = entry = cure;
           curn = cure->node;
           cure = 0;
@@ -674,7 +672,7 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
         nd = nData(curn);
         POP(nd);
         cure = entry;
-        entry = edge_stack_is_empty(&stk) ? NULL : edge_stack_pop_back(&stk);
+        entry = LIST_IS_EMPTY(&stk) ? NULL : LIST_POP_BACK(&stk);
         if (entry == &seed.out)
           state->tvedge = 0;
         else
@@ -687,7 +685,7 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
     }
   }
   state->tvedge = 0;
-  edge_stack_free(&stk);
+  LIST_FREE(&stk);
 }
 
 static void travNodes(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
