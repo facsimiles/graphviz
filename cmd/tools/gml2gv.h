@@ -37,16 +37,12 @@ typedef struct {
     attrs_t attrlist;  
 } gmledge;
 
-void free_edge(gmledge *p);
-
-DEFINE_LIST_WITH_DTOR(edges, gmledge *, free_edge)
-
 typedef struct gmlgraph {
     struct gmlgraph* parent;
     int directed;
     attrs_t attrlist;  
     nodes_t nodelist;
-    edges_t edgelist;
+    LIST(gmledge *) edgelist;
     LIST(struct gmlgraph *) graphlist;
 } gmlgraph;
 

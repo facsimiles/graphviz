@@ -51,7 +51,7 @@ void free_node(gmlnode *p) {
     free (p);
 }
 
-void free_edge(gmledge *p) {
+static void free_edge(gmledge *p) {
     if (!p) return;
     attrs_free(&p->attrlist);
     free (p);
@@ -60,7 +60,7 @@ void free_edge(gmledge *p) {
 static void free_graph(gmlgraph *p) {
     if (!p) return;
     nodes_free(&p->nodelist);
-    edges_free(&p->edgelist);
+    LIST_FREE(&p->edgelist);
     attrs_free(&p->attrlist);
     LIST_FREE(&p->graphlist);
     free (p);
@@ -121,6 +121,7 @@ pushG (void)
 {
     gmlgraph* g = gv_alloc(sizeof(gmlgraph));
 
+    g->edgelist.dtor = free_edge;
     g->graphlist.dtor = free_graph;
     g->parent = G;
     g->directed = -1;
@@ -236,7 +237,7 @@ glist  : glist glistitem
        ;
 
 glistitem : node { nodes_append(&G->nodelist, $1); }
-          | edge { edges_append(&G->edgelist, $1); }
+          | edge { LIST_APPEND(&G->edgelist, $1); }
           | hdr body 
           | DIRECTED INTEGER { 
 		if (setDir($2)) { 
@@ -647,8 +648,8 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
 	addAttrs((Agobj_t*)n, &np->attrlist, xb, unk);
     }
 
-    for (size_t i = 0; i < edges_size(&graph->edgelist); ++i) {
-	gmledge *ep = edges_get(&graph->edgelist, i);
+    for (size_t i = 0; i < LIST_SIZE(&graph->edgelist); ++i) {
+	gmledge *ep = LIST_GET(&graph->edgelist, i);
 	if (!ep->source) {
 	   fprintf (stderr, "edge without an source attribute"); 
 	   graphviz_exit (1);
