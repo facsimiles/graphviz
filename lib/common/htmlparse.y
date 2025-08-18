@@ -29,7 +29,6 @@
 #include <common/textspan.h>
 #include <gvc/gvcext.h>
 #include <util/agxbuf.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/strview.h>
 }
@@ -47,13 +46,11 @@ static inline void free_hi(htextspan_t item) {
   free(item.items);
 }
 
-DEFINE_LIST_WITH_DTOR(htextspans, htextspan_t, free_hi)
-
 struct htmlparserstate_s {
   htmllabel_t* lbl;       /* Generated label */
   htmltbl_t*   tblstack;  /* Stack of tables maintained during parsing */
   LIST(textspan_t)  fitemList;
-  htextspans_t fspanList;
+  LIST(htextspan_t) fspanList;
   agxbuf*      str;       /* Buffer for text */
   LIST(textfont_t *)      fontstack;
   GVC_t*       gvc;
@@ -388,30 +385,29 @@ appendFLineList (htmlparserstate_t *html_state, int v)
 
     LIST_CLEAR(&html_state->fitemList);
 
-    htextspans_append(&html_state->fspanList, lp);
+    LIST_APPEND(&html_state->fspanList, lp);
 }
 
 static htmltxt_t*
 mkText(htmlparserstate_t *html_state)
 {
-    htextspans_t *ispan = &html_state->fspanList;
     htmltxt_t *hft = gv_alloc(sizeof(htmltxt_t));
 
     if (!LIST_IS_EMPTY(&html_state->fitemList))
 	appendFLineList (html_state, UNSET_ALIGN);
 
-    size_t cnt = htextspans_size(ispan);
+    size_t cnt = LIST_SIZE(&html_state->fspanList);
     hft->nspans = cnt;
 
     hft->spans = gv_calloc(cnt, sizeof(htextspan_t));
-    for (size_t i = 0; i < htextspans_size(ispan); ++i) {
+    for (size_t i = 0; i < LIST_SIZE(&html_state->fspanList); ++i) {
     	// move this HTML text span into the new list
-    	htextspan_t *hi = htextspans_at(ispan, i);
+    	htextspan_t *hi = LIST_AT(&html_state->fspanList, i);
     	hft->spans[i] = *hi;
     	*hi = (htextspan_t){0};
     }
 
-    htextspans_clear(ispan);
+    LIST_CLEAR(&html_state->fspanList);
 
     return hft;
 }
@@ -465,7 +461,7 @@ static void cleanup (htmlparserstate_t *html_state)
   }
 
   LIST_CLEAR(&html_state->fitemList);
-  htextspans_clear(&html_state->fspanList);
+  LIST_CLEAR(&html_state->fspanList);
 
   LIST_FREE(&html_state->fontstack);
 }
@@ -510,6 +506,7 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
 
   LIST_PUSH_BACK(&scanner.parser.fontstack, NULL);
   scanner.parser.fitemList.dtor = free_ti;
+  scanner.parser.fspanList.dtor = free_hi;
   scanner.parser.gvc = GD_gvc(env->g);
   scanner.parser.str = &str;
 
@@ -523,7 +520,7 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
   }
 
   LIST_FREE(&scanner.parser.fitemList);
-  htextspans_free(&scanner.parser.fspanList);
+  LIST_FREE(&scanner.parser.fspanList);
 
   LIST_FREE(&scanner.parser.fontstack);
 
