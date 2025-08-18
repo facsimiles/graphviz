@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
-#include <util/list.h>
+#include <util/list2.h>
 #include <util/sort.h>
 
 /*****************************************
@@ -37,7 +37,7 @@ typedef struct {
 #define LT(p,q) ((p).dist < (q).dist)
 #define EQ(p,q) ((p).dist == (q).dist)
 
-DEFINE_LIST(pairs, Pair *)
+typedef LIST(Pair *) pairs_t;
 
 static void push(pairs_t *s, Pair x) {
 
@@ -45,18 +45,18 @@ static void push(pairs_t *s, Pair x) {
   Pair *copy = gv_alloc(sizeof(x));
   *copy = x;
 
-  pairs_push_back(s, copy);
+  LIST_PUSH_BACK(s, copy);
 }
 
 static bool pop(pairs_t *s, Pair *x) {
 
   // is the stack empty?
-  if (pairs_is_empty(s)) {
+  if (LIST_IS_EMPTY(s)) {
     return false;
   }
 
   // remove the top and pass it back to the caller
-  Pair *top = pairs_pop_back(s);
+  Pair *top = LIST_POP_BACK(s);
   *x = *top;
 
   // discard the previously saved copy
@@ -65,7 +65,7 @@ static bool pop(pairs_t *s, Pair *x) {
   return true;
 }
 
-#define sub(h,i) (*pairs_get((h), (i)))
+#define sub(h,i) (*LIST_GET((h), (i)))
 
 /* An auxulliary data structure (a heap) for 
  * finding the closest pair in the layout
@@ -264,7 +264,7 @@ static void construct_graph(size_t n, pairs_t *edges_stack,
 
     /* first compute new degrees and nedges; */
     int *degrees = gv_calloc(n, sizeof(int));
-    size_t top = pairs_size(edges_stack);
+    size_t top = LIST_SIZE(edges_stack);
     size_t new_nedges = 2 * top + n;
     Pair pair;
     int *edges = gv_calloc(new_nedges, sizeof(int));
@@ -314,5 +314,5 @@ closest_pairs2graph(double *place, int n, int num_pairs, vtx_data ** graph)
     assert(n >= 0);
     find_closest_pairs(place, (size_t)n, num_pairs, &pairs_stack);
     construct_graph((size_t)n, &pairs_stack, graph);
-    pairs_free(&pairs_stack);
+    LIST_FREE(&pairs_stack);
 }
