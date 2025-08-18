@@ -18,7 +18,7 @@
 #include <graph_generator.h>
 #include <util/alloc.h>
 #include <util/exit.h>
-#include <util/list.h>
+#include <util/list2.h>
 #include <util/random.h>
 #include <util/overflow.h>
 
@@ -517,18 +517,18 @@ static void treeDup(tree_t *tp, unsigned J) {
 
 /*****************/
 
-DEFINE_LIST(int_stack, unsigned)
+typedef LIST(unsigned) int_stack_t;
 
 static void push(int_stack_t *sp, unsigned j, unsigned d) {
-  int_stack_push_back(sp, j);
-  int_stack_push_back(sp, d);
+  LIST_PUSH_BACK(sp, j);
+  LIST_PUSH_BACK(sp, d);
 }
 
 static pair pop(int_stack_t *sp) {
 
   // extract ints in the opposite order in which they were pushed
-  const unsigned d = int_stack_pop_back(sp);
-  const unsigned j = int_stack_pop_back(sp);
+  const unsigned d = LIST_POP_BACK(sp);
+  const unsigned j = LIST_POP_BACK(sp);
 
   return (pair){j, d};
 }
@@ -654,7 +654,7 @@ treegen_t *makeTreeGen(unsigned N) {
 
 void makeRandomTree (treegen_t* tg, edgefn ef)
 {
-    int_stack_clear(&tg->sp);
+    LIST_CLEAR(&tg->sp);
     resetTree(tg->tp);
     genTree(tg->N, tg->T, &tg->sp, tg->tp);
     writeTree (tg->tp, ef);
@@ -664,7 +664,7 @@ void
 freeTreeGen(treegen_t* tg)
 {
     free (tg->T);
-    int_stack_free(&tg->sp);
+    LIST_FREE(&tg->sp);
     freeTree (tg->tp);
     free (tg);
 }
