@@ -31,6 +31,7 @@
 #include <util/gv_math.h>
 #include <util/itos.h>
 #include <util/list.h>
+#include <util/list2.h>
 #include <util/streq.h>
 
 struct adjmatrix_t {
@@ -1302,26 +1303,26 @@ int build_ranks(graph_t *g, int pass) {
 	    continue;
 	if (!MARK(n)) {
 	    MARK(n) = true;
-	    node_queue_push_back(&q, n);
-	    while (!node_queue_is_empty(&q)) {
-		node_t *n0 = node_queue_pop_front(&q);
+	    LIST_PUSH_BACK(&q, n);
+	    while (!LIST_IS_EMPTY(&q)) {
+		node_t *n0 = LIST_POP_FRONT(&q);
 		if (ND_ranktype(n0) != CLUSTER) {
 		    if (install_in_rank(g, n0) != 0) {
-		        node_queue_free(&q);
+		        LIST_FREE(&q);
 		        return -1;
 		    }
 		    enqueue_neighbors(&q, n0, pass);
 		} else {
 		    const int rc = install_cluster(g, n0, pass, &q);
 		    if (rc != 0) {
-		        node_queue_free(&q);
+		        LIST_FREE(&q);
 		        return rc;
 		    }
 		}
 	    }
 	}
     }
-    assert(node_queue_is_empty(&q));
+    assert(LIST_IS_EMPTY(&q));
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
 	GD_rank(Root)[i].valid = false;
 	if (GD_flip(g) && GD_rank(g)[i].n > 0) {
@@ -1335,7 +1336,7 @@ int build_ranks(graph_t *g, int pass) {
 
     if (g == dot_root(g) && ncross() > 0)
 	transpose(g, false);
-    node_queue_free(&q);
+    LIST_FREE(&q);
     return 0;
 }
 
@@ -1347,7 +1348,7 @@ void enqueue_neighbors(node_queue_t *q, node_t *n0, int pass) {
 	    e = ND_out(n0).list[i];
 	    if (!MARK(aghead(e))) {
 		MARK(aghead(e)) = true;
-		node_queue_push_back(q, aghead(e));
+		LIST_PUSH_BACK(q, aghead(e));
 	    }
 	}
     } else {
@@ -1355,7 +1356,7 @@ void enqueue_neighbors(node_queue_t *q, node_t *n0, int pass) {
 	    e = ND_in(n0).list[i];
 	    if (!MARK(agtail(e))) {
 		MARK(agtail(e)) = true;
-		node_queue_push_back(q, agtail(e));
+		LIST_PUSH_BACK(q, agtail(e));
 	    }
 	}
     }
