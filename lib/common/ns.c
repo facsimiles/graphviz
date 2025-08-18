@@ -44,11 +44,9 @@ static void check_cycles(graph_t * g);
 #define SEQ(a,b,c)		((a) <= (b) && (b) <= (c))
 #define TREE_EDGE(e)	(ED_tree_index(e) >= 0)
 
-DEFINE_LIST(edge_list, edge_t *)
-
 typedef struct {
     graph_t *G;
-    edge_list_t Tree_edge;
+    LIST(edge_t *) Tree_edge;
     size_t S_i;			/* search index for enter_edge */
     size_t N_edges, N_nodes;
     int Search_size;
@@ -62,9 +60,9 @@ static int add_tree_edge(network_simplex_ctx_t *ctx, edge_t * e)
 	agerrorf("add_tree_edge: missing tree edge\n");
 	return -1;
     }
-    assert(edge_list_size(&ctx->Tree_edge) <= INT_MAX);
-    ED_tree_index(e) = (int)edge_list_size(&ctx->Tree_edge);
-    edge_list_append(&ctx->Tree_edge, e);
+    assert(LIST_SIZE(&ctx->Tree_edge) <= INT_MAX);
+    ED_tree_index(e) = (int)LIST_SIZE(&ctx->Tree_edge);
+    LIST_APPEND(&ctx->Tree_edge, e);
     node_t *n = agtail(e);
     ND_mark(n) = true;
     ND_tree_out(n).list[ND_tree_out(n).size++] = e;
@@ -117,7 +115,7 @@ static void exchange_tree_edges(network_simplex_ctx_t *ctx, edge_t * e, edge_t *
 {
     ED_tree_index(f) = ED_tree_index(e);
     assert(ED_tree_index(e) >= 0);
-    edge_list_set(&ctx->Tree_edge, (size_t)ED_tree_index(e), f);
+    LIST_SET(&ctx->Tree_edge, (size_t)ED_tree_index(e), f);
     ED_tree_index(e) = -1;
 
     node_t *n = agtail(e);
@@ -186,13 +184,13 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
     int cnt = 0;
 
     size_t j = ctx->S_i;
-    while (ctx->S_i < edge_list_size(&ctx->Tree_edge)) {
-	if (ED_cutvalue(f = edge_list_get(&ctx->Tree_edge, ctx->S_i)) < 0) {
+    while (ctx->S_i < LIST_SIZE(&ctx->Tree_edge)) {
+	if (ED_cutvalue(f = LIST_GET(&ctx->Tree_edge, ctx->S_i)) < 0) {
 	    if (rv) {
 		if (ED_cutvalue(rv) > ED_cutvalue(f))
 		    rv = f;
 	    } else
-		rv = edge_list_get(&ctx->Tree_edge, ctx->S_i);
+		rv = LIST_GET(&ctx->Tree_edge, ctx->S_i);
 	    if (++cnt >= ctx->Search_size)
 		return rv;
 	}
@@ -201,12 +199,12 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
     if (j > 0) {
 	ctx->S_i = 0;
 	while (ctx->S_i < j) {
-	    if (ED_cutvalue(f = edge_list_get(&ctx->Tree_edge, ctx->S_i)) < 0) {
+	    if (ED_cutvalue(f = LIST_GET(&ctx->Tree_edge, ctx->S_i)) < 0) {
 		if (rv) {
 		    if (ED_cutvalue(rv) > ED_cutvalue(f))
 			rv = f;
 		} else
-		    rv = edge_list_get(&ctx->Tree_edge, ctx->S_i);
+		    rv = LIST_GET(&ctx->Tree_edge, ctx->S_i);
 		if (++cnt >= ctx->Search_size)
 		    return rv;
 	    }
@@ -645,7 +643,7 @@ end:
   for (size_t i = 0; i < subtree_count; i++) free(tree[i]);
   free(tree);
   if (error) return error;
-  assert(edge_list_size(&ctx->Tree_edge) == ctx->N_nodes - 1);
+  assert(LIST_SIZE(&ctx->Tree_edge) == ctx->N_nodes - 1);
   init_cutvalues(ctx);
   return 0;
 }
@@ -753,7 +751,7 @@ static int scan_and_normalize(network_simplex_ctx_t *ctx) {
 }
 
 static void reset_lists(network_simplex_ctx_t *ctx) {
-  edge_list_free(&ctx->Tree_edge);
+  LIST_FREE(&ctx->Tree_edge);
 }
 
 static void
@@ -773,8 +771,8 @@ static void LR_balance(network_simplex_ctx_t *ctx)
     int delta;
     edge_t *e, *f;
 
-    for (size_t i = 0; i < edge_list_size(&ctx->Tree_edge); i++) {
-	e = edge_list_get(&ctx->Tree_edge, i);
+    for (size_t i = 0; i < LIST_SIZE(&ctx->Tree_edge); i++) {
+	e = LIST_GET(&ctx->Tree_edge, i);
 	if (ED_cutvalue(e) == 0) {
 	    f = enter_edge(e);
 	    if (f == NULL)
@@ -898,7 +896,7 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
 	    ctx->N_edges++;
     }
 
-    edge_list_reserve(&ctx->Tree_edge, ctx->N_nodes);
+    LIST_RESERVE(&ctx->Tree_edge, ctx->N_nodes);
 
     bool feasible = true;
     for (n = GD_nlist(g); n; n = ND_next(n)) {
@@ -1302,7 +1300,7 @@ void tchk(network_simplex_ctx_t *ctx)
 		fprintf(stderr, "not a tight tree %p", e);
 	}
     }
-    if (e_cnt != edge_list_size(&ctx->Tree_edge))
+    if (e_cnt != LIST_SIZE(&ctx->Tree_edge))
 	fprintf(stderr, "something missing\n");
 }
 
