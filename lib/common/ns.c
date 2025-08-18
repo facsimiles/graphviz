@@ -331,9 +331,6 @@ typedef struct {
   int rv;    ///< result value
 } tst_t;
 
-/// a stack of states
-DEFINE_LIST(tsts, tst_t)
-
 /* find initial tight subtrees */
 static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree_t *st)
 {
@@ -343,27 +340,27 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
     rv = 1;
     ND_subtree_set(v,st);
 
-    tsts_t todo = {0};
-    tsts_push_back(&todo, (tst_t){.v = v, .rv = 1});
+    LIST(tst_t) todo = {0};
+    LIST_PUSH_BACK(&todo, ((tst_t){.v = v, .rv = 1}));
 
-    while (!tsts_is_empty(&todo)) {
+    while (!LIST_IS_EMPTY(&todo)) {
         bool updated = false;
-        tst_t *top = tsts_back(&todo);
+        tst_t *top = LIST_BACK(&todo);
 
         for (; (e = ND_in(top->v).list[top->in_i]); top->in_i++) {
             if (TREE_EDGE(e)) continue;
             if (ND_subtree(agtail(e)) == 0 && SLACK(e) == 0) {
                 if (add_tree_edge(ctx, e) != 0) {
-                    (void)tsts_pop_back(&todo);
-                    if (tsts_is_empty(&todo)) {
+                    (void)LIST_POP_BACK(&todo);
+                    if (LIST_IS_EMPTY(&todo)) {
                         rv = -1;
                     } else {
-                        --tsts_back(&todo)->rv;
+                        --LIST_BACK(&todo)->rv;
                     }
                 } else {
                     ND_subtree_set(agtail(e), st);
                     const tst_t next = {.v = agtail(e), .rv = 1};
-                    tsts_push_back(&todo, next);
+                    LIST_PUSH_BACK(&todo, next);
                 }
                 updated = true;
                 break;
@@ -377,16 +374,16 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
             if (TREE_EDGE(e)) continue;
             if (ND_subtree(aghead(e)) == 0 && SLACK(e) == 0) {
                 if (add_tree_edge(ctx, e) != 0) {
-                    (void)tsts_pop_back(&todo);
-                    if (tsts_is_empty(&todo)) {
+                    (void)LIST_POP_BACK(&todo);
+                    if (LIST_IS_EMPTY(&todo)) {
                         rv = -1;
                     } else {
-                        --tsts_back(&todo)->rv;
+                        --LIST_BACK(&todo)->rv;
                     }
                 } else {
                     ND_subtree_set(aghead(e), st);
                     const tst_t next = {.v = aghead(e), .rv = 1};
-                    tsts_push_back(&todo, next);
+                    LIST_PUSH_BACK(&todo, next);
                 }
                 updated = true;
                 break;
@@ -396,15 +393,15 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
           continue;
         }
 
-        const tst_t last = tsts_pop_back(&todo);
-        if (tsts_is_empty(&todo)) {
+        const tst_t last = LIST_POP_BACK(&todo);
+        if (LIST_IS_EMPTY(&todo)) {
             rv = last.rv;
         } else {
-            tsts_back(&todo)->rv += last.rv;
+            LIST_BACK(&todo)->rv += last.rv;
         }
     }
 
-    tsts_free(&todo);
+    LIST_FREE(&todo);
 
     return rv;
 }
