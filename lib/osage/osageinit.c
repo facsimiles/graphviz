@@ -26,7 +26,7 @@
 #include    <stdbool.h>
 #include    <stddef.h>
 #include    <util/alloc.h>
-#include    <util/list.h>
+#include    <util/list2.h>
 #include    <util/startswith.h>
 
 #define DFLT_SZ  18
@@ -39,7 +39,7 @@ indent (int i)
 	fputs ("  ", stderr);
 }
 
-DEFINE_LIST(clist, Agraph_t*)
+typedef LIST(Agraph_t *) clist_t;
 
 static void cluster_init_graph(graph_t * g)
 {
@@ -305,7 +305,7 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
 
     if (pclist == NULL) {
         // [0] is empty. The clusters are in [1..cnt].
-        clist_append(&list, NULL);
+        LIST_APPEND(&list, NULL);
         clist = &list;
     }
     else
@@ -315,7 +315,7 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
         if (is_a_cluster(subg)) {
 	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
 	    do_graph_label (subg);
-            clist_append(clist, subg);
+            LIST_APPEND(clist, subg);
             mkClusters(subg, NULL, subg);
         }
         else {
@@ -323,13 +323,13 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
         }
     }
     if (pclist == NULL) {
-        assert(clist_size(&list) - 1 <= INT_MAX);
-        GD_n_cluster(g) = (int)(clist_size(&list) - 1);
-        if (clist_size(&list) > 1) {
-            clist_shrink_to_fit(&list);
-            GD_clust(g) = clist_detach(&list);
+        assert(LIST_SIZE(&list) - 1 <= INT_MAX);
+        GD_n_cluster(g) = (int)(LIST_SIZE(&list) - 1);
+        if (LIST_SIZE(&list) > 1) {
+            LIST_SHRINK_TO_FIT(&list);
+            LIST_DETACH(&list, &GD_clust(g), &(size_t){0});
         } else {
-            clist_free(&list);
+            LIST_FREE(&list);
         }
     }
 }
