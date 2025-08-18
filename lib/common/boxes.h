@@ -3,6 +3,6 @@
 #pragma once
 
 #include <common/geom.h>
-#include <util/list.h>
+#include <util/list2.h>
 
-DEFINE_LIST(boxes, boxf)
+typedef LIST(boxf) boxes_t;

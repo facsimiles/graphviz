@@ -25,6 +25,7 @@
 #include <util/alloc.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/list2.h>
 
 #ifdef ORTHO
 #include <ortho/ortho.h>
@@ -1832,7 +1833,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
     bool smode = false;
     si = -1;
     while (ND_node_type(hn) == VIRTUAL && !sinfo.splineMerge(hn)) {
-      boxes_append(&boxes, rank_box(sp, g, ND_rank(tn)));
+      LIST_APPEND(&boxes, rank_box(sp, g, ND_rank(tn)));
       if (!smode && ((sl = straight_len(hn)) >=
                      ((GD_has_labels(g->root) & EDGE_LABEL) ? 4 + 1 : 2 + 1))) {
         smode = true;
@@ -1840,7 +1841,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
       }
       if (!smode || si > 0) {
         si--;
-        boxes_append(&boxes, maximal_bbox(g, *sp, hn, e, ND_out(hn).list[0]));
+        LIST_APPEND(&boxes, maximal_bbox(g, *sp, hn, e, ND_out(hn).list[0]));
         e = ND_out(hn).list[0];
         tn = agtail(e);
         hn = aghead(e);
@@ -1868,7 +1869,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
       }
       if (pn == 0) {
         free(ps);
-        boxes_free(&boxes);
+        LIST_FREE(&boxes);
         points_free(&pointfs);
         points_free(&pointfs2);
         return;
@@ -1883,7 +1884,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
       segfirst = e;
       tn = agtail(e);
       hn = aghead(e);
-      boxes_clear(&boxes);
+      LIST_CLEAR(&boxes);
       tend.nb = maximal_bbox(g, *sp, tn, ND_in(tn).list[0], e);
       beginpath(P, e, REGULAREDGE, &tend, spline_merge(tn));
       b = makeregularend(tend.boxes[tend.boxn - 1], BOTTOM,
@@ -1893,7 +1894,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
       P->start.theta = -M_PI / 2, P->start.constrained = true;
       smode = false;
     }
-    boxes_append(&boxes, rank_box(sp, g, ND_rank(tn)));
+    LIST_APPEND(&boxes, rank_box(sp, g, ND_rank(tn)));
     b = hend.nb = maximal_bbox(g, *sp, hn, e, NULL);
     endpath(P, hackflag ? &fwdedgeb.out : e, REGULAREDGE, &hend,
             spline_merge(aghead(e)));
@@ -1903,7 +1904,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
     if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
       hend.boxes[hend.boxn++] = b;
     completeregularpath(P, segfirst, e, &tend, &hend, &boxes);
-    boxes_free(&boxes);
+    LIST_FREE(&boxes);
     pointf *ps = NULL;
     size_t pn = 0;
     if (is_spline)
@@ -2001,9 +2002,9 @@ static void completeregularpath(path *P, edge_t *first, edge_t *last,
   for (int i = 0; i < tendp->boxn; i++)
     add_box(P, tendp->boxes[i]);
   const size_t fb = P->nbox + 1;
-  const size_t lb = fb + boxes_size(boxes) - 3;
-  for (size_t i = 0; i < boxes_size(boxes); i++)
-    add_box(P, boxes_get(boxes, i));
+  const size_t lb = fb + LIST_SIZE(boxes) - 3;
+  for (size_t i = 0; i < LIST_SIZE(boxes); i++)
+    add_box(P, LIST_GET(boxes, i));
   for (int i = hendp->boxn - 1; i >= 0; i--)
     add_box(P, hendp->boxes[i]);
   adjustregularpath(P, fb, lb);

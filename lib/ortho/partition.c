@@ -23,6 +23,7 @@
 #include <util/alloc.h>
 #include <util/bitarray.h>
 #include <util/gv_math.h>
+#include <util/list2.h>
 #include <util/prisize_t.h>
 
 #ifndef DEBUG
@@ -342,7 +343,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
           newbox.UR.x = seg[t->rseg].v0.x;
           newbox.UR.y = t->hi.y;
       }
-      boxes_append(decomp, newbox);
+      LIST_APPEND(decomp, newbox);
   }
   
   /* We have much more information available here. */
@@ -709,18 +710,19 @@ boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
     traps_free(&ver_traps);
 
     boxes_t rs = {0};
-    for (size_t i = 0; i < boxes_size(&vert_decomp); ++i)
-	for (size_t j = 0; j < boxes_size(&hor_decomp); ++j) {
+    for (size_t i = 0; i < LIST_SIZE(&vert_decomp); ++i)
+	for (size_t j = 0; j < LIST_SIZE(&hor_decomp); ++j) {
 	    boxf newbox = {0};
-	    if (rectIntersect(&newbox, boxes_get(&vert_decomp, i),
-	                      boxes_get(&hor_decomp, j)))
-		boxes_append(&rs, newbox);
+	    if (rectIntersect(&newbox, LIST_GET(&vert_decomp, i),
+	                      LIST_GET(&hor_decomp, j)))
+		LIST_APPEND(&rs, newbox);
 	}
 
     free (segs);
     free (permute);
-    boxes_free(&hor_decomp);
-    boxes_free(&vert_decomp);
-    *nrects = boxes_size(&rs);
-    return boxes_detach(&rs);
+    LIST_FREE(&hor_decomp);
+    LIST_FREE(&vert_decomp);
+    boxf *ret;
+    LIST_DETACH(&rs, &ret, nrects);
+    return ret;
 }

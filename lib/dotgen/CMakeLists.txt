@@ -35,4 +35,5 @@ target_include_directories(dotgen PRIVATE
 
 target_link_libraries(dotgen PRIVATE
   cgraph
+  util
 )
