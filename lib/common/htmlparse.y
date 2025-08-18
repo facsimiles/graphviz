@@ -40,8 +40,6 @@ static inline void free_ti(textspan_t item) {
   free(item.str);
 }
 
-DEFINE_LIST_WITH_DTOR(textspans, textspan_t, free_ti)
-
 static inline void free_hi(htextspan_t item) {
   for (size_t i = 0; i < item.nitems; i++) {
     free(item.items[i].str);
@@ -54,7 +52,7 @@ DEFINE_LIST_WITH_DTOR(htextspans, htextspan_t, free_hi)
 struct htmlparserstate_s {
   htmllabel_t* lbl;       /* Generated label */
   htmltbl_t*   tblstack;  /* Stack of tables maintained during parsing */
-  textspans_t  fitemList;
+  LIST(textspan_t)  fitemList;
   htextspans_t fspanList;
   agxbuf*      str;       /* Buffer for text */
   LIST(textfont_t *)      fontstack;
@@ -360,24 +358,23 @@ appendFItemList (htmlparserstate_t *html_state, agxbuf *ag)
 {
     const textspan_t ti = {.str = agxbdisown(ag),
                            .font = *LIST_BACK(&html_state->fontstack)};
-    textspans_append(&html_state->fitemList, ti);
+    LIST_APPEND(&html_state->fitemList, ti);
 }
 
 static void
 appendFLineList (htmlparserstate_t *html_state, int v)
 {
     htextspan_t lp = {0};
-    textspans_t *ilist = &html_state->fitemList;
 
-    size_t cnt = textspans_size(ilist);
+    size_t cnt = LIST_SIZE(&html_state->fitemList);
     lp.just = v;
     if (cnt) {
 	lp.nitems = cnt;
 	lp.items = gv_calloc(cnt, sizeof(textspan_t));
 
-	for (size_t i = 0; i < textspans_size(ilist); ++i) {
+	for (size_t i = 0; i < LIST_SIZE(&html_state->fitemList); ++i) {
 	    // move this text span into the new list
-	    textspan_t *ti = textspans_at(ilist, i);
+	    textspan_t *ti = LIST_AT(&html_state->fitemList, i);
 	    lp.items[i] = *ti;
 	    *ti = (textspan_t){0};
 	}
@@ -389,7 +386,7 @@ appendFLineList (htmlparserstate_t *html_state, int v)
 	lp.items[0].font = *LIST_BACK(&html_state->fontstack);
     }
 
-    textspans_clear(ilist);
+    LIST_CLEAR(&html_state->fitemList);
 
     htextspans_append(&html_state->fspanList, lp);
 }
@@ -400,7 +397,7 @@ mkText(htmlparserstate_t *html_state)
     htextspans_t *ispan = &html_state->fspanList;
     htmltxt_t *hft = gv_alloc(sizeof(htmltxt_t));
 
-    if (!textspans_is_empty(&html_state->fitemList))
+    if (!LIST_IS_EMPTY(&html_state->fitemList))
 	appendFLineList (html_state, UNSET_ALIGN);
 
     size_t cnt = htextspans_size(ispan);
@@ -467,7 +464,7 @@ static void cleanup (htmlparserstate_t *html_state)
     tp = next;
   }
 
-  textspans_clear(&html_state->fitemList);
+  LIST_CLEAR(&html_state->fitemList);
   htextspans_clear(&html_state->fspanList);
 
   LIST_FREE(&html_state->fontstack);
@@ -512,6 +509,7 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
   htmlscan_t    scanner = {0};
 
   LIST_PUSH_BACK(&scanner.parser.fontstack, NULL);
+  scanner.parser.fitemList.dtor = free_ti;
   scanner.parser.gvc = GD_gvc(env->g);
   scanner.parser.str = &str;
 
@@ -524,7 +522,7 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
     l = scanner.parser.lbl;
   }
 
-  textspans_free(&scanner.parser.fitemList);
+  LIST_FREE(&scanner.parser.fitemList);
   htextspans_free(&scanner.parser.fspanList);
 
   LIST_FREE(&scanner.parser.fontstack);
