@@ -44,7 +44,6 @@ static void check_cycles(graph_t * g);
 #define SEQ(a,b,c)		((a) <= (b) && (b) <= (c))
 #define TREE_EDGE(e)	(ED_tree_index(e) >= 0)
 
-DEFINE_LIST(node_list, node_t *)
 DEFINE_LIST(edge_list, edge_t *)
 
 typedef struct {
@@ -258,11 +257,11 @@ static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
     edge_t *Enter = NULL;
     int Slack = INT_MAX;
 
-    node_list_t todo = {0};
-    node_list_append(&todo, v);
+    LIST(node_t *) todo = {0};
+    LIST_APPEND(&todo, v);
 
-    while (!node_list_is_empty(&todo)) {
-	v = node_list_pop_back(&todo);
+    while (!LIST_IS_EMPTY(&todo)) {
+	v = LIST_POP_BACK(&todo);
 
 	for (i = 0; (e = ND_in(v).list[i]); i++) {
 	    if (!TREE_EDGE(e)) {
@@ -274,14 +273,14 @@ static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
 		    }
 		}
 	    } else if (ND_lim(agtail(e)) < ND_lim(v))
-		node_list_append(&todo, agtail(e));
+		LIST_APPEND(&todo, agtail(e));
 	}
 	for (i = 0; (e = ND_tree_out(v).list[i]) && Slack > 0; i++)
 	    if (ND_lim(aghead(e)) < ND_lim(v))
-		node_list_append(&todo, aghead(e));
+		LIST_APPEND(&todo, aghead(e));
 
     }
-    node_list_free(&todo);
+    LIST_FREE(&todo);
 
     return Enter;
 }
