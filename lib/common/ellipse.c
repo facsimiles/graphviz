@@ -55,7 +55,7 @@
 #include <common/render.h>
 #include <pathplan/pathplan.h>
 #include <util/alloc.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 #define TWOPI (2*M_PI)
 
@@ -168,7 +168,7 @@ static double estimateError(ellipse_t *ep, double etaA, double etaB) {
     return RationalFunction(x, safety3) * ep->a * exp(c0 + c1 * dEta);
 }
 
-DEFINE_LIST(bezier_path, pointf)
+typedef LIST(pointf) bezier_path_t;
 
 /* append points to a Bezier path
  * Assume initial call to moveTo to initialize, followed by
@@ -176,23 +176,23 @@ DEFINE_LIST(bezier_path, pointf)
  */
 
 static void moveTo(bezier_path_t *polypath, double x, double y) {
-  bezier_path_append(polypath, (pointf){.x = x, .y = y});
+  LIST_APPEND(polypath, ((pointf){.x = x, .y = y}));
 }
 
 static void curveTo(bezier_path_t *polypath, double x1, double y1, double x2,
                     double y2, double x3, double y3) {
-  bezier_path_append(polypath, (pointf){.x = x1, .y = y1});
-  bezier_path_append(polypath, (pointf){.x = x2, .y = y2});
-  bezier_path_append(polypath, (pointf){.x = x3, .y = y3});
+  LIST_APPEND(polypath, ((pointf){.x = x1, .y = y1}));
+  LIST_APPEND(polypath, ((pointf){.x = x2, .y = y2}));
+  LIST_APPEND(polypath, ((pointf){.x = x3, .y = y3}));
 }
 
 static void lineTo(bezier_path_t *polypath, double x, double y) {
-    const pointf curp = bezier_path_get(polypath, bezier_path_size(polypath) - 1);
+    const pointf curp = LIST_GET(polypath, LIST_SIZE(polypath) - 1);
     curveTo(polypath, curp.x, curp.y, x, y, x, y);
 }
 
 static void endPath(bezier_path_t *polypath) {
-    const pointf p0 = bezier_path_get(polypath, 0);
+    const pointf p0 = LIST_GET(polypath, 0);
     lineTo(polypath, p0.x, p0.y);
 }
 
@@ -283,8 +283,7 @@ static Ppolyline_t *genEllipticPath(ellipse_t * ep) {
 
     endPath(&bezier_path);
 
-    polypath->pn = bezier_path_size(&bezier_path);
-    polypath->ps = bezier_path_detach(&bezier_path);
+    LIST_DETACH(&bezier_path, &polypath->ps, &polypath->pn);
 
     return polypath;
 }
