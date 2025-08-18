@@ -69,6 +69,7 @@ endfunction(add_simple_tool)
 
 add_simple_tool(acyclic)
 add_simple_tool(bcomps)
+target_link_libraries(bcomps PRIVATE util)
 add_simple_tool(ccomps)
 target_link_libraries(ccomps PRIVATE gvc)
 add_simple_tool(nop)

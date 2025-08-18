@@ -126,8 +126,8 @@ gvcolor_LDADD = \
 bcomps_SOURCES = bcomps.c
 
 bcomps_LDADD = \
-	$(top_builddir)/lib/cgraph/libcgraph.la
-
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/util/libutil_C.la
 
 gc_SOURCES = gc.c
 
