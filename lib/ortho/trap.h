@@ -22,7 +22,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 /* Segment attributes */
 
@@ -58,7 +58,7 @@ static inline bool is_valid_trap(size_t index) {
 }
 
 /// an array of trapezoids
-DEFINE_LIST(traps, trap_t)
+typedef LIST(trap_t) traps_t;
 
 #define C_EPS 1.0e-7        /* tolerance value: Used for making */
                 /* all decisions about collinearity or */
