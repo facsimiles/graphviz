@@ -1072,8 +1072,6 @@ static int *parse_layerselect(GVC_t *gvc, char *p) {
     return laylist;
 }
 
-DEFINE_LIST(layer_names, char*)
-
 /* Split input string into tokens, with separators specified by
  * the layersep attribute. Store the values in the gvc->layerIDs array,
  * starting at index 1, and return the count.
@@ -1096,25 +1094,25 @@ static int parse_layers(GVC_t *gvc, graph_t * g, char *p)
     }
 
     gvc->layers = gv_strdup(p);
-    layer_names_t layerIDs = {0};
+    LIST(char *) layerIDs = {0};
 
     // inferred entry for the first (unnamed) layer
-    layer_names_append(&layerIDs, NULL);
+    LIST_APPEND(&layerIDs, NULL);
 
     for (tok = strtok(gvc->layers, gvc->layerDelims); tok;
          tok = strtok(NULL, gvc->layerDelims)) {
-        layer_names_append(&layerIDs, tok);
+        LIST_APPEND(&layerIDs, tok);
     }
 
-    assert(layer_names_size(&layerIDs) - 1 <= INT_MAX);
-    int ntok = (int)(layer_names_size(&layerIDs) - 1);
+    assert(LIST_SIZE(&layerIDs) - 1 <= INT_MAX);
+    int ntok = (int)(LIST_SIZE(&layerIDs) - 1);
 
     // if we found layers, save them for later reference
-    if (layer_names_size(&layerIDs) > 1) {
-        layer_names_append(&layerIDs, NULL); // add a terminating entry
-        gvc->layerIDs = layer_names_detach(&layerIDs);
+    if (LIST_SIZE(&layerIDs) > 1) {
+        LIST_APPEND(&layerIDs, NULL); // add a terminating entry
+        LIST_DETACH(&layerIDs, &gvc->layerIDs, &(size_t){0});
     }
-    layer_names_free(&layerIDs);
+    LIST_FREE(&layerIDs);
 
     return ntok;
 }
