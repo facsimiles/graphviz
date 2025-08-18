@@ -251,7 +251,7 @@ typedef struct {
 static void freeChannel(void *chan) {
     channel *cp = chan;
     free_graph (cp->G);
-    seg_list_free(&cp->seg_list);
+    LIST_FREE(&cp->seg_list);
     free (cp);
 }
 
@@ -399,8 +399,8 @@ extractVChans (maze* mp)
 static void
 insertChan (channel* chan, segment* seg)
 {
-    seg->ind_no = seg_list_size(&chan->seg_list);
-    seg_list_append(&chan->seg_list, seg);
+    seg->ind_no = LIST_SIZE(&chan->seg_list);
+    LIST_APPEND(&chan->seg_list, seg);
 }
 
 static channel*
@@ -505,16 +505,16 @@ static void putSeg (FILE* fp, segment* seg)
 }
 
 static UNUSED void dumpChanG(channel *cp, double v) {
-  if (seg_list_size(&cp->seg_list) < 2) return;
+  if (LIST_SIZE(&cp->seg_list) < 2) return;
   fprintf (stderr, "channel %.0f (%f,%f)\n", v, cp->p.p1, cp->p.p2);
-  for (size_t k = 0; k < seg_list_size(&cp->seg_list); ++k) {
+  for (size_t k = 0; k < LIST_SIZE(&cp->seg_list); ++k) {
     const adj_list_t adj = cp->G->vertices[k].adj_list;
     if (LIST_IS_EMPTY(&adj)) continue;
-    putSeg(stderr, seg_list_get(&cp->seg_list, k));
+    putSeg(stderr, LIST_GET(&cp->seg_list, k));
     fputs (" ->\n", stderr);
     for (size_t i = 0; i < LIST_SIZE(&adj); ++i) {
       fputs ("     ", stderr);
-      putSeg(stderr, seg_list_get(&cp->seg_list, LIST_GET(&adj, i)));
+      putSeg(stderr, LIST_GET(&cp->seg_list, LIST_GET(&adj, i)));
       fputs ("\n", stderr);
     }
   }
@@ -532,13 +532,13 @@ assignTrackNo (Dt_t* chans)
 	lp = ((chanItem*)l1)->chans;
 	for (l2 = dtflatten (lp); l2; l2 = dtlink(lp,l2)) {
 	    cp = (channel*)l2;
-	    if (!seg_list_is_empty(&cp->seg_list)) {
+	    if (!LIST_IS_EMPTY(&cp->seg_list)) {
 #ifdef DEBUG
     if (odb_flags & ODB_CHANG) dumpChanG (cp, ((chanItem*)l1)->v);
 #endif
 		top_sort (cp->G);
-		for (size_t k = 0; k < seg_list_size(&cp->seg_list); ++k)
-		    seg_list_get(&cp->seg_list, k)->track_no = cp->G->vertices[k].topsort_order+1;
+		for (size_t k = 0; k < LIST_SIZE(&cp->seg_list); ++k)
+		    LIST_GET(&cp->seg_list, k)->track_no = cp->G->vertices[k].topsort_order+1;
 	    }
    	}
     }
@@ -556,7 +556,7 @@ create_graphs(Dt_t* chans)
 	lp = ((chanItem*)l1)->chans;
 	for (l2 = dtflatten (lp); l2; l2 = dtlink(lp,l2)) {
 	    cp = (channel*)l2;
-	    cp->G = make_graph(seg_list_size(&cp->seg_list));
+	    cp->G = make_graph(LIST_SIZE(&cp->seg_list));
    	}
     }
 }
@@ -693,13 +693,12 @@ static int
 add_edges_in_G(channel* cp)
 {
     seg_list_t *seg_list = &cp->seg_list;
-    const size_t size = seg_list_size(&cp->seg_list);
+    const size_t size = LIST_SIZE(&cp->seg_list);
     rawgraph* G = cp->G;
 
     for (size_t x = 0; x + 1 < size; ++x) {
 	for (size_t y = x + 1; y < size; ++y) {
-	    const int cmp = seg_cmp(seg_list_get(seg_list, x),
-	                            seg_list_get(seg_list, y));
+	    const int cmp = seg_cmp(LIST_GET(seg_list, x), LIST_GET(seg_list, y));
 	    if (cmp == -2) {
 		return -1;
 	    } else if (cmp > 0) {
@@ -720,7 +719,7 @@ add_np_edges (Dt_t* chans)
 	Dt_t *const lp = ((chanItem*)l1)->chans;
 	for (Dtlink_t *l2 = dtflatten(lp); l2; l2 = dtlink(lp, l2)) {
 	    channel *const cp = (channel*)l2;
-	    if (!seg_list_is_empty(&cp->seg_list))
+	    if (!LIST_IS_EMPTY(&cp->seg_list))
 		if (add_edges_in_G(cp)) {
 		  return -1;
 		}
@@ -950,35 +949,35 @@ addPEdges (channel* cp, maze* mp)
     rawgraph* G = cp->G;
     seg_list_t *segs = &cp->seg_list;
 
-    for(size_t i = 0; i + 1 < seg_list_size(&cp->seg_list); ++i) {
-	for(size_t j = i + 1; j < seg_list_size(&cp->seg_list); ++j) {
+    for(size_t i = 0; i + 1 < LIST_SIZE(&cp->seg_list); ++i) {
+	for(size_t j = i + 1; j < LIST_SIZE(&cp->seg_list); ++j) {
 	    if (!edge_exists(G,i,j) && !edge_exists(G,j,i)) {
-		if (is_parallel(seg_list_get(segs, i), seg_list_get(segs, j))) {
+		if (is_parallel(LIST_GET(segs, i), LIST_GET(segs, j))) {
 		/* get_directions */
-		    if (seg_list_get(segs, i)->prev == 0) {
-			if (seg_list_get(segs, j)->prev == 0)
+		    if (LIST_GET(segs, i)->prev == 0) {
+			if (LIST_GET(segs, j)->prev == 0)
 			    dir = 0;
 			else
 			    dir = 1;
 		    }
-		    else if (seg_list_get(segs, j)->prev == 0) {
+		    else if (LIST_GET(segs, j)->prev == 0) {
 			dir = 1;
 		    }
 		    else {
-			if (seg_list_get(segs, i)->prev->comm_coord ==
-			    seg_list_get(segs, j)->prev->comm_coord)
+			if (LIST_GET(segs, i)->prev->comm_coord ==
+			    LIST_GET(segs, j)->prev->comm_coord)
 			    dir = 0;
 			else
 			    dir = 1;
 		    }
 
-		    if (decide_point(&p, seg_list_get(segs, i), seg_list_get(segs, j), 0, dir)
+		    if (decide_point(&p, LIST_GET(segs, i), LIST_GET(segs, j), 0, dir)
 		        != 0) {
 			return -1;
 		    }
 		    hops.a = p.a;
 		    prec1 = p.b;
-		    if (decide_point(&p, seg_list_get(segs, i), seg_list_get(segs, j), 1,
+		    if (decide_point(&p, LIST_GET(segs, i), LIST_GET(segs, j), 1,
 		                     1 - dir) != 0) {
 			return -1;
 		    }
@@ -986,36 +985,36 @@ addPEdges (channel* cp, maze* mp)
 		    prec2 = p.b;
 
 		    if (prec1 == -1) {
-			set_parallel_edges(seg_list_get(segs, j), seg_list_get(segs, i), dir, 0,
+			set_parallel_edges(LIST_GET(segs, j), LIST_GET(segs, i), dir, 0,
 			                   hops.a, mp);
-			set_parallel_edges(seg_list_get(segs, j), seg_list_get(segs, i), 1 - dir, 1,
+			set_parallel_edges(LIST_GET(segs, j), LIST_GET(segs, i), 1 - dir, 1,
 			                   hops.b, mp);
 			if(prec2==1)
-			    removeEdge(seg_list_get(segs, i), seg_list_get(segs, j), 1 - dir, mp);
+			    removeEdge(LIST_GET(segs, i), LIST_GET(segs, j), 1 - dir, mp);
 		    } else if (prec1 == 0) {
 			if (prec2 == -1) {
-			    set_parallel_edges(seg_list_get(segs, j), seg_list_get(segs, i), dir, 0,
+			    set_parallel_edges(LIST_GET(segs, j), LIST_GET(segs, i), dir, 0,
 			                       hops.a, mp);
-			    set_parallel_edges(seg_list_get(segs, j), seg_list_get(segs, i), 1 - dir,
+			    set_parallel_edges(LIST_GET(segs, j), LIST_GET(segs, i), 1 - dir,
 			                       1, hops.b, mp);
 			} else if (prec2 == 0) {
-			    set_parallel_edges(seg_list_get(segs, i), seg_list_get(segs, j), 0, dir,
+			    set_parallel_edges(LIST_GET(segs, i), LIST_GET(segs, j), 0, dir,
 			                       hops.a, mp);
-			    set_parallel_edges(seg_list_get(segs, i), seg_list_get(segs, j), 1,
+			    set_parallel_edges(LIST_GET(segs, i), LIST_GET(segs, j), 1,
 			                       1 - dir, hops.b, mp);
 			} else if (prec2 == 1) {
-			    set_parallel_edges(seg_list_get(segs, i), seg_list_get(segs, j), 0, dir,
+			    set_parallel_edges(LIST_GET(segs, i), LIST_GET(segs, j), 0, dir,
 			                       hops.a, mp);
-			    set_parallel_edges(seg_list_get(segs, i), seg_list_get(segs, j), 1,
+			    set_parallel_edges(LIST_GET(segs, i), LIST_GET(segs, j), 1,
 			                       1 - dir, hops.b, mp);
 			}
 		    } else if (prec1 == 1) {
-			set_parallel_edges(seg_list_get(segs, i), seg_list_get(segs, j), 0, dir,
+			set_parallel_edges(LIST_GET(segs, i), LIST_GET(segs, j), 0, dir,
 			                   hops.a, mp);
-			set_parallel_edges(seg_list_get(segs, i), seg_list_get(segs, j), 1, 1 - dir,
+			set_parallel_edges(LIST_GET(segs, i), LIST_GET(segs, j), 1, 1 - dir,
 			                   hops.b, mp);
 			if(prec2==-1)
-			    removeEdge(seg_list_get(segs, i), seg_list_get(segs, j), 1 - dir, mp);
+			    removeEdge(LIST_GET(segs, i), LIST_GET(segs, j), 1 - dir, mp);
 		    }
 		}
 	    }
@@ -1074,14 +1073,14 @@ static double
 vtrack (segment* seg, maze* m)
 {
   channel* chp = chanSearch(m->vchans, seg);
-  const double f = seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
+  const double f = seg->track_no / ((double)LIST_SIZE(&chp->seg_list) + 1);
   const pointf interp = interpolate_pointf(f, chp->cp->bb.LL, chp->cp->bb.UR);
   return interp.x;
 }
 
 static double htrack(segment *seg, maze *m) {
   channel* chp = chanSearch(m->hchans, seg);
-  double f = 1.0 - seg->track_no / ((double)seg_list_size(&chp->seg_list) + 1);
+  double f = 1.0 - seg->track_no / ((double)LIST_SIZE(&chp->seg_list) + 1);
   double lo = chp->cp->bb.LL.y;
   double hi = chp->cp->bb.UR.y;
   return round(lo + f * (hi - lo));

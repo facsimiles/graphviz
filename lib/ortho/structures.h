@@ -15,7 +15,7 @@
 #include <ortho/rawgraph.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 typedef struct {
     double p1, p2;
@@ -50,7 +50,7 @@ typedef struct {
   segment* segs;
 } route;
 
-DEFINE_LIST(seg_list, segment *)
+typedef LIST(segment *) seg_list_t;
 
 typedef struct {
   Dtlink_t link;
