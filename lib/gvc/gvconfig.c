@@ -26,7 +26,7 @@
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
-#include <util/list.h>
+#include <util/list2.h>
 #include <util/path.h>
 #include <util/startswith.h>
 
@@ -637,8 +637,6 @@ done:
 
 /* Emulating windows glob */
 
-DEFINE_LIST_WITH_DTOR(strs, char *, free)
-
 /* glob:
  * Assumes only GLOB_NOSORT flag given. That is, there is no offset,
  * and no previous call to glob.
@@ -653,7 +651,7 @@ glob (GVC_t* gvc, char* pattern, int flags, int (*errfunc)(const char *, int), g
     char* libdir;
     WIN32_FIND_DATA wfd;
     HANDLE h;
-    strs_t strs = {0};
+    LIST(char *) strs = {.dtor = LIST_DTOR_FREE};
     
     pglob->gl_pathc = 0;
     pglob->gl_pathv = NULL;
@@ -679,22 +677,21 @@ glob (GVC_t* gvc, char* pattern, int flags, int (*errfunc)(const char *, int), g
         goto oom;
       }
       snprintf(entry, size, "%s%c%s", libdir, PATH_SEPARATOR, wfd.cFileName);
-      if (strs_try_append(&strs, entry) != 0) {
+      if (!LIST_TRY_APPEND(&strs, entry)) {
         free(entry);
         goto oom;
       }
     } while (FindNextFile (h, &wfd));
-    if (strs_try_append(&strs, NULL) != 0) {
+    if (!LIST_TRY_APPEND(&strs, NULL) != 0) {
       goto oom;
     }
 
-    pglob->gl_pathc = strs_size(&strs);
-    pglob->gl_pathv = strs_detach(&strs);
+    LIST_DETACH(&strs, &pglob->gl_pathv, &pglob->gl_pathc);
     
     return 0;
 
 oom:
-    strs_free(&strs);
+    LIST_FREE(&strs);
     return GLOB_NOSPACE;
 }
 
