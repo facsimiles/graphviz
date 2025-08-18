@@ -16,7 +16,6 @@ noinst_HEADERS = \
   gv_ftell.h \
   gv_math.h \
   itos.h \
-  list.h \
   list2.h \
   list-private.h \
   lockfile.h \

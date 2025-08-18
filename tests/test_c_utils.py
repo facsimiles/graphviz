@@ -17,9 +17,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
 )
 
 
-@pytest.mark.parametrize(
-    "utility", ("arena", "bitarray", "itos", "list", "list2", "tokenize")
-)
+@pytest.mark.parametrize("utility", ("arena", "bitarray", "itos", "list2", "tokenize"))
 def test_utility(utility: str):
     """run the given utility’s unit tests"""
 
