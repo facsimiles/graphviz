@@ -17,7 +17,6 @@
 #include	<dotgen/dot.h>
 #include	<stdbool.h>
 #include	<stddef.h>
-#include	<util/list.h>
 #include	<util/list2.h>
 #include	<util/streq.h>
 
@@ -32,7 +31,7 @@ static void free_same(same_t s) {
   LIST_FREE(&s.l);
 }
 
-DEFINE_LIST_WITH_DTOR(same_list, same_t, free_same)
+typedef LIST(same_t) same_list_t;
 
 static void sameedge(same_list_t *same, edge_t *e, char *id);
 static void sameport(node_t *u, edge_list_t l);
@@ -43,8 +42,8 @@ void dot_sameports(graph_t * g)
     node_t *n;
     edge_t *e;
     char *id;
-    same_list_t samehead = {0};
-    same_list_t sametail = {0};
+    same_list_t samehead = {.dtor = free_same};
+    same_list_t sametail = {.dtor = free_same};
 
     E_samehead = agattr_text(g, AGEDGE, "samehead", NULL);
     E_sametail = agattr_text(g, AGEDGE, "sametail", NULL);
@@ -60,33 +59,33 @@ void dot_sameports(graph_t * g)
 	        (id = agxget(e, E_sametail))[0])
 		sameedge(&sametail, e, id);
 	}
-	for (size_t i = 0; i < same_list_size(&samehead); i++) {
-	    if (LIST_SIZE(&same_list_at(&samehead, i)->l) > 1)
-		sameport(n, same_list_get(&samehead, i).l);
+	for (size_t i = 0; i < LIST_SIZE(&samehead); i++) {
+	    if (LIST_SIZE(&LIST_AT(&samehead, i)->l) > 1)
+		sameport(n, LIST_GET(&samehead, i).l);
 	}
-	same_list_clear(&samehead);
-	for (size_t i = 0; i < same_list_size(&sametail); i++) {
-	    if (LIST_SIZE(&same_list_at(&sametail, i)->l) > 1)
-		sameport(n, same_list_get(&sametail, i).l);
+	LIST_CLEAR(&samehead);
+	for (size_t i = 0; i < LIST_SIZE(&sametail); i++) {
+	    if (LIST_SIZE(&LIST_AT(&sametail, i)->l) > 1)
+		sameport(n, LIST_GET(&sametail, i).l);
 	}
-	same_list_clear(&sametail);
+	LIST_CLEAR(&sametail);
     }
 
-    same_list_free(&samehead);
-    same_list_free(&sametail);
+    LIST_FREE(&samehead);
+    LIST_FREE(&sametail);
 }
 
 /// register \p e in the \p same structure of the originating node under \p id
 static void sameedge(same_list_t *same, edge_t *e, char *id) {
-    for (size_t i = 0; i < same_list_size(same); i++)
-	if (streq(same_list_get(same, i).id, id)) {
-	    LIST_APPEND(&same_list_at(same, i)->l, e);
+    for (size_t i = 0; i < LIST_SIZE(same); i++)
+	if (streq(LIST_GET(same, i).id, id)) {
+	    LIST_APPEND(&LIST_AT(same, i)->l, e);
 	    return;
 	}
 
     same_t to_append = {.id = id};
     LIST_APPEND(&to_append.l, e);
-    same_list_append(same, to_append);
+    LIST_APPEND(same, to_append);
 }
 
 static void sameport(node_t *u, edge_list_t l)
