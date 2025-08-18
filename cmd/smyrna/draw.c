@@ -23,7 +23,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include <stdlib.h>
 #include <string.h>
 #include <util/unreachable.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/xml.h>
 
 #include <xdot/xdot.h>

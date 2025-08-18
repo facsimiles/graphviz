@@ -26,7 +26,7 @@
 #include    <stdbool.h>
 #include    <stddef.h>
 #include    <util/alloc.h>
-#include    <util/list2.h>
+#include    <util/list.h>
 #include    <util/startswith.h>
 
 #define DFLT_SZ  18

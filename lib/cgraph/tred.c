@@ -27,7 +27,7 @@
 #include <string.h>
 #include <time.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 typedef struct {
   bool on_stack : 1;

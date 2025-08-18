@@ -11,7 +11,7 @@
 #include <ortho/rawgraph.h>
 #include <stddef.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 #define UNSCANNED 0
 #define SCANNING  1

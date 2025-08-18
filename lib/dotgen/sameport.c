@@ -17,7 +17,7 @@
 #include	<dotgen/dot.h>
 #include	<stdbool.h>
 #include	<stddef.h>
-#include	<util/list2.h>
+#include	<util/list.h>
 #include	<util/streq.h>
 
 typedef LIST(edge_t *) edge_list_t;

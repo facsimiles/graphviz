@@ -29,7 +29,7 @@
 #include <common/textspan.h>
 #include <gvc/gvcext.h>
 #include <util/agxbuf.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/strview.h>
 }
 

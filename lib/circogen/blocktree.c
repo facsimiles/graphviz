@@ -13,7 +13,7 @@
 #include <util/agxbuf.h>
 #include <util/debug.h>
 #include <util/gv_math.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 static void addNode(block_t * bp, Agnode_t * n)
 {

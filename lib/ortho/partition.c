@@ -23,7 +23,7 @@
 #include <util/alloc.h>
 #include <util/bitarray.h>
 #include <util/gv_math.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #ifndef DEBUG

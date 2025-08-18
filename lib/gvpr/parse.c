@@ -23,7 +23,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/unreachable.h>
 
 static int lineno = 1;    /* current line number */

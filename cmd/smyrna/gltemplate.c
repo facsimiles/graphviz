@@ -16,7 +16,7 @@
 #include "gltemplate.h"
 #include <glcomp/glutils.h>
 #include <util/exit.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include "glexpose.h"
 #include "glmotion.h"
 

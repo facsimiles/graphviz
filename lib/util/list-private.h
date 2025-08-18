@@ -1,9 +1,9 @@
 /// @file
-/// @brief internal implementation details of list2.h
+/// @brief internal implementation details of list.h
 /// @ingroup cgraph_utils
 ///
 /// Everything in this header should be considered “private” in the sense that
-/// it should not be called except by macros in list2.h.
+/// it should not be called except by macros in list.h.
 
 #pragma once
 
@@ -74,9 +74,9 @@ UTIL_API size_t gv_list_get_(const list_t_ list, size_t index);
 
 /// run the destructor of a list on a given slot
 ///
-/// Though this uses the public type `LIST(<type>)` defined in list2.h, this is
+/// Though this uses the public type `LIST(<type>)` defined in list.h, this is
 /// an internal API not expected to be called by anything other than the macros
-/// in list2.h.
+/// in list.h.
 ///
 /// You can think of this macro as having the following C type:
 ///

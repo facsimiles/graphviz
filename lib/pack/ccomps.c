@@ -18,7 +18,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 typedef LIST(Agnode_t *) node_stack_t;

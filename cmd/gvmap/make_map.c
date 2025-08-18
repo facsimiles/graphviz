@@ -26,7 +26,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/debug.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #include <edgepaint/lab.h>

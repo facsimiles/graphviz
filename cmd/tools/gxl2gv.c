@@ -21,7 +21,7 @@
 #include    <util/alloc.h>
 #include    <util/exit.h>
 #include    <util/gv_ctype.h>
-#include    <util/list2.h>
+#include    <util/list.h>
 #include    <util/startswith.h>
 #include    <util/unreachable.h>
 #ifdef HAVE_EXPAT

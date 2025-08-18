@@ -11,7 +11,7 @@
 #include <neatogen/digcola.h>
 #include <stdint.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 #ifdef DIGCOLA
 #include <math.h>
 #include <stdbool.h>

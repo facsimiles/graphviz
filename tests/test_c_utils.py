@@ -17,7 +17,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
 )
 
 
-@pytest.mark.parametrize("utility", ("arena", "bitarray", "itos", "list2", "tokenize"))
+@pytest.mark.parametrize("utility", ("arena", "bitarray", "itos", "list", "tokenize"))
 def test_utility(utility: str):
     """run the given utility’s unit tests"""
 
@@ -80,16 +80,16 @@ def test_overflow_h(builtins: bool):
         ),
     ),
 )
-def test_list2_type_safetyutility(bad_test: int):
+def test_list_type_safetyutility(bad_test: int):
     """
-    check the type safety of ../lib/util/list2.h’s interfaces
+    check the type safety of ../lib/util/list.h’s interfaces
 
     Args:
-        bad_test: Which type-violating test in ../lib/util/test_list2.c to compile.
+        bad_test: Which type-violating test in ../lib/util/test_list.c to compile.
     """
 
     # locate the unit tests
-    src = Path(__file__).parent.resolve() / "../lib/util/test_list2.c"
+    src = Path(__file__).parent.resolve() / "../lib/util/test_list.c"
     assert src.exists()
 
     # locate lib directory that needs to be in the include path

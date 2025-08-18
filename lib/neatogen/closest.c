@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/sort.h>
 
 /*****************************************

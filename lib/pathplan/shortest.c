@@ -15,7 +15,7 @@
 #include <math.h>
 #include <pathplan/pathutil.h>
 #include <pathplan/tri.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #define DQ_FRONT 1

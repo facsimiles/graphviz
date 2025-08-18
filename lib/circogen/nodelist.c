@@ -14,7 +14,7 @@
 #include	<limits.h>
 #include	<stddef.h>
 #include	<string.h>
-#include	<util/list2.h>
+#include	<util/list.h>
 
 void appendNodelist(nodelist_t *list, size_t one, Agnode_t *n) {
   assert(one <= LIST_SIZE(list));

@@ -26,7 +26,7 @@
 #include <util/alloc.h>
 #include <util/debug.h>
 #include <util/gv_math.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 static int nedges; ///< total no. of edges used in routing

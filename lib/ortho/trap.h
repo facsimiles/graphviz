@@ -22,7 +22,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 /* Segment attributes */
 

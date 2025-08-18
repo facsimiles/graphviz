@@ -12,7 +12,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 typedef LIST(size_t) adj_list_t;
 

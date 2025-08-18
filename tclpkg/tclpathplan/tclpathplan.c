@@ -36,7 +36,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/itos.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #if (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION >= 6) || TCL_MAJOR_VERSION > 8

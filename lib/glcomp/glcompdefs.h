@@ -23,7 +23,7 @@
 #include <tchar.h>
 #endif
 #include <glcomp/opengl.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 #ifdef __cplusplus
 extern "C" {

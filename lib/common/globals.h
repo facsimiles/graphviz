@@ -18,7 +18,7 @@
 #include <cgraph/cgraph.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 #ifdef __cplusplus
 extern "C" {

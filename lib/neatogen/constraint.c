@@ -18,7 +18,7 @@
 #include <stdbool.h>
 #include <util/alloc.h>
 #include <util/itos.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 /* For precision, scale up before algorithms, then scale down */
 #define SCALE 10   

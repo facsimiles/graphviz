@@ -17,7 +17,7 @@
 #include "selectionfuncs.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include "topviewfuncs.h"
 
 static int lastAction;

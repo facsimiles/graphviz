@@ -17,7 +17,7 @@
 #include    <pack/pack.h>
 #include    <neatogen/neatoprocs.h>
 #include    <stdbool.h>
-#include    <util/list2.h>
+#include    <util/list.h>
 
 /* the following code shamelessly copied from lib/fdpgen/layout.c
 and should be extracted and made into a common function */

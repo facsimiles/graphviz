@@ -15,7 +15,7 @@
 #include	<stdbool.h>
 #include	<util/agxbuf.h>
 #include	<util/alloc.h>
-#include	<util/list2.h>
+#include	<util/list.h>
 
 /* The code below lays out a single block on a circle.
  */

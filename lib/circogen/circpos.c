@@ -21,7 +21,7 @@
 #include	<math.h>
 #include	<stddef.h>
 #include	<util/alloc.h>
-#include	<util/list2.h>
+#include	<util/list.h>
 
 /* The function determines how much the block should be rotated
  * for best positioning with parent, assuming its center is at x and y

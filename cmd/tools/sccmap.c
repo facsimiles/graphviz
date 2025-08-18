@@ -35,7 +35,7 @@
 #include <getopt.h>
 #include "openFile.h"
 #include <util/exit.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/unreachable.h>
 
 #define INF UINT_MAX

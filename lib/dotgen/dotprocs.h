@@ -16,7 +16,7 @@ extern "C" {
 
 #include <dotgen/aspect.h>
 #include <stdbool.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 typedef LIST(Agnode_t *) node_queue_t;
 

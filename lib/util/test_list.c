@@ -1,5 +1,5 @@
 /// @file
-/// @brief basic unit tester for list2.h
+/// @brief basic unit tester for list.h
 
 #ifdef NDEBUG
 #error "this is not intended to be compiled with assertions off"
@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/list.c>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/unused.h>
 
 // test construction and destruction, with nothing in-between

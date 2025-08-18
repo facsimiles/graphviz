@@ -20,7 +20,7 @@
 #include    <util/alloc.h>
 #include    <util/gv_ctype.h>
 #include    <util/gv_math.h>
-#include    <util/list2.h>
+#include    <util/list.h>
 #include    <util/streq.h>
 #define DEF_RANKSEP 1.00
 #define UNSET 10.00

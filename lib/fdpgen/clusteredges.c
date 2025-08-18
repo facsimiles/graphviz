@@ -28,7 +28,7 @@
 #include <pack/pack.h>
 #include <stdbool.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 typedef LIST(Ppoly_t *) objlist_t;
 

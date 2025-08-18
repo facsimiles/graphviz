@@ -31,7 +31,7 @@
 #include	<common/const.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/path.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>

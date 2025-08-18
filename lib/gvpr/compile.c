@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 #include <util/startswith.h>
 #include <util/unreachable.h>

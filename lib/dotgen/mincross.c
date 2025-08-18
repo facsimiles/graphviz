@@ -30,7 +30,7 @@
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/itos.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/streq.h>
 
 struct adjmatrix_t {

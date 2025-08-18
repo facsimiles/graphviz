@@ -26,7 +26,7 @@
 #include <common/utils.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #ifdef DEBUG

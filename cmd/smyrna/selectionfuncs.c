@@ -11,7 +11,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include "selectionfuncs.h"
 #include "topviewfuncs.h"
 #include "smyrna_utils.h"

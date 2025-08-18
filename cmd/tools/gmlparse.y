@@ -25,7 +25,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/exit.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 static gmlgraph* G;
 static gmlnode* N;

@@ -13,7 +13,7 @@
 #include <circogen/circular.h>
 #include <circogen/block.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 void initBlocklist(blocklist_t * bl)
 {

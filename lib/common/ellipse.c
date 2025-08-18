@@ -55,7 +55,7 @@
 #include <common/render.h>
 #include <pathplan/pathplan.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 #define TWOPI (2*M_PI)
 

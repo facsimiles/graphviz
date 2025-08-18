@@ -15,7 +15,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 #ifdef __cplusplus
 extern "C" {

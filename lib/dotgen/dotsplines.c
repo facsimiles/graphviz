@@ -24,7 +24,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 #ifdef ORTHO
 #include <ortho/ortho.h>

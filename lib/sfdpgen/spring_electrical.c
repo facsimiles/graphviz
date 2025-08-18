@@ -26,7 +26,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 /// another parameter
 /// fₐ(i, j) = C × dist(i , j)² ÷ K × dᵢⱼ, fᵣ(i, j) = K³⁻ᵖ ÷ dist(i, j)⁻ᵖ

@@ -18,7 +18,7 @@
 #include <graph_generator.h>
 #include <util/alloc.h>
 #include <util/exit.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/random.h>
 #include <util/overflow.h>
 

@@ -15,7 +15,7 @@
 #include <ortho/rawgraph.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 typedef struct {
     double p1, p2;

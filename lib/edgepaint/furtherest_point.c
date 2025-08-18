@@ -16,7 +16,7 @@
 #include <string.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
-#include <util/list2.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 static double dist(int dim, double *x, double *y){

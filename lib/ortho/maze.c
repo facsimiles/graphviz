@@ -24,7 +24,7 @@
 #include <ortho/trap.h>
 #include <common/arith.h>
 #include <util/alloc.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 #define MARGIN 36
 

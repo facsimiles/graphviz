@@ -17,7 +17,7 @@
 #include <common/types.h>
 #include <common/globals.h>
 #include <fdpgen/fdp.h>
-#include <util/list2.h>
+#include <util/list.h>
 
 show_boxes_t Show_boxes = {.dtor = LIST_DTOR_FREE};
 
