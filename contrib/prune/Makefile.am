@@ -14,7 +14,8 @@ prune_SOURCES = prune.c
 
 prune_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/util/libutil_C.la
 
 .1.1.pdf:
 	rm -f $@; pdffile=$@; psfile=$${pdffile%pdf}ps; \

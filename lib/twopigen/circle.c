@@ -113,18 +113,16 @@ static Agnode_t *findCenterNode(Agraph_t * g)
     return center;
 }
 
-DEFINE_LIST(node_queue, Agnode_t *)
-
 /* bfs to create tree structure */
 static void setNStepsToCenter(Agraph_t * g, Agnode_t * n)
 {
     Agnode_t *next;
     Agsym_t* wt = agfindedgeattr(g,"weight");
-    node_queue_t q = {0};
+    LIST(Agnode_t *) q = {0};
 
-    node_queue_push_back(&q, n);
-    while (!node_queue_is_empty(&q)) {
-	n = node_queue_pop_front(&q);
+    LIST_PUSH_BACK(&q, n);
+    while (!LIST_IS_EMPTY(&q)) {
+	n = LIST_POP_FRONT(&q);
 	uint64_t nsteps = SCENTER(n) + 1;
 	for (Agedge_t *ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
 	    if (wt && streq(agxget(ep,wt), "0")) continue;
@@ -134,11 +132,11 @@ static void setNStepsToCenter(Agraph_t * g, Agnode_t * n)
 		SCENTER(next) = nsteps;
 		SPARENT(next) = n;
 		NCHILD(n)++;
-		node_queue_push_back(&q, next);
+		LIST_PUSH_BACK(&q, next);
 	    }
 	}
     }
-    node_queue_free(&q);
+    LIST_FREE(&q);
 }
 
 /*

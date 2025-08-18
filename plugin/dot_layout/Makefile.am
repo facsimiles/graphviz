@@ -30,6 +30,7 @@ libgvplugin_dot_layout_la_LIBADD = $(libgvplugin_dot_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/util/libutil_C.la \
 	$(MATH_LIBS)
 
 if WITH_WIN32

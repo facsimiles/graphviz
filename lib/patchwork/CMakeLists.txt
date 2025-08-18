@@ -22,4 +22,5 @@ target_include_directories(patchwork PRIVATE
 target_link_libraries(patchwork PRIVATE
   cgraph
   gvc
+  util
 )

@@ -21,6 +21,7 @@
 #include	<math.h>
 #include	<stddef.h>
 #include	<util/alloc.h>
+#include	<util/list.h>
 
 /* The function determines how much the block should be rotated
  * for best positioning with parent, assuming its center is at x and y
@@ -64,7 +65,7 @@ static double getRotation(block_t *sn, double x, double y, double theta) {
 	return theta;
     }
 
-    size_t count = nodelist_size(list);
+    size_t count = LIST_SIZE(list);
     if (count == 2) {
 	return theta - M_PI / 2.0;
     }
@@ -242,7 +243,7 @@ static void positionChildren(posinfo_t *info, posstate *stp, size_t length,
     for (child = stp->cp; child; child = child->next) {
 	if (BLK_PARENT(child) != info->n)
 	    continue;
-	if (nodelist_is_empty(&child->circle_list))
+	if (LIST_IS_EMPTY(&child->circle_list))
 	    continue;
 
 	incidentAngle = child->radius / childRadius;
@@ -326,8 +327,8 @@ static double position(size_t childCount, size_t length, nodelist_t *nodepath,
     state.firstAngle = -1;
     state.lastAngle = -1;
 
-    for (size_t item = 0; item < nodelist_size(nodepath); ++item) {
-	Agnode_t *n = nodelist_get(nodepath, item);
+    for (size_t item = 0; item < LIST_SIZE(nodepath); ++item) {
+	Agnode_t *n = LIST_GET(nodepath, item);
 
 	theta = counter * state.nodeAngle;
 	counter++;
@@ -407,7 +408,7 @@ static void doBlock(Agraph_t *g, block_t *sn, double min_dist,
     /* layout this block */
     nodelist_t longest_path = layout_block(g, sn, min_dist, state);
     sn->circle_list = longest_path;
-    size_t length = nodelist_size(&longest_path); // path contains everything in block
+    size_t length = LIST_SIZE(&longest_path); // path contains everything in block
 
     /* attach children */
     if (childCount > 0)

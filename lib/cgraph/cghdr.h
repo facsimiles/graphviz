@@ -40,7 +40,6 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <util/list.h>
 
 #define	SUCCESS				0
 #define FAILURE				-1

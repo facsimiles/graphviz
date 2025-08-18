@@ -108,20 +108,18 @@ typedef enum { HTML_UNSET = 0, HTML_TBL, HTML_TEXT, HTML_IMAGE } label_type_t;
  * Rows is a list of rows.
  */
 
-DEFINE_LIST(cells, htmlcell_t *)
-
 typedef struct {
-  cells_t rp;
+  LIST(htmlcell_t *) rp;
   bool ruled;
 } row_t;
 
 /// Free row. This closes and frees row’s list, then the item itself is freed.
 static inline void free_ritem(row_t *p) {
-  cells_free(&p->rp);
+  LIST_FREE(&p->rp);
   free (p);
 }
 
-DEFINE_LIST_WITH_DTOR(rows, row_t *, free_ritem)
+typedef LIST(row_t *) rows_t;
 
     struct htmltbl_t {
 	htmldata_t data;

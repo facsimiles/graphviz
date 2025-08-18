@@ -1,513 +1,444 @@
 /// @file
+/// @brief type-generic dynamically expanding list
 /// @ingroup cgraph_utils
+///
+/// The code in this header is structured as a public API made up of macros that
+/// do as little as possible before handing off to internal functions.
+///
+/// If you are familiar with the concept of a dynamically expanding array like
+/// C++’s `std::vector`, the only things that will likely throw you off are:
+///   1. The genericity of `LIST` is implemented through a `union` that overlaps
+///      the `base` member of a `list_t_` (a generic list core) with a typed
+///      pointer. This design involves the public macros dealing in the
+///      `LIST(foo)` type while the private functions deal in `list_t_`s.
+///   2. The start of the list is not always index 0, in order to more
+///      efficiently implement a queue. See the diagram and discussion in
+///      `try_reserve` to better understand this.
+///
+/// Some general terminology you may see in function/macro names:
+///   base – the start of the underlying heap allocation backing a list
+///   dtor – destructor
+///   head – slot index of the start of a list
+///   item – a list element
+///   slot – an item-sized space in the list, offset recorded from base
+///
+/// Some unorthodox idioms you may see used in this file:
+///   • `(void)(foo == bar)` as a way to force the compiler to type-check that
+///     `foo` and `bar` have compatible types. This is the best we can do for
+///     pointer compatibility checks without `typeof`.
+///   • `(void)(sizeof(foo) == sizeof(bar) ? (void)0 : (void)(…,abort())` as an
+///     even weaker version of the above, for when we need to delay a check to
+///     runtime instead of compile-time. This is a very unreliable check for
+///     `foo` and `bar` being the same type, so should be avoided wherever
+///     possible.
+
 #pragma once
 
 #include <assert.h>
-#include <errno.h>
-#include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <util/alloc.h>
-#include <util/asan.h>
-#include <util/exit.h>
-#include <util/unused.h>
+#include <util/list-private.h>
 
-/** create a new list type and its associated member functions
- *
- * \param name Type name to give the list container
- * \param type Type of the elements the list will store
- */
-#define DEFINE_LIST(name, type) DEFINE_LIST_WITH_DTOR(name, type, name##_noop_)
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/** \p DEFINE_LIST but with a custom element destructor
- *
- * \param name Type name to give the list container
- * \param type Type of the elements the list will store
- * \param dtor Destructor to be called on elements being released
- */
-#define DEFINE_LIST_WITH_DTOR(name, type, dtor)                                \
-                                                                               \
-  /** list container                                                           \
-   *                                                                           \
-   * All members of this type are considered private. They should only be      \
-   * accessed through the functions below.                                     \
-   */                                                                          \
-  typedef struct {                                                             \
-    type *base; /* start of the allocation for backing memory */               \
-    /* (base == NULL && capacity == 0) || (base != NULL && capacity > 0) */    \
-    size_t head; /* index of the first element */                              \
-    /* (capacity == 0 && head == 0)  || (capacity > 0 && head < capacity) */   \
-    size_t size; /* number of elements in the list */                          \
-    /* size <= capacity */                                                     \
-    size_t capacity; /* available storage slots */                             \
-  } name##_t;                                                                  \
-                                                                               \
-  /* default “do nothing” destructor */                                        \
-  static inline UNUSED void name##_noop_(type item) { (void)item; }            \
-                                                                               \
-  /** get the number of elements in a list */                                  \
-  static inline size_t name##_size(const name##_t *list) {                     \
-    assert(list != NULL);                                                      \
-    return list->size;                                                         \
-  }                                                                            \
-                                                                               \
-  /** does this list contain no elements? */                                   \
-  static inline UNUSED bool name##_is_empty(const name##_t *list) {            \
-    assert(list != NULL);                                                      \
-    return name##_size(list) == 0;                                             \
-  }                                                                            \
-                                                                               \
-  static inline int name##_try_append(name##_t *list, type item) {             \
-    assert(list != NULL);                                                      \
-                                                                               \
-    /* do we need to expand the backing storage? */                            \
-    if (list->size == list->capacity) {                                        \
-      const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);         \
-                                                                               \
-      /* will the calculation of the new size overflow? */                     \
-      if (SIZE_MAX / c < sizeof(type)) {                                       \
-        return ERANGE;                                                         \
-      }                                                                        \
-                                                                               \
-      type *base = (type *)realloc(list->base, c * sizeof(type));              \
-      if (base == NULL) {                                                      \
-        return ENOMEM;                                                         \
-      }                                                                        \
-                                                                               \
-      /* zero the new memory */                                                \
-      memset(&base[list->capacity], 0, (c - list->capacity) * sizeof(type));   \
-                                                                               \
-      /* poison the new (conceptually unallocated) memory */                   \
-      ASAN_POISON(&base[list->capacity], (c - list->capacity) * sizeof(type)); \
-                                                                               \
-      /* Do we need to shuffle the prefix upwards? E.g. */                     \
-      /*                                                */                     \
-      /*        ┌───┬───┬───┬───┐                       */                     \
-      /*   old: │ 3 │ 4 │ 1 │ 2 │                       */                     \
-      /*        └───┴───┴─┼─┴─┼─┘                       */                     \
-      /*                  │   └───────────────┐         */                     \
-      /*                  └───────────────┐   │         */                     \
-      /*                                  ▼   ▼         */                     \
-      /*        ┌───┬───┬───┬───┬───┬───┬───┬───┐       */                     \
-      /*   new: │ 3 │ 4 │   │   │   │   │ 1 │ 2 │       */                     \
-      /*        └───┴───┴───┴───┴───┴───┴───┴───┘       */                     \
-      /*          a   b   c   d   e   f   g   h         */                     \
-      if (list->head + list->size > list->capacity) {                          \
-        const size_t prefix = list->capacity - list->head;                     \
-        const size_t new_head = c - prefix;                                    \
-        /* unpoison target range, slots [g, h] in example */                   \
-        ASAN_UNPOISON(&base[new_head], prefix * sizeof(type));                 \
-        memmove(&base[new_head], &base[list->head], prefix * sizeof(type));    \
-        /* (re-)poison new gap, slots [c, f] in example */                     \
-        ASAN_POISON(&base[list->size - prefix],                                \
-                    (list->capacity - list->size) * sizeof(type));             \
-        list->head = new_head;                                                 \
-      }                                                                        \
-                                                                               \
-      list->base = base;                                                       \
-      list->capacity = c;                                                      \
-    }                                                                          \
-                                                                               \
-    const size_t new_slot = (list->head + list->size) % list->capacity;        \
-    ASAN_UNPOISON(&list->base[new_slot], sizeof(type));                        \
-    list->base[new_slot] = item;                                               \
-    ++list->size;                                                              \
-                                                                               \
-    return 0;                                                                  \
-  }                                                                            \
-                                                                               \
-  static inline void name##_append(name##_t *list, type item) {                \
-    int rc = name##_try_append(list, item);                                    \
-    if (rc != 0) {                                                             \
-      fprintf(stderr, "realloc failed: %s\n", strerror(rc));                   \
-      graphviz_exit(EXIT_FAILURE);                                             \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  /** add an item to the beginning of a list */                                \
-  static inline UNUSED void name##_prepend(name##_t *list, type item) {        \
-    assert(list != NULL);                                                      \
-                                                                               \
-    /* do we need to expand the backing storage? */                            \
-    if (list->size == list->capacity) {                                        \
-      const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);         \
-                                                                               \
-      /* will the calculation of the new size overflow? */                     \
-      if (SIZE_MAX / c < sizeof(type)) {                                       \
-        fprintf(stderr, "integer overflow during list prepend\n");             \
-        graphviz_exit(EXIT_FAILURE);                                           \
-      }                                                                        \
-                                                                               \
-      type *base =                                                             \
-          (type *)gv_recalloc(list->base, list->capacity, c, sizeof(type));    \
-                                                                               \
-      /* zero the new memory */                                                \
-      memset(&base[list->capacity], 0, (c - list->capacity) * sizeof(type));   \
-                                                                               \
-      /* poison the new (conceptually unallocated) memory */                   \
-      ASAN_POISON(&base[list->capacity], (c - list->capacity) * sizeof(type)); \
-                                                                               \
-      /* Do we need to shuffle the prefix upwards? E.g. */                     \
-      /*                                                */                     \
-      /*        ┌───┬───┬───┬───┐                       */                     \
-      /*   old: │ 3 │ 4 │ 1 │ 2 │                       */                     \
-      /*        └───┴───┴─┼─┴─┼─┘                       */                     \
-      /*                  │   └───────────────┐         */                     \
-      /*                  └───────────────┐   │         */                     \
-      /*                                  ▼   ▼         */                     \
-      /*        ┌───┬───┬───┬───┬───┬───┬───┬───┐       */                     \
-      /*   new: │ 3 │ 4 │   │   │   │   │ 1 │ 2 │       */                     \
-      /*        └───┴───┴───┴───┴───┴───┴───┴───┘       */                     \
-      /*          a   b   c   d   e   f   g   h         */                     \
-      if (list->head + list->size > list->capacity) {                          \
-        const size_t prefix = list->capacity - list->head;                     \
-        const size_t new_head = c - prefix;                                    \
-        /* unpoison target range, slots [g, h] in example */                   \
-        ASAN_UNPOISON(&base[new_head], prefix * sizeof(type));                 \
-        memmove(&base[new_head], &base[list->head], prefix * sizeof(type));    \
-        /* (re-)poison new gap, slots [c, f] in example */                     \
-        ASAN_POISON(&base[list->size - prefix],                                \
-                    (list->capacity - list->size) * sizeof(type));             \
-        list->head = new_head;                                                 \
-      }                                                                        \
-                                                                               \
-      list->base = base;                                                       \
-      list->capacity = c;                                                      \
-    }                                                                          \
-                                                                               \
-    assert(list->size < list->capacity);                                       \
-    const size_t new_slot =                                                    \
-        (list->head + (list->capacity - 1)) % list->capacity;                  \
-    ASAN_UNPOISON(&list->base[new_slot], sizeof(type));                        \
-    list->base[new_slot] = item;                                               \
-    list->head = (list->head + (list->capacity - 1)) % list->capacity;         \
-    ++list->size;                                                              \
-  }                                                                            \
-                                                                               \
-  /** retrieve an element from a list                                          \
-   *                                                                           \
-   * \param list List to operate on                                            \
-   * \param index Element index to get                                         \
-   * \return Element at the given index                                        \
-   */                                                                          \
-  static inline type name##_get(const name##_t *list, size_t index) {          \
-    assert(list != NULL);                                                      \
-    assert(index < list->size && "index out of bounds");                       \
-    return list->base[(list->head + index) % list->capacity];                  \
-  }                                                                            \
-                                                                               \
-  /** access an element in a list for the purpose of modification              \
-   *                                                                           \
-   * Because this acquires an internal pointer into the list structure, `get`  \
-   * and `set` should be preferred over this function. `get` and `set` are     \
-   * easier to reason about. In particular, the pointer returned by this       \
-   * function is invalidated by any list operation that may reallocate the     \
-   * backing storage (e.g. `shrink_to_fit`).                                   \
-   *                                                                           \
-   * \param list List to operate on                                            \
-   * \param index Element to get a pointer to                                  \
-   * \return Pointer to the requested element                                  \
-   */                                                                          \
-  static inline type *name##_at(name##_t *list, size_t index) {                \
-    assert(list != NULL);                                                      \
-    assert(index < list->size && "index out of bounds");                       \
-    return &list->base[(list->head + index) % list->capacity];                 \
-  }                                                                            \
-                                                                               \
-  /** get a handle to the first element */                                     \
-  static inline UNUSED type *name##_front(name##_t *list) {                    \
-    assert(list != NULL);                                                      \
-    assert(!name##_is_empty(list));                                            \
-    return name##_at(list, 0);                                                 \
-  }                                                                            \
-                                                                               \
-  /** get a handle to the last element */                                      \
-  static inline UNUSED type *name##_back(name##_t *list) {                     \
-    assert(list != NULL);                                                      \
-    assert(!name##_is_empty(list));                                            \
-    return name##_at(list, name##_size(list) - 1);                             \
-  }                                                                            \
-                                                                               \
-  /** assign to an element in a list                                           \
-   *                                                                           \
-   * \param list List to operate on                                            \
-   * \param index Element to assign to                                         \
-   * \param item Value to assign                                               \
-   */                                                                          \
-  static inline void name##_set(name##_t *list, size_t index, type item) {     \
-    assert(list != NULL);                                                      \
-    assert(index < name##_size(list) && "index out of bounds");                \
-    type *target = name##_at(list, index);                                     \
-    dtor(*target);                                                             \
-    *target = item;                                                            \
-  }                                                                            \
-                                                                               \
-  /** remove an element from a list                                            \
-   *                                                                           \
-   * \param list List to operate on                                            \
-   * \param item Value of element to remove                                    \
-   */                                                                          \
-  static inline UNUSED void name##_remove(name##_t *list, const type item) {   \
-    assert(list != NULL);                                                      \
-                                                                               \
-    for (size_t i = 0; i < list->size; ++i) {                                  \
-      /* is this the element we are looking for? */                            \
-      type *candidate = name##_at(list, i);                                    \
-      if (memcmp(candidate, &item, sizeof(type)) == 0) {                       \
-                                                                               \
-        /* destroy the element we are about to remove */                       \
-        dtor(*candidate);                                                      \
-                                                                               \
-        /* shrink the list */                                                  \
-        for (size_t j = i + 1; j < list->size; ++j) {                          \
-          type *replacement = name##_at(list, j);                              \
-          *candidate = *replacement;                                           \
-          candidate = replacement;                                             \
-        }                                                                      \
-        ASAN_POISON(name##_at(list, list->size - 1), sizeof(type));            \
-        --list->size;                                                          \
-        return;                                                                \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  /** remove all elements from a list */                                       \
-  static inline void name##_clear(name##_t *list) {                            \
-    assert(list != NULL);                                                      \
-                                                                               \
-    for (size_t i = 0; i < list->size; ++i) {                                  \
-      dtor(name##_get(list, i));                                               \
-      ASAN_POISON(name##_at(list, i), sizeof(type));                           \
-    }                                                                          \
-                                                                               \
-    list->size = 0;                                                            \
-                                                                               \
-    /* opportunistically re-sync the list */                                   \
-    list->head = 0;                                                            \
-  }                                                                            \
-                                                                               \
-  /** ensure the list can fit a given number of items without reallocation     \
-   *                                                                           \
-   * \param list List to operate on                                            \
-   * \param capacity Number of items the list should be able to contain        \
-   */                                                                          \
-  static inline UNUSED void name##_reserve(name##_t *list, size_t capacity) {  \
-    assert(list != NULL);                                                      \
-                                                                               \
-    /* if we can already fit enough items, nothing to do */                    \
-    if (list->capacity >= capacity) {                                          \
-      return;                                                                  \
-    }                                                                          \
-                                                                               \
-    list->base = (type *)gv_recalloc(list->base, list->capacity, capacity,     \
-                                     sizeof(type));                            \
-                                                                               \
-    /* Do we need to shuffle the prefix upwards? E.g. */                       \
-    /*                                                */                       \
-    /*        ┌───┬───┬───┬───┐                       */                       \
-    /*   old: │ 3 │ 4 │ 1 │ 2 │                       */                       \
-    /*        └───┴───┴─┼─┴─┼─┘                       */                       \
-    /*                  │   └───────────────┐         */                       \
-    /*                  └───────────────┐   │         */                       \
-    /*                                  ▼   ▼         */                       \
-    /*        ┌───┬───┬───┬───┬───┬───┬───┬───┐       */                       \
-    /*   new: │ 3 │ 4 │   │   │   │   │ 1 │ 2 │       */                       \
-    /*        └───┴───┴───┴───┴───┴───┴───┴───┘       */                       \
-    /*          a   b   c   d   e   f   g   h         */                       \
-    if (list->head + list->size > list->capacity) {                            \
-      const size_t prefix = list->capacity - list->head;                       \
-      const size_t new_head = capacity - prefix;                               \
-      /* unpoison target range, slots [g, h] in example */                     \
-      ASAN_UNPOISON(&list->base[new_head], prefix * sizeof(type));             \
-      memmove(&list->base[new_head], &list->base[list->head],                  \
-              prefix * sizeof(type));                                          \
-      /* (re-)poison new gap, slots [c, f] in example */                       \
-      ASAN_POISON(&list->base[list->size - prefix],                            \
-                  (list->capacity - list->size) * sizeof(type));               \
-      list->head = new_head;                                                   \
-    }                                                                          \
-                                                                               \
-    list->capacity = capacity;                                                 \
-  }                                                                            \
-                                                                               \
-  /** is the given element in the list? */                                     \
-  static inline UNUSED bool name##_contains(                                   \
-      const name##_t *haystack, const type needle,                             \
-      bool (*eq)(const type a, const type b)) {                                \
-    assert(haystack != NULL);                                                  \
-    assert(eq != NULL);                                                        \
-                                                                               \
-    for (size_t i = 0; i < name##_size(haystack); ++i) {                       \
-      if (eq(name##_get(haystack, i), needle)) {                               \
-        return true;                                                           \
-      }                                                                        \
-    }                                                                          \
-    return false;                                                              \
-  }                                                                            \
-                                                                               \
-  /** replicate a list */                                                      \
-  static inline UNUSED name##_t name##_copy(const name##_t *source) {          \
-    assert(source != NULL);                                                    \
-                                                                               \
-    name##_t destination = {(type *)gv_calloc(source->capacity, sizeof(type)), \
-                            0, 0, source->capacity};                           \
-    for (size_t i = 0; i < source->size; ++i) {                                \
-      name##_append(&destination, name##_get(source, i));                      \
-    }                                                                          \
-    return destination;                                                        \
-  }                                                                            \
-                                                                               \
-  /** does the list not wrap past its end?                              */     \
-  /**                                                                   */     \
-  /** This checks whether the list is discontiguous in how its elements */     \
-  /** appear in memory:                                                 */     \
-  /**                                                                   */     \
-  /**                         ┌───┬───┬───┬───┬───┬───┬───┬───┐         */     \
-  /**   a contiguous list:    │   │   │ w │ x │ y │ z │   │   │         */     \
-  /**                         └───┴───┴───┴───┴───┴───┴───┴───┘         */     \
-  /**                                   0   1   2   3                   */     \
-  /**                                                                   */     \
-  /**                         ┌───┬───┬───┬───┬───┬───┬───┬───┐         */     \
-  /**   a discontiguous list: │ y │ z │   │   │   │   │ x │ y │         */     \
-  /**                         └───┴───┴───┴───┴───┴───┴───┴───┘         */     \
-  /**                           2   3                   0   1           */     \
-  static inline UNUSED bool name##_is_contiguous(const name##_t *list) {       \
-    assert(list != NULL);                                                      \
-    return list->head + list->size <= list->capacity;                          \
-  }                                                                            \
-                                                                               \
-  /** shuffle the populated contents to reset `head` to 0 */                   \
-  static inline void name##_sync(name##_t *list) {                             \
-    assert(list != NULL);                                                      \
-                                                                               \
-    /* Allow unrestricted access. The shuffle below accesses both allocated    \
-     * and unallocated elements, so just let it read and write everything.     \
-     */                                                                        \
-    ASAN_UNPOISON(list->base, list->capacity * sizeof(type));                  \
-                                                                               \
-    /* Shuffle the list 1-1 until it is aligned. This is not efficient, but */ \
-    /* we assume this is a relatively rare operation. */                       \
-    while (list->head != 0) {                                                  \
-      /* rotate the list leftwards by 1 */                                     \
-      assert(list->capacity > 0);                                              \
-      type replacement = list->base[0];                                        \
-      for (size_t i = list->capacity - 1; i != SIZE_MAX; --i) {                \
-        type temp = list->base[i];                                             \
-        list->base[i] = replacement;                                           \
-        replacement = temp;                                                    \
-      }                                                                        \
-      --list->head;                                                            \
-    }                                                                          \
-                                                                               \
-    /* synchronization should have ensured the list no longer wraps */         \
-    assert(name##_is_contiguous(list));                                        \
-                                                                               \
-    /* re-establish access restrictions */                                     \
-    ASAN_POISON(&list->base[list->size],                                       \
-                (list->capacity - list->size) * sizeof(type));                 \
-  }                                                                            \
-                                                                               \
-  /** sort the list using the given comparator */                              \
-  static inline UNUSED void name##_sort(                                       \
-      name##_t *list, int (*cmp)(const type *a, const type *b)) {              \
-    assert(list != NULL);                                                      \
-    assert(cmp != NULL);                                                       \
-                                                                               \
-    name##_sync(list);                                                         \
-                                                                               \
-    int (*compar)(const void *, const void *) =                                \
-        (int (*)(const void *, const void *))cmp;                              \
-    if (list->size > 0) {                                                      \
-      qsort(list->base, list->size, sizeof(type), compar);                     \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  /** flip the order of elements in the list */                                \
-  static inline UNUSED void name##_reverse(name##_t *list) {                   \
-    assert(list != NULL);                                                      \
-                                                                               \
-    for (size_t i = 0; i < name##_size(list) / 2; ++i) {                       \
-      type const temp1 = name##_get(list, i);                                  \
-      type const temp2 = name##_get(list, name##_size(list) - i - 1);          \
-      name##_set(list, i, temp2);                                              \
-      name##_set(list, name##_size(list) - i - 1, temp1);                      \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  /** deallocate unused backing storage, shrinking capacity to size */         \
-  static inline UNUSED void name##_shrink_to_fit(name##_t *list) {             \
-    assert(list != NULL);                                                      \
-                                                                               \
-    name##_sync(list);                                                         \
-                                                                               \
-    if (list->capacity > list->size) {                                         \
-      list->base = (type *)gv_recalloc(list->base, list->capacity, list->size, \
-                                       sizeof(type));                          \
-      list->capacity = list->size;                                             \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  /** free resources associated with a list */                                 \
-  static inline UNUSED void name##_free(name##_t *list) {                      \
-    assert(list != NULL);                                                      \
-    name##_clear(list);                                                        \
-    free(list->base);                                                          \
-    memset(list, 0, sizeof(*list));                                            \
-  }                                                                            \
-                                                                               \
-  /** alias for append */                                                      \
-  static inline UNUSED void name##_push_back(name##_t *list, type value) {     \
-    name##_append(list, value);                                                \
-  }                                                                            \
-                                                                               \
-  /** remove and return first element */                                       \
-  static inline UNUSED type name##_pop_front(name##_t *list) {                 \
-    assert(list != NULL);                                                      \
-    assert(list->size > 0);                                                    \
-                                                                               \
-    type value = name##_get(list, 0);                                          \
-                                                                               \
-    /* do not call `dtor` because we are transferring ownership of the removed \
-     * element to the caller                                                   \
-     */                                                                        \
-    ASAN_POISON(name##_at(list, 0), sizeof(type));                             \
-    list->head = (list->head + 1) % list->capacity;                            \
-    --list->size;                                                              \
-                                                                               \
-    return value;                                                              \
-  }                                                                            \
-                                                                               \
-  /** remove and return last element */                                        \
-  static inline UNUSED type name##_pop_back(name##_t *list) {                  \
-    assert(list != NULL);                                                      \
-    assert(list->size > 0);                                                    \
-                                                                               \
-    type value = name##_get(list, list->size - 1);                             \
-                                                                               \
-    /* do not call `dtor` because we are transferring ownership of the removed \
-     * element to the caller                                                   \
-     */                                                                        \
-    ASAN_POISON(name##_at(list, list->size - 1), sizeof(type));                \
-    --list->size;                                                              \
-                                                                               \
-    return value;                                                              \
-  }                                                                            \
-                                                                               \
-  /** transform a managed list into a bare array                               \
-   *                                                                           \
-   * This can be useful when needing to pass data to a callee who does not     \
-   * use this API. The managed list is emptied and left in a state where it    \
-   * can be reused for other purposes.                                         \
-   *                                                                           \
-   * \param list List to operate on                                            \
-   * \return A pointer to an array of the `list->size` elements                \
-   */                                                                          \
-  static inline UNUSED type *name##_detach(name##_t *list) {                   \
-    assert(list != NULL);                                                      \
-    name##_sync(list);                                                         \
-    type *data = list->base;                                                   \
-    memset(list, 0, sizeof(*list));                                            \
-    return data;                                                               \
+static_assert(
+    offsetof(list_t_, base) == 0,
+    "LIST(<type>).base and LIST(<type>).impl.base will not alias each other");
+
+/// list data structure
+///
+/// Typical usage:
+///
+///   LIST(int) my_int_list = {0};
+#define LIST(type)                                                             \
+  struct {                                                                     \
+    union {                                                                    \
+      type *base;                                                              \
+      list_t_ impl;                                                            \
+    }; /**< backing storage */                                                 \
+    void (*dtor)(type); /**< optional destructor */                            \
+    type scratch;       /**< temporary space for storing off-list items */     \
   }
+
+/// sentinel value to indicate you want `free` to be used as a list destructor
+///
+/// Sample usage:
+///
+///   LIST(char *) my_strings = {.dtor = LIST_DTOR_FREE};
+#define LIST_DTOR_FREE ((void *)1)
+
+/// get the number of elements in a list
+///
+/// You can think of this macro as having the C type:
+///
+///   size_t LIST_SIZE(const LIST(<type>) *list);
+///
+/// @param list List to inspect
+/// @return Size of the list
+#define LIST_SIZE(list) gv_list_size_((list)->impl)
+
+/// does this list contain no elements?
+///
+/// You can think of this macro as having the C type:
+///
+///   bool LIST_IS_EMPTY(const LIST(<type>) *list);
+///
+/// @param list List to inspect
+/// @return True if the list is empty
+#define LIST_IS_EMPTY(list) (LIST_SIZE(list) == 0)
+
+/// try to append a new item to a list
+///
+/// You can think of this macro as having the C type:
+///
+///   bool LIST_TRY_APPEND(LIST(<type>) *list, <type> item);
+///
+/// Note that referencing `(list)->base` and calling `gv_list_append_slot_`
+/// within a single expression without an intervening sequence point is OK
+/// because, after the preceding reservation probes, we know
+/// `gv_list_append_slot_` will not alter `(list)->base`.
+///
+/// @param list List to operate on
+/// @param item Item to append
+/// @return True if the append succeeded
+#define LIST_TRY_APPEND(list, item)                                            \
+  (((list)->impl.size < (list)->impl.capacity ||                               \
+    gv_list_try_reserve_(                                                      \
+        &(list)->impl,                                                         \
+        (list)->impl.capacity == 0 ? 1 : ((list)->impl.capacity * 2),          \
+        sizeof((list)->base[0])) ||                                            \
+    gv_list_try_reserve_(&(list)->impl, (list)->impl.capacity + 1,             \
+                         sizeof((list)->base[0]))) &&                          \
+   (((list)->base[gv_list_append_slot_(&(list)->impl,                          \
+                                       sizeof((list)->base[0]))] = (item)),    \
+    1))
+
+/// add an item to the end of a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_APPEND(LIST(<type>) *list, <type> item);
+///
+/// This macro succeeds or exits on out-of-memory; it never return failure.
+///
+/// Note, in contrast to `LIST_TRY_APPEND`, `gv_list_append_slot_` and the write
+/// to `(list)->base[…]` are in separate statements because the
+/// `gv_list_append_slot_` call here _can_ alter `(list)->base`.
+///
+/// @param list List to operate on
+/// @param item Element to append
+#define LIST_APPEND(list, item)                                                \
+  do {                                                                         \
+    const size_t slot_ =                                                       \
+        gv_list_append_slot_(&(list)->impl, sizeof((list)->base[0]));          \
+    (list)->base[slot_] = (item);                                              \
+  } while (0)
+
+/// add an item to the beginning of a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_PREPEND(LIST(<type>) *list, <type> item);
+///
+/// This macro succeeds or exits on out-of-memory; it never return failure.
+///
+/// @param list List to operate on
+/// @param item Element to prepend
+#define LIST_PREPEND(list, item)                                               \
+  do {                                                                         \
+    const size_t slot_ =                                                       \
+        gv_list_prepend_slot_(&(list)->impl, sizeof((list)->base[0]));         \
+    (list)->base[slot_] = (item);                                              \
+  } while (0)
+
+/// retrieve an item from a list
+///
+/// You can think of this macro as having the C type:
+///
+///   <type> LIST_GET(const LIST(<type>) *list, size_t index);
+///
+/// @param list List to operate on
+/// @param index Item index to get
+/// @return Item at the given index
+#define LIST_GET(list, index)                                                  \
+  ((list)->base[gv_list_get_((list)->impl, (index))])
+
+/// retrieve a pointer to an item from a list
+///
+/// You can think of this macro as having one of the C types:
+///
+///   <type> *LIST_AT(LIST(<type>) *list, size_t index);
+///   const <type> *LIST_AT(const LIST(<type>) *list, size_t index);
+///
+/// @param list List to operate on
+/// @param index Item index to get
+/// @return Pointer to item at the given index
+#define LIST_AT(list, index)                                                   \
+  (&(list)->base[gv_list_get_((list)->impl, (index))])
+
+/// retrieve a pointer to the first item in a list
+///
+/// You can think of this macro as having one of the C types:
+///
+///   <type> *LIST_FRONT(LIST(<type>) *list);
+///   const <type> *LIST_FRONT(const LIST(<type>) *list);
+///
+/// @param list List to operate on
+/// @return Pointer to the first item in the list
+#define LIST_FRONT(list) LIST_AT((list), 0)
+
+/// retrieve a pointer to the last item in a list
+///
+/// You can think of this macro as having one of the C types:
+///
+///   <type> *LIST_BACK(LIST(<type>) *list);
+///   const <type> *LIST_BACK(const LIST(<type>) *list);
+///
+/// @param list List to operate on
+/// @return Pointer to the last item in the list
+#define LIST_BACK(list) LIST_AT((list), LIST_SIZE(list) - 1)
+
+/// update the value of an item in a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_SET(LIST(<type>) *list, size_t index, <type> item);
+///
+/// @param list List to operate on
+/// @param index Index of item to update
+/// @param item New value to set
+#define LIST_SET(list, index, item)                                            \
+  do {                                                                         \
+    const size_t slot_ = gv_list_get_((list)->impl, (index));                  \
+    LIST_DTOR_((list), slot_);                                                 \
+    (list)->base[slot_] = (item);                                              \
+  } while (0)
+
+/// remove an item from a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_REMOVE(LIST(<type>) *list, <type> item);
+///
+/// @param list List to operate on
+/// @param item Item to remove
+#define LIST_REMOVE(list, item)                                                \
+  do {                                                                         \
+    /* get something we can take the address of */                             \
+    (list)->scratch = (item);                                                  \
+                                                                               \
+    const size_t found_ = gv_list_find_((list)->impl, &(list)->scratch,        \
+                                        sizeof((list)->base[0]));              \
+    if (found_ == SIZE_MAX) { /* not found */                                  \
+      break;                                                                   \
+    }                                                                          \
+                                                                               \
+    LIST_DTOR_((list), found_);                                                \
+    gv_list_remove_(&(list)->impl, found_, sizeof((list)->base[0]));           \
+  } while (0)
+
+/// remove all items from a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_CLEAR(LIST(<type>) *list);
+///
+/// @param list List to clear
+#define LIST_CLEAR(list)                                                       \
+  do {                                                                         \
+    for (size_t i_ = 0; i_ < LIST_SIZE(list); ++i_) {                          \
+      const size_t slot_ = gv_list_get_((list)->impl, i_);                     \
+      LIST_DTOR_((list), slot_);                                               \
+    }                                                                          \
+    gv_list_clear_(&(list)->impl, sizeof((list)->base[0]));                    \
+  } while (0)
+
+/// reserve space for new items in a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_RESERVE(LIST(<type>) *list, size_t capacity);
+///
+/// @param list List to operate on
+/// @param capacity Total number of item slots to make available
+#define LIST_RESERVE(list, capacity)                                           \
+  gv_list_reserve_(&(list)->impl, capacity, sizeof((list)->base[0]))
+
+/// does a list contain a given item?
+///
+/// You can think of this macro as having the C type:
+///
+///   bool LIST_CONTAINS(const LIST(<type>) *list, <type> needle);
+///
+/// The `needle` parameter must be an expression that can have its address
+/// taken. E.g. `LIST_CONTAINS(my_ints, 2)` is not valid. This can be worked
+/// around with C99 compound literals, `LIST_CONTAINS(my_ints, (int){2})`.
+///
+/// @param list List to search
+/// @param needle Item to search for
+/// @return True if the item was found
+#define LIST_CONTAINS(list, needle)                                            \
+  gv_list_contains_((list)->impl,                                              \
+                    ((void)((list)->base == &(needle)), &(needle)),            \
+                    sizeof((list)->base[0]))
+
+/// copy a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_COPY(LIST(<type>) *dst, const LIST(<type>) *src);
+///
+/// @param [out] dst Copy of the source list on completion
+/// @param src List to copy
+#define LIST_COPY(dst, src)                                                    \
+  do {                                                                         \
+    (void)((dst)->base == (src)->base);                                        \
+    memset((dst), 0, sizeof(*(dst)));                                          \
+    (dst)->impl = gv_list_copy_((src)->impl, sizeof((src)->base[0]));          \
+    (dst)->dtor = (src)->dtor;                                                 \
+  } while (0)
+
+/// does the list not wrap past its end?
+///
+/// This checks whether the list is discontiguous in how its elements
+/// appear in memory:
+///
+///                         ┌───┬───┬───┬───┬───┬───┬───┬───┐
+///   a contiguous list:    │   │   │ w │ x │ y │ z │   │   │
+///                         └───┴───┴───┴───┴───┴───┴───┴───┘
+///                                   0   1   2   3
+///
+///                         ┌───┬───┬───┬───┬───┬───┬───┬───┐
+///   a discontiguous list: │ y │ z │   │   │   │   │ x │ y │
+///                         └───┴───┴───┴───┴───┴───┴───┴───┘
+///                           2   3                   0   1
+///
+/// You can think of this macro as having the C type:
+///
+///   bool LIST_IS_CONTIGUOUS(const LIST(<type>>) *list);
+///
+/// @param list List to inspect
+/// @return True if the list is contiguous
+#define LIST_IS_CONTIGUOUS(list) gv_list_is_contiguous_((list)->impl);
+
+/// shuffle the populated contents to reset `head` to 0
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_SYNC(LIST(<type>) *list);
+///
+/// See the `LIST_IS_CONTIGUOUS` leading comment for a better understanding of
+/// what it means for `head` to be non-zero.
+///
+/// @param list List to operate on
+#define LIST_SYNC(list) gv_list_sync_(&(list)->impl, sizeof((list)->base[0]))
+
+/// sort a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_SORT(LIST(<type>) *list,
+///                  int (*comparator)(const void *a, const void *b));
+///
+/// @param list List to operate on
+/// @param comparator How to compare two list items
+#define LIST_SORT(list, cmp)                                                   \
+  gv_list_sort_(&(list)->impl, (cmp), sizeof((list)->base[0]))
+
+/// reverse the item order of a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_REVERSE(LIST(<type>) *list);
+///
+/// @param list List to operate on
+#define LIST_REVERSE(list)                                                     \
+  gv_list_reverse_(&(list)->impl, sizeof((list)->base[0]))
+
+/// decrease the allocated capacity of a list to minimum
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_SHRINK_TO_FIT(LIST(<type>) *list);
+///
+/// @param list List to operate on
+#define LIST_SHRINK_TO_FIT(list)                                               \
+  gv_list_shrink_to_fit_(&(list)->impl, sizeof((list)->base[0]))
+
+/// free resources associated with a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_FREE(LIST(<type>) *list);
+///
+/// After a call to this function, the list is empty and may be reused.
+///
+/// @param list List to free
+#define LIST_FREE(list)                                                        \
+  do {                                                                         \
+    LIST_CLEAR(list);                                                          \
+    gv_list_free_(&(list)->impl);                                              \
+  } while (0)
+
+/// alias for append
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_PUSH_BACK(LIST(<type>) *list, <type> item);
+///
+/// @param list List to operate on
+/// @param item Item to append
+#define LIST_PUSH_BACK(list, item) LIST_APPEND((list), (item))
+
+/// remove and return the first item of a list
+///
+/// You can think of this macro as having the C type:
+///
+///   <type> LIST_POP_FRONT(LIST(<type>) *list);
+///
+/// @param list List to operate on
+/// @return Popped item
+#define LIST_POP_FRONT(list)                                                   \
+  (gv_list_pop_front_(&(list)->impl, &(list)->scratch,                         \
+                      sizeof((list)->base[0])),                                \
+   (list)->scratch)
+
+/// remove and return the last item of a list
+///
+/// You can think of this macro as having the C type:
+///
+///   <type> LIST_POP_BACK(LIST(<type>) *list);
+///
+/// @param list List to operate on
+/// @return Popped item
+#define LIST_POP_BACK(list)                                                    \
+  (gv_list_pop_back_(&(list)->impl, &(list)->scratch,                          \
+                     sizeof((list)->base[0])),                                 \
+   (list)->scratch)
+
+/// transform a managed list into a bare array
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_DETACH(LIST(<type>) *list, <type> **data, size_t *size);
+///
+/// This can be useful when needing to pass data to a callee who does not
+/// use this API. The managed list is emptied and left in a state where it
+/// can be reused for other purposes.
+///
+/// @param list List to operate on
+/// @param [out] data The list data on completion
+/// @param [out] size The list size on completion
+#define LIST_DETACH(list, datap, sizep)                                        \
+  do {                                                                         \
+    *(datap) = (list)->base;                                                   \
+    *(sizep) = (list)->impl.size;                                              \
+                                                                               \
+    (list)->impl = (list_t_){0};                                               \
+  } while (0)
+
+#ifdef __cplusplus
+}
+#endif

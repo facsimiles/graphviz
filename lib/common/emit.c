@@ -417,7 +417,7 @@ static void freeSeg(colorseg_t seg) {
 }
 
 /* Sum of segment sizes should add to 1 */
-DEFINE_LIST_WITH_DTOR(colorsegs, colorseg_t, freeSeg)
+typedef LIST(colorseg_t) colorsegs_t;
 
 /* Find semicolon in s, replace with '\0'.
  * Convert remainder to float v.
@@ -466,7 +466,7 @@ static double getSegLen(strview_t *s) {
  * freed before returning.
  */
 static int parseSegs(const char *clrs, colorsegs_t *psegs) {
-    colorsegs_t segs = {0};
+    colorsegs_t segs = {.dtor = freeSeg};
     double v, left = 1;
     static atomic_flag warned;
     int rval = 0;
@@ -486,7 +486,7 @@ static int parseSegs(const char *clrs, colorsegs_t *psegs) {
 	    colorseg_t s = {.t = v};
 	    if (v > 0) s.hasFraction = true;
 	    if (color.size > 0) s.color = strview_str(color);
-	    colorsegs_append(&segs, s);
+	    LIST_APPEND(&segs, s);
 	}
 	else {
 	    if (!atomic_flag_test_and_set(&warned)) {
@@ -495,7 +495,7 @@ static int parseSegs(const char *clrs, colorsegs_t *psegs) {
 		rval = 2;
 	    }
 	    else rval = 1;
-	    colorsegs_free(&segs);
+	    LIST_FREE(&segs);
 	    return rval;
 	}
 	if (AEQ0(left)) {
@@ -508,25 +508,25 @@ static int parseSegs(const char *clrs, colorsegs_t *psegs) {
     if (left > 0) {
 	/* count zero segments */
 	size_t nseg = 0;
-	for (size_t i = 0; i < colorsegs_size(&segs); ++i) {
-	    if (colorsegs_get(&segs, i).t <= 0) nseg++;
+	for (size_t i = 0; i < LIST_SIZE(&segs); ++i) {
+	    if (LIST_GET(&segs, i).t <= 0) nseg++;
 	}
 	if (nseg > 0) {
 	    double delta = left / (double)nseg;
-	    for (size_t i = 0; i < colorsegs_size(&segs); ++i) {
-		colorseg_t *s = colorsegs_at(&segs, i);
+	    for (size_t i = 0; i < LIST_SIZE(&segs); ++i) {
+		colorseg_t *s = LIST_AT(&segs, i);
 		if (s->t <= 0) s->t = delta;
 	    }
 	}
 	else {
-	    colorsegs_back(&segs)->t += left;
+	    LIST_BACK(&segs)->t += left;
 	}
     }
     
     // terminate at the last positive segment
-    while (!colorsegs_is_empty(&segs)) {
-	if (colorsegs_back(&segs)->t > 0) break;
-	colorseg_t discard = colorsegs_pop_back(&segs);
+    while (!LIST_IS_EMPTY(&segs)) {
+	if (LIST_BACK(&segs)->t > 0) break;
+	colorseg_t discard = LIST_POP_BACK(&segs);
 	freeSeg(discard);
     }
 
@@ -560,13 +560,13 @@ int wedgedEllipse(GVJ_t *job, pointf *pf, const char *clrs) {
 	gvrender_set_penwidth(job, THIN_LINE);
 	
     angle0 = 0;
-    for (size_t i = 0; i < colorsegs_size(&segs); ++i) {
-	const colorseg_t s = colorsegs_get(&segs, i);
+    for (size_t i = 0; i < LIST_SIZE(&segs); ++i) {
+	const colorseg_t s = LIST_GET(&segs, i);
 	if (s.color == NULL) break;
 	if (s.t <= 0) continue;
 	gvrender_set_fillcolor(job, s.color);
 
-	if (i + 1 == colorsegs_size(&segs))
+	if (i + 1 == LIST_SIZE(&segs))
 	    angle1 = 2*M_PI;
 	else
 	    angle1 = angle0 + 2 * M_PI * s.t;
@@ -578,7 +578,7 @@ int wedgedEllipse(GVJ_t *job, pointf *pf, const char *clrs) {
 
     if (save_penwidth > THIN_LINE)
 	gvrender_set_penwidth(job, save_penwidth);
-    colorsegs_free(&segs);
+    LIST_FREE(&segs);
     return rv;
 }
 
@@ -618,12 +618,12 @@ int stripedBox(GVJ_t *job, pointf *AF, const char *clrs, int rotate) {
     
     if (save_penwidth > THIN_LINE)
 	gvrender_set_penwidth(job, THIN_LINE);
-    for (size_t i = 0; i < colorsegs_size(&segs); ++i) {
-	const colorseg_t s = colorsegs_get(&segs, i);
+    for (size_t i = 0; i < LIST_SIZE(&segs); ++i) {
+	const colorseg_t s = LIST_GET(&segs, i);
 	if (s.color == NULL) break;
 	if (s.t <= 0) continue;
 	gvrender_set_fillcolor(job, s.color);
-	if (i + 1 == colorsegs_size(&segs))
+	if (i + 1 == LIST_SIZE(&segs))
 	    pts[1].x = pts[2].x = lastx;
 	else
 	    pts[1].x = pts[2].x = pts[0].x + xdelta * (s.t);
@@ -632,7 +632,7 @@ int stripedBox(GVJ_t *job, pointf *AF, const char *clrs, int rotate) {
     }
     if (save_penwidth > THIN_LINE)
 	gvrender_set_penwidth(job, save_penwidth);
-    colorsegs_free(&segs);
+    LIST_FREE(&segs);
     return rv;
 }
 
@@ -787,13 +787,13 @@ void update_bb_bz(boxf *bb, pointf *cp)
     }
 }
 
-DEFINE_LIST(points, pointf)
+typedef LIST(pointf) points_t;
 
 static UNUSED void psmapOutput(const points_t *ps, size_t start, size_t n) {
-   const pointf first = points_get(ps, start);
+   const pointf first = LIST_GET(ps, start);
    fprintf(stdout, "newpath %f %f moveto\n", first.x, first.y);
    for (size_t i = start + 1; i < start + n; ++i) {
-        const pointf pt = points_get(ps, i);
+        const pointf pt = LIST_GET(ps, i);
         fprintf(stdout, "%f %f lineto\n", pt.x, pt.y);
    }
    fprintf (stdout, "closepath stroke\n");
@@ -816,21 +816,21 @@ static segitem_t* appendSeg (pointf p, segitem_t* lp)
     return s;
 }
 
-DEFINE_LIST(pbs_size, size_t)
+typedef LIST(size_t) pbs_size_t;
 
 /* Output the polygon determined by the n points in p1, followed
  * by the n points in p2 in reverse order. Assumes n <= 50.
  */
 static void map_bspline_poly(points_t *pbs_p, pbs_size_t *pbs_n, size_t n,
                              pointf *p1, pointf *p2) {
-    pbs_size_append(pbs_n, 2 * n);
+    LIST_APPEND(pbs_n, 2 * n);
 
-    const UNUSED size_t nump = points_size(pbs_p);
+    const UNUSED size_t nump = LIST_SIZE(pbs_p);
     for (size_t i = 0; i < n; i++) {
-        points_append(pbs_p, p1[i]);
+        LIST_APPEND(pbs_p, p1[i]);
     }
     for (size_t i = 0; i < n; i++) {
-        points_append(pbs_p, p2[n - i - 1]);
+        LIST_APPEND(pbs_p, p2[n - i - 1]);
     }
 #if defined(DEBUG) && DEBUG == 2
     psmapOutput(pbs_p, nump, 2 * n);
@@ -1071,8 +1071,6 @@ static int *parse_layerselect(GVC_t *gvc, char *p) {
     return laylist;
 }
 
-DEFINE_LIST(layer_names, char*)
-
 /* Split input string into tokens, with separators specified by
  * the layersep attribute. Store the values in the gvc->layerIDs array,
  * starting at index 1, and return the count.
@@ -1095,25 +1093,25 @@ static int parse_layers(GVC_t *gvc, graph_t * g, char *p)
     }
 
     gvc->layers = gv_strdup(p);
-    layer_names_t layerIDs = {0};
+    LIST(char *) layerIDs = {0};
 
     // inferred entry for the first (unnamed) layer
-    layer_names_append(&layerIDs, NULL);
+    LIST_APPEND(&layerIDs, NULL);
 
     for (tok = strtok(gvc->layers, gvc->layerDelims); tok;
          tok = strtok(NULL, gvc->layerDelims)) {
-        layer_names_append(&layerIDs, tok);
+        LIST_APPEND(&layerIDs, tok);
     }
 
-    assert(layer_names_size(&layerIDs) - 1 <= INT_MAX);
-    int ntok = (int)(layer_names_size(&layerIDs) - 1);
+    assert(LIST_SIZE(&layerIDs) - 1 <= INT_MAX);
+    int ntok = (int)(LIST_SIZE(&layerIDs) - 1);
 
     // if we found layers, save them for later reference
-    if (layer_names_size(&layerIDs) > 1) {
-        layer_names_append(&layerIDs, NULL); // add a terminating entry
-        gvc->layerIDs = layer_names_detach(&layerIDs);
+    if (LIST_SIZE(&layerIDs) > 1) {
+        LIST_APPEND(&layerIDs, NULL); // add a terminating entry
+        LIST_DETACH(&layerIDs, &gvc->layerIDs, &(size_t){0});
     }
-    layer_names_free(&layerIDs);
+    LIST_FREE(&layerIDs);
 
     return ntok;
 }
@@ -2057,8 +2055,8 @@ static int multicolor(GVJ_t *job, edge_t *e, char **styles, const char *colors,
 	left = 1;
 	bz = ED_spl(e)->list[i];
 	first = 1;
-	for (size_t j = 0; j < colorsegs_size(&segs); ++j) {
-	    const colorseg_t s = colorsegs_get(&segs, j);
+	for (size_t j = 0; j < LIST_SIZE(&segs); ++j) {
+	    const colorseg_t s = LIST_GET(&segs, j);
 	    if (s.color == NULL) break;
 	    if (AEQ0(s.t)) continue;
     	    gvrender_set_pencolor(job, s.color);
@@ -2093,8 +2091,8 @@ static int multicolor(GVJ_t *job, edge_t *e, char **styles, const char *colors,
                  * Use local copy of penwidth to work around reset.
                  */
 	if (bz.sflag) {
-    	    gvrender_set_pencolor(job, colorsegs_front(&segs)->color);
-    	    gvrender_set_fillcolor(job, colorsegs_front(&segs)->color);
+    	    gvrender_set_pencolor(job, LIST_FRONT(&segs)->color);
+    	    gvrender_set_fillcolor(job, LIST_FRONT(&segs)->color);
 	    arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0], arrowsize, penwidth, bz.sflag);
 	}
 	if (bz.eflag) {
@@ -2105,7 +2103,7 @@ static int multicolor(GVJ_t *job, edge_t *e, char **styles, const char *colors,
 	if (ED_spl(e)->size > 1 && (bz.sflag || bz.eflag) && styles)
 	    gvrender_set_style(job, styles);
     }
-    colorsegs_free(&segs);
+    LIST_FREE(&segs);
     return 0;
 }
 
@@ -2555,17 +2553,16 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
         map_output_bspline(&pbs, &pbs_n, spl->list + i, w2);
       if (!(flags & GVRENDER_DOES_TRANSFORM)) {
         size_t nump = 0;
-        for (size_t i = 0; i < pbs_size_size(&pbs_n); ++i) {
-          nump += pbs_size_get(&pbs_n, i);
+        for (size_t i = 0; i < LIST_SIZE(&pbs_n); ++i) {
+          nump += LIST_GET(&pbs_n, i);
         }
-        gvrender_ptf_A(job, points_front(&pbs), points_front(&pbs), nump);
+        gvrender_ptf_A(job, LIST_FRONT(&pbs), LIST_FRONT(&pbs), nump);
       }
-      obj->url_bsplinemap_p = points_front(&pbs);
+      obj->url_bsplinemap_p = LIST_FRONT(&pbs);
       obj->url_map_shape = MAP_POLYGON;
-      obj->url_map_p = points_detach(&pbs);
-      obj->url_map_n = *pbs_size_front(&pbs_n);
-      obj->url_bsplinemap_poly_n = pbs_size_size(&pbs_n);
-      obj->url_bsplinemap_n = pbs_size_detach(&pbs_n);
+      LIST_DETACH(&pbs, &obj->url_map_p, &(size_t){0});
+      obj->url_map_n = *LIST_FRONT(&pbs_n);
+      LIST_DETACH(&pbs_n, &obj->url_bsplinemap_n, &obj->url_bsplinemap_poly_n);
     }
   }
 
@@ -3975,15 +3972,15 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	if (! (job->flags & GVDEVICE_EVENTS)) {
 	    if (debug) {
 		// Show_boxes is not defined, if at all, until splines are generated in dot
-		show_boxes_append(&Show_boxes, NULL);
-		show_boxes_sync(&Show_boxes);
+		LIST_APPEND(&Show_boxes, NULL);
+		LIST_SYNC(&Show_boxes);
 // FIXME: remove the cast and change `show_boxes` to a `char **` at the next API
 // break
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-qual"
 #endif
-		job->common->show_boxes = (const char **)show_boxes_front(&Show_boxes);
+		job->common->show_boxes = (const char **)LIST_FRONT(&Show_boxes);
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
@@ -4012,33 +4009,33 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
  * Note that memory for clrs must be freed by calling function.
  */
 bool findStopColor(const char *colorlist, char *clrs[2], double *frac) {
-    colorsegs_t segs = {0};
+    colorsegs_t segs = {.dtor = freeSeg};
     int rv;
     clrs[0] = NULL;
     clrs[1] = NULL;
 
     rv = parseSegs(colorlist, &segs);
-    if (rv || colorsegs_size(&segs) < 2 || colorsegs_front(&segs)->color == NULL) {
-	colorsegs_free(&segs);
+    if (rv || LIST_SIZE(&segs) < 2 || LIST_FRONT(&segs)->color == NULL) {
+	LIST_FREE(&segs);
 	return false;
     }
 
-    if (colorsegs_size(&segs) > 2)
+    if (LIST_SIZE(&segs) > 2)
 	agwarningf("More than 2 colors specified for a gradient - ignoring remaining\n");
 
-    clrs[0] = gv_strdup(colorsegs_front(&segs)->color);
-    if (colorsegs_get(&segs, 1).color) {
-	clrs[1] = gv_strdup(colorsegs_get(&segs, 1).color);
+    clrs[0] = gv_strdup(LIST_FRONT(&segs)->color);
+    if (LIST_GET(&segs, 1).color) {
+	clrs[1] = gv_strdup(LIST_GET(&segs, 1).color);
     }
 
-    if (colorsegs_front(&segs)->hasFraction)
-	*frac = colorsegs_front(&segs)->t;
-    else if (colorsegs_get(&segs, 1).hasFraction)
-	*frac = 1 - colorsegs_get(&segs, 1).t;
+    if (LIST_FRONT(&segs)->hasFraction)
+	*frac = LIST_FRONT(&segs)->t;
+    else if (LIST_GET(&segs, 1).hasFraction)
+	*frac = 1 - LIST_GET(&segs, 1).t;
     else 
 	*frac = 0;
 
-    colorsegs_free(&segs);
+    LIST_FREE(&segs);
     return true;
 }
 

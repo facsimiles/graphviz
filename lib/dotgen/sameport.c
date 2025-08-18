@@ -20,7 +20,7 @@
 #include	<util/list.h>
 #include	<util/streq.h>
 
-DEFINE_LIST(edge_list, edge_t*)
+typedef LIST(edge_t *) edge_list_t;
 
 typedef struct same_t {
     char *id;			/* group id */
@@ -28,10 +28,10 @@ typedef struct same_t {
 } same_t;
 
 static void free_same(same_t s) {
-  edge_list_free(&s.l);
+  LIST_FREE(&s.l);
 }
 
-DEFINE_LIST_WITH_DTOR(same_list, same_t, free_same)
+typedef LIST(same_t) same_list_t;
 
 static void sameedge(same_list_t *same, edge_t *e, char *id);
 static void sameport(node_t *u, edge_list_t l);
@@ -42,8 +42,8 @@ void dot_sameports(graph_t * g)
     node_t *n;
     edge_t *e;
     char *id;
-    same_list_t samehead = {0};
-    same_list_t sametail = {0};
+    same_list_t samehead = {.dtor = free_same};
+    same_list_t sametail = {.dtor = free_same};
 
     E_samehead = agattr_text(g, AGEDGE, "samehead", NULL);
     E_sametail = agattr_text(g, AGEDGE, "sametail", NULL);
@@ -59,33 +59,33 @@ void dot_sameports(graph_t * g)
 	        (id = agxget(e, E_sametail))[0])
 		sameedge(&sametail, e, id);
 	}
-	for (size_t i = 0; i < same_list_size(&samehead); i++) {
-	    if (edge_list_size(&same_list_at(&samehead, i)->l) > 1)
-		sameport(n, same_list_get(&samehead, i).l);
+	for (size_t i = 0; i < LIST_SIZE(&samehead); i++) {
+	    if (LIST_SIZE(&LIST_AT(&samehead, i)->l) > 1)
+		sameport(n, LIST_GET(&samehead, i).l);
 	}
-	same_list_clear(&samehead);
-	for (size_t i = 0; i < same_list_size(&sametail); i++) {
-	    if (edge_list_size(&same_list_at(&sametail, i)->l) > 1)
-		sameport(n, same_list_get(&sametail, i).l);
+	LIST_CLEAR(&samehead);
+	for (size_t i = 0; i < LIST_SIZE(&sametail); i++) {
+	    if (LIST_SIZE(&LIST_AT(&sametail, i)->l) > 1)
+		sameport(n, LIST_GET(&sametail, i).l);
 	}
-	same_list_clear(&sametail);
+	LIST_CLEAR(&sametail);
     }
 
-    same_list_free(&samehead);
-    same_list_free(&sametail);
+    LIST_FREE(&samehead);
+    LIST_FREE(&sametail);
 }
 
 /// register \p e in the \p same structure of the originating node under \p id
 static void sameedge(same_list_t *same, edge_t *e, char *id) {
-    for (size_t i = 0; i < same_list_size(same); i++)
-	if (streq(same_list_get(same, i).id, id)) {
-	    edge_list_append(&same_list_at(same, i)->l, e);
+    for (size_t i = 0; i < LIST_SIZE(same); i++)
+	if (streq(LIST_GET(same, i).id, id)) {
+	    LIST_APPEND(&LIST_AT(same, i)->l, e);
 	    return;
 	}
 
     same_t to_append = {.id = id};
-    edge_list_append(&to_append.l, e);
-    same_list_append(same, to_append);
+    LIST_APPEND(&to_append.l, e);
+    LIST_APPEND(same, to_append);
 }
 
 static void sameport(node_t *u, edge_list_t l)
@@ -105,8 +105,8 @@ static void sameport(node_t *u, edge_list_t l)
     /* Compute the direction vector (x,y) of the average direction. We compute
        with direction vectors instead of angles because else we have to first
        bring the angles within PI of each other. av(a,b)!=av(a,b+2*PI) */
-    for (size_t i = 0; i < edge_list_size(&l); i++) {
-	edge_t *e = edge_list_get(&l, i);
+    for (size_t i = 0; i < LIST_SIZE(&l); i++) {
+	edge_t *e = LIST_GET(&l, i);
 	if (aghead(e) == u)
 	    v = agtail(e);
 	else
@@ -157,8 +157,8 @@ static void sameport(node_t *u, edge_list_t l)
     prt.name = NULL;
 
     /* assign one of the ports to every edge */
-    for (size_t i = 0; i < edge_list_size(&l); i++) {
-	edge_t *e = edge_list_get(&l, i);
+    for (size_t i = 0; i < LIST_SIZE(&l); i++) {
+	edge_t *e = LIST_GET(&l, i);
 	for (; e; e = ED_to_virt(e)) {	/* assign to all virt edges of e */
 	    for (f = e; f;
 		 f = ED_edge_type(f) == VIRTUAL &&

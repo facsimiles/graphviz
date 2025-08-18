@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <stdlib.h>
 #include <util/list.h>
 
 #ifdef __cplusplus
@@ -27,12 +26,7 @@ extern "C" {
 	char *action;
     } case_info;
 
-static inline void free_case_info(case_info c) {
-  free(c.guard);
-  free(c.action);
-}
-
-DEFINE_LIST_WITH_DTOR(case_infos, case_info, free_case_info)
+typedef LIST(case_info) case_infos_t;
 
     typedef struct {
 	int l_beging;
@@ -41,7 +35,7 @@ DEFINE_LIST_WITH_DTOR(case_infos, case_info, free_case_info)
 	case_infos_t edge_stmts;
     } parse_block; 
 
-DEFINE_LIST(parse_blocks, parse_block)
+typedef LIST(parse_block) parse_blocks_t;
 
     typedef struct {
 	char *source;

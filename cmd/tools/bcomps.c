@@ -67,12 +67,10 @@ char *suffix = 0;
 int external;			/* emit blocks as root graphs */
 int doTree;			/* emit block-cutpoint tree */
 
-DEFINE_LIST(edge_stack, Agedge_t *)
-
 typedef struct {
     int count;
     int nComp;
-    edge_stack_t stk;
+    LIST(Agedge_t *) stk;
     Agraph_t *blks;
 } bcstate;
 
@@ -167,14 +165,14 @@ dfs(Agraph_t * g, Agnode_t * u, bcstate * stp, Agnode_t * parent)
 	if (v == u)
 	    continue;
 	if (N(v) == 0) {
-	    edge_stack_push_back(&stp->stk, e);
+	    LIST_PUSH_BACK(&stp->stk, e);
 	    dfs(g, v, stp, u);
 	    Low(u) = imin(Low(u), Low(v));
 	    if (Low(v) >= N(u)) {	/* u is an articulation point */
 		Cut(u) = 1;
 		sg = mkBlock(g, stp);
 		do {
-		    ep = edge_stack_pop_back(&stp->stk);
+		    ep = LIST_POP_BACK(&stp->stk);
 		    agsubnode(sg, aghead(ep), 1);
 		    agsubnode(sg, agtail(ep), 1);
 		} while (ep != e);
@@ -182,7 +180,7 @@ dfs(Agraph_t * g, Agnode_t * u, bcstate * stp, Agnode_t * parent)
 	} else if (parent != v) {
 	    Low(u) = imin(Low(u), N(v));
 	    if (N(v) < N(u))
-		edge_stack_push_back(&stp->stk, e);
+		LIST_PUSH_BACK(&stp->stk, e);
 	}
     }
 }
@@ -205,7 +203,7 @@ static void addCutPts(Agraph_t * tree, Agraph_t * blk)
 static int process(Agraph_t * g, int gcnt)
 {
     Agnode_t *n;
-    bcstate state;
+    bcstate state = {0};
     Agraph_t *blk;
     Agraph_t *tree;
     int bcnt;
@@ -213,11 +211,6 @@ static int process(Agraph_t * g, int gcnt)
     aginit(g, AGNODE, "info", sizeof(Agnodeinfo_t), true);
     aginit(g, AGEDGE, "info", sizeof(Agedgeinfo_t), true);
     aginit(g, AGRAPH, "info", sizeof(Agraphinfo_t), true);
-
-    state.count = 0;
-    state.nComp = 0;
-    state.stk = (edge_stack_t){0};
-    state.blks = 0;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (N(n) == 0)
@@ -251,7 +244,7 @@ static int process(Agraph_t * g, int gcnt)
 	fprintf(stderr, "%s: %d blocks %d cutpoints\n", agnameof(g), bcnt,
 		cuts);
     }
-    edge_stack_free(&state.stk);
+    LIST_FREE(&state.stk);
     if (state.blks && NEXTBLK(state.blks))
 	return 1;		/* >= 2 blocks */
     else

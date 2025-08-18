@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <util/list.h>
 
-DEFINE_LIST(adj_list, size_t)
+typedef LIST(size_t) adj_list_t;
 
 typedef struct {
   int color;

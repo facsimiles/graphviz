@@ -86,8 +86,6 @@ ensureMonotonicOrderingWithGaps(float *place, int n, int *ordering,
     }
 }
 
-DEFINE_LIST(ints, int)
-
 void
 constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 				       float **coords,
@@ -135,7 +133,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
     /* the desired place of each suffix of current block */
     suffix_desired_place = e->fArray3;
     /* current block (nodes connected by active constraints) */
-    ints_t block = {0};
+    LIST(int) block = {0};
 
     int *lev = gv_calloc(n, sizeof(int)); // level of each node
     for (int i = 0; i < n; i++) {
@@ -202,7 +200,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 	    /* reorder block by levels, and within levels 
 	     * by "relaxed" desired position
 	     */
-	    ints_clear(&block);
+	    LIST_CLEAR(&block);
 	    first_next_level = 0;
 	    for (int i = left; i < right; i = first_next_level) {
 		level = lev[ordering[i]];
@@ -219,7 +217,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		for (int j = i; j < first_next_level; j++) {
 		    node = ordering[j];
 		    if (desired_place[node] < cur_place) {
-			ints_append(&block, node);
+			LIST_APPEND(&block, node);
 		    }
 		}
 		/* Second, collect all nodes with desired places equal 
@@ -228,7 +226,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		for (int j = i; j < first_next_level; j++) {
 		    node = ordering[j];
 		    if (desired_place[node] == cur_place) {
-			ints_append(&block, node);
+			LIST_APPEND(&block, node);
 		    }
 		}
 		/* Third, collect all nodes with desired places greater 
@@ -237,7 +235,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		for (int j = i; j < first_next_level; j++) {
 		    node = ordering[j];
 		    if (desired_place[node] > cur_place) {
-			ints_append(&block, node);
+			LIST_APPEND(&block, node);
 		    }
 		}
 	    }
@@ -245,12 +243,12 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 	    /* loop through block and compute desired places of its prefixes */
 	    des_place_block = 0;
 	    block_deg = 0;
-	    for (size_t i = 0; i < ints_size(&block); i++) {
-		node = ints_get(&block, i);
+	    for (size_t i = 0; i < LIST_SIZE(&block); i++) {
+		node = LIST_GET(&block, i);
 		toBlockConnectivity = 0;
 		lap_node = lap[node];
 		for (size_t j = 0; j < i; j++) {
-		    toBlockConnectivity -= lap_node[ints_get(&block, j)];
+		    toBlockConnectivity -= lap_node[LIST_GET(&block, j)];
 		}
 		toBlockConnectivity *= 2;
 		/* update block stats */
@@ -264,7 +262,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		block_deg += toBlockConnectivity - lap_node[node];
 	    }
 
-	    if (n >= 0 && ints_size(&block) == (size_t)n) {
+	    if (n >= 0 && LIST_SIZE(&block) == (size_t)n) {
 		/* fix is needed since denominator was 0 in this case */
 		prefix_desired_place[n - 1] = cur_place;	/* a "neutral" value */
 	    }
@@ -272,12 +270,12 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 	    /* loop through block and compute desired places of its suffixes */
 	    des_place_block = 0;
 	    block_deg = 0;
-	    for (size_t i = ints_size(&block) - 1; i != SIZE_MAX; i--) {
-		node = ints_get(&block, i);
+	    for (size_t i = LIST_SIZE(&block) - 1; i != SIZE_MAX; i--) {
+		node = LIST_GET(&block, i);
 		toBlockConnectivity = 0;
 		lap_node = lap[node];
-		for (size_t j = i + 1; j < ints_size(&block); j++) {
-		    toBlockConnectivity -= lap_node[ints_get(&block, j)];
+		for (size_t j = i + 1; j < LIST_SIZE(&block); j++) {
+		    toBlockConnectivity -= lap_node[LIST_GET(&block, j)];
 		}
 		toBlockConnectivity *= 2;
 		/* update block stats */
@@ -291,7 +289,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		block_deg += toBlockConnectivity - lap_node[node];
 	    }
 
-	    if (n >= 0 && ints_size(&block) == (size_t)n) {
+	    if (n >= 0 && LIST_SIZE(&block) == (size_t)n) {
 		/* fix is needed since denominator was 0 in this case */
 		suffix_desired_place[0] = cur_place;	/* a "neutral" value? */
 	    }
@@ -300,7 +298,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 	    /* now, find best place to split block */
 	    size_t best_i = SIZE_MAX;
 	    max_movement = 0;
-	    for (size_t i = 0; i < ints_size(&block); i++) {
+	    for (size_t i = 0; i < LIST_SIZE(&block); i++) {
 		suffix_des_place = suffix_desired_place[i];
 		prefix_des_place =
 		    i > 0 ? prefix_desired_place[i - 1] : suffix_des_place;
@@ -316,7 +314,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		    }
 		}
 		movement =
-		    (float)(ints_size(&block) - i) * fabs(suffix_des_place - cur_place) +
+		    (float)(LIST_SIZE(&block) - i) * fabs(suffix_des_place - cur_place) +
 		    (float)i * fabs(prefix_des_place - cur_place);
 		if (movement > max_movement) {
 		    max_movement = movement;
@@ -343,11 +341,11 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		    if (lev[ordering[right]] > lev[ordering[right - 1]]) {
 			upper_bound =
 			    place[ordering[right]] - levels_gap -
-			    gap[ints_get(&block, ints_size(&block) - 1)];
+			    gap[LIST_GET(&block, LIST_SIZE(&block) - 1)];
 		    } else {
 			upper_bound =
 			    place[ordering[right]] -
-			    gap[ints_get(&block, ints_size(&block) - 1)];
+			    gap[LIST_GET(&block, LIST_SIZE(&block) - 1)];
 		    }
 		}
 		suffix_des_place = fminf(suffix_des_place, upper_bound);
@@ -367,20 +365,20 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 
 		/* move prefix: */
 		for (size_t i = 0; i < best_i; i++) {
-		    place[ints_get(&block, i)] = prefix_des_place + gap[ints_get(&block, i)];
+		    place[LIST_GET(&block, i)] = prefix_des_place + gap[LIST_GET(&block, i)];
 		}
 		/* move suffix: */
-		for (size_t i = best_i; i < ints_size(&block); i++) {
-		    place[ints_get(&block, i)] = suffix_des_place + gap[ints_get(&block, i)];
+		for (size_t i = best_i; i < LIST_SIZE(&block); i++) {
+		    place[LIST_GET(&block, i)] = suffix_des_place + gap[LIST_GET(&block, i)];
 		}
 
 
 		/* compute lower bound for next block */
 		if (right < n
 		    && lev[ordering[right]] > lev[ordering[right - 1]]) {
-		    lower_bound = place[ints_get(&block, ints_size(&block) - 1)] + levels_gap;
+		    lower_bound = place[LIST_GET(&block, LIST_SIZE(&block) - 1)] + levels_gap;
 		} else {
-		    lower_bound = place[ints_get(&block, ints_size(&block) - 1)];
+		    lower_bound = place[LIST_GET(&block, LIST_SIZE(&block) - 1)];
 		}
 
 
@@ -389,7 +387,7 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		 * the split was done
 		 */
 		for (int i = left; i < right; i++) {
-		    ordering[i] = ints_get(&block, i - (size_t)left);
+		    ordering[i] = LIST_GET(&block, i - (size_t)left);
 		}
 		converged &= equals(prefix_des_place, cur_place)
 		    && equals(suffix_des_place, cur_place);
@@ -400,16 +398,16 @@ constrained_majorization_new_with_gaps(CMajEnv * e, float *b,
 		/* compute lower bound for next block */
 		if (right < n
 		    && lev[ordering[right]] > lev[ordering[right - 1]]) {
-		    lower_bound = place[ints_get(&block, ints_size(&block) - 1)] + levels_gap;
+		    lower_bound = place[LIST_GET(&block, LIST_SIZE(&block) - 1)] + levels_gap;
 		} else {
-		    lower_bound = place[ints_get(&block, ints_size(&block) - 1)];
+		    lower_bound = place[LIST_GET(&block, LIST_SIZE(&block) - 1)];
 		}
 	    }
 	}
 	orthog1f(n, place);	/* for numerical stability, keep ||place|| small */
     }
     free(lev);
-    ints_free(&block);
+    LIST_FREE(&block);
 }
 
 void deleteCMajEnv(CMajEnv * e)

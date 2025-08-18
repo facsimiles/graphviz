@@ -52,7 +52,7 @@ static double distance_to_group(int k, int dim, double *wgt, double *pts, double
   return dist_min;
 }
 
-DEFINE_LIST(qt_list, QuadTree)
+typedef LIST(QuadTree) qt_list_t;
 
 void furtherest_point(int k, int dim, double *wgt, double *pts, double *center, double width, int max_level, double *dist_max, double **argmax){
   /* Assume that in the box defined by {center, width} are feasible;     
@@ -95,7 +95,7 @@ void furtherest_point(int k, int dim, double *wgt, double *pts, double *center, 
 
   qt_list_t candidates = {0};
   qt_list_t candidates2 = {0};
-  qt_list_append(&candidates, qt);
+  LIST_APPEND(&candidates, qt);
 
   /* idea: maintain the current best point and best (largest) distance. check the list of candidate. Subdivide each into quadrants, if any quadrant gives better distance, update, and put on the candidate
      list. If we can not prune a quadrant (a quadrant can be pruned if the distance of its center to the group of points pts, plus that from the center to the corner of the quadrant, is smaller than the best), we
@@ -104,11 +104,11 @@ void furtherest_point(int k, int dim, double *wgt, double *pts, double *center, 
     if (Verbose > 10) {
       fprintf(stderr,"level=%d=================\n", level);
     }
-    qt_list_clear(&candidates2);
-    for (size_t i = 0; i < qt_list_size(&candidates); i++){
+    LIST_CLEAR(&candidates2);
+    for (size_t i = 0; i < LIST_SIZE(&candidates); i++){
 
 
-      qt = qt_list_get(&candidates, i);
+      qt = LIST_GET(&candidates, i);
       assert(!(qt->qts));
 
       if (Verbose > 10) {
@@ -136,7 +136,7 @@ void furtherest_point(int k, int dim, double *wgt, double *pts, double *center, 
 	  pruned = true;
 	}
 	if (!pruned){
-	  qt_list_append(&candidates2, qt->qts[ii]);
+	  LIST_APPEND(&candidates2, qt->qts[ii]);
 	}
       }/* finish checking every of the 2^dim siblings */
     }/* finish checking all the candidates */
@@ -147,8 +147,8 @@ void furtherest_point(int k, int dim, double *wgt, double *pts, double *center, 
 
   QuadTree_delete(qt0);
 
-  qt_list_free(&candidates);
-  qt_list_free(&candidates2);
+  LIST_FREE(&candidates);
+  LIST_FREE(&candidates2);
 }
 
 void furtherest_point_in_list(int k, int dim, double *wgt, double *pts, QuadTree qt, int max_level, 
@@ -196,7 +196,7 @@ void furtherest_point_in_list(int k, int dim, double *wgt, double *pts, QuadTree
 
   qt_list_t candidates = {0};
   qt_list_t candidates2 = {0};
-  qt_list_append(&candidates, qt);
+  LIST_APPEND(&candidates, qt);
 
   /* idea: maintain the current best point and best (largest) distance. check the list of candidate. Subdivide each into quadrants, if any quadrant gives better distance, update, and put on the candidate
      list. If we can not prune a quadrant (a quadrant can be pruned if the distance of its center to the group of points pts, plus that from the center to the corner of the quadrant, is smaller than the best), we
@@ -205,9 +205,9 @@ void furtherest_point_in_list(int k, int dim, double *wgt, double *pts, QuadTree
     if (Verbose > 10) {
       fprintf(stderr,"level=%d=================\n", level);
     }
-    qt_list_clear(&candidates2);
-    for (size_t i = 0; i < qt_list_size(&candidates); i++){
-      qt = qt_list_get(&candidates, i);
+    LIST_CLEAR(&candidates2);
+    for (size_t i = 0; i < LIST_SIZE(&candidates); i++){
+      qt = LIST_GET(&candidates, i);
 
       if (Verbose > 10) {
 	fprintf(stderr,"candidate %" PRISIZE_T " at {", i);
@@ -237,7 +237,7 @@ void furtherest_point_in_list(int k, int dim, double *wgt, double *pts, QuadTree
 	  pruned = true;
 	}
 	if (!pruned){
-	  qt_list_append(&candidates2, qt->qts[ii]);
+	  LIST_APPEND(&candidates2, qt->qts[ii]);
 	}
       }/* finish checking every of the 2^dim siblings */
     }/* finish checking all the candidates */
@@ -246,6 +246,6 @@ void furtherest_point_in_list(int k, int dim, double *wgt, double *pts, QuadTree
 
   }/* continue down the quadtree */
 
-  qt_list_free(&candidates);
-  qt_list_free(&candidates2);
+  LIST_FREE(&candidates);
+  LIST_FREE(&candidates2);
 }

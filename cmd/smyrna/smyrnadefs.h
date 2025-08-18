@@ -71,7 +71,7 @@ typedef struct {
 	int propagate;
 }attr_t;
 
-DEFINE_LIST(attrs, attr_t*)
+typedef LIST(attr_t *) attrs_t;
 
 typedef struct
 {

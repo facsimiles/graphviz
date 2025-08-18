@@ -320,8 +320,6 @@ chkSgraph (sgraph* g)
     
 }
 
-DEFINE_LIST(snodes, snode *)
-
 /**
  * @brief creates and fills @ref sgraph for @ref maze
  *
@@ -386,33 +384,32 @@ mkMazeGraph (maze* mp, boxf bb)
         pointf pt; 
 	snodeitem* np;
 
-	snodes_t cp_sides = {0};
+	LIST(snode *) cp_sides = {0};
         pt = cp->bb.LL;
 	np = dtmatch (hdict, &pt);
 	for (; np && np->p.x < cp->bb.UR.x; np = dtnext (hdict, np)) {
-	    snodes_append(&cp_sides, np->np);
+	    LIST_APPEND(&cp_sides, np->np);
 	    np->np->cells[1] = cp;
 	}
 	np = dtmatch (vdict, &pt);
 	for (; np && np->p.y < cp->bb.UR.y; np = dtnext (vdict, np)) {
-	    snodes_append(&cp_sides, np->np);
+	    LIST_APPEND(&cp_sides, np->np);
 	    np->np->cells[1] = cp;
 	}
 	pt.y = cp->bb.UR.y;
 	np = dtmatch (hdict, &pt);
 	for (; np && np->p.x < cp->bb.UR.x; np = dtnext (hdict, np)) {
-	    snodes_append(&cp_sides, np->np);
+	    LIST_APPEND(&cp_sides, np->np);
 	    np->np->cells[0] = cp;
 	}
 	pt.x = cp->bb.UR.x;
 	pt.y = cp->bb.LL.y;
 	np = dtmatch (vdict, &pt);
 	for (; np && np->p.y < cp->bb.UR.y; np = dtnext (vdict, np)) {
-	    snodes_append(&cp_sides, np->np);
+	    LIST_APPEND(&cp_sides, np->np);
 	    np->np->cells[0] = cp;
 	}
-	cp->nsides = snodes_size(&cp_sides);
-	cp->sides = snodes_detach(&cp_sides);
+	 LIST_DETACH(&cp_sides, &cp->sides, &cp->nsides);
         if (cp->nsides > maxdeg) maxdeg = cp->nsides;
     }
 

@@ -404,8 +404,6 @@ static void freeOpts(options opts) {
   free(opts.argv);
 }
 
-DEFINE_LIST(strs, char *)
-
 /* scanArgs:
  * Parse command line options.
  */
@@ -419,7 +417,7 @@ static options scanArgs(int argc, char **argv) {
   setErrorId(opts.cmdName);
   opts.verbose = 0;
 
-  strs_t input_filenames = {0};
+  LIST(char *) input_filenames = {0};
 
   /* loop over arguments */
   for (int i = 1; i < argc;) {
@@ -431,24 +429,24 @@ static options scanArgs(int argc, char **argv) {
         goto opts_done;
       }
     } else if (arg)
-      strs_append(&input_filenames, arg);
+      LIST_APPEND(&input_filenames, arg);
   }
 
   /* Handle additional semantics */
   if (opts.useFile == 0) {
-    if (strs_is_empty(&input_filenames)) {
+    if (LIST_IS_EMPTY(&input_filenames)) {
       error(ERROR_ERROR, "No program supplied via argument or -f option");
       opts.state = -1;
     } else {
-      opts.program = strs_pop_front(&input_filenames);
+      opts.program = LIST_POP_FRONT(&input_filenames);
     }
   }
-  if (strs_is_empty(&input_filenames)) {
+  if (LIST_IS_EMPTY(&input_filenames)) {
     opts.inFiles = 0;
-    strs_free(&input_filenames);
+    LIST_FREE(&input_filenames);
   } else {
-    strs_append(&input_filenames, NULL);
-    opts.inFiles = strs_detach(&input_filenames);
+    LIST_APPEND(&input_filenames, NULL);
+    LIST_DETACH(&input_filenames, &opts.inFiles, &(size_t){0});
   }
 
   if (!opts.outFile)
@@ -458,7 +456,7 @@ opts_done:
   if (opts.state <= 0) {
     if (opts.state < 0)
       error(ERROR_USAGE | ERROR_ERROR, "%s", usage);
-    strs_free(&input_filenames);
+    LIST_FREE(&input_filenames);
   }
 
   return opts;
@@ -564,11 +562,9 @@ static trav_fns DFSfns = {agfstedge, agnxtedge, 1, 0};
 static trav_fns FWDfns = {agfstout, agnxtout_, 0, 0};
 static trav_fns REVfns = {agfstin, agnxtin_, 0, 0};
 
-DEFINE_LIST(node_queue, Agnode_t *)
-
 static void travBFS(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
   nodestream nodes;
-  node_queue_t q = {0};
+  LIST(Agnode_t *) q = {0};
   ndata *nd;
   Agnode_t *n;
   Agedge_t *cure;
@@ -582,9 +578,9 @@ static void travBFS(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
     if (MARKED(nd))
       continue;
     PUSH(nd, 0);
-    node_queue_push_back(&q, n);
-    while (!node_queue_is_empty(&q)) {
-      n = node_queue_pop_front(&q);
+    LIST_PUSH_BACK(&q, n);
+    while (!LIST_IS_EMPTY(&q)) {
+      n = LIST_POP_FRONT(&q);
       nd = nData(n);
       MARK(nd);
       POP(nd);
@@ -599,22 +595,20 @@ static void travBFS(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
         if (!evalEdge(state, prog, xprog, cure))
           continue;
         if (!ONSTACK(nd)) {
-          node_queue_push_back(&q, cure->node);
+          LIST_PUSH_BACK(&q, cure->node);
           PUSH(nd, cure);
         }
       }
     }
   }
   state->tvedge = 0;
-  node_queue_free(&q);
+  LIST_FREE(&q);
 }
-
-DEFINE_LIST(edge_stack, Agedge_t *)
 
 static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
                     trav_fns *fns) {
   Agnode_t *n;
-  edge_stack_t stk = {0};
+  LIST(Agedge_t *) stk = {0};
   Agnode_t *curn;
   Agedge_t *cure;
   Agedge_t *entry;
@@ -660,7 +654,7 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
             evalEdge(state, prog, xprog, cure);
         } else {
           evalEdge(state, prog, xprog, cure);
-          edge_stack_push_back(&stk, entry);
+          LIST_PUSH_BACK(&stk, entry);
           state->tvedge = entry = cure;
           curn = cure->node;
           cure = 0;
@@ -675,7 +669,7 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
         nd = nData(curn);
         POP(nd);
         cure = entry;
-        entry = edge_stack_is_empty(&stk) ? NULL : edge_stack_pop_back(&stk);
+        entry = LIST_IS_EMPTY(&stk) ? NULL : LIST_POP_BACK(&stk);
         if (entry == &seed.out)
           state->tvedge = 0;
         else
@@ -688,7 +682,7 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
     }
   }
   state->tvedge = 0;
-  edge_stack_free(&stk);
+  LIST_FREE(&stk);
 }
 
 static void travNodes(Gpr_t *state, Expr_t *prog, comp_block *xprog) {

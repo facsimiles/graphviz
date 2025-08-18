@@ -23,6 +23,7 @@
 #include <util/alloc.h>
 #include <util/bitarray.h>
 #include <util/gv_math.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 #ifndef DEBUG
@@ -324,7 +325,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
   if (!is_valid_trap(trnum) || bitarray_get(*visited, trnum))
     return;
 
-  trap_t *t = traps_at(tr, trnum);
+  trap_t *t = LIST_AT(tr, trnum);
 
   bitarray_set(visited, trnum, true);
   
@@ -342,7 +343,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
           newbox.UR.x = seg[t->rseg].v0.x;
           newbox.UR.y = t->hi.y;
       }
-      boxes_append(decomp, newbox);
+      LIST_APPEND(decomp, newbox);
   }
   
   /* We have much more information available here. */
@@ -357,7 +358,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
   /* take care of this first */
   if (!is_valid_trap(t->u0) && !is_valid_trap(t->u1)) {
       if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // downward opening triangle
-	  v0 = traps_get(tr, t->d1).lseg;
+	  v0 = LIST_GET(tr, t->d1).lseg;
 	  v1 = t->lseg;
 	  if (from == t->d1)
 	    {
@@ -385,7 +386,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
   else if (!is_valid_trap(t->d0) && !is_valid_trap(t->d1)) {
       if (is_valid_trap(t->u0) && is_valid_trap(t->u1)) { // upward opening triangle
 	  v0 = t->rseg;
-	  v1 = traps_get(tr, t->u0).rseg;
+	  v1 = LIST_GET(tr, t->u0).rseg;
 	  if (from == t->u1)
 	    {
 	      mnew = make_new_monotone_poly(mcur, v1, v0);
@@ -411,8 +412,8 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
   
   else if (is_valid_trap(t->u0) && is_valid_trap(t->u1)) {
       if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // downward + upward cusps
-	  v0 = traps_get(tr, t->d1).lseg;
-	  v1 = traps_get(tr, t->u0).rseg;
+	  v0 = LIST_GET(tr, t->d1).lseg;
+	  v1 = LIST_GET(tr, t->u0).rseg;
 	  if ((dir == TR_FROM_DN && t->d1 == from) ||
 	      (dir == TR_FROM_UP && t->u1 == from))
 	    {
@@ -434,7 +435,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
       else			/* only downward cusp */
 	{
 	  if (equal_to(t->lo, seg[t->lseg].v1)) {
-	      v0 = traps_get(tr, t->u0).rseg;
+	      v0 = LIST_GET(tr, t->u0).rseg;
 	      v1 = seg[t->lseg].next;
 
 	      if (dir == TR_FROM_UP && t->u0 == from)
@@ -457,7 +458,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	  else
 	    {
 	      v0 = t->rseg;
-	      v1 = traps_get(tr, t->u0).rseg;	
+	      v1 = LIST_GET(tr, t->u0).rseg;	
 	      if (dir == TR_FROM_UP && t->u1 == from)
 		{
 		  mnew = make_new_monotone_poly(mcur, v1, v0);
@@ -480,7 +481,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
   else if (is_valid_trap(t->u0) || is_valid_trap(t->u1)) { // no downward cusp
       if (is_valid_trap(t->d0) && is_valid_trap(t->d1)) { // only upward cusp
 	  if (equal_to(t->hi, seg[t->lseg].v0)) {
-	      v0 = traps_get(tr, t->d1).lseg;
+	      v0 = LIST_GET(tr, t->d1).lseg;
 	      v1 = t->lseg;
 	      if (!(dir == TR_FROM_DN && t->d0 == from))
 		{
@@ -501,7 +502,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	    }
 	  else
 	    {
-	      v0 = traps_get(tr, t->d1).lseg;
+	      v0 = LIST_GET(tr, t->d1).lseg;
 	      v1 = seg[t->rseg].next;
 
 	      if (dir == TR_FROM_DN && t->d1 == from)
@@ -581,17 +582,17 @@ static void
 monotonate_trapezoids(int nsegs, segment_t *seg, traps_t *tr, 
     int flip, boxes_t *decomp) {
     int i;
-    bitarray_t visited = bitarray_new(traps_size(tr));
+    bitarray_t visited = bitarray_new(LIST_SIZE(tr));
 
-    mchain = gv_calloc(traps_size(tr), sizeof(monchain_t));
+    mchain = gv_calloc(LIST_SIZE(tr), sizeof(monchain_t));
     vert = gv_calloc(nsegs + 1, sizeof(vertexchain_t));
     mon = gv_calloc(nsegs, sizeof(int));
 
   /* First locate a trapezoid which lies inside the polygon */
   /* and which is triangular */
     size_t j;
-    for (j = 0; j < traps_size(tr); j++)
-	if (inside_polygon(traps_at(tr, j), seg)) break;
+    for (j = 0; j < LIST_SIZE(tr); j++)
+	if (inside_polygon(LIST_AT(tr, j), seg)) break;
     const size_t tr_start = j;
   
   /* Initialise the mon data-structure and start spanning all the */
@@ -613,12 +614,12 @@ monotonate_trapezoids(int nsegs, segment_t *seg, traps_t *tr,
 				/* chain  */
   
   /* traverse the polygon */
-    if (is_valid_trap(traps_get(tr, tr_start).u0))
+    if (is_valid_trap(LIST_GET(tr, tr_start).u0))
 	traverse_polygon(&visited, decomp, seg, tr, 0, tr_start,
-	                 traps_get(tr, tr_start).u0, flip, TR_FROM_UP);
-    else if (is_valid_trap(traps_get(tr, tr_start).d0))
+	                 LIST_GET(tr, tr_start).u0, flip, TR_FROM_UP);
+    else if (is_valid_trap(LIST_GET(tr, tr_start).d0))
 	traverse_polygon(&visited, decomp, seg, tr, 0, tr_start,
-	                 traps_get(tr, tr_start).d0, flip, TR_FROM_DN);
+	                 LIST_GET(tr, tr_start).d0, flip, TR_FROM_DN);
   
     bitarray_reset(&visited);
     free (mchain);
@@ -692,35 +693,36 @@ boxf *partition(cell *cells, size_t ncells, size_t *nrects, boxf bb) {
     assert(nsegs <= INT_MAX);
     traps_t hor_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
-	fprintf(stderr, "hor traps = %" PRISIZE_T "\n", traps_size(&hor_traps));
+	fprintf(stderr, "hor traps = %" PRISIZE_T "\n", LIST_SIZE(&hor_traps));
     }
     boxes_t hor_decomp = {0};
     monotonate_trapezoids((int)nsegs, segs, &hor_traps, 0, &hor_decomp);
-    traps_free(&hor_traps);
+    LIST_FREE(&hor_traps);
 
     genSegments(cells, ncells, bb, segs, 1);
     generateRandomOrdering(nsegs, permute);
     traps_t ver_traps = construct_trapezoids((int)nsegs, segs, permute);
     if (DEBUG) {
-	fprintf(stderr, "ver traps = %" PRISIZE_T "\n", traps_size(&ver_traps));
+	fprintf(stderr, "ver traps = %" PRISIZE_T "\n", LIST_SIZE(&ver_traps));
     }
     boxes_t vert_decomp = {0};
     monotonate_trapezoids((int)nsegs, segs, &ver_traps, 1, &vert_decomp);
-    traps_free(&ver_traps);
+    LIST_FREE(&ver_traps);
 
     boxes_t rs = {0};
-    for (size_t i = 0; i < boxes_size(&vert_decomp); ++i)
-	for (size_t j = 0; j < boxes_size(&hor_decomp); ++j) {
+    for (size_t i = 0; i < LIST_SIZE(&vert_decomp); ++i)
+	for (size_t j = 0; j < LIST_SIZE(&hor_decomp); ++j) {
 	    boxf newbox = {0};
-	    if (rectIntersect(&newbox, boxes_get(&vert_decomp, i),
-	                      boxes_get(&hor_decomp, j)))
-		boxes_append(&rs, newbox);
+	    if (rectIntersect(&newbox, LIST_GET(&vert_decomp, i),
+	                      LIST_GET(&hor_decomp, j)))
+		LIST_APPEND(&rs, newbox);
 	}
 
     free (segs);
     free (permute);
-    boxes_free(&hor_decomp);
-    boxes_free(&vert_decomp);
-    *nrects = boxes_size(&rs);
-    return boxes_detach(&rs);
+    LIST_FREE(&hor_decomp);
+    LIST_FREE(&vert_decomp);
+    boxf *ret;
+    LIST_DETACH(&rs, &ret, nrects);
+    return ret;
 }

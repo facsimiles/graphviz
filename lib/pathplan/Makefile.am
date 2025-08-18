@@ -24,7 +24,7 @@ libpathplan_C_la_SOURCES = cvt.c inpoly.c route.c shortest.c \
 
 libpathplan_la_LDFLAGS = -version-info $(PATHPLAN_VERSION) -no-undefined
 libpathplan_la_SOURCES = $(libpathplan_C_la_SOURCES)
-libpathplan_la_LIBADD = $(MATH_LIBS)
+libpathplan_la_LIBADD = $(top_builddir)/lib/util/libutil_C.la $(MATH_LIBS)
 
 .3.3.pdf:
 	rm -f $@; pdffile=$@; psfile=$${pdffile%pdf}ps; \

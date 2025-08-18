@@ -98,21 +98,21 @@ typedef struct {
     double dir2;
 } pathpoint;
 
-DEFINE_LIST(vararr, pathpoint)
+typedef LIST(pathpoint) vararr_t;
 
 static void
 insertArr (vararr_t* arr, pointf p, double l)
 {
   pathpoint pt = {.x = p.x, .y = p.y, .lengthsofar = l};
-  vararr_append(arr, pt);
+  LIST_APPEND(arr, pt);
 }
 
 static void
 printArr (vararr_t* arr, FILE* fp)
 {
-    fprintf(fp, "size %" PRISIZE_T "\n", vararr_size(arr));
-    for (size_t i = 0; i < vararr_size(arr); i++) {
-	pathpoint pt = vararr_get(arr, i);
+    fprintf(fp, "size %" PRISIZE_T "\n", LIST_SIZE(arr));
+    for (size_t i = 0; i < LIST_SIZE(arr); i++) {
+	pathpoint pt = LIST_GET(arr, i);
 	fprintf(fp, "  [%" PRISIZE_T "] x %.02f y  %.02f d %.02f\n", i, pt.x, pt.y,
 	        pt.lengthsofar);
     }
@@ -193,8 +193,9 @@ stroke_t taper(bezier *bez, radfunc_t radfunc, double initwid) {
     double lineout=0, linerad=0, linelen=0;
     double theta, phi;
 
-    size_t pathcount = vararr_size(&arr);
-    pathpoint *pathpoints = vararr_detach(&arr);
+    size_t pathcount;
+    pathpoint *pathpoints;
+    LIST_DETACH(&arr, &pathpoints, &pathcount);
     linelen = pathpoints[pathcount-1].lengthsofar;
 
     /* determine miter and bevel points and directions */

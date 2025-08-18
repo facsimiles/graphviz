@@ -52,7 +52,7 @@ static char **Files;
 static int Verbose;
 static char* gname = "";
 
-DEFINE_LIST_WITH_DTOR(strs, char *, free)
+typedef LIST(char *) strs_t;
 
 static void pushString(strs_t *stk, const char *s) {
 
@@ -60,32 +60,32 @@ static void pushString(strs_t *stk, const char *s) {
   char *copy = gv_strdup(s);
 
   // push this onto the stack
-  strs_push_back(stk, copy);
+  LIST_PUSH_BACK(stk, copy);
 }
 
 static void popString(strs_t *stk) {
 
-  if (strs_is_empty(stk)) {
+  if (LIST_IS_EMPTY(stk)) {
     fprintf(stderr, "PANIC: graphml2gv: empty element stack\n");
     graphviz_exit(EXIT_FAILURE);
   }
 
-  char *const popped = strs_pop_back(stk);
+  char *const popped = LIST_POP_BACK(stk);
   free(popped);
 }
 
 static char *topString(strs_t *stk) {
 
-  if (strs_is_empty(stk)) {
+  if (LIST_IS_EMPTY(stk)) {
     fprintf(stderr, "PANIC: graphml2gv: empty element stack\n");
     graphviz_exit(EXIT_FAILURE);
   }
 
-  return *strs_back(stk);
+  return *LIST_BACK(stk);
 }
 
 static void freeString(strs_t *stk) {
-  strs_free(stk);
+  LIST_FREE(stk);
 }
 
 typedef struct {
@@ -99,12 +99,11 @@ static Agraph_t *root;		/* root graph */
 static Agraph_t *G;		/* Current graph */
 static Agedge_t *E; // current edge
 
-DEFINE_LIST(graph_stack, Agraph_t *)
-static graph_stack_t Gstack;
+static LIST(Agraph_t *) Gstack;
 
 static userdata_t genUserdata(char *dfltname) {
   userdata_t user = {0};
-  user.elements = (strs_t){0};
+  user.elements = (strs_t){.dtor = LIST_DTOR_FREE};
   user.closedElementType = TAG_NONE;
   user.edgeinverted = false;
   user.gname = dfltname;
@@ -126,12 +125,12 @@ static int isAnonGraph(const char *name) {
 static void push_subg(Agraph_t * g)
 {
   // save the root if this is the first graph
-  if (graph_stack_is_empty(&Gstack)) {
+  if (LIST_IS_EMPTY(&Gstack)) {
     root = g;
   }
 
   // insert the new graph
-  graph_stack_push_back(&Gstack, g);
+  LIST_PUSH_BACK(&Gstack, g);
 
   // update the top graph
   G = g;
@@ -139,17 +138,17 @@ static void push_subg(Agraph_t * g)
 
 static Agraph_t *pop_subg(void)
 {
-  if (graph_stack_is_empty(&Gstack)) {
+  if (LIST_IS_EMPTY(&Gstack)) {
     fprintf(stderr, "graphml2gv: Gstack underflow in graph parser\n");
     graphviz_exit(EXIT_FAILURE);
   }
 
   // pop the top graph
-  Agraph_t *g = graph_stack_pop_back(&Gstack);
+  Agraph_t *g = LIST_POP_BACK(&Gstack);
 
   // update the top graph
-  if (!graph_stack_is_empty(&Gstack)) {
-    G = *graph_stack_back(&Gstack);
+  if (!LIST_IS_EMPTY(&Gstack)) {
+    G = *LIST_BACK(&Gstack);
   }
 
   return g;
@@ -239,7 +238,7 @@ startElementHandler(void *userData, const char *name, const char **atts)
 	    edgeMode = atts[pos];
 	}
 
-	if (graph_stack_is_empty(&Gstack)) {
+	if (LIST_IS_EMPTY(&Gstack)) {
 	    if (strcmp(edgeMode, "directed") == 0) {
 		dir = Agdirected;
 	    } else if (strcmp(edgeMode, "undirected") == 0) {
@@ -499,7 +498,7 @@ int main(int argc, char **argv)
 	}
     }
 
-    graph_stack_free(&Gstack);
+    LIST_FREE(&Gstack);
 
     agxbfree(&buf);
     graphviz_exit(rv);

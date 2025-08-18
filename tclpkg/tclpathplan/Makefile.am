@@ -17,7 +17,8 @@ libtclplan_la_CFLAGS = $(TCL_CFLAGS)
 libtclplan_la_LDFLAGS = -no-undefined -module -avoid-version
 libtclplan_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la $(MATH_LIBS) \
+	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(top_builddir)/lib/util/libutil_C.la $(MATH_LIBS) \
 	-lc $(TCL_STUB_LIB_SPEC)
 
 if WITH_TCL

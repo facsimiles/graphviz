@@ -35,14 +35,14 @@
 static void dot1_rank(graph_t *g);
 static void dot2_rank(graph_t *g);
 
-DEFINE_LIST(edge_set, edge_t *)
+typedef LIST(edge_t *) edge_set_t;
 
 /// @param track An optional collection in which to record non-null entries we
 ///   removed
 static void renewlist(elist *L, edge_set_t *track) {
     for (size_t i = L->size; i != SIZE_MAX; i--) {
 	if (track != NULL && L->list[i] != NULL) {
-            edge_set_append(track, L->list[i]);
+            LIST_APPEND(track, L->list[i]);
 	}
 	L->list[i] = NULL;
     }
@@ -60,7 +60,9 @@ static void renewlist(elist *L, edge_set_t *track) {
 /// @param a One edge
 /// @param b Another edge
 /// @return A comparator value suitable for sorting algorithms
-static int edge_ptr_cmp(const edge_t **a, const edge_t **b) {
+static int edge_ptr_cmp(const void *x, const void *y) {
+  const edge_t *const *a = x;
+  const edge_t *const *b = y;
   const uintptr_t addr_a = (uintptr_t)*a;
   const uintptr_t addr_b = (uintptr_t)*b;
   if (addr_a < addr_b) {
@@ -125,7 +127,7 @@ cleanup1(graph_t * g)
         for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
             f = ED_to_virt(e);
             if (f && ED_to_orig(f) == e) {
-                edge_set_append(&to_free, f);
+                LIST_APPEND(&to_free, f);
                 ED_to_virt(e) = NULL;
             }
 	    }
@@ -135,17 +137,17 @@ cleanup1(graph_t * g)
     // XXX: Accruing all the pointers, including duplicates, and then sorting to
     // avoid duplicate frees is suboptimal. If this turns out to be a
     // performance problem, replace `edge_set_t` with a proper set.
-    edge_set_sort(&to_free, edge_ptr_cmp);
+    LIST_SORT(&to_free, edge_ptr_cmp);
     edge_t *previous = NULL;
-    for (size_t i = 0; i < edge_set_size(&to_free); ++i) {
-        edge_t *const current = edge_set_get(&to_free, i);
+    for (size_t i = 0; i < LIST_SIZE(&to_free); ++i) {
+        edge_t *const current = LIST_GET(&to_free, i);
         if (current != previous) {
             free(current->base.data);
             free(current);
         }
         previous = current;
     }
-    edge_set_free(&to_free);
+    LIST_FREE(&to_free);
 
     free(GD_comp(g).list);
     GD_comp(g).list = NULL;

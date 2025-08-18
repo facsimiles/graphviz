@@ -18,7 +18,7 @@ extern "C" {
 #include <stdbool.h>
 #include <util/list.h>
 
-DEFINE_LIST(node_queue, Agnode_t *)
+typedef LIST(Agnode_t *) node_queue_t;
 
     extern void acyclic(Agraph_t *);
     extern void allocate_ranks(Agraph_t *);

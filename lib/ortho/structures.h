@@ -50,7 +50,7 @@ typedef struct {
   segment* segs;
 } route;
 
-DEFINE_LIST(seg_list, segment *)
+typedef LIST(segment *) seg_list_t;
 
 typedef struct {
   Dtlink_t link;

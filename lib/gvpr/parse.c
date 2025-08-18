@@ -23,6 +23,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
+#include <util/list.h>
 #include <util/unreachable.h>
 
 static int lineno = 1;    /* current line number */
@@ -344,7 +345,7 @@ static void addBlock(parse_blocks_t *list, char *stmt, int line,
   item.node_stmts = nodelist;
   item.edge_stmts = edgelist;
 
-  parse_blocks_append(list, item);
+  LIST_APPEND(list, item);
 }
 
 /// create new case_info and append to list
@@ -362,7 +363,7 @@ static void addCase(case_infos_t *list, char *guard, int gline, char *action,
   if (action)
     item.astart = line;
 
-  case_infos_append(list, item);
+  LIST_APPEND(list, item);
 }
 
 static void bindAction(case_t cs, char *action, int aline, char **ap, int *lp) {
@@ -377,6 +378,11 @@ static void bindAction(case_t cs, char *action, int aline, char **ap, int *lp) {
   }
 }
 
+static void free_case_info(case_info c) {
+  free(c.guard);
+  free(c.action);
+}
+
 /// parses input into gpr sections
 parse_prog *parseProg(char *input, int isFile) {
   FILE *str;
@@ -384,8 +390,8 @@ parse_prog *parseProg(char *input, int isFile) {
   char *action = NULL;
   bool more;
   parse_blocks_t blocklist = {0};
-  case_infos_t edgelist = {0};
-  case_infos_t nodelist = {0};
+  case_infos_t edgelist = {.dtor = free_case_info};
+  case_infos_t nodelist = {.dtor = free_case_info};
   int line = 0, gline = 0;
   int l_beging = 0;
   char *begg_stmt;
@@ -427,13 +433,13 @@ parse_prog *parseProg(char *input, int isFile) {
       bindAction(Begin, action, line, &prog->begin_stmt, &prog->l_begin);
       break;
     case BeginG:
-      if (action && (begg_stmt || !case_infos_is_empty(&nodelist) ||
-                     !case_infos_is_empty(&edgelist))) { // non-empty block
+      if (action && (begg_stmt || !LIST_IS_EMPTY(&nodelist) ||
+                     !LIST_IS_EMPTY(&edgelist))) { // non-empty block
         addBlock(&blocklist, begg_stmt, l_beging, nodelist, edgelist);
 
         /* reset values */
-        edgelist = (case_infos_t){0};
-        nodelist = (case_infos_t){0};
+        edgelist = (case_infos_t){.dtor = free_case_info};
+        nodelist = (case_infos_t){.dtor = free_case_info};
         begg_stmt = NULL;
       }
       bindAction(BeginG, action, line, &begg_stmt, &l_beging);
@@ -461,8 +467,8 @@ parse_prog *parseProg(char *input, int isFile) {
     }
   }
 
-  if (begg_stmt || !case_infos_is_empty(&nodelist) ||
-      !case_infos_is_empty(&edgelist)) { // non-empty block
+  if (begg_stmt || !LIST_IS_EMPTY(&nodelist) ||
+      !LIST_IS_EMPTY(&edgelist)) { // non-empty block
     addBlock(&blocklist, begg_stmt, l_beging, nodelist, edgelist);
   }
 
@@ -479,13 +485,13 @@ parse_prog *parseProg(char *input, int isFile) {
 }
 
 static void freeBlocks(parse_blocks_t *ip) {
-  for (size_t i = 0; i < parse_blocks_size(ip); ++i) {
-    parse_block p = parse_blocks_get(ip, i);
+  for (size_t i = 0; i < LIST_SIZE(ip); ++i) {
+    parse_block p = LIST_GET(ip, i);
     free(p.begg_stmt);
-    case_infos_free(&p.node_stmts);
-    case_infos_free(&p.edge_stmts);
+    LIST_FREE(&p.node_stmts);
+    LIST_FREE(&p.edge_stmts);
   }
-  parse_blocks_free(ip);
+  LIST_FREE(ip);
 }
 
 void freeParseProg(parse_prog *prog) {

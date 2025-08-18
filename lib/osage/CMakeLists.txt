@@ -20,4 +20,5 @@ target_include_directories(osage PRIVATE
 
 target_link_libraries(osage PRIVATE
   cgraph
+  util
 )

@@ -3,6 +3,7 @@ add_library(util STATIC
   base64.c
   gv_find_me.c
   gv_fopen.c
+  list.c
   random.c
   xml.c
 )

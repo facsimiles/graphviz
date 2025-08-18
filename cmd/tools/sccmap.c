@@ -109,7 +109,7 @@ static void nodeInduce(Agraph_t * g, Agraph_t* map)
     }
 }
 
-DEFINE_LIST(node_stack, Agnode_t *)
+typedef LIST(Agnode_t *) node_stack_t;
 
 static unsigned visit(Agnode_t *n, Agraph_t *map, node_stack_t *sp,
                       sccstate *st) {
@@ -120,7 +120,7 @@ static unsigned visit(Agnode_t *n, Agraph_t *map, node_stack_t *sp,
 
     min = ++st->ID;
     setval(n, min);
-    node_stack_push_back(sp, n);
+    LIST_PUSH_BACK(sp, n);
 
     for (e = agfstout(n->root, n); e; e = agnxtout(n->root, e)) {
 	t = aghead(e);
@@ -133,9 +133,9 @@ static unsigned visit(Agnode_t *n, Agraph_t *map, node_stack_t *sp,
     }
 
     if (getval(n) == min) {
-	if (!wantDegenerateComp && *node_stack_back(sp) == n) {
+	if (!wantDegenerateComp && *LIST_BACK(sp) == n) {
 	    setval(n, INF);
-	    (void)node_stack_pop_back(sp);
+	    (void)LIST_POP_BACK(sp);
 	} else {
 	    char name[32];
 	    Agraph_t *G = agraphof(n);;
@@ -144,7 +144,7 @@ static unsigned visit(Agnode_t *n, Agraph_t *map, node_stack_t *sp,
 	    agbindrec(subg, "scc_graph", sizeof(Agraphinfo_t), true);
 	    setrep(subg, agnode(map, name, 1));
 	    do {
-		t = node_stack_pop_back(sp);
+		t = LIST_POP_BACK(sp);
 		agsubnode(subg, t, 1);
 		setval(t, INF);
 		setscc(t, subg);
@@ -235,7 +235,7 @@ static void process(Agraph_t * G)
     for (n = agfstnode(G); n; n = agnxtnode(G, n))
 	if (getval(n) == 0)
 	    visit(n, map, &stack, &state);
-    node_stack_free(&stack);
+    LIST_FREE(&stack);
     if (!StatsOnly)
 	agwrite(map, outfp);
     agclose(map);

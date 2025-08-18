@@ -105,7 +105,7 @@ extern "C" {
 	float x, y, z;
     } glCompPoint;
 
-DEFINE_LIST(glCompPoly, glCompPoint)
+typedef LIST(glCompPoint) glCompPoly_t;
 
     typedef struct {
 	double R;

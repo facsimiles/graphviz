@@ -2,13 +2,19 @@
 
 import os
 import platform
+import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import compile_c, run, run_c  # pylint: disable=wrong-import-position
+from gvtest import (  # pylint: disable=wrong-import-position
+    compile_c,
+    is_mingw,
+    run,
+    run_c,
+)
 
 
 @pytest.mark.parametrize("utility", ("arena", "bitarray", "itos", "list", "tokenize"))
@@ -49,6 +55,54 @@ def test_overflow_h(builtins: bool):
         cflags += ["-std=gnu17"]
 
     run_c(src, cflags=cflags)
+
+
+@pytest.mark.parametrize(
+    "bad_test",
+    (
+        1,
+        2,
+        3,
+        4,
+        pytest.param(
+            5,
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows" and not is_mingw(),
+                reason="this test has not been ported to Windows",
+            ),
+        ),
+        pytest.param(
+            6,
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows" and not is_mingw(),
+                reason="this test has not been ported to Windows",
+            ),
+        ),
+    ),
+)
+def test_list_type_safetyutility(bad_test: int):
+    """
+    check the type safety of ../lib/util/list.h’s interfaces
+
+    Args:
+        bad_test: Which type-violating test in ../lib/util/test_list.c to compile.
+    """
+
+    # locate the unit tests
+    src = Path(__file__).parent.resolve() / "../lib/util/test_list.c"
+    assert src.exists()
+
+    # locate lib directory that needs to be in the include path
+    lib = Path(__file__).parent.resolve() / "../lib"
+
+    # extra C flags this compilation needs
+    cflags = [f"-DBAD_TEST={bad_test}", "-I", lib]
+    if platform.system() != "Windows":
+        cflags += ["-std=gnu17"]
+
+    # this should fail to compile if strong type safety is preserved
+    with pytest.raises(subprocess.CalledProcessError):
+        compile_c(src, cflags=cflags)
 
 
 def test_gv_find_me(tmp_path: Path):

@@ -50,7 +50,8 @@ libtcldot_la_LIBADD = $(GDTCLFT_LIBS) \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/util/libutil_C.la
 
 # GDTCLFT requires gd libs to be builtin
 if WITH_LIBGD

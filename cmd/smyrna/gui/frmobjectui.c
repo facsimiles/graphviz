@@ -135,18 +135,20 @@ static int attr_compare_core(const void *key, const void *candidate) {
   return strcasecmp(k, (*c)->name);
 }
 
-static int attr_compare(const attr_t **a, const attr_t **b) {
+static int attr_compare(const void *x, const void *y) {
+  const attr_t *const *a = x;
+  const attr_t *const *b = y;
   return attr_compare_core((*a)->name, b);
 }
 
 static void attr_list_add(attr_list *l, attr_t *a) {
     if (!l || !a)
 	return;
-    attrs_append(&l->attributes, a);
-    attrs_sort(&l->attributes, attr_compare);
+    LIST_APPEND(&l->attributes, a);
+    LIST_SORT(&l->attributes, attr_compare);
     /*update indices */
-    for (size_t id = 0; id < attrs_size(&l->attributes); ++id)
-	attrs_get(&l->attributes, id)->index = id;
+    for (size_t id = 0; id < LIST_SIZE(&l->attributes); ++id)
+	LIST_GET(&l->attributes, id)->index = id;
 }
 
 static attr_data_type get_attr_data_type(char c)
@@ -206,9 +208,9 @@ static void set_attr_object_type(const char *str, int *t) {
 }
 
 static attr_t *binarySearch(attr_list *l, const char *searchKey) {
-  attrs_sync(&l->attributes);
-  attr_t **attrp = bsearch(searchKey, attrs_front(&l->attributes),
-                           attrs_size(&l->attributes), sizeof(attr_t*),
+  LIST_SYNC(&l->attributes);
+  attr_t **attrp = bsearch(searchKey, LIST_FRONT(&l->attributes),
+                           LIST_SIZE(&l->attributes), sizeof(attr_t*),
                            attr_compare_core);
   if (attrp != NULL) {
     return *attrp;
@@ -228,19 +230,19 @@ static void create_filtered_list(const char *prefix, attr_list *sl,
     if (strlen(prefix) == 0)
 	return;
     /*locate first occurrence */
-    attrs_sync(&sl->attributes);
-    attr_t *at = bsearch(prefix, attrs_front(&sl->attributes),
-                         attrs_size(&sl->attributes), sizeof(attr_t), cmp);
+    LIST_SYNC(&sl->attributes);
+    attr_t *at = bsearch(prefix, LIST_FRONT(&sl->attributes),
+                         LIST_SIZE(&sl->attributes), sizeof(attr_t), cmp);
     if (!at)
 	return;
 
     /*go backward to get the first */
     for (int res = 0; at->index > 0 && res == 0; ) {
-	at = attrs_get(&sl->attributes, at->index - 1);
+	at = LIST_GET(&sl->attributes, at->index - 1);
 	res = strncasecmp(prefix, at->name, strlen(prefix));
     }
-    for (int res = 0; at->index < attrs_size(&sl->attributes) && res == 0; ) {
-	at = attrs_get(&sl->attributes, at->index + 1);
+    for (int res = 0; at->index < LIST_SIZE(&sl->attributes) && res == 0; ) {
+	at = LIST_GET(&sl->attributes, at->index + 1);
 	res = strncasecmp(prefix, at->name, strlen(prefix));
 	if (res == 0 && at->objType[objKind] == 1)
 	    attr_list_add(tl, new_attr_ref(at));
@@ -256,12 +258,12 @@ static void filter_attributes(const char *prefix, topview *t) {
     attr_list *fl = attr_list_new(false);
     reset_attr_list_widgets(l);
     create_filtered_list(prefix, l, fl);
-    for (size_t ind = 0; ind < attrs_size(&fl->attributes); ++ind) {
-	gtk_label_set_text(l->fLabels[ind], attrs_get(&fl->attributes, ind)->name);
+    for (size_t ind = 0; ind < LIST_SIZE(&fl->attributes); ++ind) {
+	gtk_label_set_text(l->fLabels[ind], LIST_GET(&fl->attributes, ind)->name);
     }
 
     Color_Widget_bg("white", glade_xml_get_widget(xml, "txtAttr"));
-    if (attrs_is_empty(&fl->attributes))
+    if (LIST_IS_EMPTY(&fl->attributes))
 	Color_Widget_bg("red", glade_xml_get_widget(xml, "txtAttr"));
     /*a new attribute can be entered */
 
@@ -291,8 +293,8 @@ static void filter_attributes(const char *prefix, topview *t) {
 	Color_Widget_bg("white", glade_xml_get_widget(xml, "txtAttr"));
     }
 
-    for (size_t ind = 0; ind < attrs_size(&fl->attributes); ++ind) {
-	if (strcasecmp(prefix, attrs_get(&fl->attributes, ind)->name) == 0) { // an existing attribute
+    for (size_t ind = 0; ind < LIST_SIZE(&fl->attributes); ++ind) {
+	if (strcasecmp(prefix, LIST_GET(&fl->attributes, ind)->name) == 0) { // an existing attribute
 
 	    Color_Widget_bg("green", glade_xml_get_widget(xml, "txtAttr"));
 
@@ -300,17 +302,17 @@ static void filter_attributes(const char *prefix, topview *t) {
 		gtk_entry_set_text((GtkEntry *)
 				   glade_xml_get_widget(xml,
 							"txtDefValue"),
-				   attrs_get(&fl->attributes, 0)->defValG);
+				   LIST_GET(&fl->attributes, 0)->defValG);
 	    if (get_object_type() == AGNODE)
 		gtk_entry_set_text((GtkEntry *)
 				   glade_xml_get_widget(xml,
 							"txtDefValue"),
-				   attrs_get(&fl->attributes, 0)->defValN);
+				   LIST_GET(&fl->attributes, 0)->defValN);
 	    if (get_object_type() == AGEDGE)
 		gtk_entry_set_text((GtkEntry *)
 				   glade_xml_get_widget(xml,
 							"txtDefValue"),
-				   attrs_get(&fl->attributes, 0)->defValE);
+				   LIST_GET(&fl->attributes, 0)->defValE);
 	    gtk_widget_set_sensitive(glade_xml_get_widget
 				     (xml, "txtDefValue"), 0);
 	    gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
@@ -320,7 +322,7 @@ static void filter_attributes(const char *prefix, topview *t) {
 	    gtk_toggle_button_set_active((GtkToggleButton *)
 					 glade_xml_get_widget(xml,
 							      "attrProg"),
-					 attrs_get(&fl->attributes, 0)->propagate);
+					 LIST_GET(&fl->attributes, 0)->propagate);
 	    break;
 	}
     }

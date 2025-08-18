@@ -15,6 +15,7 @@ target_include_directories(tclplan PRIVATE
 target_link_libraries(tclplan PRIVATE
   pathplan
   tclstubs
+  util
 )
 
 target_include_directories(tclplan SYSTEM PRIVATE ${TCL_INCLUDE_PATH})

@@ -44,7 +44,7 @@ static unsigned char uchar_min(unsigned char a, unsigned char b) {
   return b;
 }
 
-DEFINE_LIST(edge_stack, Agedge_t *)
+typedef LIST(Agedge_t *) edge_stack_t;
 
 static void push(edge_stack_t *sp, Agedge_t *ep, nodeinfo_t *ninfo) {
 
@@ -52,17 +52,17 @@ static void push(edge_stack_t *sp, Agedge_t *ep, nodeinfo_t *ninfo) {
   ON_STACK(ninfo, aghead(ep)) = true;
 
   // insert the new edge
-  edge_stack_push_back(sp, ep);
+  LIST_PUSH_BACK(sp, ep);
 }
 
 static Agedge_t *pop(edge_stack_t *sp, nodeinfo_t *ninfo) {
 
-  if (edge_stack_is_empty(sp)) {
+  if (LIST_IS_EMPTY(sp)) {
     return NULL;
   }
 
   // remove the top
-  Agedge_t *e = edge_stack_pop_back(sp);
+  Agedge_t *e = LIST_POP_BACK(sp);
 
   // mark it as no longer on the stack
   ON_STACK(ninfo, aghead(e)) = false;
@@ -72,11 +72,11 @@ static Agedge_t *pop(edge_stack_t *sp, nodeinfo_t *ninfo) {
 
 static Agedge_t *top(edge_stack_t *sp) {
 
-  if (edge_stack_is_empty(sp)) {
+  if (LIST_IS_EMPTY(sp)) {
     return NULL;
   }
 
-  return *edge_stack_back(sp);
+  return *LIST_BACK(sp);
 }
 
 /* Main function for transitive reduction.
@@ -173,7 +173,7 @@ static int dfs(Agnode_t *n, nodeinfo_t *ninfo, int warn,
       agdelete(g, e);
     }
   }
-  edge_stack_free(&estk);
+  LIST_FREE(&estk);
   return warn;
 }
 

@@ -22,6 +22,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdio.h>
 #include <expr/expr.h>
+#include <util/list.h>
 #include "gvpr.h"
 
     typedef enum { TV_flat, TV_ne, TV_en, 

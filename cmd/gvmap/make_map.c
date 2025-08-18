@@ -247,31 +247,31 @@ static void plot_dot_labels(FILE *f, int n, int dim, double *x, char **labels, f
 
 }
 
-DEFINE_LIST(doubles, double)
+typedef LIST(double) doubles_t;
 
 static void dot_polygon(agxbuf *sbuff, doubles_t xp, doubles_t yp,
                         double line_width, bool fill, const char *cstring) {
 
-  assert(doubles_size(&xp) == doubles_size(&yp));
-  if (!doubles_is_empty(&xp)){
+  assert(LIST_SIZE(&xp) == LIST_SIZE(&yp));
+  if (!LIST_IS_EMPTY(&xp)){
     if (fill) {
       agxbprint(sbuff,
                 " c %" PRISIZE_T " -%s C %" PRISIZE_T " -%s P %" PRISIZE_T " ",
                 strlen(cstring), cstring, strlen(cstring), cstring,
-                doubles_size(&xp));
+                LIST_SIZE(&xp));
     } else {
       if (line_width > 0){
 	size_t len_swidth = (size_t)snprintf(NULL, 0, "%f", line_width);
 	agxbprint(sbuff, " c %" PRISIZE_T " -%s S %" PRISIZE_T
 	          " -setlinewidth(%f) L %" PRISIZE_T " ", strlen(cstring), cstring,
-	          len_swidth + 14, line_width, doubles_size(&xp));
+	          len_swidth + 14, line_width, LIST_SIZE(&xp));
       } else {
 	agxbprint(sbuff, " c %" PRISIZE_T " -%s L %" PRISIZE_T " ", strlen(cstring),
-	          cstring, doubles_size(&xp));
+	          cstring, LIST_SIZE(&xp));
       }
     }
-    for (size_t i = 0; i < doubles_size(&xp); i++) {
-      agxbprint(sbuff, " %f %f", doubles_get(&xp, i), doubles_get(&yp, i));
+    for (size_t i = 0; i < LIST_SIZE(&xp); i++) {
+      agxbprint(sbuff, " %f %f", LIST_GET(&xp, i), LIST_GET(&yp, i));
     }
   }
 }
@@ -305,11 +305,11 @@ static void plot_dot_polygons(agxbuf *sbuff, double line_width,
 	}
 	dot_polygon(sbuff, xp, yp, line_width, fill, cstring);
 	// start a new polygon
-	doubles_clear(&xp);
-	doubles_clear(&yp);
+	LIST_CLEAR(&xp);
+	LIST_CLEAR(&yp);
       } 
-      doubles_append(&xp, x_poly[2 * ja[j]]);
-      doubles_append(&yp, x_poly[2 * ja[j] + 1]);
+      LIST_APPEND(&xp, x_poly[2 * ja[j]]);
+      LIST_APPEND(&yp, x_poly[2 * ja[j] + 1]);
     }
     if (use_line) {
       dot_polygon(sbuff, xp, yp, line_width, fill, line_color);
@@ -319,8 +319,8 @@ static void plot_dot_polygons(agxbuf *sbuff, double line_width,
     }
   }
   agxbfree(&cstring_buffer);
-  doubles_free(&xp);
-  doubles_free(&yp);
+  LIST_FREE(&xp);
+  LIST_FREE(&yp);
 }
 
 void plot_dot_map(Agraph_t* gr, int n, int dim, double *x, SparseMatrix polys,

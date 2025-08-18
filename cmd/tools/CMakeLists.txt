@@ -69,8 +69,9 @@ endfunction(add_simple_tool)
 
 add_simple_tool(acyclic)
 add_simple_tool(bcomps)
+target_link_libraries(bcomps PRIVATE util)
 add_simple_tool(ccomps)
-target_link_libraries(ccomps PRIVATE gvc)
+target_link_libraries(ccomps PRIVATE gvc util)
 add_simple_tool(nop)
 add_simple_tool(tred)
 target_link_libraries(tred PRIVATE gvc) # e.g. for start_timer
@@ -106,6 +107,7 @@ endif()
 target_link_libraries(gc_bin PRIVATE
   cgraph
   gvc
+  util
 )
 
 install(
@@ -208,6 +210,7 @@ endif()
 
 target_link_libraries(gml2gv PRIVATE
   cgraph
+  util
 )
 
 tool_defaults(gml2gv)
@@ -264,6 +267,7 @@ if(EXPAT_FOUND)
 
   target_link_libraries(graphml2gv PRIVATE
     cgraph
+    util
     ${EXPAT_LIBRARIES}
   )
 
@@ -509,6 +513,7 @@ endif()
 
 target_link_libraries(sccmap PRIVATE
   cgraph
+  util
 )
 
 tool_defaults(sccmap)

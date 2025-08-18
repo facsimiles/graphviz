@@ -23,6 +23,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include <stdlib.h>
 #include <string.h>
 #include <util/unreachable.h>
+#include <util/list.h>
 #include <util/xml.h>
 
 #include <xdot/xdot.h>
@@ -389,13 +390,13 @@ drawfunc_t OpFns[] = {
 void draw_selpoly(glCompPoly_t *selPoly) {
     glColor4f(1,0,0,1);
     glBegin(GL_LINE_STRIP);
-    for (size_t i = 0; i < glCompPoly_size(selPoly); ++i) {
-	const glCompPoint pt = glCompPoly_get(selPoly, i);
+    for (size_t i = 0; i < LIST_SIZE(selPoly); ++i) {
+	const glCompPoint pt = LIST_GET(selPoly, i);
 	glVertex3f(pt.x, pt.y, pt.z);
     }
     glEnd();
-    if (!glCompPoly_is_empty(selPoly)) {
-        const glCompPoint last = *glCompPoly_back(selPoly);
+    if (!LIST_IS_EMPTY(selPoly)) {
+        const glCompPoint last = *LIST_BACK(selPoly);
         glBegin(GL_LINE_STRIP);
 	glVertex3f(last.x, last.y, last.z);
 	glVertex3f(view->mouse.GLpos.x,view->mouse.GLpos.y,0);

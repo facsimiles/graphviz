@@ -148,21 +148,20 @@ static void init(int argc, char *argv[])
     outfile = stdout;
 }
 
-DEFINE_LIST(node_stack, Agnode_t *)
-static node_stack_t Stk;
+static LIST(Agnode_t *) Stk;
 
 static void push(Agnode_t * np)
 {
     ND_dfs_mark(np) = -1;
-    node_stack_push_back(&Stk, np);
+    LIST_PUSH_BACK(&Stk, np);
 }
 
 static Agnode_t *pop(void)
 {
-    if (node_stack_is_empty(&Stk)) {
+    if (LIST_IS_EMPTY(&Stk)) {
 	return 0;
     }
-    return node_stack_pop_back(&Stk);
+    return LIST_POP_BACK(&Stk);
 }
 
 static void cc_dfs(Agraph_t * g, Agnode_t * n)
@@ -317,7 +316,7 @@ int main(int argc, char *argv[])
     if (n_graphs > 1)
 	wcp(tot_nodes, tot_edges, tot_cc, tot_cl, "total", 0);
 
-    node_stack_free(&Stk);
+    LIST_FREE(&Stk);
 
     graphviz_exit(rv);
 }

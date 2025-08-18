@@ -17,6 +17,7 @@
 #include "selectionfuncs.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <util/list.h>
 #include "topviewfuncs.h"
 
 static int lastAction;
@@ -134,7 +135,7 @@ void appmouse_key_release(ViewInfo* v)
 {
     if(lastAction==MM_POLYGON_SELECT)
     {
-	glCompPoly_free(&view->Topview->sel.selPoly);
+	LIST_FREE(&view->Topview->sel.selPoly);
 	glexpose();
     }
     v->keyVal = 0;

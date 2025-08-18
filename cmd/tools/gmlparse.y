@@ -34,42 +34,40 @@ static gmledge* E;
 static attrs_t *L;
 
 static void free_attrs(attrs_t *a) {
-  attrs_free(a);
+  LIST_FREE(a);
   free(a);
 }
 
-DEFINE_LIST_WITH_DTOR(dts, attrs_t *, free_attrs)
-static dts_t liststk;
+static LIST(attrs_t *) liststk = {.dtor = free_attrs};
 
 static char *sortToStr(unsigned short sort);
 
-void free_node(gmlnode *p) {
+static void free_node(gmlnode *p) {
     if (!p) return;
-    attrs_free(&p->attrlist);
+    LIST_FREE(&p->attrlist);
     free(p->id);
     free (p);
 }
 
-void free_edge(gmledge *p) {
+static void free_edge(gmledge *p) {
     if (!p) return;
-    attrs_free(&p->attrlist);
+    LIST_FREE(&p->attrlist);
     free (p);
 }
 
-void free_graph(gmlgraph *p) {
+static void free_graph(gmlgraph *p) {
     if (!p) return;
-    nodes_free(&p->nodelist);
-    edges_free(&p->edgelist);
-    attrs_free(&p->attrlist);
-    graphs_free(p->graphlist);
-    free(p->graphlist);
+    LIST_FREE(&p->nodelist);
+    LIST_FREE(&p->edgelist);
+    LIST_FREE(&p->attrlist);
+    LIST_FREE(&p->graphlist);
     free (p);
 }
 
 static void
 cleanup (void)
 {
-    dts_free(&liststk);
+    LIST_CLEAR(&liststk);
     if (L) {
 	free_attrs(L);
 	L = NULL;
@@ -88,13 +86,16 @@ cleanup (void)
     }
 }
 
+static void free_attr(gmlattr *p);
+
 static void
 pushAlist (void)
 {
     attrs_t *const lp = gv_alloc(sizeof(attrs_t));
+    lp->dtor = free_attr;
 
     if (L) {
-	dts_push_back(&liststk, L);
+	LIST_PUSH_BACK(&liststk, L);
     }
     L = lp;
 }
@@ -102,8 +103,8 @@ pushAlist (void)
 static attrs_t *popAlist(void) {
     attrs_t *lp = L;
 
-    if (!dts_is_empty(&liststk))
-	L = dts_pop_back(&liststk);
+    if (!LIST_IS_EMPTY(&liststk))
+	L = LIST_POP_BACK(&liststk);
     else
 	L = NULL;
 
@@ -121,12 +122,15 @@ pushG (void)
 {
     gmlgraph* g = gv_alloc(sizeof(gmlgraph));
 
-    g->graphlist = gv_alloc(sizeof(graphs_t));
+    g->attrlist.dtor = free_attr;
+    g->nodelist.dtor = free_node;
+    g->edgelist.dtor = free_edge;
+    g->graphlist.dtor = free_graph;
     g->parent = G;
     g->directed = -1;
 
     if (G)
-	graphs_append(G->graphlist, g);
+	LIST_APPEND(&G->graphlist, g);
 
     G = g;
 }
@@ -134,15 +138,16 @@ pushG (void)
 static gmlnode*
 mkNode (void)
 {
-    return gv_alloc(sizeof(gmlnode));
+    gmlnode *const n = gv_alloc(sizeof(gmlnode));
+    n->attrlist.dtor = free_attr;
+    return n;
 }
 
 static gmledge*
 mkEdge (void)
 {
     gmledge* ep = gv_alloc(sizeof(gmledge));
-    ep->source = NULL;
-    ep->target = NULL;
+    ep->attrlist.dtor = free_attr;
     return ep;
 }
 
@@ -159,7 +164,7 @@ static gmlattr *mkAttr(char* name, unsigned short sort, unsigned short kind,
     if (str)
 	gp->u.value = str;
     else {
-	if (list != NULL && attrs_is_empty(list)) {
+	if (list != NULL && LIST_IS_EMPTY(list)) {
 	    free_attrs(list);
 	    list = 0;
 	}
@@ -208,7 +213,7 @@ setDir (char* d)
 %token STYLE LINE POINT
 %token TEXT FONTSIZE FONTNAME COLOR
 %token <str> INTEGER REAL STRING ID NAME
-%token <list> LIST
+%token <list> GML_LIST
 
 %type <np> node
 %type <ep> edge
@@ -235,8 +240,8 @@ glist  : glist glistitem
        | glistitem
        ;
 
-glistitem : node { nodes_append(&G->nodelist, $1); }
-          | edge { edges_append(&G->edgelist, $1); }
+glistitem : node { LIST_APPEND(&G->nodelist, $1); }
+          | edge { LIST_APPEND(&G->edgelist, $1); }
           | hdr body 
           | DIRECTED INTEGER { 
 		if (setDir($2)) { 
@@ -245,8 +250,8 @@ glistitem : node { nodes_append(&G->nodelist, $1); }
 		    YYABORT;
 		}
 	  }
-	  | ID INTEGER { attrs_append(&G->attrlist, mkAttr(gv_strdup("id"), 0, INTEGER, $2, 0)); }
-          | alistitem { attrs_append(&G->attrlist, $1); }
+	  | ID INTEGER { LIST_APPEND(&G->attrlist, mkAttr(gv_strdup("id"), 0, INTEGER, $2, 0)); }
+          | alistitem { LIST_APPEND(&G->attrlist, $1); }
           ;
 
 node :  NODE { N = mkNode(); } '[' nlist ']' { $$ = N; N = NULL; }
@@ -257,7 +262,7 @@ nlist : nlist nlistitem
       ;
 
 nlistitem : ID INTEGER { N->id = $2; }
-          | alistitem { attrs_append(&N->attrlist, $1); }
+          | alistitem { LIST_APPEND(&N->attrlist, $1); }
           ;
 
 edge :  EDGE { E = mkEdge(); } '[' elist ']' { $$ = E; E = NULL; }
@@ -269,8 +274,8 @@ elist : elist elistitem
 
 elistitem : SOURCE INTEGER { E->source = $2; }
           | TARGET INTEGER { E->target = $2; }
-	  | ID INTEGER { attrs_append(&E->attrlist, mkAttr(gv_strdup("id"), 0, INTEGER, $2, 0)); }
-          | alistitem { attrs_append(&E->attrlist, $1); }
+	  | ID INTEGER { LIST_APPEND(&E->attrlist, mkAttr(gv_strdup("id"), 0, INTEGER, $2, 0)); }
+          | alistitem { LIST_APPEND(&E->attrlist, $1); }
           ;
 
 attrlist  : '[' {pushAlist(); } optalist ']' { $$ = popAlist(); }
@@ -280,22 +285,22 @@ optalist  : alist
           | /* empty */ 
           ;
 
-alist  : alist alistitem  { attrs_append(L, $2); }
-       | alistitem  { attrs_append(L, $1); }
+alist  : alist alistitem  { LIST_APPEND(L, $2); }
+       | alistitem  { LIST_APPEND(L, $1); }
        ;
 
 alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
           | NAME REAL    { $$ = mkAttr ($1, 0, REAL, $2, 0); }
           | NAME STRING  { $$ = mkAttr ($1, 0, STRING, $2, 0); }
-          | NAME attrlist  { $$ = mkAttr ($1, 0, LIST, 0, $2); }
+          | NAME attrlist  { $$ = mkAttr ($1, 0, GML_LIST, 0, $2); }
           | XVAL REAL  { $$ = mkAttr (0, XVAL, REAL, $2, 0); }
           | XVAL INTEGER  { $$ = mkAttr (0, XVAL, REAL, $2, 0); }
           | YVAL REAL  { $$ = mkAttr (0, YVAL, REAL, $2, 0); }
           | WVAL REAL  { $$ = mkAttr (0, WVAL, REAL, $2, 0); }
           | HVAL REAL  { $$ = mkAttr (0, HVAL, REAL, $2, 0); }
           | LABEL STRING  { $$ = mkAttr (0, LABEL, STRING, $2, 0); }
-          | GRAPHICS attrlist  { $$ = mkAttr (0, GRAPHICS, LIST, 0, $2); }
-          | LABELGRAPHICS attrlist  { $$ = mkAttr (0, LABELGRAPHICS, LIST, 0, $2); }
+          | GRAPHICS attrlist  { $$ = mkAttr (0, GRAPHICS, GML_LIST, 0, $2); }
+          | LABELGRAPHICS attrlist  { $$ = mkAttr (0, LABELGRAPHICS, GML_LIST, 0, $2); }
           | TYPE STRING  { $$ = mkAttr (0, TYPE, STRING, $2, 0); }
           | FILL STRING  { $$ = mkAttr (0, FILL, STRING, $2, 0); }
           | OUTLINE STRING  { $$ = mkAttr (0, OUTLINE, STRING, $2, 0); }
@@ -304,9 +309,9 @@ alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
           | WIDTH REAL  { $$ = mkAttr (0, WIDTH, REAL, $2, 0); }
           | WIDTH INTEGER  { $$ = mkAttr (0, WIDTH, INTEGER, $2, 0); }
           | STYLE STRING  { $$ = mkAttr (0, STYLE, STRING, $2, 0); }
-          | STYLE attrlist  { $$ = mkAttr (0, STYLE, LIST, 0, $2); }
-          | LINE attrlist  { $$ = mkAttr (0, LINE, LIST, 0, $2); }
-          | POINT attrlist  { $$ = mkAttr (0, POINT, LIST, 0, $2); }
+          | STYLE attrlist  { $$ = mkAttr (0, STYLE, GML_LIST, 0, $2); }
+          | LINE attrlist  { $$ = mkAttr (0, LINE, GML_LIST, 0, $2); }
+          | POINT attrlist  { $$ = mkAttr (0, POINT, GML_LIST, 0, $2); }
           | TEXT STRING  { $$ = mkAttr (0, TEXT, STRING, $2, 0); }
           | FONTNAME STRING  { $$ = mkAttr (0, FONTNAME, STRING, $2, 0); }
           | FONTSIZE INTEGER  { $$ = mkAttr (0, FONTNAME, INTEGER, $2, 0); }
@@ -315,9 +320,9 @@ alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
 
 %%
 
-void free_attr(gmlattr *p) {
+static void free_attr(gmlattr *p) {
     if (!p) return;
-    if (p->kind == LIST && p->u.lp)
+    if (p->kind == GML_LIST && p->u.lp)
 	free_attrs(p->u.lp);
     else
 	free (p->u.value);
@@ -330,7 +335,7 @@ static void deparseList(attrs_t *alist, agxbuf *xb);
 static void
 deparseAttr (gmlattr* ap, agxbuf* xb)
 {
-    if (ap->kind == LIST) {
+    if (ap->kind == GML_LIST) {
 	agxbprint (xb, "%s ", ap->name);
 	deparseList (ap->u.lp, xb);
     }
@@ -344,8 +349,8 @@ deparseAttr (gmlattr* ap, agxbuf* xb)
 
 static void deparseList(attrs_t *alist, agxbuf *xb) {
     agxbput (xb, "[ "); 
-    for (size_t i = 0; alist != NULL && i < attrs_size(alist); ++i) {
-	gmlattr *const ap = attrs_get(alist, i);
+    for (size_t i = 0; alist != NULL && i < LIST_SIZE(alist); ++i) {
+	gmlattr *const ap = LIST_GET(alist, i);
 	deparseAttr (ap, xb);
 	agxbputc (xb, ' ');
     }
@@ -358,7 +363,7 @@ unknown (Agobj_t* obj, gmlattr* ap, agxbuf* xb)
 {
     char* str;
 
-    if (ap->kind == LIST) {
+    if (ap->kind == GML_LIST) {
 	deparseList (ap->u.lp, xb);
 	str = agxbuse (xb);
     }
@@ -374,8 +379,8 @@ static void addNodeLabelGraphics(Agnode_t *np, attrs_t *alist, agxbuf *unk) {
     if (!alist)
 	return;
 
-    for (size_t i = 0; i < attrs_size(alist); ++i) {
-	gmlattr *const ap = attrs_get(alist, i);
+    for (size_t i = 0; i < LIST_SIZE(alist); ++i) {
+	gmlattr *const ap = LIST_GET(alist, i);
 	if (ap->sort == TEXT) {
 	    agsafeset (np, "label", ap->u.value, "");
 	}
@@ -416,8 +421,8 @@ static void addEdgeLabelGraphics(Agedge_t *ep, attrs_t *alist, agxbuf *xb,
     if (!alist)
 	return;
 
-    for (size_t i = 0; i < attrs_size(alist); ++i) {
-	gmlattr *const ap = attrs_get(alist, i);
+    for (size_t i = 0; i < LIST_SIZE(alist); ++i) {
+	gmlattr *const ap = LIST_GET(alist, i);
 	if (ap->sort == TEXT) {
 	    agsafeset (ep, "label", ap->u.value, "");
 	}
@@ -466,8 +471,8 @@ static void addNodeGraphics(Agnode_t *np, attrs_t *alist, agxbuf *xb,
     double d;
     int cnt = 0;
 
-    for (size_t i = 0; alist != NULL && i < attrs_size(alist); ++i) {
-	gmlattr *const ap = attrs_get(alist, i);
+    for (size_t i = 0; alist != NULL && i < LIST_SIZE(alist); ++i) {
+	gmlattr *const ap = LIST_GET(alist, i);
 	if (ap->sort == XVAL) {
 	    x = ap->u.value;
 	}
@@ -525,8 +530,8 @@ static void addEdgePoint(Agedge_t *ep, attrs_t *alist, agxbuf *xb) {
     char* x = "0";
     char* y = "0";
 
-    for (size_t i = 0; alist != NULL && i < attrs_size(alist); ++i) {
-        gmlattr *const ap = attrs_get(alist, i);
+    for (size_t i = 0; alist != NULL && i < LIST_SIZE(alist); ++i) {
+        gmlattr *const ap = LIST_GET(alist, i);
         if (ap->sort == XVAL) {
 	    x = ap->u.value;
 	}
@@ -545,8 +550,8 @@ static void addEdgePoint(Agedge_t *ep, attrs_t *alist, agxbuf *xb) {
 
 static void addEdgePos(Agedge_t *ep, attrs_t *alist, agxbuf *xb) {
     if (!alist) return;
-    for (size_t i = 0; i < attrs_size(alist); ++i) {
-	gmlattr *const ap = attrs_get(alist, i);
+    for (size_t i = 0; i < LIST_SIZE(alist); ++i) {
+	gmlattr *const ap = LIST_GET(alist, i);
 	if (ap->sort == POINT) {
 	    addEdgePoint (ep, ap->u.lp, xb);
 	}
@@ -562,8 +567,8 @@ static void addEdgeGraphics(Agedge_t *ep, attrs_t *alist, agxbuf *xb,
                             agxbuf *unk) {
     int cnt = 0;
 
-    for (size_t i = 0; alist != NULL && i < attrs_size(alist); ++i) {
-	gmlattr *const ap = attrs_get(alist, i);
+    for (size_t i = 0; alist != NULL && i < LIST_SIZE(alist); ++i) {
+	gmlattr *const ap = LIST_GET(alist, i);
 	if (ap->sort == WIDTH) {
 	    agsafeset (ep, "penwidth", ap->u.value, "");
 	}
@@ -596,8 +601,8 @@ static void addEdgeGraphics(Agedge_t *ep, attrs_t *alist, agxbuf *xb,
 }
 
 static void addAttrs(Agobj_t *obj, attrs_t *alist, agxbuf *xb, agxbuf *unk) {
-    for (size_t i = 0; i < attrs_size(alist); ++i) {
-	gmlattr *const ap = attrs_get(alist, i);
+    for (size_t i = 0; i < LIST_SIZE(alist); ++i) {
+	gmlattr *const ap = LIST_GET(alist, i);
 	if (ap->sort == GRAPHICS) {
 	    if (AGTYPE(obj) == AGNODE)
 		addNodeGraphics ((Agnode_t*)obj, ap->u.lp, xb, unk);
@@ -637,8 +642,8 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
     if (!parent && L) {
 	addAttrs ((Agobj_t*)g, L, xb, unk);
     } 
-    for (size_t i = 0; i < nodes_size(&graph->nodelist); ++i) {
-	gmlnode *const np = nodes_get(&graph->nodelist, i);
+    for (size_t i = 0; i < LIST_SIZE(&graph->nodelist); ++i) {
+	gmlnode *const np = LIST_GET(&graph->nodelist, i);
 	if (!np->id) {
 	   fprintf (stderr, "node without an id attribute"); 
 	   graphviz_exit (1);
@@ -647,8 +652,8 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
 	addAttrs((Agobj_t*)n, &np->attrlist, xb, unk);
     }
 
-    for (size_t i = 0; i < edges_size(&graph->edgelist); ++i) {
-	gmledge *ep = edges_get(&graph->edgelist, i);
+    for (size_t i = 0; i < LIST_SIZE(&graph->edgelist); ++i) {
+	gmledge *ep = LIST_GET(&graph->edgelist, i);
 	if (!ep->source) {
 	   fprintf (stderr, "edge without an source attribute"); 
 	   graphviz_exit (1);
@@ -662,8 +667,8 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
 	e = agedge (g, n, h, NULL, 1);
 	addAttrs((Agobj_t*)e, &ep->attrlist, xb, unk);
     }
-    for (size_t i = 0; i < graphs_size(graph->graphlist); ++i) {
-	gmlgraph *const gp = graphs_get(graph->graphlist, i);
+    for (size_t i = 0; i < LIST_SIZE(&graph->graphlist); ++i) {
+	gmlgraph *const gp = LIST_GET(&graph->graphlist, i);
 	mkGraph (gp, g, NULL, xb, unk);
     }
 
@@ -770,7 +775,7 @@ static char *sortToStr(unsigned short sort) {
 	s = "string"; break;
     case NAME : 
 	s = "name"; break;
-    case LIST : 
+    case GML_LIST : 
 	s = "list"; break;
     case '[' : 
 	s = "["; break;

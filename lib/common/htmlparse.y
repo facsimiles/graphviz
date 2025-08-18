@@ -35,13 +35,9 @@
 
 %code provides {
 
-DEFINE_LIST(sfont, textfont_t *)
-
 static inline void free_ti(textspan_t item) {
   free(item.str);
 }
-
-DEFINE_LIST_WITH_DTOR(textspans, textspan_t, free_ti)
 
 static inline void free_hi(htextspan_t item) {
   for (size_t i = 0; i < item.nitems; i++) {
@@ -50,15 +46,13 @@ static inline void free_hi(htextspan_t item) {
   free(item.items);
 }
 
-DEFINE_LIST_WITH_DTOR(htextspans, htextspan_t, free_hi)
-
 struct htmlparserstate_s {
   htmllabel_t* lbl;       /* Generated label */
   htmltbl_t*   tblstack;  /* Stack of tables maintained during parsing */
-  textspans_t  fitemList;
-  htextspans_t fspanList;
+  LIST(textspan_t)  fitemList;
+  LIST(htextspan_t) fspanList;
   agxbuf*      str;       /* Buffer for text */
-  sfont_t      fontstack;
+  LIST(textfont_t *)      fontstack;
   GVC_t*       gvc;
 };
 
@@ -101,13 +95,13 @@ static void cleanCell(htmlcell_t *cp);
 /// Clean up table if error in parsing.
 static void cleanTbl(htmltbl_t *tp) {
   rows_t *rows = &tp->u.p.rows;
-  for (size_t r = 0; r < rows_size(rows); ++r) {
-    row_t *rp = rows_get(rows, r);
-    for (size_t c = 0; c < cells_size(&rp->rp); ++c) {
-      cleanCell(cells_get(&rp->rp, c));
+  for (size_t r = 0; r < LIST_SIZE(rows); ++r) {
+    row_t *rp = LIST_GET(rows, r);
+    for (size_t c = 0; c < LIST_SIZE(&rp->rp); ++c) {
+      cleanCell(LIST_GET(&rp->rp, c));
     }
   }
-  rows_free(rows);
+  LIST_FREE(rows);
   free_html_data(&tp->data);
   free(tp);
 }
@@ -295,9 +289,9 @@ table : opt_space T_table {
             cleanup(&scanner->parser); YYABORT;
           }
           $2->u.p.prev = scanner->parser.tblstack;
-          $2->u.p.rows = (rows_t){0};
+          $2->u.p.rows = (rows_t){.dtor = free_ritem};
           scanner->parser.tblstack = $2;
-          $2->font = *sfont_back(&scanner->parser.fontstack);
+          $2->font = *LIST_BACK(&scanner->parser.fontstack);
           $<tbl>$ = $2;
         }
         rows T_end_table opt_space {
@@ -360,25 +354,24 @@ static void
 appendFItemList (htmlparserstate_t *html_state, agxbuf *ag)
 {
     const textspan_t ti = {.str = agxbdisown(ag),
-                           .font = *sfont_back(&html_state->fontstack)};
-    textspans_append(&html_state->fitemList, ti);
+                           .font = *LIST_BACK(&html_state->fontstack)};
+    LIST_APPEND(&html_state->fitemList, ti);
 }
 
 static void
 appendFLineList (htmlparserstate_t *html_state, int v)
 {
     htextspan_t lp = {0};
-    textspans_t *ilist = &html_state->fitemList;
 
-    size_t cnt = textspans_size(ilist);
+    size_t cnt = LIST_SIZE(&html_state->fitemList);
     lp.just = v;
     if (cnt) {
 	lp.nitems = cnt;
 	lp.items = gv_calloc(cnt, sizeof(textspan_t));
 
-	for (size_t i = 0; i < textspans_size(ilist); ++i) {
+	for (size_t i = 0; i < LIST_SIZE(&html_state->fitemList); ++i) {
 	    // move this text span into the new list
-	    textspan_t *ti = textspans_at(ilist, i);
+	    textspan_t *ti = LIST_AT(&html_state->fitemList, i);
 	    lp.items[i] = *ti;
 	    *ti = (textspan_t){0};
 	}
@@ -387,42 +380,41 @@ appendFLineList (htmlparserstate_t *html_state, int v)
 	lp.items = gv_alloc(sizeof(textspan_t));
 	lp.nitems = 1;
 	lp.items[0].str = gv_strdup("");
-	lp.items[0].font = *sfont_back(&html_state->fontstack);
+	lp.items[0].font = *LIST_BACK(&html_state->fontstack);
     }
 
-    textspans_clear(ilist);
+    LIST_CLEAR(&html_state->fitemList);
 
-    htextspans_append(&html_state->fspanList, lp);
+    LIST_APPEND(&html_state->fspanList, lp);
 }
 
 static htmltxt_t*
 mkText(htmlparserstate_t *html_state)
 {
-    htextspans_t *ispan = &html_state->fspanList;
     htmltxt_t *hft = gv_alloc(sizeof(htmltxt_t));
 
-    if (!textspans_is_empty(&html_state->fitemList))
+    if (!LIST_IS_EMPTY(&html_state->fitemList))
 	appendFLineList (html_state, UNSET_ALIGN);
 
-    size_t cnt = htextspans_size(ispan);
+    size_t cnt = LIST_SIZE(&html_state->fspanList);
     hft->nspans = cnt;
 
     hft->spans = gv_calloc(cnt, sizeof(htextspan_t));
-    for (size_t i = 0; i < htextspans_size(ispan); ++i) {
+    for (size_t i = 0; i < LIST_SIZE(&html_state->fspanList); ++i) {
     	// move this HTML text span into the new list
-    	htextspan_t *hi = htextspans_at(ispan, i);
+    	htextspan_t *hi = LIST_AT(&html_state->fspanList, i);
     	hft->spans[i] = *hi;
     	*hi = (htextspan_t){0};
     }
 
-    htextspans_clear(ispan);
+    LIST_CLEAR(&html_state->fspanList);
 
     return hft;
 }
 
 static row_t *lastRow(htmlparserstate_t *html_state) {
   htmltbl_t* tbl = html_state->tblstack;
-  row_t *sp = *rows_back(&tbl->u.p.rows);
+  row_t *sp = *LIST_BACK(&tbl->u.p.rows);
   return sp;
 }
 
@@ -431,14 +423,13 @@ static void addRow(htmlparserstate_t *html_state) {
   row_t *sp = gv_alloc(sizeof(row_t));
   if (tbl->hrule)
     sp->ruled = true;
-  rows_append(&tbl->u.p.rows, sp);
+  LIST_APPEND(&tbl->u.p.rows, sp);
 }
 
 static void setCell(htmlparserstate_t *html_state, htmlcell_t *cp, void *obj, label_type_t kind) {
   htmltbl_t* tbl = html_state->tblstack;
-  row_t *rp = *rows_back(&tbl->u.p.rows);
-  cells_t *row = &rp->rp;
-  cells_append(row, cp);
+  row_t *rp = *LIST_BACK(&tbl->u.p.rows);
+  LIST_APPEND(&rp->rp, cp);
   cp->child.kind = kind;
   if (tbl->vrule) {
     cp->vruled = true;
@@ -468,16 +459,16 @@ static void cleanup (htmlparserstate_t *html_state)
     tp = next;
   }
 
-  textspans_clear(&html_state->fitemList);
-  htextspans_clear(&html_state->fspanList);
+  LIST_CLEAR(&html_state->fitemList);
+  LIST_CLEAR(&html_state->fspanList);
 
-  sfont_free(&html_state->fontstack);
+  LIST_FREE(&html_state->fontstack);
 }
 
 static void
 pushFont (htmlparserstate_t *html_state, textfont_t *fp)
 {
-    textfont_t* curfont = *sfont_back(&html_state->fontstack);
+    textfont_t* curfont = *LIST_BACK(&html_state->fontstack);
     textfont_t  f = *fp;
 
     if (curfont) {
@@ -492,13 +483,13 @@ pushFont (htmlparserstate_t *html_state, textfont_t *fp)
     }
 
     textfont_t *const ft = dtinsert(html_state->gvc->textfont_dt, &f);
-    sfont_push_back(&html_state->fontstack, ft);
+    LIST_PUSH_BACK(&html_state->fontstack, ft);
 }
 
 static void
 popFont (htmlparserstate_t *html_state)
 {
-    (void)sfont_pop_back(&html_state->fontstack);
+    (void)LIST_POP_BACK(&html_state->fontstack);
 }
 
 /* Return parsed label or NULL if failure.
@@ -512,7 +503,9 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
   htmllabel_t*  l = NULL;
   htmlscan_t    scanner = {0};
 
-  sfont_push_back(&scanner.parser.fontstack, NULL);
+  LIST_PUSH_BACK(&scanner.parser.fontstack, NULL);
+  scanner.parser.fitemList.dtor = free_ti;
+  scanner.parser.fspanList.dtor = free_hi;
   scanner.parser.gvc = GD_gvc(env->g);
   scanner.parser.str = &str;
 
@@ -525,10 +518,10 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
     l = scanner.parser.lbl;
   }
 
-  textspans_free(&scanner.parser.fitemList);
-  htextspans_free(&scanner.parser.fspanList);
+  LIST_FREE(&scanner.parser.fitemList);
+  LIST_FREE(&scanner.parser.fspanList);
 
-  sfont_free(&scanner.parser.fontstack);
+  LIST_FREE(&scanner.parser.fontstack);
 
   agxbfree (&str);
 

@@ -78,8 +78,8 @@ SUFFIXES = .1 .1.pdf
 sccmap_SOURCES = sccmap.c
 
 sccmap_LDADD = \
-	$(top_builddir)/lib/cgraph/libcgraph.la $(EXPAT_LIBS)
-
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/util/libutil_C.la $(EXPAT_LIBS)
 
 ccomps_SOURCES = ccomps.c
 
@@ -126,8 +126,8 @@ gvcolor_LDADD = \
 bcomps_SOURCES = bcomps.c
 
 bcomps_LDADD = \
-	$(top_builddir)/lib/cgraph/libcgraph.la
-
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/util/libutil_C.la
 
 gc_SOURCES = gc.c
 
@@ -195,16 +195,16 @@ gmlscan.c: $(top_srcdir)/cmd/tools/gmlscan.l
 
 gml2gv_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la $(MATH_LIBS)
-
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/util/libutil_C.la $(MATH_LIBS)
 
 graphml2gv_SOURCES = graphml2gv.c
 graphml2gv_CPPFLAGS = $(AM_CPPFLAGS) $(EXPAT_CFLAGS)
 
 graphml2gv_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la $(EXPAT_LIBS)
-
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/util/libutil_C.la $(EXPAT_LIBS)
 
 dijkstra_SOURCES = dijkstra.c
 

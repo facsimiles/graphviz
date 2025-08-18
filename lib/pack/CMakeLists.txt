@@ -19,9 +19,13 @@ target_include_directories(pack_obj PRIVATE
   ../pathplan
 )
 
+target_link_libraries(pack_obj PRIVATE util)
+
 add_library(pack STATIC
   $<TARGET_OBJECTS:pack_obj>
 )
+
+target_link_libraries(pack PRIVATE util)
 
 # Specify headers to be installed
 install(

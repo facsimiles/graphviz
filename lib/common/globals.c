@@ -17,6 +17,9 @@
 #include <common/types.h>
 #include <common/globals.h>
 #include <fdpgen/fdp.h>
+#include <util/list.h>
+
+show_boxes_t Show_boxes = {.dtor = LIST_DTOR_FREE};
 
 /* Default layout values, possibly set via command line; -1 indicates unset */
 static fdpParms_t fdpParms = {

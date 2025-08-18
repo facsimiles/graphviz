@@ -1,260 +1,260 @@
-// basic unit tester for list.h
+/// @file
+/// @brief basic unit tester for list.h
 
 #ifdef NDEBUG
-#error this is not intended to be compiled with assertions off
+#error "this is not intended to be compiled with assertions off"
 #endif
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <util/list.c>
 #include <util/list.h>
-
-DEFINE_LIST(ints, int)
+#include <util/unused.h>
 
 // test construction and destruction, with nothing in-between
 static void test_create_reset(void) {
-  ints_t i = {0};
-  ints_free(&i);
+  LIST(int) i = {0};
+  LIST_FREE(&i);
 }
 
 // a list should start in a known initial state
 static void test_init(void) {
-  ints_t i = {0};
-  assert(ints_is_empty(&i));
-  assert(ints_size(&i) == 0);
+  LIST(int) i = {0};
+  assert(LIST_IS_EMPTY(&i));
+  assert(LIST_SIZE(&i) == 0);
 }
 
 // reset of an initialized list should be OK and idempotent
 static void test_init_reset(void) {
-  ints_t i = {0};
-  ints_free(&i);
-  ints_free(&i);
-  ints_free(&i);
+  LIST(int) i = {0};
+  LIST_FREE(&i);
+  LIST_FREE(&i);
+  LIST_FREE(&i);
 }
 
 // repeated append
 static void test_append(void) {
-  ints_t xs = {0};
-  assert(ints_is_empty(&xs));
+  LIST(int) xs = {0};
+  assert(LIST_IS_EMPTY(&xs));
 
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
-    assert(ints_size(&xs) == i + 1);
+    LIST_APPEND(&xs, (int)i);
+    assert(LIST_SIZE(&xs) == i + 1);
   }
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 /// prepend to an empty list
 static void test_prepend_0(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
 
-  ints_prepend(&xs, 42);
-  assert(ints_size(&xs) == 1);
-  assert(ints_get(&xs, 0) == 42);
+  LIST_PREPEND(&xs, 42);
+  assert(LIST_SIZE(&xs) == 1);
+  assert(LIST_GET(&xs, 0) == 42);
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 /// interleaved append and prepend
 static void test_append_prepend(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
 
   for (size_t i = 0; i < 10; ++i) {
     if (i % 2 == 0) {
-      ints_append(&xs, (int)i);
+      LIST_APPEND(&xs, (int)i);
     } else {
-      ints_prepend(&xs, (int)i);
+      LIST_PREPEND(&xs, (int)i);
     }
   }
 
-  assert(ints_size(&xs) == 10);
-  assert(ints_get(&xs, 0) == 9);
-  assert(ints_get(&xs, 1) == 7);
-  assert(ints_get(&xs, 2) == 5);
-  assert(ints_get(&xs, 3) == 3);
-  assert(ints_get(&xs, 4) == 1);
-  assert(ints_get(&xs, 5) == 0);
-  assert(ints_get(&xs, 6) == 2);
-  assert(ints_get(&xs, 7) == 4);
-  assert(ints_get(&xs, 8) == 6);
-  assert(ints_get(&xs, 9) == 8);
+  assert(LIST_SIZE(&xs) == 10);
+  assert(LIST_GET(&xs, 0) == 9);
+  assert(LIST_GET(&xs, 1) == 7);
+  assert(LIST_GET(&xs, 2) == 5);
+  assert(LIST_GET(&xs, 3) == 3);
+  assert(LIST_GET(&xs, 4) == 1);
+  assert(LIST_GET(&xs, 5) == 0);
+  assert(LIST_GET(&xs, 6) == 2);
+  assert(LIST_GET(&xs, 7) == 4);
+  assert(LIST_GET(&xs, 8) == 6);
+  assert(LIST_GET(&xs, 9) == 8);
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_get(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
+    LIST_APPEND(&xs, (int)i);
   }
 
   for (size_t i = 0; i < 10; ++i) {
-    assert(ints_get(&xs, i) == (int)i);
+    assert(LIST_GET(&xs, i) == (int)i);
   }
   for (size_t i = 9;; --i) {
-    assert(ints_get(&xs, i) == (int)i);
+    assert(LIST_GET(&xs, i) == (int)i);
     if (i == 0) {
       break;
     }
   }
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_set(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
+    LIST_APPEND(&xs, (int)i);
   }
 
   for (size_t i = 0; i < 10; ++i) {
-    ints_set(&xs, i, (int)(i + 1));
-    assert(ints_get(&xs, i) == (int)i + 1);
+    LIST_SET(&xs, i, (int)(i + 1));
+    assert(LIST_GET(&xs, i) == (int)i + 1);
   }
   for (size_t i = 9;; --i) {
-    ints_set(&xs, i, (int)i - 1);
-    assert(ints_get(&xs, i) == (int)i - 1);
+    LIST_SET(&xs, i, (int)i - 1);
+    assert(LIST_GET(&xs, i) == (int)i - 1);
     if (i == 0) {
       break;
     }
   }
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 /// removing from an empty list should be a no-op
 static void test_remove_empty(void) {
-  ints_t xs = {0};
-  ints_remove(&xs, 10);
-  assert(ints_size(&xs) == 0);
-  ints_free(&xs);
+  LIST(int) xs = {0};
+  LIST_REMOVE(&xs, 10);
+  assert(LIST_SIZE(&xs) == 0);
+  LIST_FREE(&xs);
 }
 
 /// some basic removal tests
 static void test_remove(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
 
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
+    LIST_APPEND(&xs, (int)i);
   }
 
   // remove something that does not exist
-  ints_remove(&xs, 42);
+  LIST_REMOVE(&xs, 42);
   for (size_t i = 0; i < 10; ++i) {
-    assert(ints_get(&xs, i) == (int)i);
+    assert(LIST_GET(&xs, i) == (int)i);
   }
 
   // remove in the middle
-  ints_remove(&xs, 4);
-  assert(ints_size(&xs) == 9);
+  LIST_REMOVE(&xs, 4);
+  assert(LIST_SIZE(&xs) == 9);
   for (size_t i = 0; i < 9; ++i) {
     if (i < 4) {
-      assert(ints_get(&xs, i) == (int)i);
+      assert(LIST_GET(&xs, i) == (int)i);
     } else {
-      assert(ints_get(&xs, i) == (int)i + 1);
+      assert(LIST_GET(&xs, i) == (int)i + 1);
     }
   }
 
   // remove the first
-  ints_remove(&xs, 0);
-  assert(ints_size(&xs) == 8);
+  LIST_REMOVE(&xs, 0);
+  assert(LIST_SIZE(&xs) == 8);
   for (size_t i = 0; i < 8; ++i) {
     if (i < 3) {
-      assert(ints_get(&xs, i) == (int)i + 1);
+      assert(LIST_GET(&xs, i) == (int)i + 1);
     } else {
-      assert(ints_get(&xs, i) == (int)i + 2);
+      assert(LIST_GET(&xs, i) == (int)i + 2);
     }
   }
 
   // remove the last
-  ints_remove(&xs, 9);
-  assert(ints_size(&xs) == 7);
+  LIST_REMOVE(&xs, 9);
+  assert(LIST_SIZE(&xs) == 7);
   for (size_t i = 0; i < 7; ++i) {
     if (i < 3) {
-      assert(ints_get(&xs, i) == (int)i + 1);
+      assert(LIST_GET(&xs, i) == (int)i + 1);
     } else {
-      assert(ints_get(&xs, i) == (int)i + 2);
+      assert(LIST_GET(&xs, i) == (int)i + 2);
     }
   }
 
   // remove all the rest
   for (size_t i = 0; i < 7; ++i) {
-    ints_remove(&xs, ints_get(&xs, 0));
+    LIST_REMOVE(&xs, LIST_GET(&xs, 0));
   }
-  assert(ints_size(&xs) == 0);
+  assert(LIST_SIZE(&xs) == 0);
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_at(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
+    LIST_APPEND(&xs, (int)i);
   }
 
   for (size_t i = 0; i < 10; ++i) {
-    assert(ints_get(&xs, i) == *ints_at(&xs, i));
+    assert(LIST_GET(&xs, i) == *LIST_AT(&xs, i));
   }
 
   for (size_t i = 0; i < 10; ++i) {
-    int *j = ints_at(&xs, i);
+    int *j = LIST_AT(&xs, i);
     *j = (int)i + 1;
-    assert(ints_get(&xs, i) == (int)i + 1);
+    assert(LIST_GET(&xs, i) == (int)i + 1);
   }
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_clear_empty(void) {
-  ints_t xs = {0};
-  ints_clear(&xs);
-  assert(ints_is_empty(&xs));
+  LIST(int) xs = {0};
+  LIST_CLEAR(&xs);
+  assert(LIST_IS_EMPTY(&xs));
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_clear(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
+    LIST_APPEND(&xs, (int)i);
   }
 
-  assert(!ints_is_empty(&xs));
-  ints_clear(&xs);
-  assert(ints_is_empty(&xs));
+  assert(!LIST_IS_EMPTY(&xs));
+  LIST_CLEAR(&xs);
+  assert(LIST_IS_EMPTY(&xs));
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 // basic push then pop
 static void test_push_one(void) {
-  ints_t s = {0};
+  LIST(int) s = {0};
   int arbitrary = 42;
-  ints_push_back(&s, arbitrary);
-  assert(ints_size(&s) == 1);
-  int top = ints_pop_back(&s);
+  LIST_PUSH_BACK(&s, arbitrary);
+  assert(LIST_SIZE(&s) == 1);
+  int top = LIST_POP_BACK(&s);
   assert(top == arbitrary);
-  assert(ints_is_empty(&s));
-  ints_free(&s);
+  assert(LIST_IS_EMPTY(&s));
+  LIST_FREE(&s);
 }
 
 static void push_then_pop(int count) {
-  ints_t s = {0};
+  LIST(int) s = {0};
   for (int i = 0; i < count; ++i) {
-    ints_push_back(&s, i);
-    assert(ints_size(&s) == (size_t)i + 1);
+    LIST_PUSH_BACK(&s, i);
+    assert(LIST_SIZE(&s) == (size_t)i + 1);
   }
   for (int i = count - 1;; --i) {
-    assert(ints_size(&s) == (size_t)i + 1);
-    int p = ints_pop_back(&s);
+    assert(LIST_SIZE(&s) == (size_t)i + 1);
+    int p = LIST_POP_BACK(&s);
     assert(p == i);
     if (i == 0) {
       break;
     }
   }
-  ints_free(&s);
+  LIST_FREE(&s);
 }
 
 // push a series of items
@@ -265,24 +265,26 @@ static void test_push_then_pop_many(void) { push_then_pop(4096); }
 
 // interleave some push and pop operations
 static void test_push_pop_interleaved(void) {
-  ints_t s = {0};
+  LIST(int) s = {0};
   size_t size = 0;
   for (int i = 0; i < 4096; ++i) {
     if (i % 3 == 1) {
-      int p = ints_pop_back(&s);
+      int p = LIST_POP_BACK(&s);
       assert(p == i - 1);
       --size;
     } else {
-      ints_push_back(&s, i);
+      LIST_PUSH_BACK(&s, i);
       ++size;
     }
-    assert(ints_size(&s) == size);
+    assert(LIST_SIZE(&s) == size);
   }
-  ints_free(&s);
+  LIST_FREE(&s);
 }
 
 /// an int comparer
-static int cmp_int(const int *a, const int *b) {
+static int cmp_int(const void *x, const void *y) {
+  const int *a = x;
+  const int *b = y;
   if (*a < *b) {
     return -1;
   }
@@ -294,51 +296,51 @@ static int cmp_int(const int *a, const int *b) {
 
 /// sort on an empty list should be a no-op
 static void test_sort_empty(void) {
-  ints_t xs = {0};
-  ints_sort(&xs, cmp_int);
-  assert(ints_size(&xs) == 0);
-  ints_free(&xs);
+  LIST(int) xs = {0};
+  LIST_SORT(&xs, cmp_int);
+  assert(LIST_SIZE(&xs) == 0);
+  LIST_FREE(&xs);
 }
 
 static void test_sort(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
 
   // a list of ints in an arbitrary order
   const int ys[] = {4, 2, 10, 5, -42, 3};
 
   // setup this list and sort it
   for (size_t i = 0; i < sizeof(ys) / sizeof(ys[0]); ++i) {
-    ints_append(&xs, ys[i]);
+    LIST_APPEND(&xs, ys[i]);
   }
-  ints_sort(&xs, cmp_int);
+  LIST_SORT(&xs, cmp_int);
 
   // we should now have a sorted version of `ys`
-  assert(ints_size(&xs) == sizeof(ys) / sizeof(ys[0]));
-  assert(ints_get(&xs, 0) == -42);
-  assert(ints_get(&xs, 1) == 2);
-  assert(ints_get(&xs, 2) == 3);
-  assert(ints_get(&xs, 3) == 4);
-  assert(ints_get(&xs, 4) == 5);
-  assert(ints_get(&xs, 5) == 10);
+  assert(LIST_SIZE(&xs) == sizeof(ys) / sizeof(ys[0]));
+  assert(LIST_GET(&xs, 0) == -42);
+  assert(LIST_GET(&xs, 1) == 2);
+  assert(LIST_GET(&xs, 2) == 3);
+  assert(LIST_GET(&xs, 3) == 4);
+  assert(LIST_GET(&xs, 4) == 5);
+  assert(LIST_GET(&xs, 5) == 10);
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 /// sorting an already sorted list should be a no-op
 static void test_sort_sorted(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
   const int ys[] = {-42, 2, 3, 4, 5, 10};
 
   for (size_t i = 0; i < sizeof(ys) / sizeof(ys[0]); ++i) {
-    ints_append(&xs, ys[i]);
+    LIST_APPEND(&xs, ys[i]);
   }
-  ints_sort(&xs, cmp_int);
+  LIST_SORT(&xs, cmp_int);
 
   for (size_t i = 0; i < sizeof(ys) / sizeof(ys[0]); ++i) {
-    assert(ints_get(&xs, i) == ys[i]);
+    assert(LIST_GET(&xs, i) == ys[i]);
   }
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 typedef struct {
@@ -346,10 +348,10 @@ typedef struct {
   int y;
 } pair_t;
 
-DEFINE_LIST(pairs, pair_t)
-
 /// a pair comparer, using only the first element
-static int cmp_pair(const pair_t *a, const pair_t *b) {
+static int cmp_pair(const void *x, const void *y) {
+  const pair_t *a = x;
+  const pair_t *b = y;
   if (a->x < b->x) {
     return -1;
   }
@@ -361,121 +363,124 @@ static int cmp_pair(const pair_t *a, const pair_t *b) {
 
 /// sorting a complex type should move entire values of the type together
 static void test_sort_complex(void) {
-  pairs_t xs = {0};
+  LIST(pair_t) xs = {0};
 
   const pair_t ys[] = {{1, 2}, {-2, 3}, {-10, 4}, {0, 7}};
 
   for (size_t i = 0; i < sizeof(ys) / sizeof(ys[0]); ++i) {
-    pairs_append(&xs, ys[i]);
+    LIST_APPEND(&xs, ys[i]);
   }
-  pairs_sort(&xs, cmp_pair);
+  LIST_SORT(&xs, cmp_pair);
 
-  assert(pairs_size(&xs) == sizeof(ys) / sizeof(ys[0]));
-  assert(pairs_get(&xs, 0).x == -10);
-  assert(pairs_get(&xs, 0).y == 4);
-  assert(pairs_get(&xs, 1).x == -2);
-  assert(pairs_get(&xs, 1).y == 3);
-  assert(pairs_get(&xs, 2).x == 0);
-  assert(pairs_get(&xs, 2).y == 7);
-  assert(pairs_get(&xs, 3).x == 1);
-  assert(pairs_get(&xs, 3).y == 2);
+  assert(LIST_SIZE(&xs) == sizeof(ys) / sizeof(ys[0]));
+  assert(LIST_GET(&xs, 0).x == -10);
+  assert(LIST_GET(&xs, 0).y == 4);
+  assert(LIST_GET(&xs, 1).x == -2);
+  assert(LIST_GET(&xs, 1).y == 3);
+  assert(LIST_GET(&xs, 2).x == 0);
+  assert(LIST_GET(&xs, 2).y == 7);
+  assert(LIST_GET(&xs, 3).x == 1);
+  assert(LIST_GET(&xs, 3).y == 2);
 
-  pairs_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_shrink(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
 
   // to test this one we need to access the list internals
-  while (ints_size(&xs) == xs.capacity) {
-    ints_append(&xs, 42);
+  while (LIST_SIZE(&xs) == xs.impl.capacity) {
+    LIST_APPEND(&xs, 42);
   }
 
-  assert(xs.capacity > ints_size(&xs));
-  ints_shrink_to_fit(&xs);
-  assert(xs.capacity == ints_size(&xs));
+  assert(xs.impl.capacity > LIST_SIZE(&xs));
+  LIST_SHRINK_TO_FIT(&xs);
+  assert(xs.impl.capacity == LIST_SIZE(&xs));
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_shrink_empty(void) {
-  ints_t xs = {0};
-  ints_shrink_to_fit(&xs);
-  assert(xs.capacity == 0);
-  ints_free(&xs);
+  LIST(int) xs = {0};
+  LIST_SHRINK_TO_FIT(&xs);
+  assert(xs.impl.capacity == 0);
+  LIST_FREE(&xs);
 }
 
 static void test_free(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
+    LIST_APPEND(&xs, (int)i);
   }
 
-  ints_free(&xs);
-  assert(ints_size(&xs) == 0);
-  assert(xs.capacity == 0);
+  LIST_FREE(&xs);
+  assert(LIST_SIZE(&xs) == 0);
+  assert(xs.impl.capacity == 0);
 }
 
 static void test_push_back(void) {
-  ints_t xs = {0};
-  ints_t ys = {0};
+  LIST(int) xs = {0};
+  LIST(int) ys = {0};
 
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
-    ints_push_back(&ys, (int)i);
-    assert(ints_size(&xs) == ints_size(&ys));
+    LIST_APPEND(&xs, (int)i);
+    LIST_PUSH_BACK(&ys, (int)i);
+    assert(LIST_SIZE(&xs) == LIST_SIZE(&ys));
     for (size_t j = 0; j <= i; ++j) {
-      assert(ints_get(&xs, j) == ints_get(&ys, j));
+      assert(LIST_GET(&xs, j) == LIST_GET(&ys, j));
     }
   }
 
-  ints_free(&ys);
-  ints_free(&xs);
+  LIST_FREE(&ys);
+  LIST_FREE(&xs);
 }
 
 static void test_pop_back(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
 
   for (size_t i = 0; i < 10; ++i) {
-    ints_push_back(&xs, (int)i);
+    LIST_PUSH_BACK(&xs, (int)i);
   }
   for (size_t i = 0; i < 10; ++i) {
-    assert(ints_size(&xs) == 10 - i);
-    int x = ints_pop_back(&xs);
+    assert(LIST_SIZE(&xs) == 10 - i);
+    int x = LIST_POP_BACK(&xs);
     assert(x == 10 - (int)i - 1);
   }
 
   for (size_t i = 0; i < 10; ++i) {
-    ints_push_back(&xs, (int)i);
-    (void)ints_pop_back(&xs);
-    assert(ints_is_empty(&xs));
+    LIST_PUSH_BACK(&xs, (int)i);
+    (void)LIST_POP_BACK(&xs);
+    assert(LIST_IS_EMPTY(&xs));
   }
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_large(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
 
   for (int i = 0; i < 5000; ++i) {
-    ints_append(&xs, i);
+    LIST_APPEND(&xs, i);
   }
   for (size_t i = 0; i < 5000; ++i) {
-    assert(ints_get(&xs, i) == (int)i);
+    assert(LIST_GET(&xs, i) == (int)i);
   }
 
-  ints_free(&xs);
+  LIST_FREE(&xs);
 }
 
 static void test_detach(void) {
-  ints_t xs = {0};
+  LIST(int) xs = {0};
   for (size_t i = 0; i < 10; ++i) {
-    ints_append(&xs, (int)i);
+    LIST_APPEND(&xs, (int)i);
   }
 
-  int *ys = ints_detach(&xs);
+  int *ys;
+  size_t ys_size;
+  LIST_DETACH(&xs, &ys, &ys_size);
   assert(ys != NULL);
-  assert(ints_is_empty(&xs));
+  assert(ys_size == 10);
+  assert(LIST_IS_EMPTY(&xs));
 
   for (size_t i = 0; i < 10; ++i) {
     assert(ys[i] == (int)i);
@@ -484,40 +489,141 @@ static void test_detach(void) {
   free(ys);
 }
 
-DEFINE_LIST_WITH_DTOR(strs, char *, free)
-
 static void test_dtor(void) {
 
   // setup a list with a non-trivial destructor
-  strs_t xs = {0};
+  LIST(char *) xs = {.dtor = LIST_DTOR_FREE};
 
   for (size_t i = 0; i < 10; ++i) {
     char *hello = strdup("hello");
     assert(hello != NULL);
-    strs_append(&xs, hello);
+    LIST_APPEND(&xs, hello);
   }
 
   for (size_t i = 0; i < 10; ++i) {
-    assert(strcmp(strs_get(&xs, i), "hello") == 0);
+    assert(strcmp(LIST_GET(&xs, i), "hello") == 0);
   }
 
-  strs_free(&xs);
+  LIST_FREE(&xs);
 }
 
 /// test removal does not leak memory
 static void test_remove_with_dtor(void) {
-  strs_t xs = {0};
+  LIST(char *) xs = {.dtor = LIST_DTOR_FREE};
 
   char *hello = strdup("hello");
   assert(hello != NULL);
 
-  strs_append(&xs, hello);
-  strs_remove(&xs, hello);
-  assert(strs_size(&xs) == 0);
+  LIST_APPEND(&xs, hello);
+  LIST_REMOVE(&xs, hello);
+  assert(LIST_SIZE(&xs) == 0);
 
-  strs_free(&xs);
+  LIST_FREE(&xs);
 }
 
+#ifndef BAD_TEST
+#define BAD_TEST 0
+#endif
+
+#if BAD_TEST == 1
+/// appending a struct to an int list should fail to compile
+static UNUSED void test_bad_append1(void) {
+  LIST(int) xs = {0};
+
+  struct foo {
+    int x;
+  };
+  struct foo y = {0};
+
+  LIST_APPEND(&xs, y);
+}
+#endif
+
+#if BAD_TEST == 2
+/// appending an int to a struct list should fail to compile
+static UNUSED void test_bad_append2(void) {
+  struct foo {
+    int x;
+  };
+  LIST(struct foo) xs = {0};
+
+  LIST_APPEND(&xs, 1);
+}
+#endif
+
+#if BAD_TEST == 3
+/// getter of an int list should return an int-typed value
+static UNUSED void test_bad_get1(void) {
+  LIST(int) xs = {0};
+  LIST_APPEND(&xs, 1);
+
+  struct foo {
+    int x;
+  };
+  struct foo y UNUSED = LIST_GET(&xs, 0);
+}
+#endif
+
+#if BAD_TEST == 4
+/// getter of an struct list should return an struct-typed value
+static UNUSED void test_bad_get2(void) {
+  struct foo {
+    int x;
+  };
+  LIST(struct foo) xs = {0};
+
+  struct foo y = {1};
+  LIST_APPEND(&xs, y);
+
+  int x UNUSED = LIST_GET(&xs, 0);
+}
+#endif
+
+#if BAD_TEST == 5
+/// `at` of an int list should return an int-typed pointer
+static UNUSED void test_bad_get1(void) {
+  LIST(int) xs = {0};
+  LIST_APPEND(&xs, 1);
+
+  struct foo {
+    int x;
+  };
+// upgrade incompatible pointer assignments into a compiler error
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic error "-Wincompatible-pointer-types"
+#endif
+  struct foo *y UNUSED = LIST_AT(&xs, 0);
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+}
+#endif
+
+#if BAD_TEST == 6
+/// `at` of a struct list should return an struct-typed pointer
+static UNUSED void test_bad_get2(void) {
+  struct foo {
+    int x;
+  };
+  LIST(struct foo) xs = {0};
+
+  struct foo y = {1};
+  LIST_APPEND(&xs, y);
+
+// upgrade incompatible pointer assignments into a compiler error
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic error "-Wincompatible-pointer-types"
+#endif
+  int *x UNUSED = LIST_AT(&xs, 0);
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+}
+#endif
+
+/// test removal does not leak memory
 int main(void) {
 
 #define RUN(t)                                                                 \

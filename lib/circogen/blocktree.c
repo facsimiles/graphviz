@@ -13,6 +13,7 @@
 #include <util/agxbuf.h>
 #include <util/debug.h>
 #include <util/gv_math.h>
+#include <util/list.h>
 
 static void addNode(block_t * bp, Agnode_t * n)
 {
@@ -39,7 +40,7 @@ static block_t *makeBlock(Agraph_t * g, circ_state * state)
     return bp;
 }
 
-DEFINE_LIST(estack, Agedge_t*)
+typedef LIST(Agedge_t *) estack_t;
 
 /* Current scheme adds articulation point to first non-trivial child
  * block. If none exists, it will be added to its parent's block, if
@@ -68,7 +69,7 @@ static void dfs(Agraph_t *g, Agnode_t *u, circ_state *state, bool isRoot,
 
         if (VAL(v) == 0) {   /* Since VAL(root) == 0, it gets treated as artificial cut point */
 	    PARENT(v) = u;
-            estack_push_back(stk, e);
+            LIST_PUSH_BACK(stk, e);
             dfs(g, v, state, false, stk);
             LOWVAL(u) = imin(LOWVAL(u), LOWVAL(v));
             if (LOWVAL(v) >= VAL(u)) {       /* u is an articulation point */
@@ -76,7 +77,7 @@ static void dfs(Agraph_t *g, Agnode_t *u, circ_state *state, bool isRoot,
 		Agnode_t *np;
 		Agedge_t *ep;
                 do {
-                    ep = estack_pop_back(stk);
+                    ep = LIST_POP_BACK(stk);
 		    if (EDGEORDER(ep) == 1)
 			np = aghead (ep);
 		    else
@@ -130,7 +131,7 @@ static void find_blocks(Agraph_t * g, circ_state * state)
     GV_DEBUG("root = %s", agnameof(root));
     estack_t stk = {0};
     dfs(g, root, state, true, &stk);
-    estack_free(&stk);
+    LIST_FREE(&stk);
 }
 
 /* Construct block tree by peeling nodes from block list in state.

@@ -5,4 +5,4 @@
 #include <common/geom.h>
 #include <util/list.h>
 
-DEFINE_LIST(boxes, boxf)
+typedef LIST(boxf) boxes_t;

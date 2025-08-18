@@ -12,7 +12,7 @@ add_executable(prune prune.c)
 target_include_directories(prune PRIVATE
   ../../lib
   ../../lib/cdt)
-target_link_libraries(prune PRIVATE cdt cgraph)
+target_link_libraries(prune PRIVATE cdt cgraph util)
 
 if(GETOPT_FOUND)
   target_include_directories(prune SYSTEM PRIVATE

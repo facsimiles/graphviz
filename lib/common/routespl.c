@@ -44,7 +44,7 @@ static void printboxes(size_t boxn, boxf *boxes) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
 	agxbuf buf = {0};
 	agxbprint(&buf, "%.0f %.0f %.0f %.0f pathbox", ll.x, ll.y, ur.x, ur.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
 }
 
@@ -86,38 +86,38 @@ static void psprintpointf(pointf p)
 
 static void psprintspline(Ppolyline_t spl)
 {
-    show_boxes_append(&Show_boxes, gv_strdup("%%!"));
-    show_boxes_append(&Show_boxes, gv_strdup("%% spline"));
-    show_boxes_append(&Show_boxes, gv_strdup("gsave 1 0 0 setrgbcolor newpath"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%%!"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% spline"));
+    LIST_APPEND(&Show_boxes, gv_strdup("gsave 1 0 0 setrgbcolor newpath"));
     for (size_t i = 0; i < spl.pn; i++) {
 	agxbuf buf = {0};
 	agxbprint(&buf, "%f %f %s", spl.ps[i].x, spl.ps[i].y,
 	  i == 0 ?  "moveto" : (i % 3 == 0 ? "curveto" : ""));
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("stroke grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("stroke grestore"));
 }
 
 static void psprintline(Ppolyline_t pl)
 {
-    show_boxes_append(&Show_boxes, gv_strdup("%%!"));
-    show_boxes_append(&Show_boxes, gv_strdup("%% line"));
-    show_boxes_append(&Show_boxes, gv_strdup("gsave 0 0 1 setrgbcolor newpath"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%%!"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% line"));
+    LIST_APPEND(&Show_boxes, gv_strdup("gsave 0 0 1 setrgbcolor newpath"));
     for (size_t i = 0; i < pl.pn; i++) {
 	agxbuf buf = {0};
 	agxbprint(&buf, "%f %f %s", pl.ps[i].x, pl.ps[i].y,
 		i == 0 ? "moveto" : "lineto");
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("stroke grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("stroke grestore"));
 }
 
 static void psprintpoly(Ppoly_t p)
 {
     char*  pfx;
 
-    show_boxes_append(&Show_boxes, gv_strdup("%% poly list"));
-    show_boxes_append(&Show_boxes, gv_strdup("gsave 0 1 0 setrgbcolor"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% poly list"));
+    LIST_APPEND(&Show_boxes, gv_strdup("gsave 0 1 0 setrgbcolor"));
     for (size_t bi = 0; bi < p.pn; bi++) {
 	const pointf tail = p.ps[bi];
 	const pointf head = p.ps[(bi + 1) % p.pn];
@@ -126,38 +126,38 @@ static void psprintpoly(Ppoly_t p)
 	agxbuf buf = {0};
 	agxbprint(&buf, "%s%.0f %.0f %.0f %.0f makevec", pfx, tail.x, tail.y, head.x,
 	          head.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("grestore"));
 }
 
 static void psprintboxes(size_t boxn, boxf *boxes) {
     pointf ll, ur;
 
-    show_boxes_append(&Show_boxes, gv_strdup("%% box list"));
-    show_boxes_append(&Show_boxes, gv_strdup("gsave 0 1 0 setrgbcolor"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% box list"));
+    LIST_APPEND(&Show_boxes, gv_strdup("gsave 0 1 0 setrgbcolor"));
     for (size_t bi = 0; bi < boxn; bi++) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
 	agxbuf buf = {0};
 	agxbprint(&buf, "newpath\n%.0f %.0f moveto", ll.x, ll.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
 	agxbprint(&buf, "%.0f %.0f lineto", ll.x, ur.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
 	agxbprint(&buf, "%.0f %.0f lineto", ur.x, ur.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
 	agxbprint(&buf, "%.0f %.0f lineto", ur.x, ll.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
-	show_boxes_append(&Show_boxes, gv_strdup("closepath stroke"));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, gv_strdup("closepath stroke"));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("grestore"));
 }
 
 static void psprintinit (int begin)
 {
     if (begin)
-	show_boxes_append(&Show_boxes, gv_strdup("dbgstart"));
+	LIST_APPEND(&Show_boxes, gv_strdup("dbgstart"));
     else
-	show_boxes_append(&Show_boxes, gv_strdup("grestore"));
+	LIST_APPEND(&Show_boxes, gv_strdup("grestore"));
 }
 
 static bool debugleveln(edge_t* realedge, int i)
@@ -222,7 +222,7 @@ routesplinesinit(void)
 {
     if (++routeinit > 1) return 0;
 #ifdef DEBUG
-    show_boxes_free(&Show_boxes);
+    LIST_FREE(&Show_boxes);
 #endif
     nedges = 0;
     nboxes = 0;
@@ -784,26 +784,26 @@ static pointf get_centroid(Agraph_t *g)
     return sum;
 }
 
-DEFINE_LIST(nodes, node_t *)
+typedef LIST(node_t *) nodes_t;
 
 static void nodes_delete(nodes_t *pvec) {
   if (pvec != NULL) {
-    nodes_free(pvec);
+    LIST_FREE(pvec);
   }
   free(pvec);
 }
 
-DEFINE_LIST_WITH_DTOR(cycles, nodes_t *, nodes_delete)
+typedef LIST(nodes_t *) cycles_t;
 
 static bool cycle_contains_edge(nodes_t *cycle, edge_t *edge) {
 	node_t* start = agtail(edge);
 	node_t* end = aghead(edge);
 
-	const size_t cycle_len = nodes_size(cycle);
+	const size_t cycle_len = LIST_SIZE(cycle);
 
 	for (size_t i=0; i < cycle_len; ++i) {
-		const node_t *c_start = nodes_get(cycle, i == 0 ? cycle_len - 1 : i - 1);
-		const node_t *c_end = nodes_get(cycle, i);
+		const node_t *c_start = LIST_GET(cycle, i == 0 ? cycle_len - 1 : i - 1);
+		const node_t *c_end = LIST_GET(cycle, i);
 
 		if (c_start == start && c_end == end)
 			return true;
@@ -813,24 +813,22 @@ static bool cycle_contains_edge(nodes_t *cycle, edge_t *edge) {
 	return false;
 }
 
-static bool eq(const node_t *a, const node_t *b) { return a == b; }
-
 static bool is_cycle_unique(cycles_t *cycles, nodes_t *cycle) {
-	const size_t cycle_len = nodes_size(cycle);
+	const size_t cycle_len = LIST_SIZE(cycle);
 	size_t i; //node counter
 
 	bool all_items_match;
 
-	for (size_t c = 0; c < cycles_size(cycles); ++c) {
-		nodes_t *cur_cycle = cycles_get(cycles, c);
-		const size_t cur_cycle_len = nodes_size(cur_cycle);
+	for (size_t c = 0; c < LIST_SIZE(cycles); ++c) {
+		nodes_t *cur_cycle = LIST_GET(cycles, c);
+		const size_t cur_cycle_len = LIST_SIZE(cur_cycle);
 
 		//if all the items match in equal length cycles then we're not unique
 		if (cur_cycle_len == cycle_len) {
 			all_items_match = true;
 			for (i=0; i < cur_cycle_len; ++i) {
-				node_t *cur_cycle_item = nodes_get(cur_cycle, i);
-				if (!nodes_contains(cycle, cur_cycle_item, eq)) {
+				node_t *cur_cycle_item = LIST_GET(cur_cycle, i);
+				if (!LIST_CONTAINS(cycle, cur_cycle_item)) {
 					all_items_match = false;
 					break;
 				}
@@ -848,22 +846,22 @@ static void dfs(graph_t *g, node_t *search, nodes_t *visited, node_t *end,
 	edge_t* e;
 	node_t* n;
 
-	if (nodes_contains(visited, search, eq)) {
+	if (LIST_CONTAINS(visited, search)) {
 		if (search == end) {
 			if (is_cycle_unique(cycles, visited)) {
 				nodes_t *cycle = gv_alloc(sizeof(nodes_t));
-				*cycle = nodes_copy(visited);
-				cycles_append(cycles, cycle);
+				LIST_COPY(cycle, visited);
+				LIST_APPEND(cycles, cycle);
 			}
 		}
 	} else {
-		nodes_append(visited, search);
+		LIST_APPEND(visited, search);
 		for (e = agfstout(g, search); e; e = agnxtout(g, e)) {
 			n = aghead(e);
 			dfs(g, n, visited, end, cycles);
 		}
-		if (!nodes_is_empty(visited)) {
-			(void)nodes_pop_back(visited);
+		if (!LIST_IS_EMPTY(visited)) {
+			(void)LIST_POP_BACK(visited);
 		}
 	}
 }
@@ -873,18 +871,18 @@ static cycles_t find_all_cycles(graph_t *g) {
     node_t *n;
 
     // vector of vectors of nodes -- AKA cycles to delete
-    cycles_t alloced_cycles = {0};
-    cycles_t cycles = {0}; // vector of vectors of nodes AKA a vector of cycles
+    cycles_t alloced_cycles = {.dtor = nodes_delete};
+    cycles_t cycles = {.dtor = nodes_delete}; // vector of vectors of nodes AKA a vector of cycles
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		nodes_t *cycle = gv_alloc(sizeof(nodes_t));
 		// keep track of all items we allocate to clean up at the end of this function
-		cycles_append(&alloced_cycles, cycle);
+		LIST_APPEND(&alloced_cycles, cycle);
 		
 		dfs(g, n, cycle, n, &cycles);
 	}
 	
-	cycles_free(&alloced_cycles); // cycles contains copied vecs
+	LIST_FREE(&alloced_cycles); // cycles contains copied vecs
     return cycles;
 }
 
@@ -892,14 +890,14 @@ static nodes_t *find_shortest_cycle_with_edge(cycles_t *cycles, edge_t *edge,
                                               size_t min_size) {
 	nodes_t *shortest = NULL;
 
-	for (size_t c = 0; c < cycles_size(cycles); ++c) {
-		nodes_t *cycle = cycles_get(cycles, c);
-		size_t cycle_len = nodes_size(cycle);
+	for (size_t c = 0; c < LIST_SIZE(cycles); ++c) {
+		nodes_t *cycle = LIST_GET(cycles, c);
+		size_t cycle_len = LIST_SIZE(cycle);
 
 		if (cycle_len < min_size)
 			continue;
 
-		if (shortest == NULL || nodes_size(shortest) > cycle_len) {
+		if (shortest == NULL || LIST_SIZE(shortest) > cycle_len) {
 			if (cycle_contains_edge(cycle, edge)) {
 				shortest = cycle;
 			}
@@ -918,19 +916,19 @@ static pointf get_cycle_centroid(graph_t *g, edge_t* edge)
     pointf sum = {0.0, 0.0};
 
 	if (cycle == NULL) {
-		cycles_free(&cycles);
+		LIST_FREE(&cycles);
 		return get_centroid(g);
 	}
 
 	double cnt = 0;
-	for (size_t idx = 0; idx < nodes_size(cycle); ++idx) {
-		node_t *n = nodes_get(cycle, idx);
+	for (size_t idx = 0; idx < LIST_SIZE(cycle); ++idx) {
+		node_t *n = LIST_GET(cycle, idx);
 		sum.x += ND_coord(n).x;
         sum.y += ND_coord(n).y;
         cnt++;
 	}
 
-	cycles_free(&cycles);
+	LIST_FREE(&cycles);
 
 	sum.x /= cnt;
     sum.y /= cnt;

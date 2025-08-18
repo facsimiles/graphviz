@@ -16,6 +16,7 @@
 #include "gltemplate.h"
 #include <glcomp/glutils.h>
 #include <util/exit.h>
+#include <util/list.h>
 #include "glexpose.h"
 #include "glmotion.h"
 
@@ -291,7 +292,7 @@ static gboolean motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
 	appmouse_drag(view,(int)event->x,(int)event->y);
 	redraw = true;
     }
-    if (!glCompPoly_is_empty(&view->Topview->sel.selPoly))
+    if (!LIST_IS_EMPTY(&view->Topview->sel.selPoly))
 	redraw = true;
 
     begin_x = x;
