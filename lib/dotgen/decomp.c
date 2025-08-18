@@ -21,7 +21,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <util/alloc.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 static node_t *Last_node;
 static size_t Cmark;
@@ -56,20 +56,20 @@ end_component(graph_t* g)
     GD_comp(g).list[i] = GD_nlist(g);
 }
 
-DEFINE_LIST(node_stack, node_t *)
+typedef LIST(node_t *) node_stack_t;
 
 static void push(node_stack_t *sp, node_t *np) {
   ND_mark(np) = Cmark + 1;
-  node_stack_push_back(sp, np);
+  LIST_PUSH_BACK(sp, np);
 }
 
 static node_t *pop(node_stack_t *sp) {
 
-  if (node_stack_is_empty(sp)) {
+  if (LIST_IS_EMPTY(sp)) {
     return NULL;
   }
 
-  return node_stack_pop_back(sp);
+  return LIST_POP_BACK(sp);
 }
 
 /* iterative dfs for components.
@@ -124,5 +124,5 @@ void decompose(graph_t * g, int pass)
 	    end_component(g);
 	}
     }
-    node_stack_free(&stk);
+    LIST_FREE(&stk);
 }
