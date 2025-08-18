@@ -15,7 +15,7 @@
 #include	<stdbool.h>
 #include	<util/agxbuf.h>
 #include	<util/alloc.h>
-#include	<util/list.h>
+#include	<util/list2.h>
 
 /* The code below lays out a single block on a circle.
  */
@@ -69,25 +69,18 @@ static Agraph_t *clone_graph(Agraph_t *ing, Agraph_t **xg, circ_state *state) {
     return clone;
 }
 
-DEFINE_LIST(deglist, Agnode_t*)
+typedef LIST(Agnode_t *) deglist_t;
 
 /// comparison function for sorting nodes by degree, descending
-static int cmpDegree(const Agnode_t **a, const Agnode_t **b) {
-// Suppress Clang/GCC -Wcast-qual warnings. `DEGREE` does not modify the
-// underlying data, but uses casts that make it look like it does.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
+static int cmpDegree(const void *x, const void *y) {
+  Agnode_t *const *a = x;
+  Agnode_t *const *b = y;
   if (DEGREE(*a) < DEGREE(*b)) {
     return 1;
   }
   if (DEGREE(*a) > DEGREE(*b)) {
     return -1;
   }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
   return 0;
 }
 
@@ -97,9 +90,9 @@ static deglist_t getList(Agraph_t *g) {
     Agnode_t *n;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	deglist_append(&dl, n);
+	LIST_APPEND(&dl, n);
     }
-    deglist_sort(&dl, cmpDegree);
+    LIST_SORT(&dl, cmpDegree);
     return dl;
 }
 
@@ -214,14 +207,14 @@ static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
     deglist_t dl = getList(g);
 
     while (counter < nodeCount - 3) {
-	currnode = deglist_is_empty(&dl) ? NULL : deglist_pop_back(&dl);
+	currnode = LIST_IS_EMPTY(&dl) ? NULL : LIST_POP_BACK(&dl);
 
 	/* Remove all adjacent nodes since they have to be reinserted */
 	for (e = agfstedge(g, currnode); e; e = agnxtedge(g, e, currnode)) {
 	    adjNode = aghead(e);
 	    if (currnode == adjNode)
 		adjNode = agtail(e);
-	    deglist_remove(&dl, adjNode);
+	    LIST_REMOVE(&dl, adjNode);
 	}
 
 	find_pair_edges(g, currnode, outg);
@@ -232,9 +225,9 @@ static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
 		adjNode = agtail(e);
 
 	    DEGREE(adjNode)--;
-	    deglist_append(&dl, adjNode);
+	    LIST_APPEND(&dl, adjNode);
 	}
-	deglist_sort(&dl, cmpDegree);
+	LIST_SORT(&dl, cmpDegree);
 
 	agdelete(g, currnode);
 
@@ -242,7 +235,7 @@ static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
     }
 
     agclose(g);
-    deglist_free(&dl);
+    LIST_FREE(&dl);
     return outg;
 }
 
