@@ -19,9 +19,10 @@
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/list.h>
+#include <util/list2.h>
 #include <util/prisize_t.h>
 
-DEFINE_LIST(node_stack, Agnode_t *)
+typedef LIST(Agnode_t *) node_stack_t;
 
 typedef struct {
   node_stack_t data;
@@ -45,19 +46,19 @@ static void initStk(stk_t *sp, void (*actionfn)(Agnode_t *, void *),
   sp->markfn = markfn;
 }
 
-static void freeStk(stk_t *sp) { node_stack_free(&sp->data); }
+static void freeStk(stk_t *sp) { LIST_FREE(&sp->data); }
 
 static void push(stk_t *sp, Agnode_t *np) {
   mark(sp, np);
-  node_stack_push_back(&sp->data, np);
+  LIST_PUSH_BACK(&sp->data, np);
 }
 
 static Agnode_t *pop(stk_t *sp) {
-  if (node_stack_is_empty(&sp->data)) {
+  if (LIST_IS_EMPTY(&sp->data)) {
     return NULL;
   }
 
-  return node_stack_pop_back(&sp->data);
+  return LIST_POP_BACK(&sp->data);
 }
 
 static size_t dfs(Agraph_t *g, Agnode_t *n, void *state, stk_t *stk) {
