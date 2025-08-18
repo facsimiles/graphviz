@@ -2357,14 +2357,13 @@ comp_prog *compileProg(parse_prog *inp, Gpr_t *state, compflags_t flags) {
       goto finish;
   }
 
-  if (!parse_blocks_is_empty(&inp->blocks)) {
+  if (!LIST_IS_EMPTY(&inp->blocks)) {
     comp_block *bp;
 
-    p->blocks = bp =
-        gv_calloc(parse_blocks_size(&inp->blocks), sizeof(comp_block));
+    p->blocks = bp = gv_calloc(LIST_SIZE(&inp->blocks), sizeof(comp_block));
 
-    for (size_t i = 0; i < parse_blocks_size(&inp->blocks); bp++, i++) {
-      parse_block *ibp = parse_blocks_at(&inp->blocks, i);
+    for (size_t i = 0; i < LIST_SIZE(&inp->blocks); bp++, i++) {
+      parse_block *ibp = LIST_AT(&inp->blocks, i);
       uses_graph |= mkBlock(bp, p->prog, inp->source, ibp, i);
       if (getErrorErrors())
         goto finish;

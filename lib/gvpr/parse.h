@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <util/list.h>
 #include <util/list2.h>
 
 #ifdef __cplusplus
@@ -36,7 +35,7 @@ typedef LIST(case_info) case_infos_t;
 	case_infos_t edge_stmts;
     } parse_block; 
 
-DEFINE_LIST(parse_blocks, parse_block)
+typedef LIST(parse_block) parse_blocks_t;
 
     typedef struct {
 	char *source;

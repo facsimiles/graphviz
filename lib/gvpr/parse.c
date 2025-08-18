@@ -345,7 +345,7 @@ static void addBlock(parse_blocks_t *list, char *stmt, int line,
   item.node_stmts = nodelist;
   item.edge_stmts = edgelist;
 
-  parse_blocks_append(list, item);
+  LIST_APPEND(list, item);
 }
 
 /// create new case_info and append to list
@@ -485,13 +485,13 @@ parse_prog *parseProg(char *input, int isFile) {
 }
 
 static void freeBlocks(parse_blocks_t *ip) {
-  for (size_t i = 0; i < parse_blocks_size(ip); ++i) {
-    parse_block p = parse_blocks_get(ip, i);
+  for (size_t i = 0; i < LIST_SIZE(ip); ++i) {
+    parse_block p = LIST_GET(ip, i);
     free(p.begg_stmt);
     LIST_FREE(&p.node_stmts);
     LIST_FREE(&p.edge_stmts);
   }
-  parse_blocks_free(ip);
+  LIST_FREE(ip);
 }
 
 void freeParseProg(parse_prog *prog) {
