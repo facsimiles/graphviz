@@ -36,7 +36,6 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/itos.h>
-#include <util/list.h>
 #include <util/list2.h>
 #include <util/prisize_t.h>
 
@@ -66,7 +65,7 @@ typedef struct {
     bool valid; ///< is this pane currently allocated?
 } vgpane_t;
 
-DEFINE_LIST(vgpanes, vgpane_t)
+typedef LIST(vgpane_t) vgpanes_t;
 
 static vgpanes_t vgpaneTable;
 
@@ -369,10 +368,10 @@ static vgpane_t *find_vgpane(vgpanes_t *panes, const char *handle) {
   if (sscanf(handle, HANDLE_FORMAT, &index) != 1) {
     return NULL;
   }
-  if (index >= vgpanes_size(panes)) {
+  if (index >= LIST_SIZE(panes)) {
     return NULL;
   }
-  vgpane_t *const pane = vgpanes_at(panes, index);
+  vgpane_t *const pane = LIST_AT(panes, index);
   if (!pane->valid) {
     return NULL;
   }
@@ -396,15 +395,15 @@ static void garbage_collect_vgpanes(vgpanes_t *panes) {
   assert(panes != NULL);
 
   // shrink list, discarding previously deallocated entries
-  while (!vgpanes_is_empty(panes)) {
-    if (!vgpanes_back(panes)->valid) {
-      (void)vgpanes_pop_back(panes);
+  while (!LIST_IS_EMPTY(panes)) {
+    if (!LIST_BACK(panes)->valid) {
+      (void)LIST_POP_BACK(panes);
     }
   }
 
   // if this left us with none, fully deallocate to make leak checkers happy
-  if (vgpanes_is_empty(panes)) {
-    vgpanes_free(panes);
+  if (LIST_IS_EMPTY(panes)) {
+    LIST_FREE(panes);
   }
 }
 
@@ -907,9 +906,9 @@ vgpane(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[])
     (void)argv;
 
     const vgpane_t vg = {.interp = interp};
-    vgpanes_append(&vgpaneTable, vg);
-    vgpane_t *const vgp = vgpanes_back(&vgpaneTable);
-    vgp->index = vgpanes_size(&vgpaneTable) - 1;
+    LIST_APPEND(&vgpaneTable, vg);
+    vgpane_t *const vgp = LIST_BACK(&vgpaneTable);
+    vgp->index = LIST_SIZE(&vgpaneTable) - 1;
     vgp->valid = true;
 
     agxbuf buffer = {0};
