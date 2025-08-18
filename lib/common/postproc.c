@@ -17,6 +17,7 @@
 #include <stddef.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/list2.h>
 #include <util/prisize_t.h>
 #include <util/unreachable.h>
 
@@ -672,14 +673,14 @@ void gv_postprocess(Agraph_t * g, int allowTranslation)
     if (GD_label(g) && !GD_label(g)->set)
 	place_root_label(g, dimen);
 
-    if (!show_boxes_is_empty(&Show_boxes)) {
+    if (!LIST_IS_EMPTY(&Show_boxes)) {
 	agxbuf buf = {0};
 	if (Flip)
 	    agxbprint(&buf, M2, Offset.x, Offset.y, Offset.x, Offset.y);
 	else
 	    agxbprint(&buf, M1, Offset.y, Offset.x, Offset.y, Offset.x,
 		    -Offset.x, -Offset.y);
-	show_boxes_prepend(&Show_boxes, agxbdisown(&buf));
+	LIST_PREPEND(&Show_boxes, agxbdisown(&buf));
     }
 }
 

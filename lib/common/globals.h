@@ -18,7 +18,7 @@
 #include <cgraph/cgraph.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,7 +42,7 @@ extern "C" {
 #endif
 /// @endcond
 
-DEFINE_LIST_WITH_DTOR(show_boxes, char*, free)
+typedef LIST(char *) show_boxes_t;
 
     GLOBALS_API EXTERN const char **Lib;		/* from command line */
     GLOBALS_API EXTERN char *Gvfilepath;  /* Per-process path of files allowed in image attributes (also ps libs) */
@@ -54,7 +54,7 @@ DEFINE_LIST_WITH_DTOR(show_boxes, char*, free)
     GLOBALS_API EXTERN int graphviz_errors;
     GLOBALS_API EXTERN int Nop;
     GLOBALS_API EXTERN double PSinputscale;
-    GLOBALS_API EXTERN show_boxes_t Show_boxes; // emit code for correct box coordinates
+    GLOBALS_API extern show_boxes_t Show_boxes; // emit code for correct box coordinates
     GLOBALS_API EXTERN int CL_type;		/* NONE, LOCAL, GLOBAL */
     GLOBALS_API EXTERN bool Concentrate; /// if parallel edges should be merged
     GLOBALS_API EXTERN double Epsilon;	/* defined in input_graph */

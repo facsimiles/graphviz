@@ -40,14 +40,14 @@ static void showPoints(pointf ps[], int pn)
 {
     int bi;
 
-    show_boxes_append(&Show_boxes, gv_strdup("%% self list"));
-    show_boxes_append(&Show_boxes, gv_strdup("dbgstart"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% self list"));
+    LIST_APPEND(&Show_boxes, gv_strdup("dbgstart"));
     for (bi = 0; bi < pn; bi++) {
 	agxbuf buf = {0};
 	agxbprint(&buf, "%.5g %.5g point", ps[bi].x, ps[bi].y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("grestore"));
 }
 #endif
 

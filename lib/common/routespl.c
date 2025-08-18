@@ -44,7 +44,7 @@ static void printboxes(size_t boxn, boxf *boxes) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
 	agxbuf buf = {0};
 	agxbprint(&buf, "%.0f %.0f %.0f %.0f pathbox", ll.x, ll.y, ur.x, ur.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
 }
 
@@ -86,38 +86,38 @@ static void psprintpointf(pointf p)
 
 static void psprintspline(Ppolyline_t spl)
 {
-    show_boxes_append(&Show_boxes, gv_strdup("%%!"));
-    show_boxes_append(&Show_boxes, gv_strdup("%% spline"));
-    show_boxes_append(&Show_boxes, gv_strdup("gsave 1 0 0 setrgbcolor newpath"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%%!"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% spline"));
+    LIST_APPEND(&Show_boxes, gv_strdup("gsave 1 0 0 setrgbcolor newpath"));
     for (size_t i = 0; i < spl.pn; i++) {
 	agxbuf buf = {0};
 	agxbprint(&buf, "%f %f %s", spl.ps[i].x, spl.ps[i].y,
 	  i == 0 ?  "moveto" : (i % 3 == 0 ? "curveto" : ""));
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("stroke grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("stroke grestore"));
 }
 
 static void psprintline(Ppolyline_t pl)
 {
-    show_boxes_append(&Show_boxes, gv_strdup("%%!"));
-    show_boxes_append(&Show_boxes, gv_strdup("%% line"));
-    show_boxes_append(&Show_boxes, gv_strdup("gsave 0 0 1 setrgbcolor newpath"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%%!"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% line"));
+    LIST_APPEND(&Show_boxes, gv_strdup("gsave 0 0 1 setrgbcolor newpath"));
     for (size_t i = 0; i < pl.pn; i++) {
 	agxbuf buf = {0};
 	agxbprint(&buf, "%f %f %s", pl.ps[i].x, pl.ps[i].y,
 		i == 0 ? "moveto" : "lineto");
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("stroke grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("stroke grestore"));
 }
 
 static void psprintpoly(Ppoly_t p)
 {
     char*  pfx;
 
-    show_boxes_append(&Show_boxes, gv_strdup("%% poly list"));
-    show_boxes_append(&Show_boxes, gv_strdup("gsave 0 1 0 setrgbcolor"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% poly list"));
+    LIST_APPEND(&Show_boxes, gv_strdup("gsave 0 1 0 setrgbcolor"));
     for (size_t bi = 0; bi < p.pn; bi++) {
 	const pointf tail = p.ps[bi];
 	const pointf head = p.ps[(bi + 1) % p.pn];
@@ -126,38 +126,38 @@ static void psprintpoly(Ppoly_t p)
 	agxbuf buf = {0};
 	agxbprint(&buf, "%s%.0f %.0f %.0f %.0f makevec", pfx, tail.x, tail.y, head.x,
 	          head.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("grestore"));
 }
 
 static void psprintboxes(size_t boxn, boxf *boxes) {
     pointf ll, ur;
 
-    show_boxes_append(&Show_boxes, gv_strdup("%% box list"));
-    show_boxes_append(&Show_boxes, gv_strdup("gsave 0 1 0 setrgbcolor"));
+    LIST_APPEND(&Show_boxes, gv_strdup("%% box list"));
+    LIST_APPEND(&Show_boxes, gv_strdup("gsave 0 1 0 setrgbcolor"));
     for (size_t bi = 0; bi < boxn; bi++) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
 	agxbuf buf = {0};
 	agxbprint(&buf, "newpath\n%.0f %.0f moveto", ll.x, ll.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
 	agxbprint(&buf, "%.0f %.0f lineto", ll.x, ur.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
 	agxbprint(&buf, "%.0f %.0f lineto", ur.x, ur.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
 	agxbprint(&buf, "%.0f %.0f lineto", ur.x, ll.y);
-	show_boxes_append(&Show_boxes, agxbdisown(&buf));
-	show_boxes_append(&Show_boxes, gv_strdup("closepath stroke"));
+	LIST_APPEND(&Show_boxes, agxbdisown(&buf));
+	LIST_APPEND(&Show_boxes, gv_strdup("closepath stroke"));
     }
-    show_boxes_append(&Show_boxes, gv_strdup("grestore"));
+    LIST_APPEND(&Show_boxes, gv_strdup("grestore"));
 }
 
 static void psprintinit (int begin)
 {
     if (begin)
-	show_boxes_append(&Show_boxes, gv_strdup("dbgstart"));
+	LIST_APPEND(&Show_boxes, gv_strdup("dbgstart"));
     else
-	show_boxes_append(&Show_boxes, gv_strdup("grestore"));
+	LIST_APPEND(&Show_boxes, gv_strdup("grestore"));
 }
 
 static bool debugleveln(edge_t* realedge, int i)
@@ -222,7 +222,7 @@ routesplinesinit(void)
 {
     if (++routeinit > 1) return 0;
 #ifdef DEBUG
-    show_boxes_free(&Show_boxes);
+    LIST_FREE(&Show_boxes);
 #endif
     nedges = 0;
     nboxes = 0;
