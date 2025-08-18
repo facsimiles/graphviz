@@ -44,7 +44,7 @@ static dts_t liststk;
 
 static char *sortToStr(unsigned short sort);
 
-void free_node(gmlnode *p) {
+static void free_node(gmlnode *p) {
     if (!p) return;
     attrs_free(&p->attrlist);
     free(p->id);
@@ -59,7 +59,7 @@ static void free_edge(gmledge *p) {
 
 static void free_graph(gmlgraph *p) {
     if (!p) return;
-    nodes_free(&p->nodelist);
+    LIST_FREE(&p->nodelist);
     LIST_FREE(&p->edgelist);
     attrs_free(&p->attrlist);
     LIST_FREE(&p->graphlist);
@@ -121,6 +121,7 @@ pushG (void)
 {
     gmlgraph* g = gv_alloc(sizeof(gmlgraph));
 
+    g->nodelist.dtor = free_node;
     g->edgelist.dtor = free_edge;
     g->graphlist.dtor = free_graph;
     g->parent = G;
@@ -236,7 +237,7 @@ glist  : glist glistitem
        | glistitem
        ;
 
-glistitem : node { nodes_append(&G->nodelist, $1); }
+glistitem : node { LIST_APPEND(&G->nodelist, $1); }
           | edge { LIST_APPEND(&G->edgelist, $1); }
           | hdr body 
           | DIRECTED INTEGER { 
@@ -638,8 +639,8 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
     if (!parent && L) {
 	addAttrs ((Agobj_t*)g, L, xb, unk);
     } 
-    for (size_t i = 0; i < nodes_size(&graph->nodelist); ++i) {
-	gmlnode *const np = nodes_get(&graph->nodelist, i);
+    for (size_t i = 0; i < LIST_SIZE(&graph->nodelist); ++i) {
+	gmlnode *const np = LIST_GET(&graph->nodelist, i);
 	if (!np->id) {
 	   fprintf (stderr, "node without an id attribute"); 
 	   graphviz_exit (1);

@@ -27,10 +27,6 @@ typedef struct {
     attrs_t attrlist;  
 } gmlnode;
 
-void free_node(gmlnode *p);
-
-DEFINE_LIST_WITH_DTOR(nodes, gmlnode *, free_node)
-
 typedef struct {
     char* source;
     char* target;
@@ -41,7 +37,7 @@ typedef struct gmlgraph {
     struct gmlgraph* parent;
     int directed;
     attrs_t attrlist;  
-    nodes_t nodelist;
+    LIST(gmlnode *) nodelist;
     LIST(gmledge *) edgelist;
     LIST(struct gmlgraph *) graphlist;
 } gmlgraph;
