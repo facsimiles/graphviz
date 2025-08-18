@@ -23,7 +23,7 @@
 #include <tchar.h>
 #endif
 #include <glcomp/opengl.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -105,7 +105,7 @@ extern "C" {
 	float x, y, z;
     } glCompPoint;
 
-DEFINE_LIST(glCompPoly, glCompPoint)
+typedef LIST(glCompPoint) glCompPoly_t;
 
     typedef struct {
 	double R;

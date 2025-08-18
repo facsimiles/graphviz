@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <util/alloc.h>
+#include <util/list2.h>
 #include "selectionfuncs.h"
 #include "topviewfuncs.h"
 #include "smyrna_utils.h"
@@ -223,10 +224,10 @@ void deselect_all(Agraph_t* g)
 static int close_poly(glCompPoly_t *selPoly, glCompPoint pt) {
     /* int i=0; */
     const double EPS = GetOGLDistance(3.0);
-    if (glCompPoly_size(selPoly) < 2)
+    if (LIST_SIZE(selPoly) < 2)
 	return 0;
-    if (glCompPoly_front(selPoly)->x - pt.x < EPS &&
-        glCompPoly_front(selPoly)->y - pt.y < EPS)
+    if (LIST_FRONT(selPoly)->x - pt.x < EPS &&
+        LIST_FRONT(selPoly)->y - pt.y < EPS)
 	return 1;
     return 0;
 }
@@ -247,12 +248,12 @@ static void select_polygon(Agraph_t *g, glCompPoly_t *selPoly) {
 void add_selpoly(Agraph_t *g, glCompPoly_t *selPoly, glCompPoint pt) {
     if(!close_poly(selPoly,pt))
     {
-	glCompPoly_append(selPoly, (glCompPoint){.x = pt.x, .y = pt.y});
+	LIST_APPEND(selPoly, ((glCompPoint){.x = pt.x, .y = pt.y}));
     }
     else
     {
 	select_polygon (g,selPoly);
-	glCompPoly_free(selPoly);	
+	LIST_FREE(selPoly);	
     }
 }
 

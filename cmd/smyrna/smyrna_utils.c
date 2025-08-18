@@ -58,13 +58,13 @@ glCompPoint getPointFromStr(const char *str) {
 }
 
 int point_in_polygon(glCompPoly_t *selPoly, glCompPoint p) {
-    const size_t npol = glCompPoly_size(selPoly);
+    const size_t npol = LIST_SIZE(selPoly);
     assert(npol > 0);
 
     int c = 0;
       for (size_t i = 0, j = npol - 1; i < npol; j = i++) {
-        const glCompPoint pt_i = glCompPoly_get(selPoly, i);
-        const glCompPoint pt_j = glCompPoly_get(selPoly, j);
+        const glCompPoint pt_i = LIST_GET(selPoly, i);
+        const glCompPoint pt_j = LIST_GET(selPoly, j);
         if (((pt_i.y <= p.y && p.y < pt_j.y) ||
              (pt_j.y <= p.y && p.y < pt_i.y)) &&
             p.x < (pt_j.x - pt_i.x) * (p.y - pt_i.y) / (pt_j.y - pt_i.y) + pt_i.x)
