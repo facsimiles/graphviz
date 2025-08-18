@@ -1133,8 +1133,6 @@ typedef struct {
   int tree_in_i;
 } dfs_state_t;
 
-DEFINE_LIST(dfs_stack, dfs_state_t)
-
 /*
 * Initializes DFS range attributes (par, low, lim) over tree nodes such that:
 * ND_par(n) - parent tree edge
@@ -1144,16 +1142,16 @@ DEFINE_LIST(dfs_stack, dfs_state_t)
 static int dfs_range_init(node_t *v) {
     int lim = 0;
 
-    dfs_stack_t todo = {0};
+    LIST(dfs_state_t) todo = {0};
 
     ND_par(v) = NULL;
     ND_low(v) = 1;
     const dfs_state_t root = {.v = v, .par = NULL, .lim = 1};
-    dfs_stack_push_back(&todo, root);
+    LIST_PUSH_BACK(&todo, root);
 
-    while (!dfs_stack_is_empty(&todo)) {
+    while (!LIST_IS_EMPTY(&todo)) {
         bool pushed_new = false;
-        dfs_state_t *const s = dfs_stack_back(&todo);
+        dfs_state_t *const s = LIST_BACK(&todo);
 
         while (ND_tree_out(s->v).list[s->tree_out_i]) {
             edge_t *const e = ND_tree_out(s->v).list[s->tree_out_i];
@@ -1163,7 +1161,7 @@ static int dfs_range_init(node_t *v) {
                 ND_par(n) = e;
                 ND_low(n) = s->lim;
                 const dfs_state_t next = {.v = n, .par = e, .lim = s->lim};
-                dfs_stack_push_back(&todo, next);
+                LIST_PUSH_BACK(&todo, next);
                 pushed_new = true;
                 break;
             }
@@ -1180,7 +1178,7 @@ static int dfs_range_init(node_t *v) {
                 ND_par(n) = e;
                 ND_low(n) = s->lim;
                 const dfs_state_t next = {.v = n, .par = e, .lim = s->lim};
-                dfs_stack_push_back(&todo, next);
+                LIST_PUSH_BACK(&todo, next);
                 pushed_new = true;
                 break;
             }
@@ -1192,14 +1190,14 @@ static int dfs_range_init(node_t *v) {
         ND_lim(s->v) = s->lim;
 
         lim = s->lim;
-        (void)dfs_stack_pop_back(&todo);
+        (void)LIST_POP_BACK(&todo);
 
-        if (!dfs_stack_is_empty(&todo)) {
-            dfs_stack_back(&todo)->lim = lim + 1;
+        if (!LIST_IS_EMPTY(&todo)) {
+            LIST_BACK(&todo)->lim = lim + 1;
         }
     }
 
-    dfs_stack_free(&todo);
+    LIST_FREE(&todo);
 
     return lim + 1;
 }
@@ -1215,16 +1213,16 @@ static int dfs_range(node_t * v, edge_t * par, int low)
 	return ND_lim(v) + 1;
     }
 
-    dfs_stack_t todo = {0};
+    LIST(dfs_state_t) todo = {0};
 
     ND_par(v) = par;
     ND_low(v) = low;
     const dfs_state_t root = {.v = v, .par = par, .lim = low};
-    dfs_stack_push_back(&todo, root);
+    LIST_PUSH_BACK(&todo, root);
 
-    while (!dfs_stack_is_empty(&todo)) {
+    while (!LIST_IS_EMPTY(&todo)) {
 	bool processed_child = false;
-	dfs_state_t *const s = dfs_stack_back(&todo);
+	dfs_state_t *const s = LIST_BACK(&todo);
 
 	while (ND_tree_out(s->v).list[s->tree_out_i]) {
 	    edge_t *const e = ND_tree_out(s->v).list[s->tree_out_i];
@@ -1237,7 +1235,7 @@ static int dfs_range(node_t * v, edge_t * par, int low)
 		    ND_par(n) = e;
 		    ND_low(n) = s->lim;
 		    const dfs_state_t next = {.v = n, .par = e, .lim = s->lim};
-		    dfs_stack_push_back(&todo, next);
+		    LIST_PUSH_BACK(&todo, next);
 		}
 		processed_child = true;
 		break;
@@ -1258,7 +1256,7 @@ static int dfs_range(node_t * v, edge_t * par, int low)
 		    ND_par(n) = e;
 		    ND_low(n) = s->lim;
 		    const dfs_state_t next = {.v = n, .par = e, .lim = s->lim};
-		    dfs_stack_push_back(&todo, next);
+		    LIST_PUSH_BACK(&todo, next);
 		}
 		processed_child = true;
 		break;
@@ -1271,14 +1269,14 @@ static int dfs_range(node_t * v, edge_t * par, int low)
 	ND_lim(s->v) = s->lim;
 
 	lim = s->lim;
-	(void)dfs_stack_pop_back(&todo);
+	(void)LIST_POP_BACK(&todo);
 
-	if (!dfs_stack_is_empty(&todo)) {
-	    dfs_stack_back(&todo)->lim = lim + 1;
+	if (!LIST_IS_EMPTY(&todo)) {
+	    LIST_BACK(&todo)->lim = lim + 1;
 	}
     }
 
-    dfs_stack_free(&todo);
+    LIST_FREE(&todo);
 
     return lim + 1;
 }
