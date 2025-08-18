@@ -15,7 +15,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <util/list.h>
 #include <util/list2.h>
 
 #ifdef __cplusplus
@@ -120,7 +119,7 @@ static inline void free_ritem(row_t *p) {
   free (p);
 }
 
-DEFINE_LIST_WITH_DTOR(rows, row_t *, free_ritem)
+typedef LIST(row_t *) rows_t;
 
     struct htmltbl_t {
 	htmldata_t data;

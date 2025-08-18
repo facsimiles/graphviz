@@ -95,13 +95,13 @@ static void cleanCell(htmlcell_t *cp);
 /// Clean up table if error in parsing.
 static void cleanTbl(htmltbl_t *tp) {
   rows_t *rows = &tp->u.p.rows;
-  for (size_t r = 0; r < rows_size(rows); ++r) {
-    row_t *rp = rows_get(rows, r);
+  for (size_t r = 0; r < LIST_SIZE(rows); ++r) {
+    row_t *rp = LIST_GET(rows, r);
     for (size_t c = 0; c < LIST_SIZE(&rp->rp); ++c) {
       cleanCell(LIST_GET(&rp->rp, c));
     }
   }
-  rows_free(rows);
+  LIST_FREE(rows);
   free_html_data(&tp->data);
   free(tp);
 }
@@ -289,7 +289,7 @@ table : opt_space T_table {
             cleanup(&scanner->parser); YYABORT;
           }
           $2->u.p.prev = scanner->parser.tblstack;
-          $2->u.p.rows = (rows_t){0};
+          $2->u.p.rows = (rows_t){.dtor = free_ritem};
           scanner->parser.tblstack = $2;
           $2->font = *LIST_BACK(&scanner->parser.fontstack);
           $<tbl>$ = $2;
@@ -414,7 +414,7 @@ mkText(htmlparserstate_t *html_state)
 
 static row_t *lastRow(htmlparserstate_t *html_state) {
   htmltbl_t* tbl = html_state->tblstack;
-  row_t *sp = *rows_back(&tbl->u.p.rows);
+  row_t *sp = *LIST_BACK(&tbl->u.p.rows);
   return sp;
 }
 
@@ -423,12 +423,12 @@ static void addRow(htmlparserstate_t *html_state) {
   row_t *sp = gv_alloc(sizeof(row_t));
   if (tbl->hrule)
     sp->ruled = true;
-  rows_append(&tbl->u.p.rows, sp);
+  LIST_APPEND(&tbl->u.p.rows, sp);
 }
 
 static void setCell(htmlparserstate_t *html_state, htmlcell_t *cp, void *obj, label_type_t kind) {
   htmltbl_t* tbl = html_state->tblstack;
-  row_t *rp = *rows_back(&tbl->u.p.rows);
+  row_t *rp = *LIST_BACK(&tbl->u.p.rows);
   LIST_APPEND(&rp->rp, cp);
   cp->child.kind = kind;
   if (tbl->vrule) {

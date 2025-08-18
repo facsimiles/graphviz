@@ -840,7 +840,7 @@ static void free_html_tbl(htmltbl_t * tbl)
     htmlcell_t **cells;
 
     if (tbl->row_count == SIZE_MAX) { // raw, parsed table
-	rows_free(&tbl->u.p.rows);
+	LIST_FREE(&tbl->u.p.rows);
     } else {
 	cells = tbl->u.n.cells;
 
@@ -1188,8 +1188,8 @@ static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
     bitarray_t is = bitarray_new((size_t)UINT16_MAX + 1);
 
     size_t cnt = 0;
-    for (uint16_t r = 0; r < rows_size(&rows); ++r) {
-	row_t *rp = rows_get(&rows, r);
+    for (uint16_t r = 0; r < LIST_SIZE(&rows); ++r) {
+	row_t *rp = LIST_GET(&rows, r);
 	cnt += LIST_SIZE(&rp->rp);
 	if (rp->ruled) {
 	    bitarray_set(&is, r + 1, true);
@@ -1197,8 +1197,8 @@ static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
     }
 
     cells = tbl->u.n.cells = gv_calloc(cnt + 1, sizeof(htmlcell_t *));
-    for (uint16_t r = 0; r < rows_size(&rows); ++r) {
-	row_t *rp = rows_get(&rows, r);
+    for (uint16_t r = 0; r < LIST_SIZE(&rows); ++r) {
+	row_t *rp = LIST_GET(&rows, r);
 	uint16_t c = 0;
 	for (size_t i = 0; i < LIST_SIZE(&rp->rp); ++i) {
 	    htmlcell_t *cellp = LIST_GET(&rp->rp, i);
@@ -1216,7 +1216,7 @@ static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
     }
     tbl->row_count = n_rows;
     tbl->column_count = n_cols;
-    rows_free(&rows);
+    LIST_FREE(&rows);
     bitarray_reset(&is);
     freePS(ps);
     return rv;
