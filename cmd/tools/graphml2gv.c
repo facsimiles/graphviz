@@ -29,6 +29,7 @@
 #include    <util/exit.h>
 #include    <util/gv_ctype.h>
 #include    <util/list.h>
+#include    <util/list2.h>
 #include    <util/unreachable.h>
 #ifdef HAVE_EXPAT
 #include    <expat.h>
@@ -52,7 +53,7 @@ static char **Files;
 static int Verbose;
 static char* gname = "";
 
-DEFINE_LIST_WITH_DTOR(strs, char *, free)
+typedef LIST(char *) strs_t;
 
 static void pushString(strs_t *stk, const char *s) {
 
@@ -60,32 +61,32 @@ static void pushString(strs_t *stk, const char *s) {
   char *copy = gv_strdup(s);
 
   // push this onto the stack
-  strs_push_back(stk, copy);
+  LIST_PUSH_BACK(stk, copy);
 }
 
 static void popString(strs_t *stk) {
 
-  if (strs_is_empty(stk)) {
+  if (LIST_IS_EMPTY(stk)) {
     fprintf(stderr, "PANIC: graphml2gv: empty element stack\n");
     graphviz_exit(EXIT_FAILURE);
   }
 
-  char *const popped = strs_pop_back(stk);
+  char *const popped = LIST_POP_BACK(stk);
   free(popped);
 }
 
 static char *topString(strs_t *stk) {
 
-  if (strs_is_empty(stk)) {
+  if (LIST_IS_EMPTY(stk)) {
     fprintf(stderr, "PANIC: graphml2gv: empty element stack\n");
     graphviz_exit(EXIT_FAILURE);
   }
 
-  return *strs_back(stk);
+  return *LIST_BACK(stk);
 }
 
 static void freeString(strs_t *stk) {
-  strs_free(stk);
+  LIST_FREE(stk);
 }
 
 typedef struct {
@@ -104,7 +105,7 @@ static graph_stack_t Gstack;
 
 static userdata_t genUserdata(char *dfltname) {
   userdata_t user = {0};
-  user.elements = (strs_t){0};
+  user.elements = (strs_t){.dtor = LIST_DTOR_FREE};
   user.closedElementType = TAG_NONE;
   user.edgeinverted = false;
   user.gname = dfltname;

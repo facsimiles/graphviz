@@ -267,6 +267,7 @@ if(EXPAT_FOUND)
 
   target_link_libraries(graphml2gv PRIVATE
     cgraph
+    util
     ${EXPAT_LIBRARIES}
   )
 

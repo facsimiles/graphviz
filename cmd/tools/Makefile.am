@@ -203,8 +203,8 @@ graphml2gv_CPPFLAGS = $(AM_CPPFLAGS) $(EXPAT_CFLAGS)
 
 graphml2gv_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la $(EXPAT_LIBS)
-
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/util/libutil_C.la $(EXPAT_LIBS)
 
 dijkstra_SOURCES = dijkstra.c
 
