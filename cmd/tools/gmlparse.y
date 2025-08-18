@@ -25,7 +25,6 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/exit.h>
-#include <util/list.h>
 #include <util/list2.h>
 
 static gmlgraph* G;
@@ -39,8 +38,7 @@ static void free_attrs(attrs_t *a) {
   free(a);
 }
 
-DEFINE_LIST_WITH_DTOR(dts, attrs_t *, free_attrs)
-static dts_t liststk;
+static LIST(attrs_t *) liststk = {.dtor = free_attrs};
 
 static char *sortToStr(unsigned short sort);
 
@@ -69,7 +67,7 @@ static void free_graph(gmlgraph *p) {
 static void
 cleanup (void)
 {
-    dts_free(&liststk);
+    LIST_CLEAR(&liststk);
     if (L) {
 	free_attrs(L);
 	L = NULL;
@@ -97,7 +95,7 @@ pushAlist (void)
     lp->dtor = free_attr;
 
     if (L) {
-	dts_push_back(&liststk, L);
+	LIST_PUSH_BACK(&liststk, L);
     }
     L = lp;
 }
@@ -105,8 +103,8 @@ pushAlist (void)
 static attrs_t *popAlist(void) {
     attrs_t *lp = L;
 
-    if (!dts_is_empty(&liststk))
-	L = dts_pop_back(&liststk);
+    if (!LIST_IS_EMPTY(&liststk))
+	L = LIST_POP_BACK(&liststk);
     else
 	L = NULL;
 
