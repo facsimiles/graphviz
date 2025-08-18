@@ -171,7 +171,7 @@ def compile_c(
     except subprocess.CalledProcessError:
         try:
             os.remove(dst)
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
         raise
 
