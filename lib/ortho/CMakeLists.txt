@@ -33,8 +33,12 @@ target_include_directories(ortho_obj PRIVATE
   ../pathplan
 )
 
+target_link_libraries(ortho_obj PRIVATE util)
+
 add_library(ortho STATIC
   $<TARGET_OBJECTS:ortho_obj>
 )
+
+target_link_libraries(ortho PRIVATE util)
 
 endif()
