@@ -47,7 +47,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <util/alloc.h>
-#include <util/list.h>
+#include <util/list2.h>
 
 typedef struct {
     graph_t*  rootg;  /* logical root; graph passed in to fdp_layout */
@@ -272,7 +272,7 @@ static void evalPositions(graph_t * g, graph_t* rootg)
     }
 }
 
-DEFINE_LIST(clist, graph_t*)
+typedef LIST(graph_t *) clist_t;
 
 #define BSZ 1000
 
@@ -988,7 +988,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 
     if (pclist == NULL) {
 	// [0] is empty. The clusters are in [1..cnt].
-	clist_append(&list, NULL);
+	LIST_APPEND(&list, NULL);
 	clist = &list;
     }
     else
@@ -1002,7 +1002,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 	    GD_ndim(subg) = GD_ndim(agroot(parent));
 	    LEVEL(subg) = LEVEL(parent) + 1;
 	    GPARENT(subg) = parent;
-	    clist_append(clist, subg);
+	    LIST_APPEND(clist, subg);
 	    mkClusters(subg, NULL, subg);
 	}
 	else {
@@ -1010,13 +1010,13 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 	}
     }
     if (pclist == NULL) {
-	assert(clist_size(&list) - 1 <= INT_MAX);
-	GD_n_cluster(g) = (int)(clist_size(&list) - 1);
-	if (clist_size(&list) > 1) {
-	    clist_shrink_to_fit(&list);
-	    GD_clust(g) = clist_detach(&list);
+	assert(LIST_SIZE(&list) - 1 <= INT_MAX);
+	GD_n_cluster(g) = (int)(LIST_SIZE(&list) - 1);
+	if (LIST_SIZE(&list) > 1) {
+	    LIST_SHRINK_TO_FIT(&list);
+	    LIST_DETACH(&list, &GD_clust(g), &(size_t){0});
 	} else {
-	    clist_free(&list);
+	    LIST_FREE(&list);
 	}
     }
 }
