@@ -31,7 +31,7 @@
 #include	<common/const.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
-#include <util/list.h>
+#include <util/list2.h>
 #include <util/path.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
@@ -418,8 +418,6 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
     return bp;
 }
 
-DEFINE_LIST(strs, char*)
-
 /* gvPluginList:
  * Return list of plugins of type kind.
  * The size of the list is stored in sz.
@@ -431,7 +429,7 @@ DEFINE_LIST(strs, char*)
 char **gvPluginList(GVC_t *gvc, const char *kind, int *sz) {
     size_t api;
     const gvplugin_available_t *pnext, *plugin;
-    strs_t list = {0};
+    LIST(char *) list = {0};
 
     if (!kind)
         return NULL;
@@ -451,13 +449,16 @@ char **gvPluginList(GVC_t *gvc, const char *kind, int *sz) {
         /* list only one instance of type */
         strview_t q = strview(pnext->typestr, ':');
         if (!typestr_last.data || !strview_case_eq(typestr_last, q)) {
-            strs_append(&list, strview_str(q));
+            LIST_APPEND(&list, strview_str(q));
         }
         typestr_last = q;
     }
 
-    *sz = (int)strs_size(&list);
-    return strs_detach(&list);
+    char **ret;
+    size_t size;
+    LIST_DETACH(&list, &ret, &size);
+    *sz = (int)size;
+    return ret;
 }
 
 void gvplugin_write_status(GVC_t * gvc)
