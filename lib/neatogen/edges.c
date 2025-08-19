@@ -54,7 +54,7 @@ Edge *gvbisect(Site * s1, Site * s2)
 	newedge->c /= dy;
     }
 
-    return (newedge);
+    return newedge;
 }
 
 
