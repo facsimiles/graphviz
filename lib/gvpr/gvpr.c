@@ -134,8 +134,6 @@ static char *gettok(char **sp) {
   return s;
 }
 
-#define NUM_ARGS 100
-
 /* parseArgs:
  * Split s into whitespace separated tokens, allowing quotes.
  * Append tokens to argument list and return new number of arguments.
@@ -143,22 +141,10 @@ static char *gettok(char **sp) {
  * @param arg [inout] The current arguments
  */
 static void parseArgs(char *s, strviews_t *arg) {
-  int cnt = 0;
-  char *args[NUM_ARGS];
   char *t;
 
   while ((t = gettok(&s))) {
-    if (cnt == NUM_ARGS) {
-      error(ERROR_WARNING,
-            "at most %d arguments allowed per -a flag - ignoring rest",
-            NUM_ARGS);
-      break;
-    }
-    args[cnt++] = t;
-  }
-
-  for (int i = 0; i < cnt; ++i) {
-    LIST_APPEND(arg, strview(args[i], '\0'));
+    LIST_APPEND(arg, strview(t, '\0'));
   }
 }
 
