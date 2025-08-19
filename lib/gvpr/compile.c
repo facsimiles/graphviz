@@ -33,6 +33,7 @@
 #include <util/list.h>
 #include <util/prisize_t.h>
 #include <util/startswith.h>
+#include <util/strview.h>
 #include <util/unreachable.h>
 
 static int isedge(Agobj_t *obj) {
@@ -462,13 +463,18 @@ static int lookup(Expr_t *pgm, Agobj_t *objp, Exid_t *sym, Extype_t *v) {
   return 0;
 }
 
-// return value associated with $n
-static char *getArg(int n, Gpr_t *state) {
+/// get value associated with $n
+///
+/// @param out [out] Found argument on success
+/// @return 0 on success
+static int getArg(int n, Gpr_t *state, strview_t *out) {
+  assert(out != NULL);
   if (n >= state->argc) {
     exerror("program references ARGV[%d] - undefined", n);
-    return 0;
+    return -1;
   }
-  return state->argv[n];
+  *out = state->argv[n];
+  return 0;
 }
 
 static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
@@ -1415,9 +1421,17 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
     args = env;
     state = disc->user;
     switch (sym->index) {
-    case A_ARGV:
-      v.string = getArg(args[0].integer, state);
+    case A_ARGV: {
+      strview_t arg;
+      if (getArg(args[0].integer, state, &arg) != 0) {
+        break;
+      }
+      v.string = exstralloc(pgm, arg.size + 1);
+      if (arg.size > 0) {
+        memcpy(v.string, arg.data, arg.size);
+      }
       break;
+    }
     default:
       exerror("unknown array name: %s", sym->name);
       v.string = 0;

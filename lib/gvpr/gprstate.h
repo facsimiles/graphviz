@@ -23,6 +23,7 @@ extern "C" {
 #include <stdio.h>
 #include <expr/expr.h>
 #include <util/list.h>
+#include <util/strview.h>
 #include "gvpr.h"
 
     typedef enum { TV_flat, TV_ne, TV_en, 
@@ -50,7 +51,7 @@ extern "C" {
 	Agedge_t *tvedge;
 	int name_used;
 	int argc;
-	char **argv;
+	strview_t *argv;
 	int flags;
 	gvprbinding* bindings;
 	size_t n_bindings;
@@ -60,7 +61,7 @@ extern "C" {
     typedef struct {
 	FILE *outFile;
 	int argc;
-	char **argv;
+	strview_t *argv;
 	Exerror_f errf;
 	Exexit_f exitf;
 	int flags;

@@ -38,6 +38,7 @@
 #include <util/gv_find_me.h>
 #include <util/list.h>
 #include <util/path.h>
+#include <util/strview.h>
 #include <util/unreachable.h>
 
 static char *Info[] = {
@@ -69,7 +70,7 @@ typedef struct {
   int readAhead;
   char **inFiles;
   int argc;
-  char **argv;
+  strview_t *argv;
   int state; /* > 0 : continue; <= 0 finish */
   int verbose;
 } options;
@@ -142,11 +143,10 @@ static char *gettok(char **sp) {
  * argc is the current number of arguments, with the arguments
  * stored in *argv.
  */
-static int parseArgs(char *s, int argc, char ***argv) {
+static int parseArgs(char *s, int argc, strview_t **argv) {
   int i, cnt = 0;
   char *args[NUM_ARGS];
   char *t;
-  char **av;
 
   assert(argc >= 0);
 
@@ -163,9 +163,10 @@ static int parseArgs(char *s, int argc, char ***argv) {
   if (cnt) {
     int oldcnt = argc;
     argc = oldcnt + cnt;
-    av = gv_recalloc(*argv, (size_t)oldcnt, (size_t)argc, sizeof(char *));
+    strview_t *const av =
+        gv_recalloc(*argv, (size_t)oldcnt, (size_t)argc, sizeof(strview_t));
     for (i = 0; i < cnt; i++)
-      av[oldcnt + i] = gv_strdup(args[i]);
+      av[oldcnt + i] = strview(args[i], '\0');
     *argv = av;
   }
   return argc;
@@ -399,8 +400,6 @@ static void freeOpts(options opts) {
   free(opts.inFiles);
   if (opts.useFile)
     free(opts.program);
-  for (int i = 0; i < opts.argc; i++)
-    free(opts.argv[i]);
   free(opts.argv);
 }
 
