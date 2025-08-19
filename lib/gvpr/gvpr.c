@@ -102,7 +102,7 @@ static char *gettok(char **sp) {
 
   while (gv_isspace(*rs))
     rs++;
-  if ((c = *rs) == '\0')
+  if (*rs == '\0')
     return NULL;
   while ((c = *rs)) {
     if (q && q == c) { /* end quote */
