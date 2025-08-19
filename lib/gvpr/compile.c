@@ -467,10 +467,10 @@ static int lookup(Expr_t *pgm, Agobj_t *objp, Exid_t *sym, Extype_t *v) {
 ///
 /// @param out [out] Found argument on success
 /// @return 0 on success
-static int getArg(int n, Gpr_t *state, strview_t *out) {
+static int getArg(long long n, Gpr_t *state, strview_t *out) {
   assert(out != NULL);
   if (n >= state->argc) {
-    exerror("program references ARGV[%d] - undefined", n);
+    exerror("program references ARGV[%lld] - undefined", n);
     return -1;
   }
   *out = state->argv[n];
