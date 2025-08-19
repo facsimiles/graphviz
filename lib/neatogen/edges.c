@@ -52,7 +52,7 @@ Edge *gvbisect(Site * s1, Site * s2)
 	newedge->b = 1.0;
 	newedge->a = dx / dy;
 	newedge->c /= dy;
-    };
+    }
 
     return (newedge);
 }
