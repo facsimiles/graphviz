@@ -469,11 +469,11 @@ static int lookup(Expr_t *pgm, Agobj_t *objp, Exid_t *sym, Extype_t *v) {
 /// @return 0 on success
 static int getArg(long long n, Gpr_t *state, strview_t *out) {
   assert(out != NULL);
-  if (n >= state->argc) {
+  if (n < 0 || (unsigned long long)n >= LIST_SIZE(&state->args)) {
     exerror("program references ARGV[%lld] - undefined", n);
     return -1;
   }
-  *out = state->argv[n];
+  *out = LIST_GET(&state->args, (size_t)n);
   return 0;
 }
 
@@ -1470,9 +1470,12 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
     case V_infname:
       v.string = state->infname;
       break;
-    case V_ARGC:
-      v.integer = state->argc;
+    case V_ARGC: {
+      const size_t size = LIST_SIZE(&state->args);
+      assert(size <= LLONG_MAX);
+      v.integer = (long long)size;
       break;
+    }
     case V_travtype:
       v.integer = state->tvt;
       break;
@@ -1605,7 +1608,9 @@ static Extype_t length(Exid_t *rhs, Exdisc_t *disc) {
   switch (rhs->index) {
   case A_ARGV: {
     Gpr_t *const state = disc->user;
-    v.integer = state->argc;
+    const size_t size = LIST_SIZE(&state->args);
+    assert(size <= LLONG_MAX);
+    v.integer = (long long)size;
     break;
   }
   default:
@@ -1628,7 +1633,8 @@ static int in(Extype_t lhs, Exid_t *rhs, Exdisc_t *disc) {
   switch (rhs->index) {
   case A_ARGV: {
     Gpr_t *const state = disc->user;
-    return lhs.integer >= 0 && lhs.integer < state->argc;
+    return lhs.integer >= 0 &&
+           (unsigned long long)lhs.integer < LIST_SIZE(&state->args);
   }
   default:
     exerror("unknown array name: %s", rhs->name);

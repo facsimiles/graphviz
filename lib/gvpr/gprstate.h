@@ -24,7 +24,10 @@ extern "C" {
 #include <expr/expr.h>
 #include <util/list.h>
 #include <util/strview.h>
+#include <util/list.h>
 #include "gvpr.h"
+
+typedef LIST(strview_t) strviews_t;
 
     typedef enum { TV_flat, TV_ne, TV_en, 
                    TV_bfs, 
@@ -50,8 +53,7 @@ extern "C" {
 	Agnode_t *tvnext;
 	Agedge_t *tvedge;
 	int name_used;
-	int argc;
-	strview_t *argv;
+	strviews_t args;
 	int flags;
 	gvprbinding* bindings;
 	size_t n_bindings;
@@ -60,8 +62,7 @@ extern "C" {
 
     typedef struct {
 	FILE *outFile;
-	int argc;
-	strview_t *argv;
+	strviews_t args;
 	Exerror_f errf;
 	Exexit_f exitf;
 	int flags;

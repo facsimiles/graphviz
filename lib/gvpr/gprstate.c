@@ -46,8 +46,7 @@ Gpr_t *openGPRState(gpr_info* info)
     state->tvnext = 0;
     state->tvedge = 0;
     state->outFile = info->outFile;
-    state->argc = info->argc;
-    state->argv = info->argv;
+    state->args = info->args;
     state->errf = info->errf;
     state->flags = info->flags;
 

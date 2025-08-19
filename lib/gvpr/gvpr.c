@@ -69,8 +69,7 @@ typedef struct {
   compflags_t compflags;
   int readAhead;
   char **inFiles;
-  int argc;
-  strview_t *argv;
+  strviews_t args;
   int state; /* > 0 : continue; <= 0 finish */
   int verbose;
 } options;
@@ -140,15 +139,13 @@ static char *gettok(char **sp) {
 /* parseArgs:
  * Split s into whitespace separated tokens, allowing quotes.
  * Append tokens to argument list and return new number of arguments.
- * argc is the current number of arguments, with the arguments
- * stored in *argv.
+ *
+ * @param arg [inout] The current arguments
  */
-static int parseArgs(char *s, int argc, strview_t **argv) {
-  int i, cnt = 0;
+static void parseArgs(char *s, strviews_t *arg) {
+  int cnt = 0;
   char *args[NUM_ARGS];
   char *t;
-
-  assert(argc >= 0);
 
   while ((t = gettok(&s))) {
     if (cnt == NUM_ARGS) {
@@ -160,16 +157,9 @@ static int parseArgs(char *s, int argc, strview_t **argv) {
     args[cnt++] = t;
   }
 
-  if (cnt) {
-    int oldcnt = argc;
-    argc = oldcnt + cnt;
-    strview_t *const av =
-        gv_recalloc(*argv, (size_t)oldcnt, (size_t)argc, sizeof(strview_t));
-    for (i = 0; i < cnt; i++)
-      av[oldcnt + i] = strview(args[i], '\0');
-    *argv = av;
+  for (int i = 0; i < cnt; ++i) {
+    LIST_APPEND(arg, strview(args[i], '\0'));
   }
-  return argc;
 }
 
 #if defined(_WIN32) && !defined(__MINGW32__)
@@ -361,7 +351,7 @@ static int doFlags(char *arg, int argi, int argc, char **argv, options *opts) {
       break;
     case 'a':
       if ((optarg = getOptarg(c, &arg, &argi, argc, argv))) {
-        opts->argc = parseArgs(optarg, opts->argc, &(opts->argv));
+        parseArgs(optarg, &opts->args);
       } else
         return -1;
       break;
@@ -400,7 +390,7 @@ static void freeOpts(options opts) {
   free(opts.inFiles);
   if (opts.useFile)
     free(opts.program);
-  free(opts.argv);
+  LIST_FREE(&opts.args);
 }
 
 /* scanArgs:
@@ -957,8 +947,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
     return 1;
   }
   info.outFile = gs->opts.outFile;
-  info.argc = gs->opts.argc;
-  info.argv = gs->opts.argv;
+  info.args = gs->opts.args;
   info.errf = gverrorf;
   if (uopts)
     info.flags = uopts->flags;
