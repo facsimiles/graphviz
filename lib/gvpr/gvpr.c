@@ -36,6 +36,7 @@
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/gv_find_me.h>
+#include <util/gv_fopen.h>
 #include <util/list.h>
 #include <util/path.h>
 #include <util/strview.h>
@@ -75,7 +76,7 @@ typedef struct {
 } options;
 
 static FILE *openOut(char *name) {
-  FILE *outs = fopen(name, "w");
+  FILE *const outs = gv_fopen(name, "w");
   if (outs == 0) {
     error(ERROR_ERROR, "could not open %s for writing", name);
   }
