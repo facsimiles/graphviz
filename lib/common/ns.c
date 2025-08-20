@@ -16,7 +16,6 @@
 
 #include <assert.h>
 #include <common/render.h>
-#include <inttypes.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -1309,17 +1308,15 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 	node_t *const w = aghead(e);
 	if (ND_onstack(w)) {
 	    dump_graph (g);
-	    fprintf(stderr, "cycle: last edge %" PRIx64 " %s(%" PRIx64 ") %s(%" PRIx64
-	            ")\n", (uint64_t)e, agnameof(n), (uint64_t)n, agnameof(w),
-	            (uint64_t)w);
+	    fprintf(stderr, "cycle: last edge %p %s(%p) %s(%p)\n", e, agnameof(n), n,
+	            agnameof(w), w);
 	    return w;
 	}
 	else {
 	    if (!ND_mark(w)) {
 		node_t *const x = checkdfs(g, w);
 		if (x) {
-		    fprintf(stderr,"unwind %" PRIx64 " %s(%" PRIx64 ")\n", (uint64_t)e,
-		            agnameof(n), (uint64_t)n);
+		    fprintf(stderr,"unwind %p %s(%p)\n", e, agnameof(n), n);
 		    if (x != n) return x;
 		    fprintf(stderr,"unwound to root\n");
 		    fflush(stderr);
