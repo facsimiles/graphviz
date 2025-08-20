@@ -844,8 +844,7 @@ static void TB_balance(network_simplex_ctx_t *ctx)
 static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
     edge_t *e;
 
-    ctx->G = g;
-    ctx->N_nodes = ctx->N_edges = ctx->S_i = 0;
+    *ctx = (network_simplex_ctx_t){.G = g};
     for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
 	ctx->N_nodes++;
