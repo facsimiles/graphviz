@@ -1257,8 +1257,7 @@ void tchk(network_simplex_ctx_t *ctx)
 
 void check_fast_node(node_t * n)
 {
-    node_t *nptr;
-    nptr = GD_nlist(agraphof(n));
+    node_t *nptr = GD_nlist(agraphof(n));
     while (nptr && nptr != n)
 	nptr = ND_next(nptr);
     assert(nptr != NULL);
