@@ -662,10 +662,7 @@ static void rerank(Agnode_t * v, int delta)
 static int
 update(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 {
-    int cutvalue, delta;
-    Agnode_t *lca;
-
-    delta = SLACK(f);
+    const int delta = SLACK(f);
     /* "for (v = in nodes in tail side of e) do ND_rank(v) -= delta;" */
     if (delta > 0) {
 	size_t s = ND_tree_in(agtail(e)).size + ND_tree_out(agtail(e)).size;
@@ -684,8 +681,8 @@ update(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 	}
     }
 
-    cutvalue = ED_cutvalue(e);
-    lca = treeupdate(agtail(f), aghead(f), cutvalue, true);
+    const int cutvalue = ED_cutvalue(e);
+    Agnode_t *const lca = treeupdate(agtail(f), aghead(f), cutvalue, true);
     if (treeupdate(aghead(f), agtail(f), cutvalue, false) != lca) {
 	agerrorf("update: mismatched lca in treeupdates\n");
 	return 2;
