@@ -402,8 +402,7 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
 
 static subtree_t *find_tight_subtree(network_simplex_ctx_t *ctx, Agnode_t *v)
 {
-    subtree_t       *rv;
-    rv = gv_alloc(sizeof(subtree_t));
+    subtree_t *rv = gv_alloc(sizeof(subtree_t));
     rv->rep = v;
     rv->size = tight_subtree_search(ctx,v,rv);
     if (rv->size < 0) {
