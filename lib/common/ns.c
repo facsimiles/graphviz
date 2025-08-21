@@ -450,11 +450,10 @@ static subtree_t *STsetUnion(subtree_t *s0, subtree_t *s1)
 /* find tightest edge to another tree incident on the given tree */
 static Agedge_t *inter_tree_edge_search(Agnode_t *v, Agnode_t *from, Agedge_t *best)
 {
-    int i;
     Agedge_t *e;
     subtree_t *ts = STsetFind(v);
     if (best && SLACK(best) == 0) return best;
-    for (i = 0; (e = ND_out(v).list[i]); i++) {
+    for (int i = 0; (e = ND_out(v).list[i]); i++) {
       if (TREE_EDGE(e)) {
           if (aghead(e) == from) continue;  // do not search back in tree
           best = inter_tree_edge_search(aghead(e),v,best); // search forward in tree
@@ -467,7 +466,7 @@ static Agedge_t *inter_tree_edge_search(Agnode_t *v, Agnode_t *from, Agedge_t *b
       }
     }
     /* the following code must mirror the above, but for in-edges */
-    for (i = 0; (e = ND_in(v).list[i]); i++) {
+    for (int i = 0; (e = ND_in(v).list[i]); i++) {
       if (TREE_EDGE(e)) {
           if (agtail(e) == from) continue;
           best = inter_tree_edge_search(agtail(e),v,best);
