@@ -701,17 +701,15 @@ update(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 }
 
 static int scan_and_normalize(network_simplex_ctx_t *ctx) {
-    node_t *n;
-
     int Minrank = INT_MAX;
     int Maxrank = INT_MIN;
-    for (n = GD_nlist(ctx->G); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(ctx->G); n; n = ND_next(n)) {
 	if (ND_node_type(n) == NORMAL) {
 	    Minrank = MIN(Minrank, ND_rank(n));
 	    Maxrank = MAX(Maxrank, ND_rank(n));
 	}
     }
-    for (n = GD_nlist(ctx->G); n; n = ND_next(n))
+    for (node_t *n = GD_nlist(ctx->G); n; n = ND_next(n))
 	ND_rank(n) -= Minrank;
     Maxrank -= Minrank;
     return Maxrank;
