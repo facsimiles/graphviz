@@ -1239,15 +1239,13 @@ static int dfs_range(node_t * v, edge_t * par, int low)
 #ifdef DEBUG
 void tchk(network_simplex_ctx_t *ctx)
 {
-    int i;
-    node_t *n;
     edge_t *e;
 
     size_t n_cnt = 0;
     size_t e_cnt = 0;
-    for (n = agfstnode(ctx->G); n; n = agnxtnode(ctx->G, n)) {
+    for (node_t *n = agfstnode(ctx->G); n; n = agnxtnode(ctx->G, n)) {
 	n_cnt++;
-	for (i = 0; (e = ND_tree_out(n).list[i]); i++) {
+	for (int i = 0; (e = ND_tree_out(n).list[i]); i++) {
 	    e_cnt++;
 	    if (SLACK(e) > 0)
 		fprintf(stderr, "not a tight tree %p", e);
