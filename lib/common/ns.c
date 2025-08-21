@@ -722,8 +722,7 @@ static void reset_lists(network_simplex_ctx_t *ctx) {
 static void
 freeTreeList (network_simplex_ctx_t *ctx, graph_t* g)
 {
-    node_t *n;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	free_list(ND_tree_in(n));
 	free_list(ND_tree_out(n));
 	ND_mark(n) = false;
