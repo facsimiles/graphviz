@@ -330,9 +330,8 @@ typedef struct {
 static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree_t *st)
 {
     Agedge_t *e;
-    int     rv;
 
-    rv = 1;
+    int rv = 1;
     ND_subtree_set(v,st);
 
     LIST(tst_t) todo = {0};
