@@ -518,8 +518,7 @@ static STheap_t *STbuildheap(subtree_t **elt, size_t size) {
 static
 subtree_t *STextractmin(STheap_t *heap)
 {
-    subtree_t *rv;
-    rv = heap->elt[0];
+    subtree_t *rv = heap->elt[0];
     rv->heap_index = SIZE_MAX;
       // mark this as not participating in the heap anymore
     heap->elt[0] = heap->elt[heap->size - 1];
