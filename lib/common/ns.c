@@ -1300,15 +1300,13 @@ static void dump_graph (graph_t* g)
 static node_t *checkdfs(graph_t* g, node_t * n)
 {
     edge_t *e;
-    node_t *w,*x;
-    int i;
 
     if (ND_mark(n))
-	return 0;
+	return NULL;
     ND_mark(n) = true;
     ND_onstack(n) = true;
-    for (i = 0; (e = ND_out(n).list[i]); i++) {
-	w = aghead(e);
+    for (int i = 0; (e = ND_out(n).list[i]); i++) {
+	node_t *const w = aghead(e);
 	if (ND_onstack(w)) {
 	    dump_graph (g);
 	    fprintf(stderr, "cycle: last edge %" PRIx64 " %s(%" PRIx64 ") %s(%" PRIx64
@@ -1318,7 +1316,7 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 	}
 	else {
 	    if (!ND_mark(w)) {
-		x = checkdfs(g, w);
+		node_t *const x = checkdfs(g, w);
 		if (x) {
 		    fprintf(stderr,"unwind %" PRIx64 " %s(%" PRIx64 ")\n", (uint64_t)e,
 		            agnameof(n), (uint64_t)n);
@@ -1326,13 +1324,13 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 		    fprintf(stderr,"unwound to root\n");
 		    fflush(stderr);
 		    abort();
-		    return 0;
+		    return NULL;
 		}
 	    }
 	}
     }
     ND_onstack(n) = false;
-    return 0;
+    return NULL;
 }
 
 void check_cycles(graph_t * g)
