@@ -482,9 +482,7 @@ static Agedge_t *inter_tree_edge_search(Agnode_t *v, Agnode_t *from, Agedge_t *b
 
 static Agedge_t *inter_tree_edge(subtree_t *tree)
 {
-    Agedge_t *rv;
-    rv = inter_tree_edge_search(tree->rep, NULL, NULL);
-    return rv;
+    return inter_tree_edge_search(tree->rep, NULL, NULL);
 }
 
 static size_t STheapsize(const STheap_t *heap) { return heap->size; }
