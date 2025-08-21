@@ -1002,7 +1002,7 @@ static void x_cutval(edge_t * f)
 {
     node_t *v;
     edge_t *e;
-    int i, sum, dir;
+    int dir;
 
     /* set v to the node on the side of the edge already searched */
     if (ND_par(agtail(f)) == f) {
@@ -1013,13 +1013,13 @@ static void x_cutval(edge_t * f)
 	dir = -1;
     }
 
-    sum = 0;
-    for (i = 0; (e = ND_out(v).list[i]); i++)
+    int sum = 0;
+    for (int i = 0; (e = ND_out(v).list[i]); i++)
 	if (sadd_overflow(sum, x_val(e, v, dir), &sum)) {
 	    agerrorf("overflow when computing edge weight sum\n");
 	    graphviz_exit(EXIT_FAILURE);
 	}
-    for (i = 0; (e = ND_in(v).list[i]); i++)
+    for (int i = 0; (e = ND_in(v).list[i]); i++)
 	if (sadd_overflow(sum, x_val(e, v, dir), &sum)) {
 	    agerrorf("overflow when computing edge weight sum\n");
 	    graphviz_exit(EXIT_FAILURE);
