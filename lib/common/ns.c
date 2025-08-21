@@ -629,11 +629,10 @@ end:
 /* walk up from v to LCA(v,w), setting new cutvalues. */
 static Agnode_t *treeupdate(Agnode_t * v, Agnode_t * w, int cutvalue, int dir)
 {
-    edge_t *e;
     int d;
 
     while (!SEQ(ND_low(v), ND_lim(w), ND_lim(v))) {
-	e = ND_par(v);
+	edge_t *const e = ND_par(v);
 	if (v == agtail(e))
 	    d = dir;
 	else
