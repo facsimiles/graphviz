@@ -245,7 +245,6 @@ static edge_t *dfs_enter_outedge(node_t *v, int Low, int Lim) {
 }
 
 static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
-    int i, slack;
     edge_t *e;
 
     edge_t *Enter = NULL;
@@ -257,10 +256,10 @@ static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
     while (!LIST_IS_EMPTY(&todo)) {
 	v = LIST_POP_BACK(&todo);
 
-	for (i = 0; (e = ND_in(v).list[i]); i++) {
+	for (int i = 0; (e = ND_in(v).list[i]); i++) {
 	    if (!TREE_EDGE(e)) {
 		if (!SEQ(Low, ND_lim(agtail(e)), Lim)) {
-		    slack = SLACK(e);
+		    const int slack = SLACK(e);
 		    if (slack < Slack || Enter == NULL) {
 			Enter = e;
 			Slack = slack;
@@ -269,7 +268,7 @@ static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
 	    } else if (ND_lim(agtail(e)) < ND_lim(v))
 		LIST_APPEND(&todo, agtail(e));
 	}
-	for (i = 0; (e = ND_tree_out(v).list[i]) && Slack > 0; i++)
+	for (int i = 0; (e = ND_tree_out(v).list[i]) && Slack > 0; i++)
 	    if (ND_lim(aghead(e)) < ND_lim(v))
 		LIST_APPEND(&todo, aghead(e));
 
