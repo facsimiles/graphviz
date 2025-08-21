@@ -732,16 +732,13 @@ freeTreeList (network_simplex_ctx_t *ctx, graph_t* g)
 
 static void LR_balance(network_simplex_ctx_t *ctx)
 {
-    int delta;
-    edge_t *e, *f;
-
     for (size_t i = 0; i < LIST_SIZE(&ctx->Tree_edge); i++) {
-	e = LIST_GET(&ctx->Tree_edge, i);
+	edge_t *const e = LIST_GET(&ctx->Tree_edge, i);
 	if (ED_cutvalue(e) == 0) {
-	    f = enter_edge(e);
+	    edge_t *const f = enter_edge(e);
 	    if (f == NULL)
 		continue;
-	    delta = SLACK(f);
+	    const int delta = SLACK(f);
 	    if (delta <= 1)
 		continue;
 	    if (ND_lim(agtail(e)) < ND_lim(aghead(e)))
