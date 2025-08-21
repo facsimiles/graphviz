@@ -909,8 +909,8 @@ static void graphSize(graph_t *g, size_t *nn, size_t *ne) {
 int rank2(graph_t * g, int balance, int maxiter, int search_size)
 {
     int iter = 0;
-    char *ns = "network simplex: ";
-    edge_t *e, *f;
+    char ns[] = "network simplex: ";
+    edge_t *e;
     network_simplex_ctx_t ctx = {0};
 
 #ifdef DEBUG
@@ -933,7 +933,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
 	ctx.Search_size = SEARCHSIZE;
 
     {
-	int err = feasible_tree(&ctx);
+	const int err = feasible_tree(&ctx);
 	if (err != 0) {
 	    freeTreeList(&ctx, g);
 	    return err;
@@ -945,9 +945,8 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
     }
 
     while ((e = leave_edge(&ctx))) {
-	int err;
-	f = enter_edge(e);
-	err = update(&ctx, e, f);
+	edge_t *const f = enter_edge(e);
+	const int err = update(&ctx, e, f);
 	if (err != 0) {
 	    freeTreeList(&ctx, g);
 	    return err;
