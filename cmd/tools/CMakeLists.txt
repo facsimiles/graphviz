@@ -235,6 +235,61 @@ if(NOT HAVE_GETOPT_H)
 endif()
 install(TARGETS gv2gml RUNTIME DESTINATION ${BINARY_INSTALL_DIR})
 
+if(WIN32 OR CYGWIN)
+  if(GZIP)
+    add_custom_target(man-gv2gml ALL
+      DEPENDS gv2gml.1.gz
+      COMMENT "gv2gml man page"
+    )
+    add_custom_command(
+      OUTPUT gv2gml.1.gz
+      COMMAND ${CMAKE_COMMAND} -E copy gml2gv.1.gz gv2gml.1.gz
+      MAIN_DEPENDENCY gml2gv.1.gz
+      COMMENT "Copying gml2gv.1.gz to gv2gml.1.gz"
+    )
+    install(
+      FILES ${CMAKE_CURRENT_BINARY_DIR}/gv2gml.1.gz
+      DESTINATION ${MAN_INSTALL_DIR}/man1
+    )
+  else()
+    install(
+      FILES gml2gv.1
+      DESTINATION ${MAN_INSTALL_DIR}/man1
+      RENAME gv2gml.1
+    )
+  endif()
+else()
+  if(GZIP)
+    add_custom_target(man-gv2gml ALL
+      DEPENDS gv2gml.1.gz
+      COMMENT "gv2gml man page"
+    )
+    add_custom_command(
+      OUTPUT gv2gml.1.gz
+      COMMAND ${CMAKE_COMMAND} -E create_symlink gml2gv.1.gz gv2gml.1.gz
+      COMMENT "Linking gml2gv.1.gz as gv2gml.1.gz"
+    )
+    install(
+      FILES ${CMAKE_CURRENT_BINARY_DIR}/gv2gml.1.gz
+      DESTINATION ${MAN_INSTALL_DIR}/man1
+    )
+  else()
+    add_custom_target(man-gv2gml ALL
+      DEPENDS gv2gml.1
+      COMMENT "gv2gml man page"
+    )
+    add_custom_command(
+      OUTPUT gv2gml.1
+      COMMAND ${CMAKE_COMMAND} -E create_symlink gml2gv.1 gv2gml.1
+      COMMENT "Linking gml2gv.1 as gv2gml.1"
+    )
+    install(
+      FILES ${CMAKE_CURRENT_BINARY_DIR}/gv2gml.1
+      DESTINATION ${MAN_INSTALL_DIR}/man1
+    )
+  endif()
+endif()
+
 # ================================= graphml2gv =================================
 if(EXPAT_FOUND)
 
@@ -437,6 +492,28 @@ if(EXPAT_FOUND)
         PROGRAMS ${GXL2GV_COPY}
         DESTINATION ${BINARY_INSTALL_DIR}
       )
+      if(GZIP)
+        add_custom_target(man-${cmd_alias} ALL
+          DEPENDS ${cmd_alias}.1.gz
+          COMMENT "${cmd_alias} man page"
+        )
+        add_custom_command(
+          OUTPUT ${cmd_alias}.1.gz
+          COMMAND ${CMAKE_COMMAND} -E copy gxl2gv.1.gz ${cmd_alias}.1.gz
+          MAIN_DEPENDENCY gxl2gv.1.gz
+          COMMENT "Copying gxl2gv.1.gz to ${cmd_alias}.1.gz"
+        )
+        install(
+          FILES ${CMAKE_CURRENT_BINARY_DIR}/${cmd_alias}.1.gz
+          DESTINATION ${MAN_INSTALL_DIR}/man1
+        )
+      else()
+        install(
+          FILES gxl2gv.1
+          DESTINATION ${MAN_INSTALL_DIR}/man1
+          RENAME ${cmd_alias}.1
+        )
+      endif()
     else()
       add_custom_command(
         TARGET gxl2gv
@@ -448,6 +525,36 @@ if(EXPAT_FOUND)
         FILES ${GXL2GV_COPY}
         DESTINATION ${BINARY_INSTALL_DIR}
       )
+      if(GZIP)
+        add_custom_target(man-${cmd_alias} ALL
+          DEPENDS ${cmd_alias}.1.gz
+          COMMENT "${cmd_alias} man page"
+        )
+        add_custom_command(
+          OUTPUT ${cmd_alias}.1.gz
+          COMMAND ${CMAKE_COMMAND} -E create_symlink gxl2gv.1.gz
+            ${cmd_alias}.1.gz
+          COMMENT "Linking gxl2gv.1.gz as ${cmd_alias}.1.gz"
+        )
+        install(
+          FILES ${CMAKE_CURRENT_BINARY_DIR}/${cmd_alias}.1.gz
+          DESTINATION ${MAN_INSTALL_DIR}/man1
+        )
+      else()
+        add_custom_target(man-${cmd_alias} ALL
+          DEPENDS ${cmd_alias}.1
+          COMMENT "${cmd_alias} man page"
+        )
+        add_custom_command(
+          OUTPUT ${cmd_alias}.1
+          COMMAND ${CMAKE_COMMAND} -E create_symlink gxl2gv.1 ${cmd_alias}.1
+          COMMENT "Linking gxl2gv.1 as ${cmd_alias}.1"
+        )
+        install(
+          FILES ${CMAKE_CURRENT_BINARY_DIR}/${cmd_alias}.1
+          DESTINATION ${MAN_INSTALL_DIR}/man1
+        )
+      endif()
     endif()
   endforeach()
 

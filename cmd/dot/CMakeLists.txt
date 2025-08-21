@@ -173,7 +173,10 @@ else()
 endif()
 
 # Aliases to the dot executable (not including '.exe' suffix)
-list(APPEND dot_aliases circo fdp neato osage patchwork sfdp twopi)
+list(APPEND dot_aliases circo fdp neato osage patchwork twopi)
+if(with_sfdp)
+  list(APPEND dot_aliases sfdp)
+endif()
 
 # We use copying instead of symlinking for Cygwin to avoid
 # https://gitlab.com/graphviz/graphviz/-/issues/2123
@@ -278,6 +281,69 @@ else()
     DESTINATION ${MAN_INSTALL_DIR}/man1
   )
 endif()
+
+# front ends whose man page is just a symlink to dot’s man page
+list(APPEND linkedman circo fdp neato twopi)
+if(with_sfdp)
+  list(APPEND linkedman sfdp)
+endif()
+
+foreach(alias IN LISTS linkedman)
+  if(WIN32 OR CYGWIN)
+    if(GZIP)
+      add_custom_target(man-${alias} ALL
+        DEPENDS ${alias}.1.gz
+        COMMENT "${alias} man page"
+      )
+      add_custom_command(
+        OUTPUT ${alias}.1.gz
+        COMMAND ${CMAKE_COMMAND} -E copy dot.1.gz ${alias}.1.gz
+        MAIN_DEPENDENCY dot.1.gz
+        COMMENT "Copying dot.1.gz to ${alias}.1.gz"
+      )
+      install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/${alias}.1.gz
+        DESTINATION ${MAN_INSTALL_DIR}/man1
+      )
+    else()
+      install(
+        FILES dot.1
+        DESTINATION ${MAN_INSTALL_DIR}/man1
+        RENAME ${alias}.1
+      )
+    endif()
+  else()
+    if(GZIP)
+      add_custom_target(man-${alias} ALL
+        DEPENDS ${alias}.1.gz
+        COMMENT "${alias} man page"
+      )
+      add_custom_command(
+        OUTPUT ${alias}.1.gz
+        COMMAND ${CMAKE_COMMAND} -E create_symlink dot.1.gz ${alias}.1.gz
+        COMMENT "Linking dot.1.gz as ${alias}.1.gz"
+      )
+      install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/${alias}.1.gz
+        DESTINATION ${MAN_INSTALL_DIR}/man1
+      )
+    else()
+      add_custom_target(man-${alias} ALL
+        DEPENDS ${alias}.1
+        COMMENT "${alias} man page"
+      )
+      add_custom_command(
+        OUTPUT ${alias}.1
+        COMMAND ${CMAKE_COMMAND} -E create_symlink dot.1 ${alias}.1
+        COMMENT "Linking dot.1 as ${alias}.1"
+      )
+      install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/${alias}.1
+        DESTINATION ${MAN_INSTALL_DIR}/man1
+      )
+    endif()
+  endif()
+endforeach()
 
 if(NOT CMAKE_CROSSCOMPILING)
   configure_file(
