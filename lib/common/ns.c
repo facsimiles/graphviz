@@ -1335,12 +1335,11 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 
 void check_cycles(graph_t * g)
 {
-    node_t *n;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
 	ND_onstack(n) = false;
     }
-    for (n = GD_nlist(g); n; n = ND_next(n))
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n))
 	checkdfs(g, n);
 }
 #endif				/* DEBUG */
