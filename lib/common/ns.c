@@ -843,12 +843,11 @@ static void TB_balance(network_simplex_ctx_t *ctx)
 }
 
 static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
-    node_t *n;
     edge_t *e;
 
     ctx->G = g;
     ctx->N_nodes = ctx->N_edges = ctx->S_i = 0;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
 	ctx->N_nodes++;
 	for (size_t i = 0; (e = ND_out(n).list[i]); i++)
@@ -858,7 +857,7 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
     LIST_RESERVE(&ctx->Tree_edge, ctx->N_nodes);
 
     bool feasible = true;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_priority(n) = 0;
 	size_t i;
 	for (i = 0; (e = ND_in(n).list[i]); i++) {
