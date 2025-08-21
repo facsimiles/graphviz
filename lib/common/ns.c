@@ -532,17 +532,15 @@ subtree_t *STextractmin(STheap_t *heap)
 static
 void tree_adjust(Agnode_t *v, Agnode_t *from, int delta)
 {
-    int i;
     Agedge_t *e;
-    Agnode_t *w;
-    ND_rank(v) = ND_rank(v) + delta;
-    for (i = 0; (e = ND_tree_in(v).list[i]); i++) {
-      w = agtail(e);
+    ND_rank(v) += delta;
+    for (int i = 0; (e = ND_tree_in(v).list[i]); i++) {
+      Agnode_t *const w = agtail(e);
       if (w != from)
         tree_adjust(w, v, delta);
     }
-    for (i = 0; (e = ND_tree_out(v).list[i]); i++) {
-      w = aghead(e);
+    for (int i = 0; (e = ND_tree_out(v).list[i]); i++) {
+      Agnode_t *const w = aghead(e);
       if (w != from)
         tree_adjust(w, v, delta);
     }
