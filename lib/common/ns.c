@@ -1067,13 +1067,12 @@ static int x_val(edge_t * e, node_t * v, int dir)
 
 static void dfs_cutval(node_t * v, edge_t * par)
 {
-    int i;
     edge_t *e;
 
-    for (i = 0; (e = ND_tree_out(v).list[i]); i++)
+    for (int i = 0; (e = ND_tree_out(v).list[i]); i++)
 	if (e != par)
 	    dfs_cutval(aghead(e), e);
-    for (i = 0; (e = ND_tree_in(v).list[i]); i++)
+    for (int i = 0; (e = ND_tree_in(v).list[i]); i++)
 	if (e != par)
 	    dfs_cutval(agtail(e), e);
     if (par)
