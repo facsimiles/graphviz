@@ -1273,22 +1273,20 @@ static void dump_node(FILE *sink, node_t *n) {
 
 static void dump_graph (graph_t* g)
 {
-    int i;
     edge_t *e;
-    node_t *n,*w;
-    FILE* fp = fopen ("ns.gv", "w");
+    FILE *const fp = fopen ("ns.gv", "w");
     fprintf (fp, "digraph \"%s\" {\n", agnameof(g));
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	fputs("  \"", fp);
 	dump_node(fp, n);
 	fputs("\"\n", fp);
     }
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
-	for (i = 0; (e = ND_out(n).list[i]); i++) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
+	for (int i = 0; (e = ND_out(n).list[i]); i++) {
 	    fputs("  \"", fp);
 	    dump_node(fp, n);
 	    fputs("\"", fp);
-	    w = aghead(e);
+	    node_t *const w = aghead(e);
 	    fputs(" -> \"", fp);
 	    dump_node(fp, w);
 	    fputs("\"\n", fp);
