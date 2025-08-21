@@ -627,16 +627,10 @@ end:
 }
 
 /* walk up from v to LCA(v,w), setting new cutvalues. */
-static Agnode_t *treeupdate(Agnode_t * v, Agnode_t * w, int cutvalue, int dir)
-{
-    int d;
-
+static Agnode_t *treeupdate(Agnode_t *v, Agnode_t *w, int cutvalue, bool dir) {
     while (!SEQ(ND_low(v), ND_lim(w), ND_lim(v))) {
 	edge_t *const e = ND_par(v);
-	if (v == agtail(e))
-	    d = dir;
-	else
-	    d = !dir;
+	const bool d = v == agtail(e) ? dir : !dir;
 	if (d)
 	    ED_cutvalue(e) += cutvalue;
 	else
@@ -692,8 +686,8 @@ update(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
     }
 
     cutvalue = ED_cutvalue(e);
-    lca = treeupdate(agtail(f), aghead(f), cutvalue, 1);
-    if (treeupdate(aghead(f), agtail(f), cutvalue, 0) != lca) {
+    lca = treeupdate(agtail(f), aghead(f), cutvalue, true);
+    if (treeupdate(aghead(f), agtail(f), cutvalue, false) != lca) {
 	agerrorf("update: mismatched lca in treeupdates\n");
 	return 2;
     }
