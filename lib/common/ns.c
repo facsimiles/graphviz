@@ -768,10 +768,7 @@ static int increasingrankcmpf(const void *x, const void *y) {
 
 static void TB_balance(network_simplex_ctx_t *ctx)
 {
-    node_t *n;
     edge_t *e;
-    int low, high, choice;
-    int inweight, outweight;
     int adj = 0;
     char *s;
 
@@ -783,7 +780,7 @@ static void TB_balance(network_simplex_ctx_t *ctx)
     if ( (s = agget(ctx->G,"TBbalance")) ) {
          if (streq(s,"min")) adj = 1;
          else if (streq(s,"max")) adj = 2;
-         if (adj) for (n = GD_nlist(ctx->G); n; n = ND_next(n))
+         if (adj) for (node_t *n = GD_nlist(ctx->G); n; n = ND_next(n))
               if (ND_node_type(n) == NORMAL) {
                 if (ND_in(n).size == 0 && adj == 1) {
                    ND_rank(n) = 0;
@@ -795,22 +792,23 @@ static void TB_balance(network_simplex_ctx_t *ctx)
     }
     LIST(node_t *) Tree_node = {0};
     LIST_RESERVE(&Tree_node, ctx->N_nodes);
-    for (n = GD_nlist(ctx->G); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(ctx->G); n; n = ND_next(n)) {
       LIST_APPEND(&Tree_node, n);
     }
     LIST_SORT(&Tree_node, adj > 1 ? decreasingrankcmpf: increasingrankcmpf);
     for (size_t i = 0; i < LIST_SIZE(&Tree_node); i++) {
-        n = LIST_GET(&Tree_node, i);
+        node_t *const n = LIST_GET(&Tree_node, i);
         if (ND_node_type(n) == NORMAL)
           nrank[ND_rank(n)]++;
     }
     for (size_t ii = 0; ii < LIST_SIZE(&Tree_node); ii++) {
-      n = LIST_GET(&Tree_node, ii);
+      node_t *const n = LIST_GET(&Tree_node, ii);
       if (ND_node_type(n) != NORMAL)
         continue;
-      inweight = outweight = 0;
-      low = 0;
-      high = Maxrank;
+      int inweight = 0;
+      int outweight = 0;
+      int low = 0;
+      int high = Maxrank;
       for (size_t i = 0; (e = ND_in(n).list[i]); i++) {
         inweight += ED_weight(e);
         low = MAX(low, ND_rank(agtail(e)) + ED_minlen(e));
@@ -823,11 +821,11 @@ static void TB_balance(network_simplex_ctx_t *ctx)
         low = 0;		/* vnodes can have ranks < 0 */
       if (adj) {
         if (inweight == outweight)
-            ND_rank(n) = (adj == 1? low : high);
+            ND_rank(n) = adj == 1 ? low : high;
       }
       else {
                 if (inweight == outweight) {
-                    choice = low;
+                    int choice = low;
                     for (int i = low + 1; i <= high; i++)
                         if (nrank[i] < nrank[choice])
                             choice = i;
