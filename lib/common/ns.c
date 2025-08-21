@@ -645,14 +645,13 @@ static Agnode_t *treeupdate(Agnode_t *v, Agnode_t *w, int cutvalue, bool dir) {
 
 static void rerank(Agnode_t * v, int delta)
 {
-    int i;
     edge_t *e;
 
     ND_rank(v) -= delta;
-    for (i = 0; (e = ND_tree_out(v).list[i]); i++)
+    for (int i = 0; (e = ND_tree_out(v).list[i]); i++)
 	if (e != ND_par(v))
 	    rerank(aghead(e), delta);
-    for (i = 0; (e = ND_tree_in(v).list[i]); i++)
+    for (int i = 0; (e = ND_tree_in(v).list[i]); i++)
 	if (e != ND_par(v))
 	    rerank(agtail(e), delta);
 }
