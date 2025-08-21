@@ -549,30 +549,25 @@ void tree_adjust(Agnode_t *v, Agnode_t *from, int delta)
 static
 subtree_t *merge_trees(network_simplex_ctx_t *ctx, Agedge_t *e)   /* entering tree edge */
 {
-  int       delta;
-  subtree_t *t0, *t1, *rv;
-
   assert(!TREE_EDGE(e));
 
-  t0 = STsetFind(agtail(e));
-  t1 = STsetFind(aghead(e));
+  subtree_t *const t0 = STsetFind(agtail(e));
+  subtree_t *const t1 = STsetFind(aghead(e));
 
   if (!on_heap(t0)) { // move t0
-    delta = SLACK(e);
+    const int delta = SLACK(e);
     if (delta != 0)
       tree_adjust(t0->rep,NULL,delta);
   }
   else {  // move t1
-    delta = -SLACK(e);
+    const int delta = -SLACK(e);
     if (delta != 0)
       tree_adjust(t1->rep,NULL,delta);
   }
   if (add_tree_edge(ctx, e) != 0) {
     return NULL;
   }
-  rv = STsetUnion(t0,t1);
-  
-  return rv;
+  return STsetUnion(t0, t1);
 }
 
 /* Construct initial tight tree. Graph must be connected, feasible.
