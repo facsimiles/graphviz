@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   not can now be controlled by the `-DWITH_POPPLER={AUTO|ON|OFF}` option. #2714
 - The gvpr `-a` option is no longer limited to 100 arguments. It is limited now
   only by available memory.
+- In the CMake build system, whether librsvg-dependent components are built or
+  not can now be controlled by the `-DWITH_RSVG={AUTO|ON|OFF}` option. #2714
 
 ### Fixed
 
