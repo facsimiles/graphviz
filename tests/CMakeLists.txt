@@ -12,15 +12,13 @@ else()
   find_package(Boost REQUIRED)
 endif()
 
-find_package(Catch2 REQUIRED)
+find_package(Catch2 3 REQUIRED)
 find_package(RAPIDXML REQUIRED)
 find_package(SVGPP REQUIRED)
 
 enable_testing()
 
-# for convenience, make a library that depends on everything so each
-# separate test can be as small as possible
-add_library(test_common SHARED
+add_library(test_common STATIC
             graphviz_edge.cpp
             graphviz_edge.h
             graphviz_graph.cpp
@@ -65,6 +63,7 @@ target_link_libraries(test_common PUBLIC
   cgraph++
   gvc
   gvc++
+  Catch2::Catch2
 )
 
 # common steps for creating a test case
