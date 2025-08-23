@@ -31,8 +31,7 @@
 #include <ortho/ortho.h>
 #endif
 
-#define NSUB 9    /* number of subdivisions, re-aiming splines */
-#define CHUNK 128 /* in building list of edges */
+#define NSUB 9 /* number of subdivisions, re-aiming splines */
 
 #define MINW 16 /* minimum width of a box in the edge path */
 #define HALFMINW 8
@@ -94,11 +93,6 @@ static void setflags(Agedge_t *, int, int, int);
 static int straight_len(Agnode_t *);
 static Agedge_t *straight_path(Agedge_t *, int, points_t *);
 static Agedge_t *top_bound(Agedge_t *, int);
-
-#define GROWEDGES                                                              \
-  do {                                                                         \
-    edges = gv_recalloc(edges, n_edges, n_edges + CHUNK, sizeof(edge_t *));    \
-  } while (0)
 
 static edge_t *getmainedge(edge_t *e) {
   edge_t *le = e;
@@ -240,7 +234,7 @@ static int dot_splines_(graph_t *g, int normalize) {
   node_t *n;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
-  edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1, **edges = NULL;
+  edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1;
   path P = {0};
   int et = EDGE_TYPE(g);
   fwdedgea.out.base.data = &fwdedgeai.hdr;
@@ -256,6 +250,7 @@ static int dot_splines_(graph_t *g, int normalize) {
     }
   }
   spline_info_t sd = {0};
+  LIST(edge_t *) edges = {0};
 #ifdef ORTHO
   if (et == EDGETYPE_ORTHO) {
     resetRW(g);
@@ -275,10 +270,8 @@ static int dot_splines_(graph_t *g, int normalize) {
     return 0;
   sd = (spline_info_t){.Splinesep = GD_nodesep(g) / 4,
                        .Multisep = GD_nodesep(g)};
-  edges = gv_calloc(CHUNK, sizeof(edge_t *));
 
   /* compute boundaries and list of splines */
-  unsigned n_edges = 0;
   n_nodes = 0;
   for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
     n_nodes += GD_rank(g)[i].n;
@@ -306,16 +299,12 @@ static int dot_splines_(graph_t *g, int normalize) {
         if (ED_edge_type(e) == FLATORDER || ED_edge_type(e) == IGNORED)
           continue;
         setflags(e, REGULAREDGE, FWDEDGE, MAINGRAPH);
-        edges[n_edges++] = e;
-        if (n_edges % CHUNK == 0)
-          GROWEDGES;
+        LIST_APPEND(&edges, e);
       }
       if (ND_flat_out(n).list)
         for (int k = 0; (e = ND_flat_out(n).list[k]); k++) {
           setflags(e, FLATEDGE, 0, AUXGRAPH);
-          edges[n_edges++] = e;
-          if (n_edges % CHUNK == 0)
-            GROWEDGES;
+          LIST_APPEND(&edges, e);
         }
       if (ND_other(n).list) {
         /* In position, each node has its rw stored in mval and,
@@ -328,9 +317,7 @@ static int dot_splines_(graph_t *g, int normalize) {
         }
         for (int k = 0; (e = ND_other(n).list[k]); k++) {
           setflags(e, 0, 0, AUXGRAPH);
-          edges[n_edges++] = e;
-          if (n_edges % CHUNK == 0)
-            GROWEDGES;
+          LIST_APPEND(&edges, e);
         }
       }
     }
@@ -342,7 +329,7 @@ static int dot_splines_(graph_t *g, int normalize) {
    * alternatively, the edges would be routed identically if
    * routed separately.
    */
-  qsort(edges, n_edges, sizeof(edges[0]), edgecmp);
+  LIST_SORT(&edges, edgecmp);
 
   /* FIXME: just how many boxes can there be? */
   P.boxes = gv_calloc(n_nodes + 20 * 2 * NSUB, sizeof(boxf));
@@ -357,9 +344,9 @@ static int dot_splines_(graph_t *g, int normalize) {
     }
   }
 
-  for (unsigned l = 0; l < n_edges;) {
+  for (unsigned l = 0; l < LIST_SIZE(&edges);) {
     const unsigned ind = l;
-    le0 = getmainedge((e0 = edges[l++]));
+    le0 = getmainedge((e0 = LIST_GET(&edges, l++)));
     if (ED_tail_port(e0).defined || ED_head_port(e0).defined) {
       ea = e0;
     } else {
@@ -370,8 +357,8 @@ static int dot_splines_(graph_t *g, int normalize) {
       ea = &fwdedgea.out;
     }
     unsigned cnt;
-    for (cnt = 1; l < n_edges; cnt++, l++) {
-      if (le0 != (le1 = getmainedge((e1 = edges[l]))))
+    for (cnt = 1; l < LIST_SIZE(&edges); cnt++, l++) {
+      if (le0 != (le1 = getmainedge((e1 = LIST_GET(&edges, l)))))
         break;
       if (ED_adjacent(e0))
         continue; /* all flat adjacent edges at once */
@@ -391,15 +378,15 @@ static int dot_splines_(graph_t *g, int normalize) {
       if ((ED_tree_index(e0) & EDGETYPEMASK) == FLATEDGE &&
           ED_label(e0) != ED_label(e1))
         break;
-      if (ED_tree_index(edges[l]) & MAINGRAPH) /* Aha! -C is on */
+      if (ED_tree_index(LIST_GET(&edges, l)) & MAINGRAPH) /* Aha! -C is on */
         break;
     }
 
     if (et == EDGETYPE_CURVED) {
       edge_t **edgelist = gv_calloc(cnt, sizeof(edge_t *));
-      edgelist[0] = getmainedge((edges + ind)[0]);
+      edgelist[0] = getmainedge(LIST_GET(&edges, ind));
       for (unsigned ii = 1; ii < cnt; ii++)
-        edgelist[ii] = (edges + ind)[ii];
+        edgelist[ii] = LIST_GET(&edges, ind + ii);
       makeStraightEdges(g, edgelist, cnt, et, &sinfo);
       free(edgelist);
     } else if (agtail(e0) == aghead(e0)) {
@@ -418,20 +405,22 @@ static int dot_splines_(graph_t *g, int normalize) {
         double dwny = ND_coord(n).y - ND_coord(GD_rank(g)[r + 1].v[0]).y;
         sizey = MIN(upy, dwny);
       }
-      makeSelfEdge(edges, ind, cnt, sd.Multisep, sizey / 2, &sinfo);
+      makeSelfEdge(LIST_FRONT(&edges), ind, cnt, sd.Multisep, sizey / 2,
+                   &sinfo);
       for (unsigned b = 0; b < cnt; b++) {
-        e = edges[ind + b];
+        e = LIST_GET(&edges, ind + b);
         if (ED_label(e))
           updateBB(g, ED_label(e));
       }
     } else if (ND_rank(agtail(e0)) == ND_rank(aghead(e0))) {
-      const int rc = make_flat_edge(g, sd, &P, edges, ind, cnt, et);
+      const int rc =
+          make_flat_edge(g, sd, &P, LIST_FRONT(&edges), ind, cnt, et);
       if (rc != 0) {
         free(sd.Rank_box);
         return rc;
       }
     } else
-      make_regular_edge(g, &sd, &P, edges, ind, cnt, et);
+      make_regular_edge(g, &sd, &P, LIST_FRONT(&edges), ind, cnt, et);
   }
 
   /* place regular edge labels */
@@ -480,7 +469,7 @@ finish:
     routesplinesterm();
   }
   free(sd.Rank_box);
-  free(edges);
+  LIST_FREE(&edges);
   free(P.boxes);
   State = GVSPLINES;
   EdgeLabelsDone = 1;
@@ -549,28 +538,18 @@ static void setflags(edge_t *e, int hint1, int hint2, int f3) {
  *  - labels if flat edges
  *  - edge id
  */
-static int edgecmp(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  edge_t **ptr0 = (edge_t **)x;
-  edge_t **ptr1 = (edge_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+static int edgecmp(const void *p0, const void *p1) {
+  edge_t *const *ptr0 = p0;
+  edge_t *const *ptr1 = p1;
   Agedgeinfo_t fwdedgeai, fwdedgebi;
   Agedgepair_t fwdedgea, fwdedgeb;
-  edge_t *e0, *e1, *ea, *eb, *le0, *le1;
+  edge_t *ea, *eb, *le0, *le1;
   int et0, et1, rv;
 
   fwdedgea.out.base.data = &fwdedgeai.hdr;
   fwdedgeb.out.base.data = &fwdedgebi.hdr;
-  e0 = *ptr0;
-  e1 = *ptr1;
+  edge_t *const e0 = *ptr0;
+  edge_t *const e1 = *ptr1;
   et0 = ED_tree_index(e0) & EDGETYPEMASK;
   et1 = ED_tree_index(e1) & EDGETYPEMASK;
   if (et0 < et1) {
