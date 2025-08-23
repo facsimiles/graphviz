@@ -5955,7 +5955,7 @@ def test_2705(tmp_path: Path):
     ), "round tripping graph through file was not idempotent"
 
 
-@pytest.mark.skipif(shutil.which("gvpr") is None, reason="gvpr is not available")
+@pytest.mark.skipif(which("gvpr") is None, reason="gvpr is not available")
 def test_2707():
     """
     gvpr should not perform a double-free while processing this example
