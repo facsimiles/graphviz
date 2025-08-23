@@ -36,8 +36,10 @@
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/gv_find_me.h>
+#include <util/gv_fopen.h>
 #include <util/list.h>
 #include <util/path.h>
+#include <util/strview.h>
 #include <util/unreachable.h>
 
 static char *Info[] = {
@@ -68,14 +70,13 @@ typedef struct {
   compflags_t compflags;
   int readAhead;
   char **inFiles;
-  int argc;
-  char **argv;
+  strviews_t args;
   int state; /* > 0 : continue; <= 0 finish */
   int verbose;
 } options;
 
 static FILE *openOut(char *name) {
-  FILE *outs = fopen(name, "w");
+  FILE *const outs = gv_fopen(name, "w");
   if (outs == 0) {
     error(ERROR_ERROR, "could not open %s for writing", name);
   }
@@ -102,7 +103,7 @@ static char *gettok(char **sp) {
 
   while (gv_isspace(*rs))
     rs++;
-  if ((c = *rs) == '\0')
+  if (*rs == '\0')
     return NULL;
   while ((c = *rs)) {
     if (q && q == c) { /* end quote */
@@ -134,41 +135,18 @@ static char *gettok(char **sp) {
   return s;
 }
 
-#define NUM_ARGS 100
-
 /* parseArgs:
  * Split s into whitespace separated tokens, allowing quotes.
  * Append tokens to argument list and return new number of arguments.
- * argc is the current number of arguments, with the arguments
- * stored in *argv.
+ *
+ * @param arg [inout] The current arguments
  */
-static int parseArgs(char *s, int argc, char ***argv) {
-  int i, cnt = 0;
-  char *args[NUM_ARGS];
+static void parseArgs(char *s, strviews_t *arg) {
   char *t;
-  char **av;
-
-  assert(argc >= 0);
 
   while ((t = gettok(&s))) {
-    if (cnt == NUM_ARGS) {
-      error(ERROR_WARNING,
-            "at most %d arguments allowed per -a flag - ignoring rest",
-            NUM_ARGS);
-      break;
-    }
-    args[cnt++] = t;
+    LIST_APPEND(arg, strview(t, '\0'));
   }
-
-  if (cnt) {
-    int oldcnt = argc;
-    argc = oldcnt + cnt;
-    av = gv_recalloc(*argv, (size_t)oldcnt, (size_t)argc, sizeof(char *));
-    for (i = 0; i < cnt; i++)
-      av[oldcnt + i] = gv_strdup(args[i]);
-    *argv = av;
-  }
-  return argc;
 }
 
 #if defined(_WIN32) && !defined(__MINGW32__)
@@ -360,7 +338,7 @@ static int doFlags(char *arg, int argi, int argc, char **argv, options *opts) {
       break;
     case 'a':
       if ((optarg = getOptarg(c, &arg, &argi, argc, argv))) {
-        opts->argc = parseArgs(optarg, opts->argc, &(opts->argv));
+        parseArgs(optarg, &opts->args);
       } else
         return -1;
       break;
@@ -399,9 +377,7 @@ static void freeOpts(options opts) {
   free(opts.inFiles);
   if (opts.useFile)
     free(opts.program);
-  for (int i = 0; i < opts.argc; i++)
-    free(opts.argv[i]);
-  free(opts.argv);
+  LIST_FREE(&opts.args);
 }
 
 /* scanArgs:
@@ -958,8 +934,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
     return 1;
   }
   info.outFile = gs->opts.outFile;
-  info.argc = gs->opts.argc;
-  info.argv = gs->opts.argv;
+  info.args = gs->opts.args;
   info.errf = gverrorf;
   if (uopts)
     info.flags = uopts->flags;

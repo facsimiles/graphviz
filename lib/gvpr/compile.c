@@ -33,6 +33,7 @@
 #include <util/list.h>
 #include <util/prisize_t.h>
 #include <util/startswith.h>
+#include <util/strview.h>
 #include <util/unreachable.h>
 
 static int isedge(Agobj_t *obj) {
@@ -462,13 +463,18 @@ static int lookup(Expr_t *pgm, Agobj_t *objp, Exid_t *sym, Extype_t *v) {
   return 0;
 }
 
-// return value associated with $n
-static char *getArg(int n, Gpr_t *state) {
-  if (n >= state->argc) {
-    exerror("program references ARGV[%d] - undefined", n);
-    return 0;
+/// get value associated with $n
+///
+/// @param out [out] Found argument on success
+/// @return 0 on success
+static int getArg(long long n, Gpr_t *state, strview_t *out) {
+  assert(out != NULL);
+  if (n < 0 || (unsigned long long)n >= LIST_SIZE(&state->args)) {
+    exerror("program references ARGV[%lld] - undefined", n);
+    return -1;
   }
-  return state->argv[n];
+  *out = LIST_GET(&state->args, (size_t)n);
+  return 0;
 }
 
 static int setDfltAttr(Agraph_t *gp, char *k, char *name, char *value) {
@@ -1415,9 +1421,17 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
     args = env;
     state = disc->user;
     switch (sym->index) {
-    case A_ARGV:
-      v.string = getArg(args[0].integer, state);
+    case A_ARGV: {
+      strview_t arg;
+      if (getArg(args[0].integer, state, &arg) != 0) {
+        break;
+      }
+      v.string = exstralloc(pgm, arg.size + 1);
+      if (arg.size > 0) {
+        memcpy(v.string, arg.data, arg.size);
+      }
       break;
+    }
     default:
       exerror("unknown array name: %s", sym->name);
       v.string = 0;
@@ -1456,9 +1470,12 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
     case V_infname:
       v.string = state->infname;
       break;
-    case V_ARGC:
-      v.integer = state->argc;
+    case V_ARGC: {
+      const size_t size = LIST_SIZE(&state->args);
+      assert(size <= LLONG_MAX);
+      v.integer = (long long)size;
       break;
+    }
     case V_travtype:
       v.integer = state->tvt;
       break;
@@ -1591,7 +1608,9 @@ static Extype_t length(Exid_t *rhs, Exdisc_t *disc) {
   switch (rhs->index) {
   case A_ARGV: {
     Gpr_t *const state = disc->user;
-    v.integer = state->argc;
+    const size_t size = LIST_SIZE(&state->args);
+    assert(size <= LLONG_MAX);
+    v.integer = (long long)size;
     break;
   }
   default:
@@ -1614,7 +1633,8 @@ static int in(Extype_t lhs, Exid_t *rhs, Exdisc_t *disc) {
   switch (rhs->index) {
   case A_ARGV: {
     Gpr_t *const state = disc->user;
-    return lhs.integer >= 0 && lhs.integer < state->argc;
+    return lhs.integer >= 0 &&
+           (unsigned long long)lhs.integer < LIST_SIZE(&state->args);
   }
   default:
     exerror("unknown array name: %s", rhs->name);
