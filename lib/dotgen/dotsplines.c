@@ -417,6 +417,7 @@ static int dot_splines_(graph_t *g, int normalize) {
           make_flat_edge(g, sd, &P, LIST_FRONT(&edges), ind, cnt, et);
       if (rc != 0) {
         free(sd.Rank_box);
+        LIST_FREE(&edges);
         return rc;
       }
     } else
