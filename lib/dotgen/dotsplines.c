@@ -18,6 +18,7 @@
 #include <math.h>
 #include <stdatomic.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,10 +45,13 @@
 #define GRAPHTYPEMASK 192 /* the OR of the above */
 
 static void makefwdedge(edge_t *new, edge_t *old) {
-  Agedgeinfo_t *const info = (Agedgeinfo_t *)new->base.data;
-  *info = *(Agedgeinfo_t *)old->base.data;
+  Agedgeinfo_t *const info =
+      (Agedgeinfo_t *)((uintptr_t)new->base.data - offsetof(Agedgeinfo_t, hdr));
+  const Agedgeinfo_t *const old_info =
+      (Agedgeinfo_t *)((uintptr_t)old->base.data - offsetof(Agedgeinfo_t, hdr));
+  *info = *old_info;
   *new = *old;
-  new->base.data = (Agrec_t *)info;
+  new->base.data = &info->hdr;
   AGTAIL(new) = AGHEAD(old);
   AGHEAD(new) = AGTAIL(old);
   ED_tail_port(new) = ED_head_port(old);
@@ -239,8 +243,8 @@ static int dot_splines_(graph_t *g, int normalize) {
   edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1, **edges = NULL;
   path P = {0};
   int et = EDGE_TYPE(g);
-  fwdedgea.out.base.data = (Agrec_t *)&fwdedgeai;
-  fwdedgeb.out.base.data = (Agrec_t *)&fwdedgebi;
+  fwdedgea.out.base.data = &fwdedgeai.hdr;
+  fwdedgeb.out.base.data = &fwdedgebi.hdr;
 
   if (et == EDGETYPE_NONE)
     return 0;
@@ -563,8 +567,8 @@ static int edgecmp(const void *x, const void *y) {
   edge_t *e0, *e1, *ea, *eb, *le0, *le1;
   int et0, et1, rv;
 
-  fwdedgea.out.base.data = (Agrec_t *)&fwdedgeai;
-  fwdedgeb.out.base.data = (Agrec_t *)&fwdedgebi;
+  fwdedgea.out.base.data = &fwdedgeai.hdr;
+  fwdedgeb.out.base.data = &fwdedgebi.hdr;
   e0 = *ptr0;
   e1 = *ptr1;
   et0 = ED_tree_index(e0) & EDGETYPEMASK;
@@ -1564,7 +1568,7 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
   int tside, hside;
   pathend_t tend, hend;
 
-  fwdedge.out.base.data = (Agrec_t *)&fwdedgei;
+  fwdedge.out.base.data = &fwdedgei.hdr;
 
   /* Get sample edge; normalize to go from left to right */
   e = edges[ind];
@@ -1768,26 +1772,28 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
   points_t pointfs = {0};
   points_t pointfs2 = {0};
 
-  fwdedgea.out.base.data = (Agrec_t *)&fwdedgeai;
-  fwdedgeb.out.base.data = (Agrec_t *)&fwdedgebi;
-  fwdedge.out.base.data = (Agrec_t *)&fwdedgei;
+  fwdedgea.out.base.data = &fwdedgeai.hdr;
+  fwdedgeb.out.base.data = &fwdedgebi.hdr;
+  fwdedge.out.base.data = &fwdedgei.hdr;
 
   sl = 0;
   e = edges[ind];
   bool hackflag = false;
   if (abs(ND_rank(agtail(e)) - ND_rank(aghead(e))) > 1) {
-    fwdedgeai = *(Agedgeinfo_t *)e->base.data;
+    fwdedgeai = *(Agedgeinfo_t *)((uintptr_t)e->base.data -
+                                  offsetof(Agedgeinfo_t, hdr));
     fwdedgea.out = *e;
     fwdedgea.in = *AGOUT2IN(e);
-    fwdedgea.out.base.data = (Agrec_t *)&fwdedgeai;
+    fwdedgea.out.base.data = &fwdedgeai.hdr;
     if (ED_tree_index(e) & BWDEDGE) {
       makefwdedge(&fwdedgeb.out, e);
       agtail(&fwdedgea.out) = aghead(e);
       ED_tail_port(&fwdedgea.out) = ED_head_port(e);
     } else {
-      fwdedgebi = *(Agedgeinfo_t *)e->base.data;
+      fwdedgebi = *(Agedgeinfo_t *)((uintptr_t)e->base.data -
+                                    offsetof(Agedgeinfo_t, hdr));
       fwdedgeb.out = *e;
-      fwdedgeb.out.base.data = (Agrec_t *)&fwdedgebi;
+      fwdedgeb.out.base.data = &fwdedgebi.hdr;
       agtail(&fwdedgea.out) = agtail(e);
       fwdedgeb.in = *AGOUT2IN(e);
     }
