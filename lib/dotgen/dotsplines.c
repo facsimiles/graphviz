@@ -43,22 +43,18 @@
 #define AUXGRAPH 128
 #define GRAPHTYPEMASK 192 /* the OR of the above */
 
-#define MAKEFWDEDGE(new, old)                                                  \
-  {                                                                            \
-    edge_t *newp;                                                              \
-    Agedgeinfo_t *info;                                                        \
-    newp = new;                                                                \
-    info = (Agedgeinfo_t *)newp->base.data;                                    \
-    *info = *(Agedgeinfo_t *)old->base.data;                                   \
-    *newp = *old;                                                              \
-    newp->base.data = (Agrec_t *)info;                                         \
-    AGTAIL(newp) = AGHEAD(old);                                                \
-    AGHEAD(newp) = AGTAIL(old);                                                \
-    ED_tail_port(newp) = ED_head_port(old);                                    \
-    ED_head_port(newp) = ED_tail_port(old);                                    \
-    ED_edge_type(newp) = VIRTUAL;                                              \
-    ED_to_orig(newp) = old;                                                    \
-  }
+static void makefwdedge(edge_t *new, edge_t *old) {
+  Agedgeinfo_t *const info = (Agedgeinfo_t *)new->base.data;
+  *info = *(Agedgeinfo_t *)old->base.data;
+  *new = *old;
+  new->base.data = (Agrec_t *)info;
+  AGTAIL(new) = AGHEAD(old);
+  AGHEAD(new) = AGTAIL(old);
+  ED_tail_port(new) = ED_head_port(old);
+  ED_head_port(new) = ED_tail_port(old);
+  ED_edge_type(new) = VIRTUAL;
+  ED_to_orig(new) = old;
+}
 
 typedef struct {
   double LeftBound;
@@ -366,7 +362,7 @@ static int dot_splines_(graph_t *g, int normalize) {
       ea = le0;
     }
     if (ED_tree_index(ea) & BWDEDGE) {
-      MAKEFWDEDGE(&fwdedgea.out, ea);
+      makefwdedge(&fwdedgea.out, ea);
       ea = &fwdedgea.out;
     }
     unsigned cnt;
@@ -381,7 +377,7 @@ static int dot_splines_(graph_t *g, int normalize) {
         eb = le1;
       }
       if (ED_tree_index(eb) & BWDEDGE) {
-        MAKEFWDEDGE(&fwdedgeb.out, eb);
+        makefwdedge(&fwdedgeb.out, eb);
         eb = &fwdedgeb.out;
       }
       if (portcmp(ED_tail_port(ea), ED_tail_port(eb)))
@@ -619,12 +615,12 @@ static int edgecmp(const void *x, const void *y) {
 
   ea = (ED_tail_port(e0).defined || ED_head_port(e0).defined) ? e0 : le0;
   if (ED_tree_index(ea) & BWDEDGE) {
-    MAKEFWDEDGE(&fwdedgea.out, ea);
+    makefwdedge(&fwdedgea.out, ea);
     ea = &fwdedgea.out;
   }
   eb = (ED_tail_port(e1).defined || ED_head_port(e1).defined) ? e1 : le1;
   if (ED_tree_index(eb) & BWDEDGE) {
-    MAKEFWDEDGE(&fwdedgeb.out, eb);
+    makefwdedge(&fwdedgeb.out, eb);
     eb = &fwdedgeb.out;
   }
   if ((rv = portcmp(ED_tail_port(ea), ED_tail_port(eb))))
@@ -1574,7 +1570,7 @@ static int make_flat_edge(graph_t *g, const spline_info_t sp, path *P,
   e = edges[ind];
   bool isAdjacent = ED_adjacent(e) != 0;
   if (ED_tree_index(e) & BWDEDGE) {
-    MAKEFWDEDGE(&fwdedge.out, e);
+    makefwdedge(&fwdedge.out, e);
     e = &fwdedge.out;
   }
   for (unsigned i = 1; i < cnt; i++) {
@@ -1785,7 +1781,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
     fwdedgea.in = *AGOUT2IN(e);
     fwdedgea.out.base.data = (Agrec_t *)&fwdedgeai;
     if (ED_tree_index(e) & BWDEDGE) {
-      MAKEFWDEDGE(&fwdedgeb.out, e);
+      makefwdedge(&fwdedgeb.out, e);
       agtail(&fwdedgea.out) = aghead(e);
       ED_tail_port(&fwdedgea.out) = ED_head_port(e);
     } else {
@@ -1807,7 +1803,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
     hackflag = true;
   } else {
     if (ED_tree_index(e) & BWDEDGE) {
-      MAKEFWDEDGE(&fwdedgea.out, e);
+      makefwdedge(&fwdedgea.out, e);
       e = &fwdedgea.out;
     }
   }
@@ -1953,7 +1949,7 @@ static void make_regular_edge(graph_t *g, spline_info_t *sp, path *P,
   for (unsigned j = 1; j < cnt; j++) {
     e = edges[ind + j];
     if (ED_tree_index(e) & BWDEDGE) {
-      MAKEFWDEDGE(&fwdedge.out, e);
+      makefwdedge(&fwdedge.out, e);
       e = &fwdedge.out;
     }
     for (size_t k = 1; k + 1 < LIST_SIZE(&pointfs); k++)
