@@ -579,6 +579,7 @@ int feasible_tree(network_simplex_ctx_t *ctx)
 {
   Agedge_t *ee;
   size_t subtree_count = 0;
+  STheap_t *heap = NULL;
   int error = 0;
 
   /* initialization */
@@ -600,7 +601,7 @@ int feasible_tree(network_simplex_ctx_t *ctx)
   }
 
   /* incrementally merge subtrees */
-  STheap_t *const heap = STbuildheap(tree,subtree_count);
+  heap = STbuildheap(tree,subtree_count);
   while (STheapsize(heap) > 1) {
     subtree_t *tree0 = STextractmin(heap);
     if (!(ee = inter_tree_edge(tree0))) {
