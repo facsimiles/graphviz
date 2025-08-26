@@ -212,7 +212,6 @@ static edge_t *leave_edge(network_simplex_ctx_t *ctx)
 }
 
 static edge_t *dfs_enter_outedge(node_t *v, int Low, int Lim) {
-    int i, slack;
     edge_t *e;
     edge_t *Enter = NULL;
     int Slack = INT_MAX;
@@ -223,10 +222,10 @@ static edge_t *dfs_enter_outedge(node_t *v, int Low, int Lim) {
     while (!LIST_IS_EMPTY(&todo)) {
 	v = LIST_POP_BACK(&todo);
 
-	for (i = 0; (e = ND_out(v).list[i]); i++) {
+	for (int i = 0; (e = ND_out(v).list[i]); i++) {
 	    if (!TREE_EDGE(e)) {
 		if (!SEQ(Low, ND_lim(aghead(e)), Lim)) {
-		    slack = SLACK(e);
+		    const int slack = SLACK(e);
 		    if (slack < Slack || Enter == NULL) {
 			Enter = e;
 			Slack = slack;
@@ -235,7 +234,7 @@ static edge_t *dfs_enter_outedge(node_t *v, int Low, int Lim) {
 	    } else if (ND_lim(aghead(e)) < ND_lim(v))
 		LIST_APPEND(&todo, aghead(e));
 	}
-	for (i = 0; (e = ND_tree_in(v).list[i]) && Slack > 0; i++)
+	for (int i = 0; (e = ND_tree_in(v).list[i]) && Slack > 0; i++)
 	    if (ND_lim(agtail(e)) < ND_lim(v))
 		LIST_APPEND(&todo, agtail(e));
 
@@ -246,7 +245,6 @@ static edge_t *dfs_enter_outedge(node_t *v, int Low, int Lim) {
 }
 
 static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
-    int i, slack;
     edge_t *e;
 
     edge_t *Enter = NULL;
@@ -258,10 +256,10 @@ static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
     while (!LIST_IS_EMPTY(&todo)) {
 	v = LIST_POP_BACK(&todo);
 
-	for (i = 0; (e = ND_in(v).list[i]); i++) {
+	for (int i = 0; (e = ND_in(v).list[i]); i++) {
 	    if (!TREE_EDGE(e)) {
 		if (!SEQ(Low, ND_lim(agtail(e)), Lim)) {
-		    slack = SLACK(e);
+		    const int slack = SLACK(e);
 		    if (slack < Slack || Enter == NULL) {
 			Enter = e;
 			Slack = slack;
@@ -270,7 +268,7 @@ static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
 	    } else if (ND_lim(agtail(e)) < ND_lim(v))
 		LIST_APPEND(&todo, agtail(e));
 	}
-	for (i = 0; (e = ND_tree_out(v).list[i]) && Slack > 0; i++)
+	for (int i = 0; (e = ND_tree_out(v).list[i]) && Slack > 0; i++)
 	    if (ND_lim(aghead(e)) < ND_lim(v))
 		LIST_APPEND(&todo, aghead(e));
 
@@ -332,9 +330,8 @@ typedef struct {
 static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree_t *st)
 {
     Agedge_t *e;
-    int     rv;
 
-    rv = 1;
+    int rv = 1;
     ND_subtree_set(v,st);
 
     LIST(tst_t) todo = {0};
@@ -405,8 +402,7 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
 
 static subtree_t *find_tight_subtree(network_simplex_ctx_t *ctx, Agnode_t *v)
 {
-    subtree_t       *rv;
-    rv = gv_alloc(sizeof(subtree_t));
+    subtree_t *rv = gv_alloc(sizeof(subtree_t));
     rv->rep = v;
     rv->size = tight_subtree_search(ctx,v,rv);
     if (rv->size < 0) {
@@ -454,11 +450,10 @@ static subtree_t *STsetUnion(subtree_t *s0, subtree_t *s1)
 /* find tightest edge to another tree incident on the given tree */
 static Agedge_t *inter_tree_edge_search(Agnode_t *v, Agnode_t *from, Agedge_t *best)
 {
-    int i;
     Agedge_t *e;
     subtree_t *ts = STsetFind(v);
     if (best && SLACK(best) == 0) return best;
-    for (i = 0; (e = ND_out(v).list[i]); i++) {
+    for (int i = 0; (e = ND_out(v).list[i]); i++) {
       if (TREE_EDGE(e)) {
           if (aghead(e) == from) continue;  // do not search back in tree
           best = inter_tree_edge_search(aghead(e),v,best); // search forward in tree
@@ -471,7 +466,7 @@ static Agedge_t *inter_tree_edge_search(Agnode_t *v, Agnode_t *from, Agedge_t *b
       }
     }
     /* the following code must mirror the above, but for in-edges */
-    for (i = 0; (e = ND_in(v).list[i]); i++) {
+    for (int i = 0; (e = ND_in(v).list[i]); i++) {
       if (TREE_EDGE(e)) {
           if (agtail(e) == from) continue;
           best = inter_tree_edge_search(agtail(e),v,best);
@@ -487,9 +482,7 @@ static Agedge_t *inter_tree_edge_search(Agnode_t *v, Agnode_t *from, Agedge_t *b
 
 static Agedge_t *inter_tree_edge(subtree_t *tree)
 {
-    Agedge_t *rv;
-    rv = inter_tree_edge_search(tree->rep, NULL, NULL);
-    return rv;
+    return inter_tree_edge_search(tree->rep, NULL, NULL);
 }
 
 static size_t STheapsize(const STheap_t *heap) { return heap->size; }
@@ -525,8 +518,7 @@ static STheap_t *STbuildheap(subtree_t **elt, size_t size) {
 static
 subtree_t *STextractmin(STheap_t *heap)
 {
-    subtree_t *rv;
-    rv = heap->elt[0];
+    subtree_t *rv = heap->elt[0];
     rv->heap_index = SIZE_MAX;
       // mark this as not participating in the heap anymore
     heap->elt[0] = heap->elt[heap->size - 1];
@@ -540,17 +532,15 @@ subtree_t *STextractmin(STheap_t *heap)
 static
 void tree_adjust(Agnode_t *v, Agnode_t *from, int delta)
 {
-    int i;
     Agedge_t *e;
-    Agnode_t *w;
-    ND_rank(v) = ND_rank(v) + delta;
-    for (i = 0; (e = ND_tree_in(v).list[i]); i++) {
-      w = agtail(e);
+    ND_rank(v) += delta;
+    for (int i = 0; (e = ND_tree_in(v).list[i]); i++) {
+      Agnode_t *const w = agtail(e);
       if (w != from)
         tree_adjust(w, v, delta);
     }
-    for (i = 0; (e = ND_tree_out(v).list[i]); i++) {
-      w = aghead(e);
+    for (int i = 0; (e = ND_tree_out(v).list[i]); i++) {
+      Agnode_t *const w = aghead(e);
       if (w != from)
         tree_adjust(w, v, delta);
     }
@@ -559,30 +549,25 @@ void tree_adjust(Agnode_t *v, Agnode_t *from, int delta)
 static
 subtree_t *merge_trees(network_simplex_ctx_t *ctx, Agedge_t *e)   /* entering tree edge */
 {
-  int       delta;
-  subtree_t *t0, *t1, *rv;
-
   assert(!TREE_EDGE(e));
 
-  t0 = STsetFind(agtail(e));
-  t1 = STsetFind(aghead(e));
+  subtree_t *const t0 = STsetFind(agtail(e));
+  subtree_t *const t1 = STsetFind(aghead(e));
 
   if (!on_heap(t0)) { // move t0
-    delta = SLACK(e);
+    const int delta = SLACK(e);
     if (delta != 0)
       tree_adjust(t0->rep,NULL,delta);
   }
   else {  // move t1
-    delta = -SLACK(e);
+    const int delta = -SLACK(e);
     if (delta != 0)
       tree_adjust(t1->rep,NULL,delta);
   }
   if (add_tree_edge(ctx, e) != 0) {
     return NULL;
   }
-  rv = STsetUnion(t0,t1);
-  
-  return rv;
+  return STsetUnion(t0, t1);
 }
 
 /* Construct initial tight tree. Graph must be connected, feasible.
@@ -595,7 +580,6 @@ int feasible_tree(network_simplex_ctx_t *ctx)
 {
   Agedge_t *ee;
   size_t subtree_count = 0;
-  STheap_t *heap = NULL;
   int error = 0;
 
   /* initialization */
@@ -617,7 +601,7 @@ int feasible_tree(network_simplex_ctx_t *ctx)
   }
 
   /* incrementally merge subtrees */
-  heap = STbuildheap(tree,subtree_count);
+  STheap_t *const heap = STbuildheap(tree,subtree_count);
   while (STheapsize(heap) > 1) {
     subtree_t *tree0 = STextractmin(heap);
     if (!(ee = inter_tree_edge(tree0))) {
@@ -643,17 +627,10 @@ end:
 }
 
 /* walk up from v to LCA(v,w), setting new cutvalues. */
-static Agnode_t *treeupdate(Agnode_t * v, Agnode_t * w, int cutvalue, int dir)
-{
-    edge_t *e;
-    int d;
-
+static Agnode_t *treeupdate(Agnode_t *v, Agnode_t *w, int cutvalue, bool dir) {
     while (!SEQ(ND_low(v), ND_lim(w), ND_lim(v))) {
-	e = ND_par(v);
-	if (v == agtail(e))
-	    d = dir;
-	else
-	    d = !dir;
+	edge_t *const e = ND_par(v);
+	const bool d = v == agtail(e) ? dir : !dir;
 	if (d)
 	    ED_cutvalue(e) += cutvalue;
 	else
@@ -668,14 +645,13 @@ static Agnode_t *treeupdate(Agnode_t * v, Agnode_t * w, int cutvalue, int dir)
 
 static void rerank(Agnode_t * v, int delta)
 {
-    int i;
     edge_t *e;
 
     ND_rank(v) -= delta;
-    for (i = 0; (e = ND_tree_out(v).list[i]); i++)
+    for (int i = 0; (e = ND_tree_out(v).list[i]); i++)
 	if (e != ND_par(v))
 	    rerank(aghead(e), delta);
-    for (i = 0; (e = ND_tree_in(v).list[i]); i++)
+    for (int i = 0; (e = ND_tree_in(v).list[i]); i++)
 	if (e != ND_par(v))
 	    rerank(agtail(e), delta);
 }
@@ -686,10 +662,7 @@ static void rerank(Agnode_t * v, int delta)
 static int
 update(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 {
-    int cutvalue, delta;
-    Agnode_t *lca;
-
-    delta = SLACK(f);
+    const int delta = SLACK(f);
     /* "for (v = in nodes in tail side of e) do ND_rank(v) -= delta;" */
     if (delta > 0) {
 	size_t s = ND_tree_in(agtail(e)).size + ND_tree_out(agtail(e)).size;
@@ -708,9 +681,9 @@ update(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 	}
     }
 
-    cutvalue = ED_cutvalue(e);
-    lca = treeupdate(agtail(f), aghead(f), cutvalue, 1);
-    if (treeupdate(aghead(f), agtail(f), cutvalue, 0) != lca) {
+    const int cutvalue = ED_cutvalue(e);
+    Agnode_t *const lca = treeupdate(agtail(f), aghead(f), cutvalue, true);
+    if (treeupdate(aghead(f), agtail(f), cutvalue, false) != lca) {
 	agerrorf("update: mismatched lca in treeupdates\n");
 	return 2;
     }
@@ -728,17 +701,15 @@ update(network_simplex_ctx_t *ctx, edge_t * e, edge_t * f)
 }
 
 static int scan_and_normalize(network_simplex_ctx_t *ctx) {
-    node_t *n;
-
     int Minrank = INT_MAX;
     int Maxrank = INT_MIN;
-    for (n = GD_nlist(ctx->G); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(ctx->G); n; n = ND_next(n)) {
 	if (ND_node_type(n) == NORMAL) {
 	    Minrank = MIN(Minrank, ND_rank(n));
 	    Maxrank = MAX(Maxrank, ND_rank(n));
 	}
     }
-    for (n = GD_nlist(ctx->G); n; n = ND_next(n))
+    for (node_t *n = GD_nlist(ctx->G); n; n = ND_next(n))
 	ND_rank(n) -= Minrank;
     Maxrank -= Minrank;
     return Maxrank;
@@ -751,8 +722,7 @@ static void reset_lists(network_simplex_ctx_t *ctx) {
 static void
 freeTreeList (network_simplex_ctx_t *ctx, graph_t* g)
 {
-    node_t *n;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	free_list(ND_tree_in(n));
 	free_list(ND_tree_out(n));
 	ND_mark(n) = false;
@@ -762,16 +732,13 @@ freeTreeList (network_simplex_ctx_t *ctx, graph_t* g)
 
 static void LR_balance(network_simplex_ctx_t *ctx)
 {
-    int delta;
-    edge_t *e, *f;
-
     for (size_t i = 0; i < LIST_SIZE(&ctx->Tree_edge); i++) {
-	e = LIST_GET(&ctx->Tree_edge, i);
+	edge_t *const e = LIST_GET(&ctx->Tree_edge, i);
 	if (ED_cutvalue(e) == 0) {
-	    f = enter_edge(e);
+	    edge_t *const f = enter_edge(e);
 	    if (f == NULL)
 		continue;
-	    delta = SLACK(f);
+	    const int delta = SLACK(f);
 	    if (delta <= 1)
 		continue;
 	    if (ND_lim(agtail(e)) < ND_lim(aghead(e)))
@@ -801,10 +768,7 @@ static int increasingrankcmpf(const void *x, const void *y) {
 
 static void TB_balance(network_simplex_ctx_t *ctx)
 {
-    node_t *n;
     edge_t *e;
-    int low, high, choice;
-    int inweight, outweight;
     int adj = 0;
     char *s;
 
@@ -816,7 +780,7 @@ static void TB_balance(network_simplex_ctx_t *ctx)
     if ( (s = agget(ctx->G,"TBbalance")) ) {
          if (streq(s,"min")) adj = 1;
          else if (streq(s,"max")) adj = 2;
-         if (adj) for (n = GD_nlist(ctx->G); n; n = ND_next(n))
+         if (adj) for (node_t *n = GD_nlist(ctx->G); n; n = ND_next(n))
               if (ND_node_type(n) == NORMAL) {
                 if (ND_in(n).size == 0 && adj == 1) {
                    ND_rank(n) = 0;
@@ -828,22 +792,23 @@ static void TB_balance(network_simplex_ctx_t *ctx)
     }
     LIST(node_t *) Tree_node = {0};
     LIST_RESERVE(&Tree_node, ctx->N_nodes);
-    for (n = GD_nlist(ctx->G); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(ctx->G); n; n = ND_next(n)) {
       LIST_APPEND(&Tree_node, n);
     }
     LIST_SORT(&Tree_node, adj > 1 ? decreasingrankcmpf: increasingrankcmpf);
     for (size_t i = 0; i < LIST_SIZE(&Tree_node); i++) {
-        n = LIST_GET(&Tree_node, i);
+        node_t *const n = LIST_GET(&Tree_node, i);
         if (ND_node_type(n) == NORMAL)
           nrank[ND_rank(n)]++;
     }
     for (size_t ii = 0; ii < LIST_SIZE(&Tree_node); ii++) {
-      n = LIST_GET(&Tree_node, ii);
+      node_t *const n = LIST_GET(&Tree_node, ii);
       if (ND_node_type(n) != NORMAL)
         continue;
-      inweight = outweight = 0;
-      low = 0;
-      high = Maxrank;
+      int inweight = 0;
+      int outweight = 0;
+      int low = 0;
+      int high = Maxrank;
       for (size_t i = 0; (e = ND_in(n).list[i]); i++) {
         inweight += ED_weight(e);
         low = MAX(low, ND_rank(agtail(e)) + ED_minlen(e));
@@ -856,11 +821,11 @@ static void TB_balance(network_simplex_ctx_t *ctx)
         low = 0;		/* vnodes can have ranks < 0 */
       if (adj) {
         if (inweight == outweight)
-            ND_rank(n) = (adj == 1? low : high);
+            ND_rank(n) = adj == 1 ? low : high;
       }
       else {
                 if (inweight == outweight) {
-                    choice = low;
+                    int choice = low;
                     for (int i = low + 1; i <= high; i++)
                         if (nrank[i] < nrank[choice])
                             choice = i;
@@ -878,12 +843,11 @@ static void TB_balance(network_simplex_ctx_t *ctx)
 }
 
 static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
-    node_t *n;
     edge_t *e;
 
     ctx->G = g;
     ctx->N_nodes = ctx->N_edges = ctx->S_i = 0;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
 	ctx->N_nodes++;
 	for (size_t i = 0; (e = ND_out(n).list[i]); i++)
@@ -893,7 +857,7 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
     LIST_RESERVE(&ctx->Tree_edge, ctx->N_nodes);
 
     bool feasible = true;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_priority(n) = 0;
 	size_t i;
 	for (i = 0; (e = ND_in(n).list[i]); i++) {
@@ -916,12 +880,11 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
  * Compute no. of nodes and edges in the graph
  */
 static void graphSize(graph_t *g, size_t *nn, size_t *ne) {
-    size_t nnodes, nedges;
-    node_t *n;
     edge_t *e;
    
-    nnodes = nedges = 0;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    size_t nnodes = 0;
+    size_t nedges = 0;
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	nnodes++;
 	for (size_t i = 0; (e = ND_out(n).list[i]); i++) {
 	    nedges++;
@@ -946,8 +909,8 @@ static void graphSize(graph_t *g, size_t *nn, size_t *ne) {
 int rank2(graph_t * g, int balance, int maxiter, int search_size)
 {
     int iter = 0;
-    char *ns = "network simplex: ";
-    edge_t *e, *f;
+    char ns[] = "network simplex: ";
+    edge_t *e;
     network_simplex_ctx_t ctx = {0};
 
 #ifdef DEBUG
@@ -970,7 +933,7 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
 	ctx.Search_size = SEARCHSIZE;
 
     {
-	int err = feasible_tree(&ctx);
+	const int err = feasible_tree(&ctx);
 	if (err != 0) {
 	    freeTreeList(&ctx, g);
 	    return err;
@@ -982,9 +945,8 @@ int rank2(graph_t * g, int balance, int maxiter, int search_size)
     }
 
     while ((e = leave_edge(&ctx))) {
-	int err;
-	f = enter_edge(e);
-	err = update(&ctx, e, f);
+	edge_t *const f = enter_edge(e);
+	const int err = update(&ctx, e, f);
 	if (err != 0) {
 	    freeTreeList(&ctx, g);
 	    return err;
@@ -1040,7 +1002,7 @@ static void x_cutval(edge_t * f)
 {
     node_t *v;
     edge_t *e;
-    int i, sum, dir;
+    int dir;
 
     /* set v to the node on the side of the edge already searched */
     if (ND_par(agtail(f)) == f) {
@@ -1051,13 +1013,13 @@ static void x_cutval(edge_t * f)
 	dir = -1;
     }
 
-    sum = 0;
-    for (i = 0; (e = ND_out(v).list[i]); i++)
+    int sum = 0;
+    for (int i = 0; (e = ND_out(v).list[i]); i++)
 	if (sadd_overflow(sum, x_val(e, v, dir), &sum)) {
 	    agerrorf("overflow when computing edge weight sum\n");
 	    graphviz_exit(EXIT_FAILURE);
 	}
-    for (i = 0; (e = ND_in(v).list[i]); i++)
+    for (int i = 0; (e = ND_in(v).list[i]); i++)
 	if (sadd_overflow(sum, x_val(e, v, dir), &sum)) {
 	    agerrorf("overflow when computing edge weight sum\n");
 	    graphviz_exit(EXIT_FAILURE);
@@ -1105,13 +1067,12 @@ static int x_val(edge_t * e, node_t * v, int dir)
 
 static void dfs_cutval(node_t * v, edge_t * par)
 {
-    int i;
     edge_t *e;
 
-    for (i = 0; (e = ND_tree_out(v).list[i]); i++)
+    for (int i = 0; (e = ND_tree_out(v).list[i]); i++)
 	if (e != par)
 	    dfs_cutval(aghead(e), e);
-    for (i = 0; (e = ND_tree_in(v).list[i]); i++)
+    for (int i = 0; (e = ND_tree_in(v).list[i]); i++)
 	if (e != par)
 	    dfs_cutval(agtail(e), e);
     if (par)
@@ -1278,15 +1239,13 @@ static int dfs_range(node_t * v, edge_t * par, int low)
 #ifdef DEBUG
 void tchk(network_simplex_ctx_t *ctx)
 {
-    int i;
-    node_t *n;
     edge_t *e;
 
     size_t n_cnt = 0;
     size_t e_cnt = 0;
-    for (n = agfstnode(ctx->G); n; n = agnxtnode(ctx->G, n)) {
+    for (node_t *n = agfstnode(ctx->G); n; n = agnxtnode(ctx->G, n)) {
 	n_cnt++;
-	for (i = 0; (e = ND_tree_out(n).list[i]); i++) {
+	for (int i = 0; (e = ND_tree_out(n).list[i]); i++) {
 	    e_cnt++;
 	    if (SLACK(e) > 0)
 		fprintf(stderr, "not a tight tree %p", e);
@@ -1298,8 +1257,7 @@ void tchk(network_simplex_ctx_t *ctx)
 
 void check_fast_node(node_t * n)
 {
-    node_t *nptr;
-    nptr = GD_nlist(agraphof(n));
+    node_t *nptr = GD_nlist(agraphof(n));
     while (nptr && nptr != n)
 	nptr = ND_next(nptr);
     assert(nptr != NULL);
@@ -1315,22 +1273,20 @@ static void dump_node(FILE *sink, node_t *n) {
 
 static void dump_graph (graph_t* g)
 {
-    int i;
     edge_t *e;
-    node_t *n,*w;
-    FILE* fp = fopen ("ns.gv", "w");
+    FILE *const fp = fopen ("ns.gv", "w");
     fprintf (fp, "digraph \"%s\" {\n", agnameof(g));
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	fputs("  \"", fp);
 	dump_node(fp, n);
 	fputs("\"\n", fp);
     }
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
-	for (i = 0; (e = ND_out(n).list[i]); i++) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
+	for (int i = 0; (e = ND_out(n).list[i]); i++) {
 	    fputs("  \"", fp);
 	    dump_node(fp, n);
 	    fputs("\"", fp);
-	    w = aghead(e);
+	    node_t *const w = aghead(e);
 	    fputs(" -> \"", fp);
 	    dump_node(fp, w);
 	    fputs("\"\n", fp);
@@ -1344,15 +1300,13 @@ static void dump_graph (graph_t* g)
 static node_t *checkdfs(graph_t* g, node_t * n)
 {
     edge_t *e;
-    node_t *w,*x;
-    int i;
 
     if (ND_mark(n))
-	return 0;
+	return NULL;
     ND_mark(n) = true;
     ND_onstack(n) = true;
-    for (i = 0; (e = ND_out(n).list[i]); i++) {
-	w = aghead(e);
+    for (int i = 0; (e = ND_out(n).list[i]); i++) {
+	node_t *const w = aghead(e);
 	if (ND_onstack(w)) {
 	    dump_graph (g);
 	    fprintf(stderr, "cycle: last edge %" PRIx64 " %s(%" PRIx64 ") %s(%" PRIx64
@@ -1362,7 +1316,7 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 	}
 	else {
 	    if (!ND_mark(w)) {
-		x = checkdfs(g, w);
+		node_t *const x = checkdfs(g, w);
 		if (x) {
 		    fprintf(stderr,"unwind %" PRIx64 " %s(%" PRIx64 ")\n", (uint64_t)e,
 		            agnameof(n), (uint64_t)n);
@@ -1370,23 +1324,22 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 		    fprintf(stderr,"unwound to root\n");
 		    fflush(stderr);
 		    abort();
-		    return 0;
+		    return NULL;
 		}
 	    }
 	}
     }
     ND_onstack(n) = false;
-    return 0;
+    return NULL;
 }
 
 void check_cycles(graph_t * g)
 {
-    node_t *n;
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
 	ND_onstack(n) = false;
     }
-    for (n = GD_nlist(g); n; n = ND_next(n))
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n))
 	checkdfs(g, n);
 }
 #endif				/* DEBUG */
