@@ -1424,7 +1424,7 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
     case A_ARGV: {
       strview_t arg;
       if (getArg(args[0].integer, state, &arg) != 0) {
-        break;
+        return (Extype_t){0};
       }
       v.string = exstralloc(pgm, arg.size + 1);
       if (arg.size > 0) {
