@@ -125,8 +125,8 @@ void glCompDrawText3D(glCompFont f, float x, float y, double z, float w,
 
 }
 
-void glCompDrawText(glCompFont f, float x, float y) {
-    glRasterPos2f(x, y);
+void glCompDrawText(glCompFont f, double x, double y) {
+    glRasterPos2d(x, y);
     glDrawPixels(f.tex->width, f.tex->height, GL_RGBA, GL_UNSIGNED_BYTE,  f.tex->data);
 }
 
