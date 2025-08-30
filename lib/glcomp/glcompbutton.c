@@ -118,7 +118,7 @@ void glCompButtonDraw(glCompButton * p)
     if (!p->base.common.visible)
 	return;
     /*draw panel */
-    glCompDrawRectPrism(&ref.pos, ref.width, ref.height,
+    glCompDrawRectPrism(ref.pos, ref.width, ref.height,
                         p->base.common.borderWidth, &ref.color, !p->status);
     if (p->label)
 	p->label->base.common.functions.draw(p->label);

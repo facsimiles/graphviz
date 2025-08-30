@@ -43,7 +43,7 @@ static void glCompPanelDraw(void *o) {
   r.pos.z = -0.001f;
   glCompDrawRectangle(&r);
   /*draw panel */
-  glCompDrawRectPrism(&ref.pos, ref.width, ref.height,
+  glCompDrawRectPrism(ref.pos, ref.width, ref.height,
                       p->base.common.borderWidth, &ref.color, true);
 }
 

@@ -288,7 +288,7 @@ void glCompDrawRectangle(glCompRect * r)
     glEnd();
 }
 
-void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b,
+void glCompDrawRectPrism(glCompPoint p, float w, float h, float b,
                          glCompColor *c, bool bumped) {
     const float d = 0.01f;
     float color_fac;
@@ -302,30 +302,30 @@ void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b,
 	color_fac = 1.0f / 1.3f;
 
 
-    A.x = p->x;
-    A.y = p->y;
-    A.z = p->z;
-    B.x = p->x + w;
-    B.y = p->y;
-    B.z = p->z;
-    C.x = p->x + w;
-    C.y = p->y + h;
-    C.z = p->z;
-    D.x = p->x;
-    D.y = p->y + h;
-    D.z = p->z;
-    G.x = p->x + b;
-    G.y = p->y + b;
-    G.z = p->z + d;
-    H.x = p->x + w - b;
-    H.y = p->y + b;
-    H.z = p->z + d;
-    E.x = p->x + b;
-    E.y = p->y + h - b;
-    E.z = p->z + d;
-    F.x = p->x + w - b;
-    F.y = p->y + h - b;
-    F.z = p->z + d;
+    A.x = p.x;
+    A.y = p.y;
+    A.z = p.z;
+    B.x = p.x + w;
+    B.y = p.y;
+    B.z = p.z;
+    C.x = p.x + w;
+    C.y = p.y + h;
+    C.z = p.z;
+    D.x = p.x;
+    D.y = p.y + h;
+    D.z = p.z;
+    G.x = p.x + b;
+    G.y = p.y + b;
+    G.z = p.z + d;
+    H.x = p.x + w - b;
+    H.y = p.y + b;
+    H.z = p.z + d;
+    E.x = p.x + b;
+    E.y = p.y + h - b;
+    E.z = p.z + d;
+    F.x = p.x + w - b;
+    F.y = p.y + h - b;
+    F.z = p.z + d;
     glBegin(GL_QUADS);
     glColor4d(c->R * dim, c->G * dim, c->B * dim, c->A);
     glCompQuadVertex(G, H, F, E);
