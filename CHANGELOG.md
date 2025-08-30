@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   only by available memory.
 - In the CMake build system, whether librsvg-dependent components are built or
   not can now be controlled by the `-DWITH_RSVG={AUTO|ON|OFF}` option. #2714
+- In the CMake build system, whether libwebp-dependent components are built or
+  not can now be controlled by the `-DWITH_WEBP={AUTO|ON|OFF}` option. #2714
 
 ### Fixed
 
