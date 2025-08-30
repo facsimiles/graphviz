@@ -288,12 +288,12 @@ finishSegment (GVJ_t *job, edge_t *e)
 {
     pointf p0 = gvrender_ptf(job, ND_coord(agtail(e)));
     pointf p1 = gvrender_ptf(job, ND_coord(aghead(e)));
-    double o_x, o_y, o_z;
+    double o_z;
     double x, y, y0, z, theta;
     state_t *state = job->context;
 
-    o_x = ((double)(p0.x + p1.x))/2;
-    o_y = ((double)(p0.y + p1.y))/2;
+    const double o_x = (p0.x + p1.x) / 2.0;
+    const double o_y = (p0.y + p1.y) / 2.0;
     o_z = (state->Fstz + state->Sndz) / 2;
     /* Compute rotation */
     /* Pick end point with highest y */
