@@ -268,13 +268,12 @@ void glCompCalcWidget(glCompCommon * parent, glCompCommon * child,
     child->height = ref->height;
 }
 
-static void glCompQuadVertex(glCompPoint * p0, glCompPoint * p1,
-			     glCompPoint * p2, glCompPoint * p3)
-{
-    glVertex3f(p0->x, p0->y, p0->z);
-    glVertex3f(p1->x, p1->y, p1->z);
-    glVertex3f(p2->x, p2->y, p2->z);
-    glVertex3f(p3->x, p3->y, p3->z);
+static void glCompQuadVertex(glCompPoint p0, glCompPoint p1, glCompPoint p2,
+                             glCompPoint p3) {
+    glVertex3f(p0.x, p0.y, p0.z);
+    glVertex3f(p1.x, p1.y, p1.z);
+    glVertex3f(p2.x, p2.y, p2.z);
+    glVertex3f(p3.x, p3.y, p3.z);
 }
 
 void glCompSetColor(glCompColor c) { glColor4d(c.R, c.G, c.B, c.A); }
@@ -328,17 +327,17 @@ void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b, float d,
     F.z = p->z + d;
     glBegin(GL_QUADS);
     glColor4d(c->R * dim, c->G * dim, c->B * dim, c->A);
-    glCompQuadVertex(&G, &H, &F, &E);
+    glCompQuadVertex(G, H, F, E);
 
     glColor4d(c->R * color_fac * dim, c->G * color_fac * dim,
 	      c->B * color_fac * dim, c->A);
-    glCompQuadVertex(&A, &B, &H, &G);
-    glCompQuadVertex(&B, &H, &F, &C);
+    glCompQuadVertex(A, B, H, G);
+    glCompQuadVertex(B, H, F, C);
 
     glColor4d(c->R / color_fac * dim, c->G / color_fac * dim,
 	      c->B / color_fac * dim, c->A);
-    glCompQuadVertex(&A, &G, &E, &D);
-    glCompQuadVertex(&E, &F, &C, &D);
+    glCompQuadVertex(A, G, E, D);
+    glCompQuadVertex(E, F, C, D);
     glEnd();
 
 }
