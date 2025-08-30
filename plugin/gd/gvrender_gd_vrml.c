@@ -288,13 +288,12 @@ finishSegment (GVJ_t *job, edge_t *e)
 {
     pointf p0 = gvrender_ptf(job, ND_coord(agtail(e)));
     pointf p1 = gvrender_ptf(job, ND_coord(aghead(e)));
-    double o_z;
-    double x, y, y0, z, theta;
+    double x, y, z;
     state_t *state = job->context;
 
     const double o_x = (p0.x + p1.x) / 2.0;
     const double o_y = (p0.y + p1.y) / 2.0;
-    o_z = (state->Fstz + state->Sndz) / 2;
+    const double o_z = (state->Fstz + state->Sndz) / 2;
     /* Compute rotation */
     /* Pick end point with highest y */
     if (p0.y > p1.y) {
@@ -311,14 +310,12 @@ finishSegment (GVJ_t *job, edge_t *e)
     x -= o_x;
     y -= o_y;
     z -= o_z;
-    if (p0.y > p1.y)
-	theta = acos(2 * y / state->EdgeLen) + M_PI;
-    else
-	theta = acos(2 * y / state->EdgeLen);
+    const double theta =
+      acos(2 * y / state->EdgeLen) + (p0.y > p1.y ? M_PI : 0);
     if (!x && !z)   /* parallel  to y-axis */
 	x = 1;
 
-    y0 = (state->HeadHt - state->TailHt) / 2.0;
+    const double y0 = (state->HeadHt - state->TailHt) / 2.0;
     gvputs(job,   "      ]\n");
     gvprintf(job, "      center 0 %.3f 0\n", y0);
     gvprintf(job, "      rotation %.3f 0 %.3f %.3f\n", -z, x, -theta);
