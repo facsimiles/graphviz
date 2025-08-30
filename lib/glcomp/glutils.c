@@ -289,7 +289,7 @@ void glCompDrawRectangle(glCompRect * r)
 }
 
 void glCompDrawRectPrism(glCompPoint p, float w, float h, float b,
-                         glCompColor *c, bool bumped) {
+                         glCompColor c, bool bumped) {
     const float d = 0.01f;
     float color_fac;
     glCompPoint A, B, C, D, E, F, G, H;
@@ -327,16 +327,16 @@ void glCompDrawRectPrism(glCompPoint p, float w, float h, float b,
     F.y = p.y + h - b;
     F.z = p.z + d;
     glBegin(GL_QUADS);
-    glColor4d(c->R * dim, c->G * dim, c->B * dim, c->A);
+    glColor4d(c.R * dim, c.G * dim, c.B * dim, c.A);
     glCompQuadVertex(G, H, F, E);
 
-    glColor4d(c->R * color_fac * dim, c->G * color_fac * dim,
-	      c->B * color_fac * dim, c->A);
+    glColor4d(c.R * color_fac * dim, c.G * color_fac * dim,
+              c.B * color_fac * dim, c.A);
     glCompQuadVertex(A, B, H, G);
     glCompQuadVertex(B, H, F, C);
 
-    glColor4d(c->R / color_fac * dim, c->G / color_fac * dim,
-	      c->B / color_fac * dim, c->A);
+    glColor4d(c.R / color_fac * dim, c.G / color_fac * dim,
+              c.B / color_fac * dim, c.A);
     glCompQuadVertex(A, G, E, D);
     glCompQuadVertex(E, F, C, D);
     glEnd();
