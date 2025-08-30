@@ -288,8 +288,9 @@ void glCompDrawRectangle(glCompRect * r)
     glEnd();
 }
 
-void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b, float d,
+void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b,
                          glCompColor *c, bool bumped) {
+    const float d = 0.01f;
     float color_fac;
     glCompPoint A, B, C, D, E, F, G, H;
     float dim = 1;
