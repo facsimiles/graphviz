@@ -5955,7 +5955,7 @@ def test_2705(tmp_path: Path):
     ), "round tripping graph through file was not idempotent"
 
 
-@pytest.mark.skipif(shutil.which("gvpr") is None, reason="gvpr is not available")
+@pytest.mark.skipif(which("gvpr") is None, reason="gvpr is not available")
 def test_2707():
     """
     gvpr should not perform a double-free while processing this example
@@ -5982,6 +5982,26 @@ def test_2712():
 
     # process this to a JPEG
     dot("jpe", source=source)
+
+
+@pytest.mark.skipif(which("fdp") is None, reason="fdp is not available")
+@pytest.mark.xfail(
+    strict=not is_ndebug_defined(),
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2717",
+)
+def test_2717():
+    """
+    processing the given graph with fdp should not crash
+    https://gitlab.com/graphviz/graphviz/-/issues/2717
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2717.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run it through fdp
+    fdp = which("fdp")
+    run([fdp, "-o", os.devnull, input])
 
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))

@@ -1,0 +1,15 @@
+digraph cats {
+  graph [engine=fdp];
+  subgraph cluster_big_cats {
+    "Lion" "Snow Leopard";
+  };
+  subgraph domestic_cats {
+    cluster=true;
+    "Siamese" "Persian";
+  };
+  subgraph cluster_domestic_cats {
+    "SiameseA" "PersianA";
+  };
+  cluster_big_cats -> domestic_cats;
+  cluster_big_cats -> cluster_domestic_cats;
+}
