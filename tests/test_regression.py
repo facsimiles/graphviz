@@ -6013,7 +6013,7 @@ def test_2722():
 
     # The SHA1 digest of ../lib/cdt/cdt.h. This should be updated whenever you update
     # ../lib/cdt/cdt.h.
-    reference = "40cbb7d39ff21e789875fb802820475e195db207"
+    reference = "43c41531381ed1cec4259a08a80dd69b53189100"
 
     # read in the current cdt.h, accounting for Windows vs Unix line ending differences
     cdt_h = Path(__file__).absolute().parents[1] / "lib/cdt/cdt.h"

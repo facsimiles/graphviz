@@ -112,7 +112,6 @@ EXCLUDE = (
     "lib/ast/fmtesc.c",
     "lib/ast/stresc.c",
     "lib/ast/strmatch.c",
-    "lib/cdt/cdt.h",
     "lib/cdt/dtclose.c",
     "lib/cdt/dtdisc.c",
     "lib/cdt/dtextract.c",
