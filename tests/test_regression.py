@@ -6031,6 +6031,24 @@ def test_2722():
     ), "cdt.h has changed; update test_2722 and remember to update `CDT_VERSION`"
 
 
+@pytest.mark.xfail(
+    strict=which("dot") is not None and is_asan_instrumented(which("dot")),
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2723",
+)
+def test_2723():
+    """
+    Graphviz should not crash while processing this graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2723
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2723.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # process this
+    dot("png", input)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
