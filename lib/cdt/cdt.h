@@ -21,7 +21,7 @@ extern "C" {
 **      Written by Kiem-Phong Vo
 */
 
-#define CDT_VERSION	20050420L
+#define CDT_VERSION	20241216L
 
 #include <stddef.h>	/* size_t */
 #include <string.h>

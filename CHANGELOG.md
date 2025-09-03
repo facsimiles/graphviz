@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased (13.1.3)]
+## [Unreleased (14.0.0)]
 
 ### Changed
 
@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   not can now be controlled by the `-DWITH_RSVG={AUTO|ON|OFF}` option. #2714
 - In the CMake build system, whether libwebp-dependent components are built or
   not can now be controlled by the `-DWITH_WEBP={AUTO|ON|OFF}` option. #2714
+- **Breaking**: The `CDT_VERSION` macro has been updated to reflect the last
+  time an API-breaking change was made. This should have happened in Graphviz
+  9.0.0 and then multiple other releases since then. #2722
 
 ### Fixed
 
@@ -3305,7 +3308,7 @@ March 13, 2000: Use AM_PROG_LIBTOOL instead of AC_PROG_LIBTOOL
    in configure.in.  John Ellson <ellson@graphviz.org>
 ```
 
-[Unreleased (13.1.3)]: https://gitlab.com/graphviz/graphviz/compare/13.1.2...main
+[Unreleased (14.0.0)]: https://gitlab.com/graphviz/graphviz/compare/13.1.2...main
 [13.1.2]: https://gitlab.com/graphviz/graphviz/compare/13.1.1...13.1.2
 [13.1.1]: https://gitlab.com/graphviz/graphviz/compare/13.1.0...13.1.1
 [13.1.0]: https://gitlab.com/graphviz/graphviz/compare/13.0.1...13.1.0
