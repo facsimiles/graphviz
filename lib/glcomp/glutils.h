@@ -28,8 +28,8 @@ void to3D(int x, int y, float *X, float *Y, float *Z);
     extern void glCompCalcWidget(glCompCommon * parent,
 				 glCompCommon * child, glCompCommon * ref);
     extern void glCompDrawRectangle(glCompRect * r);
-void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b, float d,
-                         glCompColor *c, bool bumped);
+void glCompDrawRectPrism(glCompPoint p, float w, float h, float b,
+                         glCompColor c, bool bumped);
 void glCompSetColor(glCompColor c);
 
 double distBetweenPts(glCompPoint A, glCompPoint B, double R);

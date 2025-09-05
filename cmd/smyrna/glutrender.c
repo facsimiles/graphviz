@@ -42,15 +42,12 @@ static glMouseButtonType getGlCompMouseType(int n)
 
 static void cb_reshape(int width, int height)
 {
-    int vPort[4];
     float aspect;
     view->w = width;
     view->h = height;
     if (view->widgets)
 	glcompsetUpdateBorder(view->widgets, view->w, view->h);
     glViewport(0, 0, view->w, view->h);
-    /* get current viewport */
-    glGetIntegerv(GL_VIEWPORT, vPort);
     /* setup various opengl things that we need */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();

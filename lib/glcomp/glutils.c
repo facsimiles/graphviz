@@ -268,13 +268,12 @@ void glCompCalcWidget(glCompCommon * parent, glCompCommon * child,
     child->height = ref->height;
 }
 
-static void glCompQuadVertex(glCompPoint * p0, glCompPoint * p1,
-			     glCompPoint * p2, glCompPoint * p3)
-{
-    glVertex3f(p0->x, p0->y, p0->z);
-    glVertex3f(p1->x, p1->y, p1->z);
-    glVertex3f(p2->x, p2->y, p2->z);
-    glVertex3f(p3->x, p3->y, p3->z);
+static void glCompQuadVertex(glCompPoint p0, glCompPoint p1, glCompPoint p2,
+                             glCompPoint p3) {
+    glVertex3f(p0.x, p0.y, p0.z);
+    glVertex3f(p1.x, p1.y, p1.z);
+    glVertex3f(p2.x, p2.y, p2.z);
+    glVertex3f(p3.x, p3.y, p3.z);
 }
 
 void glCompSetColor(glCompColor c) { glColor4d(c.R, c.G, c.B, c.A); }
@@ -289,58 +288,39 @@ void glCompDrawRectangle(glCompRect * r)
     glEnd();
 }
 
-void glCompDrawRectPrism(glCompPoint *p, float w, float h, float b, float d,
-                         glCompColor *c, bool bumped) {
-    float color_fac;
-    glCompPoint A, B, C, D, E, F, G, H;
+void glCompDrawRectPrism(glCompPoint p, float w, float h, float b,
+                         glCompColor c, bool bumped) {
+    const float d = 0.01f;
+    float color_fac = 1.0f / 1.3f;
     float dim = 1;
     if (!bumped) {
 	color_fac = 1.3f;
-	b = b - 2;
+	b -= 2;
 	dim = 0.5;
-    } else
-	color_fac = 1.0f / 1.3f;
+    }
 
-
-    A.x = p->x;
-    A.y = p->y;
-    A.z = p->z;
-    B.x = p->x + w;
-    B.y = p->y;
-    B.z = p->z;
-    C.x = p->x + w;
-    C.y = p->y + h;
-    C.z = p->z;
-    D.x = p->x;
-    D.y = p->y + h;
-    D.z = p->z;
-    G.x = p->x + b;
-    G.y = p->y + b;
-    G.z = p->z + d;
-    H.x = p->x + w - b;
-    H.y = p->y + b;
-    H.z = p->z + d;
-    E.x = p->x + b;
-    E.y = p->y + h - b;
-    E.z = p->z + d;
-    F.x = p->x + w - b;
-    F.y = p->y + h - b;
-    F.z = p->z + d;
+    const glCompPoint A = {.x = p.x,         .y = p.y,         .z = p.z    };
+    const glCompPoint B = {.x = p.x + w,     .y = p.y,         .z = p.z    };
+    const glCompPoint C = {.x = p.x + w,     .y = p.y + h,     .z = p.z    };
+    const glCompPoint D = {.x = p.x,         .y = p.y + h,     .z = p.z    };
+    const glCompPoint G = {.x = p.x + b,     .y = p.y + b,     .z = p.z + d};
+    const glCompPoint H = {.x = p.x + w - b, .y = p.y + b,     .z = p.z + d};
+    const glCompPoint E = {.x = p.x + b,     .y = p.y + h - b, .z = p.z + d};
+    const glCompPoint F = {.x = p.x + w - b, .y = p.y + h - b, .z = p.z + d};
     glBegin(GL_QUADS);
-    glColor4d(c->R * dim, c->G * dim, c->B * dim, c->A);
-    glCompQuadVertex(&G, &H, &F, &E);
+    glColor4d(c.R * dim, c.G * dim, c.B * dim, c.A);
+    glCompQuadVertex(G, H, F, E);
 
-    glColor4d(c->R * color_fac * dim, c->G * color_fac * dim,
-	      c->B * color_fac * dim, c->A);
-    glCompQuadVertex(&A, &B, &H, &G);
-    glCompQuadVertex(&B, &H, &F, &C);
+    glColor4d(c.R * color_fac * dim, c.G * color_fac * dim,
+              c.B * color_fac * dim, c.A);
+    glCompQuadVertex(A, B, H, G);
+    glCompQuadVertex(B, H, F, C);
 
-    glColor4d(c->R / color_fac * dim, c->G / color_fac * dim,
-	      c->B / color_fac * dim, c->A);
-    glCompQuadVertex(&A, &G, &E, &D);
-    glCompQuadVertex(&E, &F, &C, &D);
+    glColor4d(c.R / color_fac * dim, c.G / color_fac * dim,
+              c.B / color_fac * dim, c.A);
+    glCompQuadVertex(A, G, E, D);
+    glCompQuadVertex(E, F, C, D);
     glEnd();
-
 }
 
 double distBetweenPts(glCompPoint A, glCompPoint B, double R) {
