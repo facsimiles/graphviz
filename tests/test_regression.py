@@ -6,6 +6,7 @@ of these indicates that a past bug has been reintroduced.
 """
 
 import dataclasses
+import hashlib
 import io
 import json
 import math
@@ -6002,6 +6003,32 @@ def test_2717():
     # run it through fdp
     fdp = which("fdp")
     run([fdp, "-o", os.devnull, input])
+
+
+def test_2722():
+    """
+    the `CDT_VERSION` macro should be updated whenever its API changes
+    https://gitlab.com/graphviz/graphviz/-/issues/2722
+    """
+
+    # The SHA1 digest of ../lib/cdt/cdt.h. This should be updated whenever you update
+    # ../lib/cdt/cdt.h.
+    reference = "43c41531381ed1cec4259a08a80dd69b53189100"
+
+    # read in the current cdt.h, accounting for Windows vs Unix line ending differences
+    cdt_h = Path(__file__).absolute().parents[1] / "lib/cdt/cdt.h"
+    content = cdt_h.read_text(encoding="utf-8")
+
+    # hash the content
+    m = hashlib.sha1()
+    m.update(content.encode("utf-8"))
+
+    # Check they match. The intent here is that this assertion will fail whenever cdt.h
+    # is updated without taking this test case into account. The failure should prompt
+    # the developer to update `CDT_VERSION`.
+    assert (
+        reference == m.hexdigest()
+    ), "cdt.h has changed; update test_2722 and remember to update `CDT_VERSION`"
 
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
