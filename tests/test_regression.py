@@ -5985,6 +5985,23 @@ def test_2712():
     dot("jpe", source=source)
 
 
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2716"
+)
+def test_2716():
+    """
+    version components should be exposed that work at compile-time
+    https://gitlab.com/graphviz/graphviz/-/issues/2716
+    """
+
+    # find co-located test source
+    c_src = (Path(__file__).parent / "2716.c").resolve()
+    assert c_src.exists(), "missing test case"
+
+    # generate a graph and pass it through dot
+    compile_c(c_src)
+
+
 @pytest.mark.skipif(which("fdp") is None, reason="fdp is not available")
 @pytest.mark.xfail(
     strict=not is_ndebug_defined(),
