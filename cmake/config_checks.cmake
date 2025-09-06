@@ -51,7 +51,6 @@ set(HAVE_LASI       ${LASI_FOUND}      )
 set(HAVE_PANGOCAIRO ${PANGOCAIRO_FOUND})
 set(HAVE_POPPLER    ${POPPLER_FOUND}   )
 set(HAVE_WEBP       ${WEBP_FOUND}      )
-set(HAVE_X11        ${X11_FOUND}       )
 
 # Values
 if(WIN32)
