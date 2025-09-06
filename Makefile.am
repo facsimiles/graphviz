@@ -22,6 +22,13 @@ BUILT_SOURCES = $(top_builddir)/graphviz_version.h
 $(top_builddir)/graphviz_version.h: config.h
 	printf '#pragma once\n' > $(top_builddir)/graphviz_version.h
 	$(EGREP) 'PACKAGE|VERSION|GVPLUGIN' config.h >> $(top_builddir)/graphviz_version.h
+	printf '\n/// Graphviz version constants\n///\n' >> $(top_builddir)/graphviz_version.h
+	printf '/// These are only accurate for releases, not inter-release Graphviz commits\n' >> $(top_builddir)/graphviz_version.h
+	printf '/// built from source.\n' >> $(top_builddir)/graphviz_version.h
+	printf '#define GRAPHVIZ_VERSION_MAJOR @GRAPHVIZ_VERSION_MAJOR@\n' >> $(top_builddir)/graphviz_version.h
+	printf '#define GRAPHVIZ_VERSION_MINOR @GRAPHVIZ_VERSION_MINOR@\n' >> $(top_builddir)/graphviz_version.h
+	printf '#define GRAPHVIZ_VERSION_PATCH ' >> $(top_builddir)/graphviz_version.h
+	printf '@GRAPHVIZ_VERSION_MICRO@' | $(SED) 's/\([0-9]\+\).*/\1\n/g' >> $(top_builddir)/graphviz_version.h
 
 EXTRA_DIST = graphviz.spec \
 	config/depcomp \

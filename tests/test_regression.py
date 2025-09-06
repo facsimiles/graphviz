@@ -5985,9 +5985,6 @@ def test_2712():
     dot("jpe", source=source)
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2716"
-)
 def test_2716():
     """
     version components should be exposed that work at compile-time

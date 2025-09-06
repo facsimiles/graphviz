@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   9.0.0 and then multiple other releases since then. #2722
 - In the CMake build system, whether X11-dependent components are built or not
   can now be controlled by the `-DWITH_X={AUTO|ON|OFF}` option. #2714
+- The graphviz_version.h header includes macros `GRAPHVIZ_VERSION_MAJOR`,
+  `GRAPHVIZ_VERSION_MINOR`, `GRAPHVIZ_VERSION_PATCH` for compile-time
+  discrimination based on the Graphviz version. #2716
 
 ### Fixed
 
