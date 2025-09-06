@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: The `CDT_VERSION` macro has been updated to reflect the last
   time an API-breaking change was made. This should have happened in Graphviz
   9.0.0 and then multiple other releases since then. #2722
+- In the CMake build system, whether X11-dependent components are built or not
+  can now be controlled by the `-DWITH_X={AUTO|ON|OFF}` option. #2714
 
 ### Fixed
 
