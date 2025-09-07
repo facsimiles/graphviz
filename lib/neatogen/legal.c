@@ -17,6 +17,7 @@
 #include <stddef.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/list.h>
 
 #define SLOPE(p,q) ( ( ( p.y ) - ( q.y ) ) / ( ( p.x ) - ( q.x ) ) )
 
@@ -41,12 +42,7 @@ typedef struct polygon polygon;
 
     struct active_edge {
 	vertex *name;
-	struct active_edge *next, *last;
     };
-    typedef struct active_edge_list {
-	active_edge *first, *final;
-	int number;
-    } active_edge_list ;
 
 static int sign(double v) {
   if (v < 0)
@@ -277,13 +273,10 @@ static int gt(const void *a, const void *b) {
  * Return 1 if intersection found, 0 for not found, -1 for error.
  */
 static int find_ints(vertex vertex_list[], size_t nvertices) {
-    int j, k, found = 0;
-    active_edge_list all;
+    int k, found = 0;
+    LIST(active_edge*) all = {.dtor = LIST_DTOR_FREE};
     active_edge *new, *tempa;
     vertex *pt1, *pt2, *templ;
-
-    all.first = all.final = 0;
-    all.number = 0;
 
     vertex **pvertex = gv_calloc(nvertices, sizeof(vertex*));
 
@@ -303,29 +296,18 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
 	    case -1:		/* forward edge, test and insert      */
 
                  /* test */
-		for (tempa = all.first, j = 0; j < all.number;
-		     j++, tempa = tempa->next) {
+		for (size_t j = 0; j < LIST_SIZE(&all); ++j) {
+		    tempa = LIST_GET(&all, j);
 		    found = find_intersection(tempa->name, templ);
 		    if (found)
 			goto finish;
 		}
 
 		new = gv_alloc(sizeof(active_edge));
-		if (all.number == 0) {
-		    all.first = new;
-		    new->last = 0;
-		} /* insert */
-		else {
-		    all.final->next = new;
-		    new->last = all.final;
-		}
+		LIST_APPEND(&all, new);
 
 		new->name = templ;
-		new->next = 0;
 		templ->active = new;
-		all.final = new;
-		all.number++;
-
 		break;		/* end of case -1       */
 
 	    case 1:		/* backward edge, delete        */
@@ -334,20 +316,7 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
 		    agerrorf("trying to delete a non-line\n");
 		    return -1;
 		}
-		if (all.number == 1)
-		    all.final = all.first = 0;	/* delete the line */
-		else if (tempa == all.first) {
-		    all.first = all.first->next;
-		    all.first->last = 0;
-		} else if (tempa == all.final) {
-		    all.final = all.final->last;
-		    all.final->next = 0;
-		} else {
-		    tempa->last->next = tempa->next;
-		    tempa->next->last = tempa->last;
-		}
-		free(tempa);
-		all.number--;
+		LIST_REMOVE(&all, tempa);
 		templ->active = 0;
 		break;		/* end of case 1        */
 
@@ -362,11 +331,7 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
     }				/* end i for loop       */
 
 finish :
-    for (tempa = all.first, j = 0; j < all.number;
-		     j++, tempa = new) {
-	new = tempa->next;
-	free (tempa);
-    }
+    LIST_FREE(&all);
     free (pvertex);
     return found;
 }
