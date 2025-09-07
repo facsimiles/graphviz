@@ -832,15 +832,15 @@ static void free_html_cell(htmlcell_t * cp)
 }
 
 /* If tbl->row_count is `SIZE_MAX`, table is in initial state from
- * HTML parse, with data stored in u.p. Once run through processTbl,
- * data is stored in u.n and tbl->row_count is < `SIZE_MAX`.
+ * HTML parse, with data stored in `tbl->u.prev` and `tbl->u.rows`. Once run
+ * through processTbl, data is stored in u.n and tbl->row_count is < `SIZE_MAX`.
  */
 static void free_html_tbl(htmltbl_t * tbl)
 {
     htmlcell_t **cells;
 
     if (tbl->row_count == SIZE_MAX) { // raw, parsed table
-	LIST_FREE(&tbl->u.p.rows);
+	LIST_FREE(&tbl->u.rows);
     } else {
 	cells = tbl->u.n.cells;
 
@@ -1180,7 +1180,7 @@ static uint16_t findCol(PointSet *ps, int row, int col, htmlcell_t *cellp) {
 static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
 {
     htmlcell_t **cells;
-    rows_t rows = tbl->u.p.rows;
+    rows_t rows = tbl->u.rows;
     int rv = 0;
     size_t n_rows = 0;
     size_t n_cols = 0;

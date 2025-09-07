@@ -598,7 +598,7 @@ static htmltbl_t *mkTbl(htmllexstate_t *ctx, char **atts)
     htmltbl_t *tbl = gv_alloc(sizeof(htmltbl_t));
 
     tbl->row_count = SIZE_MAX; // flag that table is a raw, parsed table
-    tbl->u.p.rows = (rows_t){.dtor = free_ritem};
+    tbl->u.rows = (rows_t){.dtor = free_ritem};
     tbl->cellborder = -1; // unset cell border attribute
     doAttrs(ctx, tbl, tbl_items, sizeof(tbl_items) / ISIZE, atts, "<TABLE>");
 

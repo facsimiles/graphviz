@@ -131,7 +131,7 @@ typedef LIST(row_t *) rows_t;
 	    struct {
 		htmltbl_t *prev;	/* stack */
 		rows_t rows; ///< cells
-	    } p;
+	    };
 	} u;
 	int8_t cellborder;
 	double *heights; ///< heights of the rows
