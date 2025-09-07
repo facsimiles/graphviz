@@ -132,7 +132,7 @@ typedef LIST(row_t *) rows_t;
 		htmltbl_t *prev;	/* stack */
 		rows_t rows; ///< cells
 	    };
-	} u;
+	};
 	int8_t cellborder;
 	double *heights; ///< heights of the rows
 	double *widths; ///< widths of the columns
