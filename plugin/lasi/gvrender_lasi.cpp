@@ -149,9 +149,7 @@ static void lasi_begin_graph(GVJ_t * job)
 	// include epsf
         epsf_define(job);
         if (job->common->show_boxes) {
-            const char* args[2];
-            args[0] = job->common->show_boxes[0];
-            args[1] = nullptr;
+            const char *args[2] = {job->common->show_boxes[0]};
             cat_libfile(job, nullptr, args);
         }
     }
