@@ -127,7 +127,7 @@ typedef LIST(row_t *) rows_t;
 	    struct {
 		htmlcell_t *parent;	/* enclosing cell */
 		htmlcell_t **cells;	/* cells */
-	    } n;
+	    };
 	    struct {
 		htmltbl_t *prev;	/* stack */
 		rows_t rows; ///< cells
