@@ -47,9 +47,6 @@ typedef struct polygon polygon;
 	active_edge *first, *final;
 	int number;
     } active_edge_list ;
-    typedef struct {
-	int nvertices, ninters;
-    } data ;
 
 static int sign(double v) {
   if (v < 0)
