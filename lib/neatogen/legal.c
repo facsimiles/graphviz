@@ -308,7 +308,7 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
 
 		new->name = templ;
 		templ->active = new;
-		break;		/* end of case -1       */
+		break;
 
 	    case 1:		/* backward edge, delete        */
 
@@ -318,17 +318,17 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
 		}
 		LIST_REMOVE(&all, tempa);
 		templ->active = 0;
-		break;		/* end of case 1        */
+		break;
 
 	    default:
 		break; // same point; do nothing
 
-	    }			/* end switch   */
+	    }
 
 	    pt2 = after(pvertex[i]);
 	    templ = pvertex[i];	/*second neighbor */
-	}			/* end k for loop       */
-    }				/* end i for loop       */
+	}
+    }
 
 finish :
     LIST_FREE(&all);
