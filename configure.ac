@@ -423,7 +423,6 @@ AC_PATH_XTRA
 if test "$no_x" = "yes"; then
   use_xlib="No (disabled or unavailable)"
   AC_MSG_WARN([X11 not available.])
-  X_SUBDIRS=""
 else
   use_xlib="Yes"
   PKG_CHECK_MODULES(XRENDER, [xrender],HAVE_XRENDER="yes" ,HAVE_XRENDER="no")

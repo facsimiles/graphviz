@@ -41,8 +41,6 @@ typedef SSIZE_T ssize_t;
 #cmakedefine HAVE_POPPLER
 #cmakedefine HAVE_RSVG
 #cmakedefine HAVE_WEBP
-#cmakedefine HAVE_X11
-#cmakedefine HAVE_XRENDER
 
 // Values
 #define BROWSER "@BROWSER@"
