@@ -517,7 +517,7 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 {
     boxf pts = tbl->data.box;
     pointf pos = env->pos;
-    htmlcell_t **cells = tbl->u.n.cells;
+    htmlcell_t **cells = tbl->cells;
     htmlcell_t *cp;
     static textfont_t savef;
     htmlmap_data_t saved;
@@ -565,7 +565,7 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	 * At present, we set the penwidth to 1 for rules until we provide the calculations to take
 	 * into account wider rules.
 	 */
-	cells = tbl->u.n.cells;
+	cells = tbl->cells;
 	gvrender_set_penwidth(job, 1.0);
 	while ((cp = *cells++)) {
 	    if (cp->hruled || cp->vruled)
@@ -832,17 +832,18 @@ static void free_html_cell(htmlcell_t * cp)
 }
 
 /* If tbl->row_count is `SIZE_MAX`, table is in initial state from
- * HTML parse, with data stored in u.p. Once run through processTbl,
- * data is stored in u.n and tbl->row_count is < `SIZE_MAX`.
+ * HTML parse, with data stored in `tbl->prev` and `tbl->rows`. Once run through
+ * processTbl, data is stored in `tbl->parent` and `tbl->cells`, and
+ * tbl->row_count is < `SIZE_MAX`.
  */
 static void free_html_tbl(htmltbl_t * tbl)
 {
     htmlcell_t **cells;
 
     if (tbl->row_count == SIZE_MAX) { // raw, parsed table
-	LIST_FREE(&tbl->u.p.rows);
+	LIST_FREE(&tbl->rows);
     } else {
-	cells = tbl->u.n.cells;
+	cells = tbl->cells;
 
 	free(tbl->heights);
 	free(tbl->widths);
@@ -850,7 +851,7 @@ static void free_html_tbl(htmltbl_t * tbl)
 	    free_html_cell(*cells);
 	    cells++;
 	}
-	free(tbl->u.n.cells);
+	free(tbl->cells);
     }
     free_html_data(&tbl->data);
     free(tbl);
@@ -897,7 +898,7 @@ static htmldata_t *portToTbl(htmltbl_t * tp, char *id)
 	rv = &tp->data;
     else {
 	rv = NULL;
-	cells = tp->u.n.cells;
+	cells = tp->cells;
 	while ((cp = *cells++)) {
 	    if ((rv = portToCell(cp, id)))
 		break;
@@ -1180,7 +1181,7 @@ static uint16_t findCol(PointSet *ps, int row, int col, htmlcell_t *cellp) {
 static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
 {
     htmlcell_t **cells;
-    rows_t rows = tbl->u.p.rows;
+    rows_t rows = tbl->rows;
     int rv = 0;
     size_t n_rows = 0;
     size_t n_cols = 0;
@@ -1196,7 +1197,7 @@ static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
 	}
     }
 
-    cells = tbl->u.n.cells = gv_calloc(cnt + 1, sizeof(htmlcell_t *));
+    cells = tbl->cells = gv_calloc(cnt + 1, sizeof(htmlcell_t *));
     for (uint16_t r = 0; r < LIST_SIZE(&rows); ++r) {
 	row_t *rp = LIST_GET(&rows, r);
 	uint16_t c = 0;
@@ -1255,7 +1256,7 @@ static void set_cell_widths(htmltbl_t *table) {
   // largest minimum cell width …”. Note that this loop and the following one
   // could be fused, but this would make the implementation harder to relate
   // back to the specification.
-  for (htmlcell_t **i = table->u.n.cells; *i != NULL; ++i) {
+  for (htmlcell_t **i = table->cells; *i != NULL; ++i) {
     const htmlcell_t cell = **i;
     if (cell.colspan > 1) {
       continue;
@@ -1268,7 +1269,7 @@ static void set_cell_widths(htmltbl_t *table) {
   // widths of the columns it spans so that together, they are at least as wide
   // as the cell. … If possible, widen all spanned columns by approximately the
   // same amount.”
-  for (htmlcell_t **i = table->u.n.cells; *i != NULL; ++i) {
+  for (htmlcell_t **i = table->cells; *i != NULL; ++i) {
     const htmlcell_t cell = **i;
     if (cell.colspan == 1) {
       continue;
@@ -1294,7 +1295,7 @@ static void set_cell_widths(htmltbl_t *table) {
   }
 
   // take the minimum width for each column and apply it to its contained cells
-  for (htmlcell_t **i = table->u.n.cells; *i != NULL; ++i) {
+  for (htmlcell_t **i = table->cells; *i != NULL; ++i) {
     htmlcell_t *cell = *i;
 
     // what is the current width of this cell’s column(s)’ span?
@@ -1321,7 +1322,7 @@ static void set_cell_heights(htmltbl_t *table) {
   assert(table->heights == NULL && "table heights computed twice");
   table->heights = gv_calloc(table->row_count + 1, sizeof(double));
 
-  for (htmlcell_t **i = table->u.n.cells; *i != NULL; ++i) {
+  for (htmlcell_t **i = table->cells; *i != NULL; ++i) {
     const htmlcell_t cell = **i;
     if (cell.rowspan > 1) {
       continue;
@@ -1331,7 +1332,7 @@ static void set_cell_heights(htmltbl_t *table) {
         fmax(table->heights[cell.row], cell.data.box.UR.y);
   }
 
-  for (htmlcell_t **i = table->u.n.cells; *i != NULL; ++i) {
+  for (htmlcell_t **i = table->cells; *i != NULL; ++i) {
     const htmlcell_t cell = **i;
     if (cell.rowspan == 1) {
       continue;
@@ -1354,7 +1355,7 @@ static void set_cell_heights(htmltbl_t *table) {
     }
   }
 
-  for (htmlcell_t **i = table->u.n.cells; *i != NULL; ++i) {
+  for (htmlcell_t **i = table->cells; *i != NULL; ++i) {
     htmlcell_t *cell = *i;
 
     double min_height = 0;
@@ -1540,13 +1541,12 @@ static void pos_html_cell(htmlcell_t *cp, boxf pos, unsigned char sides) {
  */
 static void pos_html_tbl(htmltbl_t *tbl, boxf pos, unsigned char sides) {
     int plus;
-    htmlcell_t **cells = tbl->u.n.cells;
+    htmlcell_t **cells = tbl->cells;
     htmlcell_t *cp;
     boxf cbox;
 
-    if (tbl->u.n.parent && tbl->u.n.parent->data.pencolor
-	&& !tbl->data.pencolor)
-	tbl->data.pencolor = gv_strdup(tbl->u.n.parent->data.pencolor);
+    if (tbl->parent && tbl->parent->data.pencolor && !tbl->data.pencolor)
+	tbl->data.pencolor = gv_strdup(tbl->parent->data.pencolor);
 
     double oldsz = tbl->data.box.UR.x;
     double delx = fmax(pos.UR.x - pos.LL.x - oldsz, 0);
@@ -1644,7 +1644,7 @@ size_html_tbl(graph_t * g, htmltbl_t * tbl, htmlcell_t * parent,
 
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
-    tbl->u.n.parent = parent;
+    tbl->parent = parent;
     rv = processTbl(g, tbl, env);
 
     /* Set up border and spacing */
@@ -1792,7 +1792,7 @@ void printData(htmldata_t * dp)
 
 void printTbl(htmltbl_t * tbl, int ind)
 {
-    htmlcell_t **cells = tbl->u.n.cells;
+    htmlcell_t **cells = tbl->cells;
     indent(ind);
     fprintf(stderr, "tbl (%p) %" PRISIZE_T " %" PRISIZE_T " ", tbl, tbl->column_count, tbl->row_count);
     printData(&tbl->data);

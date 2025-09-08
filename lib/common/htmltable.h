@@ -127,12 +127,12 @@ typedef LIST(row_t *) rows_t;
 	    struct {
 		htmlcell_t *parent;	/* enclosing cell */
 		htmlcell_t **cells;	/* cells */
-	    } n;
+	    };
 	    struct {
 		htmltbl_t *prev;	/* stack */
 		rows_t rows; ///< cells
-	    } p;
-	} u;
+	    };
+	};
 	int8_t cellborder;
 	double *heights; ///< heights of the rows
 	double *widths; ///< widths of the columns
