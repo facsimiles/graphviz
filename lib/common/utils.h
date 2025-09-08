@@ -43,7 +43,21 @@ UTILS_API void write_plain(GVJ_t *job, graph_t *g, void *f, bool extend);
 
 /// @param yOff Displacement to apply to `y`
 UTILS_API double yDir(double y, double yOff);
-UTILS_API char *ps_string(char *s, int);
+
+/// translate string for emitting into a PostScript file
+///
+/// Internally, strings are always UTF-8. If `chset` is `CHAR_LATIN1`, we know
+/// all of the values can be represented by Latin-1; if `chset` is `CHAR_UTF8`,
+/// we use the string as is; otherwise, we test to see if the string is ASCII,
+/// Latin-1 or non-Latin, and translate to Latin-l if possible.
+///
+/// The caller must free the returned string.
+///
+/// @param s String to translate
+/// @param chset Character set
+/// @return Translated string
+UTILS_API char *ps_string(char *s, int chset);
+
 UTILS_API char *strdup_and_subst_obj(char *str, void *obj);
 UTILS_API void epsf_emit_body(GVJ_t *job, usershape_t *us);
 UTILS_API void epsf_define(GVJ_t *job);

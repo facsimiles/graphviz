@@ -245,14 +245,6 @@ charsetOf (char* s)
     return r;
 }
 
-/* ps_string:
- * internally, strings are always utf8. If chset is CHAR_LATIN1, we know
- * all of the values can be represented by latin-1; if chset is
- * CHAR_UTF8, we use the string as is; otherwise, we test to see if the
- * string is ascii, latin-1 or non-latin, and translate to latin-l if
- * possible.
- * The caller must free the returned string.
- */
 char *ps_string(char *ins, int chset)
 {
     char *base;
