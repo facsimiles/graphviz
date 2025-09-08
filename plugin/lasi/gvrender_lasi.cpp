@@ -8,7 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -154,9 +154,11 @@ static void lasi_begin_graph(GVJ_t * job)
         }
     }
     // Set base URL for relative links (for Distiller ≥ 3.0)
-    if (obj->url)
-	gvprintf(job, "[ {Catalog} << /URI << /Base %s >> >>\n"
-		"/PUT pdfmark\n", ps_string(obj->url, CHAR_UTF8));
+    if (obj->url) {
+	char *const ps = ps_string(obj->url, CHAR_UTF8);
+	gvprintf(job, "[ {Catalog} << /URI << /Base %s >> >>\n/PUT pdfmark\n", ps);
+	free(ps);
+    }
 }
 
 static void lasi_begin_layer(GVJ_t * job, char*, int layerNum, int numLayers)
@@ -254,11 +256,13 @@ static void lasi_begin_anchor(GVJ_t *job, char *url, char*, char*, char*)
 	gvputs(job, "[ /Rect [ ");
 	gvprintpointflist(job, obj->url_map_p, 2);
 	gvputs(job, " ]\n");
+	char *const ps = ps_string(url, CHAR_UTF8);
 	gvprintf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(url, CHAR_UTF8));
+		ps);
+	free(ps);
     }
 }
 

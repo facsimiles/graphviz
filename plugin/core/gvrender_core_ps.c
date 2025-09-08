@@ -107,9 +107,11 @@ static void psgen_begin_graph(GVJ_t * job)
 	setupLatin1 = true;
     }
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
-    if (obj->url)
-	gvprintf(job, "[ {Catalog} << /URI << /Base %s >> >>\n"
-		"/PUT pdfmark\n", ps_string(obj->url,isLatin1));
+    if (obj->url) {
+	char *const ps = ps_string(obj->url, isLatin1);
+	gvprintf(job, "[ {Catalog} << /URI << /Base %s >> >>\n/PUT pdfmark\n", ps);
+	free(ps);
+    }
 }
 
 static void psgen_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
@@ -214,11 +216,13 @@ static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *targe
         gvputs(job, "[ /Rect [ ");
 	gvprintpointflist(job, obj->url_map_p, 2);
         gvputs(job, " ]\n");
+        char *const ps = ps_string(url, isLatin1);
         gvprintf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(url, isLatin1));
+		ps);
+        free(ps);
     }
 }
 
@@ -336,6 +340,7 @@ static void psgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     gvputs(job, " moveto ");
     gvprintdouble(job, span->size.x);
     gvprintf(job, " %s alignedtext\n", str);
+    free(str);
 }
 
 static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
