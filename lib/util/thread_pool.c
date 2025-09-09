@@ -5,16 +5,20 @@
 #include <threads.h>
 #include <util/thread_pool.h>
 
+typedef enum { INIT = 0, PRIMED, RUNNING } phase_t;
+
 typedef struct {
+  thrd_t handle;
+  bool created;
   size_t thread_id;
   mtx_t *starter;
   bool *ok;
   int (*entry)(size_t thread_id, void *state);
   void *original_state;
-} trampoline_state_t;
+} thread_state_t;
 
 static int trampoline(void *state) {
-  trampoline_state_t *const s = state;
+  thread_state_t *const s = state;
 
   if (mtx_lock(s->starter) != thrd_success) {
     return -1;
@@ -29,13 +33,12 @@ static int trampoline(void *state) {
 }
 
 struct thread_pool {
-  thrd_t *thread;
+  phase_t phase;
+  thread_state_t *thread;
+  size_t n_thread;
   mtx_t starter;
   bool starter_created;
   bool ok;
-  trampoline_state_t *state;
-  size_t n_thread;
-  size_t n_created;
 };
 
 thread_pool_t *gv_thread_pool_new(size_t threads,
@@ -56,34 +59,25 @@ thread_pool_t *gv_thread_pool_new(size_t threads,
   if (threads > 0 && pool->thread == NULL) {
     goto fail;
   }
-
-  pool->state = calloc(threads, sizeof(pool->state[0]));
-  if (threads > 0 && pool->state == NULL) {
-    goto fail;
-  }
+  pool->n_thread = threads;
 
   if (mtx_lock(&pool->starter) != thrd_success) {
     goto fail;
   }
 
-  pool->n_thread = threads;
+  pool->phase = PRIMED;
   for (size_t i = 0; i < threads; ++i) {
-    pool->state[i] = (trampoline_state_t){.thread_id = i,
-                                          .starter = &pool->starter,
-                                          .ok = &pool->ok,
-                                          .entry = entry,
-                                          .original_state = state};
-    if (thrd_create(&pool->thread[i], trampoline, &pool->state[i]) !=
+    pool->thread[i].thread_id = i;
+    pool->thread[i].starter = &pool->starter;
+    pool->thread[i].ok = &pool->ok;
+    pool->thread[i].entry = entry;
+    pool->thread[i].original_state = state;
+    if (thrd_create(&pool->thread[i].handle, trampoline, &pool->thread[i]) !=
         thrd_success) {
-      (void)mtx_unlock(&pool->starter);
       goto fail;
     }
-    ++pool->n_created;
+    pool->thread[i].created = true;
   }
-
-  // release the threads
-  pool->ok = true;
-  (void)mtx_unlock(&pool->starter);
 
   return pool;
 
@@ -92,14 +86,34 @@ fail:
   return NULL;
 }
 
+void gv_thread_pool_start(thread_pool_t *pool) {
+  assert(pool != NULL);
+  assert(pool->phase == PRIMED);
+
+  pool->phase = RUNNING;
+
+  // release the threads
+  pool->ok = true;
+  (void)mtx_unlock(&pool->starter);
+}
+
 int gv_thread_pool_join(thread_pool_t *pool) {
   assert(pool != NULL);
 
+  // if the threads are still blocked on the initial barrier, release them
+  if (pool->phase == PRIMED) {
+    pool->ok = false;
+    (void)mtx_unlock(&pool->starter);
+  }
+
   int res = 0;
 
-  for (size_t i = pool->n_created - 1; i != SIZE_MAX; --i) {
+  for (size_t i = pool->n_thread - 1; i != SIZE_MAX; --i) {
+    if (!pool->thread[i].created) {
+      continue;
+    }
     int one_res;
-    const int rc = thrd_join(pool->thread[i], &one_res);
+    const int rc = thrd_join(pool->thread[i].handle, &one_res);
     if (rc != thrd_success) {
       return rc;
     }
@@ -112,7 +126,6 @@ int gv_thread_pool_join(thread_pool_t *pool) {
 void gv_thread_pool_free(thread_pool_t *pool) {
   if (pool != NULL) {
     (void)gv_thread_pool_join(pool);
-    free(pool->state);
     free(pool->thread);
     if (pool->starter_created) {
       mtx_destroy(&pool->starter);
