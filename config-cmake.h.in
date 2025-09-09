@@ -51,3 +51,5 @@ typedef SSIZE_T ssize_t;
 // Conditional values
 #cmakedefine DARWIN
 #cmakedefine DARWIN_DYLIB
+
+#cmakedefine HAVE_PTHREADS

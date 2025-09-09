@@ -102,6 +102,14 @@ else()
   set(AUTO_X OFF)
 endif()
 
+set(WITH_THREADS AUTO CACHE STRING "multi-threading used within Graphviz")
+set_property(CACHE WITH_THREADS PROPERTY STRINGS AUTO ON OFF)
+if(WITH_THREADS STREQUAL "AUTO")
+  set(AUTO_THREADS ON)
+else()
+  set(AUTO_THREADS OFF)
+endif()
+
 if(WIN32)
   if(BUILD_SHARED_LIBS)
     # build dynamic-link libraries on Windows, including MinGW
@@ -728,6 +736,29 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # Studio, when building C that links against C++ (e.g. lib/neatogen/*.c), uses
   # the C++ compiler options instead of the C ones
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /experimental:c11atomics")
+endif()
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+if(AUTO_THREADS)
+  find_package(Threads)
+  # reject non-pthreads for now
+  if(Threads_FOUND AND NOT CMAKE_USE_PTHREADS_INIT)
+    set(Threads_FOUND 0)
+  endif()
+elseif(WITH_THREADS)
+  find_package(Threads REQUIRED)
+  # reject non-pthreads for now
+  if(Threads_FOUND AND NOT CMAKE_USE_PTHREADS_INIT)
+    message(FATAL_ERROR "threading support not found")
+  endif()
+else()
+  message(STATUS "skipping threading discovery because -DWITH_THREADS=OFF")
+  set(Threads_FOUND 0)
+endif()
+if(Threads_FOUND)
+  set(HAVE_PTHREADS 1)
+else()
+  set(HAVE_PTHREADS 0)
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
