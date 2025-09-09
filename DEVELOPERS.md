@@ -263,6 +263,26 @@ flamegraph.pl out.perf-folded > perf.svg
 Now open perf.svg in your favorite SVG viewer. Generally a web browser like
 Firefox is recommended to handle the interactivity of the SVG.
 
+### Validating
+
+After making changes to speed up Graphviz, you should make sure your changes are
+actually a speed up. One way to do this is using tests/compare_performance.py.
+This runs a number of Graphviz commands, originating from user-reported
+performance problems, and compares the effect of your changes.
+
+To use it:
+1. Build Graphviz before your changes and install to, e.g., /tmp/before
+2. Build Graphviz after your changes and install to, e.g., /tmp/after
+3. Run a comparison
+
+```bash
+python3 tests/compare_performance.py /tmp/before/bin/dot /tmp/after/bin/dot
+```
+
+This will take a _long_ time (10+ hours). But the script echoes what it is
+running as well as a table of partial results, so you can interrupt it if you
+see something unexpected.
+
 ## Memory safety
 
 Graphviz is a 30+ year old code base written in memory unsafe languages. As
