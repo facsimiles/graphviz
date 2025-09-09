@@ -5,8 +5,6 @@
 #include <threads.h>
 #include <util/thread_pool.h>
 
-typedef enum { INIT = 0, PRIMED, RUNNING } phase_t;
-
 typedef struct {
   thrd_t handle;
   bool created;
@@ -33,11 +31,11 @@ static int trampoline(void *state) {
 }
 
 struct thread_pool {
-  phase_t phase;
   thread_state_t *thread;
   size_t n_thread;
   mtx_t starter;
   bool starter_created;
+  bool starter_held;
   bool ok;
 };
 
@@ -64,8 +62,8 @@ thread_pool_t *gv_thread_pool_new(size_t threads,
   if (mtx_lock(&pool->starter) != thrd_success) {
     goto fail;
   }
+  pool->starter_held = true;
 
-  pool->phase = PRIMED;
   for (size_t i = 0; i < threads; ++i) {
     pool->thread[i].thread_id = i;
     pool->thread[i].starter = &pool->starter;
@@ -88,22 +86,22 @@ fail:
 
 void gv_thread_pool_start(thread_pool_t *pool) {
   assert(pool != NULL);
-  assert(pool->phase == PRIMED);
-
-  pool->phase = RUNNING;
+  assert(pool->starter_held);
 
   // release the threads
   pool->ok = true;
   (void)mtx_unlock(&pool->starter);
+  pool->starter_held = false;
 }
 
 int gv_thread_pool_join(thread_pool_t *pool) {
   assert(pool != NULL);
 
   // if the threads are still blocked on the initial barrier, release them
-  if (pool->phase == PRIMED) {
+  if (pool->starter_held) {
     pool->ok = false;
     (void)mtx_unlock(&pool->starter);
+    pool->starter_held = false;
   }
 
   int res = 0;
