@@ -685,12 +685,14 @@ string(REGEX REPLACE "[^.]*\\.([^.]*)\\..*"
 string(REGEX REPLACE "[^.]*\\.[^.]*\\.(.*)$"
   "\\1" GRAPHVIZ_VERSION_PATCH
   ${GRAPHVIZ_VERSION_STRING})
+string(REGEX REPLACE "([0-9]+).*$" "\\1" GRAPHVIZ_VERSION_PATCH_PREFIX
+  ${GRAPHVIZ_VERSION_PATCH})
 
 set(GRAPHVIZ_VERSION_FULL "${GRAPHVIZ_VERSION_STRING}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/builddate.h
      "#define BUILDDATE \"${GRAPHVIZ_VERSION_BUILD}\"")
 
-configure_file(graphviz_version.h.cmake
+configure_file(graphviz_version.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/graphviz_version.h @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/graphviz_version.h
         DESTINATION ${HEADER_INSTALL_DIR})

@@ -7,3 +7,11 @@
 #define PACKAGE_TARNAME "graphviz"
 #define PACKAGE_URL ""
 #define PACKAGE_VERSION "@GRAPHVIZ_VERSION_STRING@"
+
+/// Graphviz version constants
+///
+/// These are only accurate for releases, not inter-release Graphviz commits
+/// built from source.
+#define GRAPHVIZ_VERSION_MAJOR @GRAPHVIZ_VERSION_MAJOR@
+#define GRAPHVIZ_VERSION_MINOR @GRAPHVIZ_VERSION_MINOR@
+#define GRAPHVIZ_VERSION_PATCH @GRAPHVIZ_VERSION_PATCH_PREFIX@
