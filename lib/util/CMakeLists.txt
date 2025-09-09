@@ -7,6 +7,7 @@ add_library(util STATIC
   list.c
   mt_stack.c
   random.c
+  thread_pool.c
   xml.c
 )
 

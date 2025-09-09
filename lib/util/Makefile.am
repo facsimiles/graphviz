@@ -31,6 +31,7 @@ noinst_HEADERS = \
   strcasecmp.h \
   streq.h \
   strview.h \
+  thread_pool.h \
   tokenize.h \
   unreachable.h \
   unused.h \
@@ -38,7 +39,7 @@ noinst_HEADERS = \
 noinst_LTLIBRARIES = libutil_C.la
 
 libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c hazard.c \
-	list.c mt_stack.c random.c xml.c
+	list.c mt_stack.c random.c thread_pool.c xml.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 EXTRA_DIST = README
