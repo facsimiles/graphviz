@@ -23,6 +23,10 @@
 #include <util/exit.h>
 #include <util/prisize_t.h>
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#include <malloc.h>
+#endif
+
 static inline void *gv_calloc(size_t nmemb, size_t size) {
 
   if (nmemb > 0 && SIZE_MAX / nmemb < size) {
@@ -45,6 +49,39 @@ static inline void *gv_calloc(size_t nmemb, size_t size) {
 }
 
 static inline void *gv_alloc(size_t size) { return gv_calloc(1, size); }
+
+/// allocate aligned memory, exiting on failure
+///
+/// The caller should later call `gv_aligned_free` to free the returned pointer.
+/// It is _not_ valid to call `free` directly on the returned pointer
+///
+/// @param alignment Alignment requested in bytes
+/// @param size Size requested in bytes
+/// @return A pointer to allocated memory
+static inline void *gv_aligned_alloc(size_t alignment, size_t size) {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  void *const p = _aligned_malloc(size, alignment);
+#else
+  void *const p = aligned_alloc(alignment, size);
+#endif
+  if (size > 0 && p == NULL) {
+    fprintf(stderr,
+            "out of memory when trying to allocate %" PRISIZE_T " bytes\n",
+            size);
+    graphviz_exit(EXIT_FAILURE);
+  }
+
+  return p;
+}
+
+/// free a pointer that was allocated with `gv_aligned_alloc`
+static inline void gv_aligned_free(void *p) {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  _aligned_free(p);
+#else
+  free(p);
+#endif
+}
 
 static inline void *gv_realloc(void *ptr, size_t old_size, size_t new_size) {
 

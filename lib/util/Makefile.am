@@ -20,6 +20,7 @@ noinst_HEADERS = \
   list.h \
   list-private.h \
   lockfile.h \
+  mt_stack.h \
   optional.h \
   overflow.h \
   path.h \
@@ -37,7 +38,7 @@ noinst_HEADERS = \
 noinst_LTLIBRARIES = libutil_C.la
 
 libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c hazard.c \
-	list.c random.c xml.c
+	list.c mt_stack.c random.c xml.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 EXTRA_DIST = README

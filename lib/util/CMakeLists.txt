@@ -5,6 +5,7 @@ add_library(util STATIC
   gv_fopen.c
   hazard.c
   list.c
+  mt_stack.c
   random.c
   xml.c
 )
