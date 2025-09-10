@@ -489,7 +489,7 @@ pushFont (htmlparserstate_t *html_state, textfont_t *fp)
 static void
 popFont (htmlparserstate_t *html_state)
 {
-    (void)LIST_POP_BACK(&html_state->fontstack);
+    LIST_DROP_BACK(&html_state->fontstack);
 }
 
 /* Return parsed label or NULL if failure.
