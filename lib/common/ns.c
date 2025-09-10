@@ -1223,7 +1223,7 @@ static int dfs_range(node_t * v, edge_t * par, int low)
 	ND_lim(s->v) = s->lim;
 
 	lim = s->lim;
-	(void)LIST_POP_BACK(&todo);
+	LIST_DROP_BACK(&todo);
 
 	if (!LIST_IS_EMPTY(&todo)) {
 	    LIST_BACK(&todo)->lim = lim + 1;
