@@ -418,6 +418,24 @@ static_assert(
                      sizeof((list)->base[0])),                                 \
    (list)->scratch)
 
+/// remove the last item of a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_DROP_BACK(LIST(<type>) *list);
+///
+/// This can be used to pop the last element when the caller does not need the
+/// popped item.
+///
+/// @param list List to operate on
+#define LIST_DROP_BACK(list)                                                   \
+  do {                                                                         \
+    const size_t slot_ = gv_list_get_((list)->impl, LIST_SIZE(list) - 1);      \
+    LIST_DTOR_((list), slot_);                                                 \
+    gv_list_pop_back_(&(list)->impl, &(list)->scratch,                         \
+                      sizeof((list)->base[0]));                                \
+  } while (0)
+
 /// transform a managed list into a bare array
 ///
 /// You can think of this macro as having the C type:
