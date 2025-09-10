@@ -56,11 +56,8 @@ static bool pop(pairs_t *s, Pair *x) {
   }
 
   // remove the top and pass it back to the caller
-  Pair *top = LIST_POP_BACK(s);
-  *x = *top;
-
-  // discard the previously saved copy
-  free(top);
+  *x = **LIST_BACK(s);
+  LIST_DROP_BACK(s);
 
   return true;
 }
@@ -310,7 +307,7 @@ void
 closest_pairs2graph(double *place, int n, int num_pairs, vtx_data ** graph)
 {
     /* build a graph with with edges between the 'num_pairs' closest pairs in the 1-D space: 'place' */
-    pairs_t pairs_stack = {0};
+    pairs_t pairs_stack = {.dtor = LIST_DTOR_FREE};
     assert(n >= 0);
     find_closest_pairs(place, (size_t)n, num_pairs, &pairs_stack);
     construct_graph((size_t)n, &pairs_stack, graph);
