@@ -526,8 +526,7 @@ static int parseSegs(const char *clrs, colorsegs_t *psegs) {
     // terminate at the last positive segment
     while (!LIST_IS_EMPTY(&segs)) {
 	if (LIST_BACK(&segs)->t > 0) break;
-	colorseg_t discard = LIST_POP_BACK(&segs);
-	freeSeg(discard);
+	LIST_DROP_BACK(&segs);
     }
 
     *psegs = segs;
