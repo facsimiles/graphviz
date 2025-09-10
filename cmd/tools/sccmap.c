@@ -135,7 +135,7 @@ static unsigned visit(Agnode_t *n, Agraph_t *map, node_stack_t *sp,
     if (getval(n) == min) {
 	if (!wantDegenerateComp && *LIST_BACK(sp) == n) {
 	    setval(n, INF);
-	    (void)LIST_POP_BACK(sp);
+	    LIST_DROP_BACK(sp);
 	} else {
 	    char name[32];
 	    Agraph_t *G = agraphof(n);;
