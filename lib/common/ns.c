@@ -1144,7 +1144,7 @@ static int dfs_range_init(node_t *v) {
         ND_lim(s->v) = s->lim;
 
         lim = s->lim;
-        (void)LIST_POP_BACK(&todo);
+        LIST_DROP_BACK(&todo);
 
         if (!LIST_IS_EMPTY(&todo)) {
             LIST_BACK(&todo)->lim = lim + 1;
