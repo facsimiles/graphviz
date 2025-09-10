@@ -70,8 +70,7 @@ static void popString(strs_t *stk) {
     graphviz_exit(EXIT_FAILURE);
   }
 
-  char *const popped = LIST_POP_BACK(stk);
-  free(popped);
+  LIST_DROP_BACK(stk);
 }
 
 static char *topString(strs_t *stk) {
