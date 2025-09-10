@@ -249,10 +249,8 @@ static void add_edge(vtx_data * graph, int u, int v)
     }
 }
 
-static void construct_graph(size_t n, pairs_t *edges_stack,
-                            vtx_data **New_graph) {
+static vtx_data *construct_graph(size_t n, pairs_t *edges_stack) {
     /* construct an unweighted graph using the edges 'edges_stack' */
-    vtx_data *new_graph;
 
     /* first compute new degrees and nedges; */
     int *degrees = gv_calloc(n, sizeof(int));
@@ -276,7 +274,7 @@ static void construct_graph(size_t n, pairs_t *edges_stack,
 	weights[i] = 1.0;
     }
 
-    *New_graph = new_graph = gv_calloc(n, sizeof(vtx_data));
+    vtx_data *const new_graph = gv_calloc(n, sizeof(vtx_data));
     for (size_t i = 0; i < n; i++) {
 	new_graph[i].nedges = 1;
 	new_graph[i].ewgts = weights;
@@ -296,6 +294,7 @@ static void construct_graph(size_t n, pairs_t *edges_stack,
 	assert(pair.right <= INT_MAX);
 	add_edge(new_graph, (int)pair.left, (int)pair.right);
     }
+    return new_graph;
 }
 
 void
@@ -305,6 +304,6 @@ closest_pairs2graph(double *place, int n, int num_pairs, vtx_data ** graph)
     pairs_t pairs_stack = {0};
     assert(n >= 0);
     find_closest_pairs(place, (size_t)n, num_pairs, &pairs_stack);
-    construct_graph((size_t)n, &pairs_stack, graph);
+    *graph = construct_graph((size_t)n, &pairs_stack);
     LIST_FREE(&pairs_stack);
 }
