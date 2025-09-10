@@ -397,7 +397,7 @@ static void garbage_collect_vgpanes(vgpanes_t *panes) {
   // shrink list, discarding previously deallocated entries
   while (!LIST_IS_EMPTY(panes)) {
     if (!LIST_BACK(panes)->valid) {
-      (void)LIST_POP_BACK(panes);
+      LIST_DROP_BACK(panes);
     }
   }
 
