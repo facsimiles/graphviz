@@ -287,7 +287,7 @@ static bool remove_poly(vgpane_t *vgp, int id) {
 	    for (size_t j = i++; i < LIST_SIZE(&vgp->poly); i++, j++) {
 		LIST_SET(&vgp->poly, j, LIST_GET(&vgp->poly, i));
 	    }
-	    (void)LIST_POP_BACK(&vgp->poly);
+	    LIST_DROP_BACK(&vgp->poly);
 	    vc_stale(vgp);
 	    return true;
 	}
