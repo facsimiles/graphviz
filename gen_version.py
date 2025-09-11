@@ -122,12 +122,6 @@ parser.add_argument(
     const="patch",
     help="Print patch version",
 )
-parser.add_argument(
-    "--output",
-    type=argparse.FileType("wt", encoding="ascii"),
-    default=sys.stdout,
-    help="Path to write result to",
-)
 
 args = parser.parse_args()
 
@@ -168,12 +162,12 @@ if not patch_version.isnumeric():
     patch_version += f".{committer_date}"
 
 if args.date_format:
-    args.output.write(f"{committer_date}\n")
+    print(committer_date)
 elif args.component == "major":
-    args.output.write(f"{major_version}\n")
+    print(major_version)
 elif args.component == "minor":
-    args.output.write(f"{minor_version}\n")
+    print(minor_version)
 elif args.component == "patch":
-    args.output.write(f"{patch_version}\n")
+    print(patch_version)
 else:
-    args.output.write(f"{major_version}.{minor_version}.{patch_version}\n")
+    print(f"{major_version}.{minor_version}.{patch_version}")
