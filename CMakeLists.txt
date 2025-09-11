@@ -654,17 +654,13 @@ endif()
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
-if(DEFINED VERSION)
-  set(GRAPHVIZ_VERSION_STRING "${VERSION}")
-else()
-  execute_process(
-    COMMAND           ${Python3_EXECUTABLE} gen_version.py
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_VARIABLE   GRAPHVIZ_VERSION_STRING
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    COMMAND_ERROR_IS_FATAL ANY
-  )
-endif()
+execute_process(
+  COMMAND           ${Python3_EXECUTABLE} gen_version.py
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  OUTPUT_VARIABLE   GRAPHVIZ_VERSION_STRING
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  COMMAND_ERROR_IS_FATAL ANY
+)
 
 # Set GRAPHVIZ_VERSION_BUILD to time of last commit, or to 0 if that fails.
 execute_process(
