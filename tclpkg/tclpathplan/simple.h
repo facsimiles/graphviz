@@ -42,11 +42,6 @@
 
     struct active_edge {
 	struct vertex *name;
-	struct active_edge *next, *last;
-    };
-    struct active_edge_list {
-	struct active_edge *first, *final;
-	int number;
     };
     struct data {
 	size_t nvertices;

@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/list.h>
 
 static int gt(const void *a, const void *b);
 
@@ -20,14 +21,12 @@ void find_ints(struct vertex vertex_list[],
 	struct data *input,
 	struct intersection ilist[])
 {
-    int j, k;
-    struct active_edge_list all;
+    int k;
+    LIST(struct active_edge *) all = {.dtor = LIST_DTOR_FREE};
     struct active_edge *tempa;
     struct vertex *pt1, *pt2, *templ;
 
     input->ninters = 0;
-    all.first = all.final = NULL;
-    all.number = 0;
 
     struct vertex **pvertex = gv_calloc(input->nvertices, sizeof(struct vertex*));
 
@@ -45,27 +44,16 @@ void find_ints(struct vertex vertex_list[],
 	    switch (gt(&pt1, &pt2)) {
 
 	    case -1:		/* forward edge, test and insert      */
-
-		for (tempa = all.first, j = 0; j < all.number;
-		     j++, tempa = tempa->next)
+		for (size_t j = 0; j < LIST_SIZE(&all); ++j) {
+		    tempa = LIST_GET(&all, j);
 		    find_intersection(tempa->name, templ, ilist, input);	/* test */
-
-		struct active_edge *new = gv_alloc(sizeof(struct active_edge));
-		if (all.number == 0) {
-		    all.first = new;
-		    new->last = NULL;
-		} /* insert */
-		else {
-		    all.final->next = new;
-		    new->last = all.final;
 		}
 
-		new->name = templ;
-		new->next = NULL;
-		templ->active = new;
-		all.final = new;
-		all.number++;
+		struct active_edge *new = gv_alloc(sizeof(struct active_edge));
+		LIST_APPEND(&all, new);
 
+		new->name = templ;
+		templ->active = new;
 		break;		/* end of case -1       */
 
 	    case 1:		/* backward edge, delete        */
@@ -75,20 +63,7 @@ void find_ints(struct vertex vertex_list[],
 			    "\n***ERROR***\n trying to delete a non line\n");
 		    graphviz_exit(1);
 		}
-		if (all.number == 1)
-		    all.final = all.first = NULL;	/* delete the line */
-		else if (tempa == all.first) {
-		    all.first = all.first->next;
-		    all.first->last = NULL;
-		} else if (tempa == all.final) {
-		    all.final = all.final->last;
-		    all.final->next = NULL;
-		} else {
-		    tempa->last->next = tempa->next;
-		    tempa->next->last = tempa->last;
-		}
-		free(tempa);
-		all.number--;
+		LIST_REMOVE(&all, tempa);
 		templ->active = NULL;
 		break;		/* end of case 1        */
 
@@ -100,6 +75,7 @@ void find_ints(struct vertex vertex_list[],
 	    templ = pvertex[i];	/*second neighbor */
 	}			/* end k for loop       */
     }				/* end i for loop       */
+    LIST_FREE(&all);
     free(pvertex);
 }
 
