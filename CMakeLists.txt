@@ -682,7 +682,7 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
   COMMAND_ERROR_IS_FATAL ANY
 )
-set(GRAPHVIZ_VERSION_STRING
+set(GRAPHVIZ_VERSION
   "${GRAPHVIZ_VERSION_MAJOR}.${GRAPHVIZ_VERSION_MINOR}.\
 ${GRAPHVIZ_VERSION_PATCH}${GRAPHVIZ_VERSION_PRE_RELEASE}"
 )
@@ -697,7 +697,6 @@ execute_process(
   COMMAND_ERROR_IS_FATAL ANY
 )
 
-set(GRAPHVIZ_VERSION_FULL "${GRAPHVIZ_VERSION_STRING}")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/builddate.h
      "#define BUILDDATE \"${GRAPHVIZ_VERSION_BUILD}\"")
 
@@ -706,7 +705,7 @@ configure_file(graphviz_version.h.in
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/graphviz_version.h
         DESTINATION ${HEADER_INSTALL_DIR})
 
-message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION_FULL}")
+message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION}")
 
 include(config_checks)
 if(NOT HAVE_GETOPT_H)
@@ -857,7 +856,7 @@ if(with_cxx_tests)
 endif()
 
 set(GVPLUGIN_VERSION "${GRAPHVIZ_PLUGIN_VERSION}")
-set(VERSION "${GRAPHVIZ_VERSION_STRING}")
+set(VERSION "${GRAPHVIZ_VERSION}")
 set(prefix "${CMAKE_INSTALL_PREFIX}") # cmake-lint: disable=C0103
 set(exec_prefix "${CMAKE_INSTALL_PREFIX}") # cmake-lint: disable=C0103
 set(PACKAGE "graphviz")

@@ -33,7 +33,7 @@ add_custom_target(tclplan_pkgindex
     ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/../mkpkgindex.py"
     --file libtclplan${CMAKE_SHARED_LIBRARY_SUFFIX}
     --name Tclpathplan
-    --version "${GRAPHVIZ_VERSION_STRING}"
+    --version "${GRAPHVIZ_VERSION}"
   DEPENDS ../mkpkgindex.py
   BYPRODUCTS pkgIndex.tcl
   COMMENT "create tclplan package index"

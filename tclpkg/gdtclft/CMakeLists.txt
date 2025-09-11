@@ -25,7 +25,7 @@ if(GD_FOUND)
       ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/../mkpkgindex.py"
       --file libgdtclft${CMAKE_SHARED_LIBRARY_SUFFIX}
       --name Gdtclft
-      --version "${GRAPHVIZ_VERSION_STRING}"
+      --version "${GRAPHVIZ_VERSION}"
     DEPENDS ../mkpkgindex.py
     BYPRODUCTS pkgIndex.tcl
     COMMENT "create gdtclft package index"
