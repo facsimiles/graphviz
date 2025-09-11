@@ -7,7 +7,7 @@ dnl Set Graphviz version information
 # set:
 #	graphviz_version_major
 #	graphviz_version_minor
-#	graphviz_version_micro
+#	graphviz_version_patch
 #	graphviz_version_pre_release
 #	graphviz_version_date
 #	graphviz_change_date
@@ -15,12 +15,12 @@ dnl Set Graphviz version information
 #	graphviz_author_email
 m4_include(./version.m4)
 
-AC_INIT([graphviz],[graphviz_version_major().graphviz_version_minor().graphviz_version_micro()graphviz_version_pre_release()],
+AC_INIT([graphviz],[graphviz_version_major().graphviz_version_minor().graphviz_version_patch()graphviz_version_pre_release()],
   [https://gitlab.com/graphviz/graphviz/-/issues])
 
 GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
 GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
-GRAPHVIZ_VERSION_MICRO=graphviz_version_micro()
+GRAPHVIZ_VERSION_PATCH=graphviz_version_patch()
 GRAPHVIZ_VERSION_PRE_RELEASE=graphviz_version_pre_release()
 
 # NB: date/time of last commit - or "0"
@@ -32,7 +32,7 @@ GRAPHVIZ_CHANGE_DATE=graphviz_change_date()
 
 AC_SUBST([GRAPHVIZ_VERSION_MAJOR])
 AC_SUBST([GRAPHVIZ_VERSION_MINOR])
-AC_SUBST([GRAPHVIZ_VERSION_MICRO])
+AC_SUBST([GRAPHVIZ_VERSION_PATCH])
 AC_SUBST([GRAPHVIZ_VERSION_PRE_RELEASE])
 AC_SUBST([GRAPHVIZ_VERSION_DATE])
 AC_SUBST([GRAPHVIZ_AUTHOR_NAME])

@@ -20,7 +20,7 @@ dnl Graphviz package version number, (as distinct from shared library version)
 
 m4_define([graphviz_version_major],[$GRAPHVIZ_VERSION_MAJOR])
 m4_define([graphviz_version_minor],[$GRAPHVIZ_VERSION_MINOR])
-m4_define([graphviz_version_micro],[$GRAPHVIZ_VERSION_PATCH])
+m4_define([graphviz_version_patch],[$GRAPHVIZ_VERSION_PATCH])
 m4_define([graphviz_version_pre_release],[$GRAPHVIZ_VERSION_PRE_RELEASE])
 
 m4_define([graphviz_version_date],[$GRAPHVIZ_VERSION_DATE])
