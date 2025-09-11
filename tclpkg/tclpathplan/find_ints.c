@@ -17,16 +17,12 @@
 
 static int gt(const void *a, const void *b);
 
-void find_ints(struct vertex vertex_list[],
-	struct data *input,
-	struct intersection ilist[])
-{
+void find_ints(struct vertex vertex_list[], struct data *input,
+               intersections_t *ilist) {
     int k;
     LIST(struct active_edge *) all = {.dtor = LIST_DTOR_FREE};
     struct active_edge *tempa;
     struct vertex *pt1, *pt2, *templ;
-
-    input->ninters = 0;
 
     struct vertex **pvertex = gv_calloc(input->nvertices, sizeof(struct vertex*));
 
@@ -46,7 +42,7 @@ void find_ints(struct vertex vertex_list[],
 	    case -1:		/* forward edge, test and insert      */
 		for (size_t j = 0; j < LIST_SIZE(&all); ++j) {
 		    tempa = LIST_GET(&all, j);
-		    find_intersection(tempa->name, templ, ilist, input);	/* test */
+		    find_intersection(tempa->name, templ, ilist); // test
 		}
 
 		struct active_edge *new = gv_alloc(sizeof(struct active_edge));

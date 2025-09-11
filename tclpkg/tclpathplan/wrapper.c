@@ -14,13 +14,15 @@
 #include <stdlib.h>
 #include "simple.h"
 #include <util/alloc.h>
+#include <util/list.h>
+#include <util/prisize_t.h>
 
 int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
     int rv;
 
     struct data input;
-    struct intersection ilist[10000];
+    intersections_t ilist = {0};
 
     struct polygon *polygon_list = gv_calloc(n_polys, sizeof(struct polygon));
 
@@ -43,38 +45,40 @@ int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
     input.nvertices = nverts;
 
-    find_ints(vertex_list, &input, ilist);
+    find_ints(vertex_list, &input, &ilist);
 
 
 #define EQ_PT(v,w) (((v).x == (w).x) && ((v).y == (w).y))
     rv = 1;
     {
 	struct position vft, vsd, avft, avsd;
-	for (int i = 0; i < input.ninters; i++) {
-	    vft = ilist[i].firstv->pos;
-	    avft = after(ilist[i].firstv)->pos;
-	    vsd = ilist[i].secondv->pos;
-	    avsd = after(ilist[i].secondv)->pos;
+	for (size_t i = 0; i < LIST_SIZE(&ilist); i++) {
+	    struct intersection inter = LIST_GET(&ilist, i);
+	    vft = inter.firstv->pos;
+	    avft = after(inter.firstv)->pos;
+	    vsd = inter.secondv->pos;
+	    avsd = after(inter.secondv)->pos;
 	    if ((vft.x != avft.x && vsd.x != avsd.x) ||
-		(vft.x == avft.x && !EQ_PT(vft, ilist[i]) && !EQ_PT(avft, ilist[i])) ||
-		(vsd.x == avsd.x && !EQ_PT(vsd, ilist[i]) && !EQ_PT(avsd, ilist[i]))) {
+		(vft.x == avft.x && !EQ_PT(vft, inter) && !EQ_PT(avft, inter)) ||
+		(vsd.x == avsd.x && !EQ_PT(vsd, inter) && !EQ_PT(avsd, inter))) {
 		rv = 0;
-		fprintf(stderr, "\nintersection %d at %.3f %.3f\n",
-			i, ilist[i].x, ilist[i].y);
+		fprintf(stderr, "\nintersection %" PRISIZE_T " at %.3f %.3f\n",
+			i, inter.x, inter.y);
 		fprintf(stderr, "seg#1 : (%.3f, %.3f) (%.3f, %.3f)\n",
-			ilist[i].firstv->pos.x
-			, ilist[i].firstv->pos.y
-			, after(ilist[i].firstv)->pos.x
-			, after(ilist[i].firstv)->pos.y);
+			inter.firstv->pos.x
+			, inter.firstv->pos.y
+			, after(inter.firstv)->pos.x
+			, after(inter.firstv)->pos.y);
 		fprintf(stderr, "seg#2 : (%.3f, %.3f) (%.3f, %.3f)\n",
-			ilist[i].secondv->pos.x
-			, ilist[i].secondv->pos.y
-			, after(ilist[i].secondv)->pos.x
-			, after(ilist[i].secondv)->pos.y);
+			inter.secondv->pos.x
+			, inter.secondv->pos.y
+			, after(inter.secondv)->pos.x
+			, after(inter.secondv)->pos.y);
 	    }
 	}
     }
     free(polygon_list);
     free(vertex_list);
+    LIST_FREE(&ilist);
     return rv;
 }

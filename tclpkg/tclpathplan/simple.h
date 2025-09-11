@@ -9,9 +9,7 @@
  *************************************************************************/
 
 #include <stddef.h>
-
-#define MAXINTS  10000		/* modify this line to reflect the max no. of 
-				   intersections you want reported -- 50000 seems to break the program */
+#include <util/list.h>
 
 #define SLOPE(p,q) ( ( ( p.y ) - ( q.y ) ) / ( ( p.x ) - ( q.x ) ) )
 #define MAX(a,b) ( ( a ) > ( b ) ? ( a ) : ( b ) )
@@ -40,17 +38,18 @@
 	double x, y;
     };
 
+typedef LIST(struct intersection) intersections_t;
+
     struct active_edge {
 	struct vertex *name;
     };
     struct data {
 	size_t nvertices;
-	int ninters;
     };
 
 void find_ints(struct vertex vertex_list[], struct data *input,
-               struct intersection ilist[]);
+               intersections_t *ilist);
 
 /// detect whether lines `l` and `m` intersect
 void find_intersection(struct vertex *l, struct vertex *m,
-                       struct intersection ilist[], struct data *input);
+                       intersections_t *ilist);

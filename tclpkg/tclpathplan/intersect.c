@@ -9,10 +9,8 @@
  *************************************************************************/
 
 #include <math.h>
-#include <stdio.h>
 #include "simple.h"
 #include <stdlib.h>
-#include <util/exit.h>
 #include <util/unreachable.h>
 
 static int sign(double v) {
@@ -154,10 +152,8 @@ static int intpoint(struct vertex *l, struct vertex *m, double *x, double *y,
     return 1;
 }
 
-void find_intersection(struct vertex *l,
-		  struct vertex *m,
-		  struct intersection ilist[], struct data *input)
-{
+void find_intersection(struct vertex *l, struct vertex *m,
+                       intersections_t *ilist) {
     double x, y;
     int i[3];
     sgnarea(l, m, i);
@@ -177,16 +173,13 @@ void find_intersection(struct vertex *l,
 			       online(l, m, 1)) : online(l, m, abs(i[0]))))
 	return;
 
-    if (input->ninters >= MAXINTS) {
-	fprintf(stderr, "\n**ERROR**\n using too many intersections\n");
-	graphviz_exit(1);
-    }
-
-    ilist[input->ninters].firstv = l;
-    ilist[input->ninters].secondv = m;
-    ilist[input->ninters].firstp = l->poly;
-    ilist[input->ninters].secondp = m->poly;
-    ilist[input->ninters].x = x;
-    ilist[input->ninters].y = y;
-    input->ninters++;
+    struct intersection inter = {
+      .firstv = l,
+      .secondv = m,
+      .firstp = l->poly,
+      .secondp = m->poly,
+      .x = x,
+      .y = y
+    };
+    LIST_APPEND(ilist, inter);
 }
