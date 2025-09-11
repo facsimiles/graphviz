@@ -54,7 +54,7 @@ void find_ints(struct vertex vertex_list[],
 
 		new->name = templ;
 		templ->active = new;
-		break;		/* end of case -1       */
+		break;
 
 	    case 1:		/* backward edge, delete        */
 
@@ -65,16 +65,16 @@ void find_ints(struct vertex vertex_list[],
 		}
 		LIST_REMOVE(&all, tempa);
 		templ->active = NULL;
-		break;		/* end of case 1        */
+		break;
 
 	    default:
 		break;
-	    }			/* end switch   */
+	    }
 
 	    pt2 = after(pvertex[i]);
 	    templ = pvertex[i];	/*second neighbor */
-	}			/* end k for loop       */
-    }				/* end i for loop       */
+	}
+    }
     LIST_FREE(&all);
     free(pvertex);
 }
