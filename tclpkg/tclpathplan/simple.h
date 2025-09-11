@@ -43,11 +43,8 @@ typedef LIST(struct intersection) intersections_t;
     struct active_edge {
 	struct vertex *name;
     };
-    struct data {
-	size_t nvertices;
-    };
 
-void find_ints(struct vertex vertex_list[], struct data *input,
+void find_ints(struct vertex vertex_list[], size_t nvertices,
                intersections_t *ilist);
 
 /// detect whether lines `l` and `m` intersect

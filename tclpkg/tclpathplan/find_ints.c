@@ -17,23 +17,23 @@
 
 static int gt(const void *a, const void *b);
 
-void find_ints(struct vertex vertex_list[], struct data *input,
+void find_ints(struct vertex vertex_list[], size_t nvertices,
                intersections_t *ilist) {
     int k;
     LIST(struct active_edge *) all = {.dtor = LIST_DTOR_FREE};
     struct active_edge *tempa;
     struct vertex *pt1, *pt2, *templ;
 
-    struct vertex **pvertex = gv_calloc(input->nvertices, sizeof(struct vertex*));
+    struct vertex **pvertex = gv_calloc(nvertices, sizeof(struct vertex*));
 
-    for (size_t i = 0; i < input->nvertices; i++)
+    for (size_t i = 0; i < nvertices; i++)
 	pvertex[i] = vertex_list + i;
 
 /* sort vertices by x coordinate	*/
-    qsort(pvertex, input->nvertices, sizeof(struct vertex *), gt);
+    qsort(pvertex, nvertices, sizeof(struct vertex *), gt);
 
 /* walk through the vertices in order of increasing x coordinate	*/
-    for (size_t i = 0; i < input->nvertices; i++) {
+    for (size_t i = 0; i < nvertices; i++) {
 	pt1 = pvertex[i];
 	templ = pt2 = prior(pvertex[i]);
 	for (k = 0; k < 2; k++) {	/* each vertex has 2 edges */

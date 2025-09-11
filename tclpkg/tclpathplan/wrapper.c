@@ -20,8 +20,6 @@
 int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
     int rv;
-
-    struct data input;
     intersections_t ilist = {0};
 
     struct polygon *polygon_list = gv_calloc(n_polys, sizeof(struct polygon));
@@ -43,10 +41,7 @@ int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 	polygon_list[i].finish = &vertex_list[vno - 1];
     }
 
-    input.nvertices = nverts;
-
-    find_ints(vertex_list, &input, &ilist);
-
+    find_ints(vertex_list, nverts, &ilist);
 
 #define EQ_PT(v,w) (((v).x == (w).x) && ((v).y == (w).y))
     rv = 1;
