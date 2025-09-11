@@ -87,7 +87,7 @@ def test_existence(binary: str):
         check_that_tool_does_not_exist(binary, os_id)
         pytest.skip("mingle is not built for Rocky due to lacking libANN")
 
-    if binary == "mingle" and is_cmake() and is_mingw():
+    if binary == "mingle" and is_mingw():
         check_that_tool_does_not_exist(binary, os_id)
         pytest.skip(f"{binary} is not built on some Windows due to lacking libANN")
 
