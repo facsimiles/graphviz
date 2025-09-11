@@ -27,8 +27,7 @@ $(top_builddir)/graphviz_version.h: config.h
 	printf '/// built from source.\n' >> $(top_builddir)/graphviz_version.h
 	printf '#define GRAPHVIZ_VERSION_MAJOR @GRAPHVIZ_VERSION_MAJOR@\n' >> $(top_builddir)/graphviz_version.h
 	printf '#define GRAPHVIZ_VERSION_MINOR @GRAPHVIZ_VERSION_MINOR@\n' >> $(top_builddir)/graphviz_version.h
-	printf '#define GRAPHVIZ_VERSION_PATCH ' >> $(top_builddir)/graphviz_version.h
-	printf '@GRAPHVIZ_VERSION_MICRO@' | $(SED) 's/\([0-9]\+\).*/\1\n/g' >> $(top_builddir)/graphviz_version.h
+	printf '#define GRAPHVIZ_VERSION_PATCH @GRAPHVIZ_VERSION_PATCH@\n' >> $(top_builddir)/graphviz_version.h
 
 EXTRA_DIST = graphviz.spec \
 	config/depcomp \

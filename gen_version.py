@@ -122,6 +122,13 @@ parser.add_argument(
     const="patch",
     help="Print patch version",
 )
+parser.add_argument(
+    "--pre-release",
+    dest="component",
+    action="store_const",
+    const="pre_release",
+    help="Print separator (~) and pre-release identifiers",
+)
 
 args = parser.parse_args()
 
@@ -130,12 +137,12 @@ date_format = args.date_format or graphviz_date_format
 major_version, minor_version, patch_version, collection = get_version()
 
 if collection == "development":
-    patch_version = f"{patch_version}~dev"
+    pre_release = "~dev"
 else:
-    patch_version = str(patch_version)
+    pre_release = ""
 
 committer_date = "0"
-if not patch_version.isnumeric() or args.date_format:
+if pre_release != "" or args.date_format:
     os.environ["TZ"] = "UTC"
     try:
         committer_date = subprocess.check_output(
@@ -157,9 +164,9 @@ if not patch_version.isnumeric() or args.date_format:
             "Warning: build not started in a Git clone: setting version date to 0.\n"
         )
 
-if not patch_version.isnumeric():
-    # Non-numerical patch version; add committer date
-    patch_version += f".{committer_date}"
+if pre_release != "":
+    # add committer date
+    pre_release += f".{committer_date}"
 
 if args.date_format:
     print(committer_date)
@@ -169,5 +176,7 @@ elif args.component == "minor":
     print(minor_version)
 elif args.component == "patch":
     print(patch_version)
+elif args.component == "pre_release":
+    print(pre_release)
 else:
-    print(f"{major_version}.{minor_version}.{patch_version}")
+    print(f"{major_version}.{minor_version}.{patch_version}{pre_release}")
