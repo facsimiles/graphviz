@@ -843,7 +843,7 @@ void do_graph_label(graph_t * sg)
 
 	GD_has_labels(sg->root) |= GRAPH_LABEL;
 
-	GD_label(sg) = make_label(sg, str, aghtmlstr(str) ? LT_HTML : LT_NONE,
+	GD_label(sg) = make_label(sg, str, aghtmlstr(str), false,
 	    late_double(sg, agfindgraphattr(sg, "fontsize"),
 			DEFAULT_FONTSIZE, MIN_FONTSIZE),
 	    late_nnstring(sg, agfindgraphattr(sg, "fontname"),

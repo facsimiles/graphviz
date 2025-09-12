@@ -114,7 +114,13 @@ RENDER_API bool initMapData(GVJ_t *, char *, char *, char *, char *, char *,
     RENDER_API bool isPolygon(node_t *);
     RENDER_API void makeSelfEdge(edge_t *edges[], size_t ind, size_t cnt,
 	double sizex, double sizey, splineInfo * sinfo);
-    RENDER_API textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor);
+
+/// @param is_html Create the label as an HTML label
+/// @param is_record Is this destined for use in a record shape?
+RENDER_API textlabel_t *make_label(void *obj, char *str, bool is_html,
+                                   bool is_record, double fontsize,
+                                   char *fontname, char *fontcolor);
+
     RENDER_API bezier *new_spline(edge_t *e, size_t sz);
     RENDER_API char **parse_style(char *s);
     RENDER_API void place_graph_label(Agraph_t *);

@@ -105,8 +105,8 @@ void make_simple_label(GVC_t * gvc, textlabel_t * lp)
  * Assume str is freshly allocated for this instance, so it
  * can be freed in free_label.
  */
-textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor)
-{
+textlabel_t *make_label(void *obj, char *str, bool is_html, bool is_record,
+                        double fontsize, char *fontname, char *fontcolor) {
     textlabel_t *rv = gv_alloc(sizeof(textlabel_t));
     graph_t *g = NULL, *sg = NULL;
     node_t *n = NULL;
@@ -131,13 +131,13 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
     rv->fontcolor = fontcolor;
     rv->fontsize = fontsize;
     rv->charset = GD_charset(g);
-    if (kind & LT_RECD) {
+    if (is_record) {
 	rv->text = gv_strdup(str);
-        if (kind & LT_HTML) {
+        if (is_html) {
 	    rv->html = true;
 	}
     }
-    else if (kind == LT_HTML) {
+    else if (is_html) {
 	rv->text = gv_strdup(str);
 	rv->html = true;
 	if (make_html_label(obj, rv)) {
@@ -156,7 +156,8 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
 	}
     }
     else {
-        assert(kind == LT_NONE);
+        assert(!is_record);
+        assert(!is_html);
 	/* This call just processes the graph object based escape sequences. The formatting escape
          * sequences (\n, \l, \r) are processed in make_simple_label. That call also replaces \\ with \.
          */

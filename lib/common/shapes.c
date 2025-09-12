@@ -3463,9 +3463,7 @@ static field_t *parse_reclbl(node_t *n, bool LR, bool flag, char *text) {
 		if (tsp > text + 1 && tsp - 1 != hstsp && *(tsp - 1) == ' ')
 		    tsp--;
 		*tsp = '\000';
-		fp->lp =
-		    make_label(n, text,
-			       lbl->html ? LT_HTML : LT_NONE,
+		fp->lp = make_label(n, text, lbl->html, false,
 			       lbl->fontsize, lbl->fontname, lbl->fontcolor);
 		fp->LR = true;
 		hstsp = tsp = text;

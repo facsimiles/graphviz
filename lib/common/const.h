@@ -234,11 +234,6 @@ enum {
 #define RGRADIENT 	3
 #define NO_POLY   	4    /* bit flag: if set, do fill only */
 
-/* label types */
-#define LT_NONE 	(0 << 1)
-#define LT_HTML 	(1 << 1)
-#define LT_RECD 	(2 << 1)
-
 /* Flags stored in GD_flags 
  * Bit(s):  0     unused
  *          1-3   EDGETYPE_
