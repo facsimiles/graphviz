@@ -102,8 +102,7 @@ void make_simple_label(GVC_t * gvc, textlabel_t * lp)
     lp->space = lp->dimen;
 }
 
-/* make_label:
- * Assume str is freshly allocated for this instance, so it
+/* Assume str is freshly allocated for this instance, so it
  * can be freed in free_label.
  */
 textlabel_t *make_label(void *obj, char *str, bool is_html, bool is_record,
@@ -181,8 +180,7 @@ textlabel_t *make_label(void *obj, char *str, bool is_html, bool is_record,
     return rv;
 }
 
-/* free_textspan:
- * Free resources related to textspan_t.
+/* Free resources related to textspan_t.
  * tl is an array of cnt textspan_t's.
  * It is also assumed that the text stored in the str field
  * is all stored in one large buffer shared by all of the textspan_t,
@@ -274,8 +272,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     obj->emit_state = old_emit_state;
 }
 
-/* strdup_and_subst_obj0:
- * Replace various escape sequences with the name of the associated
+/* Replace various escape sequences with the name of the associated
  * graph object. A double backslash \\ can be used to avoid a replacement.
  * If escBackslash is true, convert \\ to \; else leave alone. All other dyads 
  * of the form \. are passed through unchanged.
@@ -384,9 +381,7 @@ static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash)
     return agxbdisown(&buf);
 }
 
-/* strdup_and_subst_obj:
- * Processes graph object escape sequences; also collapses \\ to \.
- */
+/// Processes graph object escape sequences; also collapses \\ to \.
 char *strdup_and_subst_obj(char *str, void *obj)
 {
     return strdup_and_subst_obj0 (str, obj, 1);
