@@ -6063,9 +6063,6 @@ def test_2723():
     dot("png", input)
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2727"
-)
 def test_2727():
     """
     the label “<>” should be accepted

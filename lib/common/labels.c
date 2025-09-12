@@ -17,6 +17,7 @@
 #include <stddef.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/streq.h>
 
 static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash);
 
@@ -112,6 +113,9 @@ textlabel_t *make_label(void *obj, char *str, bool is_html, bool is_record,
     node_t *n = NULL;
     edge_t *e = NULL;
         char *s;
+
+    // disregard HTML intent for empty string labels
+    is_html &= !streq(str, "");
 
     switch (agobjkind(obj)) {
     case AGRAPH:

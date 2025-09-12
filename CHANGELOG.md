@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   disabled (`-Dwith_sfdp=OFF`).
 - The plugin version in pre-built Fedora and Rocky Linux packages has been
   corrected 6 → 8. This change should have happened in Graphviz 13.0.0.
+- Empty HTML-like labels (`<>`) are once again processed successfully. This was
+  a regression in Graphviz 13.0.0. #2727
 
 ## [13.1.2] – 2025-08-09
 
