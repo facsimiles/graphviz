@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   corrected 6 → 8. This change should have happened in Graphviz 13.0.0.
 - Empty HTML-like labels (`<>`) are once again processed successfully. This was
   a regression in Graphviz 13.0.0. #2727
+- Some typos in the cgraph man page have been fixed.
 
 ## [13.1.2] – 2025-08-09
 
