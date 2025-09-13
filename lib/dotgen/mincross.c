@@ -34,10 +34,9 @@
 #include <util/streq.h>
 
 struct adjmatrix_t {
-  size_t nrows;
-  size_t ncols;
-  uint8_t *data;    ///< bit-packed backing memory
-  size_t allocated; ///< how many bytes have been allocated backing `data`?
+  size_t nrows;  ///< how many rows have been allocated?
+  size_t ncols;  ///< how many columns have been allocated?
+  uint8_t *data; ///< bit-packed backing memory
 };
 
 /// get the value of a matrix cell
@@ -49,14 +48,17 @@ struct adjmatrix_t {
 static bool matrix_get(adjmatrix_t *me, size_t row, size_t col) {
   assert(me != NULL);
 
-  // if this index is beyond anything set, infer it as unset
-  const size_t index = row * me->ncols + col;
-  const size_t byte_index = index / 8;
-  const size_t bit_index = index % 8;
-  if (byte_index >= me->allocated) {
+  // if this index is beyond anything allocated, infer it as unset
+  if (row >= me->nrows) {
+    return false;
+  }
+  if (col >= me->ncols) {
     return false;
   }
 
+  const size_t index = row * me->ncols + col;
+  const size_t byte_index = index / 8;
+  const size_t bit_index = index % 8;
   return (me->data[byte_index] >> bit_index) & 1;
 }
 
@@ -69,15 +71,38 @@ static void matrix_set(adjmatrix_t *me, size_t row, size_t col) {
   assert(me != NULL);
 
   // if we are updating beyond allocated space, expand the backing store
+  if (row >= me->nrows || col >= me->ncols) {
+    // allocate an enlarged space
+    const size_t nrows = zmax(me->nrows, row + 1);
+    const size_t ncols = zmax(me->ncols, col + 1);
+    const size_t bits = nrows * ncols;
+    const size_t bytes = bits / 8 + (bits % 8 == 0 ? 0 : 1);
+    uint8_t *const data = gv_alloc(bytes);
+
+    // replicate set bits
+    for (size_t r = 0; r < me->nrows; ++r) {
+      for (size_t c = 0; c < me->ncols; ++c) {
+        if (!matrix_get(me, r, c)) {
+          continue;
+        }
+        const size_t index = r * ncols + c;
+        const size_t byte_index = index / 8;
+        const size_t bit_index = index % 8;
+        data[byte_index] |= (uint8_t)(UINT8_C(1) << bit_index);
+      }
+    }
+
+    // replace old matrix with newly expanded one
+    free(me->data);
+    *me = (adjmatrix_t){.nrows = nrows, .ncols = ncols, .data = data};
+  }
+
+  assert(row < me->nrows);
+  assert(col < me->ncols);
+
   const size_t index = row * me->ncols + col;
   const size_t byte_index = index / 8;
   const size_t bit_index = index % 8;
-  if (byte_index >= me->allocated) {
-    me->data = gv_recalloc(me->data, me->allocated, byte_index + 1,
-                           sizeof(me->data[0]));
-    me->allocated = byte_index + 1;
-  }
-
   me->data[byte_index] |= (uint8_t)(UINT8_C(1) << bit_index);
 }
 
@@ -105,7 +130,17 @@ static void mincross_step(graph_t * g, int pass);
 static void mincross_options(graph_t * g);
 static void save_best(graph_t * g);
 static void restore_best(graph_t * g);
-static adjmatrix_t *new_matrix(size_t i, size_t j);
+
+/// create an adjacency matrix
+///
+/// These matrices dynamically expand on demand. So the initial dimensions
+/// provided can be later safely exceeded at runtime.
+///
+/// @param initial_rows How many rows to allocate now
+/// @param initial_columns How many columns to allocate now
+/// @return A constructed matrix
+static adjmatrix_t *new_matrix(size_t initial_rows, size_t initial_columns);
+
 static void free_matrix(adjmatrix_t * p);
 static int ordercmpf(const void *, const void *);
 static int64_t ncross(void);
@@ -444,10 +479,12 @@ int dot_mincross(graph_t *g) {
     return 0;
 }
 
-static adjmatrix_t *new_matrix(size_t i, size_t j) {
+static adjmatrix_t *new_matrix(size_t initial_rows, size_t initial_columns) {
     adjmatrix_t *rv = gv_alloc(sizeof(adjmatrix_t));
-    rv->nrows = i;
-    rv->ncols = j;
+    const size_t bits = initial_rows * initial_columns;
+    const size_t bytes = bits / 8 + (bits % 8 == 0 ? 0 : 1);
+    uint8_t *const data = gv_alloc(bytes);
+    *rv = (adjmatrix_t){.nrows = initial_rows, .ncols = initial_columns, .data = data};
     return rv;
 }
 
@@ -1137,8 +1174,6 @@ static void flat_search(graph_t * g, node_t * v)
 	    if (ED_weight(e) == 0)
 		continue;
 	    if (ND_onstack(aghead(e))) {
-		assert(flatindex(aghead(e)) < M->nrows);
-		assert(flatindex(agtail(e)) < M->ncols);
 		matrix_set(M, (size_t)flatindex(aghead(e)), (size_t)flatindex(agtail(e)));
 		delete_flat_edge(e);
 		i--;
@@ -1146,8 +1181,6 @@ static void flat_search(graph_t * g, node_t * v)
 		    continue;
 		flat_rev(g, e);
 	    } else {
-		assert(flatindex(aghead(e)) < M->nrows);
-		assert(flatindex(agtail(e)) < M->ncols);
 		matrix_set(M, (size_t)flatindex(agtail(e)), (size_t)flatindex(aghead(e)));
 		if (!ND_mark(aghead(e)))
 		    flat_search(g, aghead(e));
