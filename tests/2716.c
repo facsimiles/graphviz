@@ -11,8 +11,8 @@
 #ifndef GRAPHVIZ_VERSION_MINOR
 #error "GRAPHVIZ_VERSION_MINOR missing"
 #endif
-#ifndef GRAPHVIZ_VERSION_MAJOR
-#error "GRAPHVIZ_VERSION_MINOR missing"
+#ifndef GRAPHVIZ_VERSION_PATCH
+#error "GRAPHVIZ_VERSION_PATCH missing"
 #endif
 
 // confirm they are numeric values

@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The graphviz_version.h header includes macros `GRAPHVIZ_VERSION_MAJOR`,
   `GRAPHVIZ_VERSION_MINOR`, `GRAPHVIZ_VERSION_PATCH` for compile-time
   discrimination based on the Graphviz version. #2716
+- The CMake build system no longer allows overriding the Graphviz version with
+  `-DVERSION=…`.
 
 ### Fixed
 

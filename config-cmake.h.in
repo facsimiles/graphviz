@@ -46,7 +46,7 @@ typedef SSIZE_T ssize_t;
 #define BROWSER "@BROWSER@"
 #define DEFAULT_DPI @DEFAULT_DPI@
 #define GVPLUGIN_CONFIG_FILE "@GVPLUGIN_CONFIG_FILE@"
-#define PACKAGE_VERSION "@GRAPHVIZ_VERSION_FULL@"
+#define PACKAGE_VERSION "@GRAPHVIZ_VERSION@"
 
 // Conditional values
 #cmakedefine DARWIN

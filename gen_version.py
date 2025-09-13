@@ -123,13 +123,11 @@ parser.add_argument(
     help="Print patch version",
 )
 parser.add_argument(
-    "--definition", action="store_true", help="Print a C-style preprocessor #define"
-)
-parser.add_argument(
-    "--output",
-    type=argparse.FileType("wt", encoding="ascii"),
-    default=sys.stdout,
-    help="Path to write result to",
+    "--pre-release",
+    dest="component",
+    action="store_const",
+    const="pre_release",
+    help="Print separator (~) and pre-release identifiers",
 )
 
 args = parser.parse_args()
@@ -139,12 +137,12 @@ date_format = args.date_format or graphviz_date_format
 major_version, minor_version, patch_version, collection = get_version()
 
 if collection == "development":
-    patch_version = f"{patch_version}~dev"
+    pre_release = "~dev"
 else:
-    patch_version = str(patch_version)
+    pre_release = ""
 
 committer_date = "0"
-if not patch_version.isnumeric() or args.date_format:
+if pre_release != "" or args.date_format:
     os.environ["TZ"] = "UTC"
     try:
         committer_date = subprocess.check_output(
@@ -166,34 +164,19 @@ if not patch_version.isnumeric() or args.date_format:
             "Warning: build not started in a Git clone: setting version date to 0.\n"
         )
 
-if not patch_version.isnumeric():
-    # Non-numerical patch version; add committer date
-    patch_version += f".{committer_date}"
+if pre_release != "":
+    # add committer date
+    pre_release += f".{committer_date}"
 
 if args.date_format:
-    if args.definition:
-        args.output.write(f'#define BUILDDATE "{committer_date}"\n')
-    else:
-        args.output.write(f"{committer_date}\n")
+    print(committer_date)
 elif args.component == "major":
-    if args.definition:
-        args.output.write(f'#define VERSION_MAJOR "{major_version}"\n')
-    else:
-        args.output.write(f"{major_version}\n")
+    print(major_version)
 elif args.component == "minor":
-    if args.definition:
-        args.output.write(f'#define VERSION_MINOR "{minor_version}"\n')
-    else:
-        args.output.write(f"{minor_version}\n")
+    print(minor_version)
 elif args.component == "patch":
-    if args.definition:
-        args.output.write(f'#define VERSION_PATCH "{patch_version}"\n')
-    else:
-        args.output.write(f"{patch_version}\n")
+    print(patch_version)
+elif args.component == "pre_release":
+    print(pre_release)
 else:
-    if args.definition:
-        args.output.write(
-            f'#define VERSION "{major_version}.{minor_version}.' f'{patch_version}"\n'
-        )
-    else:
-        args.output.write(f"{major_version}.{minor_version}.{patch_version}\n")
+    print(f"{major_version}.{minor_version}.{patch_version}{pre_release}")

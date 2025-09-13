@@ -52,7 +52,7 @@ add_custom_target(tcldot_pkgindex
     ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/../mkpkgindex.py"
     --file libtcldot${CMAKE_SHARED_LIBRARY_SUFFIX}
     --name Tcldot
-    --version "${GRAPHVIZ_VERSION_STRING}"
+    --version "${GRAPHVIZ_VERSION}"
   DEPENDS ../mkpkgindex.py
   BYPRODUCTS pkgIndex.tcl
   COMMENT "create tcldot package index"

@@ -3,6 +3,7 @@
 GRAPHVIZ_VERSION_MAJOR=$( python3 gen_version.py --major )
 GRAPHVIZ_VERSION_MINOR=$( python3 gen_version.py --minor )
 GRAPHVIZ_VERSION_PATCH=$( python3 gen_version.py --patch )
+GRAPHVIZ_VERSION_PRE_RELEASE=$( python3 gen_version.py --pre-release )
 
 GRAPHVIZ_VERSION_DATE=$( python3 gen_version.py --committer-date-graphviz )
 GRAPHVIZ_CHANGE_DATE=$( python3 gen_version.py --committer-date-changelog )
@@ -19,7 +20,8 @@ dnl Graphviz package version number, (as distinct from shared library version)
 
 m4_define([graphviz_version_major],[$GRAPHVIZ_VERSION_MAJOR])
 m4_define([graphviz_version_minor],[$GRAPHVIZ_VERSION_MINOR])
-m4_define([graphviz_version_micro],[$GRAPHVIZ_VERSION_PATCH])
+m4_define([graphviz_version_patch],[$GRAPHVIZ_VERSION_PATCH])
+m4_define([graphviz_version_pre_release],[$GRAPHVIZ_VERSION_PRE_RELEASE])
 
 m4_define([graphviz_version_date],[$GRAPHVIZ_VERSION_DATE])
 m4_define([graphviz_change_date],["$GRAPHVIZ_CHANGE_DATE"])
