@@ -8,7 +8,7 @@
  * Graphs are composed of nodes, edges, and nested subgraphs.
  * These graph objects may be attributed with string name-value pairs
  * and programmer-defined records (see Attributes).
- * All of Libcgraph’s global symbols have the prefix **ag** (case varying).
+ * Most of Libcgraph’s global symbols have the prefix **ag** (case varying).
  * In the following, if a function has a parameter `int createflag` and
  * the object does not exist, the function will create the specified object
  * if `createflag` is non-zero; otherwise, it will return NULL.
