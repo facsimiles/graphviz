@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   discrimination based on the Graphviz version. #2716
 - The CMake build system no longer allows overriding the Graphviz version with
   `-DVERSION=…`.
+- **Breaking**: The `agcanonStr` function has been removed.
 
 ### Fixed
 

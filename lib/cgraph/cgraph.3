@@ -120,7 +120,6 @@ char		*agstrdup_html(Agraph_t *, char *);
 int		aghtmlstr(char *);
 char		*agstrbind(Agraph_t * g, char *);
 int		strfree(Agraph_t *, char *);
-char		*agcanonStr(char *);
 char		*agstrcanon(char *, char *);
 .P1
 .SS "GENERIC OBJECTS"
@@ -333,15 +332,12 @@ an HTML-like string, use \fBagstrdup_html\fP. The \fBaghtmlstr\fP
 function can be used to query if a string is an ordinary string or
 an HTML-like string.
 .PP
-\fBagcanonStr\fP returns a pointer to a version of the input string
+\fBagstrcanon\fP returns a pointer to a version of the input string
 canonicalized for output for later re-parsing. This includes quoting
-special characters and keywords. It uses its own internal buffer, so
-the value will be lost on the next call to \fBagcanonStr\fP.
-\fBagstrcanon\fP is an unsafe version of \fBagcanonStr\fP, in which
-the application passes in a buffer as the second argument. Note that
-the buffer may not be used; if the input string is in canonical form,
-the function will just return a pointer to it.
-For both of the functions, the input string must have been created using
+special characters and keywords. The application passes in a buffer as the
+second argument. Note that the buffer may not be used; if the input string is in
+canonical form, the function will just return a pointer to it.
+The input string must have been created using
 \fBagstrdup\fP or \fBagstrdup_html\fP.
 .SH "RECORDS"
 Uninterpreted records may be attached to graphs, subgraphs, nodes,
