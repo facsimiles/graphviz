@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief implements @ref agwrite, @ref agcanon, @ref agstrcanon,
+ * @brief implements @ref agwrite, @ref agstrcanon,
  * and @ref agcanonStr
  *
  * @ingroup cgraph_graph

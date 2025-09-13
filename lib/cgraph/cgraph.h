@@ -569,10 +569,6 @@ CGRAPH_API int agobjkind(void *obj);
  * This includes quoting special characters and keywords.
  * It uses its own internal buffer, so the value will be lost on
  * the next call to @ref agcanonStr.
- * @ref agcanon is identical with @ref agcanonStr
- * except it can be used with any character string.
- * The second argument indicates whether or not the string
- * should be canonicalized as an HTML-like string.
  *
  * @{
  */
