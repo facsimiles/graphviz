@@ -396,6 +396,8 @@ who will be affected by a new Graphviz release.
 
 * [Alpine](https://git.alpinelinux.org/aports/tree/main/graphviz),
   Natanael Copa ncopa@alpinelinux.org
+* [Arch Linux](https://gitlab.archlinux.org/archlinux/packaging/packages/graphviz),
+  Lukas Fleischer lfleischer@archlinux.org
 * [Chocolatey](https://chocolatey.org/packages/Graphviz/),
   [@RedBaron2 on Github](https://github.com/RedBaron2)
 * [Debian](https://packages.debian.org/sid/graphviz),
