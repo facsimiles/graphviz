@@ -213,29 +213,29 @@ static bool realIntersect(vertex *firstv, vertex *secondv, pointf p) {
 
 /* find_intersection:
  * detect whether segments l and m intersect      
- * Return 1 if found; 0 otherwise;
+ * Return true if found; false otherwise;
  */
-static int find_intersection(vertex *l, vertex *m) {
+static bool find_intersection(vertex *l, vertex *m) {
     double x, y;
     pointf p;
 	int i[3];
     sgnarea(l, m, i);
 
     if (i[2] > 0)
-	return 0;
+	return false;
 
     if (i[2] < 0) {
 	sgnarea(m, l, i);
 	if (i[2] > 0)
-	    return 0;
+	    return false;
 	if (!intpoint(l, m, &x, &y, i[2] < 0 ? 3 : online(m, l, abs(i[0]))))
-	    return 0;
+	    return false;
     }
 
     else if (!intpoint(l, m, &x, &y, i[0] == i[1] ?
 		       2 * MAX(online(l, m, 0),
 			       online(l, m, 1)) : online(l, m, abs(i[0]))))
-	return 0;
+	return false;
 
     p.x = x;
     p.y = y;
