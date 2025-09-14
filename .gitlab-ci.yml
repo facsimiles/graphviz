@@ -587,10 +587,10 @@ ubuntu-24.04-cmake-minimal-build:
     variables:
       IMAGE: ubuntu-24.04
 
-ubuntu-24.10-cmake-ASan-build-and-test-including-ctest:
+ubuntu-24.04-cmake-ASan-build-and-test-including-ctest:
     stage: build
     needs:
-        - job: docker_build_ubuntu-24.10
+        - job: docker_build_ubuntu-24.04
           artifacts: false
     script:
         - source /opt/virtualenv/bin/activate
@@ -626,7 +626,7 @@ ubuntu-24.10-cmake-ASan-build-and-test-including-ctest:
         - tags
     tags:
         - saas-linux-small-amd64
-    image: "$CI_REGISTRY_IMAGE/ubuntu-24.10:$CI_COMMIT_SHA"
+    image: "$CI_REGISTRY_IMAGE/ubuntu-24.04:$CI_COMMIT_SHA"
     retry:
         max: 1
         when:
