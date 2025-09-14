@@ -287,7 +287,7 @@ static bool remove_poly(vgpane_t *vgp, int id) {
 	    for (size_t j = i++; i < LIST_SIZE(&vgp->poly); i++, j++) {
 		LIST_SET(&vgp->poly, j, LIST_GET(&vgp->poly, i));
 	    }
-	    (void)LIST_POP_BACK(&vgp->poly);
+	    LIST_DROP_BACK(&vgp->poly);
 	    vc_stale(vgp);
 	    return true;
 	}
@@ -397,7 +397,7 @@ static void garbage_collect_vgpanes(vgpanes_t *panes) {
   // shrink list, discarding previously deallocated entries
   while (!LIST_IS_EMPTY(panes)) {
     if (!LIST_BACK(panes)->valid) {
-      (void)LIST_POP_BACK(panes);
+      LIST_DROP_BACK(panes);
     }
   }
 

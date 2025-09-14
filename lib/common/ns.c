@@ -344,7 +344,7 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
             if (TREE_EDGE(e)) continue;
             if (ND_subtree(agtail(e)) == 0 && SLACK(e) == 0) {
                 if (add_tree_edge(ctx, e) != 0) {
-                    (void)LIST_POP_BACK(&todo);
+                    LIST_DROP_BACK(&todo);
                     if (LIST_IS_EMPTY(&todo)) {
                         rv = -1;
                     } else {
@@ -367,7 +367,7 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
             if (TREE_EDGE(e)) continue;
             if (ND_subtree(aghead(e)) == 0 && SLACK(e) == 0) {
                 if (add_tree_edge(ctx, e) != 0) {
-                    (void)LIST_POP_BACK(&todo);
+                    LIST_DROP_BACK(&todo);
                     if (LIST_IS_EMPTY(&todo)) {
                         rv = -1;
                     } else {
@@ -1144,7 +1144,7 @@ static int dfs_range_init(node_t *v) {
         ND_lim(s->v) = s->lim;
 
         lim = s->lim;
-        (void)LIST_POP_BACK(&todo);
+        LIST_DROP_BACK(&todo);
 
         if (!LIST_IS_EMPTY(&todo)) {
             LIST_BACK(&todo)->lim = lim + 1;
@@ -1223,7 +1223,7 @@ static int dfs_range(node_t * v, edge_t * par, int low)
 	ND_lim(s->v) = s->lim;
 
 	lim = s->lim;
-	(void)LIST_POP_BACK(&todo);
+	LIST_DROP_BACK(&todo);
 
 	if (!LIST_IS_EMPTY(&todo)) {
 	    LIST_BACK(&todo)->lim = lim + 1;

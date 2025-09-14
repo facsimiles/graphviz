@@ -861,7 +861,7 @@ static void dfs(graph_t *g, node_t *search, nodes_t *visited, node_t *end,
 			dfs(g, n, visited, end, cycles);
 		}
 		if (!LIST_IS_EMPTY(visited)) {
-			(void)LIST_POP_BACK(visited);
+			LIST_DROP_BACK(visited);
 		}
 	}
 }
