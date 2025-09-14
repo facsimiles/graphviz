@@ -26,22 +26,17 @@
 #define after(v) (((v)==((v)->poly->finish))?((v)->poly->start):((v)+1))
 #define prior(v) (((v)==((v)->poly->start))?((v)->poly->finish):((v)-1))
 
-typedef struct active_edge active_edge;
 typedef struct polygon polygon;
 
-    typedef struct {
+    typedef struct vertex {
 	pointf pos;
 	polygon *poly;
-	active_edge *active;
+	struct vertex *active;
     } vertex ;
 
     struct polygon {
 	vertex *start, *finish;
 	boxf bb;
-    };
-
-    struct active_edge {
-	vertex *name;
     };
 
 static int sign(double v) {
@@ -274,8 +269,8 @@ static int gt(const void *a, const void *b) {
  */
 static int find_ints(vertex vertex_list[], size_t nvertices) {
     int k, found = 0;
-    LIST(active_edge*) all = {.dtor = LIST_DTOR_FREE};
-    active_edge *new, *tempa;
+    LIST(vertex *) all = {0};
+    vertex *tempa;
     vertex *pt1, *pt2, *templ;
 
     vertex **pvertex = gv_calloc(nvertices, sizeof(vertex*));
@@ -298,16 +293,13 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
                  /* test */
 		for (size_t j = 0; j < LIST_SIZE(&all); ++j) {
 		    tempa = LIST_GET(&all, j);
-		    found = find_intersection(tempa->name, templ);
+		    found = find_intersection(tempa, templ);
 		    if (found)
 			goto finish;
 		}
 
-		new = gv_alloc(sizeof(active_edge));
-		LIST_APPEND(&all, new);
-
-		new->name = templ;
-		templ->active = new;
+		LIST_APPEND(&all, templ);
+		templ->active = templ;
 		break;
 
 	    case 1:		/* backward edge, delete        */
