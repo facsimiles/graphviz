@@ -14,6 +14,7 @@
 #include <limits.h>
 #include <neatogen/neato.h>
 #include <pathplan/pathutil.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
 #include <util/exit.h>
@@ -187,11 +188,9 @@ putSeg (int i, vertex* v)
 }
 
 /* realIntersect:
- * Return 1 if a real intersection has been found
+ * Return true if a real intersection has been found
  */
-static int
-realIntersect (vertex *firstv, vertex *secondv, pointf p)
-{
+static bool realIntersect(vertex *firstv, vertex *secondv, pointf p) {
     pointf vft, vsd, avft, avsd;
 
     vft = firstv->pos;
@@ -209,9 +208,9 @@ realIntersect (vertex *firstv, vertex *secondv, pointf p)
 		putSeg (1, firstv);
 		putSeg (2, secondv);
 	}
-	return 1;
+	return true;
     }
-    else return 0;
+    else return false;
 }
 
 /* find_intersection:
