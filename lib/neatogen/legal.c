@@ -210,7 +210,7 @@ static bool realIntersect(vertex *firstv, vertex *secondv, pointf p) {
 	}
 	return true;
     }
-    else return false;
+    return false;
 }
 
 /* find_intersection:
