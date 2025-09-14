@@ -191,12 +191,10 @@ putSeg (int i, vertex* v)
  * Return true if a real intersection has been found
  */
 static bool realIntersect(vertex *firstv, vertex *secondv, pointf p) {
-    pointf vft, vsd, avft, avsd;
-
-    vft = firstv->pos;
-    avft = after(firstv)->pos;
-    vsd = secondv->pos;
-    avsd = after(secondv)->pos;
+    const pointf vft = firstv->pos;
+    const pointf avft = after(firstv)->pos;
+    const pointf vsd = secondv->pos;
+    const pointf avsd = after(secondv)->pos;
 
     if ((vft.x != avft.x && vsd.x != avsd.x) ||
 	(vft.x == avft.x && !EQ_PT(vft, p) && !EQ_PT(avft, p)) ||
