@@ -15,6 +15,7 @@
 #include <neatogen/heap.h>
 #include <neatogen/voronoi.h>
 #include <util/gv_math.h>
+#include <util/list.h>
 
 void voronoi(Site *(*nextsite)(void *context), void *context) {
     Site *newsite, *bot, *top, *p;
@@ -24,7 +25,7 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     Halfedge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
     Edge *e;
 
-    edgeinit();
+    LIST(Edge *) allocated = {0}; // live edges to be freed
     siteinit();
     pq_t *pq = PQinitialize();
     bottomsite = nextsite(context);
@@ -44,6 +45,7 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    rbnd = ELright(lbnd);
 	    bot = rightreg(lbnd);
 	    e = gvbisect(bot, newsite);
+	    LIST_APPEND(&allocated, e);
 	    bisector = HEcreate(&st, e, le);
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(lbnd, bisector)) != NULL) {
@@ -66,8 +68,12 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    top = rightreg(rbnd);
 	    v = lbnd->vertex;
 	    makevertex(v);
-	    endpoint(lbnd->ELedge, lbnd->ELpm, v);
-	    endpoint(rbnd->ELedge, rbnd->ELpm, v);
+	    if (endpoint(lbnd->ELedge, lbnd->ELpm, v)) {
+		LIST_REMOVE(&allocated, lbnd->ELedge);
+	    }
+	    if (endpoint(rbnd->ELedge, rbnd->ELpm, v)) {
+		LIST_REMOVE(&allocated, rbnd->ELedge);
+	    }
 	    ELdelete(lbnd);
 	    PQdelete(pq, rbnd);
 	    ELdelete(rbnd);
@@ -77,9 +83,12 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 		pm = re;
 	    }
 	    e = gvbisect(bot, top);
+	    LIST_APPEND(&allocated, e);
 	    bisector = HEcreate(&st, e, pm);
 	    ELinsert(llbnd, bisector);
-	    endpoint(e, re - pm, v);
+	    if (endpoint(e, re - pm, v)) {
+		LIST_REMOVE(&allocated, e);
+	    }
 	    deref(v);
 	    if ((p = hintersect(llbnd, bisector)) != NULL) {
 		PQdelete(pq, llbnd);
@@ -103,4 +112,9 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     // `PQcleanup` relies on the number of sites, so should be discarded and
     // at least every time we use `vAdjust`. See note in adjust.c:cleanup().
     PQcleanup(pq);
+
+    for (size_t i = 0; i < LIST_SIZE(&allocated); ++i) {
+	free(LIST_GET(&allocated, i));
+    }
+    LIST_FREE(&allocated);
 }

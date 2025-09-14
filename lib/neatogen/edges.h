@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,8 +34,8 @@ extern "C" {
 #define re 1
 
     extern double pxmin, pxmax, pymin, pymax;	/* clipping window */
-INTERNAL void edgeinit(void);
-INTERNAL void endpoint(Edge *, int, Site *);
+/// @return True if edge was deallocated
+INTERNAL bool endpoint(Edge *, int, Site *);
 INTERNAL void clip_line(Edge * e);
 INTERNAL Edge *gvbisect(Site *, Site *);
 
