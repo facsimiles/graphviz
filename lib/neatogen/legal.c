@@ -217,7 +217,6 @@ static bool realIntersect(vertex *firstv, vertex *secondv, pointf p) {
  */
 static bool find_intersection(vertex *l, vertex *m) {
     double x, y;
-    pointf p;
 	int i[3];
     sgnarea(l, m, i);
 
@@ -237,9 +236,7 @@ static bool find_intersection(vertex *l, vertex *m) {
 			       online(l, m, 1)) : online(l, m, abs(i[0]))))
 	return false;
 
-    p.x = x;
-    p.y = y;
-    return realIntersect(l, m, p);
+    return realIntersect(l, m, (pointf){.x = x, .y = y});
 }
 
 static int gt(const void *a, const void *b) {
