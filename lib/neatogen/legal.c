@@ -262,10 +262,9 @@ static int gt(const void *a, const void *b) {
  * Return 1 if intersection found, 0 for not found, -1 for error.
  */
 static int find_ints(vertex vertex_list[], size_t nvertices) {
-    int k, found = 0;
+    int found = 0;
     LIST(vertex *) all = {0};
     vertex *tempa;
-    vertex *pt1, *pt2, *templ;
 
     vertex **pvertex = gv_calloc(nvertices, sizeof(vertex*));
 
@@ -277,9 +276,10 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
 
 /* walk through the vertices in order of increasing x coordinate	*/
     for (size_t i = 0; i < nvertices; i++) {
-	pt1 = pvertex[i];
-	templ = pt2 = prior(pvertex[i]);
-	for (k = 0; k < 2; k++) {	/* each vertex has 2 edges */
+	vertex *const pt1 = pvertex[i];
+	vertex *pt2 = prior(pvertex[i]);
+	vertex *templ = pt2;
+	for (int k = 0; k < 2; k++) { // each vertex has 2 edges
 	    switch (gt(&pt1, &pt2)) {
 
 	    case -1:		/* forward edge, test and insert      */
