@@ -52,7 +52,7 @@ Source0: https://gitlab.com/graphviz/graphviz/-/archive/@VERSION@/graphviz-@VERS
 %endif
 
 # Plugins version
-%global pluginsver 6
+%global pluginsver 8
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
