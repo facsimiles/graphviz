@@ -68,14 +68,14 @@ elif [[ "${CONFIGURE_OPTIONS:-}" =~ "--enable-static" ]]; then
     GV_VERSION=$(python3 gen_version.py)
     if [ "${use_autogen:-no}" = "yes" ]; then
         ./autogen.sh
-        ./configure ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
+        ./configure --disable-dependency-tracking ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
         make
         make install
         tar cf - -C build . | xz -9 -c - > ${DIR}/graphviz-${GV_VERSION}-${ARCH}.tar.xz
     else
         tar xfz graphviz-${GV_VERSION}.tar.gz
         pushd graphviz-${GV_VERSION}
-        ./configure $CONFIGURE_OPTIONS --prefix=$( pwd )/build | tee >(../ci/extract-configure-log.sh >../${META_DATA_DIR}/configure.log)
+        ./configure --disable-dependency-tracking $CONFIGURE_OPTIONS --prefix=$( pwd )/build | tee >(../ci/extract-configure-log.sh >../${META_DATA_DIR}/configure.log)
         make
         make install
         popd
@@ -96,7 +96,7 @@ else
     elif [[ ${id} == darwin* ]]; then
         tar xfz graphviz-${GV_VERSION}.tar.gz
         pushd graphviz-${GV_VERSION}
-        ./configure --prefix=$( pwd )/build --with-quartz=yes
+        ./configure --disable-dependency-tracking --prefix=$( pwd )/build --with-quartz=yes
         make
         make install
         python3 ../ci/make_relocatable.py $( pwd )/build
@@ -112,14 +112,14 @@ else
         fi
         if [ "${use_autogen:-no}" = "yes" ]; then
             ./autogen.sh
-            ./configure ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
+            ./configure --disable-dependency-tracking ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
             make
             make install
             tar cf - -C build . | xz -9 -c - > ${DIR}/graphviz-${GV_VERSION}-${ARCH}.tar.xz
         else
             tar xfz graphviz-${GV_VERSION}.tar.gz
             pushd graphviz-${GV_VERSION}
-            ./configure ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(../ci/extract-configure-log.sh >../${META_DATA_DIR}/configure.log)
+            ./configure --disable-dependency-tracking ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(../ci/extract-configure-log.sh >../${META_DATA_DIR}/configure.log)
             make
             make install
             popd
