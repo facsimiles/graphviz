@@ -152,7 +152,7 @@ static htmllabel_t *mkLabel(void *obj, label_type_t kind) {
  */
 static void cleanup (htmlparserstate_t *html_state);
 
-/// Return 1 if s contains a non-space character.
+/// Return true if s contains a non-space character.
 static bool nonSpace(const char *s) {
   char   c;
 

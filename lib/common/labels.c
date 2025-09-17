@@ -17,6 +17,7 @@
 #include <stddef.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/streq.h>
 
 static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash);
 
@@ -101,17 +102,19 @@ void make_simple_label(GVC_t * gvc, textlabel_t * lp)
     lp->space = lp->dimen;
 }
 
-/* make_label:
- * Assume str is freshly allocated for this instance, so it
+/* Assume str is freshly allocated for this instance, so it
  * can be freed in free_label.
  */
-textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor)
-{
+textlabel_t *make_label(void *obj, char *str, bool is_html, bool is_record,
+                        double fontsize, char *fontname, char *fontcolor) {
     textlabel_t *rv = gv_alloc(sizeof(textlabel_t));
     graph_t *g = NULL, *sg = NULL;
     node_t *n = NULL;
     edge_t *e = NULL;
         char *s;
+
+    // disregard HTML intent for empty string labels
+    is_html &= !streq(str, "");
 
     switch (agobjkind(obj)) {
     case AGRAPH:
@@ -131,13 +134,13 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
     rv->fontcolor = fontcolor;
     rv->fontsize = fontsize;
     rv->charset = GD_charset(g);
-    if (kind & LT_RECD) {
+    if (is_record) {
 	rv->text = gv_strdup(str);
-        if (kind & LT_HTML) {
+        if (is_html) {
 	    rv->html = true;
 	}
     }
-    else if (kind == LT_HTML) {
+    else if (is_html) {
 	rv->text = gv_strdup(str);
 	rv->html = true;
 	if (make_html_label(obj, rv)) {
@@ -156,7 +159,8 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
 	}
     }
     else {
-        assert(kind == LT_NONE);
+        assert(!is_record);
+        assert(!is_html);
 	/* This call just processes the graph object based escape sequences. The formatting escape
          * sequences (\n, \l, \r) are processed in make_simple_label. That call also replaces \\ with \.
          */
@@ -176,8 +180,7 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
     return rv;
 }
 
-/* free_textspan:
- * Free resources related to textspan_t.
+/* Free resources related to textspan_t.
  * tl is an array of cnt textspan_t's.
  * It is also assumed that the text stored in the str field
  * is all stored in one large buffer shared by all of the textspan_t,
@@ -269,8 +272,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     obj->emit_state = old_emit_state;
 }
 
-/* strdup_and_subst_obj0:
- * Replace various escape sequences with the name of the associated
+/* Replace various escape sequences with the name of the associated
  * graph object. A double backslash \\ can be used to avoid a replacement.
  * If escBackslash is true, convert \\ to \; else leave alone. All other dyads 
  * of the form \. are passed through unchanged.
@@ -379,9 +381,7 @@ static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash)
     return agxbdisown(&buf);
 }
 
-/* strdup_and_subst_obj:
- * Processes graph object escape sequences; also collapses \\ to \.
- */
+/// Processes graph object escape sequences; also collapses \\ to \.
 char *strdup_and_subst_obj(char *str, void *obj)
 {
     return strdup_and_subst_obj0 (str, obj, 1);

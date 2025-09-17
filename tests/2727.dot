@@ -1,0 +1,13 @@
+digraph "my-digraph"
+{
+
+  // Windows 10 Home 64 bit 22H2 19045.6216
+  //
+  // syntax error with dot - graphviz version 13.1.2 (20250808.2320)
+  // passes with dot - graphviz version 12.2.1 (20241206.2353)
+ 
+  "my-label" [fontsize=16 label=<label-with-fontsize>]
+  
+  "empty-label" [label=<>]
+
+}
