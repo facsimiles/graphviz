@@ -6078,9 +6078,6 @@ def test_2727():
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr is not available")
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2731"
-)
 def test_2731():
     """
     gvpr should produce output for this example
