@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief implements @ref agwrite, @ref agcanon, @ref agstrcanon,
+ * @brief implements @ref agwrite, @ref agstrcanon,
  * and @ref agcanonStr
  *
  * @ingroup cgraph_graph
@@ -222,33 +222,6 @@ char *agstrcanon(char *arg, char *buf)
 	return agcanonhtmlstr(arg, buf);
     else
 	return _agstrcanon(arg, buf);
-}
-
-static char *getoutputbuffer(const char *str)
-{
-    static char *rv;
-    static size_t len = 0;
-    const size_t req = MAX(agstrcanon_bytes(str), BUFSIZ);
-    if (req > len) {
-	char *r = realloc(rv, req);
-	if (r == NULL)
-	    return NULL;
-	rv = r;
-	len = req;
-    }
-    return rv;
-}
-
-/**
- * canonicalize a string for printing.
- * Shared static buffer - unsafe.
- */
-char *agcanonStr(char *str)
-{
-    char *buffer = getoutputbuffer(str);
-    if (buffer == NULL)
-        return NULL;
-    return agstrcanon(str, buffer);
 }
 
 static int _write_canonstr(Agraph_t *g, iochan_t *ofile, char *str, bool chk) {

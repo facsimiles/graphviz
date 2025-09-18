@@ -8,7 +8,7 @@
  * Graphs are composed of nodes, edges, and nested subgraphs.
  * These graph objects may be attributed with string name-value pairs
  * and programmer-defined records (see Attributes).
- * All of Libcgraph’s global symbols have the prefix **ag** (case varying).
+ * Most of Libcgraph’s global symbols have the prefix **ag** (case varying).
  * In the following, if a function has a parameter `int createflag` and
  * the object does not exist, the function will create the specified object
  * if `createflag` is non-zero; otherwise, it will return NULL.
@@ -564,16 +564,6 @@ CGRAPH_API int agobjkind(void *obj);
  * All uses of cgraph strings need to be freed using @ref agstrfree
  * in order to correctly maintain the reference count.
  *
- * @ref agcanonStr returns a pointer to a version of the input string
- * canonicalized for output for later re-parsing.
- * This includes quoting special characters and keywords.
- * It uses its own internal buffer, so the value will be lost on
- * the next call to @ref agcanonStr.
- * @ref agcanon is identical with @ref agcanonStr
- * except it can be used with any character string.
- * The second argument indicates whether or not the string
- * should be canonicalized as an HTML-like string.
- *
  * @{
  */
 CGRAPH_API char *agstrdup(Agraph_t *, const char *);
@@ -609,7 +599,6 @@ CGRAPH_API char *agstrbind_html(Agraph_t *g, const char *);
 CGRAPH_API int agstrfree(Agraph_t *, const char *, bool is_html);
 ///< @param is_html Is the string being freed an HTML-like string?
 CGRAPH_API char *agstrcanon(char *, char *);
-CGRAPH_API char *agcanonStr(char *str); /* manages its own buf */
 /// @}
 
 /** @defgroup cgraph_attr attributes
