@@ -34,9 +34,7 @@ static void setBounds(ArcBall_t *a, float NewWidth, float NewHeight) {
     a->AdjustHeight = 1.0f / ((NewHeight - 1.0f) * 0.5f);
 }
 
-static void mapToSphere(ArcBall_t * a, const Point2fT * NewPt,
-			Vector3fT * NewVec)
-{
+static Vector3fT mapToSphere(ArcBall_t *a, const Point2fT *NewPt) {
     Point2fT TempPt;
 
     //Copy paramter into temp point
@@ -56,15 +54,11 @@ static void mapToSphere(ArcBall_t * a, const Point2fT * NewPt,
 	float norm = 1.0f / FuncSqrt(length);
 
 	//Return the "normalized" vector, a point on the sphere
-	NewVec->X = TempPt.X * norm;
-	NewVec->Y = TempPt.Y * norm;
-	NewVec->Z = 0.0f;
+	return (Vector3fT){.X = TempPt.X * norm, .Y = TempPt.Y * norm};
     } else			//Else it's on the inside
     {
 	//Return a vector to a point mapped inside the sphere sqrt(radius squared - length)
-	NewVec->X = TempPt.X;
-	NewVec->Y = TempPt.Y;
-	NewVec->Z = FuncSqrt(1.0f - length);
+	return (Vector3fT){.X = TempPt.X, .Y = TempPt.Y, .Z = FuncSqrt(1.0f - length)};
     }
 }
 
@@ -98,13 +92,13 @@ ArcBall_t init_arcBall(float NewWidth, float NewHeight) {
 static void click(ArcBall_t * a, const Point2fT * NewPt)
 {
     //Map the point to the sphere
-    mapToSphere(a, NewPt, &a->StVec);
+    a->StVec = mapToSphere(a, NewPt);
 }
 
 //Mouse drag, calculate rotation
 static Quat4fT drag(ArcBall_t *a, const Point2fT *NewPt) {
     //Map the point to the sphere
-    mapToSphere(a, NewPt, &a->EnVec);
+    a->EnVec = mapToSphere(a, NewPt);
 
     //Return the quaternion equivalent to the rotation
     // compute the vector perpendicular to the begin and end vectors
