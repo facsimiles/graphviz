@@ -43,11 +43,11 @@ static void mapToSphere(ArcBall_t * a, const Point2fT * NewPt,
     TempPt = *NewPt;
 
     //Adjust point coords and scale down to range of [-1 ... 1]
-    TempPt.s.X = (TempPt.s.X * a->AdjustWidth) - 1.0f;
-    TempPt.s.Y = 1.0f - (TempPt.s.Y * a->AdjustHeight);
+    TempPt.X = TempPt.X * a->AdjustWidth - 1.0f;
+    TempPt.Y = 1.0f - TempPt.Y * a->AdjustHeight;
 
     //Compute the square of the length of the vector to the point from the center
-    float length = TempPt.s.X * TempPt.s.X + TempPt.s.Y * TempPt.s.Y;
+    float length = TempPt.X * TempPt.X + TempPt.Y * TempPt.Y;
 
     //If the point is mapped outside of the sphere... (length > radius squared)
     if (length > 1.0f) {
@@ -56,14 +56,14 @@ static void mapToSphere(ArcBall_t * a, const Point2fT * NewPt,
 	float norm = 1.0f / FuncSqrt(length);
 
 	//Return the "normalized" vector, a point on the sphere
-	NewVec->X = TempPt.s.X * norm;
-	NewVec->Y = TempPt.s.Y * norm;
+	NewVec->X = TempPt.X * norm;
+	NewVec->Y = TempPt.Y * norm;
 	NewVec->Z = 0.0f;
     } else			//Else it's on the inside
     {
 	//Return a vector to a point mapped inside the sphere sqrt(radius squared - length)
-	NewVec->X = TempPt.s.X;
-	NewVec->Y = TempPt.s.Y;
+	NewVec->X = TempPt.X;
+	NewVec->Y = TempPt.Y;
 	NewVec->Z = FuncSqrt(1.0f - length);
     }
 }

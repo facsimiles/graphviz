@@ -48,12 +48,8 @@
 # include <assert.h>
 
 //Math types derived from the KempoApi tMath library
-typedef union {
-    struct {
-	float X, Y;
-    } s;
-
-    float T[2];
+typedef struct {
+    float X, Y;
 } Tuple2fT;			//A generic 2-element tuple that is represented by single-precision floating point x,y coordinates. 
 
 typedef struct {
