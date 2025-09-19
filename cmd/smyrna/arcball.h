@@ -209,11 +209,10 @@ typedef union {
       * @param v2 the second vector
       */
 
-static Vector3fT Vector3fCross(const Vector3fT *v1, const Vector3fT *v2) {
-    assert(v1 && v2);
-    return (Vector3fT){.X = v1->Y * v2->Z - v1->Z * v2->Y,
-                       .Y = v1->Z * v2->X - v1->X * v2->Z,
-                       .Z = v1->X * v2->Y - v1->Y * v2->X};
+static Vector3fT Vector3fCross(Vector3fT v1, Vector3fT v2) {
+    return (Vector3fT){.X = v1.Y * v2.Z - v1.Z * v2.Y,
+                       .Y = v1.Z * v2.X - v1.X * v2.Z,
+                       .Z = v1.X * v2.Y - v1.Y * v2.X};
 }
 
     /**
