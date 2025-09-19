@@ -542,7 +542,6 @@ struct _ArcBall_t {
     int isDragging;
 };
 
-
-void init_arcBall(ArcBall_t * a, float NewWidth, float NewHeight);
+ArcBall_t init_arcBall(float NewWidth, float NewHeight);
 void arcmouseClick(void);
 void arcmouseDrag(void);

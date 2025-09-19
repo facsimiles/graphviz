@@ -116,7 +116,7 @@ static gboolean configure_event(GtkWidget *widget, GdkEventConfigure *event,
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     if (widget->allocation.width > 1)
-	init_arcBall(view->arcball, view->w, view->h);
+	*view->arcball = init_arcBall(view->w, view->h);
 
     if (view->w > view->h) {
 	aspect = (float) view->w / (float) view->h;

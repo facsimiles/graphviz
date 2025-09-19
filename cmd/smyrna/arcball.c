@@ -85,12 +85,13 @@ static Matrix3fT ThisRot = { {1.0f, 0.0f, 0.0f,	// NEW: This Rotation
 };
 
 //Create/Destroy
-void init_arcBall(ArcBall_t *a, float NewWidth, float NewHeight) {
-    *a = (ArcBall_t){.Transform = Transform, .LastRot = LastRot,
-                     .ThisRot = ThisRot};
+ArcBall_t init_arcBall(float NewWidth, float NewHeight) {
+    ArcBall_t a = {.Transform = Transform, .LastRot = LastRot,
+                   .ThisRot = ThisRot};
 
     //Set initial bounds
-    setBounds(a, NewWidth, NewHeight);
+    setBounds(&a, NewWidth, NewHeight);
+    return a;
 }
 
 //Mouse down
