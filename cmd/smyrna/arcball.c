@@ -56,15 +56,15 @@ static void mapToSphere(ArcBall_t * a, const Point2fT * NewPt,
 	float norm = 1.0f / FuncSqrt(length);
 
 	//Return the "normalized" vector, a point on the sphere
-	NewVec->s.X = TempPt.s.X * norm;
-	NewVec->s.Y = TempPt.s.Y * norm;
-	NewVec->s.Z = 0.0f;
+	NewVec->X = TempPt.s.X * norm;
+	NewVec->Y = TempPt.s.Y * norm;
+	NewVec->Z = 0.0f;
     } else			//Else it's on the inside
     {
 	//Return a vector to a point mapped inside the sphere sqrt(radius squared - length)
-	NewVec->s.X = TempPt.s.X;
-	NewVec->s.Y = TempPt.s.Y;
-	NewVec->s.Z = FuncSqrt(1.0f - length);
+	NewVec->X = TempPt.s.X;
+	NewVec->Y = TempPt.s.Y;
+	NewVec->Z = FuncSqrt(1.0f - length);
     }
 }
 
@@ -86,20 +86,11 @@ static Matrix3fT ThisRot = { {1.0f, 0.0f, 0.0f,	// NEW: This Rotation
 
 //Create/Destroy
 void init_arcBall(ArcBall_t *a, float NewWidth, float NewHeight) {
-    a->Transform = Transform;
-    a->LastRot = LastRot;
-    a->ThisRot = ThisRot;
-    //Clear initial values
-    a->StVec.s.X =
-	a->StVec.s.Y =
-	a->StVec.s.Z = a->EnVec.s.X = a->EnVec.s.Y = a->EnVec.s.Z = 0.0f;
+    *a = (ArcBall_t){.Transform = Transform, .LastRot = LastRot,
+                     .ThisRot = ThisRot};
 
     //Set initial bounds
     setBounds(a, NewWidth, NewHeight);
-
-    a->isClicked = 0;
-    a->isRClicked = 0;
-    a->isDragging = 0;
 }
 
 //Mouse down
@@ -124,9 +115,9 @@ static Quat4fT drag(ArcBall_t *a, const Point2fT *NewPt) {
     if (Vector3fLength(&Perp) > Epsilon) { // if it’s non-zero
         // we're OK, so return the perpendicular vector as the transform after
         // all
-        return (Quat4fT){.X = Perp.s.X,
-                         .Y = Perp.s.Y,
-                         .Z = Perp.s.Z,
+        return (Quat4fT){.X = Perp.X,
+                         .Y = Perp.Y,
+                         .Z = Perp.Z,
         // in the quaternion values, W is cosine (theta / 2), where theta is
         // rotation angle
                          .W = Vector3fDot(&a->StVec, &a->EnVec)};

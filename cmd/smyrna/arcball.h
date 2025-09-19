@@ -56,12 +56,8 @@ typedef union {
     float T[2];
 } Tuple2fT;			//A generic 2-element tuple that is represented by single-precision floating point x,y coordinates. 
 
-typedef union {
-    struct {
-	float X, Y, Z;
-    } s;
-
-    float T[3];
+typedef struct {
+    float X, Y, Z;
 } Tuple3fT;			//A generic 3-element tuple that is represented by single precision-floating point x,y,z coordinates. 
 
 typedef struct {
@@ -223,9 +219,9 @@ static void Vector3fCross(Vector3fT * NewObj, const Vector3fT * v1,
     // store on stack once for aliasing-safty
     // i.e. safe when a.cross(a, b)
 
-    Result.s.X = (v1->s.Y * v2->s.Z) - (v1->s.Z * v2->s.Y);
-    Result.s.Y = (v1->s.Z * v2->s.X) - (v1->s.X * v2->s.Z);
-    Result.s.Z = (v1->s.X * v2->s.Y) - (v1->s.Y * v2->s.X);
+    Result.X = v1->Y * v2->Z - v1->Z * v2->Y;
+    Result.Y = v1->Z * v2->X - v1->X * v2->Z;
+    Result.Z = v1->X * v2->Y - v1->Y * v2->X;
 
     //copy result back
     *NewObj = Result;
@@ -240,8 +236,7 @@ static float Vector3fDot(const Vector3fT * NewObj, const Vector3fT * v1)
 {
     assert(NewObj && v1);
 
-    return (NewObj->s.X * v1->s.X) +
-	(NewObj->s.Y * v1->s.Y) + (NewObj->s.Z * v1->s.Z);
+    return NewObj->X * v1->X + NewObj->Y * v1->Y + NewObj->Z * v1->Z;
 }
 
     /**
@@ -253,8 +248,7 @@ static float Vector3fLengthSquared(const Vector3fT * NewObj)
 {
     assert(NewObj);
 
-    return (NewObj->s.X * NewObj->s.X) +
-	(NewObj->s.Y * NewObj->s.Y) + (NewObj->s.Z * NewObj->s.Z);
+    return NewObj->X * NewObj->X + NewObj->Y * NewObj->Y + NewObj->Z * NewObj->Z;
 }
 
     /**
