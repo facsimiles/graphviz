@@ -126,15 +126,15 @@ static void drag(ArcBall_t * a, const Point2fT * NewPt, Quat4fT * NewRot)
 	if (Vector3fLength(&Perp) > Epsilon)	//if its non-zero
 	{
 	    //We're ok, so return the perpendicular vector as the transform after all
-	    NewRot->s.X = Perp.s.X;
-	    NewRot->s.Y = Perp.s.Y;
-	    NewRot->s.Z = Perp.s.Z;
+	    NewRot->X = Perp.s.X;
+	    NewRot->Y = Perp.s.Y;
+	    NewRot->Z = Perp.s.Z;
 	    //In the quaternion values, w is cosine (theta / 2), where theta is rotation angle
-	    NewRot->s.W = Vector3fDot(&a->StVec, &a->EnVec);
+	    NewRot->W = Vector3fDot(&a->StVec, &a->EnVec);
 	} else			//if its zero
 	{
 	    //The begin and end vectors coincide, so return an identity transform
-	    NewRot->s.X = NewRot->s.Y = NewRot->s.Z = NewRot->s.W = 0.0f;
+	    *NewRot = (Quat4fT){0};
 	}
     }
 }

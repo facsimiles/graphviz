@@ -64,12 +64,8 @@ typedef union {
     float T[3];
 } Tuple3fT;			//A generic 3-element tuple that is represented by single precision-floating point x,y,z coordinates. 
 
-typedef union {
-    struct {
-	float X, Y, Z, W;
-    } s;
-
-    float T[4];
+typedef struct {
+    float X, Y, Z, W;
 } Tuple4fT;			//A 4-element tuple represented by single-precision floating point x,y,z,w coordinates. 
 
 typedef union {
@@ -291,22 +287,21 @@ static void Matrix3fSetRotationFromQuat4f(Matrix3fT * NewObj,
 
     assert(NewObj && q1);
 
-    n = (q1->s.X * q1->s.X) + (q1->s.Y * q1->s.Y) + (q1->s.Z * q1->s.Z) +
-	(q1->s.W * q1->s.W);
+    n = q1->X * q1->X + q1->Y * q1->Y + q1->Z * q1->Z + q1->W * q1->W;
     s = (n > 0.0f) ? (2.0f / n) : 0.0f;
 
-    xs = q1->s.X * s;
-    ys = q1->s.Y * s;
-    zs = q1->s.Z * s;
-    wx = q1->s.W * xs;
-    wy = q1->s.W * ys;
-    wz = q1->s.W * zs;
-    xx = q1->s.X * xs;
-    xy = q1->s.X * ys;
-    xz = q1->s.X * zs;
-    yy = q1->s.Y * ys;
-    yz = q1->s.Y * zs;
-    zz = q1->s.Z * zs;
+    xs = q1->X * s;
+    ys = q1->Y * s;
+    zs = q1->Z * s;
+    wx = q1->W * xs;
+    wy = q1->W * ys;
+    wz = q1->W * zs;
+    xx = q1->X * xs;
+    xy = q1->X * ys;
+    xz = q1->X * zs;
+    yy = q1->Y * ys;
+    yz = q1->Y * zs;
+    zz = q1->Z * zs;
 
     NewObj->s.XX = 1.0f - (yy + zz);
     NewObj->s.YX = xy - wz;
