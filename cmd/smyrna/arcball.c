@@ -107,10 +107,8 @@ static Quat4fT drag(ArcBall_t *a, const Point2fT *NewPt) {
     mapToSphere(a, NewPt, &a->EnVec);
 
     //Return the quaternion equivalent to the rotation
-    Vector3fT Perp;
-    
     // compute the vector perpendicular to the begin and end vectors
-    Vector3fCross(&Perp, &a->StVec, &a->EnVec);
+    const Vector3fT Perp = Vector3fCross(&a->StVec, &a->EnVec);
     
     // compute the length of the perpendicular vector
     if (Vector3fLength(&Perp) > Epsilon) { // if it’s non-zero

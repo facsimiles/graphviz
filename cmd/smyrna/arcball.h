@@ -204,27 +204,16 @@ typedef union {
 
 #ifdef ARCBALL_C
     /**
-      * Sets this vector to be the vector cross product of vectors v1 and v2.
+      * Returns a vector that is the vector cross product of vectors v1 and v2.
       * @param v1 the first vector
       * @param v2 the second vector
       */
 
-static void Vector3fCross(Vector3fT * NewObj, const Vector3fT * v1,
-			  const Vector3fT * v2)
-{
-    Vector3fT Result;		//safe not to initialize
-
-    assert(NewObj && v1 && v2);
-
-    // store on stack once for aliasing-safty
-    // i.e. safe when a.cross(a, b)
-
-    Result.X = v1->Y * v2->Z - v1->Z * v2->Y;
-    Result.Y = v1->Z * v2->X - v1->X * v2->Z;
-    Result.Z = v1->X * v2->Y - v1->Y * v2->X;
-
-    //copy result back
-    *NewObj = Result;
+static Vector3fT Vector3fCross(const Vector3fT *v1, const Vector3fT *v2) {
+    assert(v1 && v2);
+    return (Vector3fT){.X = v1->Y * v2->Z - v1->Z * v2->Y,
+                       .Y = v1->Z * v2->X - v1->X * v2->Z,
+                       .Z = v1->X * v2->Y - v1->Y * v2->X};
 }
 
     /**
