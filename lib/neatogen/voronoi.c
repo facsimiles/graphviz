@@ -14,6 +14,7 @@
 #include <neatogen/hedges.h>
 #include <neatogen/heap.h>
 #include <neatogen/voronoi.h>
+#include <util/arena.h>
 #include <util/gv_math.h>
 #include <util/list.h>
 
@@ -25,7 +26,7 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     Halfedge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
     Edge *e;
 
-    LIST(Edge *) allocated = {0}; // live edges to be freed
+    arena_t edge_allocator = {0};
     siteinit();
     pq_t *pq = PQinitialize();
     bottomsite = nextsite(context);
@@ -44,8 +45,7 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    lbnd = ELleftbnd(&st, &newsite->coord);
 	    rbnd = ELright(lbnd);
 	    bot = rightreg(lbnd);
-	    e = gvbisect(bot, newsite);
-	    LIST_APPEND(&allocated, e);
+	    e = gvbisect(bot, newsite, &edge_allocator);
 	    bisector = HEcreate(&st, e, le);
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(lbnd, bisector)) != NULL) {
@@ -68,12 +68,8 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    top = rightreg(rbnd);
 	    v = lbnd->vertex;
 	    makevertex(v);
-	    if (endpoint(lbnd->ELedge, lbnd->ELpm, v)) {
-		LIST_REMOVE(&allocated, lbnd->ELedge);
-	    }
-	    if (endpoint(rbnd->ELedge, rbnd->ELpm, v)) {
-		LIST_REMOVE(&allocated, rbnd->ELedge);
-	    }
+	    endpoint(lbnd->ELedge, lbnd->ELpm, v, &edge_allocator);
+	    endpoint(rbnd->ELedge, rbnd->ELpm, v, &edge_allocator);
 	    ELdelete(lbnd);
 	    PQdelete(pq, rbnd);
 	    ELdelete(rbnd);
@@ -82,13 +78,10 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 		SWAP(&bot, &top);
 		pm = re;
 	    }
-	    e = gvbisect(bot, top);
-	    LIST_APPEND(&allocated, e);
+	    e = gvbisect(bot, top, &edge_allocator);
 	    bisector = HEcreate(&st, e, pm);
 	    ELinsert(llbnd, bisector);
-	    if (endpoint(e, re - pm, v)) {
-		LIST_REMOVE(&allocated, e);
-	    }
+	    endpoint(e, re - pm, v, &edge_allocator);
 	    deref(v);
 	    if ((p = hintersect(llbnd, bisector)) != NULL) {
 		PQdelete(pq, llbnd);
@@ -113,8 +106,5 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     // at least every time we use `vAdjust`. See note in adjust.c:cleanup().
     PQcleanup(pq);
 
-    for (size_t i = 0; i < LIST_SIZE(&allocated); ++i) {
-	free(LIST_GET(&allocated, i));
-    }
-    LIST_FREE(&allocated);
+    gv_arena_reset(&edge_allocator);
 }

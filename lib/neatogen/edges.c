@@ -8,20 +8,20 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include <assert.h>
 #include <neatogen/neato.h>
 #include <neatogen/info.h>
 #include <neatogen/edges.h>
 #include <math.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <util/alloc.h>
+#include <stddef.h>
+#include <util/arena.h>
 
 double pxmin, pxmax, pymin, pymax;	/* clipping window */
 
-Edge *gvbisect(Site * s1, Site * s2)
-{
+Edge *gvbisect(Site *s1, Site *s2, arena_t *allocator) {
+    assert(allocator != NULL);
     double dx, dy, adx, ady;
-    Edge *newedge = gv_alloc(sizeof(*newedge));
+    Edge *newedge = ARENA_NEW(allocator, Edge);
 
     newedge->reg[0] = s1;
     newedge->reg[1] = s2;
@@ -174,14 +174,14 @@ void clip_line(Edge * e)
     doSeg(e, x1, y1, x2, y2);
 }
 
-bool endpoint(Edge *e, int lr, Site *s) {
+void endpoint(Edge *e, int lr, Site *s, arena_t *allocator) {
+    assert(allocator != NULL);
     e->ep[lr] = s;
     ref(s);
     if (e->ep[re - lr] == NULL)
-	return false;
+	return;
     clip_line(e);
     deref(e->reg[le]);
     deref(e->reg[re]);
-    free(e);
-    return true;
+    gv_arena_free(allocator, e, sizeof(*e));
 }

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <util/arena.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,10 +35,9 @@ extern "C" {
 #define re 1
 
     extern double pxmin, pxmax, pymin, pymax;	/* clipping window */
-/// @return True if edge was deallocated
-INTERNAL bool endpoint(Edge *, int, Site *);
+INTERNAL void endpoint(Edge *, int, Site *, arena_t *);
 INTERNAL void clip_line(Edge * e);
-INTERNAL Edge *gvbisect(Site *, Site *);
+INTERNAL Edge *gvbisect(Site *, Site *, arena_t *);
 
 #undef INTERNAL
 
