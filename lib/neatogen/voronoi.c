@@ -14,7 +14,6 @@
 #include <neatogen/hedges.h>
 #include <neatogen/heap.h>
 #include <neatogen/voronoi.h>
-#include <util/arena.h>
 #include <util/gv_math.h>
 #include <util/list.h>
 
@@ -26,7 +25,6 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     Halfedge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
     Edge *e;
 
-    arena_t edge_allocator = {0};
     siteinit();
     pq_t *pq = PQinitialize();
     bottomsite = nextsite(context);
@@ -45,7 +43,7 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    lbnd = ELleftbnd(&st, &newsite->coord);
 	    rbnd = ELright(lbnd);
 	    bot = rightreg(lbnd);
-	    e = gvbisect(bot, newsite, &edge_allocator);
+	    e = gvbisect(bot, newsite, &st.allocated);
 	    bisector = HEcreate(&st, e, le);
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(lbnd, bisector)) != NULL) {
@@ -68,8 +66,8 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    top = rightreg(rbnd);
 	    v = lbnd->vertex;
 	    makevertex(v);
-	    endpoint(lbnd->ELedge, lbnd->ELpm, v, &edge_allocator);
-	    endpoint(rbnd->ELedge, rbnd->ELpm, v, &edge_allocator);
+	    endpoint(lbnd->ELedge, lbnd->ELpm, v, &st.allocated);
+	    endpoint(rbnd->ELedge, rbnd->ELpm, v, &st.allocated);
 	    ELdelete(lbnd);
 	    PQdelete(pq, rbnd);
 	    ELdelete(rbnd);
@@ -78,10 +76,10 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 		SWAP(&bot, &top);
 		pm = re;
 	    }
-	    e = gvbisect(bot, top, &edge_allocator);
+	    e = gvbisect(bot, top, &st.allocated);
 	    bisector = HEcreate(&st, e, pm);
 	    ELinsert(llbnd, bisector);
-	    endpoint(e, re - pm, v, &edge_allocator);
+	    endpoint(e, re - pm, v, &st.allocated);
 	    deref(v);
 	    if ((p = hintersect(llbnd, bisector)) != NULL) {
 		PQdelete(pq, llbnd);
@@ -105,6 +103,4 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     // `PQcleanup` relies on the number of sites, so should be discarded and
     // at least every time we use `vAdjust`. See note in adjust.c:cleanup().
     PQcleanup(pq);
-
-    gv_arena_reset(&edge_allocator);
 }
