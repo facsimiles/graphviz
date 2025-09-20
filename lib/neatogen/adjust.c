@@ -422,7 +422,6 @@ static void newPos(const state_t *st, bool doAll) {
 static void cleanup(void)
 {
     siteinit();			/* free memory */
-    edgeinit();			/* free memory */
 }
 
 static int vAdjust(state_t *st) {

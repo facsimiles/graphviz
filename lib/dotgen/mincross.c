@@ -183,15 +183,14 @@ static void nname(node_t *v, FILE *stream) {
 }
 static void dumpg (graph_t* g)
 {
-    int j, i, r;
-    node_t* v;
+    int i;
     edge_t* e;
 
     fprintf (stderr, "digraph A {\n");
-    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+    for (int r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	fprintf (stderr, "  subgraph {rank=same  ");
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	  v = GD_rank(g)[r].v[i];
+	  node_t *const v = GD_rank(g)[r].v[i];
           if (i > 0)
  	    fputs(" -> ", stderr);
           nname(v, stderr);
@@ -199,10 +198,10 @@ static void dumpg (graph_t* g)
         if (i > 1) fprintf (stderr, " [style=invis]}\n");
         else fprintf (stderr, " }\n");
     }
-    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
+    for (int r = GD_minrank(g); r < GD_maxrank(g); r++) {
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	  v = GD_rank(g)[r].v[i];
-	  for (j = 0; (e = ND_out(v).list[j]); j++) {
+	  node_t *const v = GD_rank(g)[r].v[i];
+	  for (int j = 0; (e = ND_out(v).list[j]); j++) {
              nname(v, stderr);
              fputs(" -> ", stderr);
              nname(aghead(e), stderr);

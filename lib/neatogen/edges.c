@@ -9,27 +9,19 @@
  *************************************************************************/
 
 #include <neatogen/neato.h>
-#include <neatogen/mem.h>
 #include <neatogen/info.h>
 #include <neatogen/edges.h>
 #include <math.h>
-
+#include <stdbool.h>
+#include <stdlib.h>
+#include <util/alloc.h>
 
 double pxmin, pxmax, pymin, pymax;	/* clipping window */
-
-static Freelist efl;
-
-void edgeinit(void)
-{
-    freeinit(&efl, sizeof(Edge));
-}
 
 Edge *gvbisect(Site * s1, Site * s2)
 {
     double dx, dy, adx, ady;
-    Edge *newedge;
-
-    newedge = getfree(&efl);
+    Edge *newedge = gv_alloc(sizeof(*newedge));
 
     newedge->reg[0] = s1;
     newedge->reg[1] = s2;
@@ -182,14 +174,14 @@ void clip_line(Edge * e)
     doSeg(e, x1, y1, x2, y2);
 }
 
-void endpoint(Edge * e, int lr, Site * s)
-{
+bool endpoint(Edge *e, int lr, Site *s) {
     e->ep[lr] = s;
     ref(s);
     if (e->ep[re - lr] == NULL)
-	return;
+	return false;
     clip_line(e);
     deref(e->reg[le]);
     deref(e->reg[re]);
-    makefree(e, &efl);
+    free(e);
+    return true;
 }
