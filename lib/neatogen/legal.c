@@ -14,6 +14,7 @@
 #include <limits.h>
 #include <neatogen/neato.h>
 #include <pathplan/pathutil.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
 #include <util/exit.h>
@@ -26,22 +27,17 @@
 #define after(v) (((v)==((v)->poly->finish))?((v)->poly->start):((v)+1))
 #define prior(v) (((v)==((v)->poly->start))?((v)->poly->finish):((v)-1))
 
-typedef struct active_edge active_edge;
 typedef struct polygon polygon;
 
-    typedef struct {
+    typedef struct vertex {
 	pointf pos;
 	polygon *poly;
-	active_edge *active;
+	struct vertex *active;
     } vertex ;
 
     struct polygon {
 	vertex *start, *finish;
 	boxf bb;
-    };
-
-    struct active_edge {
-	vertex *name;
     };
 
 static int sign(double v) {
@@ -192,17 +188,13 @@ putSeg (int i, vertex* v)
 }
 
 /* realIntersect:
- * Return 1 if a real intersection has been found
+ * Return true if a real intersection has been found
  */
-static int
-realIntersect (vertex *firstv, vertex *secondv, pointf p)
-{
-    pointf vft, vsd, avft, avsd;
-
-    vft = firstv->pos;
-    avft = after(firstv)->pos;
-    vsd = secondv->pos;
-    avsd = after(secondv)->pos;
+static bool realIntersect(vertex *firstv, vertex *secondv, pointf p) {
+    const pointf vft = firstv->pos;
+    const pointf avft = after(firstv)->pos;
+    const pointf vsd = secondv->pos;
+    const pointf avsd = after(secondv)->pos;
 
     if ((vft.x != avft.x && vsd.x != avsd.x) ||
 	(vft.x == avft.x && !EQ_PT(vft, p) && !EQ_PT(avft, p)) ||
@@ -214,40 +206,37 @@ realIntersect (vertex *firstv, vertex *secondv, pointf p)
 		putSeg (1, firstv);
 		putSeg (2, secondv);
 	}
-	return 1;
+	return true;
     }
-    else return 0;
+    return false;
 }
 
 /* find_intersection:
  * detect whether segments l and m intersect      
- * Return 1 if found; 0 otherwise;
+ * Return true if found; false otherwise;
  */
-static int find_intersection(vertex *l, vertex *m) {
+static bool find_intersection(vertex *l, vertex *m) {
     double x, y;
-    pointf p;
 	int i[3];
     sgnarea(l, m, i);
 
     if (i[2] > 0)
-	return 0;
+	return false;
 
     if (i[2] < 0) {
 	sgnarea(m, l, i);
 	if (i[2] > 0)
-	    return 0;
+	    return false;
 	if (!intpoint(l, m, &x, &y, i[2] < 0 ? 3 : online(m, l, abs(i[0]))))
-	    return 0;
+	    return false;
     }
 
     else if (!intpoint(l, m, &x, &y, i[0] == i[1] ?
 		       2 * MAX(online(l, m, 0),
 			       online(l, m, 1)) : online(l, m, abs(i[0]))))
-	return 0;
+	return false;
 
-    p.x = x;
-    p.y = y;
-    return realIntersect(l, m, p);
+    return realIntersect(l, m, (pointf){.x = x, .y = y});
 }
 
 static int gt(const void *a, const void *b) {
@@ -273,10 +262,9 @@ static int gt(const void *a, const void *b) {
  * Return 1 if intersection found, 0 for not found, -1 for error.
  */
 static int find_ints(vertex vertex_list[], size_t nvertices) {
-    int k, found = 0;
-    LIST(active_edge*) all = {.dtor = LIST_DTOR_FREE};
-    active_edge *new, *tempa;
-    vertex *pt1, *pt2, *templ;
+    int found = 0;
+    LIST(vertex *) all = {0};
+    vertex *tempa;
 
     vertex **pvertex = gv_calloc(nvertices, sizeof(vertex*));
 
@@ -288,9 +276,10 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
 
 /* walk through the vertices in order of increasing x coordinate	*/
     for (size_t i = 0; i < nvertices; i++) {
-	pt1 = pvertex[i];
-	templ = pt2 = prior(pvertex[i]);
-	for (k = 0; k < 2; k++) {	/* each vertex has 2 edges */
+	vertex *const pt1 = pvertex[i];
+	vertex *pt2 = prior(pvertex[i]);
+	vertex *templ = pt2;
+	for (int k = 0; k < 2; k++) { // each vertex has 2 edges
 	    switch (gt(&pt1, &pt2)) {
 
 	    case -1:		/* forward edge, test and insert      */
@@ -298,16 +287,13 @@ static int find_ints(vertex vertex_list[], size_t nvertices) {
                  /* test */
 		for (size_t j = 0; j < LIST_SIZE(&all); ++j) {
 		    tempa = LIST_GET(&all, j);
-		    found = find_intersection(tempa->name, templ);
+		    found = find_intersection(tempa, templ);
 		    if (found)
 			goto finish;
 		}
 
-		new = gv_alloc(sizeof(active_edge));
-		LIST_APPEND(&all, new);
-
-		new->name = templ;
-		templ->active = new;
+		LIST_APPEND(&all, templ);
+		templ->active = templ;
 		break;
 
 	    case 1:		/* backward edge, delete        */
