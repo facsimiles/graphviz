@@ -5746,15 +5746,13 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
     root = dot_bin.parents[1]
 
     # extract plugin version
-    GVPLUGIN_CURRENT, GVPLUGIN_REVISION, GVPLUGIN_AGE = plugin_version()
+    current, revision, age = plugin_version()
 
     for subdir in ("lib", "lib64"):
         if is_macos():
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.dylib"
         elif is_mingw():
-            candidate = (
-                root / f"bin/libgvplugin_{plugin}-{GVPLUGIN_CURRENT - GVPLUGIN_AGE}.dll"
-            )
+            candidate = root / f"bin/libgvplugin_{plugin}-{current - age}.dll"
         elif platform.system() == "Windows":
             candidate = root / subdir / f"gvplugin_{plugin}.lib"
         else:
@@ -5765,9 +5763,7 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
 
         if platform.system() == "Linux":
             # try it with the version info suffix, which is what some RHEL platforms use
-            suffix = (
-                f".{GVPLUGIN_CURRENT - GVPLUGIN_AGE}.{GVPLUGIN_REVISION}.{GVPLUGIN_AGE}"
-            )
+            suffix = f".{current - age}.{revision}.{age}"
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so{suffix}"
             print(f"checking {candidate}")  # log some useful information
             if candidate.exists():
