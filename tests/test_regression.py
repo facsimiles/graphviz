@@ -6984,3 +6984,20 @@ def test_library_so_version(lib: str):
     assert (
         cmake_version[2] == version[1]
     ), "CMake and Autotools build systems disagree on library patch version"
+
+    # parse the equivalent out of the Debian rules
+    rules = Path(__file__).resolve().parents[1] / "debian/rules"
+    deb_soname: Optional[int] = None
+    with open(rules, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*" + lib.upper() + r"_SONAME\s*=\s*(?P<soversion>\d+)\s*$", line
+            ):
+                deb_soname = int(m.group("soversion"))
+                break
+    assert deb_soname is not None, "failed to parse SONAME from Debian rules"
+
+    # again, we use a common mapping rule `major = current - age`
+    assert (
+        version[0] - version[2] == deb_soname
+    ), "Autotools and Debian rules disagree on library version"
