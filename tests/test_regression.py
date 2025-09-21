@@ -6858,3 +6858,38 @@ def test_duplicate_font_family():
     for ff in re.findall(r'font-family="(?P<families>[^"]*)', svg):
         families = [f.strip() for f in ff.split(",")]
         assert len(families) == len(set(families)), "duplicate font families listed"
+
+
+def test_plugin_version_cmake():
+    """confirm the plugin version defined in CMake matches Autotools"""
+    autotools_current, autotools_revision, autotools_age = plugin_version()
+
+    # the CMake build system assumes the second two components are 0 for now
+    cmake_revision = 0
+    cmake_age = 0
+
+    assert (
+        autotools_revision == cmake_revision
+    ), "CMake build system assumes plugin revision is 0 and it is not"
+    assert (
+        autotools_age == cmake_age
+    ), "CMake build system assumes plugin age is 0 and it is not"
+
+    # parse the equivalent out of the CMake build system
+    cmakelists = Path(__file__).resolve().parents[1] / "CMakeLists.txt"
+    cmake_current: Optional[int] = None
+    with open(cmakelists, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*set\s*\(\s*GRAPHVIZ_PLUGIN_VERSION\s+(?P<current>\d+)\s*\)\s*$",
+                line,
+            ):
+                cmake_current = int(m.group("current"))
+                break
+    assert (
+        cmake_current is not None
+    ), "failed to parse CMake build system’s plugin current version"
+
+    assert (
+        autotools_current == cmake_current
+    ), "Autotools and CMake build systems disagree on plugin current version"
