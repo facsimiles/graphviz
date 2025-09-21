@@ -6077,6 +6077,22 @@ def test_2727():
     dot("svg", input)
 
 
+@pytest.mark.skipif(which("gvpr") is None, reason="gvpr is not available")
+def test_2731():
+    """
+    gvpr should produce output for this example
+    https://gitlab.com/graphviz/graphviz/-/issues/2731
+    """
+
+    # find our test source
+    graph = (Path(__file__).parent / "graphs/unix.gv").resolve()
+
+    gvpr_bin = which("gvpr")
+    result = run([gvpr_bin, "-c", 'N{label="\\N";}', graph])
+
+    assert result.strip() != "", "gvpr output missing"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(

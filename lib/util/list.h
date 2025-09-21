@@ -451,6 +451,7 @@ static_assert(
 /// @param [out] size The list size on completion
 #define LIST_DETACH(list, datap, sizep)                                        \
   do {                                                                         \
+    LIST_SYNC(list);                                                           \
     *(datap) = (list)->base;                                                   \
     *(sizep) = (list)->impl.size;                                              \
                                                                                \
