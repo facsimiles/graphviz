@@ -5752,7 +5752,9 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
         if is_macos():
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.dylib"
         elif is_mingw():
-            candidate = root / f"bin/libgvplugin_{plugin}-{GVPLUGIN_CURRENT}.dll"
+            candidate = (
+                root / f"bin/libgvplugin_{plugin}-{GVPLUGIN_CURRENT - GVPLUGIN_AGE}.dll"
+            )
         elif platform.system() == "Windows":
             candidate = root / subdir / f"gvplugin_{plugin}.lib"
         else:
