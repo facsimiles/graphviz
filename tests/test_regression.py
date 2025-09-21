@@ -5763,7 +5763,9 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
 
         if platform.system() == "Linux":
             # try it with the version info suffix, which is what some RHEL platforms use
-            suffix = f".{GVPLUGIN_CURRENT}.{GVPLUGIN_REVISION}.{GVPLUGIN_AGE}"
+            suffix = (
+                f".{GVPLUGIN_CURRENT - GVPLUGIN_AGE}.{GVPLUGIN_REVISION}.{GVPLUGIN_AGE}"
+            )
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so{suffix}"
             print(f"checking {candidate}")  # log some useful information
             if candidate.exists():
