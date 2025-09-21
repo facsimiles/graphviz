@@ -6893,3 +6893,27 @@ def test_plugin_version_cmake():
     assert (
         autotools_current == cmake_current
     ), "Autotools and CMake build systems disagree on plugin current version"
+
+
+def test_plugin_version_redhat():
+    """confirm the plugin version defined in Red Hat spec files matches Autotools"""
+    autotools_current, _, _ = plugin_version()
+
+    # parse the equivalent out of the spec file
+    spec = Path(__file__).resolve().parents[1] / "redhat/graphviz.spec.fedora.in"
+    rpm_current: Optional[int] = None
+    with open(spec, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*%\s*global\s+pluginsver\s+(?P<current>\d+)\s*$",
+                line,
+            ):
+                rpm_current = int(m.group("current"))
+                break
+    assert (
+        rpm_current is not None
+    ), "failed to parse Red Hat spec file’s plugin current version"
+
+    assert (
+        autotools_current == rpm_current
+    ), "Autotools and Red Hat spec file disagree on plugin current version"
