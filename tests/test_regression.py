@@ -6919,18 +6919,7 @@ def test_plugin_version_redhat():
     ), "Autotools and Red Hat spec file disagree on plugin current version"
 
 
-@pytest.mark.parametrize(
-    "lib",
-    (
-        "cdt",
-        "cgraph",
-        pytest.param("expr", marks=pytest.mark.xfail(strict=True)),
-        "gvc",
-        "gvpr",
-        "pathplan",
-        "xdot",
-    ),
-)
+@pytest.mark.parametrize("lib", ("cdt", "cgraph", "gvc", "gvpr", "pathplan", "xdot"))
 def test_library_so_version(lib: str):
     """test library SO versions are consistently defined"""
 
