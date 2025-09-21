@@ -7001,3 +7001,41 @@ def test_library_so_version(lib: str):
     assert (
         version[0] - version[2] == deb_soname
     ), "Autotools and Debian rules disagree on library version"
+
+    # parse the equivalent out of the Debian lintian overrides
+    overrides = (
+        Path(__file__).resolve().parents[1] / "debian/libgraphviz4.lintian-overrides"
+    )
+    overrides_version1: Optional[int] = None
+    overrides_version2: Optional[int] = None
+    with open(overrides, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.search(r"\blib" + lib + r"\.so\.(?P<soversion>\d+)\b", line):
+                overrides_version1 = int(m.group("soversion"))
+                if overrides_version2 is not None:
+                    break
+                continue
+            if m := re.search(r"\blib" + lib + r"(?P<soversion>\d+)\b", line):
+                overrides_version2 = int(m.group("soversion"))
+                if overrides_version1 is not None:
+                    break
+                continue
+    # libgvpr has no overrides
+    if lib == "gvpr":
+        assert overrides_version1 is None
+        assert overrides_version2 is None
+        return
+    assert (
+        overrides_version1 is not None
+    ), f"failed to parse lib{lib}.so.* from Debian lintian overrides"
+    assert (
+        overrides_version2 is not None
+    ), f"failed to parse lib{lib}* from Debian lintian overrides"
+
+    # again, we use a common mapping rule `major = current - age`
+    assert (
+        version[0] - version[2] == overrides_version1
+    ), "Autotools and Debian lintian overrides disagree on library version"
+    assert (
+        version[0] - version[2] == overrides_version2
+    ), "Autotools and Debian lintian overrides disagree on library version"
