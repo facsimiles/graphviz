@@ -44,6 +44,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky,
     is_rocky_8,
     is_static_build,
+    plugin_version,
     remove_asan_summary,
     remove_xtype_warnings,
     run,
@@ -5744,10 +5745,8 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
     dot_bin = which("dot")
     root = dot_bin.parents[1]
 
-    # replicate information from ../configure.ac
-    GVPLUGIN_CURRENT = 8
-    GVPLUGIN_REVISION = 0
-    GVPLUGIN_AGE = 0
+    # extract plugin version
+    GVPLUGIN_CURRENT, GVPLUGIN_REVISION, GVPLUGIN_AGE = plugin_version()
 
     for subdir in ("lib", "lib64"):
         if is_macos():

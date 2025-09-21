@@ -391,6 +391,40 @@ def has_sandbox() -> bool:
     return False
 
 
+def plugin_version() -> tuple[int, int, int]:
+    """get the Graphviz plugin libtool revision, current, age"""
+
+    # treat configure.ac as the canonical source of this information
+    configure_ac = Path(__file__).resolve().parents[1] / "configure.ac"
+
+    # parse out the version components
+    current: Optional[int] = None
+    revision: Optional[int] = None
+    age: Optional[int] = None
+    with open(configure_ac, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(r"\s*GVPLUGIN_CURRENT\s*=\s*(?P<current>\d+)\s*$", line):
+                current = int(m.group("current"))
+                if revision is not None and age is not None:
+                    break
+                continue
+            if m := re.match(r"\s*GVPLUGIN_REVISION\s*=\s*(?P<revision>\d+)\s*$", line):
+                revision = int(m.group("revision"))
+                if current is not None and age is not None:
+                    break
+                continue
+            if m := re.match(r"\s*GVPLUGIN_AGE\s*=\s*(?P<age>\d+)\s*$", line):
+                age = int(m.group("age"))
+                if current is not None and revision is not None:
+                    break
+                continue
+    assert current is not None, "failed to parse plugin version"
+    assert revision is not None, "failed to parse plugin version"
+    assert age is not None, "failed to parse plugin version"
+
+    return current, revision, age
+
+
 def run_c(
     src: Path,
     args: list[Union[Path, str]] = None,
