@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.0.1)]
 
+### Changed
+
+- The pre-built macOS package for Autotools is now a .pkg file instead of a
+  tarball of binaries. #2726, !4348
+
 ## [14.0.0] – 2025-09-21
 
 ### Changed
