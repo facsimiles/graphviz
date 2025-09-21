@@ -6917,3 +6917,81 @@ def test_plugin_version_redhat():
     assert (
         autotools_current == rpm_current
     ), "Autotools and Red Hat spec file disagree on plugin current version"
+
+
+@pytest.mark.parametrize(
+    "lib",
+    (
+        "cdt",
+        "cgraph",
+        pytest.param("expr", marks=pytest.mark.xfail(strict=True)),
+        "gvc",
+        "gvpr",
+        "pathplan",
+        "xdot",
+    ),
+)
+def test_library_so_version(lib: str):
+    """test library SO versions are consistently defined"""
+
+    # parse the canonical version out of Autotools
+    makefile_am = Path(__file__).resolve().parents[1] / "lib" / lib / "Makefile.am"
+    version: Optional[tuple[int, int, int]] = None
+    with open(makefile_am, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*"
+                + lib.upper()
+                + r'_VERSION\s*=\s*"(?P<current>\d+):(?P<revision>\d+):(?P<age>\d+)"\s*$',
+                line,
+            ):
+                version = (
+                    int(m.group("current")),
+                    int(m.group("revision")),
+                    int(m.group("age")),
+                )
+                break
+    assert version is not None, "failed to parse library version"
+
+    # parse the equivalent out of the CMake build system
+    cmakelists = Path(__file__).resolve().parents[1] / "lib" / lib / "CMakeLists.txt"
+    cmake_version: Optional[tuple[int, int, int]] = None
+    cmake_soversion: Optional[int] = None
+    with open(cmakelists, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*VERSION\s+(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)\s*$", line
+            ):
+                cmake_version = (
+                    int(m.group("major")),
+                    int(m.group("minor")),
+                    int(m.group("patch")),
+                )
+                if cmake_soversion is not None:
+                    break
+                continue
+            if m := re.match(r"\s*SOVERSION\s+(?P<major>\d+)\s*$", line):
+                cmake_soversion = int(m.group("major"))
+                if cmake_version is not None:
+                    break
+                continue
+    assert cmake_version is not None, "failed to parse version from CMake build system"
+    assert (
+        cmake_soversion is not None
+    ), "failed to parse SO version from CMake build system"
+
+    assert cmake_version[0] == cmake_soversion, "major version and SO version disagree"
+
+    # unconditionally use the mapping rule `major = current - age` even though this is
+    # platform-dependent, because all the platforms we support use this mapping
+    assert (
+        cmake_version[0] == version[0] - version[2]
+    ), "CMake and Autotools build systems disagree on library major version"
+
+    assert (
+        cmake_version[1] == version[2]
+    ), "CMake and Autotools build systems disagree on library minor version"
+
+    assert (
+        cmake_version[2] == version[1]
+    ), "CMake and Autotools build systems disagree on library patch version"
