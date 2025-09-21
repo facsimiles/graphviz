@@ -2082,7 +2082,6 @@ AC_CONFIG_FILES(Makefile
 	lib/mingle/Makefile
 	lib/label/Makefile
 	lib/sfdpgen/Makefile
-	lib/sfdpgen/libsfdp.pc
 	lib/osage/Makefile
 	lib/edgepaint/Makefile
 	lib/gvpr/Makefile
