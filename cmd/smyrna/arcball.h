@@ -48,28 +48,16 @@
 # include <assert.h>
 
 //Math types derived from the KempoApi tMath library
-typedef union {
-    struct {
-	float X, Y;
-    } s;
-
-    float T[2];
+typedef struct {
+    float X, Y;
 } Tuple2fT;			//A generic 2-element tuple that is represented by single-precision floating point x,y coordinates. 
 
-typedef union {
-    struct {
-	float X, Y, Z;
-    } s;
-
-    float T[3];
+typedef struct {
+    float X, Y, Z;
 } Tuple3fT;			//A generic 3-element tuple that is represented by single precision-floating point x,y,z coordinates. 
 
-typedef union {
-    struct {
-	float X, Y, Z, W;
-    } s;
-
-    float T[4];
+typedef struct {
+    float X, Y, Z, W;
 } Tuple4fT;			//A 4-element tuple represented by single-precision floating point x,y,z,w coordinates. 
 
 typedef union {
@@ -212,27 +200,15 @@ typedef union {
 
 #ifdef ARCBALL_C
     /**
-      * Sets this vector to be the vector cross product of vectors v1 and v2.
+      * Returns a vector that is the vector cross product of vectors v1 and v2.
       * @param v1 the first vector
       * @param v2 the second vector
       */
 
-static void Vector3fCross(Vector3fT * NewObj, const Vector3fT * v1,
-			  const Vector3fT * v2)
-{
-    Vector3fT Result;		//safe not to initialize
-
-    assert(NewObj && v1 && v2);
-
-    // store on stack once for aliasing-safty
-    // i.e. safe when a.cross(a, b)
-
-    Result.s.X = (v1->s.Y * v2->s.Z) - (v1->s.Z * v2->s.Y);
-    Result.s.Y = (v1->s.Z * v2->s.X) - (v1->s.X * v2->s.Z);
-    Result.s.Z = (v1->s.X * v2->s.Y) - (v1->s.Y * v2->s.X);
-
-    //copy result back
-    *NewObj = Result;
+static Vector3fT Vector3fCross(Vector3fT v1, Vector3fT v2) {
+    return (Vector3fT){.X = v1.Y * v2.Z - v1.Z * v2.Y,
+                       .Y = v1.Z * v2.X - v1.X * v2.Z,
+                       .Z = v1.X * v2.Y - v1.Y * v2.X};
 }
 
     /**
@@ -244,8 +220,7 @@ static float Vector3fDot(const Vector3fT * NewObj, const Vector3fT * v1)
 {
     assert(NewObj && v1);
 
-    return (NewObj->s.X * v1->s.X) +
-	(NewObj->s.Y * v1->s.Y) + (NewObj->s.Z * v1->s.Z);
+    return NewObj->X * v1->X + NewObj->Y * v1->Y + NewObj->Z * v1->Z;
 }
 
     /**
@@ -257,8 +232,7 @@ static float Vector3fLengthSquared(const Vector3fT * NewObj)
 {
     assert(NewObj);
 
-    return (NewObj->s.X * NewObj->s.X) +
-	(NewObj->s.Y * NewObj->s.Y) + (NewObj->s.Z * NewObj->s.Z);
+    return NewObj->X * NewObj->X + NewObj->Y * NewObj->Y + NewObj->Z * NewObj->Z;
 }
 
     /**
@@ -291,22 +265,21 @@ static void Matrix3fSetRotationFromQuat4f(Matrix3fT * NewObj,
 
     assert(NewObj && q1);
 
-    n = (q1->s.X * q1->s.X) + (q1->s.Y * q1->s.Y) + (q1->s.Z * q1->s.Z) +
-	(q1->s.W * q1->s.W);
+    n = q1->X * q1->X + q1->Y * q1->Y + q1->Z * q1->Z + q1->W * q1->W;
     s = (n > 0.0f) ? (2.0f / n) : 0.0f;
 
-    xs = q1->s.X * s;
-    ys = q1->s.Y * s;
-    zs = q1->s.Z * s;
-    wx = q1->s.W * xs;
-    wy = q1->s.W * ys;
-    wz = q1->s.W * zs;
-    xx = q1->s.X * xs;
-    xy = q1->s.X * ys;
-    xz = q1->s.X * zs;
-    yy = q1->s.Y * ys;
-    yz = q1->s.Y * zs;
-    zz = q1->s.Z * zs;
+    xs = q1->X * s;
+    ys = q1->Y * s;
+    zs = q1->Z * s;
+    wx = q1->W * xs;
+    wy = q1->W * ys;
+    wz = q1->W * zs;
+    xx = q1->X * xs;
+    xy = q1->X * ys;
+    xz = q1->X * zs;
+    yy = q1->Y * ys;
+    yz = q1->Y * zs;
+    zz = q1->Z * zs;
 
     NewObj->s.XX = 1.0f - (yy + zz);
     NewObj->s.YX = xy - wz;
@@ -553,7 +526,6 @@ struct _ArcBall_t {
     int isDragging;
 };
 
-
-void init_arcBall(ArcBall_t * a, float NewWidth, float NewHeight);
+ArcBall_t init_arcBall(float NewWidth, float NewHeight);
 void arcmouseClick(void);
 void arcmouseDrag(void);

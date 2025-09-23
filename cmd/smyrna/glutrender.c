@@ -51,7 +51,7 @@ static void cb_reshape(int width, int height)
     /* setup various opengl things that we need */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    init_arcBall(view->arcball, view->w, view->h);
+    *view->arcball = init_arcBall(view->w, view->h);
     if (view->w > view->h) {
 	aspect = (float) view->w / (float) view->h;
 	glOrtho(-aspect * GL_VIEWPORT_FACTOR, aspect * GL_VIEWPORT_FACTOR,
