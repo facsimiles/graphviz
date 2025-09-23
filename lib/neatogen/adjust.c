@@ -933,9 +933,6 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	case AM_SCALEXY:
 	    ret = scAdjust(G, 0);
 	    break;
-	case AM_PUSH:
-        ret = 0;
-	    break;
 	case AM_PUSHPULL:
         ret = 0;
 	    break;
