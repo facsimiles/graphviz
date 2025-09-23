@@ -19,15 +19,15 @@ extern "C" {
 #include <neatogen/defs.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
-INTERNAL void PCA_alloc(DistType **, int, int, double **, int);
-INTERNAL bool iterativePCA_1D(double **, int, int, double *);
+PRIVATE void PCA_alloc(DistType **, int, int, double **, int);
+PRIVATE bool iterativePCA_1D(double **, int, int, double *);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

@@ -17,9 +17,9 @@ extern "C" {
 #include <stddef.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
     /* Support for freelists */
@@ -30,11 +30,11 @@ extern "C" {
 	int nodesize;		/* Size of node */
     } Freelist;
 
-INTERNAL void *getfree(Freelist *);
-INTERNAL void freeinit(Freelist *, int);
-INTERNAL void makefree(void *, Freelist *);
+PRIVATE void *getfree(Freelist *);
+PRIVATE void freeinit(Freelist *, int);
+PRIVATE void makefree(void *, Freelist *);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

@@ -18,16 +18,16 @@ extern "C" {
 #include <neatogen/sgd.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
-INTERNAL void ngdijkstra(int, vtx_data *, int, DistType *);
-INTERNAL void dijkstra_f(int, vtx_data *, int, float *);
-INTERNAL int dijkstra_sgd(graph_sgd *, int, term_sgd *);
+PRIVATE void ngdijkstra(int, vtx_data *, int, DistType *);
+PRIVATE void dijkstra_f(int, vtx_data *, int, float *);
+PRIVATE int dijkstra_sgd(graph_sgd *, int, term_sgd *);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

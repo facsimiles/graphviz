@@ -17,9 +17,9 @@ extern "C" {
 #include <neatogen/geometry.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
     typedef struct {
@@ -30,13 +30,13 @@ extern "C" {
 	int kind;
     } Poly;
 
-INTERNAL void polyFree(void);
-INTERNAL int polyOverlap(Point, Poly *, Point, Poly *);
-INTERNAL int makePoly(Poly *, Agnode_t *, double, double);
-INTERNAL int makeAddPoly(Poly *, Agnode_t *, double, double);
-INTERNAL void breakPoly(Poly *);
+PRIVATE void polyFree(void);
+PRIVATE int polyOverlap(Point, Poly *, Point, Poly *);
+PRIVATE int makePoly(Poly *, Agnode_t *, double, double);
+PRIVATE int makeAddPoly(Poly *, Agnode_t *, double, double);
+PRIVATE void breakPoly(Poly *);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

@@ -17,15 +17,15 @@ extern "C" {
 #include <neatogen/defs.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
-INTERNAL void embed_graph(vtx_data *graph, int n, int dim, DistType ***, int);
-INTERNAL void center_coordinate(DistType **, int, int);
+PRIVATE void embed_graph(vtx_data *graph, int n, int dim, DistType ***, int);
+PRIVATE void center_coordinate(DistType **, int, int);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

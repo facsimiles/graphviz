@@ -34,12 +34,12 @@
 #include	<neatogen/adjust.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
-INTERNAL int lu_decompose(double **a, int n);
-INTERNAL void lu_solve(double *x, double *b, int n);
+PRIVATE int lu_decompose(double **a, int n);
+PRIVATE void lu_solve(double *x, double *b, int n);
 
-#undef INTERNAL
+#undef PRIVATE

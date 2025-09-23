@@ -19,9 +19,9 @@ extern "C" {
 #include <neatogen/defs.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
     typedef struct {
@@ -31,15 +31,15 @@ extern "C" {
 	int start;
     } Queue;
 
-INTERNAL void mkQueue(Queue *, int);
-INTERNAL void freeQueue(Queue *);
-INTERNAL void initQueue(Queue *, int startVertex);
-INTERNAL bool deQueue(Queue *, int *);
-INTERNAL bool enQueue(Queue *, int);
+PRIVATE void mkQueue(Queue *, int);
+PRIVATE void freeQueue(Queue *);
+PRIVATE void initQueue(Queue *, int startVertex);
+PRIVATE bool deQueue(Queue *, int *);
+PRIVATE bool enQueue(Queue *, int);
 
-INTERNAL void bfs(int, vtx_data*, int, DistType*);
+PRIVATE void bfs(int, vtx_data*, int, DistType*);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

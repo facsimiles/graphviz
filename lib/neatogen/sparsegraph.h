@@ -19,9 +19,9 @@ extern "C" {
 #include "config.h"
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
     typedef struct {
@@ -42,10 +42,10 @@ extern "C" {
 
     typedef int DistType;	/* must be signed!! */
 
-INTERNAL void freeGraphData(vtx_data * graph);
-INTERNAL void freeGraph(v_data * graph);
+PRIVATE void freeGraphData(vtx_data * graph);
+PRIVATE void freeGraph(v_data * graph);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

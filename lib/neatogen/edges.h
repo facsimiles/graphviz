@@ -20,9 +20,9 @@ extern "C" {
 #include <neatogen/site.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
     typedef struct Edge {
@@ -35,11 +35,11 @@ extern "C" {
 #define re 1
 
     extern double pxmin, pxmax, pymin, pymax;	/* clipping window */
-INTERNAL void endpoint(Edge *, int, Site *, arena_t *);
-INTERNAL void clip_line(Edge * e);
-INTERNAL Edge *gvbisect(Site *, Site *, arena_t *);
+PRIVATE void endpoint(Edge *, int, Site *, arena_t *);
+PRIVATE void clip_line(Edge * e);
+PRIVATE Edge *gvbisect(Site *, Site *, arena_t *);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

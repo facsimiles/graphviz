@@ -18,29 +18,29 @@ extern "C" {
 #include <stdbool.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
 /*************************
  * C.G. method - SPARSE  *
  ************************/
 
-INTERNAL int conjugate_gradient(vtx_data *, double *, double *, int,
+PRIVATE int conjugate_gradient(vtx_data *, double *, double *, int,
 				   double, int);
 
 /*************************
  * C.G. method - DENSE   *
  ************************/
 
-INTERNAL int conjugate_gradient_f(float **, double *, double *, int,
+PRIVATE int conjugate_gradient_f(float **, double *, double *, int,
 				     double, int, bool);
 
-INTERNAL int conjugate_gradient_mkernel(float *, float *, float *, int,
+PRIVATE int conjugate_gradient_mkernel(float *, float *, float *, int,
 					   double, int);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

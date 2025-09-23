@@ -19,9 +19,9 @@ extern "C" {
 #include <stdbool.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
 #define DFLT_MARGIN     4   /* 4 points */
@@ -46,19 +46,19 @@ typedef struct {
     bool doAdd;  /* if true, x and y are in points */
 } expand_t;
 
-INTERNAL expand_t sepFactor(graph_t * G);
-INTERNAL expand_t esepFactor(graph_t * G);
-INTERNAL int adjustNodes(graph_t * G);
-INTERNAL int normalize(graph_t * g);
-INTERNAL int removeOverlapAs(graph_t*, char*);
-INTERNAL int removeOverlapWith(graph_t*, adjust_data*);
-INTERNAL int cAdjust(graph_t *, int);
-INTERNAL int scAdjust(graph_t *, int);
-INTERNAL void graphAdjustMode(graph_t *G, adjust_data*, char* dflt);
-INTERNAL double *getSizes(Agraph_t * g, pointf pad, int *n_elabels, int **elabels);
-INTERNAL SparseMatrix makeMatrix(Agraph_t *g);
+PRIVATE expand_t sepFactor(graph_t * G);
+PRIVATE expand_t esepFactor(graph_t * G);
+PRIVATE int adjustNodes(graph_t * G);
+PRIVATE int normalize(graph_t * g);
+PRIVATE int removeOverlapAs(graph_t*, char*);
+PRIVATE int removeOverlapWith(graph_t*, adjust_data*);
+PRIVATE int cAdjust(graph_t *, int);
+PRIVATE int scAdjust(graph_t *, int);
+PRIVATE void graphAdjustMode(graph_t *G, adjust_data*, char* dflt);
+PRIVATE double *getSizes(Agraph_t * g, pointf pad, int *n_elabels, int **elabels);
+PRIVATE SparseMatrix makeMatrix(Agraph_t *g);
 
-#undef INTERNAL
+#undef PRIVATE
 
 #ifdef __cplusplus
 }

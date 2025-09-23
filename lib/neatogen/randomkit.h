@@ -59,9 +59,9 @@
 #include <stddef.h>
 
 #if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
+#define PRIVATE __attribute__((visibility("hidden")))
 #else
-#define INTERNAL /* nothing */
+#define PRIVATE /* nothing */
 #endif
 
 #define RK_STATE_LEN 624
@@ -84,20 +84,20 @@ extern "C" {
 /*
  * Initialize the RNG state using the given seed.
  */
-INTERNAL void rk_seed(unsigned long seed, rk_state *state);
+PRIVATE void rk_seed(unsigned long seed, rk_state *state);
 
 /*
  * Returns a random unsigned long between 0 and RK_MAX inclusive
  */
-INTERNAL unsigned long rk_random(rk_state *state);
+PRIVATE unsigned long rk_random(rk_state *state);
 
 /*
  * Returns a random unsigned long between 0 and max inclusive.
  */
-INTERNAL unsigned long rk_interval(unsigned long max, rk_state *state);
+PRIVATE unsigned long rk_interval(unsigned long max, rk_state *state);
 
 #ifdef __cplusplus
 }
 #endif
 
-#undef INTERNAL
+#undef PRIVATE
