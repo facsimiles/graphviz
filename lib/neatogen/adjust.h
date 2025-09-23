@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,12 +19,6 @@ extern "C" {
 #include "geom.h"
 #include <sparse/SparseMatrix.h>
 #include <stdbool.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 #define DFLT_MARGIN     4   /* 4 points */
 
@@ -57,8 +53,6 @@ PRIVATE int scAdjust(graph_t *, int);
 PRIVATE void graphAdjustMode(graph_t *G, adjust_data*, char* dflt);
 PRIVATE double *getSizes(Agraph_t * g, pointf pad, int *n_elabels, int **elabels);
 PRIVATE SparseMatrix makeMatrix(Agraph_t *g);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

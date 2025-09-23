@@ -11,12 +11,7 @@
 #pragma once
 
 #include <neatogen/sparsegraph.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
+#include <util/api.h>
 
 typedef struct {
     int  nedges; /* no. of edges in triangulation */
@@ -35,5 +30,3 @@ PRIVATE v_data *UG_graph(double *x, double *y, int n);
 PRIVATE surface_t* mkSurface (double *x, double *y, int n, int* segs, int nsegs);
 
 PRIVATE void freeSurface (surface_t* s);
-
-#undef PRIVATE

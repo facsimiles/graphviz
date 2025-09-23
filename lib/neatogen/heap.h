@@ -10,18 +10,14 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/hedges.h>
 #include <stdbool.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 /// priority queue heap
 typedef struct pq pq_t;
@@ -33,8 +29,6 @@ PRIVATE Point PQ_min(pq_t *pq);
 PRIVATE bool PQempty(const pq_t *pq);
 PRIVATE void PQdelete(pq_t *pq, Halfedge *);
 PRIVATE void PQinsert(pq_t *pq, Halfedge *, Site *, double);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

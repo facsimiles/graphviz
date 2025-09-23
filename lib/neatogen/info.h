@@ -12,6 +12,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,12 +20,6 @@ extern "C" {
 
 #include <neatogen/poly.h>
 #include <neatogen/voronoi.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 /// info concerning site
 typedef struct {
@@ -41,8 +36,6 @@ extern Info_t *nodeInfo;
 
 /// insert vertex into sorted list
 PRIVATE void addVertex(Site *, double, double);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

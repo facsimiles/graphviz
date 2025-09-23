@@ -11,18 +11,13 @@
 #pragma once
 
 #include <stddef.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "config.h"
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
     typedef struct {
 	int nedges;		/* no. of neighbors, including self */
@@ -44,8 +39,6 @@ extern "C" {
 
 PRIVATE void freeGraphData(vtx_data * graph);
 PRIVATE void freeGraph(v_data * graph);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

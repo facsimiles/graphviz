@@ -10,14 +10,10 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
 #endif
 
 #ifdef DIGCOLA
@@ -43,8 +39,6 @@ PRIVATE void deleteCMajEnv(CMajEnv *e);
 PRIVATE float** unpackMatrix(float * packedMat, int n);
 
 #endif 
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

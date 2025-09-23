@@ -11,12 +11,7 @@
 #pragma once
 
 #include <stddef.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,8 +38,6 @@ PRIVATE void addpt(Point * a, Point b, Point c);
 PRIVATE double area_2(Point a, Point b, Point c);
 PRIVATE int leftOf(Point a, Point b, Point c);
 PRIVATE int intersection(Point a, Point b, Point c, Point d, Point * p);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

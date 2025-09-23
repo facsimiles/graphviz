@@ -11,18 +11,13 @@
 #pragma once
 
 #include <stdbool.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/sparsegraph.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 PRIVATE void scadd(double *, int, double, double *);
 PRIVATE double norm(double *, int);
@@ -78,8 +73,6 @@ PRIVATE void square_vec(int n, float *vec);
 PRIVATE void invert_vec(int n, float *vec);
 PRIVATE void sqrt_vecf(int n, float *source, float *target);
 PRIVATE void invert_sqrt_vec(int n, float *vec);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

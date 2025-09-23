@@ -10,13 +10,7 @@
 
 #pragma once
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
+#include <util/api.h>
 
 PRIVATE SparseMatrix call_tri(int n, double * x);
 PRIVATE SparseMatrix call_tri2(int n, int dim, double * x);
-
-#undef PRIVATE

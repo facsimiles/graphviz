@@ -57,12 +57,7 @@
 #pragma once
 
 #include <stddef.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
+#include <util/api.h>
 
 #define RK_STATE_LEN 624
 
@@ -99,5 +94,3 @@ PRIVATE unsigned long rk_interval(unsigned long max, rk_state *state);
 #ifdef __cplusplus
 }
 #endif
-
-#undef PRIVATE

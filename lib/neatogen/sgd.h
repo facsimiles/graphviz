@@ -1,16 +1,11 @@
 #pragma once
 
 #include <stddef.h>
+#include <util/api.h>
 #include <util/bitarray.h>
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
 #endif
 
 typedef struct {
@@ -28,8 +23,6 @@ typedef struct graph_sgd {
 } graph_sgd;
 
 PRIVATE void sgd(graph_t *, int);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

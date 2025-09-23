@@ -11,18 +11,13 @@
 #pragma once
 
 #include <stdbool.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/defs.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
     typedef struct {
 	int *data;
@@ -38,8 +33,6 @@ PRIVATE bool deQueue(Queue *, int *);
 PRIVATE bool enQueue(Queue *, int);
 
 PRIVATE void bfs(int, vtx_data*, int, DistType*);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

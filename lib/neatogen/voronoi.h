@@ -10,21 +10,15 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/site.h>
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
-
 PRIVATE void voronoi(Site *(*)(void *), void *);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

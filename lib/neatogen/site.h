@@ -11,18 +11,13 @@
 #pragma once
 
 #include <stddef.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/geometry.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 // sites are also used as vertices on line segments
 typedef struct Site {
@@ -40,8 +35,6 @@ PRIVATE double ngdist(Site *, Site *); /* Distance between two sites */
 PRIVATE void deref(Site *);            /* Increment refcnt of site  */
 PRIVATE void ref(Site *);              /* Decrement refcnt of site  */
 PRIVATE void makevertex(Site *);       /* Transform a site into a vertex */
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

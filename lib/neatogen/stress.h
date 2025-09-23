@@ -10,17 +10,13 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/defs.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 #define tolerance_cg 1e-3
 
@@ -51,8 +47,6 @@ PRIVATE float *compute_apsp_artificial_weights_packed(vtx_data *graph, int n);
 PRIVATE float* circuitModel(vtx_data * graph, int nG);
 PRIVATE float* mdsModel (vtx_data * graph, int nG);
 PRIVATE int initLayout(int n, int dim, double **coords, node_t **nodes);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

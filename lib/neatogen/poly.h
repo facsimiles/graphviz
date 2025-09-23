@@ -10,17 +10,13 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/geometry.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
     typedef struct {
 	Point origin;
@@ -35,8 +31,6 @@ PRIVATE int polyOverlap(Point, Poly *, Point, Poly *);
 PRIVATE int makePoly(Poly *, Agnode_t *, double, double);
 PRIVATE int makeAddPoly(Poly *, Agnode_t *, double, double);
 PRIVATE void breakPoly(Poly *);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

@@ -12,17 +12,10 @@
 
 #include <render.h>
 #include <pathutil.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
+#include <util/api.h>
 
 typedef struct router_s router_t;
 
 PRIVATE void freeRouter (router_t* rtr);
 PRIVATE router_t* mkRouter (Ppoly_t** obs, int npoly);
 PRIVATE int makeMultiSpline(edge_t* e, router_t * rtr, int);
-
-#undef PRIVATE

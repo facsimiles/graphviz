@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,17 +19,9 @@ extern "C" {
 #include <neatogen/defs.h>
 #include <neatogen/sgd.h>
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
-
 PRIVATE void ngdijkstra(int, vtx_data *, int, DistType *);
 PRIVATE void dijkstra_f(int, vtx_data *, int, float *);
 PRIVATE int dijkstra_sgd(graph_sgd *, int, term_sgd *);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

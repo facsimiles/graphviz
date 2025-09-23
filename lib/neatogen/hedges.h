@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <util/api.h>
 #include <util/arena.h>
 
 #ifdef __cplusplus
@@ -18,12 +19,6 @@ extern "C" {
 
 #include <neatogen/site.h>
 #include <neatogen/edges.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
     typedef struct Halfedge {
 	struct Halfedge *ELleft, *ELright;
@@ -51,8 +46,6 @@ PRIVATE Halfedge *ELleftbnd(el_state_t *, Point *);
 PRIVATE void ELdelete(Halfedge *);
 PRIVATE Halfedge *ELleft(Halfedge *), *ELright(Halfedge *);
 PRIVATE Site *leftreg(Halfedge *), *rightreg(Halfedge *);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

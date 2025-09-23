@@ -12,12 +12,7 @@
 
 #include <sfdpgen/post_process.h>
 #include <stdbool.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
+#include <util/api.h>
 
 typedef  StressMajorizationSmoother OverlapSmoother;
 
@@ -60,5 +55,3 @@ PRIVATE void remove_overlap(int dim, SparseMatrix A, double *x, double *label_si
                     int ntry, double initial_scaling, int edge_labeling_scheme,
                     int n_constr_nodes, int *constr_nodes,
                     SparseMatrix A_constr, bool doShrink);
-
-#undef PRIVATE

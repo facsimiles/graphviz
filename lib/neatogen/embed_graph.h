@@ -10,22 +10,16 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/defs.h>
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
-
 PRIVATE void embed_graph(vtx_data *graph, int n, int dim, DistType ***, int);
 PRIVATE void center_coordinate(DistType **, int, int);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

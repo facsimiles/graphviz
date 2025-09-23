@@ -11,18 +11,13 @@
 #pragma once
 
 #include <stddef.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/defs.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 PRIVATE void fill_neighbors_vec_unweighted(vtx_data *, int vtx,
 					      int *vtx_vec);
@@ -37,8 +32,6 @@ PRIVATE void quicksort_placef(float *, int *, int, int);
 PRIVATE void compute_new_weights(vtx_data * graph, int n);
 PRIVATE void restore_old_weights(vtx_data * graph, int n,
 				    float *old_weights);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

@@ -10,17 +10,13 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/defs.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 #ifdef DIGCOLA
 PRIVATE int compute_y_coords(vtx_data*, int, double*, int);
@@ -47,8 +43,6 @@ typedef struct ipsep_options {
 PRIVATE int stress_majorization_cola(vtx_data*, int, double**, node_t**, int, int, int, ipsep_options*);
 #endif
 #endif
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

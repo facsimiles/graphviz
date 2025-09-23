@@ -10,18 +10,14 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/defs.h>
 #include <stdbool.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 /*************************
  * C.G. method - SPARSE  *
@@ -39,8 +35,6 @@ PRIVATE int conjugate_gradient_f(float **, double *, double *, int,
 
 PRIVATE int conjugate_gradient_mkernel(float *, float *, float *, int,
 					   double, int);
-
-#undef PRIVATE
 
 #ifdef __cplusplus
 }

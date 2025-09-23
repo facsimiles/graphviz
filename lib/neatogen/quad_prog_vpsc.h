@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,12 +32,6 @@ extern "C" {
 #include <neatogen/defs.h>
 #include <neatogen/digcola.h>
 #include <stdbool.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define PRIVATE __attribute__((visibility("hidden")))
-#else
-#define PRIVATE /* nothing */
-#endif
 
 typedef struct CMajEnvVPSC {
 	float **A;
@@ -80,8 +76,6 @@ typedef struct {
  */
 PRIVATE DigColaLevel* assign_digcola_levels(int *ordering, int n, int *level_inds, int num_divisions);
 PRIVATE int get_num_digcola_constraints(DigColaLevel *levels, int num_levels);
-
-#undef PRIVATE
 
 #endif 
 
