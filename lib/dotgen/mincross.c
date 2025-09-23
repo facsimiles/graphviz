@@ -183,14 +183,13 @@ static void nname(node_t *v, FILE *stream) {
 }
 static void dumpg (graph_t* g)
 {
-    int i;
     edge_t* e;
 
     fprintf (stderr, "digraph A {\n");
     for (int r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	fprintf (stderr, "  subgraph {rank=same  ");
 	const char *trailer = " }\n";
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	for (int i = 0; i < GD_rank(g)[r].n; i++) {
 	  node_t *const v = GD_rank(g)[r].v[i];
           if (i > 0) {
  	    fputs(" -> ", stderr);
@@ -201,7 +200,7 @@ static void dumpg (graph_t* g)
         fputs(trailer, stderr);
     }
     for (int r = GD_minrank(g); r < GD_maxrank(g); r++) {
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	for (int i = 0; i < GD_rank(g)[r].n; i++) {
 	  node_t *const v = GD_rank(g)[r].v[i];
 	  for (int j = 0; (e = ND_out(v).list[j]); j++) {
              nname(v, stderr);
