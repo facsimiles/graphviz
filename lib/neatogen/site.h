@@ -26,7 +26,6 @@ typedef struct Site {
   unsigned refcnt;
 } Site;
 
-extern int siteidx;
 extern Site *bottomsite;
 
 PRIVATE void siteinit(void);
