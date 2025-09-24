@@ -282,23 +282,6 @@ static void Matrix3fMulMatrix3f(Matrix3fT * NewObj, const Matrix3fT * m1)
     *NewObj = Result;
 }
 
-
-static void Matrix4fSetRotationScaleFromMatrix4f(Matrix4fT * NewObj,
-						 const Matrix4fT * m1)
-{
-    assert(NewObj && m1);
-
-    NewObj->XX = m1->XX;
-    NewObj->YX = m1->YX;
-    NewObj->ZX = m1->ZX;
-    NewObj->XY = m1->XY;
-    NewObj->YY = m1->YY;
-    NewObj->ZY = m1->ZY;
-    NewObj->XZ = m1->XZ;
-    NewObj->YZ = m1->YZ;
-    NewObj->ZZ = m1->ZZ;
-}
-
     /**
       * Performs SVD on this matrix and gets scale and rotation.
       * Rotation is placed into rot3, and rot4.
@@ -366,9 +349,7 @@ static float Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
 
     if (rot4)			//if pointer not null
     {
-	if (rot4 != NewObj) {
-	    Matrix4fSetRotationScaleFromMatrix4f(rot4, NewObj);	// private method
-	}
+	*rot4 = *NewObj;
 	// zero-div may occur.
 
 	n = 1.0f / FuncSqrt(NewObj->XX * NewObj->XX +
