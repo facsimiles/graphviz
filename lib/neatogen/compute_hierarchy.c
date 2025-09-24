@@ -23,7 +23,7 @@
  * This is controlled by two parameters: 'abs_tol' and 
  * 'relative_tol'. The smaller these two are, the more 
  * levels we'll get. 
- * More speciffically:
+ * More specifically:
  * We never consider gaps smaller than 'abs_tol'
  * Additionally, we never consider gaps smaller than 'abs_tol'*<avg_gap>
  * 
