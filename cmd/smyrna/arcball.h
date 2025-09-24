@@ -445,7 +445,6 @@ struct _ArcBall_t {
     Matrix3fT LastRot;
     Matrix3fT ThisRot;
     Point2fT MousePt;
-    int isRClicked;
     int isDragging;
 };
 
