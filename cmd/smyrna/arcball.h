@@ -109,76 +109,19 @@ typedef union {
 typedef union {
     float M[16];
     struct {
-	//column major
-	union {
-	    float M00;
-	    float XX;
-	    float SX;
-	};			//XAxis.X and Scale X
-	union {
-	    float M10;
-	    float XY;
-	};			//XAxis.Y
-	union {
-	    float M20;
-	    float XZ;
-	};			//XAxis.Z
-	union {
-	    float M30;
-	    float XW;
-	};			//XAxis.W
-	union {
-	    float M01;
-	    float YX;
-	};			//YAxis.X
-	union {
-	    float M11;
-	    float YY;
-	    float SY;
-	};			//YAxis.Y and Scale Y
-	union {
-	    float M21;
-	    float YZ;
-	};			//YAxis.Z
-	union {
-	    float M31;
-	    float YW;
-	};			//YAxis.W
-	union {
-	    float M02;
-	    float ZX;
-	};			//ZAxis.X
-	union {
-	    float M12;
-	    float ZY;
-	};			//ZAxis.Y
-	union {
-	    float M22;
-	    float ZZ;
-	    float SZ;
-	};			//ZAxis.Z and Scale Z
-	union {
-	    float M32;
-	    float ZW;
-	};			//ZAxis.W
-	union {
-	    float M03;
-	    float TX;
-	};			//Trans.X
-	union {
-	    float M13;
-	    float TY;
-	};			//Trans.Y
-	union {
-	    float M23;
-	    float TZ;
-	};			//Trans.Z
-	union {
-	    float M33;
-	    float TW;
-	    float SW;
-	};			//Trans.W and Scale W
-    } s;
+	float XX;
+	float XY;
+	float XZ;
+	float XW;
+	float YX;
+	float YY;
+	float YZ;
+	float YW;
+	float ZX;
+	float ZY;
+	float ZZ;
+	float ZW;
+    };
 } Matrix4fT;			//A single precision floating point 4 by 4 matrix. 
 
 
@@ -345,15 +288,15 @@ static void Matrix4fSetRotationScaleFromMatrix4f(Matrix4fT * NewObj,
 {
     assert(NewObj && m1);
 
-    NewObj->s.XX = m1->s.XX;
-    NewObj->s.YX = m1->s.YX;
-    NewObj->s.ZX = m1->s.ZX;
-    NewObj->s.XY = m1->s.XY;
-    NewObj->s.YY = m1->s.YY;
-    NewObj->s.ZY = m1->s.ZY;
-    NewObj->s.XZ = m1->s.XZ;
-    NewObj->s.YZ = m1->s.YZ;
-    NewObj->s.ZZ = m1->s.ZZ;
+    NewObj->XX = m1->XX;
+    NewObj->YX = m1->YX;
+    NewObj->ZX = m1->ZX;
+    NewObj->XY = m1->XY;
+    NewObj->YY = m1->YY;
+    NewObj->ZY = m1->ZY;
+    NewObj->XZ = m1->XZ;
+    NewObj->YZ = m1->YZ;
+    NewObj->ZZ = m1->ZZ;
 }
 
     /**
@@ -375,47 +318,47 @@ static float Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
     // Not complete but fast and reasonable.
     // See comment in Matrix3d.
 
-    s = FuncSqrt(((NewObj->s.XX * NewObj->s.XX) +
-		  (NewObj->s.XY * NewObj->s.XY) +
-		  (NewObj->s.XZ * NewObj->s.XZ) +
-		  (NewObj->s.YX * NewObj->s.YX) +
-		  (NewObj->s.YY * NewObj->s.YY) +
-		  (NewObj->s.YZ * NewObj->s.YZ) +
-		  (NewObj->s.ZX * NewObj->s.ZX) +
-		  (NewObj->s.ZY * NewObj->s.ZY) +
-		  (NewObj->s.ZZ * NewObj->s.ZZ)) / 3.0f);
+    s = FuncSqrt((NewObj->XX * NewObj->XX +
+		  NewObj->XY * NewObj->XY +
+		  NewObj->XZ * NewObj->XZ +
+		  NewObj->YX * NewObj->YX +
+		  NewObj->YY * NewObj->YY +
+		  NewObj->YZ * NewObj->YZ +
+		  NewObj->ZX * NewObj->ZX +
+		  NewObj->ZY * NewObj->ZY +
+		  NewObj->ZZ * NewObj->ZZ) / 3.0f);
 
     if (rot3)			//if pointer not null
     {
-	rot3->s.XX = NewObj->s.XX;
-	rot3->s.XY = NewObj->s.XY;
-	rot3->s.XZ = NewObj->s.XZ;
-	rot3->s.YX = NewObj->s.YX;
-	rot3->s.YY = NewObj->s.YY;
-	rot3->s.YZ = NewObj->s.YZ;
-	rot3->s.ZX = NewObj->s.ZX;
-	rot3->s.ZY = NewObj->s.ZY;
-	rot3->s.ZZ = NewObj->s.ZZ;
+	rot3->s.XX = NewObj->XX;
+	rot3->s.XY = NewObj->XY;
+	rot3->s.XZ = NewObj->XZ;
+	rot3->s.YX = NewObj->YX;
+	rot3->s.YY = NewObj->YY;
+	rot3->s.YZ = NewObj->YZ;
+	rot3->s.ZX = NewObj->ZX;
+	rot3->s.ZY = NewObj->ZY;
+	rot3->s.ZZ = NewObj->ZZ;
 
 	// zero-div may occur.
 
-	n = 1.0f / FuncSqrt((NewObj->s.XX * NewObj->s.XX) +
-			    (NewObj->s.XY * NewObj->s.XY) +
-			    (NewObj->s.XZ * NewObj->s.XZ));
+	n = 1.0f / FuncSqrt(NewObj->XX * NewObj->XX +
+			    NewObj->XY * NewObj->XY +
+			    NewObj->XZ * NewObj->XZ);
 	rot3->s.XX *= n;
 	rot3->s.XY *= n;
 	rot3->s.XZ *= n;
 
-	n = 1.0f / FuncSqrt((NewObj->s.YX * NewObj->s.YX) +
-			    (NewObj->s.YY * NewObj->s.YY) +
-			    (NewObj->s.YZ * NewObj->s.YZ));
+	n = 1.0f / FuncSqrt(NewObj->YX * NewObj->YX +
+			    NewObj->YY * NewObj->YY +
+			    NewObj->YZ * NewObj->YZ);
 	rot3->s.YX *= n;
 	rot3->s.YY *= n;
 	rot3->s.YZ *= n;
 
-	n = 1.0f / FuncSqrt((NewObj->s.ZX * NewObj->s.ZX) +
-			    (NewObj->s.ZY * NewObj->s.ZY) +
-			    (NewObj->s.ZZ * NewObj->s.ZZ));
+	n = 1.0f / FuncSqrt(NewObj->ZX * NewObj->ZX +
+			    NewObj->ZY * NewObj->ZY +
+			    NewObj->ZZ * NewObj->ZZ);
 	rot3->s.ZX *= n;
 	rot3->s.ZY *= n;
 	rot3->s.ZZ *= n;
@@ -428,26 +371,26 @@ static float Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
 	}
 	// zero-div may occur.
 
-	n = 1.0f / FuncSqrt((NewObj->s.XX * NewObj->s.XX) +
-			    (NewObj->s.XY * NewObj->s.XY) +
-			    (NewObj->s.XZ * NewObj->s.XZ));
-	rot4->s.XX *= n;
-	rot4->s.XY *= n;
-	rot4->s.XZ *= n;
+	n = 1.0f / FuncSqrt(NewObj->XX * NewObj->XX +
+			    NewObj->XY * NewObj->XY +
+			    NewObj->XZ * NewObj->XZ);
+	rot4->XX *= n;
+	rot4->XY *= n;
+	rot4->XZ *= n;
 
-	n = 1.0f / FuncSqrt((NewObj->s.YX * NewObj->s.YX) +
-			    (NewObj->s.YY * NewObj->s.YY) +
-			    (NewObj->s.YZ * NewObj->s.YZ));
-	rot4->s.YX *= n;
-	rot4->s.YY *= n;
-	rot4->s.YZ *= n;
+	n = 1.0f / FuncSqrt(NewObj->YX * NewObj->YX +
+			    NewObj->YY * NewObj->YY +
+			    NewObj->YZ * NewObj->YZ);
+	rot4->YX *= n;
+	rot4->YY *= n;
+	rot4->YZ *= n;
 
-	n = 1.0f / FuncSqrt((NewObj->s.ZX * NewObj->s.ZX) +
-			    (NewObj->s.ZY * NewObj->s.ZY) +
-			    (NewObj->s.ZZ * NewObj->s.ZZ));
-	rot4->s.ZX *= n;
-	rot4->s.ZY *= n;
-	rot4->s.ZZ *= n;
+	n = 1.0f / FuncSqrt(NewObj->ZX * NewObj->ZX +
+			    NewObj->ZY * NewObj->ZY +
+			    NewObj->ZZ * NewObj->ZZ);
+	rot4->ZX *= n;
+	rot4->ZY *= n;
+	rot4->ZZ *= n;
     }
 
     return s;
@@ -459,15 +402,15 @@ static void Matrix4fSetRotationScaleFromMatrix3f(Matrix4fT * NewObj,
 {
     assert(NewObj && m1);
 
-    NewObj->s.XX = m1->s.XX;
-    NewObj->s.YX = m1->s.YX;
-    NewObj->s.ZX = m1->s.ZX;
-    NewObj->s.XY = m1->s.XY;
-    NewObj->s.YY = m1->s.YY;
-    NewObj->s.ZY = m1->s.ZY;
-    NewObj->s.XZ = m1->s.XZ;
-    NewObj->s.YZ = m1->s.YZ;
-    NewObj->s.ZZ = m1->s.ZZ;
+    NewObj->XX = m1->s.XX;
+    NewObj->YX = m1->s.YX;
+    NewObj->ZX = m1->s.ZX;
+    NewObj->XY = m1->s.XY;
+    NewObj->YY = m1->s.YY;
+    NewObj->ZY = m1->s.ZY;
+    NewObj->XZ = m1->s.XZ;
+    NewObj->YZ = m1->s.YZ;
+    NewObj->ZZ = m1->s.ZZ;
 }
 
 
@@ -475,15 +418,15 @@ static void Matrix4fMulRotationScale(Matrix4fT * NewObj, float scale)
 {
     assert(NewObj);
 
-    NewObj->s.XX *= scale;
-    NewObj->s.YX *= scale;
-    NewObj->s.ZX *= scale;
-    NewObj->s.XY *= scale;
-    NewObj->s.YY *= scale;
-    NewObj->s.ZY *= scale;
-    NewObj->s.XZ *= scale;
-    NewObj->s.YZ *= scale;
-    NewObj->s.ZZ *= scale;
+    NewObj->XX *= scale;
+    NewObj->YX *= scale;
+    NewObj->ZX *= scale;
+    NewObj->XY *= scale;
+    NewObj->YY *= scale;
+    NewObj->ZY *= scale;
+    NewObj->XZ *= scale;
+    NewObj->YZ *= scale;
+    NewObj->ZZ *= scale;
 }
 
     /**
