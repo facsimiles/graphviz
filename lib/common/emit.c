@@ -1108,7 +1108,7 @@ static int parse_layers(GVC_t *gvc, graph_t * g, char *p)
     // if we found layers, save them for later reference
     if (LIST_SIZE(&layerIDs) > 1) {
         LIST_APPEND(&layerIDs, NULL); // add a terminating entry
-        LIST_DETACH(&layerIDs, &gvc->layerIDs, &(size_t){0});
+        LIST_DETACH(&layerIDs, &gvc->layerIDs, NULL);
     }
     LIST_FREE(&layerIDs);
 
@@ -2559,7 +2559,7 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
       }
       obj->url_bsplinemap_p = LIST_FRONT(&pbs);
       obj->url_map_shape = MAP_POLYGON;
-      LIST_DETACH(&pbs, &obj->url_map_p, &(size_t){0});
+      LIST_DETACH(&pbs, &obj->url_map_p, NULL);
       obj->url_map_n = *LIST_FRONT(&pbs_n);
       LIST_DETACH(&pbs_n, &obj->url_bsplinemap_n, &obj->url_bsplinemap_poly_n);
     }
