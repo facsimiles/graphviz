@@ -131,9 +131,10 @@ static_assert(
 /// @param item Element to append
 #define LIST_APPEND(list, item)                                                \
   do {                                                                         \
+    (list)->scratch = (item);                                                  \
     const size_t slot_ =                                                       \
         gv_list_append_slot_(&(list)->impl, sizeof((list)->base[0]));          \
-    (list)->base[slot_] = (item);                                              \
+    (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
 
 /// add an item to the beginning of a list

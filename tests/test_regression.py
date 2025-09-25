@@ -6144,9 +6144,6 @@ def test_2732(fmt: str):
     assert output != b"", "empty output produced for valid graph"
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2734"
-)
 def test_2734():
     """
     this graph should not be drawn with sharply angled curves

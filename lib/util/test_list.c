@@ -46,6 +46,18 @@ static void test_append(void) {
   LIST_FREE(&xs);
 }
 
+/// append should not be affected by surprising parameter expansion order
+/// https://gitlab.com/graphviz/graphviz/-/issues/2734
+static void test_2734_append(void) {
+  LIST(int) xs = {0};
+
+  LIST_APPEND(&xs, 42);
+  LIST_APPEND(&xs, LIST_GET(&xs, LIST_SIZE(&xs) - 1));
+  assert(LIST_GET(&xs, 1) == 42);
+
+  LIST_FREE(&xs);
+}
+
 /// prepend to an empty list
 static void test_prepend_0(void) {
   LIST(int) xs = {0};
@@ -638,6 +650,7 @@ int main(void) {
   RUN(init);
   RUN(init_reset);
   RUN(append);
+  RUN(2734_append);
   RUN(prepend_0);
   RUN(append_prepend);
   RUN(get);
