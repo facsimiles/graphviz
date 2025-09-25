@@ -438,8 +438,8 @@ static_assert(
 /// can be reused for other purposes.
 ///
 /// @param list List to operate on
-/// @param [out] data The list data on completion
-/// @param [out] size The list size on completion
+/// @param [out] datap The list data on completion
+/// @param [out] sizep The list size on completion
 #define LIST_DETACH(list, datap, sizep)                                        \
   gv_list_detach_(&(list)->impl, ((void)((list)->base == *(datap)), (datap)),  \
                   (sizep), sizeof((list)->base[0]))
