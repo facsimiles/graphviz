@@ -398,3 +398,16 @@ void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   ASAN_POISON(to_pop, item_size);
   --list->size;
 }
+
+void gv_list_detach_(list_t_ *list, void *datap, size_t *sizep,
+                     size_t item_size) {
+  assert(list != NULL);
+  assert(datap != NULL);
+  assert(sizep != NULL);
+
+  gv_list_sync_(list, item_size);
+  memcpy(datap, &list->base, sizeof(void *));
+  *sizep = list->size;
+
+  *list = (list_t_){0};
+}

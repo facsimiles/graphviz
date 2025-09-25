@@ -221,6 +221,15 @@ UTIL_API void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size);
 /// @param item_size Byte size of each list item
 UTIL_API void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size);
 
+/// transform a managed list into a bare array
+///
+/// @param list List to operate on
+/// @param [out] datap The list data on completion
+/// @param [out] sizep The list size on completion
+/// @param item_size Byte size of each list item
+UTIL_API void gv_list_detach_(list_t_ *list, void *datap, size_t *sizep,
+                              size_t item_size);
+
 #ifdef __cplusplus
 }
 #endif

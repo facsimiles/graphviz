@@ -441,16 +441,8 @@ static_assert(
 /// @param [out] data The list data on completion
 /// @param [out] size The list size on completion
 #define LIST_DETACH(list, datap, sizep)                                        \
-  do {                                                                         \
-    /* do assignment first to expand macro parameters in a less surprising */  \
-    /* order, even though the list is not necessarily in a synced state yet */ \
-    *(datap) = (list)->base;                                                   \
-    *(sizep) = (list)->impl.size;                                              \
-                                                                               \
-    LIST_SYNC(list);                                                           \
-                                                                               \
-    (list)->impl = (list_t_){0};                                               \
-  } while (0)
+  gv_list_detach_(&(list)->impl, ((void)((list)->base == *(datap)), (datap)),  \
+                  (sizep), sizeof((list)->base[0]))
 
 #ifdef __cplusplus
 }
