@@ -95,26 +95,13 @@ static_assert(
 ///
 ///   bool LIST_TRY_APPEND(LIST(<type>) *list, <type> item);
 ///
-/// Note that referencing `(list)->base` and calling `gv_list_append_slot_`
-/// within a single expression without an intervening sequence point is OK
-/// because, after the preceding reservation probes, we know
-/// `gv_list_append_slot_` will not alter `(list)->base`.
-///
 /// @param list List to operate on
 /// @param item Item to append
 /// @return True if the append succeeded
 #define LIST_TRY_APPEND(list, item)                                            \
-  (((list)->scratch = (item)),                                                 \
-   ((list)->impl.size < (list)->impl.capacity ||                               \
-    gv_list_try_reserve_(                                                      \
-        &(list)->impl,                                                         \
-        (list)->impl.capacity == 0 ? 1 : ((list)->impl.capacity * 2),          \
-        sizeof((list)->base[0])) ||                                            \
-    gv_list_try_reserve_(&(list)->impl, (list)->impl.capacity + 1,             \
-                         sizeof((list)->base[0]))) &&                          \
-       (((list)->base[gv_list_append_slot_(                                    \
-             &(list)->impl, sizeof((list)->base[0]))] = (list)->scratch),      \
-        1))
+  gv_list_try_append_(&(list)->impl,                                           \
+                      ((list)->scratch = (item), &(list)->scratch),            \
+                      sizeof((list)->base[0]))
 
 /// add an item to the end of a list
 ///

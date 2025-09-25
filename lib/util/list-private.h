@@ -56,6 +56,15 @@ UTIL_API bool gv_list_try_reserve_(list_t_ *list, size_t capacity,
 /// @return Index of the new (empty) slot
 UTIL_API size_t gv_list_append_slot_(list_t_ *list, size_t item_size);
 
+/// try to append a new item to a list
+///
+/// @param list List to operate on
+/// @param item Pointer to item to append
+/// @param item_size Byte size of each list item
+/// @return True if the append succeeded
+UTIL_API bool gv_list_try_append_(list_t_ *list, const void *item,
+                                  size_t item_size);
+
 /// add an empty space for an item to the beginning of a list
 ///
 /// This function calls `exit` on failure.

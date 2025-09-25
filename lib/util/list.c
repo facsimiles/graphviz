@@ -158,6 +158,47 @@ bool gv_list_try_reserve_(list_t_ *list, size_t capacity, size_t item_size) {
   return try_reserve(list, capacity, item_size) == 0;
 }
 
+bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
+  assert(list != NULL);
+  assert(item != NULL);
+
+  // do we need to expand the backing storage?
+  if (list->size == list->capacity) {
+    do {
+      // can we attempt doubling without integer overflow?
+      if (SIZE_MAX / 2 >= list->capacity) {
+        const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);
+        if (gv_list_try_reserve_(list, c, item_size)) {
+          // success
+          break;
+        }
+      }
+
+      // try a more conservative expansion
+      if (SIZE_MAX - 1 >= list->capacity) {
+        if (gv_list_try_reserve_(list, list->capacity + 1, item_size)) {
+          // success
+          break;
+        }
+      }
+
+      // failed to expand the list
+      return false;
+    } while (0);
+  }
+
+  assert(list->size < list->capacity);
+
+  // we can now append, knowing it will not require backing storage expansion
+  const size_t new_slot = (list->head + list->size) % list->capacity;
+  void *const slot = INDEX_TO(list, new_slot, item_size);
+  ASAN_UNPOISON(slot, item_size);
+  memcpy(slot, item, item_size);
+  ++list->size;
+
+  return true;
+}
+
 size_t gv_list_get_(const list_t_ list, size_t index) {
   assert(index < list.size && "index out of bounds");
   return (list.head + index) % list.capacity;
