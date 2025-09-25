@@ -104,16 +104,17 @@ static_assert(
 /// @param item Item to append
 /// @return True if the append succeeded
 #define LIST_TRY_APPEND(list, item)                                            \
-  (((list)->impl.size < (list)->impl.capacity ||                               \
+  (((list)->scratch = (item)),                                                 \
+   ((list)->impl.size < (list)->impl.capacity ||                               \
     gv_list_try_reserve_(                                                      \
         &(list)->impl,                                                         \
         (list)->impl.capacity == 0 ? 1 : ((list)->impl.capacity * 2),          \
         sizeof((list)->base[0])) ||                                            \
     gv_list_try_reserve_(&(list)->impl, (list)->impl.capacity + 1,             \
                          sizeof((list)->base[0]))) &&                          \
-   (((list)->base[gv_list_append_slot_(&(list)->impl,                          \
-                                       sizeof((list)->base[0]))] = (item)),    \
-    1))
+       (((list)->base[gv_list_append_slot_(                                    \
+             &(list)->impl, sizeof((list)->base[0]))] = (list)->scratch),      \
+        1))
 
 /// add an item to the end of a list
 ///
