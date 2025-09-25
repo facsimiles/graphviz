@@ -214,9 +214,10 @@ static_assert(
 /// @param item New value to set
 #define LIST_SET(list, index, item)                                            \
   do {                                                                         \
+    (list)->scratch = (item);                                                  \
     const size_t slot_ = gv_list_get_((list)->impl, (index));                  \
     LIST_DTOR_((list), slot_);                                                 \
-    (list)->base[slot_] = (item);                                              \
+    (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
 
 /// remove an item from a list
