@@ -20,6 +20,7 @@
 
 #include <math.h>
 #include <stdbool.h>
+#include <util/unused.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,8 +77,7 @@ GEOMPROCS_API void rect2poly(pointf *p);
 
 GEOMPROCS_API int line_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p);
 
-static inline point add_point(point p, point q)
-{
+static inline WUR point add_point(point p, point q) {
     point r;
 
     r.x = p.x + q.x;
@@ -85,8 +85,7 @@ static inline point add_point(point p, point q)
     return r;
 }
 
-static inline pointf add_pointf(pointf p, pointf q)
-{
+static inline WUR pointf add_pointf(pointf p, pointf q) {
     pointf r;
 
     r.x = p.x + q.x;
@@ -94,8 +93,7 @@ static inline pointf add_pointf(pointf p, pointf q)
     return r;
 }
 
-static inline pointf sub_pointf(pointf p, pointf q)
-{
+static inline WUR pointf sub_pointf(pointf p, pointf q) {
     pointf r;
 
     r.x = p.x - q.x;
@@ -103,8 +101,7 @@ static inline pointf sub_pointf(pointf p, pointf q)
     return r;
 }
 
-static inline pointf mid_pointf(pointf p, pointf q)
-{
+static inline WUR pointf mid_pointf(pointf p, pointf q) {
     pointf r;
 
     r.x = (p.x + q.x) / 2.;
@@ -112,8 +109,7 @@ static inline pointf mid_pointf(pointf p, pointf q)
     return r;
 }
 
-static inline pointf interpolate_pointf(double t, pointf p, pointf q)
-{
+static inline WUR pointf interpolate_pointf(double t, pointf p, pointf q) {
     pointf r;
 
     r.x = p.x + t * (q.x - p.x);
@@ -121,8 +117,7 @@ static inline pointf interpolate_pointf(double t, pointf p, pointf q)
     return r;
 }
 
-static inline point exch_xy(point p)
-{
+static inline WUR point exch_xy(point p) {
     point r;
 
     r.x = p.y;
@@ -130,8 +125,7 @@ static inline point exch_xy(point p)
     return r;
 }
 
-static inline pointf exch_xyf(pointf p)
-{
+static inline WUR pointf exch_xyf(pointf p) {
     pointf r;
 
     r.x = p.y;
@@ -139,12 +133,11 @@ static inline pointf exch_xyf(pointf p)
     return r;
 }
 
-static inline bool boxf_overlap(boxf b0, boxf b1) {
+static inline WUR bool boxf_overlap(boxf b0, boxf b1) {
     return OVERLAP(b0, b1);
 }
 
-static inline pointf perp (pointf p)
-{
+static inline WUR pointf perp (pointf p) {
     pointf r;
 
     r.x = -p.y;
@@ -152,8 +145,7 @@ static inline pointf perp (pointf p)
     return r;
 }
 
-static inline pointf scale (double c, pointf p)
-{
+static inline WUR pointf scale (double c, pointf p) {
     pointf r;
 
     r.x = c * p.x;
