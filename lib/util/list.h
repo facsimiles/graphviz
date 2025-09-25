@@ -455,9 +455,12 @@ static_assert(
 /// @param [out] size The list size on completion
 #define LIST_DETACH(list, datap, sizep)                                        \
   do {                                                                         \
-    LIST_SYNC(list);                                                           \
+    /* do assignment first to expand macro parameters in a less surprising */  \
+    /* order, even though the list is not necessarily in a synced state yet */ \
     *(datap) = (list)->base;                                                   \
     *(sizep) = (list)->impl.size;                                              \
+                                                                               \
+    LIST_SYNC(list);                                                           \
                                                                                \
     (list)->impl = (list_t_){0};                                               \
   } while (0)
