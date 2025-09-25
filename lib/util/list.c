@@ -153,11 +153,6 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   return 0;
 }
 
-bool gv_list_try_reserve_(list_t_ *list, size_t capacity, size_t item_size) {
-  assert(list != NULL);
-  return try_reserve(list, capacity, item_size) == 0;
-}
-
 bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
   assert(list != NULL);
   assert(item != NULL);
@@ -168,7 +163,7 @@ bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
       // can we attempt doubling without integer overflow?
       if (SIZE_MAX / 2 >= list->capacity) {
         const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);
-        if (gv_list_try_reserve_(list, c, item_size)) {
+        if (try_reserve(list, c, item_size) == 0) {
           // success
           break;
         }
@@ -176,7 +171,7 @@ bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
 
       // try a more conservative expansion
       if (SIZE_MAX - 1 >= list->capacity) {
-        if (gv_list_try_reserve_(list, list->capacity + 1, item_size)) {
+        if (try_reserve(list, list->capacity + 1, item_size) == 0) {
           // success
           break;
         }

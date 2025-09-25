@@ -38,15 +38,6 @@ typedef struct {
 /// @return Size of the list
 static inline size_t gv_list_size_(const list_t_ list) { return list.size; }
 
-/// try to reserve the given capacity for usage
-///
-/// @param list List to operate on
-/// @param capacity Requested size to expand to
-/// @param item_size Byte size of each list item
-/// @return True if reservation succeeded
-UTIL_API bool gv_list_try_reserve_(list_t_ *list, size_t capacity,
-                                   size_t item_size);
-
 /// add an empty space for an item to the end of a list
 ///
 /// This function calls `exit` on failure.
