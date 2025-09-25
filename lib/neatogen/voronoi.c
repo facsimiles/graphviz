@@ -25,7 +25,6 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     Halfedge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
     Edge *e;
 
-    LIST(Edge *) allocated = {0}; // live edges to be freed
     siteinit();
     pq_t *pq = PQinitialize();
     bottomsite = nextsite(context);
@@ -44,8 +43,7 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    lbnd = ELleftbnd(&st, &newsite->coord);
 	    rbnd = ELright(lbnd);
 	    bot = rightreg(lbnd);
-	    e = gvbisect(bot, newsite);
-	    LIST_APPEND(&allocated, e);
+	    e = gvbisect(bot, newsite, &st.allocated);
 	    bisector = HEcreate(&st, e, le);
 	    ELinsert(lbnd, bisector);
 	    if ((p = hintersect(lbnd, bisector)) != NULL) {
@@ -68,12 +66,8 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    top = rightreg(rbnd);
 	    v = lbnd->vertex;
 	    makevertex(v);
-	    if (endpoint(lbnd->ELedge, lbnd->ELpm, v)) {
-		LIST_REMOVE(&allocated, lbnd->ELedge);
-	    }
-	    if (endpoint(rbnd->ELedge, rbnd->ELpm, v)) {
-		LIST_REMOVE(&allocated, rbnd->ELedge);
-	    }
+	    endpoint(lbnd->ELedge, lbnd->ELpm, v, &st.allocated);
+	    endpoint(rbnd->ELedge, rbnd->ELpm, v, &st.allocated);
 	    ELdelete(lbnd);
 	    PQdelete(pq, rbnd);
 	    ELdelete(rbnd);
@@ -82,13 +76,10 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 		SWAP(&bot, &top);
 		pm = re;
 	    }
-	    e = gvbisect(bot, top);
-	    LIST_APPEND(&allocated, e);
+	    e = gvbisect(bot, top, &st.allocated);
 	    bisector = HEcreate(&st, e, pm);
 	    ELinsert(llbnd, bisector);
-	    if (endpoint(e, re - pm, v)) {
-		LIST_REMOVE(&allocated, e);
-	    }
+	    endpoint(e, re - pm, v, &st.allocated);
 	    deref(v);
 	    if ((p = hintersect(llbnd, bisector)) != NULL) {
 		PQdelete(pq, llbnd);
@@ -112,9 +103,4 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     // `PQcleanup` relies on the number of sites, so should be discarded and
     // at least every time we use `vAdjust`. See note in adjust.c:cleanup().
     PQcleanup(pq);
-
-    for (size_t i = 0; i < LIST_SIZE(&allocated); ++i) {
-	free(LIST_GET(&allocated, i));
-    }
-    LIST_FREE(&allocated);
 }

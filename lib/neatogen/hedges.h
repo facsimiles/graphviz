@@ -35,7 +35,7 @@ extern "C" {
     } Halfedge;
 
 typedef struct {
-  arena_t allocated; ///< outstanding live Halfedges
+  arena_t allocated; ///< outstanding dynamic allocations
   int hashsize;
   Halfedge **hash;
   Halfedge *leftend;
