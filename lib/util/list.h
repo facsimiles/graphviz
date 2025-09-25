@@ -150,9 +150,10 @@ static_assert(
 /// @param item Element to prepend
 #define LIST_PREPEND(list, item)                                               \
   do {                                                                         \
+    (list)->scratch = (item);                                                  \
     const size_t slot_ =                                                       \
         gv_list_prepend_slot_(&(list)->impl, sizeof((list)->base[0]));         \
-    (list)->base[slot_] = (item);                                              \
+    (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
 
 /// retrieve an item from a list
