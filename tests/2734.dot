@@ -1,0 +1,39 @@
+digraph "" {
+    node [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"];
+    edge [penwidth=1; color="#0000ff"; headport="n"; tailport="s"];
+    bgcolor="#ffffff";
+
+    node1 [shape="invhouse"; class="entry"; fillcolor="#48AB30"; color="#000000"; height=0.6; id="node1"];
+    node3 [shape="house"; class="exit"; fillcolor="#AB3030"; color="#000000"; height=0.5; id="node3"];
+    node4 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.6; id="node4"];
+    node6 [shape="house"; class="exit"; fillcolor="#AB3030"; color="#000000"; height=0.5; id="node6"];
+    node7 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.3; id="node7"];
+    node8 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.3; id="node8"];
+    node12 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=1.7999999999999998; id="node12"];
+    node13 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.3; id="node13"];
+    node16 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.6; id="node16"];
+    node18 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.3; id="node18"];
+    node22 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.3; id="node22"];
+    node30 [shape="house"; class="exit"; fillcolor="#AB3030"; color="#000000"; height=0.8999999999999999; id="node30"];
+    node19 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.3; id="node19"];
+    node21 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=0.6; id="node21"];
+    node14 [label=""; style="filled"; shape="box"; class="default"; fillcolor="#d3d3d3"; color="#000000"; height=1.7999999999999998; id="node14"];
+    node1 -> node3 [class="consequence"; color="#008000"];
+    node4 -> node6 [class="consequence"; color="#008000"];
+    node7 -> node8 [class="consequence"; color="#008000"];
+    node4 -> node7 [class="alternative"; color="#ff0000"];
+    node21 -> node19 [class="regular"; color="#0000ff"];
+    node18 -> node19 [class="alternative"; color="#ff0000"];
+    node16 -> node18 [class="consequence"; color="#008000"];
+    node16 -> node22 [class="alternative"; color="#ff0000"];
+    node12 -> node13 [class="regular"; color="#0000ff"];
+    node13 -> node14 [class="regular"; color="#0000ff"; penwidth=2; dir="back"; headport="s"; tailport="n"];
+    node1 -> node4 [class="alternative"; color="#ff0000"];
+    node8 -> node12 [class="regular"; color="#0000ff"];
+    node7 -> node12 [class="alternative"; color="#ff0000"];
+    node13 -> node16 [class="consequence"; color="#008000"];
+    node13 -> node30 [class="alternative"; color="#ff0000"];
+    node18 -> node21 [class="consequence"; color="#008000"];
+    node19 -> node14 [class="regular"; color="#0000ff"];
+    node22 -> node14 [class="regular"; color="#0000ff"];
+}

@@ -6144,6 +6144,58 @@ def test_2732(fmt: str):
     assert output != b"", "empty output produced for valid graph"
 
 
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2734"
+)
+def test_2734():
+    """
+    this graph should not be drawn with sharply angled curves
+    https://gitlab.com/graphviz/graphviz/-/issues/2734
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2734.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # process this
+    svg = dot("svg", input)
+
+    # parse the SVG
+    root = ET.fromstring(svg)
+
+    # look at each path
+    for path in root.findall(".//{http://www.w3.org/2000/svg}path"):
+
+        # get the definition and make it slightly easier to parse
+        d = path.get("d")
+        points_str = d.replace("C", " ").replace("M", " ")
+
+        # parse it into a list of points
+        points = [
+            (float(x), float(y))
+            for x, y in [p.split(",") for p in points_str.split(" ") if p]
+        ]
+
+        # examine the angles along the path, looking for an abnormally large one
+        gradient: Optional[float] = None
+        last_point: Optional[tuple[float, float]] = None
+        for p in points:
+            if last_point is None:
+                last_point = p
+                continue
+            # for simplicity, skip paths with vertical lines because we know the
+            # problematic one we are scanning for does not have any
+            if p[0] == last_point[0]:
+                break
+            this_gradient = (p[1] - last_point[1]) / (p[0] - last_point[0])
+            if gradient is not None:
+                angle = math.atan(
+                    (gradient - this_gradient) / (1 + gradient * this_gradient)
+                )
+                assert math.degrees(angle) < 10, "unnecessarily sharp edge generated"
+            gradient = this_gradient
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
