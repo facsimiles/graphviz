@@ -16,7 +16,7 @@
     <pkg-ref id="com.att.graphviz.app" version="0">app.pkg</pkg-ref>
     <options hostArchitectures="arm64,x86_64"/>
     <choice id="default" title="Graphviz and App" description="Install Graphviz and the macOS Graphivz App."/>
-    <choice id="com.att.graphviz" title="Graphviz" description="Install Graphviz into /usr/local.">
+    <choice id="com.att.graphviz" title="Graphviz" description="Install Graphviz into @prefix@.">
         <pkg-ref id="com.att.graphviz"/>
     </choice>
     <choice id="com.att.graphviz.app" title="Graphviz App" description="Install the macOS Graphviz App into the Applications folder."> 

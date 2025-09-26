@@ -9,8 +9,7 @@ CMakeCache.txt
 /graphviz-*.tar.gz
 
 # product of: make pkg
-/graphviz-*/
-/graphviz-*.pkg
+graphviz-*.pkg
 
 cmd/gvedit/moc_csettings.cpp
 cmd/gvedit/moc_imageviewer.cpp
@@ -68,6 +67,12 @@ debian/libgv-php5.install
 macosx/Info.plist
 macosx/build/Distribution.xml
 !macosx/build/Makefile
+macosx/build/Scripts
+macosx/build/SharedPrecompiledHeaders
+macosx/build/XCBuildData
+macosx/build/usr
+macosx/build/app.pkg
+macosx/build/dot.pkg
 stamp-h1
 tclpkg/gv/META.gv
 

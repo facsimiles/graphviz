@@ -136,7 +136,7 @@ portable-source:
         expire_in: 1 week
         paths:
             - Packages/*/*/*.zip
-            - Packages/*/*/*.tar.gz
+            - Packages/*/*/*.pkg
         reports:
             metrics: metrics.txt
     except:
