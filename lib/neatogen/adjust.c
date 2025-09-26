@@ -151,7 +151,6 @@ static int makeInfo(Agraph_t * graph)
         }
 
 	ip->site.sitenbr = i;
-	ip->site.refcnt = 1;
 	ip->node = node;
 	ip->verts = NULL;
 	ip->n_verts = 0;
@@ -188,7 +187,6 @@ static void sortSites(state_t *st) {
 	st->sites[i] = &ip->site;
 	ip->verts = NULL;
 	ip->n_verts = 0;
-	ip->site.refcnt = 1;
     }
 
     qsort(st->sites, nsites, sizeof(Site *), scomp);
@@ -413,17 +411,6 @@ static void newPos(const state_t *st, bool doAll) {
     }
 }
 
-/* Cleanup voronoi memory.
- * Note that ELcleanup relies on the number
- * of sites, so should at least be reset every time we use vAdjust.
- * This could be optimized, over multiple components or
- * even multiple graphs, but probably not worth it.
- */
-static void cleanup(void)
-{
-    siteinit();			/* free memory */
-}
-
 static int vAdjust(state_t *st) {
     unsigned iterCnt = 0;
     unsigned badLevel = 0;
@@ -468,7 +455,6 @@ static int vAdjust(state_t *st) {
     GV_DEBUG("Number of iterations = %u", iterCnt);
     GV_DEBUG("Number of increases = %u", increaseCnt);
 
-    cleanup();
     return 1;
 }
 

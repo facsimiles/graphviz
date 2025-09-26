@@ -25,8 +25,6 @@ Edge *gvbisect(Site *s1, Site *s2, arena_t *allocator) {
 
     newedge->reg[0] = s1;
     newedge->reg[1] = s2;
-    ref(s1);
-    ref(s2);
     newedge->ep[0] = NULL;
     newedge->ep[1] = NULL;
 
@@ -177,11 +175,8 @@ void clip_line(Edge * e)
 void endpoint(Edge *e, int lr, Site *s, arena_t *allocator) {
     assert(allocator != NULL);
     e->ep[lr] = s;
-    ref(s);
     if (e->ep[re - lr] == NULL)
 	return;
     clip_line(e);
-    deref(e->reg[le]);
-    deref(e->reg[re]);
     gv_arena_free(allocator, e, sizeof(*e));
 }

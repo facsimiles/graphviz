@@ -64,7 +64,6 @@ void PQinsert(pq_t *pq, Halfedge *he, Site *v, double offset) {
     Halfedge *last, *next;
 
     he->vertex = v;
-    ref(v);
     he->ystar = v->coord.y + offset;
     last = &pq->hash[PQbucket(pq, he)];
     while ((next = last->PQnext) != NULL &&
@@ -85,7 +84,6 @@ void PQdelete(pq_t *pq, Halfedge *he) {
 	    last = last->PQnext;
 	last->PQnext = he->PQnext;
 	--pq->count;
-	deref(he->vertex);
 	he->vertex = NULL;
     }
 }
