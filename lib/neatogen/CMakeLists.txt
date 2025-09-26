@@ -20,7 +20,6 @@ set(SOURCES
   info.h
   kkutils.h
   matrix_ops.h
-  mem.h
   multispline.h
   neato.h
   neatoprocs.h
@@ -59,7 +58,6 @@ set(SOURCES
   lu.c
   matinv.c
   matrix_ops.c
-  memory.c
   multispline.c
   neatoinit.c
   neatosplines.c
