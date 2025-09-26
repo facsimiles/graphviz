@@ -11,7 +11,6 @@
 #include <common/render.h>
 #include <stdbool.h>
 
-#include <neatogen/mem.h>
 #include <neatogen/hedges.h>
 #include <neatogen/heap.h>
 #include <util/alloc.h>
