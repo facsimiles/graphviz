@@ -14,7 +14,6 @@ GVC_SONAME        = 7
 CDT_SONAME        = 6
 CGRAPH_SONAME     = 8
 GVPR_SONAME       = 2
-EXPR_SONAME       = 4
 XDOT_SONAME       = 4
 GRAPHVIZ_SONAME	  = 4
 
@@ -123,7 +122,6 @@ install: build
 		--override s/libcdt$(CDT_SONAME)-dev//      \
 		--override s/libgvpr$(GVPR_SONAME)-dev//      \
 		--override s/libgvc$(GVC_SONAME)-dev//      \
-		--override s/libexpr$(EXPR_SONAME)-dev//      \
 		--override s/libgts-0.7-5-dev/libgts-dev/ \
 		--override s/libexpat1-dev// \
 		--override s/libltdl7-dev// \

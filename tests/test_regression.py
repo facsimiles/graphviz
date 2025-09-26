@@ -44,6 +44,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky,
     is_rocky_8,
     is_static_build,
+    plugin_version,
     remove_asan_summary,
     remove_xtype_warnings,
     run,
@@ -5744,16 +5745,14 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
     dot_bin = which("dot")
     root = dot_bin.parents[1]
 
-    # replicate information from ../configure.ac
-    GVPLUGIN_CURRENT = 8
-    GVPLUGIN_REVISION = 0
-    GVPLUGIN_AGE = 0
+    # extract plugin version
+    current, revision, age = plugin_version()
 
     for subdir in ("lib", "lib64"):
         if is_macos():
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.dylib"
         elif is_mingw():
-            candidate = root / f"bin/libgvplugin_{plugin}-{GVPLUGIN_CURRENT}.dll"
+            candidate = root / f"bin/libgvplugin_{plugin}-{current - age}.dll"
         elif platform.system() == "Windows":
             candidate = root / subdir / f"gvplugin_{plugin}.lib"
         else:
@@ -5764,7 +5763,7 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
 
         if platform.system() == "Linux":
             # try it with the version info suffix, which is what some RHEL platforms use
-            suffix = f".{GVPLUGIN_CURRENT}.{GVPLUGIN_REVISION}.{GVPLUGIN_AGE}"
+            suffix = f".{current - age}.{revision}.{age}"
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so{suffix}"
             print(f"checking {candidate}")  # log some useful information
             if candidate.exists():
@@ -6859,3 +6858,184 @@ def test_duplicate_font_family():
     for ff in re.findall(r'font-family="(?P<families>[^"]*)', svg):
         families = [f.strip() for f in ff.split(",")]
         assert len(families) == len(set(families)), "duplicate font families listed"
+
+
+def test_plugin_version_cmake():
+    """confirm the plugin version defined in CMake matches Autotools"""
+    autotools_current, autotools_revision, autotools_age = plugin_version()
+
+    # the CMake build system assumes the second two components are 0 for now
+    cmake_revision = 0
+    cmake_age = 0
+
+    assert (
+        autotools_revision == cmake_revision
+    ), "CMake build system assumes plugin revision is 0 and it is not"
+    assert (
+        autotools_age == cmake_age
+    ), "CMake build system assumes plugin age is 0 and it is not"
+
+    # parse the equivalent out of the CMake build system
+    cmakelists = Path(__file__).resolve().parents[1] / "CMakeLists.txt"
+    cmake_current: Optional[int] = None
+    with open(cmakelists, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*set\s*\(\s*GRAPHVIZ_PLUGIN_VERSION\s+(?P<current>\d+)\s*\)\s*$",
+                line,
+            ):
+                cmake_current = int(m.group("current"))
+                break
+    assert (
+        cmake_current is not None
+    ), "failed to parse CMake build system’s plugin current version"
+
+    assert (
+        autotools_current == cmake_current
+    ), "Autotools and CMake build systems disagree on plugin current version"
+
+
+def test_plugin_version_redhat():
+    """confirm the plugin version defined in Red Hat spec files matches Autotools"""
+    autotools_current, _, _ = plugin_version()
+
+    # parse the equivalent out of the spec file
+    spec = Path(__file__).resolve().parents[1] / "redhat/graphviz.spec.fedora.in"
+    rpm_current: Optional[int] = None
+    with open(spec, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*%\s*global\s+pluginsver\s+(?P<current>\d+)\s*$",
+                line,
+            ):
+                rpm_current = int(m.group("current"))
+                break
+    assert (
+        rpm_current is not None
+    ), "failed to parse Red Hat spec file’s plugin current version"
+
+    assert (
+        autotools_current == rpm_current
+    ), "Autotools and Red Hat spec file disagree on plugin current version"
+
+
+@pytest.mark.parametrize("lib", ("cdt", "cgraph", "gvc", "gvpr", "pathplan", "xdot"))
+def test_library_so_version(lib: str):
+    """test library SO versions are consistently defined"""
+
+    # parse the canonical version out of Autotools
+    makefile_am = Path(__file__).resolve().parents[1] / "lib" / lib / "Makefile.am"
+    version: Optional[tuple[int, int, int]] = None
+    with open(makefile_am, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*"
+                + lib.upper()
+                + r'_VERSION\s*=\s*"(?P<current>\d+):(?P<revision>\d+):(?P<age>\d+)"\s*$',
+                line,
+            ):
+                version = (
+                    int(m.group("current")),
+                    int(m.group("revision")),
+                    int(m.group("age")),
+                )
+                break
+    assert version is not None, "failed to parse library version"
+
+    # parse the equivalent out of the CMake build system
+    cmakelists = Path(__file__).resolve().parents[1] / "lib" / lib / "CMakeLists.txt"
+    cmake_version: Optional[tuple[int, int, int]] = None
+    cmake_soversion: Optional[int] = None
+    with open(cmakelists, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*VERSION\s+(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)\s*$", line
+            ):
+                cmake_version = (
+                    int(m.group("major")),
+                    int(m.group("minor")),
+                    int(m.group("patch")),
+                )
+                if cmake_soversion is not None:
+                    break
+                continue
+            if m := re.match(r"\s*SOVERSION\s+(?P<major>\d+)\s*$", line):
+                cmake_soversion = int(m.group("major"))
+                if cmake_version is not None:
+                    break
+                continue
+    assert cmake_version is not None, "failed to parse version from CMake build system"
+    assert (
+        cmake_soversion is not None
+    ), "failed to parse SO version from CMake build system"
+
+    assert cmake_version[0] == cmake_soversion, "major version and SO version disagree"
+
+    # unconditionally use the mapping rule `major = current - age` even though this is
+    # platform-dependent, because all the platforms we support use this mapping
+    assert (
+        cmake_version[0] == version[0] - version[2]
+    ), "CMake and Autotools build systems disagree on library major version"
+
+    assert (
+        cmake_version[1] == version[2]
+    ), "CMake and Autotools build systems disagree on library minor version"
+
+    assert (
+        cmake_version[2] == version[1]
+    ), "CMake and Autotools build systems disagree on library patch version"
+
+    # parse the equivalent out of the Debian rules
+    rules = Path(__file__).resolve().parents[1] / "debian/rules"
+    deb_soname: Optional[int] = None
+    with open(rules, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.match(
+                r"\s*" + lib.upper() + r"_SONAME\s*=\s*(?P<soversion>\d+)\s*$", line
+            ):
+                deb_soname = int(m.group("soversion"))
+                break
+    assert deb_soname is not None, "failed to parse SONAME from Debian rules"
+
+    # again, we use a common mapping rule `major = current - age`
+    assert (
+        version[0] - version[2] == deb_soname
+    ), "Autotools and Debian rules disagree on library version"
+
+    # parse the equivalent out of the Debian lintian overrides
+    overrides = (
+        Path(__file__).resolve().parents[1] / "debian/libgraphviz4.lintian-overrides"
+    )
+    overrides_version1: Optional[int] = None
+    overrides_version2: Optional[int] = None
+    with open(overrides, "rt", encoding="utf-8") as f:
+        for line in f:
+            if m := re.search(r"\blib" + lib + r"\.so\.(?P<soversion>\d+)\b", line):
+                overrides_version1 = int(m.group("soversion"))
+                if overrides_version2 is not None:
+                    break
+                continue
+            if m := re.search(r"\blib" + lib + r"(?P<soversion>\d+)\b", line):
+                overrides_version2 = int(m.group("soversion"))
+                if overrides_version1 is not None:
+                    break
+                continue
+    # libgvpr has no overrides
+    if lib == "gvpr":
+        assert overrides_version1 is None
+        assert overrides_version2 is None
+        return
+    assert (
+        overrides_version1 is not None
+    ), f"failed to parse lib{lib}.so.* from Debian lintian overrides"
+    assert (
+        overrides_version2 is not None
+    ), f"failed to parse lib{lib}* from Debian lintian overrides"
+
+    # again, we use a common mapping rule `major = current - age`
+    assert (
+        version[0] - version[2] == overrides_version1
+    ), "Autotools and Debian lintian overrides disagree on library version"
+    assert (
+        version[0] - version[2] == overrides_version2
+    ), "Autotools and Debian lintian overrides disagree on library version"

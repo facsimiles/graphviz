@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-LAB_GAMUT_VERSION = "1:0:0"
-
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/lib/common \

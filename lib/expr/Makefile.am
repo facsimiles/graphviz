@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-EXPR_VERSION = "4:0:0"
-
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib \
 	-I$(top_builddir)/lib \
