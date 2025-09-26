@@ -65,7 +65,6 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    bot = leftreg(lbnd);
 	    top = rightreg(rbnd);
 	    v = lbnd->vertex;
-	    makevertex(v);
 	    endpoint(lbnd->ELedge, lbnd->ELpm, v, &st.allocated);
 	    endpoint(rbnd->ELedge, rbnd->ELpm, v, &st.allocated);
 	    ELdelete(lbnd);

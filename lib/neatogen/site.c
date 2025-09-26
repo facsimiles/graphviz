@@ -15,12 +15,10 @@
 Site *bottomsite;
 
 static Freelist sfl;
-static size_t nvertices;
 
 void siteinit(void)
 {
     freeinit(&sfl, sizeof(Site));
-    nvertices = 0;
 }
 
 
@@ -38,13 +36,6 @@ double ngdist(Site * s, Site * t)
     dy = s->coord.y - t->coord.y;
     ans = hypot(dx, dy);
     return ans;
-}
-
-
-void makevertex(Site * v)
-{
-    v->sitenbr = nvertices;
-    ++nvertices;
 }
 
 void deref(Site * v)
