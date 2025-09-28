@@ -31,7 +31,7 @@ if(PANGOCAIRO_FOUND)
   endif()
 
   set_target_properties(gvplugin_kitty PROPERTIES
-    VERSION ${GVPLUGIN_CURRENT}.0.0
+    VERSION ${GVPLUGIN_CURRENT}.0.${GVPLUGIN_REVISION}
     SOVERSION ${GVPLUGIN_CURRENT}
   )
 

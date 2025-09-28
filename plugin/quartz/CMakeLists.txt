@@ -37,7 +37,7 @@ if(IS_DIRECTORY "/System/Library/Frameworks/ApplicationServices.framework")
   endif()
 
   set_target_properties(gvplugin_quartz PROPERTIES
-    VERSION ${GVPLUGIN_CURRENT}.0.0
+    VERSION ${GVPLUGIN_CURRENT}.0.${GVPLUGIN_REVISION}
     SOVERSION ${GVPLUGIN_CURRENT}
   )
 

@@ -46,7 +46,7 @@ endif()
 
 # Specify library version and soversion
 set_target_properties(gvplugin_neato_layout PROPERTIES
-  VERSION ${GVPLUGIN_CURRENT}.0.0
+  VERSION ${GVPLUGIN_CURRENT}.0.${GVPLUGIN_REVISION}
   SOVERSION ${GVPLUGIN_CURRENT}
 )
 

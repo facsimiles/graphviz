@@ -39,7 +39,7 @@ if(WIN32)
 
   # Specify library version and soversion
   set_target_properties(gvplugin_gdiplus PROPERTIES
-    VERSION ${GVPLUGIN_CURRENT}.0.0
+    VERSION ${GVPLUGIN_CURRENT}.0.${GVPLUGIN_REVISION}
     SOVERSION ${GVPLUGIN_CURRENT}
   )
 
