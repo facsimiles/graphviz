@@ -223,7 +223,6 @@ static void renderSelectedNodes(Agraph_t * g)
     Agsym_t* l_color_attr = GG_nodelabelcolor(g);
     glCompColor c;
     int defaultNodeShape;
-    float nodeSize;
 
     glCompColorxlate(&c,agxget(g,l_color_attr));
 
@@ -247,7 +246,7 @@ static void renderSelectedNodes(Agraph_t * g)
 	    continue;
 	glColor4d(view->selectedNodeColor.R, view->selectedNodeColor.G,view->selectedNodeColor.B, view->selectedNodeColor.A);
 	pos = ND_A(v);
-	nodeSize = ND_size(v);
+	const double nodeSize = ND_size(v);
 
 	if (defaultNodeShape == 0) 
 	    glVertex3f(pos.x, pos.y, pos.z + 0.001f);
