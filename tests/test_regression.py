@@ -6018,6 +6018,26 @@ def test_2717():
     run([fdp, "-o", os.devnull, input])
 
 
+@pytest.mark.skipif(which("osage") is None, reason="osage is not available")
+@pytest.mark.xfail(
+    strict=which("dot") is not None and is_asan_instrumented(which("dot")),
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2721",
+)
+def test_2721():
+    """
+    osage should not crash when processing this graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2721
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2721.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # run it through osage
+    osage = which("osage")
+    run([osage, "-Tpng", "-o", os.devnull, input])
+
+
 def test_2722():
     """
     the `CDT_VERSION` macro should be updated whenever its API changes
