@@ -168,11 +168,8 @@ static float Vector3fDot(Vector3fT NewObj, Vector3fT v1) {
       * @return the squared length of this vector
       */
 
-static float Vector3fLengthSquared(const Vector3fT * NewObj)
-{
-    assert(NewObj);
-
-    return NewObj->X * NewObj->X + NewObj->Y * NewObj->Y + NewObj->Z * NewObj->Z;
+static float Vector3fLengthSquared(Vector3fT NewObj) {
+    return NewObj.X * NewObj.X + NewObj.Y * NewObj.Y + NewObj.Z * NewObj.Z;
 }
 
     /**
@@ -184,7 +181,7 @@ static float Vector3fLength(const Vector3fT * NewObj)
 {
     assert(NewObj);
 
-    return FuncSqrt(Vector3fLengthSquared(NewObj));
+    return FuncSqrt(Vector3fLengthSquared(*NewObj));
 }
 
     /**
