@@ -35,14 +35,14 @@ if(PANGOCAIRO_FOUND AND DevIL_FOUND)
   endif()
 
   set_target_properties(gvplugin_devil PROPERTIES
-    VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
-    SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+    VERSION ${GVPLUGIN_CURRENT}.0.0
+    SOVERSION ${GVPLUGIN_CURRENT}
   )
 
   if(MINGW)
     # work around https://gitlab.kitware.com/cmake/cmake/-/issues/21716
     set_target_properties(gvplugin_devil PROPERTIES
-      RUNTIME_OUTPUT_NAME gvplugin_devil-${GRAPHVIZ_PLUGIN_VERSION}
+      RUNTIME_OUTPUT_NAME gvplugin_devil-${GVPLUGIN_CURRENT}
     )
   endif()
 

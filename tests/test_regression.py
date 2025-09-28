@@ -6982,7 +6982,7 @@ def test_plugin_version_cmake():
     with open(cmakelists, "rt", encoding="utf-8") as f:
         for line in f:
             if m := re.match(
-                r"\s*set\s*\(\s*GRAPHVIZ_PLUGIN_VERSION\s+(?P<current>\d+)\s*\)\s*$",
+                r"\s*set\s*\(\s*GVPLUGIN_CURRENT\s+(?P<current>\d+)\s*\)\s*$",
                 line,
             ):
                 cmake_current = int(m.group("current"))

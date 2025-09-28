@@ -1,6 +1,6 @@
 #pragma once
-#define GVPLUGIN_CONFIG_FILE "config@GRAPHVIZ_PLUGIN_VERSION@"
-#define GVPLUGIN_VERSION @GRAPHVIZ_PLUGIN_VERSION@
+#define GVPLUGIN_CONFIG_FILE "config@GVPLUGIN_CURRENT@"
+#define GVPLUGIN_VERSION @GVPLUGIN_CURRENT@
 #define PACKAGE_BUGREPORT "https://gitlab.com/graphviz/graphviz/-/issues"
 #define PACKAGE_NAME "graphviz"
 #define PACKAGE_STRING "graphviz @GRAPHVIZ_VERSION@"
