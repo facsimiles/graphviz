@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The pre-built macOS package for Autotools is now a .pkg file instead of a
   tarball of binaries. #2726, !4348
+- In the CMake build system, whether Ghostscript-dependent components are built
+  or not can now be controlled by the `-DWITH_GHOSTSCRIPT={AUTO|ON|OFF}` option.
+  #2735
 
 ### Fixed
 

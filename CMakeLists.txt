@@ -58,6 +58,15 @@ option(GRAPHVIZ_CLI "Build command line tools" ON)
 set(WITH_GDK AUTO CACHE STRING "enable GDK-dependent components (GDK plugin)")
 set_property(CACHE WITH_GDK PROPERTY STRINGS AUTO ON OFF)
 
+set(WITH_GHOSTSCRIPT AUTO CACHE STRING
+    "enable Ghostscript-dependent components (Ghostscript plugin)")
+set_property(CACHE WITH_GHOSTSCRIPT PROPERTY STRINGS AUTO ON OFF)
+if(WITH_GHOSTSCRIPT STREQUAL "AUTO")
+  set(AUTO_GHOSTSCRIPT ON)
+else()
+  set(AUTO_GHOSTSCRIPT OFF)
+endif()
+
 set(WITH_GTK AUTO CACHE STRING "enable GTK-dependent components (smyrna)")
 set_property(CACHE WITH_GTK PROPERTY STRINGS AUTO ON OFF)
 if(WITH_GTK STREQUAL "AUTO")
@@ -261,7 +270,16 @@ if(NOT WITH_SMYRNA STREQUAL "OFF")
 endif()
 
 find_package(GD)
-find_package(GS)
+if(WITH_GHOSTSCRIPT)
+  find_package(GS)
+  if(NOT AUTO_GHOSTSCRIPT)
+    set_package_properties(GS PROPERTIES TYPE REQUIRED)
+  endif()
+else()
+  message(STATUS
+          "skipping Ghostscript discovery because -DWITH_GHOSTSCRIPT=OFF")
+  set(GS_FOUND 0)
+endif()
 
 if(NOT ENABLE_LTDL STREQUAL "OFF")
   find_package(LTDL)
