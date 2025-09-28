@@ -113,7 +113,7 @@ static Quat4fT drag(ArcBall_t *a, const Point2fT *NewPt) {
                          .Z = Perp.Z,
         // in the quaternion values, W is cosine (theta / 2), where theta is
         // rotation angle
-                         .W = Vector3fDot(&a->StVec, &a->EnVec)};
+                         .W = Vector3fDot(a->StVec, a->EnVec)};
     } else { // if it’s zero
         // the begin and end vectors coincide, so return an identity transform
         return (Quat4fT){0};

@@ -159,11 +159,8 @@ static Vector3fT Vector3fCross(Vector3fT v1, Vector3fT v2) {
       * @param  v1 the other vector
       */
 
-static float Vector3fDot(const Vector3fT * NewObj, const Vector3fT * v1)
-{
-    assert(NewObj && v1);
-
-    return NewObj->X * v1->X + NewObj->Y * v1->Y + NewObj->Z * v1->Z;
+static float Vector3fDot(Vector3fT NewObj, Vector3fT v1) {
+    return NewObj.X * v1.X + NewObj.Y * v1.Y + NewObj.Z * v1.Z;
 }
 
     /**
