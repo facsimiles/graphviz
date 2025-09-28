@@ -315,7 +315,7 @@ static void renderNodes(Agraph_t * g)
 	}
 	glColor4d(c.R,c.G,c.B,c.A);	    
 	const glCompPoint pos = getPointFromStr(agxget(v, pos_attr));
-	float nodeSize = l_float(v, size_attr, 0);
+	double nodeSize = l_float(v, size_attr, 0);
 
 	ND_A(v) = pos;
 
