@@ -735,7 +735,8 @@ message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION}")
 
 include(config_checks)
 if(NOT HAVE_GETOPT_H)
-  find_package(GETOPT REQUIRED)
+  find_package(GETOPT)
+  set_package_properties(GETOPT PROPERTIES TYPE REQUIRED)
 endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
