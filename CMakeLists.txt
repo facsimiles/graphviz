@@ -677,7 +677,8 @@ endif()
 
 # ============================ Set Graphviz version ============================
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
+find_package(Python3 COMPONENTS Interpreter)
+set_package_properties(Python3 PROPERTIES TYPE REQUIRED)
 
 execute_process(
   COMMAND           ${Python3_EXECUTABLE} gen_version.py --major
