@@ -131,7 +131,7 @@ void arcmouseClick(void)
 void arcmouseDrag(void)
 {
     Quat4fT ThisQuat = drag(view->arcball, &view->arcball->MousePt);
-    Matrix3fSetRotationFromQuat4f(&view->arcball->ThisRot, &ThisQuat);	// Convert Quaternion Into Matrix3fT
+    view->arcball->ThisRot = Matrix3fSetRotationFromQuat4f(&ThisQuat); // Convert Quaternion Into Matrix3fT
     Matrix3fMulMatrix3f(&view->arcball->ThisRot, &view->arcball->LastRot);	// Accumulate Last Rotation Into This One
     Matrix4fSetRotationFromMatrix3f(&view->arcball->Transform, &view->arcball->ThisRot);	// Set Our Final Transform's Rotation From This One
 
