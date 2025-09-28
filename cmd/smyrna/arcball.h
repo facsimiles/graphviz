@@ -177,11 +177,8 @@ static float Vector3fLengthSquared(Vector3fT NewObj) {
       * @return the length of this vector
       */
 
-static float Vector3fLength(const Vector3fT * NewObj)
-{
-    assert(NewObj);
-
-    return FuncSqrt(Vector3fLengthSquared(*NewObj));
+static float Vector3fLength(Vector3fT NewObj) {
+    return FuncSqrt(Vector3fLengthSquared(NewObj));
 }
 
     /**

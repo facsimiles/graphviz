@@ -105,7 +105,7 @@ static Quat4fT drag(ArcBall_t *a, const Point2fT *NewPt) {
     const Vector3fT Perp = Vector3fCross(a->StVec, a->EnVec);
     
     // compute the length of the perpendicular vector
-    if (Vector3fLength(&Perp) > Epsilon) { // if it’s non-zero
+    if (Vector3fLength(Perp) > Epsilon) { // if it’s non-zero
         // we're OK, so return the perpendicular vector as the transform after
         // all
         return (Quat4fT){.X = Perp.X,
