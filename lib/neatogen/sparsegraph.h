@@ -11,18 +11,13 @@
 #pragma once
 
 #include <stddef.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "config.h"
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
 
     typedef struct {
 	int nedges;		/* no. of neighbors, including self */
@@ -42,10 +37,8 @@ extern "C" {
 
     typedef int DistType;	/* must be signed!! */
 
-INTERNAL void freeGraphData(vtx_data * graph);
-INTERNAL void freeGraph(v_data * graph);
-
-#undef INTERNAL
+PRIVATE void freeGraphData(vtx_data * graph);
+PRIVATE void freeGraph(v_data * graph);
 
 #ifdef __cplusplus
 }

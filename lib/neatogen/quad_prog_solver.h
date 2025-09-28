@@ -10,14 +10,10 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
 #endif
 
 #ifdef DIGCOLA
@@ -34,17 +30,15 @@ typedef struct {
 	int num_levels;
 }CMajEnv;
 
-INTERNAL CMajEnv* initConstrainedMajorization(float *, int, int*, int*, int);
+PRIVATE CMajEnv* initConstrainedMajorization(float *, int, int*, int*, int);
 
-INTERNAL void constrained_majorization_new_with_gaps(CMajEnv*, float*, float**, 
+PRIVATE void constrained_majorization_new_with_gaps(CMajEnv*, float*, float**, 
                                             int, int, float);
-INTERNAL void deleteCMajEnv(CMajEnv *e);
+PRIVATE void deleteCMajEnv(CMajEnv *e);
 
-INTERNAL float** unpackMatrix(float * packedMat, int n);
+PRIVATE float** unpackMatrix(float * packedMat, int n);
 
 #endif 
-
-#undef INTERNAL
 
 #ifdef __cplusplus
 }

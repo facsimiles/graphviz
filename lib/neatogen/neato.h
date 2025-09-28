@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <util/api.h>
 #include "config.h"
 
 #define MODEL_SHORTPATH      0
@@ -33,13 +34,5 @@
 #include	<neatogen/neatoprocs.h>
 #include	<neatogen/adjust.h>
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
-
-INTERNAL int lu_decompose(double **a, int n);
-INTERNAL void lu_solve(double *x, double *b, int n);
-
-#undef INTERNAL
+PRIVATE int lu_decompose(double **a, int n);
+PRIVATE void lu_solve(double *x, double *b, int n);

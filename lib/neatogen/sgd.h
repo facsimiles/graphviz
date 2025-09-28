@@ -1,16 +1,11 @@
 #pragma once
 
 #include <stddef.h>
+#include <util/api.h>
 #include <util/bitarray.h>
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
 #endif
 
 typedef struct {
@@ -27,9 +22,7 @@ typedef struct graph_sgd {
     float *weights; // weights of edges (length sources[n])
 } graph_sgd;
 
-INTERNAL void sgd(graph_t *, int);
-
-#undef INTERNAL
+PRIVATE void sgd(graph_t *, int);
 
 #ifdef __cplusplus
 }

@@ -217,7 +217,7 @@ static Agobj_t *deref(Expr_t *pgm, Exnode_t *x, Exref_t *ref, Agobj_t *objp,
       agxbfree(&xb);
       return ptr;
     } else
-      return deref(pgm, x, ref->next, (Agobj_t *)ptr, state);
+      return deref(pgm, x, ref->next, ptr, state);
   } else
     switch (ref->symbol->index) { /* sym->lex == ID */
     case V_outgraph:

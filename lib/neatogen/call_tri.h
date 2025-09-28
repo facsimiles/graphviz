@@ -10,13 +10,7 @@
 
 #pragma once
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
+#include <util/api.h>
 
-INTERNAL SparseMatrix call_tri(int n, double * x);
-INTERNAL SparseMatrix call_tri2(int n, int dim, double * x);
-
-#undef INTERNAL
+PRIVATE SparseMatrix call_tri(int n, double * x);
+PRIVATE SparseMatrix call_tri2(int n, int dim, double * x);

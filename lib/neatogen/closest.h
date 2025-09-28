@@ -10,21 +10,15 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <neatogen/defs.h>
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
-
-INTERNAL void closest_pairs2graph(double *, int, int, vtx_data **);
-
-#undef INTERNAL
+PRIVATE void closest_pairs2graph(double *, int, int, vtx_data **);
 
 #ifdef __cplusplus
 }

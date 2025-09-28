@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,30 +19,22 @@ extern "C" {
 #include <neatogen/defs.h>
 #include <stdbool.h>
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
-
 /*************************
  * C.G. method - SPARSE  *
  ************************/
 
-INTERNAL int conjugate_gradient(vtx_data *, double *, double *, int,
+PRIVATE int conjugate_gradient(vtx_data *, double *, double *, int,
 				   double, int);
 
 /*************************
  * C.G. method - DENSE   *
  ************************/
 
-INTERNAL int conjugate_gradient_f(float **, double *, double *, int,
+PRIVATE int conjugate_gradient_f(float **, double *, double *, int,
 				     double, int, bool);
 
-INTERNAL int conjugate_gradient_mkernel(float *, float *, float *, int,
+PRIVATE int conjugate_gradient_mkernel(float *, float *, float *, int,
 					   double, int);
-
-#undef INTERNAL
 
 #ifdef __cplusplus
 }

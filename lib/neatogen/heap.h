@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <util/api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,24 +19,16 @@ extern "C" {
 #include <neatogen/hedges.h>
 #include <stdbool.h>
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
-
 /// priority queue heap
 typedef struct pq pq_t;
 
-INTERNAL pq_t *PQinitialize(void);
-INTERNAL void PQcleanup(pq_t *pq);
-INTERNAL Halfedge *PQextractmin(pq_t *pq);
-INTERNAL Point PQ_min(pq_t *pq);
-INTERNAL bool PQempty(const pq_t *pq);
-INTERNAL void PQdelete(pq_t *pq, Halfedge *);
-INTERNAL void PQinsert(pq_t *pq, Halfedge *, Site *, double);
-
-#undef INTERNAL
+PRIVATE pq_t *PQinitialize(void);
+PRIVATE void PQcleanup(pq_t *pq);
+PRIVATE Halfedge *PQextractmin(pq_t *pq);
+PRIVATE Point PQ_min(pq_t *pq);
+PRIVATE bool PQempty(const pq_t *pq);
+PRIVATE void PQdelete(pq_t *pq, Halfedge *);
+PRIVATE void PQinsert(pq_t *pq, Halfedge *, Site *, double);
 
 #ifdef __cplusplus
 }
