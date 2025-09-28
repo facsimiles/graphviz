@@ -188,7 +188,7 @@ static float Vector3fLength(Vector3fT NewObj) {
       */
     //$hack this can be optimized some(if s == 0)
 
-static Matrix3fT Matrix3fSetRotationFromQuat4f(const Quat4fT *q1) {
+static Matrix3fT Matrix3fSetRotationFromQuat4f(Quat4fT q1) {
     float n, s;
     float xs, ys, zs;
     float wx, wy, wz;
@@ -196,23 +196,21 @@ static Matrix3fT Matrix3fSetRotationFromQuat4f(const Quat4fT *q1) {
     float yy, yz, zz;
     Matrix3fT NewObj = {0};
 
-    assert(q1);
-
-    n = q1->X * q1->X + q1->Y * q1->Y + q1->Z * q1->Z + q1->W * q1->W;
+    n = q1.X * q1.X + q1.Y * q1.Y + q1.Z * q1.Z + q1.W * q1.W;
     s = (n > 0.0f) ? (2.0f / n) : 0.0f;
 
-    xs = q1->X * s;
-    ys = q1->Y * s;
-    zs = q1->Z * s;
-    wx = q1->W * xs;
-    wy = q1->W * ys;
-    wz = q1->W * zs;
-    xx = q1->X * xs;
-    xy = q1->X * ys;
-    xz = q1->X * zs;
-    yy = q1->Y * ys;
-    yz = q1->Y * zs;
-    zz = q1->Z * zs;
+    xs = q1.X * s;
+    ys = q1.Y * s;
+    zs = q1.Z * s;
+    wx = q1.W * xs;
+    wy = q1.W * ys;
+    wz = q1.W * zs;
+    xx = q1.X * xs;
+    xy = q1.X * ys;
+    xz = q1.X * zs;
+    yy = q1.Y * ys;
+    yz = q1.Y * zs;
+    zz = q1.Z * zs;
 
     NewObj.s.XX = 1.0f - (yy + zz);
     NewObj.s.YX = xy - wz;
