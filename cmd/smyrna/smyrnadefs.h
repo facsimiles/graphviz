@@ -145,7 +145,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
     typedef struct{
         Agrec_t h;
         glCompPoint A;
-	float size;
+	double size;
 	int selected;
 	int visible;
 	int printLabel;
