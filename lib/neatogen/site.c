@@ -12,8 +12,6 @@
 #include <neatogen/site.h>
 #include <math.h>
 
-
-int siteidx;
 Site *bottomsite;
 
 static Freelist sfl;

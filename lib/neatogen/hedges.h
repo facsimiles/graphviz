@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <util/api.h>
 #include <util/arena.h>
 
 #ifdef __cplusplus
@@ -18,12 +19,6 @@ extern "C" {
 
 #include <neatogen/site.h>
 #include <neatogen/edges.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
 
     typedef struct Halfedge {
 	struct Halfedge *ELleft, *ELright;
@@ -42,17 +37,15 @@ typedef struct {
   Halfedge *rightend;
 } el_state_t;
 
-INTERNAL void ELinitialize(el_state_t *);
-INTERNAL void ELcleanup(el_state_t *);
-INTERNAL Site *hintersect(Halfedge *, Halfedge *);
-INTERNAL Halfedge *HEcreate(el_state_t *, Edge *, char);
-INTERNAL void ELinsert(Halfedge *, Halfedge *);
-INTERNAL Halfedge *ELleftbnd(el_state_t *, Point *);
-INTERNAL void ELdelete(Halfedge *);
-INTERNAL Halfedge *ELleft(Halfedge *), *ELright(Halfedge *);
-INTERNAL Site *leftreg(Halfedge *), *rightreg(Halfedge *);
-
-#undef INTERNAL
+PRIVATE void ELinitialize(el_state_t *);
+PRIVATE void ELcleanup(el_state_t *);
+PRIVATE Site *hintersect(Halfedge *, Halfedge *);
+PRIVATE Halfedge *HEcreate(el_state_t *, Edge *, char);
+PRIVATE void ELinsert(Halfedge *, Halfedge *);
+PRIVATE Halfedge *ELleftbnd(el_state_t *, Point *);
+PRIVATE void ELdelete(Halfedge *);
+PRIVATE Halfedge *ELleft(Halfedge *), *ELright(Halfedge *);
+PRIVATE Site *leftreg(Halfedge *), *rightreg(Halfedge *);
 
 #ifdef __cplusplus
 }

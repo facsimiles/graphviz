@@ -11,6 +11,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <util/api.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,16 +19,8 @@ extern "C" {
 
 #include <neatogen/defs.h>
 
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
-
-INTERNAL void PCA_alloc(DistType **, int, int, double **, int);
-INTERNAL bool iterativePCA_1D(double **, int, int, double *);
-
-#undef INTERNAL
+PRIVATE void PCA_alloc(DistType **, int, int, double **, int);
+PRIVATE bool iterativePCA_1D(double **, int, int, double *);
 
 #ifdef __cplusplus
 }

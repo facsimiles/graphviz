@@ -11,6 +11,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <util/api.h>
 #include <util/arena.h>
 
 #ifdef __cplusplus
@@ -18,12 +19,6 @@ extern "C" {
 #endif
 
 #include <neatogen/site.h>
-
-#if !defined(__CYGWIN__) && defined(__GNUC__) && !defined(__MINGW32__)
-#define INTERNAL __attribute__((visibility("hidden")))
-#else
-#define INTERNAL /* nothing */
-#endif
 
     typedef struct Edge {
 	double a, b, c;		/* edge on line ax + by = c */
@@ -35,11 +30,9 @@ extern "C" {
 #define re 1
 
     extern double pxmin, pxmax, pymin, pymax;	/* clipping window */
-INTERNAL void endpoint(Edge *, int, Site *, arena_t *);
-INTERNAL void clip_line(Edge * e);
-INTERNAL Edge *gvbisect(Site *, Site *, arena_t *);
-
-#undef INTERNAL
+PRIVATE void endpoint(Edge *, int, Site *, arena_t *);
+PRIVATE void clip_line(Edge * e);
+PRIVATE Edge *gvbisect(Site *, Site *, arena_t *);
 
 #ifdef __cplusplus
 }

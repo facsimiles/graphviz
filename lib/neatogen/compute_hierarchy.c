@@ -23,7 +23,7 @@
  * This is controlled by two parameters: 'abs_tol' and 
  * 'relative_tol'. The smaller these two are, the more 
  * levels we'll get. 
- * More speciffically:
+ * More specifically:
  * We never consider gaps smaller than 'abs_tol'
  * Additionally, we never consider gaps smaller than 'abs_tol'*<avg_gap>
  * 
@@ -67,7 +67,7 @@ compute_hierarchy(vtx_data * graph, int n, double abs_tol,
 	}
     }
 
-    /* sort nodes accoridng to their y-ordering */
+    // sort nodes according to their y-ordering
     *orderingp = ordering = gv_calloc(n, sizeof(int));
     for (i = 0; i < n; i++) {
 	ordering[i] = i;
