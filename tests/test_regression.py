@@ -6092,6 +6092,38 @@ def test_2731():
     assert result.strip() != "", "gvpr output missing"
 
 
+@pytest.mark.parametrize(
+    "fmt",
+    (
+        "png",
+        pytest.param(
+            "png:cairo:gdk",
+            marks=pytest.mark.skipif(
+                is_macos() or platform.system() == "Windows",
+                reason="GDK plugin not supported",
+            ),
+        ),
+        "jpg",
+        "jpg:cairo:gd",
+    ),
+)
+def test_2732(fmt: str):
+    """
+    back ends should not produce empty files
+    https://gitlab.com/graphviz/graphviz/-/issues/2732
+
+    Args:
+        fmt: Format to pass to dot’s `-T…`.
+    """
+
+    # an arbitrary, trivial graph
+    source = "graph G { a -- b; }"
+
+    # confirm this produces non-empty output
+    output = dot(fmt, source=source)
+    assert output != b"", "empty output produced for valid graph"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
