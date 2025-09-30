@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <stdbool.h>
 #include <util/api.h>
 
 #ifdef __cplusplus
@@ -18,19 +17,6 @@ extern "C" {
 #endif
 
 #include <neatogen/defs.h>
-
-    typedef struct {
-	int *data;
-	int queueSize;
-	int end;
-	int start;
-    } Queue;
-
-PRIVATE void mkQueue(Queue *, int);
-PRIVATE void freeQueue(Queue *);
-PRIVATE void initQueue(Queue *, int startVertex);
-PRIVATE bool deQueue(Queue *, int *);
-PRIVATE bool enQueue(Queue *, int);
 
 PRIVATE void bfs(int, vtx_data*, int, DistType*);
 
