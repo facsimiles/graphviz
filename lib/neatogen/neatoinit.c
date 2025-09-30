@@ -34,7 +34,6 @@
 #include <common/utils.h>
 #include <neatogen/sgd.h>
 #include <cgraph/cgraph.h>
-#include <limits.h>
 #include <float.h>
 #include <stdatomic.h>
 #include <stdbool.h>
@@ -268,7 +267,7 @@ static void freeClusterData(cluster_data c) {
 static int user_spline(attrsym_t * E_pos, edge_t * e)
 {
     char *pos;
-    int n, nc;
+    int nc;
     pointf *pp;
     double x, y;
     int sflag = 0, eflag = 0;
@@ -301,8 +300,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	}
 
 	const size_t npts = numFields(pos); // count potential points
-	assert(npts <= INT_MAX);
-	n = (int)npts;
+	size_t n = npts;
 	if (n < 4 || n % 3 != 1) {
 	    gv_free_splines(e);
 	    if (!atomic_flag_test_and_set(&warned)) {
