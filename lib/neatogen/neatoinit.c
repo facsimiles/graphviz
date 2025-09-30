@@ -270,7 +270,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     int nc;
     pointf *pp;
     double x, y;
-    int sflag = 0, eflag = 0;
+    bool sflag = false, eflag = false;
     pointf sp = { 0, 0 }, ep = { 0, 0};
     bezier *newspl;
     int more = 1;
@@ -285,7 +285,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     do {
 	/* check for s head */
 	if (sscanf(pos, "s,%lf,%lf%n", &x, &y, &nc) == 2) {
-	    sflag = 1;
+	    sflag = true;
 	    pos = pos + nc;
 	    sp.x = x;
 	    sp.y = y;
@@ -293,7 +293,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 
 	/* check for e head */
 	if (sscanf(pos, " e,%lf,%lf%n", &x, &y, &nc) == 2) {
-	    eflag = 1;
+	    eflag = true;
 	    pos = pos + nc;
 	    ep.x = x;
 	    ep.y = y;
