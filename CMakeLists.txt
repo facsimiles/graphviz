@@ -191,7 +191,7 @@ endif()
 set(GVPLUGIN_CURRENT 8)
 
 # see configure.ac GVPLUGIN_REVISION
-set(GVPLUGIN_REVISION 1)
+set(GVPLUGIN_REVISION 2)
 
 # Name of the config file used by Graphviz
 set(GVPLUGIN_CONFIG_FILE config${GVPLUGIN_CURRENT})

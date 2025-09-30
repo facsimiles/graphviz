@@ -34,6 +34,7 @@
 #include <common/utils.h>
 #include <neatogen/sgd.h>
 #include <cgraph/cgraph.h>
+#include <limits.h>
 #include <float.h>
 #include <stdatomic.h>
 #include <stdbool.h>
@@ -168,8 +169,8 @@ void neato_cleanup(graph_t * g)
     neato_cleanup_graph(g);
 }
 
-static int numFields(const char *pos) {
-    int cnt = 0;
+static size_t numFields(const char *pos) {
+    size_t cnt = 0;
     char c;
 
     do {
@@ -267,7 +268,7 @@ static void freeClusterData(cluster_data c) {
 static int user_spline(attrsym_t * E_pos, edge_t * e)
 {
     char *pos;
-    int i, n, npts, nc;
+    int n, nc;
     pointf *pp;
     double x, y;
     int sflag = 0, eflag = 0;
@@ -284,8 +285,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     arrow_flags(e, &stype, &etype);
     do {
 	/* check for s head */
-	i = sscanf(pos, "s,%lf,%lf%n", &x, &y, &nc);
-	if (i == 2) {
+	if (sscanf(pos, "s,%lf,%lf%n", &x, &y, &nc) == 2) {
 	    sflag = 1;
 	    pos = pos + nc;
 	    sp.x = x;
@@ -293,16 +293,16 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	}
 
 	/* check for e head */
-	i = sscanf(pos, " e,%lf,%lf%n", &x, &y, &nc);
-	if (i == 2) {
+	if (sscanf(pos, " e,%lf,%lf%n", &x, &y, &nc) == 2) {
 	    eflag = 1;
 	    pos = pos + nc;
 	    ep.x = x;
 	    ep.y = y;
 	}
 
-	npts = numFields(pos); // count potential points
-	n = npts;
+	const size_t npts = numFields(pos); // count potential points
+	assert(npts <= INT_MAX);
+	n = (int)npts;
 	if (n < 4 || n % 3 != 1) {
 	    gv_free_splines(e);
 	    if (!atomic_flag_test_and_set(&warned)) {
@@ -313,8 +313,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	pointf *ps = gv_calloc(n, sizeof(pointf));
 	pp = ps;
 	while (n) {
-	    i = sscanf(pos, "%lf,%lf%n", &x, &y, &nc);
-	    if (i < 2) {
+	    if (sscanf(pos, "%lf,%lf%n", &x, &y, &nc) < 2) {
 		if (!atomic_flag_test_and_set(&warned)) {
 		    agwarningf("syntax error in pos attribute for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
 		}
@@ -335,8 +334,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    pos++;
 
 	/* parsed successfully; create spline */
-	assert(npts >= 0);
-	newspl = new_spline(e, (size_t)npts);
+	newspl = new_spline(e, npts);
 	if (sflag) {
 	    newspl->sflag = stype;
 	    newspl->sp = sp;
@@ -345,7 +343,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    newspl->eflag = etype;
 	    newspl->ep = ep;
 	}
-	for (i = 0; i < npts; i++) {
+	for (size_t i = 0; i < npts; i++) {
 	    newspl->list[i] = ps[i];
 	}
 	free(ps);
