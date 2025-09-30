@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased (14.1.0)]
+
+### Added
+
+- Added option `neato -n3` for fit ends of edges to nodes' borders when edge 
+  trajectory is set.
+
 ## [14.0.5] – 2025-11-28
 
 ### Fixed
@@ -3386,6 +3393,7 @@ March 13, 2000: Use AM_PROG_LIBTOOL instead of AC_PROG_LIBTOOL
    in configure.in.  John Ellson <ellson@graphviz.org>
 ```
 
+[Unreleased (14.1.0)]: https://gitlab.com/graphviz/graphviz/compare/14.0.5...main
 [14.0.5]: https://gitlab.com/graphviz/graphviz/compare/14.0.4...14.0.5
 [14.0.4]: https://gitlab.com/graphviz/graphviz/compare/14.0.2...14.0.4
 [14.0.2]: https://gitlab.com/graphviz/graphviz/compare/14.0.1...14.0.2

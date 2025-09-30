@@ -584,7 +584,7 @@ int init_nop(Agraph_t * g, int adjust)
 	    freeEdgeInfo (g);
 	    posEdges = NoEdges;
 	}
-	if (posEdges != AllEdges)
+	if (posEdges != AllEdges || Nop==3)
 	    spline_edges0(g, false);   /* add edges */
 	else
 	    State = GVSPLINES;
