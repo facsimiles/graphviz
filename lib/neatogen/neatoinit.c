@@ -435,8 +435,8 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb, boxf* bbp)
 	}
 	*bbp = bb;
 	return 1;
-    } else
-	return 0;
+    }
+    return 0;
 }
 
 static void add_cluster(Agraph_t * g, Agraph_t * subg)
