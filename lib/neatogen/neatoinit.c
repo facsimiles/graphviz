@@ -390,10 +390,9 @@ static pos_edge nop_init_edges(Agraph_t * g)
     if (nedges) {
 	if (nedges == agnedges(g))
 	    return AllEdges;
-	else
-	    return SomeEdges;
-    } else
-	return NoEdges;
+	return SomeEdges;
+    }
+    return NoEdges;
 }
 
 /* freeEdgeInfo:
