@@ -38,15 +38,6 @@ typedef struct {
 /// @return Size of the list
 static inline size_t gv_list_size_(const list_t_ list) { return list.size; }
 
-/// try to reserve the given capacity for usage
-///
-/// @param list List to operate on
-/// @param capacity Requested size to expand to
-/// @param item_size Byte size of each list item
-/// @return True if reservation succeeded
-UTIL_API bool gv_list_try_reserve_(list_t_ *list, size_t capacity,
-                                   size_t item_size);
-
 /// add an empty space for an item to the end of a list
 ///
 /// This function calls `exit` on failure.
@@ -55,6 +46,15 @@ UTIL_API bool gv_list_try_reserve_(list_t_ *list, size_t capacity,
 /// @param item_size Byte size of each list item
 /// @return Index of the new (empty) slot
 UTIL_API size_t gv_list_append_slot_(list_t_ *list, size_t item_size);
+
+/// try to append a new item to a list
+///
+/// @param list List to operate on
+/// @param item Pointer to item to append
+/// @param item_size Byte size of each list item
+/// @return True if the append succeeded
+UTIL_API bool gv_list_try_append_(list_t_ *list, const void *item,
+                                  size_t item_size);
 
 /// add an empty space for an item to the beginning of a list
 ///
@@ -220,6 +220,15 @@ UTIL_API void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size);
 /// @param [out] into Destination to pop the item into
 /// @param item_size Byte size of each list item
 UTIL_API void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size);
+
+/// transform a managed list into a bare array
+///
+/// @param list List to operate on
+/// @param [out] datap The list data on completion
+/// @param [out] sizep The list size on completion; optional
+/// @param item_size Byte size of each list item
+UTIL_API void gv_list_detach_(list_t_ *list, void *datap, size_t *sizep,
+                              size_t item_size);
 
 #ifdef __cplusplus
 }

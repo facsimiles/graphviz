@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The pre-built macOS package for Autotools is now a .pkg file instead of a
   tarball of binaries. #2726, !4348
 
+### Fixed
+
+- Points generated as curves by the dot layout algorithm are once again placed
+  correctly. This was a regression in Graphviz 14.0.0. #2734
+
 ## [14.0.0] – 2025-09-21
 
 ### Changed
