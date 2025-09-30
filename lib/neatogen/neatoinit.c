@@ -316,8 +316,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 		return 0;
 	    }
 	    pos += nc;
-	    pp->x = x;
-	    pp->y = y;
+	    *pp = (pointf){.x = x, .y = y};
 	    pp++;
 	}
  	while (gv_isspace(*pos)) pos++;
