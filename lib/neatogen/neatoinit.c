@@ -294,8 +294,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	if (sscanf(pos, " e,%lf,%lf%n", &x, &y, &nc) == 2) {
 	    eflag = true;
 	    pos = pos + nc;
-	    ep.x = x;
-	    ep.y = y;
+	    ep = (pointf){.x = x, .y = y};
 	}
 
 	const size_t npts = numFields(pos); // count potential points
