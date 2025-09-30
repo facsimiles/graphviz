@@ -300,17 +300,16 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	}
 
 	const size_t npts = numFields(pos); // count potential points
-	size_t n = npts;
-	if (n < 4 || n % 3 != 1) {
+	if (npts < 4 || npts % 3 != 1) {
 	    gv_free_splines(e);
 	    if (!atomic_flag_test_and_set(&warned)) {
 		agwarningf("pos attribute for edge (%s,%s) doesn't have 3n+1 points\n", agnameof(agtail(e)), agnameof(aghead(e)));
 	    }
 	    return 0;
 	}
-	pointf *ps = gv_calloc(n, sizeof(pointf));
+	pointf *ps = gv_calloc(npts, sizeof(pointf));
 	pp = ps;
-	while (n) {
+	for (size_t n = npts; n > 0; --n) {
 	    if (sscanf(pos, "%lf,%lf%n", &x, &y, &nc) < 2) {
 		if (!atomic_flag_test_and_set(&warned)) {
 		    agwarningf("syntax error in pos attribute for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
@@ -323,7 +322,6 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    pp->x = x;
 	    pp->y = y;
 	    pp++;
-	    n--;
 	}
  	while (gv_isspace(*pos)) pos++;
 	if (*pos == '\0')
