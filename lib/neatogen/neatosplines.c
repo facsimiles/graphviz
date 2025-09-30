@@ -396,7 +396,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, bool isOrtho)
 	obs->ps = gv_calloc(sides, sizeof(Ppoint_t));
 	/* assuming polys are in CCW order, and pathplan needs CW */
 	for (size_t j = 0; j < sides; j++) {
-	    double xmargin = 0.0, ymargin = 0.0;
+	    double xmargin = 0, ymargin = 0;
 	    if (isPoly) {
 		if (pmargin->doAdd) {
 		    if (sides == 4) {
@@ -436,7 +436,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, bool isOrtho)
 	    } else {
 		const double width = INCH2PS(ND_outline_width(n));
 		const double height = INCH2PS(ND_outline_height(n));
-		margin = pmargin->doAdd ? (pointf) {pmargin->x, pmargin->y} : (pointf) {0.0, 0.0};
+		margin = pmargin->doAdd ? (pointf){pmargin->x, pmargin->y} : (pointf){0};
 		const double ellipse_a = (width + margin.x) / 2.0;
 		const double ellipse_b = (height + margin.y) / 2.0;
 		polyp = circumscribed_polygon_corner_about_ellipse(ellipse_a, ellipse_b, j, sides);

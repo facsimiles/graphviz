@@ -40,14 +40,12 @@ void ELinitialize(el_state_t *st) {
     st->hash[st->hashsize - 1] = st->rightend;
 }
 
-
-Site *hintersect(Halfedge * el1, Halfedge * el2)
-{
+Site *hintersect(Halfedge *el1, Halfedge *el2, arena_t *allocator) {
+    assert(allocator != NULL);
     Edge *e1, *e2, *e;
     Halfedge *el;
     double d, xint, yint;
     bool right_of_site;
-    Site *v;
 
     e1 = el1->ELedge;
     e2 = el2->ELedge;
@@ -76,8 +74,7 @@ Site *hintersect(Halfedge * el1, Halfedge * el2)
     if ((right_of_site && el->ELpm == le) || (!right_of_site && el->ELpm == re))
 	return NULL;
 
-    v = getsite();
-    v->refcnt = 0;
+    Site *const v = ARENA_NEW(allocator, Site);
     v->coord.x = xint;
     v->coord.y = yint;
     return v;

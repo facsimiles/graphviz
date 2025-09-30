@@ -39,7 +39,7 @@ typedef struct {
 
 PRIVATE void ELinitialize(el_state_t *);
 PRIVATE void ELcleanup(el_state_t *);
-PRIVATE Site *hintersect(Halfedge *, Halfedge *);
+PRIVATE Site *hintersect(Halfedge *, Halfedge *, arena_t *);
 PRIVATE Halfedge *HEcreate(el_state_t *, Edge *, char);
 PRIVATE void ELinsert(Halfedge *, Halfedge *);
 PRIVATE Halfedge *ELleftbnd(el_state_t *, Point *);

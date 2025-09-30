@@ -14,7 +14,6 @@
 #include <math.h>
 #include <neatogen/poly.h>
 #include <common/geom.h>
-#include <neatogen/mem.h>
 #include <stdbool.h>
 #include <util/alloc.h>
 #include <util/streq.h>
