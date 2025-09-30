@@ -37,30 +37,18 @@ void bfs(int vertex, vtx_data *graph, int n, DistType *dist)
     mkQueue(&Q, n);
     initQueue(&Q, vertex);
 
-    if (graph[0].ewgts == NULL) {
-	while (deQueue(&Q, &closestVertex)) {
-	    closestDist = dist[closestVertex];
-	    for (size_t i = 1; i < graph[closestVertex].nedges; i++) {
-		neighbor = graph[closestVertex].edges[i];
-		if (dist[neighbor] < -0.5) {	/* first time to reach neighbor */
-		    dist[neighbor] = closestDist + 1;
-		    enQueue(&Q, neighbor);
-		}
-	    }
-	}
-    } else {
-	while (deQueue(&Q, &closestVertex)) {
-	    closestDist = dist[closestVertex];
-	    for (size_t i = 1; i < graph[closestVertex].nedges; i++) {
-		neighbor = graph[closestVertex].edges[i];
-		if (dist[neighbor] < -0.5) {	/* first time to reach neighbor */
-		    dist[neighbor] =
-			closestDist +
-			(DistType) graph[closestVertex].ewgts[i];
-		    enQueue(&Q, neighbor);
-		}
-	    }
-	}
+    while (deQueue(&Q, &closestVertex)) {
+        closestDist = dist[closestVertex];
+        for (size_t i = 1; i < graph[closestVertex].nedges; i++) {
+            neighbor = graph[closestVertex].edges[i];
+            if (dist[neighbor] < -0.5) { // first time to reach neighbor
+                const DistType bump = graph[0].ewgts == NULL
+                  ? 1
+                  : (DistType)graph[closestVertex].ewgts[i];
+                dist[neighbor] = closestDist + bump;
+                enQueue(&Q, neighbor);
+            }
+        }
     }
 
     /* For dealing with disconnected graphs: */
