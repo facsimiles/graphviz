@@ -273,7 +273,6 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     bool sflag = false, eflag = false;
     pointf sp = { 0, 0 }, ep = { 0, 0};
     bezier *newspl;
-    int more = 1;
     static atomic_flag warned;
 
     pos = agxget(e, E_pos);
@@ -282,7 +281,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 
     uint32_t stype, etype;
     arrow_flags(e, &stype, &etype);
-    do {
+    for (bool more = true; more; ) {
 	/* check for s head */
 	if (sscanf(pos, "s,%lf,%lf%n", &x, &y, &nc) == 2) {
 	    sflag = true;
@@ -323,7 +322,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	}
  	while (gv_isspace(*pos)) pos++;
 	if (*pos == '\0')
-	    more = 0;
+	    more = false;
 	else
 	    pos++;
 
@@ -341,7 +340,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    newspl->list[i] = ps[i];
 	}
 	free(ps);
-    } while (more);
+    }
 
     if (ED_label(e))
 	set_label(e, ED_label(e), "lp");
