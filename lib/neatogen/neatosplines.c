@@ -655,11 +655,8 @@ static int spline_edges_(graph_t *g, expand_t *pmargin, int edgetype) {
     /* spline-drawing pass */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-/* fprintf (stderr, "%s -- %s %d\n", agnameof(agtail(e)), agnameof(aghead(e)), ED_count(e)); */
 	    node_t *head = aghead(e);
 	    if (useEdges && ED_spl(e)) {
-		add_pointf(ND_coord(n), ED_tail_port(e).p);
-		add_pointf(ND_coord(head), ED_head_port(e).p);
 		addEdgeLabels(e);
 	    } 
 	    else if (ED_count(e) == 0) continue;  /* only do representative */
