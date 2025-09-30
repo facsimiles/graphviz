@@ -284,14 +284,14 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	/* check for s head */
 	if (sscanf(pos, "s,%lf,%lf%n", &x, &y, &nc) == 2) {
 	    sflag = true;
-	    pos = pos + nc;
+	    pos += nc;
 	    sp = (pointf){.x = x, .y = y};
 	}
 
 	/* check for e head */
 	if (sscanf(pos, " e,%lf,%lf%n", &x, &y, &nc) == 2) {
 	    eflag = true;
-	    pos = pos + nc;
+	    pos += nc;
 	    ep = (pointf){.x = x, .y = y};
 	}
 
