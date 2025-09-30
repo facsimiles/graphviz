@@ -266,7 +266,6 @@ static void freeClusterData(cluster_data c) {
  */
 static int user_spline(attrsym_t * E_pos, edge_t * e)
 {
-    char *pos;
     int nc;
     pointf *pp;
     double x, y;
@@ -275,7 +274,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     bezier *newspl;
     static atomic_flag warned;
 
-    pos = agxget(e, E_pos);
+    const char *pos = agxget(e, E_pos);
     if (*pos == '\0')
 	return 0;
 
