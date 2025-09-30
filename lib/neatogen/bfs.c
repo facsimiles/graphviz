@@ -20,10 +20,7 @@
 #include <neatogen/bfs.h>
 #include <util/list.h>
 
-void bfs(int vertex, vtx_data *graph, int n, DistType *dist)
- /* compute vector 'dist' of distances of all nodes from 'vertex' */
-{
-    int closestVertex, neighbor;
+void bfs(int vertex, vtx_data *graph, int n, DistType *dist) {
     DistType closestDist = INT_MAX;
 
     /* initial distances with edge weights: */
@@ -35,10 +32,10 @@ void bfs(int vertex, vtx_data *graph, int n, DistType *dist)
     LIST_PUSH_BACK(&Q, vertex);
 
     while (!LIST_IS_EMPTY(&Q)) {
-        closestVertex = LIST_POP_FRONT(&Q);
+        const int closestVertex = LIST_POP_FRONT(&Q);
         closestDist = dist[closestVertex];
         for (size_t i = 1; i < graph[closestVertex].nedges; i++) {
-            neighbor = graph[closestVertex].edges[i];
+            const int neighbor = graph[closestVertex].edges[i];
             if (dist[neighbor] < -0.5) { // first time to reach neighbor
                 const DistType bump = graph[0].ewgts == NULL
                   ? 1

@@ -18,7 +18,8 @@ extern "C" {
 
 #include <neatogen/defs.h>
 
-PRIVATE void bfs(int, vtx_data*, int, DistType*);
+/// compute vector `dist` of distances of all nodes from `vertex`
+PRIVATE void bfs(int vertex, vtx_data *graph, int n, DistType *dist);
 
 #ifdef __cplusplus
 }
