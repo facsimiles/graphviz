@@ -325,7 +325,6 @@ EXCLUDE = (
     "lib/mingle/nearest_neighbor_graph_ann.cpp",
     "lib/neatogen/adjust.c",
     "lib/neatogen/adjust.h",
-    "lib/neatogen/bfs.c",
     "lib/neatogen/bfs.h",
     "lib/neatogen/call_tri.c",
     "lib/neatogen/call_tri.h",
