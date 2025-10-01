@@ -88,6 +88,24 @@ static int triangulate(Ppoint_t **pointp, size_t pointn,
     return 0;
 }
 
+bool intersects(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc, Ppoint_t pd) {
+  int ccw1, ccw2, ccw3, ccw4;
+
+  if (ccw(pa, pb, pc) == ISON || ccw(pa, pb, pd) == ISON ||
+      ccw(pc, pd, pa) == ISON || ccw(pc, pd, pb) == ISON) {
+    if (between(pa, pb, pc) || between(pa, pb, pd) || between(pc, pd, pa) ||
+        between(pc, pd, pb))
+      return true;
+  } else {
+    ccw1 = ccw(pa, pb, pc) == ISCCW ? 1 : 0;
+    ccw2 = ccw(pa, pb, pd) == ISCCW ? 1 : 0;
+    ccw3 = ccw(pc, pd, pa) == ISCCW ? 1 : 0;
+    ccw4 = ccw(pc, pd, pb) == ISCCW ? 1 : 0;
+    return (ccw1 ^ ccw2) && (ccw3 ^ ccw4);
+  }
+  return false;
+}
+
 bool isdiagonal(size_t i, size_t ip2, void *pointp, size_t pointn,
                 indexer_t indexer) {
     int res;
@@ -116,24 +134,6 @@ bool isdiagonal(size_t i, size_t ip2, void *pointp, size_t pointn,
 	    }
     }
     return true;
-}
-
-bool intersects(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc, Ppoint_t pd) {
-    int ccw1, ccw2, ccw3, ccw4;
-
-    if (ccw(pa, pb, pc) == ISON || ccw(pa, pb, pd) == ISON ||
-	ccw(pc, pd, pa) == ISON || ccw(pc, pd, pb) == ISON) {
-	if (between(pa, pb, pc) || between(pa, pb, pd) ||
-	    between(pc, pd, pa) || between(pc, pd, pb))
-	    return true;
-    } else {
-	ccw1 = ccw(pa, pb, pc) == ISCCW ? 1 : 0;
-	ccw2 = ccw(pa, pb, pd) == ISCCW ? 1 : 0;
-	ccw3 = ccw(pc, pd, pa) == ISCCW ? 1 : 0;
-	ccw4 = ccw(pc, pd, pb) == ISCCW ? 1 : 0;
-	return (ccw1 ^ ccw2) && (ccw3 ^ ccw4);
-    }
-    return false;
 }
 
 bool between(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc) {
