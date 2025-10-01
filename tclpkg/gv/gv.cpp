@@ -677,7 +677,8 @@ char *renderresult(Agraph_t *g, const char *format) {
   BA ba;
   ba.sz = BUFSIZ;
   // must be freed by wrapper code
-  ba.data = reinterpret_cast<char *>(gv_calloc(ba.sz, sizeof(char)));
+  void *const p = gv_calloc(ba.sz, sizeof(char));
+  ba.data = new (p) char[ba.sz]{};
   ba.len = 0;
   gv_string_writer_init(gvc);
   (void)gvRender(gvc, g, format, reinterpret_cast<FILE *>(&ba));
