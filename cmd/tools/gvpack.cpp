@@ -595,7 +595,8 @@ static Agraph_t *cloneGraph(std::vector<Agraph_t *> &gs, GVC_t *gvc,
     /* set up cluster tree */
     if (GD_n_cluster(root)) {
 	int j, idx;
-	GD_clust(root) = reinterpret_cast<graph_t**>(gv_calloc(1 + GD_n_cluster(root), sizeof(graph_t*)));
+	void *const p = gv_calloc(1 + GD_n_cluster(root), sizeof(graph_t *));
+	GD_clust(root) = new (p) graph_t *[1 + GD_n_cluster(root)]{};
 
 	idx = 1;
 	for (Agraph_t *g : gs) {
