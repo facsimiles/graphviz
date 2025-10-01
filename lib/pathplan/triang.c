@@ -88,7 +88,8 @@ static int triangulate(Ppoint_t **pointp, size_t pointn,
     return 0;
 }
 
-bool intersects(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc, Ppoint_t pd) {
+/// line to line intersection
+static bool intersects(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc, Ppoint_t pd) {
   int ccw1, ccw2, ccw3, ccw4;
 
   if (ccw(pa, pb, pc) == ISON || ccw(pa, pb, pd) == ISON ||
