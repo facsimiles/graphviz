@@ -88,6 +88,15 @@ static int triangulate(Ppoint_t **pointp, size_t pointn,
     return 0;
 }
 
+bool between(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc) {
+  const Ppoint_t pba = {.x = pb.x - pa.x, .y = pb.y - pa.y};
+  const Ppoint_t pca = {.x = pc.x - pa.x, .y = pc.y - pa.y};
+  if (ccw(pa, pb, pc) != ISON)
+    return false;
+  return pca.x * pba.x + pca.y * pba.y >= 0 &&
+         pca.x * pca.x + pca.y * pca.y <= pba.x * pba.x + pba.y * pba.y;
+}
+
 /// line to line intersection
 static bool intersects(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc, Ppoint_t pd) {
   int ccw1, ccw2, ccw3, ccw4;
@@ -135,13 +144,4 @@ bool isdiagonal(size_t i, size_t ip2, void *pointp, size_t pointn,
 	    }
     }
     return true;
-}
-
-bool between(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc) {
-    const Ppoint_t pba = {.x = pb.x - pa.x, .y = pb.y - pa.y};
-    const Ppoint_t pca = {.x = pc.x - pa.x, .y = pc.y - pa.y};
-    if (ccw(pa, pb, pc) != ISON)
-	return false;
-    return pca.x * pba.x + pca.y * pba.y >= 0 &&
-	pca.x * pca.x + pca.y * pca.y <= pba.x * pba.x + pba.y * pba.y;
 }
