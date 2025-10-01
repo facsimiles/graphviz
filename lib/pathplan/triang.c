@@ -88,7 +88,8 @@ static int triangulate(Ppoint_t **pointp, size_t pointn,
     return 0;
 }
 
-bool between(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc) {
+/// is pb between pa and pc?
+static bool between(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc) {
   const Ppoint_t pba = {.x = pb.x - pa.x, .y = pb.y - pa.y};
   const Ppoint_t pca = {.x = pc.x - pa.x, .y = pc.y - pa.y};
   if (ccw(pa, pb, pc) != ISON)
