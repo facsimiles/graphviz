@@ -586,7 +586,6 @@ nodelist_t layout_block(Agraph_t *g, block_t *sn, double min_dist,
     Agraph_t *copyG, *tree, *subg;
     int k;
     double theta, radius, largest_node;
-    largest_node = 0;
 
     subg = sn->sub_graph;
     block_graph(g, sn);		/* add induced edges */
