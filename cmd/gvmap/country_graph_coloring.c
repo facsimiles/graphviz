@@ -17,15 +17,12 @@
 
 static void get_local_12_norm(int n, int i, const int *ia, const int *ja,
     const int *p, double *norm){
-  int j, nz = 0;
-  norm[0] = n; norm[1] = 0;
+  int j;
+  norm[0] = n;
   for (j = ia[i]; j < ia[i+1]; j++){
     if (ja[j] == i) continue;
     norm[0] = fmin(norm[0], abs(p[i] - p[ja[j]]));
-    nz++;
-    norm[1] += abs(p[i] - p[ja[j]]);
   }
-  if (nz > 0) norm[1] /= nz;
 }
 
 static void get_12_norm(int n, const int *ia, const int *ja, int *p,
