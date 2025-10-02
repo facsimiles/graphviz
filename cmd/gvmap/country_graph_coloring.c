@@ -94,27 +94,23 @@ void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
 }
   
 void country_graph_coloring(int seed, SparseMatrix A, int **p) {
-  int n = A->m, i, j, jj;
-  SparseMatrix L, A2;
-  int a = -1;
-  double nrow;
-  clock_t start, start2;
+  int n = A->m;
 
-  start = clock();
+  clock_t start = clock();
   assert(A->m == A->n);
-  A2 = SparseMatrix_symmetrize(A, true);
+  SparseMatrix A2 = SparseMatrix_symmetrize(A, true);
   const int *const ia = A2->ia;
   const int *const ja = A2->ja;
 
   /* Laplacian */
-  L = SparseMatrix_new(n, n, 1, MATRIX_TYPE_REAL, FORMAT_COORD);
-  for (i = 0; i < n; i++){
-    nrow = 0.;
-    for (j = ia[i]; j < ia[i+1]; j++){
-      jj = ja[j];
+  SparseMatrix L = SparseMatrix_new(n, n, 1, MATRIX_TYPE_REAL, FORMAT_COORD);
+  for (int i = 0; i < n; i++){
+    double nrow = 0.;
+    for (int j = ia[i]; j < ia[i+1]; j++){
+      const int jj = ja[j];
       if (jj != i){
 	nrow ++;
-	L = SparseMatrix_coordinate_form_add_entry(L, i, jj, &a);
+	L = SparseMatrix_coordinate_form_add_entry(L, i, jj, &(int){-1});
       }
     }
     L = SparseMatrix_coordinate_form_add_entry(L, i, i, &nrow);
@@ -133,7 +129,7 @@ void country_graph_coloring(int seed, SparseMatrix A, int **p) {
     fprintf(stderr, "cpu time for spectral ordering (before greedy) = %f\n",
             ((double)(clock() - start)) / CLOCKS_PER_SEC);
 
-  start2 = clock();
+  clock_t start2 = clock();
   /* swapping */
   improve_antibandwidth_by_swapping(A2, *p);
   if (Verbose) {
