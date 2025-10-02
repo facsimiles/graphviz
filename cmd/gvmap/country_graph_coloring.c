@@ -30,12 +30,10 @@ static void get_12_norm(int n, const int *ia, const int *ja, int *p,
   /* norm[0] := antibandwidth
      norm[1] := (\sum_{i\in V} (Min_{{j,i}\in E} |p[i] - p[j]|)/|V|
   */
-  int i, j;
-  double tmp;
   norm[0] = n; norm[1] = 0;
-  for (i = 0; i < n; i++){
-    tmp = n;
-    for (j = ia[i]; j < ia[i+1]; j++){
+  for (int i = 0; i < n; i++){
+    double tmp = n;
+    for (int j = ia[i]; j < ia[i+1]; j++){
       if (ja[j] == i) continue;
       norm[0] = fmin(norm[0], abs(p[i] - p[ja[j]]));
       tmp = fmin(tmp, abs(p[i] - p[ja[j]]));
