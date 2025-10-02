@@ -115,7 +115,7 @@ void country_graph_coloring(int seed, SparseMatrix A, int **p) {
   start = clock();
   assert(A->m == A->n);
   A2 = SparseMatrix_symmetrize(A, true);
-  int *const ia = A2->ia;
+  const int *const ia = A2->ia;
   ja = A2->ja;
 
   /* Laplacian */
