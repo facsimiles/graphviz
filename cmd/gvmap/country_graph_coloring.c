@@ -15,14 +15,15 @@
 #include <stdbool.h>
 #include <time.h>
 
-static void get_local_12_norm(int n, int i, const int *ia, const int *ja,
-    const int *p, double *norm){
+static double get_local_12_norm(int n, int i, const int *ia, const int *ja,
+                                const int *p) {
   int j;
-  norm[0] = n;
+  double norm = n;
   for (j = ia[i]; j < ia[i+1]; j++){
     if (ja[j] == i) continue;
-    norm[0] = fmin(norm[0], abs(p[i] - p[ja[j]]));
+    norm = fmin(norm, abs(p[i] - p[ja[j]]));
   }
+  return norm;
 }
 
 static void get_12_norm(int n, const int *ia, const int *ja, int *p,
@@ -60,16 +61,16 @@ void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
   while (improved){
     improved = false;
     for (i = 0; i < n; i++){
-      get_local_12_norm(n, i, ia, ja, p, norm1);
+      norm1[0] = get_local_12_norm(n, i, ia, ja, p);
       for (j = 0; j < n; j++){
 	if (j == i) continue;
-	get_local_12_norm(n, j, ia, ja, p, norm2);
+	norm2[0] = get_local_12_norm(n, j, ia, ja, p);
 	const int pi = p[i];
 	const int pj = p[j];
 	(p)[i] = pj;
 	(p)[j] = pi;
-	get_local_12_norm(n, i, ia, ja, p, norm11);
-	get_local_12_norm(n, j, ia, ja, p, norm22);
+	norm11[0] = get_local_12_norm(n, i, ia, ja, p);
+	norm22[0] = get_local_12_norm(n, j, ia, ja, p);
 	if (fmin(norm11[0], norm22[0]) > fmin(norm1[0], norm2[0])){
 	  improved = true;
 	  norm1[0] = norm11[0];
