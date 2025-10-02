@@ -386,7 +386,6 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	}
     }
 
-    argv += optind;
     if (!opts->outfile)
 	opts->outfile = stdout;
     if (graphType == unknown) {
