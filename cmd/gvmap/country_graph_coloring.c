@@ -106,7 +106,6 @@ void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
 void country_graph_coloring(int seed, SparseMatrix A, int **p) {
   int n = A->m, i, j, jj;
   SparseMatrix L, A2;
-  int *ja = A->ja;
   int a = -1;
   double nrow;
   double norm1[3];
@@ -116,7 +115,7 @@ void country_graph_coloring(int seed, SparseMatrix A, int **p) {
   assert(A->m == A->n);
   A2 = SparseMatrix_symmetrize(A, true);
   const int *const ia = A2->ia;
-  ja = A2->ja;
+  int *const ja = A2->ja;
 
   /* Laplacian */
   L = SparseMatrix_new(n, n, 1, MATRIX_TYPE_REAL, FORMAT_COORD);
