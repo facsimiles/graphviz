@@ -76,7 +76,6 @@ void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
 	if (fmin(norm11[0], norm22[0]) > fmin(norm1[0], norm2[0])){
 	  improved = true;
 	  norm1[0] = norm11[0];
-	  norm1[1] = norm11[1];
 	  continue;
 	}
 	(p)[i] = pi;
