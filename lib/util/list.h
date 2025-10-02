@@ -285,8 +285,8 @@ static_assert(
 /// @param src List to copy
 #define LIST_COPY(dst, src)                                                    \
   do {                                                                         \
-    (void)((dst)->base == (src)->base);                                        \
     memset((dst), 0, sizeof(*(dst)));                                          \
+    (void)((dst)->base == (src)->base);                                        \
     (dst)->impl = gv_list_copy_((src)->impl, sizeof((src)->base[0]));          \
     (dst)->dtor = (src)->dtor;                                                 \
   } while (0)
