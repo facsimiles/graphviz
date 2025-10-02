@@ -109,7 +109,6 @@ void country_graph_coloring(int seed, SparseMatrix A, int **p) {
   SparseMatrix L, A2;
   int a = -1;
   double nrow;
-  double norm1[3];
   clock_t start, start2;
 
   start = clock();
@@ -156,7 +155,6 @@ void country_graph_coloring(int seed, SparseMatrix A, int **p) {
             ((double)(clock() - start)) / CLOCKS_PER_SEC);
 
   }
-  get_12_norm(n, ia, ja, *p, norm1);
 
   if (A2 != A) SparseMatrix_delete(A2);
   SparseMatrix_delete(L);
