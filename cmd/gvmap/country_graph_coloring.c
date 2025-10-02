@@ -28,7 +28,8 @@ static void get_local_12_norm(int n, int i, const int *ia, const int *ja,
   if (nz > 0) norm[1] /= nz;
 }
 
-static void get_12_norm(int n, const int *ia, int *ja, int *p, double *norm) {
+static void get_12_norm(int n, const int *ia, const int *ja, int *p,
+                        double *norm) {
   /* norm[0] := antibandwidth
      norm[1] := (\sum_{{i,j}\in E} |p[i] - p[j]|)/|E|
      norm[2] := (\sum_{i\in V} (Min_{{j,i}\in E} |p[i] - p[j]|)/|V|
