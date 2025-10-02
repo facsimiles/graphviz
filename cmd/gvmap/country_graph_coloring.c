@@ -17,9 +17,8 @@
 
 static double get_local_12_norm(int n, int i, const int *ia, const int *ja,
                                 const int *p) {
-  int j;
   double norm = n;
-  for (j = ia[i]; j < ia[i+1]; j++){
+  for (int j = ia[i]; j < ia[i+1]; j++){
     if (ja[j] == i) continue;
     norm = fmin(norm, abs(p[i] - p[ja[j]]));
   }
