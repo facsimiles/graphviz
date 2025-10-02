@@ -31,25 +31,21 @@ static void get_local_12_norm(int n, int i, const int *ia, const int *ja,
 static void get_12_norm(int n, const int *ia, const int *ja, int *p,
                         double *norm) {
   /* norm[0] := antibandwidth
-     norm[1] := (\sum_{{i,j}\in E} |p[i] - p[j]|)/|E|
-     norm[2] := (\sum_{i\in V} (Min_{{j,i}\in E} |p[i] - p[j]|)/|V|
+     norm[1] := (\sum_{i\in V} (Min_{{j,i}\in E} |p[i] - p[j]|)/|V|
   */
-  int i, j, nz = 0;
+  int i, j;
   double tmp;
-  norm[0] = n; norm[1] = 0; norm[2] = 0;
+  norm[0] = n; norm[1] = 0;
   for (i = 0; i < n; i++){
     tmp = n;
     for (j = ia[i]; j < ia[i+1]; j++){
       if (ja[j] == i) continue;
       norm[0] = fmin(norm[0], abs(p[i] - p[ja[j]]));
-      norm[1] += abs(p[i] - p[ja[j]]);
       tmp = fmin(tmp, abs(p[i] - p[ja[j]]));
-      nz++;
     }
-    norm[2] += tmp;
+    norm[1] += tmp;
   }
-  norm[2] /= n;
-  norm[1] /= nz;
+  norm[1] /= n;
 }
 
 void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
@@ -89,14 +85,14 @@ void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
       if (i%100 == 0 && Verbose) {
 	get_12_norm(n, ia, ja, p, norm1);
 	fprintf(fp, "%f %f %f\n", ((double)(clock() - start)) / CLOCKS_PER_SEC,
-	        norm1[0], norm1[2]);
+	        norm1[0], norm1[1]);
       }
     }
     if (Verbose) {
       get_12_norm(n, ia, ja, p, norm1);
-      fprintf(stderr, "[%d] aband = %f, aband_avg = %f\n", cnt++, norm1[0], norm1[2]);
+      fprintf(stderr, "[%d] aband = %f, aband_avg = %f\n", cnt++, norm1[0], norm1[1]);
       fprintf(fp,"%f %f %f\n", ((double)(clock() - start)) / CLOCKS_PER_SEC,
-              norm1[0], norm1[2]);
+              norm1[0], norm1[1]);
     }
   }
   if (fp != NULL) {
