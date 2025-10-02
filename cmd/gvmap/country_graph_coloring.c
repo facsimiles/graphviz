@@ -49,7 +49,7 @@ static void get_12_norm(int n, const int *ia, const int *ja, int *p,
 void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
   bool improved = true;
   int cnt = 1, n = A->m, i, j, *ia = A->ia, *ja = A->ja;
-  double norm1[2], norm22[3];
+  double norm1[2];
   clock_t start = clock();
   FILE *fp = NULL;
   
@@ -70,8 +70,8 @@ void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
 	(p)[i] = pj;
 	(p)[j] = pi;
 	const double norm11 = get_local_12_norm(n, i, ia, ja, p);
-	norm22[0] = get_local_12_norm(n, j, ia, ja, p);
-	if (fmin(norm11, norm22[0]) > fmin(norm1[0], norm2)){
+	const double norm22 = get_local_12_norm(n, j, ia, ja, p);
+	if (fmin(norm11, norm22) > fmin(norm1[0], norm2)){
 	  improved = true;
 	  norm1[0] = norm11;
 	  continue;
