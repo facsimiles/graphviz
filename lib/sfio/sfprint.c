@@ -48,7 +48,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
     Argv_t argv;		/* for extf to return value     */
     Sffmt_t *ft;		/* format environment           */
 
-    int argp, argn;		/* arg position and number      */
+    int argn;		/* arg position and number      */
 
 #define SLACK		1024
     char buf[SF_MAXDIGITS + SLACK];
@@ -100,7 +100,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 	    form += 1;
 
 	flags = 0;
-	size = width = precis = base = n_s = argp = -1;
+	size = width = precis = base = n_s = -1;
 	ssp = _Sfdigits;
 	endep = ep = NULL;
 	endsp = sp = buf + (sizeof(buf) - 1);
@@ -310,7 +310,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 	    }
 	}
 
-	argp = FP_SET(argp, argn);
+	FP_SET(-1, argn);
 	FMTSET(ft, form, fmt, size, flags, width, precis, base, t_str, n_str);
 	v = ft->extf(&argv, ft);
 
