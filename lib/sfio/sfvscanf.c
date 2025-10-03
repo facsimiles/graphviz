@@ -168,7 +168,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 			n_str = (form - 1) - t_str;
 		    else {
 			t_str = _Sffmtintf(t_str + 1, &n);
-			FP_SET(-1, argn);
+			++argn;
 
 			FMTSET(ft, form, LEFTP, 0, 0, 0, 0, 0, NULL, 0);
 			n = ft->extf(&argv, ft);
@@ -196,7 +196,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		goto dot_size;
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1, &n);
-		n = FP_SET(-1, argn);
+		n = ++argn;
 
 		FMTSET(ft, form, '.', dot, 0, 0, 0, 0, NULL, 0);
 		if (ft->extf(&argv, ft) < 0)
@@ -238,7 +238,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		    size = size * 10 + (n - '0');
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1, &n);
-		n = FP_SET(-1, argn);
+		n = ++argn;
 
 		FMTSET(ft, form, 'I', sizeof(int), 0, 0, 0, 0, NULL, 0);
 		if (ft->extf(&argv, ft) < 0)
@@ -302,7 +302,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    }
 	}
 
-	FP_SET(-1, argn);
+	++argn;
 	FMTSET(ft, form, fmt, size, flags, width, 0, base, t_str, n_str);
 	v = ft->extf(&argv, ft);
 

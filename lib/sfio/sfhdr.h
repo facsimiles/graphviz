@@ -62,9 +62,6 @@ extern "C" {
 	  } \
 	}
 
-/* extensions to sfvprintf/sfvscanf */
-#define FP_SET(fp,fn)	(fp < 0 ? (fn += 1) : (fn = fp) )
-
     typedef union {
 	int i, *ip;
 	long l, *lp;
