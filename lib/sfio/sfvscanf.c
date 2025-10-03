@@ -74,7 +74,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 
     Argv_t argv;
 
-    int argp, argn;
+    int argn;
 
     void *value;		/* location to assign scanned value */
     const char *t_str;
@@ -146,7 +146,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	t_str = NULL;
 	n_str = 0;
 	value = NULL;
-	argp = -1;
 
       loop_flags:		/* LOOP FOR FLAGS, WIDTH, BASE, TYPE */
 	switch ((fmt = *form++)) {
@@ -303,7 +302,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    }
 	}
 
-	argp = FP_SET(argp, argn);
+	FP_SET(-1, argn);
 	FMTSET(ft, form, fmt, size, flags, width, 0, base, t_str, n_str);
 	v = ft->extf(&argv, ft);
 
