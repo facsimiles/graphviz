@@ -319,7 +319,7 @@ void vectors_scalar_mult(int n, const double *vector, double alpha,
     }
 }
 
-void copy_vector(int n, const double *source, double *dest) {
+void copy_vector(int n, const double *restrict source, double *restrict dest) {
     int i;
     for (i = 0; i < n; i++)
 	dest[i] = source[i];
