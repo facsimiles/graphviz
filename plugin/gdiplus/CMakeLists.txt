@@ -39,14 +39,14 @@ if(WIN32)
 
   # Specify library version and soversion
   set_target_properties(gvplugin_gdiplus PROPERTIES
-    VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
-    SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+    VERSION ${GVPLUGIN_CURRENT}.0.${GVPLUGIN_REVISION}
+    SOVERSION ${GVPLUGIN_CURRENT}
   )
 
   if(MINGW)
     # work around https://gitlab.kitware.com/cmake/cmake/-/issues/21716
     set_target_properties(gvplugin_gdiplus PROPERTIES
-        RUNTIME_OUTPUT_NAME gvplugin_gdiplus-${GRAPHVIZ_PLUGIN_VERSION}
+        RUNTIME_OUTPUT_NAME gvplugin_gdiplus-${GVPLUGIN_CURRENT}
     )
   endif()
 

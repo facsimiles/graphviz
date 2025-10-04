@@ -5763,7 +5763,7 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
 
         if platform.system() == "Linux":
             # try it with the version info suffix, which is what some RHEL platforms use
-            suffix = f".{current - age}.{revision}.{age}"
+            suffix = f".{current - age}.{age}.{revision}"
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so{suffix}"
             print(f"checking {candidate}")  # log some useful information
             if candidate.exists():
@@ -6965,13 +6965,9 @@ def test_plugin_version_cmake():
     """confirm the plugin version defined in CMake matches Autotools"""
     autotools_current, autotools_revision, autotools_age = plugin_version()
 
-    # the CMake build system assumes the second two components are 0 for now
-    cmake_revision = 0
+    # the CMake build system assumes the last component is 0 for now
     cmake_age = 0
 
-    assert (
-        autotools_revision == cmake_revision
-    ), "CMake build system assumes plugin revision is 0 and it is not"
     assert (
         autotools_age == cmake_age
     ), "CMake build system assumes plugin age is 0 and it is not"
@@ -6979,21 +6975,36 @@ def test_plugin_version_cmake():
     # parse the equivalent out of the CMake build system
     cmakelists = Path(__file__).resolve().parents[1] / "CMakeLists.txt"
     cmake_current: Optional[int] = None
+    cmake_revision: Optional[int] = None
     with open(cmakelists, "rt", encoding="utf-8") as f:
         for line in f:
             if m := re.match(
-                r"\s*set\s*\(\s*GRAPHVIZ_PLUGIN_VERSION\s+(?P<current>\d+)\s*\)\s*$",
+                r"\s*set\s*\(\s*GVPLUGIN_CURRENT\s+(?P<current>\d+)\s*\)\s*$",
                 line,
             ):
                 cmake_current = int(m.group("current"))
-                break
+                if cmake_revision is not None:
+                    break
+            if m := re.match(
+                r"\s*set\s*\(\s*GVPLUGIN_REVISION\s+(?P<revision>\d+)\s*\)\s*$",
+                line,
+            ):
+                cmake_revision = int(m.group("revision"))
+                if cmake_current is not None:
+                    break
     assert (
         cmake_current is not None
     ), "failed to parse CMake build system’s plugin current version"
+    assert (
+        cmake_revision is not None
+    ), "failed to parse CMake build system’s plugin revision"
 
     assert (
         autotools_current == cmake_current
     ), "Autotools and CMake build systems disagree on plugin current version"
+    assert (
+        autotools_revision == cmake_revision
+    ), "Autotools and CMake build systems disagree on plugin revision"
 
 
 def test_plugin_version_redhat():

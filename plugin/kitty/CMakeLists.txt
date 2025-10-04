@@ -31,14 +31,14 @@ if(PANGOCAIRO_FOUND)
   endif()
 
   set_target_properties(gvplugin_kitty PROPERTIES
-    VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
-    SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+    VERSION ${GVPLUGIN_CURRENT}.0.${GVPLUGIN_REVISION}
+    SOVERSION ${GVPLUGIN_CURRENT}
   )
 
   if(MINGW)
     # work around https://gitlab.kitware.com/cmake/cmake/-/issues/21716
     set_target_properties(gvplugin_kitty PROPERTIES
-      RUNTIME_OUTPUT_NAME gvplugin_kitty-${GRAPHVIZ_PLUGIN_VERSION}
+      RUNTIME_OUTPUT_NAME gvplugin_kitty-${GVPLUGIN_CURRENT}
     )
   endif()
 endif()
