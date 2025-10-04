@@ -26,7 +26,6 @@ target_include_directories(gvplugin_core PRIVATE
   ../../lib/cgraph
   ../../lib/common
   ../../lib/gvc
-  ../../lib/gvpr
   ../../lib/pathplan
 )
 
