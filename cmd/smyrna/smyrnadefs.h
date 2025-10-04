@@ -145,7 +145,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
     typedef struct{
         Agrec_t h;
         glCompPoint A;
-	float size;
+	double size;
 	int selected;
 	int visible;
 	int printLabel;
@@ -334,7 +334,7 @@ enum {SCHEMACOUNT = 4}; // number of colors
 	int keyVal; ///< depressed key or 0 if none
 	mouse_action_t* mouse_actions; ///< customizable mouse interaction list
 	size_t mouse_action_count;
-	float nodeScale;
+	double nodeScale;
 	int guiMode;
 	char* optArg;
 
