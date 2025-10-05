@@ -1700,9 +1700,7 @@ if test "$with_quartz" != "yes"; then
 else
   if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
     use_quartz="Yes"
-    QUARTZ_CFLAGS=''
     QUARTZ_LIBS='-framework ApplicationServices'
-    AC_SUBST([QUARTZ_CFLAGS])
     AC_SUBST([QUARTZ_LIBS])
     AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the Quartz framework for macOS])
   else
