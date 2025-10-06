@@ -614,7 +614,6 @@ void fdp_tLayout(graph_t * g, xparams * xpms)
     int i;
     int reset;
     bport_t *pp = PORTS(g);
-    double temp;
     Grid *grid;
     pointf ctr;
     Agnode_t *n;
@@ -627,13 +626,13 @@ void fdp_tLayout(graph_t * g, xparams * xpms)
 	grid = mkGrid(agnnodes(g));
 	adjustGrid(grid, agnnodes(g));
 	for (i = 0; i < T_loopcnt; i++) {
-	    temp = cool(i);
+	    const double temp = cool(i);
 	    gAdjust(g, temp, pp, grid);
 	}
 	delGrid(grid);
     } else {
 	for (i = 0; i < T_loopcnt; i++) {
-	    temp = cool(i);
+	    const double temp = cool(i);
 	    adjust(g, temp, pp);
 	}
     }
