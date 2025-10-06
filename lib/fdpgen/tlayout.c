@@ -29,6 +29,7 @@
 
 #include <sys/types.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
 #ifndef _WIN32
@@ -119,12 +120,13 @@ static void reset_params(void)
  * Set parameters for expansion phase based on initial
  * layout parameters. If T0 is not set, we set it here
  * based on the size of the graph. In this case, we
- * return 1, so that fdp_tLayout can unset T0, to be
+ * return true, so that fdp_tLayout can unset T0, to be
  * reset by a recursive call to fdp_tLayout.
+ *
+ * @return Does `reset` need to be called later?
  */
-static int init_params(graph_t * g, xparams * xpms)
-{
-    int ret = 0;
+static bool init_params(graph_t *g, xparams *xpms) {
+    bool ret = false;
 
     if (T_T0 == -1.0) {
 	int nnodes = agnnodes(g);
@@ -137,7 +139,7 @@ static int init_params(graph_t * g, xparams * xpms)
 	    fprintf(stderr, "(%s) : T0 %f\n", agnameof(GORIG(g->root)), T_T0);
 	}
 #endif
-	ret = 1;
+	ret = true;
     }
 
     xpms->T0 = cool(T_pass1);
@@ -612,7 +614,7 @@ static pointf initPositions(graph_t * g, bport_t * pp)
 void fdp_tLayout(graph_t * g, xparams * xpms)
 {
     bport_t *const pp = PORTS(g);
-    const int reset = init_params(g, xpms);
+    const bool reset = init_params(g, xpms);
     const pointf ctr = initPositions(g, pp);
 
     if (T_useGrid) {
