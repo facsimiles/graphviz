@@ -108,15 +108,12 @@ static double cool(int t)
     return T_T0 * (T_maxIters - t) / T_maxIters;
 }
 
-/* reset_params:
- */
 static void reset_params(void)
 {
     T_T0 = -1.0;
 }
 
-/* init_params:
- * Set parameters for expansion phase based on initial
+/* Set parameters for expansion phase based on initial
  * layout parameters. If T0 is not set, we set it here
  * based on the size of the graph. In this case, we
  * return true, so that fdp_tLayout can unset T0, to be
@@ -161,9 +158,7 @@ static bool init_params(graph_t *g, xparams *xpms) {
     return ret;
 }
 
-/* fdp_initParams:
- * Initialize parameters based on root graph attributes.
- */
+/// initialize parameters based on root graph attributes
 void fdp_initParams(graph_t * g)
 {
     T_useGrid = D_useGrid;
@@ -227,10 +222,7 @@ doRep(node_t * p, node_t * q, double xdelta, double ydelta, double dist2)
     DISP(p)[1] -= ydelta * force;
 }
 
-/* applyRep:
- * Repulsive force = (K*K)/d
- *  or K*K/d*d
- */
+/// repulsive force = K × K ÷ d or K × K ÷ d × d
 static void applyRep(Agnode_t * p, Agnode_t * q)
 {
     double xdelta, ydelta;
@@ -303,9 +295,8 @@ static int gridRepulse(cell *cellp, Grid *grid) {
     return 0;
 }
 
-/* applyAttr:
- * Attractive force = weight*(d*d)/K
- *  or        force = (d - L(e))*weight(e)
+/* Attractive force = weight × (d × d) ÷ K
+ *  or        force = (d - L(e)) × weight(e)
  */
 static void applyAttr(Agnode_t * p, Agnode_t * q, Agedge_t * e)
 {
@@ -381,8 +372,6 @@ static void updatePos(Agraph_t * g, double temp, bport_t * pp)
 
 #define FLOOR(d) ((int)floor(d))
 
-/* gAdjust:
- */
 static void gAdjust(Agraph_t * g, double temp, bport_t * pp, Grid * grid)
 {
     Agnode_t *n;
@@ -410,8 +399,6 @@ static void gAdjust(Agraph_t * g, double temp, bport_t * pp, Grid * grid)
     updatePos(g, temp, pp);
 }
 
-/* adjust:
- */
 static void adjust(Agraph_t * g, double temp, bport_t * pp)
 {
     Agnode_t *n;
@@ -438,8 +425,7 @@ static void adjust(Agraph_t * g, double temp, bport_t * pp)
     updatePos(g, temp, pp);
 }
 
-/* initPositions:
- * Create initial layout of nodes
+/* Create initial layout of nodes
  * TODO :
  *  Position nodes near neighbors with positions.
  *  Use bbox to reset K.
@@ -605,8 +591,7 @@ static pointf initPositions(graph_t * g, bport_t * pp)
     return ctr;
 }
 
-/* fdp_tLayout:
- * Given graph g with ports nodes, layout g respecting ports.
+/* Given graph g with ports nodes, layout g respecting ports.
  * If some node have position information, it may be useful to
  * reset temperature and other parameters to reflect this.
  */
