@@ -611,34 +611,27 @@ static pointf initPositions(graph_t * g, bport_t * pp)
  */
 void fdp_tLayout(graph_t * g, xparams * xpms)
 {
-    int i;
-    int reset;
-    bport_t *pp = PORTS(g);
-    Grid *grid;
-    pointf ctr;
-    Agnode_t *n;
-
-    reset = init_params(g, xpms);
-
-    ctr = initPositions(g, pp);
+    bport_t *const pp = PORTS(g);
+    const int reset = init_params(g, xpms);
+    const pointf ctr = initPositions(g, pp);
 
     if (T_useGrid) {
-	grid = mkGrid(agnnodes(g));
+	Grid *const grid = mkGrid(agnnodes(g));
 	adjustGrid(grid, agnnodes(g));
-	for (i = 0; i < T_loopcnt; i++) {
+	for (int i = 0; i < T_loopcnt; i++) {
 	    const double temp = cool(i);
 	    gAdjust(g, temp, pp, grid);
 	}
 	delGrid(grid);
     } else {
-	for (i = 0; i < T_loopcnt; i++) {
+	for (int i = 0; i < T_loopcnt; i++) {
 	    const double temp = cool(i);
 	    adjust(g, temp, pp);
 	}
     }
 
     if (ctr.x != 0.0 || ctr.y != 0.0) {
-	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    ND_pos(n)[0] += ctr.x;
 	    ND_pos(n)[1] += ctr.y;
 	}
