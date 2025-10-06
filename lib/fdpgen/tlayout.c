@@ -35,7 +35,6 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-#include <ctype.h>
 #include <fdpgen/dbg.h>
 #include <fdpgen/grid.h>
 #include <neatogen/neato.h>
