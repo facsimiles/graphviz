@@ -620,7 +620,6 @@ void fdp_tLayout(graph_t * g, xparams * xpms)
     Agnode_t *n;
 
     reset = init_params(g, xpms);
-    temp = T_T0;
 
     ctr = initPositions(g, pp);
 
