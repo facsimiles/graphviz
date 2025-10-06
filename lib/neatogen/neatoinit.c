@@ -168,8 +168,8 @@ void neato_cleanup(graph_t * g)
     neato_cleanup_graph(g);
 }
 
-static int numFields(const char *pos) {
-    int cnt = 0;
+static size_t numFields(const char *pos) {
+    size_t cnt = 0;
     char c;
 
     do {
@@ -266,55 +266,47 @@ static void freeClusterData(cluster_data c) {
  */
 static int user_spline(attrsym_t * E_pos, edge_t * e)
 {
-    char *pos;
-    int i, n, npts, nc;
+    int nc;
     pointf *pp;
     double x, y;
-    int sflag = 0, eflag = 0;
+    bool sflag = false, eflag = false;
     pointf sp = { 0, 0 }, ep = { 0, 0};
     bezier *newspl;
-    int more = 1;
     static atomic_flag warned;
 
-    pos = agxget(e, E_pos);
+    const char *pos = agxget(e, E_pos);
     if (*pos == '\0')
 	return 0;
 
     uint32_t stype, etype;
     arrow_flags(e, &stype, &etype);
-    do {
+    for (bool more = true; more; ) {
 	/* check for s head */
-	i = sscanf(pos, "s,%lf,%lf%n", &x, &y, &nc);
-	if (i == 2) {
-	    sflag = 1;
-	    pos = pos + nc;
-	    sp.x = x;
-	    sp.y = y;
+	if (sscanf(pos, "s,%lf,%lf%n", &x, &y, &nc) == 2) {
+	    sflag = true;
+	    pos += nc;
+	    sp = (pointf){.x = x, .y = y};
 	}
 
 	/* check for e head */
-	i = sscanf(pos, " e,%lf,%lf%n", &x, &y, &nc);
-	if (i == 2) {
-	    eflag = 1;
-	    pos = pos + nc;
-	    ep.x = x;
-	    ep.y = y;
+	if (sscanf(pos, " e,%lf,%lf%n", &x, &y, &nc) == 2) {
+	    eflag = true;
+	    pos += nc;
+	    ep = (pointf){.x = x, .y = y};
 	}
 
-	npts = numFields(pos); // count potential points
-	n = npts;
-	if (n < 4 || n % 3 != 1) {
+	const size_t npts = numFields(pos); // count potential points
+	if (npts < 4 || npts % 3 != 1) {
 	    gv_free_splines(e);
 	    if (!atomic_flag_test_and_set(&warned)) {
 		agwarningf("pos attribute for edge (%s,%s) doesn't have 3n+1 points\n", agnameof(agtail(e)), agnameof(aghead(e)));
 	    }
 	    return 0;
 	}
-	pointf *ps = gv_calloc(n, sizeof(pointf));
+	pointf *ps = gv_calloc(npts, sizeof(pointf));
 	pp = ps;
-	while (n) {
-	    i = sscanf(pos, "%lf,%lf%n", &x, &y, &nc);
-	    if (i < 2) {
+	for (size_t n = npts; n > 0; --n) {
+	    if (sscanf(pos, "%lf,%lf%n", &x, &y, &nc) < 2) {
 		if (!atomic_flag_test_and_set(&warned)) {
 		    agwarningf("syntax error in pos attribute for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
 		}
@@ -323,20 +315,17 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 		return 0;
 	    }
 	    pos += nc;
-	    pp->x = x;
-	    pp->y = y;
+	    *pp = (pointf){.x = x, .y = y};
 	    pp++;
-	    n--;
 	}
  	while (gv_isspace(*pos)) pos++;
 	if (*pos == '\0')
-	    more = 0;
+	    more = false;
 	else
 	    pos++;
 
 	/* parsed successfully; create spline */
-	assert(npts >= 0);
-	newspl = new_spline(e, (size_t)npts);
+	newspl = new_spline(e, npts);
 	if (sflag) {
 	    newspl->sflag = stype;
 	    newspl->sp = sp;
@@ -345,11 +334,11 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    newspl->eflag = etype;
 	    newspl->ep = ep;
 	}
-	for (i = 0; i < npts; i++) {
+	for (size_t i = 0; i < npts; i++) {
 	    newspl->list[i] = ps[i];
 	}
 	free(ps);
-    } while (more);
+    }
 
     if (ED_label(e))
 	set_label(e, ED_label(e), "lp");
@@ -401,10 +390,9 @@ static pos_edge nop_init_edges(Agraph_t * g)
     if (nedges) {
 	if (nedges == agnedges(g))
 	    return AllEdges;
-	else
-	    return SomeEdges;
-    } else
-	return NoEdges;
+	return SomeEdges;
+    }
+    return NoEdges;
 }
 
 /* freeEdgeInfo:
@@ -447,8 +435,8 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb, boxf* bbp)
 	}
 	*bbp = bb;
 	return 1;
-    } else
-	return 0;
+    }
+    return 0;
 }
 
 static void add_cluster(Agraph_t * g, Agraph_t * subg)
