@@ -585,8 +585,7 @@ nodelist_t layout_block(Agraph_t *g, block_t *sn, double min_dist,
                         circ_state *state) {
     Agraph_t *copyG, *tree, *subg;
     int k;
-    double theta, radius, largest_node;
-    largest_node = 0;
+    double theta, radius;
 
     subg = sn->sub_graph;
     block_graph(g, sn);		/* add induced edges */
@@ -602,7 +601,7 @@ nodelist_t layout_block(Agraph_t *g, block_t *sn, double min_dist,
     longest_path = reduce_edge_crossings(longest_path, subg);
 
     size_t N = LIST_SIZE(&longest_path);
-    largest_node = largest_nodesize(&longest_path);
+    const double largest_node = largest_nodesize(&longest_path);
     /* N*(min_dist+largest_node) is roughly circumference of required circle */
     if (N == 1)
 	radius = 0;
