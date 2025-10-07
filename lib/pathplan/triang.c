@@ -88,6 +88,35 @@ static int triangulate(Ppoint_t **pointp, size_t pointn,
     return 0;
 }
 
+/// is pb between pa and pc?
+static bool between(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc) {
+  const Ppoint_t pba = {.x = pb.x - pa.x, .y = pb.y - pa.y};
+  const Ppoint_t pca = {.x = pc.x - pa.x, .y = pc.y - pa.y};
+  if (ccw(pa, pb, pc) != ISON)
+    return false;
+  return pca.x * pba.x + pca.y * pba.y >= 0 &&
+         pca.x * pca.x + pca.y * pca.y <= pba.x * pba.x + pba.y * pba.y;
+}
+
+/// line to line intersection
+static bool intersects(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc, Ppoint_t pd) {
+  int ccw1, ccw2, ccw3, ccw4;
+
+  if (ccw(pa, pb, pc) == ISON || ccw(pa, pb, pd) == ISON ||
+      ccw(pc, pd, pa) == ISON || ccw(pc, pd, pb) == ISON) {
+    if (between(pa, pb, pc) || between(pa, pb, pd) || between(pc, pd, pa) ||
+        between(pc, pd, pb))
+      return true;
+  } else {
+    ccw1 = ccw(pa, pb, pc) == ISCCW ? 1 : 0;
+    ccw2 = ccw(pa, pb, pd) == ISCCW ? 1 : 0;
+    ccw3 = ccw(pc, pd, pa) == ISCCW ? 1 : 0;
+    ccw4 = ccw(pc, pd, pb) == ISCCW ? 1 : 0;
+    return (ccw1 ^ ccw2) && (ccw3 ^ ccw4);
+  }
+  return false;
+}
+
 bool isdiagonal(size_t i, size_t ip2, void *pointp, size_t pointn,
                 indexer_t indexer) {
     int res;
@@ -116,31 +145,4 @@ bool isdiagonal(size_t i, size_t ip2, void *pointp, size_t pointn,
 	    }
     }
     return true;
-}
-
-bool intersects(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc, Ppoint_t pd) {
-    int ccw1, ccw2, ccw3, ccw4;
-
-    if (ccw(pa, pb, pc) == ISON || ccw(pa, pb, pd) == ISON ||
-	ccw(pc, pd, pa) == ISON || ccw(pc, pd, pb) == ISON) {
-	if (between(pa, pb, pc) || between(pa, pb, pd) ||
-	    between(pc, pd, pa) || between(pc, pd, pb))
-	    return true;
-    } else {
-	ccw1 = ccw(pa, pb, pc) == ISCCW ? 1 : 0;
-	ccw2 = ccw(pa, pb, pd) == ISCCW ? 1 : 0;
-	ccw3 = ccw(pc, pd, pa) == ISCCW ? 1 : 0;
-	ccw4 = ccw(pc, pd, pb) == ISCCW ? 1 : 0;
-	return (ccw1 ^ ccw2) && (ccw3 ^ ccw4);
-    }
-    return false;
-}
-
-bool between(Ppoint_t pa, Ppoint_t pb, Ppoint_t pc) {
-    const Ppoint_t pba = {.x = pb.x - pa.x, .y = pb.y - pa.y};
-    const Ppoint_t pca = {.x = pc.x - pa.x, .y = pc.y - pa.y};
-    if (ccw(pa, pb, pc) != ISON)
-	return false;
-    return pca.x * pba.x + pca.y * pba.y >= 0 &&
-	pca.x * pca.x + pca.y * pca.y <= pba.x * pba.x + pba.y * pba.y;
 }
