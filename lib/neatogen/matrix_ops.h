@@ -31,7 +31,8 @@ PRIVATE void right_mult_with_vector_f(float **, int, double *,
 PRIVATE void vectors_subtraction(int, double *, double *, double *);
 PRIVATE void vectors_addition(int, double *, double *, double *);
 PRIVATE void vectors_scalar_mult(int, const double *, double, double *);
-PRIVATE void copy_vector(int n, const double *source, double *dest);
+PRIVATE void copy_vector(int n, const double *restrict source,
+                         double *restrict dest);
 PRIVATE double vectors_inner_product(int n, const double *vector1,
 					const double *vector2);
 PRIVATE double max_abs(int n, double *vector);
