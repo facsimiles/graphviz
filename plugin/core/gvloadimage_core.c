@@ -203,13 +203,12 @@ static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, bool fill
 {
     int i;
     pointf AF[4];
-    shape_desc *shape;
 
     assert(job);
     assert(us);
     assert(us->name);
 
-    if ((shape = us->data)) {
+    if (us->data) {
 	AF[0] = b.LL;
 	AF[2] = b.UR;
 	AF[1].x = AF[0].x;
