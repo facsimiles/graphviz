@@ -39,6 +39,7 @@ class Case:
     format: str
     flags: list[str]
     index: int = 0
+    xfail: bool = True  # is this test case expected to fail?
 
 
 TESTS: list[Case] = [
@@ -411,9 +412,19 @@ def genOutname(name, alg, fmt, index: int):
 
 @pytest.mark.parametrize(
     "name,input,algorithm,format,flags,index",
-    ((c.name, c.input, c.algorithm, c.format, c.flags, c.index) for c in TESTS),
+    (
+        pytest.param(
+            c.name,
+            c.input,
+            c.algorithm,
+            c.format,
+            c.flags,
+            c.index,
+            marks=pytest.mark.xfail(strict=True) if c.xfail else (),
+        )
+        for c in TESTS
+    ),
 )
-@pytest.mark.xfail(strict=True)
 def test_graph(
     name: str,
     input: Path,
