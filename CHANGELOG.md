@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.0.2)]
 
+### Fixed
+
+- Memory corruption when using the Java bindings to render to a string has been
+  corrected. This was a regression in Graphviz 2.49.0.
+
 ## [14.0.1] – 2025-10-05
 
 ### Changed

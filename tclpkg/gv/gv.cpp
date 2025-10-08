@@ -9,10 +9,12 @@
  *************************************************************************/
 
 #include "gv_channel.h"
-#include <cstdlib>
+#include <cassert>
+#include <climits>
 #include <cstring>
 #include <gvc/gvc.h>
 #include <string>
+#include <util/agxbuf.h>
 #include <util/alloc.h>
 
 #define agfindattr(x, s) agattrsym(x, s)
@@ -662,29 +664,21 @@ bool render(Agraph_t *g, const char *format, const char *filename) {
   return err == 0;
 }
 
-typedef struct {
-  char *data;
-  int sz;  // buffer size
-  int len; // length of array
-} BA;
-
 // render to string result, using binding-dependent gv_string_writer()
 char *renderresult(Agraph_t *g, const char *format) {
   if (!g)
     return nullptr;
   if (!GD_alg(g))
     return nullptr;
-  BA ba;
-  ba.sz = BUFSIZ;
   // must be freed by wrapper code
-  void *const p = gv_calloc(ba.sz, sizeof(char));
-  ba.data = new (p) char[ba.sz]{};
-  ba.len = 0;
+  agxbuf buffer = {};
   gv_string_writer_init(gvc);
-  (void)gvRender(gvc, g, format, reinterpret_cast<FILE *>(&ba));
+  (void)gvRender(gvc, g, format, reinterpret_cast<FILE *>(&buffer));
   gv_writer_reset(gvc); // Reset to default
-  *reinterpret_cast<int *>(GD_alg(g)) = ba.len;
-  return ba.data;
+  const size_t len = agxblen(&buffer);
+  assert(len <= INT_MAX);
+  *reinterpret_cast<int *>(GD_alg(g)) = static_cast<int>(len);
+  return agxbdisown(&buffer);
 }
 
 // render to string result, using binding-dependent gv_string_writer()
