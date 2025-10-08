@@ -41,6 +41,7 @@ class Case:
 
 
 TESTS: list[Case] = [
+    Case("trivial", Path("trivial.gv"), "dot", "gv", [], xfail=False),
     Case("shapes", Path("shapes.gv"), "dot", "gv", []),
     Case("shapes", Path("shapes.gv"), "dot", "ps", []),
     Case("crazy", Path("crazy.gv"), "dot", "png", []),
