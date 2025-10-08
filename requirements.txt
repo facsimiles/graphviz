@@ -3,6 +3,6 @@ cmakelang==0.6.13
 isort==6.0.1
 pexpect==4.9.0
 pillow==11.3.0
-pylint==3.3.8
+pylint==3.3.9
 pytest==8.4.2
 tabulate==0.9.0
