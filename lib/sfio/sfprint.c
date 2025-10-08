@@ -48,7 +48,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
     Argv_t argv;		/* for extf to return value     */
     Sffmt_t *ft;		/* format environment           */
 
-    int argp, argn;		/* arg position and number      */
+    int argn;		/* arg position and number      */
 
 #define SLACK		1024
     char buf[SF_MAXDIGITS + SLACK];
@@ -100,7 +100,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 	    form += 1;
 
 	flags = 0;
-	size = width = precis = base = n_s = argp = -1;
+	size = width = precis = base = n_s = -1;
 	ssp = _Sfdigits;
 	endep = ep = NULL;
 	endsp = sp = buf + (sizeof(buf) - 1);
@@ -135,7 +135,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 			n_str = (form - 1) - t_str;
 		    else {
 			t_str = _Sffmtintf(t_str + 1, &n);
-			FP_SET(-1, argn);
+			++argn;
 
 			FMTSET(ft, form, LEFTP, 0, 0, 0, 0, 0, NULL, 0);
 			n = ft->extf(&argv, ft);
@@ -204,7 +204,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 	    form += 1;		/* fall through */
 	case '*':
 	    form = _Sffmtintf(form, &n);
-	    n = FP_SET(-1, argn);
+	    n = ++argn;
 
 	    FMTSET(ft, form, '.', dot, 0, 0, 0, 0, NULL, 0);
 	    if (ft->extf(&argv, ft) < 0)
@@ -245,7 +245,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 		    size = size * 10 + (n - '0');
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1, &n);
-		n = FP_SET(-1, argn);
+		n = ++argn;
 
 		FMTSET(ft, form, 'I', sizeof(int), 0, 0, 0, 0, NULL, 0);
 		if (ft->extf(&argv, ft) < 0)
@@ -310,7 +310,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 	    }
 	}
 
-	argp = FP_SET(argp, argn);
+	++argn;
 	FMTSET(ft, form, fmt, size, flags, width, precis, base, t_str, n_str);
 	v = ft->extf(&argv, ft);
 
