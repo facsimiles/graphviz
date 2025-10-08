@@ -1015,34 +1015,33 @@ static void attach_edge_label_coordinates(int dim, SparseMatrix A, int n_edge_la
 }
 
 static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_nodes, int *edge_label_nodes){
-  int i, id = 0, j, jj, ii;
+  int id = 0;
   int *ia = A->ia, *ja = A->ja;
-  SparseMatrix B;
 
   int *mask = gv_calloc(A->m, sizeof(int));
 
-  for (i = 0; i < A->m; i++) mask[i] = 1;
+  for (int i = 0; i < A->m; i++) mask[i] = 1;
 
-  for (i = 0; i < n_edge_label_nodes; i++){
+  for (int i = 0; i < n_edge_label_nodes; i++){
     mask[edge_label_nodes[i]] = -1;
   }
 
-  for (i = 0; i < A->m; i++) {
+  for (int i = 0; i < A->m; i++) {
     if (mask[i] > 0) mask[i] = id++;
   }
 
   LIST(int) irn = {0};
   LIST(int) jcn = {0};
-  for (i = 0; i < A->m; i++){
+  for (int i = 0; i < A->m; i++){
     if (mask[i] < 0) continue;
-    for (j = ia[i]; j < ia[i+1]; j++){
+    for (int j = ia[i]; j < ia[i+1]; j++){
       if (mask[ja[j]] >= 0) {
 	LIST_APPEND(&irn, mask[i]);
 	LIST_APPEND(&jcn, mask[ja[j]]);
 	continue;
       }
-      ii = ja[j];
-      for (jj = ia[ii]; jj < ia[ii+1]; jj++){
+      const int ii = ja[j];
+      for (int jj = ia[ii]; jj < ia[ii+1]; jj++){
 	if (ja[jj] != i && mask[ja[jj]] >= 0) {
 	    LIST_APPEND(&irn, mask[i]);
 	    LIST_APPEND(&jcn, mask[ja[jj]]);
@@ -1054,10 +1053,11 @@ static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_n
   LIST_SYNC(&irn);
   LIST_SYNC(&jcn);
   assert(LIST_SIZE(&irn) <= INT_MAX);
-  B = SparseMatrix_from_coordinate_arrays((int)LIST_SIZE(&irn), id, id,
-                                          LIST_FRONT(&irn), LIST_FRONT(&jcn),
-                                          NULL, MATRIX_TYPE_PATTERN,
-                                          sizeof(double));
+  SparseMatrix B = SparseMatrix_from_coordinate_arrays((int)LIST_SIZE(&irn), id,
+                                                       id, LIST_FRONT(&irn),
+                                                       LIST_FRONT(&jcn), NULL,
+                                                       MATRIX_TYPE_PATTERN,
+                                                       sizeof(double));
 
   LIST_FREE(&irn);
   LIST_FREE(&jcn);
