@@ -340,12 +340,10 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
     GtsSurface* s = tri(x, y, n, NULL, 0, 1);
     int nedges;
     int* edges;
-    estats stats;
 
     if (!s) return NULL;
 
-    stats.n = 0;
-    stats.delaunay = NULL;
+    estats stats = {0};
     edgeStats (s, &stats);
     *pnedges = nedges = stats.n;
 
