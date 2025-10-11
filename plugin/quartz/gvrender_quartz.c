@@ -12,13 +12,17 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <TargetConditionals.h>
 #include <util/gv_math.h>
 
-#if TARGET_OS_IPHONE
+#ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
 #include <mach/mach_host.h>
 #include <sys/mman.h>
+#endif
+
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
 #include <ImageIO/ImageIO.h>
+#endif
 #endif
 
 #include <gvc/gvplugin_device.h>
@@ -46,7 +50,8 @@ static void quartzgen_end_job(GVJ_t * job)
 {
     CGContextRef context = job->context;
 	
-#if TARGET_OS_IPHONE
+#ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
 	void* context_data;
 	size_t context_datalen;
 	
@@ -63,6 +68,7 @@ static void quartzgen_end_job(GVJ_t * job)
 			break;
 	}
 #endif
+#endif
 
 	switch (job->device.id) {
 
@@ -76,6 +82,10 @@ static void quartzgen_end_job(GVJ_t * job)
 		*((CGImageRef *) job->window) = CGBitmapContextCreateImage(context);
 	    break;
 
+#if (defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&                 \
+     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040) ||                 \
+    (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&                \
+     __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000)
 	default:		/* bitmap formats */
 	    {
 		/* create an image destination */
@@ -98,13 +108,16 @@ static void quartzgen_end_job(GVJ_t * job)
 		CGDataConsumerRelease(data_consumer);
 	    }
 	    break;
+#endif
 	}
 	
 	CGContextRelease(context);
 
-#if TARGET_OS_IPHONE
+#ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
 	if (context_data && context_datalen)
 		munmap(context_data, context_datalen);
+#endif
 #endif
 }
 
@@ -172,7 +185,9 @@ static void quartzgen_begin_page(GVJ_t * job)
 
 		void *buffer = NULL;
 
-#if TARGET_OS_IPHONE
+#ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+
 		/* iPhoneOS has no swap files for memory, so if we're short of memory we need to make our own temp scratch file to back it */
 
 		size_t buffer_size = job->height * bytes_per_row;
@@ -206,6 +221,7 @@ static void quartzgen_begin_page(GVJ_t * job)
 			buffer = NULL;
 		    }
 		}
+#endif
 #endif
 
 		/* create a true color bitmap for drawing into */
@@ -451,12 +467,17 @@ static gvrender_features_t render_features_quartz = {
     RGBA_DOUBLE			/* color_type */
 };
 
+#if (defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&                 \
+     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040) ||                 \
+    (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&                \
+     __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000)
 static gvdevice_features_t device_features_quartz = {
     GVDEVICE_BINARY_FORMAT | GVDEVICE_DOES_TRUECOLOR,	/* flags */
     {0., 0.},			/* default margin - points */
     {0., 0.},			/* default page width, height - points */
     {72., 72.}			/* dpi */
 };
+#endif
 
 static gvdevice_features_t device_features_quartz_paged = {
     GVDEVICE_DOES_PAGES | GVDEVICE_BINARY_FORMAT | GVDEVICE_DOES_TRUECOLOR | GVRENDER_NO_WHITE_BG,	/* flags */
@@ -472,7 +493,16 @@ gvplugin_installed_t gvrender_quartz_types[] = {
 
 gvplugin_installed_t gvdevice_quartz_types[] = {
     {FORMAT_PDF, "pdf:quartz", 8, NULL, &device_features_quartz_paged},
+#if (defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&                 \
+     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040) ||                 \
+    (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&                \
+     __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000)
     {FORMAT_CGIMAGE, "cgimage:quartz", 8, NULL, &device_features_quartz},
+#endif
+#if (defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&                 \
+     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040) ||                 \
+    (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&                \
+     __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000)
     {FORMAT_BMP, "bmp:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_GIF, "gif:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_ICO, "ico:quartz", 8, NULL, &device_features_quartz},
@@ -484,13 +514,16 @@ gvplugin_installed_t gvdevice_quartz_types[] = {
     {FORMAT_TIFF, "tif:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_TIFF, "tiff:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_TGA, "tga:quartz", 8, NULL, &device_features_quartz},
-#if !TARGET_OS_IPHONE
+#endif
+#ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
     {FORMAT_EXR, "exr:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_ICNS, "icns:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_PICT, "pct:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_PICT, "pict:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_PSD, "psd:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_SGI, "sgi:quartz", 8, NULL, &device_features_quartz},
+#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };

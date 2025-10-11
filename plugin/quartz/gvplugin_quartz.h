@@ -11,11 +11,10 @@
 #pragma once
 
 #include <Availability.h>
-#include <TargetConditionals.h>
 
-#if TARGET_OS_IPHONE
+#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
 #include <CoreGraphics/CoreGraphics.h>
-#else
+#elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
@@ -44,11 +43,14 @@ typedef enum {
 
 static const int BITS_PER_COMPONENT = 8;	/* bits per color component */
 
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
 CFStringRef format_to_uti(format_type format);
+#endif
 
 extern CGDataConsumerCallbacks device_data_consumer_callbacks;
 
 /* gvtextlayout_quartz.c in Mac OS X: layout is a CoreText CTLineRef */
+/* GVTextLayout.m in iPhoneOS: layout is a custom Objective-C GVTextLayout */
 
 void *quartz_new_layout(char* fontname, double fontsize, char* text);
 void quartz_size_layout(void *layout, double* width, double* height, double* yoffset_layout);

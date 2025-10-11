@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.0.2)]
 
+### Changed
+
+- Quartz plugin code paths to support older macOS and iOS versions have been
+  restored. Their removal was a regression in Graphviz 13.0.0.
+
 ### Fixed
 
 - Memory corruption when using the Java bindings to render to a string has been
