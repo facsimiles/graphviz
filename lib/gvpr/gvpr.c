@@ -83,8 +83,7 @@ static FILE *openOut(char *name) {
   return outs;
 }
 
-/* gettok:
- * Tokenize a string. Tokens consist of either a non-empty string
+/* Tokenize a string. Tokens consist of either a non-empty string
  * of non-space characters, or all characters between a pair of
  * single or double quotes. As usual, we map
  *   \c -> c
@@ -135,8 +134,7 @@ static char *gettok(char **sp) {
   return s;
 }
 
-/* parseArgs:
- * Split s into whitespace separated tokens, allowing quotes.
+/* Split s into whitespace separated tokens, allowing quotes.
  * Append tokens to argument list and return new number of arguments.
  *
  * @param arg [inout] The current arguments
@@ -207,8 +205,7 @@ static char *dflt_gvprpath(void) {
   return share;
 }
 
-/* resolve:
- * Translate -f arg parameter into a pathname.
+/* Translate -f arg parameter into a pathname.
  * If arg contains '/', return arg.
  * Else search directories in GVPRPATH for arg.
  * Return NULL on error.
@@ -302,8 +299,7 @@ static char *getOptarg(int c, char **argp, int *argip, int argc, char **argv) {
   return rv;
 }
 
-/* doFlags:
- * Process a command-line argument starting with a '-'.
+/* Process a command-line argument starting with a '-'.
  * argi is the index of the next available item in argv[].
  * argc has its usual meaning.
  *
@@ -380,9 +376,7 @@ static void freeOpts(options opts) {
   LIST_FREE(&opts.args);
 }
 
-/* scanArgs:
- * Parse command line options.
- */
+/// parse command line options
 static options scanArgs(int argc, char **argv) {
   char *arg;
   options opts = {0};
@@ -705,9 +699,7 @@ static void travFlat(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
   }
 }
 
-/* doCleanup:
- * Reset node traversal data
- */
+/// reset node traversal data
 static void doCleanup(Agraph_t *g) {
   Agnode_t *n;
   ndata *nd;
@@ -719,9 +711,7 @@ static void doCleanup(Agraph_t *g) {
   }
 }
 
-/* traverse:
- * return true if traversal requires cleanup
- */
+/// return true if traversal requires cleanup
 static bool traverse(Gpr_t *state, Expr_t *prog, comp_block *bp, bool cleanup) {
   if (!state->target) {
     char *target;
@@ -832,8 +822,7 @@ static bool traverse(Gpr_t *state, Expr_t *prog, comp_block *bp, bool cleanup) {
   return cleanup;
 }
 
-/* addOutputGraph:
- * Append output graph to option struct.
+/* Append output graph to option struct.
  * We know uopts and state->outgraph are non-NULL.
  */
 static void addOutputGraph(Gpr_t *state, gvpropts *uopts) {
@@ -877,8 +866,7 @@ typedef struct {
   options opts;
 } gvpr_state_t;
 
-/* gvexitf:
- * Only used if GV_USE_EXIT not set during exeval.
+/* Only used if GV_USE_EXIT not set during exeval.
  * This implies setjmp/longjmp set up.
  */
 static void gvexitf(void *env, int v) {
@@ -905,8 +893,7 @@ static void gverrorf(Expr_t *handle, Exdisc_t *discipline, int level,
   }
 }
 
-/* gvpr_core:
- * Return 0 on success; non-zero on error.
+/* Return 0 on success; non-zero on error.
  *
  * FIX/TODO:
  *  - close non-source/non-output graphs
