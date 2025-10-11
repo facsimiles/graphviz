@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Memory corruption when using the Java bindings to render to a string has been
   corrected. This was a regression in Graphviz 2.49.0.
+- A minor typo in the `gvpr(3)` man page has been fixed.
 
 ## [14.0.1] – 2025-10-05
 
