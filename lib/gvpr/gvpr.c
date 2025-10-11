@@ -937,7 +937,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
   info.args = gs->opts.args;
   info.errf = gverrorf;
   info.flags = uopts->flags;
-  if ((uopts->flags & GV_USE_EXIT))
+  if (uopts->flags & GV_USE_EXIT)
     info.exitf = 0;
   else
     info.exitf = gvexitf;
@@ -954,7 +954,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
 
   initGPRState(gs->state);
 
-  if ((uopts->flags & GV_USE_OUTGRAPH)) {
+  if (uopts->flags & GV_USE_OUTGRAPH) {
     uopts->outgraphs = 0;
     uopts->n_outgraphs = 0;
   }
