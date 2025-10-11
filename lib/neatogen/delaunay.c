@@ -341,7 +341,6 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
     int nedges;
     int* edges;
     estats stats;
-    estate state;
 
     if (!s) return NULL;
 
@@ -352,9 +351,7 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 
     if (nedges) {
 	edges = gv_calloc(2 * nedges, sizeof(int));
-	state.n = 0;
-	state.edges = edges;
-	gts_surface_foreach_edge(s, addEdge, &state);
+	gts_surface_foreach_edge(s, addEdge, &(estate){.edges = edges});
     }
     else {
 	int* vs = gv_calloc(n, sizeof(int));
