@@ -936,10 +936,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
   info.outFile = gs->opts.outFile;
   info.args = gs->opts.args;
   info.errf = gverrorf;
-  if (uopts)
-    info.flags = uopts->flags;
-  else
-    info.flags = 0;
+  info.flags = uopts->flags;
   if ((uopts->flags & GV_USE_EXIT))
     info.exitf = 0;
   else
@@ -969,7 +966,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
     }
   }
 
-  bool incoreGraphs = uopts && uopts->ingraphs;
+  bool incoreGraphs = uopts->ingraphs;
 
   if (gs->opts.verbose)
     fprintf(stderr, "Parse/compile/init: %.2f secs.\n", gvelapsed_sec());
@@ -979,7 +976,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
 
   /* if program is not null */
   if (gs->xprog->uses_graph) {
-    if (uopts && uopts->ingraphs)
+    if (uopts->ingraphs)
       gs->ing = newIngGraphs(0, uopts->ingraphs, ing_read);
     else
       gs->ing = newIng(0, gs->opts.inFiles, ing_read);
@@ -1032,7 +1029,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
        */
       if (gs->state->outgraph != NULL &&
           (agnnodes(gs->state->outgraph) || gs->opts.compflags.srcout)) {
-        if (uopts && (uopts->flags & GV_USE_OUTGRAPH))
+        if (uopts->flags & GV_USE_OUTGRAPH)
           addOutputGraph(gs->state, uopts);
         else
           sfioWrite(gs->state->outgraph, gs->opts.outFile);
@@ -1071,6 +1068,11 @@ int gvpr(int argc, char *argv[], gvpropts *uopts) {
 
   // initialize opts to something that makes freeOpts() a no-op if we fail early
   gvpr_state.opts.outFile = stdout;
+
+  gvpropts DEFAULT_OPTS = {0};
+  if (uopts == NULL) {
+    uopts = &DEFAULT_OPTS;
+  }
 
   int rv = gvpr_core(argc, argv, uopts, &gvpr_state);
 
