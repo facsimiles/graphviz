@@ -8,26 +8,10 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <neatogen/mem.h>
 #include <neatogen/site.h>
 #include <math.h>
 
 Site *bottomsite;
-
-static Freelist sfl;
-static size_t nvertices;
-
-void siteinit(void)
-{
-    freeinit(&sfl, sizeof(Site));
-    nvertices = 0;
-}
-
-
-Site *getsite(void)
-{
-    return getfree(&sfl);
-}
 
 double ngdist(Site * s, Site * t)
 {
@@ -38,23 +22,4 @@ double ngdist(Site * s, Site * t)
     dy = s->coord.y - t->coord.y;
     ans = hypot(dx, dy);
     return ans;
-}
-
-
-void makevertex(Site * v)
-{
-    v->sitenbr = nvertices;
-    ++nvertices;
-}
-
-void deref(Site * v)
-{
-    --v->refcnt;
-    if (v->refcnt == 0)
-	makefree(v, &sfl);
-}
-
-void ref(Site * v)
-{
-    ++v->refcnt;
 }

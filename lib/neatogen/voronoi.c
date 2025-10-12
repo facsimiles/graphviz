@@ -8,7 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <neatogen/mem.h>
 #include <neatogen/geometry.h>
 #include <neatogen/edges.h>
 #include <neatogen/hedges.h>
@@ -25,7 +24,6 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
     Halfedge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
     Edge *e;
 
-    siteinit();
     pq_t *pq = PQinitialize();
     bottomsite = nextsite(context);
     el_state_t st = {0};
@@ -46,14 +44,14 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    e = gvbisect(bot, newsite, &st.allocated);
 	    bisector = HEcreate(&st, e, le);
 	    ELinsert(lbnd, bisector);
-	    if ((p = hintersect(lbnd, bisector)) != NULL) {
+	    if ((p = hintersect(lbnd, bisector, &st.allocated)) != NULL) {
 		PQdelete(pq, lbnd);
 		PQinsert(pq, lbnd, p, ngdist(p, newsite));
 	    }
 	    lbnd = bisector;
 	    bisector = HEcreate(&st, e, re);
 	    ELinsert(lbnd, bisector);
-	    if ((p = hintersect(bisector, rbnd)) != NULL)
+	    if ((p = hintersect(bisector, rbnd, &st.allocated)) != NULL)
 		PQinsert(pq, bisector, p, ngdist(p, newsite));
 	    newsite = nextsite(context);
 	} else if (!PQempty(pq)) {
@@ -65,7 +63,6 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    bot = leftreg(lbnd);
 	    top = rightreg(rbnd);
 	    v = lbnd->vertex;
-	    makevertex(v);
 	    endpoint(lbnd->ELedge, lbnd->ELpm, v, &st.allocated);
 	    endpoint(rbnd->ELedge, rbnd->ELpm, v, &st.allocated);
 	    ELdelete(lbnd);
@@ -80,12 +77,11 @@ void voronoi(Site *(*nextsite)(void *context), void *context) {
 	    bisector = HEcreate(&st, e, pm);
 	    ELinsert(llbnd, bisector);
 	    endpoint(e, re - pm, v, &st.allocated);
-	    deref(v);
-	    if ((p = hintersect(llbnd, bisector)) != NULL) {
+	    if ((p = hintersect(llbnd, bisector, &st.allocated)) != NULL) {
 		PQdelete(pq, llbnd);
 		PQinsert(pq, llbnd, p, ngdist(p, bot));
 	    }
-	    if ((p = hintersect(bisector, rrbnd)) != NULL) {
+	    if ((p = hintersect(bisector, rrbnd, &st.allocated)) != NULL) {
 		PQinsert(pq, bisector, p, ngdist(p, bot));
 	    }
 	} else

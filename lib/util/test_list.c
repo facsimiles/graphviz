@@ -46,6 +46,18 @@ static void test_append(void) {
   LIST_FREE(&xs);
 }
 
+/// append should not be affected by surprising parameter expansion order
+/// https://gitlab.com/graphviz/graphviz/-/issues/2734
+static void test_2734_append(void) {
+  LIST(int) xs = {0};
+
+  LIST_APPEND(&xs, 42);
+  LIST_APPEND(&xs, LIST_GET(&xs, LIST_SIZE(&xs) - 1));
+  assert(LIST_GET(&xs, 1) == 42);
+
+  LIST_FREE(&xs);
+}
+
 /// prepend to an empty list
 static void test_prepend_0(void) {
   LIST(int) xs = {0};
@@ -54,6 +66,25 @@ static void test_prepend_0(void) {
   assert(LIST_SIZE(&xs) == 1);
   assert(LIST_GET(&xs, 0) == 42);
 
+  LIST_FREE(&xs);
+}
+
+/// try-append should not be affected by surprising parameter expansion order
+/// https://gitlab.com/graphviz/graphviz/-/issues/2734
+static void test_2734_try_append(void) {
+  LIST(int) xs = {0};
+
+  if (!LIST_TRY_APPEND(&xs, 42)) {
+    goto done;
+  }
+
+  if (!LIST_TRY_APPEND(&xs, LIST_GET(&xs, LIST_SIZE(&xs) - 1))) {
+    goto done;
+  }
+
+  assert(LIST_GET(&xs, 1) == 42);
+
+done:
   LIST_FREE(&xs);
 }
 
@@ -80,6 +111,18 @@ static void test_append_prepend(void) {
   assert(LIST_GET(&xs, 7) == 4);
   assert(LIST_GET(&xs, 8) == 6);
   assert(LIST_GET(&xs, 9) == 8);
+
+  LIST_FREE(&xs);
+}
+
+/// prepend should not be affected by surprising parameter expansion order
+/// https://gitlab.com/graphviz/graphviz/-/issues/2734
+static void test_2734_prepend(void) {
+  LIST(int) xs = {0};
+
+  LIST_PREPEND(&xs, 42);
+  LIST_PREPEND(&xs, LIST_GET(&xs, 0));
+  assert(LIST_GET(&xs, 0) == 42);
 
   LIST_FREE(&xs);
 }
@@ -638,8 +681,11 @@ int main(void) {
   RUN(init);
   RUN(init_reset);
   RUN(append);
+  RUN(2734_append);
   RUN(prepend_0);
+  RUN(2734_try_append);
   RUN(append_prepend);
+  RUN(2734_prepend);
   RUN(get);
   RUN(set);
   RUN(remove_empty);

@@ -23,17 +23,11 @@ extern "C" {
 typedef struct Site {
   Point coord;
   size_t sitenbr;
-  unsigned refcnt;
 } Site;
 
 extern Site *bottomsite;
 
-PRIVATE void siteinit(void);
-PRIVATE Site *getsite(void);
 PRIVATE double ngdist(Site *, Site *); /* Distance between two sites */
-PRIVATE void deref(Site *);            /* Increment refcnt of site  */
-PRIVATE void ref(Site *);              /* Decrement refcnt of site  */
-PRIVATE void makevertex(Site *);       /* Transform a site into a vertex */
 
 #ifdef __cplusplus
 }

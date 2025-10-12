@@ -396,7 +396,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, bool isOrtho)
 	obs->ps = gv_calloc(sides, sizeof(Ppoint_t));
 	/* assuming polys are in CCW order, and pathplan needs CW */
 	for (size_t j = 0; j < sides; j++) {
-	    double xmargin = 0.0, ymargin = 0.0;
+	    double xmargin = 0, ymargin = 0;
 	    if (isPoly) {
 		if (pmargin->doAdd) {
 		    if (sides == 4) {
@@ -436,7 +436,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, bool isOrtho)
 	    } else {
 		const double width = INCH2PS(ND_outline_width(n));
 		const double height = INCH2PS(ND_outline_height(n));
-		margin = pmargin->doAdd ? (pointf) {pmargin->x, pmargin->y} : (pointf) {0.0, 0.0};
+		margin = pmargin->doAdd ? (pointf){pmargin->x, pmargin->y} : (pointf){0};
 		const double ellipse_a = (width + margin.x) / 2.0;
 		const double ellipse_b = (height + margin.y) / 2.0;
 		polyp = circumscribed_polygon_corner_about_ellipse(ellipse_a, ellipse_b, j, sides);
@@ -655,11 +655,8 @@ static int spline_edges_(graph_t *g, expand_t *pmargin, int edgetype) {
     /* spline-drawing pass */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-/* fprintf (stderr, "%s -- %s %d\n", agnameof(agtail(e)), agnameof(aghead(e)), ED_count(e)); */
 	    node_t *head = aghead(e);
 	    if (useEdges && ED_spl(e)) {
-		add_pointf(ND_coord(n), ED_tail_port(e).p);
-		add_pointf(ND_coord(head), ED_head_port(e).p);
 		addEdgeLabels(e);
 	    } 
 	    else if (ED_count(e) == 0) continue;  /* only do representative */

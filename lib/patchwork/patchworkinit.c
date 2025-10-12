@@ -61,7 +61,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
         GD_n_cluster(g) = (int)(LIST_SIZE(&list) - 1);
         if (LIST_SIZE(&list) > 1) {
             LIST_SHRINK_TO_FIT(&list);
-            LIST_DETACH(&list, &GD_clust(g), &(size_t){0});
+            LIST_DETACH(&list, &GD_clust(g), NULL);
         } else {
             LIST_FREE(&list);
         }

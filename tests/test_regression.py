@@ -5763,7 +5763,7 @@ def _find_plugin_so(plugin: str) -> Optional[Path]:
 
         if platform.system() == "Linux":
             # try it with the version info suffix, which is what some RHEL platforms use
-            suffix = f".{current - age}.{revision}.{age}"
+            suffix = f".{current - age}.{age}.{revision}"
             candidate = root / subdir / f"graphviz/libgvplugin_{plugin}.so{suffix}"
             print(f"checking {candidate}")  # log some useful information
             if candidate.exists():
@@ -6142,6 +6142,55 @@ def test_2732(fmt: str):
     # confirm this produces non-empty output
     output = dot(fmt, source=source)
     assert output != b"", "empty output produced for valid graph"
+
+
+def test_2734():
+    """
+    this graph should not be drawn with sharply angled curves
+    https://gitlab.com/graphviz/graphviz/-/issues/2734
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2734.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # process this
+    svg = dot("svg", input)
+
+    # parse the SVG
+    root = ET.fromstring(svg)
+
+    # look at each path
+    for path in root.findall(".//{http://www.w3.org/2000/svg}path"):
+
+        # get the definition and make it slightly easier to parse
+        d = path.get("d")
+        points_str = d.replace("C", " ").replace("M", " ")
+
+        # parse it into a list of points
+        points = [
+            (float(x), float(y))
+            for x, y in [p.split(",") for p in points_str.split(" ") if p]
+        ]
+
+        # examine the angles along the path, looking for an abnormally large one
+        gradient: Optional[float] = None
+        last_point: Optional[tuple[float, float]] = None
+        for p in points:
+            if last_point is None:
+                last_point = p
+                continue
+            # for simplicity, skip paths with vertical lines because we know the
+            # problematic one we are scanning for does not have any
+            if p[0] == last_point[0]:
+                break
+            this_gradient = (p[1] - last_point[1]) / (p[0] - last_point[0])
+            if gradient is not None:
+                angle = math.atan(
+                    (gradient - this_gradient) / (1 + gradient * this_gradient)
+                )
+                assert math.degrees(angle) < 10, "unnecessarily sharp edge generated"
+            gradient = this_gradient
 
 
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
@@ -6916,13 +6965,9 @@ def test_plugin_version_cmake():
     """confirm the plugin version defined in CMake matches Autotools"""
     autotools_current, autotools_revision, autotools_age = plugin_version()
 
-    # the CMake build system assumes the second two components are 0 for now
-    cmake_revision = 0
+    # the CMake build system assumes the last component is 0 for now
     cmake_age = 0
 
-    assert (
-        autotools_revision == cmake_revision
-    ), "CMake build system assumes plugin revision is 0 and it is not"
     assert (
         autotools_age == cmake_age
     ), "CMake build system assumes plugin age is 0 and it is not"
@@ -6930,21 +6975,36 @@ def test_plugin_version_cmake():
     # parse the equivalent out of the CMake build system
     cmakelists = Path(__file__).resolve().parents[1] / "CMakeLists.txt"
     cmake_current: Optional[int] = None
+    cmake_revision: Optional[int] = None
     with open(cmakelists, "rt", encoding="utf-8") as f:
         for line in f:
             if m := re.match(
-                r"\s*set\s*\(\s*GRAPHVIZ_PLUGIN_VERSION\s+(?P<current>\d+)\s*\)\s*$",
+                r"\s*set\s*\(\s*GVPLUGIN_CURRENT\s+(?P<current>\d+)\s*\)\s*$",
                 line,
             ):
                 cmake_current = int(m.group("current"))
-                break
+                if cmake_revision is not None:
+                    break
+            if m := re.match(
+                r"\s*set\s*\(\s*GVPLUGIN_REVISION\s+(?P<revision>\d+)\s*\)\s*$",
+                line,
+            ):
+                cmake_revision = int(m.group("revision"))
+                if cmake_current is not None:
+                    break
     assert (
         cmake_current is not None
     ), "failed to parse CMake build system’s plugin current version"
+    assert (
+        cmake_revision is not None
+    ), "failed to parse CMake build system’s plugin revision"
 
     assert (
         autotools_current == cmake_current
     ), "Autotools and CMake build systems disagree on plugin current version"
+    assert (
+        autotools_revision == cmake_revision
+    ), "Autotools and CMake build systems disagree on plugin revision"
 
 
 def test_plugin_version_redhat():

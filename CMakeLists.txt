@@ -58,6 +58,15 @@ option(GRAPHVIZ_CLI "Build command line tools" ON)
 set(WITH_GDK AUTO CACHE STRING "enable GDK-dependent components (GDK plugin)")
 set_property(CACHE WITH_GDK PROPERTY STRINGS AUTO ON OFF)
 
+set(WITH_GHOSTSCRIPT AUTO CACHE STRING
+    "enable Ghostscript-dependent components (Ghostscript plugin)")
+set_property(CACHE WITH_GHOSTSCRIPT PROPERTY STRINGS AUTO ON OFF)
+if(WITH_GHOSTSCRIPT STREQUAL "AUTO")
+  set(AUTO_GHOSTSCRIPT ON)
+else()
+  set(AUTO_GHOSTSCRIPT OFF)
+endif()
+
 set(WITH_GTK AUTO CACHE STRING "enable GTK-dependent components (smyrna)")
 set_property(CACHE WITH_GTK PROPERTY STRINGS AUTO ON OFF)
 if(WITH_GTK STREQUAL "AUTO")
@@ -131,8 +140,10 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # ============================= Build dependencies =============================
-find_package(BISON 3.0 REQUIRED)
-find_package(FLEX REQUIRED)
+find_package(BISON 3.0)
+set_package_properties(BISON PROPERTIES TYPE REQUIRED)
+find_package(FLEX)
+set_package_properties(FLEX PROPERTIES TYPE REQUIRED)
 find_program(GZIP gzip)
 
 # ================== Convenient values for CMake configuration =================
@@ -176,9 +187,14 @@ else()
       "${WINDOWS_DEPENDENCY_VCPKG_DIR}/x86-windows")
 endif()
 
-set(GRAPHVIZ_PLUGIN_VERSION 8)
+# see configure.ac GVPLUGIN_CURRENT
+set(GVPLUGIN_CURRENT 8)
+
+# see configure.ac GVPLUGIN_REVISION
+set(GVPLUGIN_REVISION 2)
+
 # Name of the config file used by Graphviz
-set(GVPLUGIN_CONFIG_FILE config${GRAPHVIZ_PLUGIN_VERSION})
+set(GVPLUGIN_CONFIG_FILE config${GVPLUGIN_CURRENT})
 
 # ============================ Library dependencies ============================
 if(WIN32)
@@ -256,7 +272,16 @@ if(NOT WITH_SMYRNA STREQUAL "OFF")
 endif()
 
 find_package(GD)
-find_package(GS)
+if(WITH_GHOSTSCRIPT)
+  find_package(GS)
+  if(NOT AUTO_GHOSTSCRIPT)
+    set_package_properties(GS PROPERTIES TYPE REQUIRED)
+  endif()
+else()
+  message(STATUS
+          "skipping Ghostscript discovery because -DWITH_GHOSTSCRIPT=OFF")
+  set(GS_FOUND 0)
+endif()
 
 if(NOT ENABLE_LTDL STREQUAL "OFF")
   find_package(LTDL)
@@ -652,7 +677,8 @@ endif()
 
 # ============================ Set Graphviz version ============================
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
+find_package(Python3 COMPONENTS Interpreter)
+set_package_properties(Python3 PROPERTIES TYPE REQUIRED)
 
 execute_process(
   COMMAND           ${Python3_EXECUTABLE} gen_version.py --major
@@ -709,7 +735,8 @@ message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION}")
 
 include(config_checks)
 if(NOT HAVE_GETOPT_H)
-  find_package(GETOPT REQUIRED)
+  find_package(GETOPT)
+  set_package_properties(GETOPT PROPERTIES TYPE REQUIRED)
 endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -855,7 +882,7 @@ if(with_cxx_tests)
   add_subdirectory(tests)
 endif()
 
-set(GVPLUGIN_VERSION "${GRAPHVIZ_PLUGIN_VERSION}")
+set(GVPLUGIN_VERSION "${GVPLUGIN_CURRENT}")
 set(VERSION "${GRAPHVIZ_VERSION}")
 set(prefix "${CMAKE_INSTALL_PREFIX}") # cmake-lint: disable=C0103
 set(exec_prefix "${CMAKE_INSTALL_PREFIX}") # cmake-lint: disable=C0103

@@ -422,7 +422,7 @@ static options scanArgs(int argc, char **argv) {
     LIST_FREE(&input_filenames);
   } else {
     LIST_APPEND(&input_filenames, NULL);
-    LIST_DETACH(&input_filenames, &opts.inFiles, &(size_t){0});
+    LIST_DETACH(&input_filenames, &opts.inFiles, NULL);
   }
 
   if (!opts.outFile)

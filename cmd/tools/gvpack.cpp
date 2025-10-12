@@ -522,7 +522,8 @@ static void cloneClusterTree(Agraph_t * g, Agraph_t * ng)
 
     if (GD_n_cluster(g)) {
 	GD_n_cluster(ng) = GD_n_cluster(g);
-	GD_clust(ng) = reinterpret_cast<Agraph_t**>(gv_calloc(1 + GD_n_cluster(g), sizeof(Agraph_t*)));
+	void *const p = gv_calloc(1 + GD_n_cluster(g), sizeof(Agraph_t *));
+	GD_clust(ng) = new (p) Agraph_t *[1 + GD_n_cluster(g)]{};
 	for (i = 1; i <= GD_n_cluster(g); i++) {
 	    Agraph_t *c = GETCLUST(GD_clust(g)[i]);
 	    GD_clust(ng)[i] = c;
@@ -594,7 +595,8 @@ static Agraph_t *cloneGraph(std::vector<Agraph_t *> &gs, GVC_t *gvc,
     /* set up cluster tree */
     if (GD_n_cluster(root)) {
 	int j, idx;
-	GD_clust(root) = reinterpret_cast<graph_t**>(gv_calloc(1 + GD_n_cluster(root), sizeof(graph_t*)));
+	void *const p = gv_calloc(1 + GD_n_cluster(root), sizeof(graph_t *));
+	GD_clust(root) = new (p) graph_t *[1 + GD_n_cluster(root)]{};
 
 	idx = 1;
 	for (Agraph_t *g : gs) {

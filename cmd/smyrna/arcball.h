@@ -159,11 +159,8 @@ static Vector3fT Vector3fCross(Vector3fT v1, Vector3fT v2) {
       * @param  v1 the other vector
       */
 
-static float Vector3fDot(const Vector3fT * NewObj, const Vector3fT * v1)
-{
-    assert(NewObj && v1);
-
-    return NewObj->X * v1->X + NewObj->Y * v1->Y + NewObj->Z * v1->Z;
+static float Vector3fDot(Vector3fT NewObj, Vector3fT v1) {
+    return NewObj.X * v1.X + NewObj.Y * v1.Y + NewObj.Z * v1.Z;
 }
 
     /**
@@ -171,11 +168,8 @@ static float Vector3fDot(const Vector3fT * NewObj, const Vector3fT * v1)
       * @return the squared length of this vector
       */
 
-static float Vector3fLengthSquared(const Vector3fT * NewObj)
-{
-    assert(NewObj);
-
-    return NewObj->X * NewObj->X + NewObj->Y * NewObj->Y + NewObj->Z * NewObj->Z;
+static float Vector3fLengthSquared(Vector3fT NewObj) {
+    return NewObj.X * NewObj.X + NewObj.Y * NewObj.Y + NewObj.Z * NewObj.Z;
 }
 
     /**
@@ -183,10 +177,7 @@ static float Vector3fLengthSquared(const Vector3fT * NewObj)
       * @return the length of this vector
       */
 
-static float Vector3fLength(const Vector3fT * NewObj)
-{
-    assert(NewObj);
-
+static float Vector3fLength(Vector3fT NewObj) {
     return FuncSqrt(Vector3fLengthSquared(NewObj));
 }
 
@@ -197,42 +188,40 @@ static float Vector3fLength(const Vector3fT * NewObj)
       */
     //$hack this can be optimized some(if s == 0)
 
-static void Matrix3fSetRotationFromQuat4f(Matrix3fT * NewObj,
-					  const Quat4fT * q1)
-{
+static Matrix3fT Matrix3fSetRotationFromQuat4f(Quat4fT q1) {
     float n, s;
     float xs, ys, zs;
     float wx, wy, wz;
     float xx, xy, xz;
     float yy, yz, zz;
+    Matrix3fT NewObj = {0};
 
-    assert(NewObj && q1);
-
-    n = q1->X * q1->X + q1->Y * q1->Y + q1->Z * q1->Z + q1->W * q1->W;
+    n = q1.X * q1.X + q1.Y * q1.Y + q1.Z * q1.Z + q1.W * q1.W;
     s = (n > 0.0f) ? (2.0f / n) : 0.0f;
 
-    xs = q1->X * s;
-    ys = q1->Y * s;
-    zs = q1->Z * s;
-    wx = q1->W * xs;
-    wy = q1->W * ys;
-    wz = q1->W * zs;
-    xx = q1->X * xs;
-    xy = q1->X * ys;
-    xz = q1->X * zs;
-    yy = q1->Y * ys;
-    yz = q1->Y * zs;
-    zz = q1->Z * zs;
+    xs = q1.X * s;
+    ys = q1.Y * s;
+    zs = q1.Z * s;
+    wx = q1.W * xs;
+    wy = q1.W * ys;
+    wz = q1.W * zs;
+    xx = q1.X * xs;
+    xy = q1.X * ys;
+    xz = q1.X * zs;
+    yy = q1.Y * ys;
+    yz = q1.Y * zs;
+    zz = q1.Z * zs;
 
-    NewObj->s.XX = 1.0f - (yy + zz);
-    NewObj->s.YX = xy - wz;
-    NewObj->s.ZX = xz + wy;
-    NewObj->s.XY = xy + wz;
-    NewObj->s.YY = 1.0f - (xx + zz);
-    NewObj->s.ZY = yz - wx;
-    NewObj->s.XZ = xz - wy;
-    NewObj->s.YZ = yz + wx;
-    NewObj->s.ZZ = 1.0f - (xx + yy);
+    NewObj.s.XX = 1.0f - (yy + zz);
+    NewObj.s.YX = xy - wz;
+    NewObj.s.ZX = xz + wy;
+    NewObj.s.XY = xy + wz;
+    NewObj.s.YY = 1.0f - (xx + zz);
+    NewObj.s.ZY = yz - wx;
+    NewObj.s.XZ = xz - wy;
+    NewObj.s.YZ = yz + wx;
+    NewObj.s.ZZ = 1.0f - (xx + yy);
+    return NewObj;
 }
 
     /**
@@ -241,42 +230,32 @@ static void Matrix3fSetRotationFromQuat4f(Matrix3fT * NewObj,
      * @param m1 the other matrix 
      */
 
-static void Matrix3fMulMatrix3f(Matrix3fT * NewObj, const Matrix3fT * m1)
-{
+static void Matrix3fMulMatrix3f(Matrix3fT *NewObj, Matrix3fT m1) {
     Matrix3fT Result;		//safe not to initialize
 
-    assert(NewObj && m1);
+    assert(NewObj);
 
     // alias-safe way.
-    Result.s.M00 =
-	(NewObj->s.M00 * m1->s.M00) + (NewObj->s.M01 * m1->s.M10) +
-	(NewObj->s.M02 * m1->s.M20);
-    Result.s.M01 =
-	(NewObj->s.M00 * m1->s.M01) + (NewObj->s.M01 * m1->s.M11) +
-	(NewObj->s.M02 * m1->s.M21);
-    Result.s.M02 =
-	(NewObj->s.M00 * m1->s.M02) + (NewObj->s.M01 * m1->s.M12) +
-	(NewObj->s.M02 * m1->s.M22);
+    Result.s.M00 = NewObj->s.M00 * m1.s.M00 + NewObj->s.M01 * m1.s.M10 +
+	NewObj->s.M02 * m1.s.M20;
+    Result.s.M01 = NewObj->s.M00 * m1.s.M01 + NewObj->s.M01 * m1.s.M11 +
+	NewObj->s.M02 * m1.s.M21;
+    Result.s.M02 = NewObj->s.M00 * m1.s.M02 + NewObj->s.M01 * m1.s.M12 +
+	NewObj->s.M02 * m1.s.M22;
 
-    Result.s.M10 =
-	(NewObj->s.M10 * m1->s.M00) + (NewObj->s.M11 * m1->s.M10) +
-	(NewObj->s.M12 * m1->s.M20);
-    Result.s.M11 =
-	(NewObj->s.M10 * m1->s.M01) + (NewObj->s.M11 * m1->s.M11) +
-	(NewObj->s.M12 * m1->s.M21);
-    Result.s.M12 =
-	(NewObj->s.M10 * m1->s.M02) + (NewObj->s.M11 * m1->s.M12) +
-	(NewObj->s.M12 * m1->s.M22);
+    Result.s.M10 = NewObj->s.M10 * m1.s.M00 + NewObj->s.M11 * m1.s.M10 +
+	NewObj->s.M12 * m1.s.M20;
+    Result.s.M11 = NewObj->s.M10 * m1.s.M01 + NewObj->s.M11 * m1.s.M11 +
+	NewObj->s.M12 * m1.s.M21;
+    Result.s.M12 = NewObj->s.M10 * m1.s.M02 + NewObj->s.M11 * m1.s.M12 +
+	NewObj->s.M12 * m1.s.M22;
 
-    Result.s.M20 =
-	(NewObj->s.M20 * m1->s.M00) + (NewObj->s.M21 * m1->s.M10) +
-	(NewObj->s.M22 * m1->s.M20);
-    Result.s.M21 =
-	(NewObj->s.M20 * m1->s.M01) + (NewObj->s.M21 * m1->s.M11) +
-	(NewObj->s.M22 * m1->s.M21);
-    Result.s.M22 =
-	(NewObj->s.M20 * m1->s.M02) + (NewObj->s.M21 * m1->s.M12) +
-	(NewObj->s.M22 * m1->s.M22);
+    Result.s.M20 = NewObj->s.M20 * m1.s.M00 + NewObj->s.M21 * m1.s.M10 +
+	NewObj->s.M22 * m1.s.M20;
+    Result.s.M21 = NewObj->s.M20 * m1.s.M01 + NewObj->s.M21 * m1.s.M11 +
+	NewObj->s.M22 * m1.s.M21;
+    Result.s.M22 = NewObj->s.M20 * m1.s.M02 + NewObj->s.M21 * m1.s.M12 +
+	NewObj->s.M22 * m1.s.M22;
 
     //copy result back to this
     *NewObj = Result;

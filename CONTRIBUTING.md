@@ -69,9 +69,10 @@ main branch. When rebasing interactively, you can achieve this with
 ### C and C++ style
 
 Graphviz is written predominantly in C and C++. C code is compiled under
-[C99](https://en.wikipedia.org/wiki/C99) and C++ code is compiled under
-[C++17](https://en.cppreference.com/w/cpp/17). It is generally possible to rely
-on a standards-conformant compiler with the following exceptions:
+[C17](https://en.wikipedia.org/wiki/C17_(C_standard_revision)) and C++ code is
+compiled under [C++17](https://en.cppreference.com/w/cpp/17). It is generally
+possible to rely on a standards-conformant compiler with the following
+exceptions:
 
 * The `printf` format specifier `"%zu"` cannot be used. See
   lib/util/prisize_t.h for an explanation of why.

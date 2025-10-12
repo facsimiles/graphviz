@@ -95,25 +95,13 @@ static_assert(
 ///
 ///   bool LIST_TRY_APPEND(LIST(<type>) *list, <type> item);
 ///
-/// Note that referencing `(list)->base` and calling `gv_list_append_slot_`
-/// within a single expression without an intervening sequence point is OK
-/// because, after the preceding reservation probes, we know
-/// `gv_list_append_slot_` will not alter `(list)->base`.
-///
 /// @param list List to operate on
 /// @param item Item to append
 /// @return True if the append succeeded
 #define LIST_TRY_APPEND(list, item)                                            \
-  (((list)->impl.size < (list)->impl.capacity ||                               \
-    gv_list_try_reserve_(                                                      \
-        &(list)->impl,                                                         \
-        (list)->impl.capacity == 0 ? 1 : ((list)->impl.capacity * 2),          \
-        sizeof((list)->base[0])) ||                                            \
-    gv_list_try_reserve_(&(list)->impl, (list)->impl.capacity + 1,             \
-                         sizeof((list)->base[0]))) &&                          \
-   (((list)->base[gv_list_append_slot_(&(list)->impl,                          \
-                                       sizeof((list)->base[0]))] = (item)),    \
-    1))
+  gv_list_try_append_(&(list)->impl,                                           \
+                      ((list)->scratch = (item), &(list)->scratch),            \
+                      sizeof((list)->base[0]))
 
 /// add an item to the end of a list
 ///
@@ -131,9 +119,10 @@ static_assert(
 /// @param item Element to append
 #define LIST_APPEND(list, item)                                                \
   do {                                                                         \
+    (list)->scratch = (item);                                                  \
     const size_t slot_ =                                                       \
         gv_list_append_slot_(&(list)->impl, sizeof((list)->base[0]));          \
-    (list)->base[slot_] = (item);                                              \
+    (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
 
 /// add an item to the beginning of a list
@@ -148,9 +137,10 @@ static_assert(
 /// @param item Element to prepend
 #define LIST_PREPEND(list, item)                                               \
   do {                                                                         \
+    (list)->scratch = (item);                                                  \
     const size_t slot_ =                                                       \
         gv_list_prepend_slot_(&(list)->impl, sizeof((list)->base[0]));         \
-    (list)->base[slot_] = (item);                                              \
+    (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
 
 /// retrieve an item from a list
@@ -211,9 +201,10 @@ static_assert(
 /// @param item New value to set
 #define LIST_SET(list, index, item)                                            \
   do {                                                                         \
+    (list)->scratch = (item);                                                  \
     const size_t slot_ = gv_list_get_((list)->impl, (index));                  \
     LIST_DTOR_((list), slot_);                                                 \
-    (list)->base[slot_] = (item);                                              \
+    (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
 
 /// remove an item from a list
@@ -294,8 +285,8 @@ static_assert(
 /// @param src List to copy
 #define LIST_COPY(dst, src)                                                    \
   do {                                                                         \
-    (void)((dst)->base == (src)->base);                                        \
     memset((dst), 0, sizeof(*(dst)));                                          \
+    (void)((dst)->base == (src)->base);                                        \
     (dst)->impl = gv_list_copy_((src)->impl, sizeof((src)->base[0]));          \
     (dst)->dtor = (src)->dtor;                                                 \
   } while (0)
@@ -447,16 +438,11 @@ static_assert(
 /// can be reused for other purposes.
 ///
 /// @param list List to operate on
-/// @param [out] data The list data on completion
-/// @param [out] size The list size on completion
+/// @param [out] datap The list data on completion
+/// @param [out] sizep The list size on completion
 #define LIST_DETACH(list, datap, sizep)                                        \
-  do {                                                                         \
-    LIST_SYNC(list);                                                           \
-    *(datap) = (list)->base;                                                   \
-    *(sizep) = (list)->impl.size;                                              \
-                                                                               \
-    (list)->impl = (list_t_){0};                                               \
-  } while (0)
+  gv_list_detach_(&(list)->impl, ((void)((list)->base == *(datap)), (datap)),  \
+                  (sizep), sizeof((list)->base[0]))
 
 #ifdef __cplusplus
 }

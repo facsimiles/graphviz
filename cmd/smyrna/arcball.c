@@ -105,7 +105,7 @@ static Quat4fT drag(ArcBall_t *a, const Point2fT *NewPt) {
     const Vector3fT Perp = Vector3fCross(a->StVec, a->EnVec);
     
     // compute the length of the perpendicular vector
-    if (Vector3fLength(&Perp) > Epsilon) { // if it’s non-zero
+    if (Vector3fLength(Perp) > Epsilon) { // if it’s non-zero
         // we're OK, so return the perpendicular vector as the transform after
         // all
         return (Quat4fT){.X = Perp.X,
@@ -113,7 +113,7 @@ static Quat4fT drag(ArcBall_t *a, const Point2fT *NewPt) {
                          .Z = Perp.Z,
         // in the quaternion values, W is cosine (theta / 2), where theta is
         // rotation angle
-                         .W = Vector3fDot(&a->StVec, &a->EnVec)};
+                         .W = Vector3fDot(a->StVec, a->EnVec)};
     } else { // if it’s zero
         // the begin and end vectors coincide, so return an identity transform
         return (Quat4fT){0};
@@ -131,8 +131,8 @@ void arcmouseClick(void)
 void arcmouseDrag(void)
 {
     Quat4fT ThisQuat = drag(view->arcball, &view->arcball->MousePt);
-    Matrix3fSetRotationFromQuat4f(&view->arcball->ThisRot, &ThisQuat);	// Convert Quaternion Into Matrix3fT
-    Matrix3fMulMatrix3f(&view->arcball->ThisRot, &view->arcball->LastRot);	// Accumulate Last Rotation Into This One
+    view->arcball->ThisRot = Matrix3fSetRotationFromQuat4f(ThisQuat); // Convert Quaternion Into Matrix3fT
+    Matrix3fMulMatrix3f(&view->arcball->ThisRot, view->arcball->LastRot);	// Accumulate Last Rotation Into This One
     Matrix4fSetRotationFromMatrix3f(&view->arcball->Transform, &view->arcball->ThisRot);	// Set Our Final Transform's Rotation From This One
 
 }

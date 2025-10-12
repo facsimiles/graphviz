@@ -4,12 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased (14.0.1)]
+## [Unreleased (14.0.2)]
+
+## [14.0.1] – 2025-10-05
 
 ### Changed
 
 - The pre-built macOS package for Autotools is now a .pkg file instead of a
   tarball of binaries. #2726, !4348
+- In the CMake build system, whether Ghostscript-dependent components are built
+  or not can now be controlled by the `-DWITH_GHOSTSCRIPT={AUTO|ON|OFF}` option.
+  #2735
+
+### Fixed
+
+- Points generated as curves by the dot layout algorithm are once again placed
+  correctly. This was a regression in Graphviz 14.0.0. #2734
 
 ## [14.0.0] – 2025-09-21
 
@@ -3328,7 +3338,8 @@ March 13, 2000: Use AM_PROG_LIBTOOL instead of AC_PROG_LIBTOOL
    in configure.in.  John Ellson <ellson@graphviz.org>
 ```
 
-[Unreleased (14.0.1)]: https://gitlab.com/graphviz/graphviz/compare/14.0.0...main
+[Unreleased (14.0.2)]: https://gitlab.com/graphviz/graphviz/compare/14.0.1...main
+[14.0.1]: https://gitlab.com/graphviz/graphviz/compare/14.0.0...14.0.1
 [14.0.0]: https://gitlab.com/graphviz/graphviz/compare/13.1.2...14.0.0
 [13.1.2]: https://gitlab.com/graphviz/graphviz/compare/13.1.1...13.1.2
 [13.1.1]: https://gitlab.com/graphviz/graphviz/compare/13.1.0...13.1.1
