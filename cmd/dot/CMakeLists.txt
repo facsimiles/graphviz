@@ -109,6 +109,10 @@ if(BUILD_SHARED_LIBS)
     endif()
   endif()
 
+  if(HAVE_QUARTZ)
+    target_link_libraries(dot_builtins PRIVATE gvplugin_quartz)
+  endif()
+
   install(
     TARGETS dot_builtins
     RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
