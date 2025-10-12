@@ -9,6 +9,7 @@
  *************************************************************************/
 
 #include "config.h"
+#include <assert.h>
 #include <sparse/SparseMatrix.h>
 #include <sfdpgen/spring_electrical.h>
 #include <sparse/QuadTree.h>
@@ -17,6 +18,7 @@
 #include <neatogen/overlap.h>
 #include <common/types.h>
 #include <common/arith.h>
+#include <limits.h>
 #include <math.h>
 #include <common/globals.h>
 #include <stdbool.h>
@@ -1013,65 +1015,52 @@ static void attach_edge_label_coordinates(int dim, SparseMatrix A, int n_edge_la
 }
 
 static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_nodes, int *edge_label_nodes){
-  int i, id = 0, nz, j, jj, ii;
-  int *ia = A->ia, *ja = A->ja, *irn = NULL, *jcn = NULL;
-  SparseMatrix B;
+  int id = 0;
+  int *ia = A->ia, *ja = A->ja;
 
   int *mask = gv_calloc(A->m, sizeof(int));
 
-  for (i = 0; i < A->m; i++) mask[i] = 1;
+  for (int i = 0; i < A->m; i++) mask[i] = 1;
 
-  for (i = 0; i < n_edge_label_nodes; i++){
+  for (int i = 0; i < n_edge_label_nodes; i++){
     mask[edge_label_nodes[i]] = -1;
   }
 
-  for (i = 0; i < A->m; i++) {
+  for (int i = 0; i < A->m; i++) {
     if (mask[i] > 0) mask[i] = id++;
   }
 
-  nz  = 0;
-  for (i = 0; i < A->m; i++){
+  LIST(int) irn = {0};
+  LIST(int) jcn = {0};
+  for (int i = 0; i < A->m; i++){
     if (mask[i] < 0) continue;
-    for (j = ia[i]; j < ia[i+1]; j++){
+    for (int j = ia[i]; j < ia[i+1]; j++){
       if (mask[ja[j]] >= 0) {
-	nz++;
+	LIST_APPEND(&irn, mask[i]);
+	LIST_APPEND(&jcn, mask[ja[j]]);
 	continue;
       }
-      ii = ja[j];
-      for (jj = ia[ii]; jj < ia[ii+1]; jj++){
-	if (ja[jj] != i && mask[ja[jj]] >= 0) nz++;
-      }
-    }
-  }
-
-  if (nz > 0) {
-    irn = gv_calloc(nz, sizeof(int));
-    jcn = gv_calloc(nz, sizeof(int));
-  }
-
-  nz = 0;
-  for (i = 0; i < A->m; i++){
-    if (mask[i] < 0) continue;
-    for (j = ia[i]; j < ia[i+1]; j++){
-      if (mask[ja[j]] >= 0) {
-	irn[nz] = mask[i];
-	jcn[nz++] = mask[ja[j]];
-	continue;
-      }
-      ii = ja[j];
-      for (jj = ia[ii]; jj < ia[ii+1]; jj++){
+      const int ii = ja[j];
+      for (int jj = ia[ii]; jj < ia[ii+1]; jj++){
 	if (ja[jj] != i && mask[ja[jj]] >= 0) {
-	    irn[nz] = mask[i];
-	    jcn[nz++] = mask[ja[jj]];
+	    LIST_APPEND(&irn, mask[i]);
+	    LIST_APPEND(&jcn, mask[ja[jj]]);
 	}
       }
     }
   }
 
-  B = SparseMatrix_from_coordinate_arrays(nz, id, id, irn, jcn, NULL, MATRIX_TYPE_PATTERN, sizeof(double));
+  LIST_SYNC(&irn);
+  LIST_SYNC(&jcn);
+  assert(LIST_SIZE(&irn) <= INT_MAX);
+  SparseMatrix B = SparseMatrix_from_coordinate_arrays((int)LIST_SIZE(&irn), id,
+                                                       id, LIST_FRONT(&irn),
+                                                       LIST_FRONT(&jcn), NULL,
+                                                       MATRIX_TYPE_PATTERN,
+                                                       sizeof(double));
 
-  free(irn);
-  free(jcn);
+  LIST_FREE(&irn);
+  LIST_FREE(&jcn);
   free(mask);
   return B;
 
