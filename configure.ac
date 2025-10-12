@@ -458,7 +458,7 @@ else
       SWIG_PHP_DATA=gv.php
       SWIG_PHP_DATA_TO_PACKAGE=usr/share/php/gv.php
     ], [
-      # SWIG â¥ 4.1.0 no longer generates any PHP code for the bindings
+      # SWIG â‰¥ 4.1.0 no longer generates any PHP code for the bindings
       SWIG_PHP_DATA=
       SWIG_PHP_DATA_TO_PACKAGE=
     ])
