@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Quartz plugin code paths to support older macOS and iOS versions have been
   restored. Their removal was a regression in Graphviz 13.0.0.
+- In the CMake build system, whether Quartz-dependent components are built or
+  not can now be controlled by the `-DWITH_QUARTZ={AUTO|ON|OFF}` option.
 
 ### Fixed
 
