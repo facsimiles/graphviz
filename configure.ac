@@ -1700,9 +1700,7 @@ case "${host_os}" in
       yes )
         if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
           use_quartz="Yes"
-          QUARTZ_CFLAGS=''
           QUARTZ_LIBS='-framework ApplicationServices'
-          AC_SUBST([QUARTZ_CFLAGS])
           AC_SUBST([QUARTZ_LIBS])
         else
           use_quartz="No (missing ApplicationServices.framework)"
