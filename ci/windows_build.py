@@ -203,6 +203,8 @@ def main(args: list[str]) -> int:
             "pytest",
             "-m",
             "not slow",
+            "-n",
+            "auto",
             "--junit-xml=report.xml",
             "ci/tests.py",
             "tests",
