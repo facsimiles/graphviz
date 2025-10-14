@@ -124,7 +124,7 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
     p3 = polyp->ps[(minpi == polyp->pn - 1) ? 0 : minpi + 1];
     if ((p1.x == p2.x && p2.x == p3.x && p3.y > p2.y) ||
 	ccw(p1, p2, p3) != ISCCW) {
-	for (pi = polyp->pn - 1; polyp->pn > 0 && pi != SIZE_MAX; pi--) {
+	for (pi = polyp->pn - 1; pi != SIZE_MAX; pi--) {
 	    if (pi < polyp->pn - 1
 		&& polyp->ps[pi].x == polyp->ps[pi + 1].x
 		&& polyp->ps[pi].y == polyp->ps[pi + 1].y)
