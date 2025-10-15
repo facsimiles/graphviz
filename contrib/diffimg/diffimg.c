@@ -140,10 +140,6 @@ static bool imageDiff (gdImagePtr A, gdImagePtr B, gdImagePtr C,
 
 int main(int argc, char **argv)
 {
-    gdImagePtr A, B, C;
-    int black, white;
-    int minSX, minSY, maxSX, maxSY;
-    bool rc;
 #ifdef HAVE_GD_PNG
     FILE *f;
 #endif
@@ -156,26 +152,26 @@ int main(int argc, char **argv)
         fprintf(stderr, "Usage: diffimg image1 image2 [outimage]\n");
         graphviz_exit(EX_USAGE);
     }
-    A = imageLoad(argv[1]);
-    B = imageLoad(argv[2]);
+    gdImagePtr A = imageLoad(argv[1]);
+    gdImagePtr B = imageLoad(argv[2]);
 
-    minSX = (gdImageSX(A) < gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
-    minSY = (gdImageSY(A) < gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B);
-    maxSX = (gdImageSX(A) > gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
-    maxSY = (gdImageSY(A) > gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B);
+    const int minSX = (gdImageSX(A) < gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
+    const int minSY = (gdImageSY(A) < gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B);
+    const int maxSX = (gdImageSX(A) > gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
+    const int maxSY = (gdImageSY(A) > gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B);
     
-    C = gdImageCreatePalette (maxSX, maxSY);
+    gdImagePtr C = gdImageCreatePalette(maxSX, maxSY);
 
-    white = gdImageColorAllocate(C, gdRedMax, gdGreenMax, gdBlueMax);
-    black = gdImageColorAllocate(C, 0, 0, 0);
+    const int white = gdImageColorAllocate(C, gdRedMax, gdGreenMax, gdBlueMax);
+    const int black = gdImageColorAllocate(C, 0, 0, 0);
 
     if (maxSX > minSX && maxSY > minSY)
 	gdImageFilledRectangle(C, minSX, minSY, maxSX-1, maxSY-1, black);
 
-    rc = imageDiff (A, B, C, minSX, minSY, black, white);
+    const bool rc = imageDiff (A, B, C, minSX, minSY, black, white);
 
 #ifdef HAVE_GD_PNG
-    if ((argc > 3) && ((f = fopen(argv[3], "wb")))) {
+    if (argc > 3 && (f = fopen(argv[3], "wb"))) {
 	gdImagePng (C, f);
 	fclose(f);
     }
