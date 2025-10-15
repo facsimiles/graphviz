@@ -46,8 +46,7 @@
 static const char pstopng[] =
     "gs -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=- -q -";
 
-static gdImagePtr imageLoad (char *filename)
-{
+static gdImagePtr imageLoad(const char *filename) {
     FILE *f;
     char *ext;
     gdImagePtr im;
