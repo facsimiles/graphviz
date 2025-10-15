@@ -73,6 +73,11 @@ static gdImagePtr imageLoad (char *filename)
 	agxbprint(&cmd, "%s <%s >%s", pstopng, filename, tmp);
 	rc = system(agxbuse(&cmd));
 	agxbfree(&cmd);
+	if (rc) {
+            agxbfree(&fname);
+            fprintf(stderr, "Failed to convert \"%s%s\"\n", filename, ext);
+            graphviz_exit(EX_USAGE);
+	}
 	
         f = fopen(tmp, "rb");
 	agxbfree(&fname);

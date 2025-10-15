@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.0.3)]
 
+### Fixed
+
+- `diffimg` now notices failures when calling Ghostscript to convert PS images
+  to PNG and exits instead of continuing.
+
 ## [14.0.2] – 2025-10-19
 
 ### Changed
