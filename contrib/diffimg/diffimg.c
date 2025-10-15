@@ -126,15 +126,12 @@ static bool imageDiff (gdImagePtr A, gdImagePtr B, gdImagePtr C,
 	int w, int h,
 	int black, int white)
 {
-    int x, y;
-    bool d, rc;
-
-    rc = false;
-    for (y = 0; y < h; y++) {
-        for (x = 0; x < w; x++) {
-	    d = (bool)( gdImageGetTrueColorPixel(B,x,y)
+    bool rc = false;
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+	    const bool d = (bool)( gdImageGetTrueColorPixel(B,x,y)
 		      - gdImageGetTrueColorPixel(A,x,y));
-            gdImageSetPixel (C, x, y, (d ? white : black));
+            gdImageSetPixel (C, x, y, d ? white : black);
 	    rc |= d;
         }
     }
