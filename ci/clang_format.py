@@ -99,7 +99,6 @@ EXCLUDE = (
     "cmd/tools/sccmap.c",
     "cmd/tools/tred.c",
     "cmd/tools/unflatten.c",
-    "contrib/diffimg/diffimg.c",
     "contrib/prune/prune.c",
     "doc/libgraph/agmemread.c",
     "doc/libgraph/sccmap.c",
