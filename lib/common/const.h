@@ -137,8 +137,6 @@
 
 #define		QPDF		30	/* Quartz paged PDF */
 
-#define		QBM_LAST 200	/* last Quartz bitmap format, exclusive */
-
 #define		GVRENDER_PLUGIN	300	/* a plugin supported language */
 #define		NO_SUPPORT	999	/* no support */
 
