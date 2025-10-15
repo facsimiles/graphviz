@@ -431,7 +431,6 @@ confidence=HIGH,
 # --disable=W".
 disable=raw-checker-failed,
         locally-disabled,
-        file-ignored,
         suppressed-message,
         useless-suppression,
         deprecated-pragma,
