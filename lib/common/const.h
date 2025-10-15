@@ -133,7 +133,6 @@
 #define		MIF		4	/* Adobe FrameMaker */
 #define		PIC_format	5	/* symbol PIC is used by compilers for 
 					   Position Independent Code */
-#define		TK		15	/* TK canvas */
 
 #define		VTX		21	/* visual thought */
 #define		METAPOST	22
