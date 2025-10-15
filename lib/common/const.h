@@ -119,8 +119,6 @@
 #define		TOP		(1<<TOP_IX)
 #define		LEFT		(1<<LEFT_IX)
 
-#define CW    1			/* clock-wise */
-
 /* Obj types  for renderers */
 #define		NONE    0
 #define		NODE    1
