@@ -136,7 +136,6 @@
 #define		METAPOST	22
 
 #define		QPDF		30	/* Quartz paged PDF */
-#define		QEPDF		31	/* Quartz embedded PDF */
 
 #define		QBM_FIRST 100	/* first Quartz bitmap format, inclusive */
 #define		QBM_LAST 200	/* last Quartz bitmap format, exclusive */
