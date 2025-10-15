@@ -48,17 +48,13 @@ static const char pstopng[] =
 
 static gdImagePtr imageLoad(const char *filename) {
     FILE *f;
-    char *ext;
-    gdImagePtr im;
-    int rc;
-    struct stat statbuf;
 
-    ext = strrchr(filename, '.');
+    const char *ext = strrchr(filename, '.');
     if (!ext) {
         fprintf(stderr, "Filename \"%s\" has no file extension.\n", filename);
         graphviz_exit(EX_USAGE);
     }
-    rc = stat(filename, &statbuf);
+    int rc = stat(filename, &(struct stat){0});
     if (rc) {
 	 fprintf(stderr, "Failed to stat \"%s\"\n", filename);
          graphviz_exit(EX_NOINPUT);
@@ -93,7 +89,7 @@ static gdImagePtr imageLoad(const char *filename) {
             graphviz_exit(EX_NOINPUT);
         }
     }
-    im = 0;
+    gdImagePtr im = NULL;
     if (strcasecmp(ext, ".png") == 0) {
 #ifdef HAVE_GD_PNG
         im = gdImageCreateFromPng(f);
