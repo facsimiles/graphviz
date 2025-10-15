@@ -43,7 +43,8 @@
 #include <util/alloc.h>
 #include <util/exit.h>
 
-static char *pstopng="gs -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=- -q -";
+static const char pstopng[] =
+    "gs -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=- -q -";
 
 static gdImagePtr imageLoad (char *filename)
 {
