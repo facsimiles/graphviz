@@ -119,7 +119,6 @@
 #define		TOP		(1<<TOP_IX)
 #define		LEFT		(1<<LEFT_IX)
 
-#define CCW  -1			/* counter clock-wise */
 #define CW    1			/* clock-wise */
 
 /* Obj types  for renderers */
