@@ -131,7 +131,7 @@ install: build
 
 	# Move from debian/tmp to the appropriate packages, rename one binary
 	dh_install --sourcedir=debian/tmp
-	dh_missing --sourcedir=debian/tmp
+	dh_missing --list-missing --sourcedir=debian/tmp
 	mv $(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/sbin/dot \
 		$(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/sbin/libgraphviz$(GRAPHVIZ_SONAME)-config-update
 
@@ -170,44 +170,44 @@ install: build
 
 # Build architecture-independent files here.
 binary-indep: build install
-	dh_testdir -i
-	dh_testroot -i
-	dh_installdocs -i
-	dh_installmenu -i
-	dh_installchangelogs CHANGELOG.md -i
-	dh_perl -i
-	dh_link -i
-	dh_strip -i
-	dh_compress -i -X.pdf
-	dh_fixperms -i
-	dh_makeshlibs -i
-	dh_installdeb -i
-	dh_shlibdeps -i
-	dh_gencontrol -i
-	dh_md5sums -i
-	dh_builddeb -i
+	dh_testdir --indep
+	dh_testroot --indep
+	dh_installdocs --indep
+	dh_installmenu --indep
+	dh_installchangelogs CHANGELOG.md --indep
+	dh_perl --indep
+	dh_link --indep
+	dh_strip --indep
+	dh_compress --indep --exclude=.pdf
+	dh_fixperms --indep
+	dh_makeshlibs --indep
+	dh_installdeb --indep
+	dh_shlibdeps --indep
+	dh_gencontrol --indep
+	dh_md5sums --indep
+	dh_builddeb --indep
 
 # Build architecture-dependent files here.
 # Pass -a to all debhelper commands in this target to reduce clutter.
 binary-arch: build install
-	dh_testdir -a
-	dh_testroot -a
-	dh_installdocs -a -XMakefile
-	dh_installexamples -a
-	dh_installmenu -a
-	dh_installman -a
-	dh_installchangelogs CHANGELOG.md -a
-	dh_perl -a
-	dh_link -a
-	dh_strip -a
-	dh_compress -a
-	dh_fixperms -a
-	dh_makeshlibs -plibgraphviz$(GRAPHVIZ_SONAME) -V 'libgraphviz4 (>= 2.18)'
-	dh_installdeb -a
-	dh_shlibdeps -a -L libgraphviz$(GRAPHVIZ_SONAME) $(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/lib
-	dh_gencontrol -a
-	dh_md5sums -a
-	dh_builddeb -a
+	dh_testdir --arch
+	dh_testroot --arch
+	dh_installdocs --arch --exclude=Makefile
+	dh_installexamples --arch
+	dh_installmenu --arch
+	dh_installman --arch
+	dh_installchangelogs CHANGELOG.md --arch
+	dh_perl --arch
+	dh_link --arch
+	dh_strip --arch
+	dh_compress --arch
+	dh_fixperms --arch
+	dh_makeshlibs -plibgraphviz$(GRAPHVIZ_SONAME) '--version-info=libgraphviz4 (>= 2.18)'
+	dh_installdeb --arch
+	dh_shlibdeps --arch --libpackage=libgraphviz$(GRAPHVIZ_SONAME) $(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/lib
+	dh_gencontrol --arch
+	dh_md5sums --arch
+	dh_builddeb --arch
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install configure
