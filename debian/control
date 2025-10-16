@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: John Ellson <ellson@graphviz.org>
 Standards-Version: 3.7.3
 Build-Depends: tcl-dev,
+ debhelper-compat (= 8),
  debhelper (>= 8),
  libfreetype6-dev,
  zlib1g-dev,
