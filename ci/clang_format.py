@@ -536,6 +536,8 @@ EXCLUDE = (
     "plugin/pango/gvrender_pango.c",
     "plugin/pango/gvtextlayout_pango.c",
     "plugin/poppler/gvloadimage_poppler.c",
+    "plugin/quartz/GVTextLayout.h",
+    "plugin/quartz/GVTextLayout.m",
     "plugin/quartz/gvdevice_quartz.c",
     "plugin/quartz/gvloadimage_quartz.c",
     "plugin/quartz/gvplugin_quartz.c",
