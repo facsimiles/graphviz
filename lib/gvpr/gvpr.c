@@ -83,8 +83,7 @@ static FILE *openOut(char *name) {
   return outs;
 }
 
-/* gettok:
- * Tokenize a string. Tokens consist of either a non-empty string
+/* Tokenize a string. Tokens consist of either a non-empty string
  * of non-space characters, or all characters between a pair of
  * single or double quotes. As usual, we map
  *   \c -> c
@@ -135,8 +134,7 @@ static char *gettok(char **sp) {
   return s;
 }
 
-/* parseArgs:
- * Split s into whitespace separated tokens, allowing quotes.
+/* Split s into whitespace separated tokens, allowing quotes.
  * Append tokens to argument list and return new number of arguments.
  *
  * @param arg [inout] The current arguments
@@ -207,8 +205,7 @@ static char *dflt_gvprpath(void) {
   return share;
 }
 
-/* resolve:
- * Translate -f arg parameter into a pathname.
+/* Translate -f arg parameter into a pathname.
  * If arg contains '/', return arg.
  * Else search directories in GVPRPATH for arg.
  * Return NULL on error.
@@ -302,8 +299,7 @@ static char *getOptarg(int c, char **argp, int *argip, int argc, char **argv) {
   return rv;
 }
 
-/* doFlags:
- * Process a command-line argument starting with a '-'.
+/* Process a command-line argument starting with a '-'.
  * argi is the index of the next available item in argv[].
  * argc has its usual meaning.
  *
@@ -380,9 +376,7 @@ static void freeOpts(options opts) {
   LIST_FREE(&opts.args);
 }
 
-/* scanArgs:
- * Parse command line options.
- */
+/// parse command line options
 static options scanArgs(int argc, char **argv) {
   char *arg;
   options opts = {0};
@@ -705,9 +699,7 @@ static void travFlat(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
   }
 }
 
-/* doCleanup:
- * Reset node traversal data
- */
+/// reset node traversal data
 static void doCleanup(Agraph_t *g) {
   Agnode_t *n;
   ndata *nd;
@@ -719,9 +711,7 @@ static void doCleanup(Agraph_t *g) {
   }
 }
 
-/* traverse:
- * return true if traversal requires cleanup
- */
+/// return true if traversal requires cleanup
 static bool traverse(Gpr_t *state, Expr_t *prog, comp_block *bp, bool cleanup) {
   if (!state->target) {
     char *target;
@@ -832,8 +822,7 @@ static bool traverse(Gpr_t *state, Expr_t *prog, comp_block *bp, bool cleanup) {
   return cleanup;
 }
 
-/* addOutputGraph:
- * Append output graph to option struct.
+/* Append output graph to option struct.
  * We know uopts and state->outgraph are non-NULL.
  */
 static void addOutputGraph(Gpr_t *state, gvpropts *uopts) {
@@ -877,8 +866,7 @@ typedef struct {
   options opts;
 } gvpr_state_t;
 
-/* gvexitf:
- * Only used if GV_USE_EXIT not set during exeval.
+/* Only used if GV_USE_EXIT not set during exeval.
  * This implies setjmp/longjmp set up.
  */
 static void gvexitf(void *env, int v) {
@@ -905,8 +893,7 @@ static void gverrorf(Expr_t *handle, Exdisc_t *discipline, int level,
   }
 }
 
-/* gvpr_core:
- * Return 0 on success; non-zero on error.
+/* Return 0 on success; non-zero on error.
  *
  * FIX/TODO:
  *  - close non-source/non-output graphs
@@ -936,11 +923,8 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
   info.outFile = gs->opts.outFile;
   info.args = gs->opts.args;
   info.errf = gverrorf;
-  if (uopts)
-    info.flags = uopts->flags;
-  else
-    info.flags = 0;
-  if ((uopts->flags & GV_USE_EXIT))
+  info.flags = uopts->flags;
+  if (uopts->flags & GV_USE_EXIT)
     info.exitf = 0;
   else
     info.exitf = gvexitf;
@@ -957,7 +941,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
 
   initGPRState(gs->state);
 
-  if ((uopts->flags & GV_USE_OUTGRAPH)) {
+  if (uopts->flags & GV_USE_OUTGRAPH) {
     uopts->outgraphs = 0;
     uopts->n_outgraphs = 0;
   }
@@ -969,7 +953,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
     }
   }
 
-  bool incoreGraphs = uopts && uopts->ingraphs;
+  bool incoreGraphs = uopts->ingraphs;
 
   if (gs->opts.verbose)
     fprintf(stderr, "Parse/compile/init: %.2f secs.\n", gvelapsed_sec());
@@ -979,7 +963,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
 
   /* if program is not null */
   if (gs->xprog->uses_graph) {
-    if (uopts && uopts->ingraphs)
+    if (uopts->ingraphs)
       gs->ing = newIngGraphs(0, uopts->ingraphs, ing_read);
     else
       gs->ing = newIng(0, gs->opts.inFiles, ing_read);
@@ -1032,7 +1016,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
        */
       if (gs->state->outgraph != NULL &&
           (agnnodes(gs->state->outgraph) || gs->opts.compflags.srcout)) {
-        if (uopts && (uopts->flags & GV_USE_OUTGRAPH))
+        if (uopts->flags & GV_USE_OUTGRAPH)
           addOutputGraph(gs->state, uopts);
         else
           sfioWrite(gs->state->outgraph, gs->opts.outFile);
@@ -1071,6 +1055,11 @@ int gvpr(int argc, char *argv[], gvpropts *uopts) {
 
   // initialize opts to something that makes freeOpts() a no-op if we fail early
   gvpr_state.opts.outFile = stdout;
+
+  gvpropts DEFAULT_OPTS = {0};
+  if (uopts == NULL) {
+    uopts = &DEFAULT_OPTS;
+  }
 
   int rv = gvpr_core(argc, argv, uopts, &gvpr_state);
 

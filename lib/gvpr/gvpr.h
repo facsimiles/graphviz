@@ -70,6 +70,7 @@ typedef struct {
     gvprbinding* bindings;    /* array of bindings, terminated with {NULL,NULL} */
 } gvpropts;
 
+/// @param opts Options affecting gvpr behavior. Pass `NULL` for defaults.
 GVPR_API extern int gvpr (int argc, char *argv[], gvpropts* opts);
 
 #ifdef __cplusplus
