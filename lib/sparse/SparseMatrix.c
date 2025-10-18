@@ -571,7 +571,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
   SparseMatrix A = NULL;
   int *ia, *ja;
   double *a, *val;
-  int *ai, *vali;
+  int *ai;
   int i;
 
   assert(m > 0 && n > 0 && nz >= 0);
@@ -625,8 +625,8 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
-  case MATRIX_TYPE_INTEGER:
-    vali = val0;
+  case MATRIX_TYPE_INTEGER: {
+    int *vali = val0;
     ai = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
@@ -643,6 +643,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
+  }
   case MATRIX_TYPE_PATTERN:
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
