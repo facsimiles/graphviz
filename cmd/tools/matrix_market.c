@@ -16,7 +16,6 @@
 
 SparseMatrix SparseMatrix_import_matrix_market(FILE * f)
 {
-    int ret_code;
     MM_typecode matcode;
     double *val = NULL, *v;
     int *vali = NULL, i, m, n, *I = NULL, *J = NULL, nz;
@@ -38,7 +37,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE * f)
     }
 
     /* find out size of sparse matrix .... */
-    if ((ret_code = mm_read_mtx_crd_size(f, &m, &n, &nz)) != 0) {
+    if (mm_read_mtx_crd_size(f, &m, &n, &nz) != 0) {
 	return NULL;
     }
     /* reseve memory for matrices */
