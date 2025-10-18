@@ -1,4 +1,4 @@
-if(IS_DIRECTORY "/System/Library/Frameworks/ApplicationServices.framework")
+if(HAVE_QUARTZ)
 
   add_library(gvplugin_quartz
     gvplugin_quartz.h
