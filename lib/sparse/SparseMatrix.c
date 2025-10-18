@@ -559,7 +559,14 @@ SparseMatrix SparseMatrix_from_coordinate_format_not_compacted(SparseMatrix A){
   return SparseMatrix_from_coordinate_arrays_not_compacted(A->nz, A->m, A->n, irn, jcn, a, A->type, A->size);
 }
 
-static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, int n, int *irn, int *jcn, void *val0, int type, size_t sz, int sum_repeated){
+static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
+                                                                 int n,
+                                                                 int *irn,
+                                                                 int *jcn,
+                                                                 const void *val0,
+                                                                 int type,
+                                                                 size_t sz,
+                                                                 int sum_repeated) {
   /* convert a sparse matrix in coordinate form to one in compressed row form.
      nz: number of entries
      irn: row indices 0-based
