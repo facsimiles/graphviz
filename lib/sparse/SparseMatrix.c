@@ -589,7 +589,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
 
   switch (type){
   case MATRIX_TYPE_REAL: {
-    double *val = val0;
+    const double *const val = val0;
     a = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
@@ -608,7 +608,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     break;
   }
   case MATRIX_TYPE_COMPLEX: {
-    double *val = val0;
+    const double *const val = val0;
     a = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
