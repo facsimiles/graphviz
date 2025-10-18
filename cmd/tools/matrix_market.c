@@ -219,6 +219,7 @@ done:
     free(I);
     free(J);
     free(val);
+    free(vali);
 
     if (A != NULL && matcode.shape == MS_SYMMETRIC) {
 	A->is_symmetric = true;
