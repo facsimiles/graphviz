@@ -628,7 +628,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     break;
   }
   case MATRIX_TYPE_INTEGER: {
-    int *vali = val0;
+    const int *const vali = val0;
     ai = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
