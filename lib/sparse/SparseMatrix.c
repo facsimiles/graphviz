@@ -570,7 +570,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
 
   SparseMatrix A = NULL;
   int *ia, *ja;
-  double *a, *val;
+  double *a;
   int *ai;
   int i;
 
@@ -588,8 +588,8 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
   }
 
   switch (type){
-  case MATRIX_TYPE_REAL:
-    val = val0;
+  case MATRIX_TYPE_REAL: {
+    double *val = val0;
     a = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
@@ -606,8 +606,9 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
-  case MATRIX_TYPE_COMPLEX:
-    val = val0;
+  }
+  case MATRIX_TYPE_COMPLEX: {
+    double *val = val0;
     a = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
@@ -625,6 +626,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
+  }
   case MATRIX_TYPE_INTEGER: {
     int *vali = val0;
     ai = A->a;
