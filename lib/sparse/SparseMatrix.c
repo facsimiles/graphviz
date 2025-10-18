@@ -619,8 +619,8 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     }
     for (i = 0; i < m; i++) ia[i+1] += ia[i];
     for (i = 0; i < nz; i++){
-      a[2*ia[irn[i]]] = *(val++);
-      a[2*ia[irn[i]]+1] = *(val++);
+      a[2*ia[irn[i]]] = val[2 * i];
+      a[2*ia[irn[i]]+1] = val[2 * i + 1];
       ja[ia[irn[i]]++] = jcn[i];
     }
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
