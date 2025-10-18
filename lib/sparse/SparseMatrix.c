@@ -698,9 +698,9 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
 }
 
 SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n, int *irn,
-                                                 int *jcn, const void *val0,
+                                                 int *jcn, const void *val,
                                                  int type, size_t sz) {
-  return SparseMatrix_from_coordinate_arrays_internal(nz, m, n, irn, jcn, val0, type, sz, SUM_REPEATED_ALL);
+  return SparseMatrix_from_coordinate_arrays_internal(nz, m, n, irn, jcn, val, type, sz, SUM_REPEATED_ALL);
 }
 
 
