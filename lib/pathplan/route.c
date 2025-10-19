@@ -35,7 +35,7 @@ static size_t opn, opl;
 
 static int reallyroutespline(Pedge_t *, size_t,
 			     Ppoint_t *, int, Ppoint_t, Ppoint_t);
-static int mkspline(Ppoint_t *, int, tna_t *, Ppoint_t, Ppoint_t,
+static int mkspline(Ppoint_t *, int, const tna_t *, Ppoint_t, Ppoint_t,
 		    Ppoint_t *, Ppoint_t *, Ppoint_t *, Ppoint_t *);
 static int splinefits(Pedge_t *, size_t, Ppoint_t, Pvector_t, Ppoint_t,
 		      Pvector_t, Ppoint_t *, int);
@@ -151,7 +151,7 @@ static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
     return 0;
 }
 
-static int mkspline(Ppoint_t * inps, int inpn, tna_t * tnas, Ppoint_t ev0,
+static int mkspline(Ppoint_t * inps, int inpn, const tna_t *tnas, Ppoint_t ev0,
 		    Ppoint_t ev1, Ppoint_t * sp0, Ppoint_t * sv0,
 		    Ppoint_t * sp1, Ppoint_t * sv1)
 {
