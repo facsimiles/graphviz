@@ -135,8 +135,10 @@ static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
 	const Ppoint_t p = {
 	  .x = B0(t) * p1.x + B1(t) * cp1.x + B2(t) * cp2.x + B3(t) * p2.x,
 	  .y = B0(t) * p1.y + B1(t) * cp1.y + B2(t) * cp2.y + B3(t) * p2.y};
-	if ((d = dist(p, inps[i])) > maxd)
-	    maxd = d, maxi = i;
+	if ((d = dist(p, inps[i])) > maxd) {
+	    maxd = d;
+	    maxi = i;
+	}
     }
     free(tnas);
     const int spliti = maxi;
