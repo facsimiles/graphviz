@@ -170,7 +170,6 @@ static inline int vagxbprint(agxbuf *xb, const char *fmt, va_list ap) {
     rc = vsnprintf(NULL, 0, fmt, ap2);
     va_end(ap2);
     if (rc < 0) {
-      va_end(ap);
       return rc;
     }
     size = (size_t)rc + 1; // account for NUL terminator

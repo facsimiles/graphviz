@@ -418,6 +418,7 @@ static int dot_splines_(graph_t *g, int normalize) {
       if (rc != 0) {
         free(sd.Rank_box);
         LIST_FREE(&edges);
+        free(P.boxes);
         return rc;
       }
     } else
