@@ -103,6 +103,7 @@ static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
     static tna_t *tnas;
     static int tnan;
 
+    assert(inpn > 0);
     if (tnan < inpn) {
 	tna_t *new_tnas = realloc(tnas, sizeof(tna_t) * (size_t)inpn);
 	if (new_tnas == NULL)
