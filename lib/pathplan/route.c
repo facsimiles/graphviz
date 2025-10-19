@@ -100,16 +100,10 @@ static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
     double maxd, d, t;
     int maxi, i, spliti;
 
-    static tna_t *tnas;
-    static int tnan;
-
     assert(inpn > 0);
-    if (tnan < inpn) {
-	tna_t *new_tnas = realloc(tnas, sizeof(tna_t) * (size_t)inpn);
-	if (new_tnas == NULL)
-	    return -1;
-	tnas = new_tnas;
-	tnan = inpn;
+    tna_t *const tnas = calloc((size_t)inpn, sizeof(tna_t));
+    if (tnas == NULL) {
+	return -1;
     }
     tnas[0].t = 0;
     for (i = 1; i < inpn; i++)
@@ -120,13 +114,17 @@ static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
 	tnas[i].a[0] = scale(ev0, B1(tnas[i].t));
 	tnas[i].a[1] = scale(ev1, B2(tnas[i].t));
     }
-    if (mkspline(inps, inpn, tnas, ev0, ev1, &p1, &v1, &p2, &v2) == -1)
+    if (mkspline(inps, inpn, tnas, ev0, ev1, &p1, &v1, &p2, &v2) == -1) {
+	free(tnas);
 	return -1;
+    }
     int fit = splinefits(edges, edgen, p1, v1, p2, v2, inps, inpn);
     if (fit > 0) {
+	free(tnas);
 	return 0;
     }
     if (fit < 0) {
+	free(tnas);
 	return -1;
     }
     cp1 = add(p1, scale(v1, 1 / 3.0));
@@ -138,6 +136,7 @@ static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
 	if ((d = dist(p, inps[i])) > maxd)
 	    maxd = d, maxi = i;
     }
+    free(tnas);
     spliti = maxi;
     splitv1 = normv(sub(inps[spliti], inps[spliti - 1]));
     splitv2 = normv(sub(inps[spliti + 1], inps[spliti]));
