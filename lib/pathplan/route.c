@@ -95,10 +95,9 @@ int Proutespline(Pedge_t *barriers, size_t n_barriers, Ppolyline_t input_route,
 
 static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
                              int inpn, Ppoint_t ev0, Ppoint_t ev1) {
-    Ppoint_t p1, p2, cp1, cp2, p;
-    Pvector_t v1, v2, splitv, splitv1, splitv2;
-    double maxd, d, t;
-    int maxi, i, spliti;
+    Ppoint_t p1, p2;
+    Pvector_t v1, v2;
+    double d;
 
     assert(inpn > 0);
     tna_t *const tnas = calloc((size_t)inpn, sizeof(tna_t));
@@ -106,11 +105,11 @@ static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
 	return -1;
     }
     tnas[0].t = 0;
-    for (i = 1; i < inpn; i++)
+    for (int i = 1; i < inpn; i++)
 	tnas[i].t = tnas[i - 1].t + dist(inps[i], inps[i - 1]);
-    for (i = 1; i < inpn; i++)
+    for (int i = 1; i < inpn; i++)
 	tnas[i].t /= tnas[inpn - 1].t;
-    for (i = 0; i < inpn; i++) {
+    for (int i = 0; i < inpn; i++) {
 	tnas[i].a[0] = scale(ev0, B1(tnas[i].t));
 	tnas[i].a[1] = scale(ev1, B2(tnas[i].t));
     }
@@ -127,20 +126,23 @@ static int reallyroutespline(Pedge_t *edges, size_t edgen, Ppoint_t *inps,
 	free(tnas);
 	return -1;
     }
-    cp1 = add(p1, scale(v1, 1 / 3.0));
-    cp2 = sub(p2, scale(v2, 1 / 3.0));
-    for (maxd = -1, maxi = -1, i = 1; i < inpn - 1; i++) {
-	t = tnas[i].t;
-	p.x = B0(t) * p1.x + B1(t) * cp1.x + B2(t) * cp2.x + B3(t) * p2.x;
-	p.y = B0(t) * p1.y + B1(t) * cp1.y + B2(t) * cp2.y + B3(t) * p2.y;
+    const Ppoint_t cp1 = add(p1, scale(v1, 1 / 3.0));
+    const Ppoint_t cp2 = sub(p2, scale(v2, 1 / 3.0));
+    int maxi = -1;
+    double maxd = -1;
+    for (int i = 1; i < inpn - 1; i++) {
+	const double t = tnas[i].t;
+	const Ppoint_t p = {
+	  .x = B0(t) * p1.x + B1(t) * cp1.x + B2(t) * cp2.x + B3(t) * p2.x,
+	  .y = B0(t) * p1.y + B1(t) * cp1.y + B2(t) * cp2.y + B3(t) * p2.y};
 	if ((d = dist(p, inps[i])) > maxd)
 	    maxd = d, maxi = i;
     }
     free(tnas);
-    spliti = maxi;
-    splitv1 = normv(sub(inps[spliti], inps[spliti - 1]));
-    splitv2 = normv(sub(inps[spliti + 1], inps[spliti]));
-    splitv = normv(add(splitv1, splitv2));
+    const int spliti = maxi;
+    const Pvector_t splitv1 = normv(sub(inps[spliti], inps[spliti - 1]));
+    const Pvector_t splitv2 = normv(sub(inps[spliti + 1], inps[spliti]));
+    const Pvector_t splitv = normv(add(splitv1, splitv2));
     if (reallyroutespline(edges, edgen, inps, spliti + 1, ev0, splitv) < 0) {
 	return -1;
     }
