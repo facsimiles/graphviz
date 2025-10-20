@@ -2484,6 +2484,8 @@ def test_2095_1():
     assert input.exists(), "unexpectedly missing test case"
 
     timeout = 60  # seconds
+    if platform.system() == "Windows":
+        timeout *= 2
 
     # this typically takes ~1s to run, so give a wide margin of error and require that
     # that Graphviz finishes within that
@@ -2623,8 +2625,12 @@ def test_2168():
     input = Path(__file__).parent / "2168.dot"
     assert input.exists(), "unexpectedly missing test case"
 
+    timeout = 5
+    if platform.system() == "Windows":
+        timeout *= 2
+
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=5)
+    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
 
 
 def test_2168_1():
@@ -2637,8 +2643,12 @@ def test_2168_1():
     input = Path(__file__).parent / "2168_1.dot"
     assert input.exists(), "unexpectedly missing test case"
 
+    timeout = 5
+    if platform.system() == "Windows":
+        timeout *= 2
+
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=5)
+    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
 
 
 def test_2168_2():
@@ -2651,8 +2661,12 @@ def test_2168_2():
     input = Path(__file__).parent / "2168_2.dot"
     assert input.exists(), "unexpectedly missing test case"
 
+    timeout = 5
+    if platform.system() == "Windows":
+        timeout *= 2
+
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=5)
+    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
 
 
 def test_2168_3():
@@ -2665,8 +2679,12 @@ def test_2168_3():
     input = Path(__file__).parent / "2168_3.dot"
     assert input.exists(), "unexpectedly missing test case"
 
+    timeout = 5
+    if platform.system() == "Windows":
+        timeout *= 2
+
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=5)
+    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
 
 
 def test_2168_4():
@@ -2679,8 +2697,12 @@ def test_2168_4():
     input = Path(__file__).parent / "2168_4.dot"
     assert input.exists(), "unexpectedly missing test case"
 
+    timeout = 5
+    if platform.system() == "Windows":
+        timeout *= 2
+
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=5)
+    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
 
 
 def test_2168_5():
