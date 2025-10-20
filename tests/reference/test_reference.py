@@ -13,7 +13,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../tests"))
 from gvtest import run, run_raw  # pylint: disable=wrong-import-position
 
 
-# pylint: disable=line-too-long
 @pytest.mark.xfail
 @pytest.mark.parametrize(
     "src,format,reference",
