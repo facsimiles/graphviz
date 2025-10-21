@@ -77,7 +77,6 @@ typedef struct {
 } options;
 
 typedef clock_t mytime_t;
-#define DIFF_IN_SECS(S, T) ((S - T) / (double)CLOCKS_PER_SEC)
 
 static mytime_t T;
 
@@ -88,7 +87,7 @@ static double elapsed_sec(void) {
   double rv;
 
   end = clock();
-  rv = DIFF_IN_SECS(end, T);
+  rv = (end - T) / (double)CLOCKS_PER_SEC;
   return rv;
 }
 
