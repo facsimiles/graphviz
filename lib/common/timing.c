@@ -13,7 +13,6 @@
 #include	<time.h>
 
 typedef clock_t mytime_t;
-#define DIFF_IN_SECS(S,T) ((S - T) / (double)CLOCKS_PER_SEC)
 
 #include <common/types.h>
 #include <common/utils.h>
@@ -31,6 +30,6 @@ double elapsed_sec(void)
     double rv;
 
     S = clock();
-    rv = DIFF_IN_SECS(S, T);
+    rv = (S - T) / (double)CLOCKS_PER_SEC;
     return rv;
 }
