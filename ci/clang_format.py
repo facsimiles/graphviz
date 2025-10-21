@@ -194,7 +194,6 @@ EXCLUDE = (
     "lib/common/taper.c",
     "lib/common/textspan.c",
     "lib/common/textspan.h",
-    "lib/common/timing.c",
     "lib/common/types.h",
     "lib/common/usershape.h",
     "lib/common/utils.c",
