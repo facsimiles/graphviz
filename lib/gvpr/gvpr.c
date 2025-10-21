@@ -30,6 +30,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
@@ -74,6 +75,23 @@ typedef struct {
   int state; /* > 0 : continue; <= 0 finish */
   int verbose;
 } options;
+
+typedef clock_t mytime_t;
+#define GET_TIME(S) S = clock()
+#define DIFF_IN_SECS(S, T) ((S - T) / (double)CLOCKS_PER_SEC)
+
+static mytime_t T;
+
+static void gvstart_timer(void) { GET_TIME(T); }
+
+static double gvelapsed_sec(void) {
+  mytime_t end;
+  double rv;
+
+  GET_TIME(end);
+  rv = DIFF_IN_SECS(end, T);
+  return rv;
+}
 
 static FILE *openOut(char *name) {
   FILE *const outs = gv_fopen(name, "w");

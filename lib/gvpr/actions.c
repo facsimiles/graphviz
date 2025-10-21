@@ -820,22 +820,3 @@ char *colorx(Expr_t *ex, const char *incolor, char *fmt) {
   agxbfree(&fp);
   return result;
 }
-
-#include <time.h>
-
-typedef clock_t mytime_t;
-#define GET_TIME(S) S = clock()
-#define DIFF_IN_SECS(S, T) ((S - T) / (double)CLOCKS_PER_SEC)
-
-static mytime_t T;
-
-void gvstart_timer(void) { GET_TIME(T); }
-
-double gvelapsed_sec(void) {
-  mytime_t end;
-  double rv;
-
-  GET_TIME(end);
-  rv = DIFF_IN_SECS(end, T);
-  return rv;
-}
