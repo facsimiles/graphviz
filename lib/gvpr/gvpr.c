@@ -79,12 +79,8 @@ typedef struct {
 static clock_t start_timer(void) { return clock(); }
 
 static double elapsed_sec(clock_t start) {
-  clock_t end;
-  double rv;
-
-  end = clock();
-  rv = (end - start) / (double)CLOCKS_PER_SEC;
-  return rv;
+  const clock_t end = clock();
+  return (end - start) / (double)CLOCKS_PER_SEC;
 }
 
 static FILE *openOut(char *name) {
