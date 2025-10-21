@@ -12,12 +12,10 @@
 
 #include	<time.h>
 
-typedef clock_t mytime_t;
-
 #include <common/types.h>
 #include <common/utils.h>
 
-static mytime_t T;
+static clock_t T;
 
 void start_timer(void)
 {
@@ -26,7 +24,7 @@ void start_timer(void)
 
 double elapsed_sec(void)
 {
-    mytime_t S;
+    clock_t S;
     double rv;
 
     S = clock();
