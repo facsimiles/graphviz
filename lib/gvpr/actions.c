@@ -832,10 +832,10 @@ static mytime_t T;
 void gvstart_timer(void) { GET_TIME(T); }
 
 double gvelapsed_sec(void) {
-  mytime_t S;
+  mytime_t end;
   double rv;
 
-  GET_TIME(S);
-  rv = DIFF_IN_SECS(S, T);
+  GET_TIME(end);
+  rv = DIFF_IN_SECS(end, T);
   return rv;
 }
