@@ -76,16 +76,14 @@ typedef struct {
   int verbose;
 } options;
 
-static clock_t T;
+static clock_t start_timer(void) { return clock(); }
 
-static void start_timer(void) { T = clock(); }
-
-static double elapsed_sec(void) {
+static double elapsed_sec(clock_t start) {
   clock_t end;
   double rv;
 
   end = clock();
-  rv = (end - T) / (double)CLOCKS_PER_SEC;
+  rv = (end - start) / (double)CLOCKS_PER_SEC;
   return rv;
 }
 
@@ -928,8 +926,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
     return gs->opts.state;
   }
 
-  if (gs->opts.verbose)
-    start_timer();
+  clock_t start = start_timer();
   gs->prog = parseProg(gs->opts.program, gs->opts.useFile);
   if (gs->prog == NULL) {
     return 1;
@@ -970,7 +967,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
   bool incoreGraphs = uopts->ingraphs;
 
   if (gs->opts.verbose)
-    fprintf(stderr, "Parse/compile/init: %.2f secs.\n", elapsed_sec());
+    fprintf(stderr, "Parse/compile/init: %.2f secs.\n", elapsed_sec(start));
   /* do begin */
   if (gs->xprog->begin_stmt != NULL)
     exeval(gs->xprog->prog, gs->xprog->begin_stmt, gs->state);
@@ -982,13 +979,12 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
     else
       gs->ing = newIng(0, gs->opts.inFiles, ing_read);
 
-    if (gs->opts.verbose)
-      start_timer();
+    start = start_timer();
     Agraph_t *nextg = NULL;
     for (gs->state->curgraph = nextGraph(gs->ing); gs->state->curgraph;
          gs->state->curgraph = nextg) {
       if (gs->opts.verbose)
-        fprintf(stderr, "Read graph: %.2f secs.\n", elapsed_sec());
+        fprintf(stderr, "Read graph: %.2f secs.\n", elapsed_sec(start));
       gs->state->infname = fileName(gs->ing);
       if (gs->opts.readAhead)
         nextg = gs->state->nextgraph = nextGraph(gs->ing);
@@ -1017,7 +1013,7 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
       if (gs->xprog->endg_stmt != NULL)
         exeval(gs->xprog->prog, gs->xprog->endg_stmt, gs->state);
       if (gs->opts.verbose)
-        fprintf(stderr, "Finish graph: %.2f secs.\n", elapsed_sec());
+        fprintf(stderr, "Finish graph: %.2f secs.\n", elapsed_sec(start));
 
       /* if $O == $G and $T is empty, delete $T */
       if (gs->state->outgraph == gs->state->curgraph &&
@@ -1041,12 +1037,11 @@ static int gvpr_core(int argc, char *argv[], gvpropts *uopts,
       gs->state->target = 0;
       gs->state->outgraph = 0;
 
-      if (gs->opts.verbose)
-        start_timer();
+      start = start_timer();
       if (!gs->opts.readAhead)
         nextg = nextGraph(gs->ing);
       if (gs->opts.verbose && nextg != NULL) {
-        fprintf(stderr, "Read graph: %.2f secs.\n", elapsed_sec());
+        fprintf(stderr, "Read graph: %.2f secs.\n", elapsed_sec(start));
       }
     }
   }
