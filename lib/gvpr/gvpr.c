@@ -76,14 +76,12 @@ typedef struct {
   int verbose;
 } options;
 
-typedef clock_t mytime_t;
-
-static mytime_t T;
+static clock_t T;
 
 static void start_timer(void) { T = clock(); }
 
 static double elapsed_sec(void) {
-  mytime_t end;
+  clock_t end;
   double rv;
 
   end = clock();
