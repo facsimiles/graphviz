@@ -29,11 +29,6 @@
 #include <util/unused.h>
 
 #ifdef HAVE_EXPAT
-#ifdef _WIN32
-// ensure that the expat functions get the correct storage class
-// declarations also on MinGW
-#define XML_USE_MSC_EXTENSIONS 1
-#endif
 #include <expat.h>
 #endif
 

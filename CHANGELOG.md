@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal timing operations now use `clock()` on all platforms (previously this
   was only used on Windows). This should result in more accurate timing in
   verbose informational messages.
+- Building Graphviz with expat &lt; 2.2.8 is no longer supported on MinGW.
 
 ### Fixed
 
