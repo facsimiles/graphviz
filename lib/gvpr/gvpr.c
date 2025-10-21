@@ -77,18 +77,17 @@ typedef struct {
 } options;
 
 typedef clock_t mytime_t;
-#define GET_TIME(S) S = clock()
 #define DIFF_IN_SECS(S, T) ((S - T) / (double)CLOCKS_PER_SEC)
 
 static mytime_t T;
 
-static void start_timer(void) { GET_TIME(T); }
+static void start_timer(void) { T = clock(); }
 
 static double elapsed_sec(void) {
   mytime_t end;
   double rv;
 
-  GET_TIME(end);
+  end = clock();
   rv = DIFF_IN_SECS(end, T);
   return rv;
 }
