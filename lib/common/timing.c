@@ -24,10 +24,6 @@ void start_timer(void)
 
 double elapsed_sec(void)
 {
-    clock_t S;
-    double rv;
-
-    S = clock();
-    rv = (S - T) / (double)CLOCKS_PER_SEC;
-    return rv;
+    const clock_t S = clock();
+    return (S - T) / (double)CLOCKS_PER_SEC;
 }
