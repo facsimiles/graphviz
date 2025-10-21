@@ -13,7 +13,6 @@
 #include	<time.h>
 
 typedef clock_t mytime_t;
-#define GET_TIME(S) S = clock()
 #define DIFF_IN_SECS(S,T) ((S - T) / (double)CLOCKS_PER_SEC)
 
 #include <common/types.h>
@@ -23,7 +22,7 @@ static mytime_t T;
 
 void start_timer(void)
 {
-    GET_TIME(T);
+    T = clock();
 }
 
 double elapsed_sec(void)
@@ -31,7 +30,7 @@ double elapsed_sec(void)
     mytime_t S;
     double rv;
 
-    GET_TIME(S);
+    S = clock();
     rv = DIFF_IN_SECS(S, T);
     return rv;
 }
