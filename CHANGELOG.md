@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to PNG and exits instead of continuing.
 - `dtstat` no longer reads/writes out of bounds memory on platforms where
   `sizeof(int) < sizeof(size_t)`. This was a regression in Graphviz 7.0.1.
+- Some incorrect variable types in the libcdt man page have been corrected.
 
 ## [14.0.2] – 2025-10-19
 
