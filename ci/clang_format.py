@@ -121,7 +121,6 @@ EXCLUDE = (
     "lib/cdt/dtrenew.c",
     "lib/cdt/dtrestore.c",
     "lib/cdt/dtsize.c",
-    "lib/cdt/dtstat.c",
     "lib/cdt/dtstrhash.c",
     "lib/cdt/dttree.c",
     "lib/cdt/dtview.c",
