@@ -66,13 +66,24 @@ def get_version() -> Tuple[int, int, int, Collection]:
 
     Returns a tuple of major version, minor version, patch version,
     "stable"/"development".
+
+    The decision procedure for the last version component is:
+      1. If the top CHANGELOG.md version heading is “Unreleased (…”
+           ⇒ DEVELOPMENT
+      2. If we cannot query Git history information
+           ⇒ STABLE
+      3. If an immediate parent commit of the current commit added the top CHANGELOG.md
+         version heading
+           ⇒ STABLE
+      4. Else
+           ⇒ DEVELOPMENT, and +1 patch
     """
 
     # is this a development revision (as opposed to a stable release)?
     is_development = False
 
     with open(CHANGELOG, encoding="utf-8") as f:
-        for line in f:
+        for lineno, line in enumerate(f, 1):
             # is this a version heading?
             m = re.match(r"## \[(?P<heading>[^\]]*)\]", line)
             if m is None:
@@ -105,7 +116,24 @@ def get_version() -> Tuple[int, int, int, Collection]:
     if is_development:
         coll = Collection.DEVELOPMENT
     else:
-        coll = Collection.STABLE
+        # this is a stable release if one of our parent commits added the release line
+        try:
+            added_in = git("blame", "-l", f"-L{lineno},{lineno}", CHANGELOG).split(" ")[
+                0
+            ]
+            parents = git("log", "--pretty=%P", "-n", "1", "HEAD").split()
+            if added_in in parents:
+                coll = Collection.STABLE
+            else:
+                # bump the patch component, conservatively assuming that the next
+                # release will be a patch release and no changelog-relevant changes have
+                # yet occurred
+                patch += 1
+                coll = Collection.DEVELOPMENT
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            # We do not have Git or we are not in a repository checkout. Assume this is
+            # a snapshot of an official release.
+            coll = Collection.STABLE
 
     return major, minor, patch, coll
 
