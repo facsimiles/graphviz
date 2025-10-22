@@ -153,7 +153,7 @@ committer_date = "0"
 if pre_release != "" or args.date_format:
     os.environ["TZ"] = "UTC"
     try:
-        committer_date = subprocess.check_output(
+        p = subprocess.run(
             [
                 "git",
                 "log",
@@ -162,9 +162,12 @@ if pre_release != "" or args.date_format:
                 "--format=%cd",
                 f"--date=format-local:{date_format}",
             ],
+            stdout=subprocess.PIPE,
             cwd=Path(__file__).resolve().parent,
+            check=True,
             universal_newlines=True,
-        ).strip()
+        )
+        committer_date = p.stdout.strip()
     except FileNotFoundError:
         sys.stderr.write("Warning: Git is not installed: setting version date to 0.\n")
     except subprocess.CalledProcessError:
