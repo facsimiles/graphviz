@@ -50,8 +50,7 @@ int dtstat(Dt_t* dt, Dtstat_t* ds, int all)
 	if (dt->data.type & DT_SET)
 	{	dthstat(dt->data,ds,NULL);
 		if(ds->dt_max+1 > Size)
-		{	if(Size > 0)
-				free(Count);
+		{	free(Count);
 			if(!(Count = calloc(ds->dt_max + 1, sizeof(size_t))))
 				return -1;
 			Size = ds->dt_max+1;
@@ -64,8 +63,7 @@ int dtstat(Dt_t* dt, Dtstat_t* ds, int all)
 	{	if (dt->data.here)
 		{	dttstat(ds, dt->data.here, 0, NULL);
 			if(ds->dt_n+1 > Size)
-			{	if(Size > 0)
-					free(Count);
+			{	free(Count);
 				if(!(Count = calloc(ds->dt_n + 1, sizeof(size_t))))
 					return -1;
 				Size = ds->dt_n+1;
