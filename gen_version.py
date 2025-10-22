@@ -28,7 +28,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 CHANGELOG = Path(__file__).parent / "CHANGELOG.md"
 assert CHANGELOG.exists(), "CHANGELOG.md file missing"
@@ -39,6 +39,25 @@ class Collection(enum.Enum):
 
     STABLE = enum.auto()
     DEVELOPMENT = enum.auto()
+
+
+def git(*argv: Union[str, Path]) -> str:
+    """run git, returning its output"""
+
+    # ensure time-related output is independent of locale
+    env = os.environ.copy()
+    env["TZ"] = "UTC"
+
+    p = subprocess.run(
+        ["git"] + list(argv),
+        stdout=subprocess.PIPE,
+        cwd=Path(__file__).resolve().parent,
+        check=True,
+        env=env,
+        universal_newlines=True,
+    )
+
+    return p.stdout.strip()
 
 
 def get_version() -> Tuple[int, int, int, Collection]:
@@ -151,25 +170,14 @@ else:
 
 committer_date = "0"
 if pre_release != "" or args.date_format:
-    env = os.environ.copy()
-    env["TZ"] = "UTC"
     try:
-        p = subprocess.run(
-            [
-                "git",
-                "log",
-                "-n",
-                "1",
-                "--format=%cd",
-                f"--date=format-local:{date_format}",
-            ],
-            stdout=subprocess.PIPE,
-            cwd=Path(__file__).resolve().parent,
-            check=True,
-            env=env,
-            universal_newlines=True,
+        committer_date = git(
+            "log",
+            "-n",
+            "1",
+            "--format=%cd",
+            f"--date=format-local:{date_format}",
         )
-        committer_date = p.stdout.strip()
     except FileNotFoundError:
         sys.stderr.write("Warning: Git is not installed: setting version date to 0.\n")
     except subprocess.CalledProcessError:
