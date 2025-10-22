@@ -151,7 +151,8 @@ else:
 
 committer_date = "0"
 if pre_release != "" or args.date_format:
-    os.environ["TZ"] = "UTC"
+    env = os.environ.copy()
+    env["TZ"] = "UTC"
     try:
         p = subprocess.run(
             [
@@ -165,6 +166,7 @@ if pre_release != "" or args.date_format:
             stdout=subprocess.PIPE,
             cwd=Path(__file__).resolve().parent,
             check=True,
+            env=env,
             universal_newlines=True,
         )
         committer_date = p.stdout.strip()
