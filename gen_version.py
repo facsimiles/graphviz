@@ -22,6 +22,7 @@ Entry version   Entry collection          Output
 """
 
 import argparse
+import enum
 import os
 import re
 import subprocess
@@ -33,7 +34,14 @@ CHANGELOG = Path(__file__).parent / "CHANGELOG.md"
 assert CHANGELOG.exists(), "CHANGELOG.md file missing"
 
 
-def get_version() -> Tuple[int, int, int, str]:
+class Collection(enum.Enum):
+    """release collection, as described above"""
+
+    STABLE = enum.auto()
+    DEVELOPMENT = enum.auto()
+
+
+def get_version() -> Tuple[int, int, int, Collection]:
     """
     Derive a Graphviz version from the changelog information.
 
@@ -76,9 +84,9 @@ def get_version() -> Tuple[int, int, int, str]:
             raise RuntimeError("no version found")
 
     if is_development:
-        coll = "development"
+        coll = Collection.DEVELOPMENT
     else:
-        coll = "stable"
+        coll = Collection.STABLE
 
     return major, minor, patch, coll
 
@@ -136,7 +144,7 @@ date_format = args.date_format or graphviz_date_format
 
 major_version, minor_version, patch_version, collection = get_version()
 
-if collection == "development":
+if collection == Collection.DEVELOPMENT:
     pre_release = "~dev"
 else:
     pre_release = ""
