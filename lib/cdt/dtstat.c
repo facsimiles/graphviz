@@ -35,7 +35,6 @@ static void dthstat(Dtdata_t data, Dtstat_t *ds, size_t *count) {
 int dtstat(Dt_t* dt, Dtstat_t* ds, int all)
 {
 	static size_t *Count;
-	static size_t Size;
 
 	UNFLATTEN(dt);
 
@@ -49,28 +48,17 @@ int dtstat(Dt_t* dt, Dtstat_t* ds, int all)
 
 	if (dt->data.type & DT_SET)
 	{	dthstat(dt->data,ds,NULL);
-		if(ds->dt_max+1 > Size)
-		{	free(Count);
-			if(!(Count = calloc(ds->dt_max + 1, sizeof(size_t))))
-				return -1;
-			Size = ds->dt_max+1;
-		}
-		for (size_t i = 0; i <= ds->dt_max; ++i)
-			Count[i] = 0;
+		free(Count);
+		if(!(Count = calloc(ds->dt_max + 1, sizeof(size_t))))
+			return -1;
 		dthstat(dt->data,ds,Count);
 	}
 	else if (dt->data.type & (DT_OSET|DT_OBAG))
 	{	if (dt->data.here)
 		{	dttstat(ds, dt->data.here, 0, NULL);
-			if(ds->dt_n+1 > Size)
-			{	free(Count);
-				if(!(Count = calloc(ds->dt_n + 1, sizeof(size_t))))
-					return -1;
-				Size = ds->dt_n+1;
-			}
-
-			for (size_t i = 0; i <= ds->dt_n; ++i)
-				Count[i] = 0;
+			free(Count);
+			if(!(Count = calloc(ds->dt_n + 1, sizeof(size_t))))
+				return -1;
 			dttstat(ds, dt->data.here, 0, Count);
 			for(size_t i = 0; i <= ds->dt_n; ++i)
 				if(Count[i] > ds->dt_max)
