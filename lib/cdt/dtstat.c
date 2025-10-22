@@ -18,12 +18,9 @@ static void dttstat(Dtstat_t *ds, Dtlink_t *root, size_t depth, size_t *level) {
 }
 
 static void dthstat(Dtdata_t data, Dtstat_t *ds, size_t *count) {
-	Dtlink_t*	t;
-	int		h;
-
-	for (h = data.ntab - 1; h >= 0; --h)
+	for (int h = data.ntab - 1; h >= 0; --h)
 	{	size_t n = 0;
-		for (t = data.htab[h]; t; t = t->right)
+		for (Dtlink_t *t = data.htab[h]; t; t = t->right)
 			n += 1;
 		if(count)
 			count[n] += 1;
