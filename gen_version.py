@@ -162,7 +162,7 @@ if pre_release != "" or args.date_format:
                 "--format=%cd",
                 f"--date=format-local:{date_format}",
             ],
-            cwd=os.path.abspath(os.path.dirname(__file__)),
+            cwd=Path(__file__).resolve().parent,
             universal_newlines=True,
         ).strip()
     except FileNotFoundError:
