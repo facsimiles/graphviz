@@ -723,7 +723,7 @@ static int clust_ht(Agraph_t * g)
 static void set_ycoords(graph_t * g)
 {
     int i, j, r;
-    double maxht, delta, d0, d1;
+    double delta, d0, d1;
     node_t *n;
     edge_t *e;
     rank_t *rank = GD_rank(g);
@@ -769,7 +769,7 @@ static void set_ycoords(graph_t * g)
     lbl = clust_ht(g);
 
     /* make the initial assignment of ycoords to leftmost nodes by ranks */
-    maxht = 0;
+    double maxht = 0;
     r = GD_maxrank(g);
     ND_coord(rank[r].v[0]).y = rank[r].ht1;
     while (--r >= GD_minrank(g)) {
