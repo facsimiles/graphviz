@@ -723,7 +723,7 @@ static int clust_ht(Agraph_t * g)
 static void set_ycoords(graph_t * g)
 {
     int i, j, r;
-    double ht2, maxht, delta, d0, d1;
+    double maxht, delta, d0, d1;
     node_t *n;
     edge_t *e;
     rank_t *rank = GD_rank(g);
@@ -738,7 +738,7 @@ static void set_ycoords(graph_t * g)
 	    n = rank[r].v[i];
 
 	    /* assumes symmetry, ht1 = ht2 */
-	    ht2 = ND_ht(n) / 2;
+	    double ht2 = ND_ht(n) / 2;
 
 
 	    /* have to look for high self-edge labels, too */
