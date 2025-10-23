@@ -730,7 +730,7 @@ static void set_ycoords(graph_t * g)
     graph_t *clust;
     int lbl;
 
-    ht2 = maxht = 0;
+    maxht = 0;
 
     /* scan ranks for tallest nodes.  */
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
