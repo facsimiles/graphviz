@@ -91,7 +91,6 @@ EXCLUDE = (
     "cmd/tools/gvgen.c",
     "cmd/tools/gvpack.cpp",
     "cmd/tools/gxl2gv.c",
-    "cmd/tools/matrix_market.c",
     "cmd/tools/matrix_market.h",
     "cmd/tools/mm2gv.c",
     "cmd/tools/mmio.c",

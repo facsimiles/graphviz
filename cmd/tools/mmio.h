@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <stdio.h>
+
 #define MM_MAX_LINE_LENGTH 100025
 #define MatrixMarketBanner "%%MatrixMarket"
 #define MM_MAX_TOKEN_LENGTH 64
