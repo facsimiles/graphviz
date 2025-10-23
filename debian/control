@@ -3,7 +3,38 @@ Section: graphics
 Priority: optional
 Maintainer: John Ellson <ellson@graphviz.org>
 Standards-Version: 3.7.3
-Build-Depends: tcl-dev, debhelper (>= 8), libfreetype6-dev, zlib1g-dev, libjpeg-dev, libxaw7-dev, bison, flex, autotools-dev, libexpat1-dev, libfontconfig1-dev, libltdl3-dev, swig, libperl-dev, libgd-dev (>= 2.0.35), groff-base, ghostscript, ruby, ruby-dev (>= 1.8), php-dev (>= 5), python-dev, python-minimal, libcairo2-dev, libpango1.0-dev, guile-2.2-dev, d-shlibs, librsvg2-dev, libgtkglext1-dev, libglade2-dev, libgts-dev, freeglut3-dev, liblua5.3-dev
+Build-Depends: tcl-dev,
+ debhelper-compat (= 9),
+ libfreetype6-dev,
+ zlib1g-dev,
+ libjpeg-dev,
+ libxaw7-dev,
+ bison,
+ flex,
+ autotools-dev,
+ libexpat1-dev,
+ libfontconfig1-dev,
+ libltdl3-dev,
+ swig,
+ libperl-dev,
+ libgd-dev (>= 2.0.35),
+ groff-base,
+ ghostscript,
+ ruby,
+ ruby-dev (>= 1.8),
+ php-dev (>= 5),
+ python-dev,
+ python-minimal,
+ libcairo2-dev,
+ libpango1.0-dev,
+ guile-2.2-dev,
+ d-shlibs,
+ librsvg2-dev,
+ libgtkglext1-dev,
+ libglade2-dev,
+ libgts-dev,
+ freeglut3-dev,
+ liblua5.3-dev
 Homepage: http://www.graphviz.org/
 
 Package: graphviz
