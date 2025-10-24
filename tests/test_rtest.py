@@ -19,7 +19,11 @@ from pathlib import Path
 import pytest
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import run  # pylint: disable=wrong-import-position
+from gvtest import (  # pylint: disable=wrong-import-position
+    is_ubuntu_2404,
+    is_ubuntu_2504,
+    run,
+)
 
 # Test specifications
 GRAPHDIR = Path(__file__).parent / "graphs"
@@ -42,7 +46,14 @@ class Case:
 
 TESTS: list[Case] = [
     Case("trivial", Path("trivial.gv"), "dot", "gv", [], xfail=False),
-    Case("shapes", Path("shapes.gv"), "dot", "gv", []),
+    Case(
+        "shapes",
+        Path("shapes.gv"),
+        "dot",
+        "gv",
+        [],
+        xfail=not (is_ubuntu_2404() or is_ubuntu_2504()),
+    ),
     Case("shapes", Path("shapes.gv"), "dot", "ps", []),
     Case("crazy", Path("crazy.gv"), "dot", "png", []),
     Case("crazy", Path("crazy.gv"), "dot", "ps", []),
