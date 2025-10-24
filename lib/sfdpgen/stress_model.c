@@ -1,36 +1,36 @@
-#include <sparse/general.h>
-#include <sparse/SparseMatrix.h>
-#include <sfdpgen/spring_electrical.h>
 #include <sfdpgen/post_process.h>
+#include <sfdpgen/spring_electrical.h>
 #include <sfdpgen/stress_model.h>
+#include <sparse/SparseMatrix.h>
+#include <sparse/general.h>
 #include <stdbool.h>
 
 int stress_model(int dim, SparseMatrix B, double *x, int maxit_sm) {
   SparseMatrix A = B;
   int rc = 0;
 
-  if (!SparseMatrix_is_symmetric(A, false) || A->type != MATRIX_TYPE_REAL){
-    if (A->type == MATRIX_TYPE_REAL){
+  if (!SparseMatrix_is_symmetric(A, false) || A->type != MATRIX_TYPE_REAL) {
+    if (A->type == MATRIX_TYPE_REAL) {
       A = SparseMatrix_symmetrize(A, false);
       A = SparseMatrix_remove_diagonal(A);
     } else {
       A = SparseMatrix_get_real_adjacency_matrix_symmetrized(A);
-    } 
+    }
   }
   A = SparseMatrix_remove_diagonal(A);
 
   const int m = A->m;
 
-  SparseStressMajorizationSmoother sm =
-    SparseStressMajorizationSmoother_new(A, dim, x); // weight the long distances
+  SparseStressMajorizationSmoother sm = SparseStressMajorizationSmoother_new(
+      A, dim, x); // weight the long distances
 
   if (!sm) {
     rc = -1;
     goto RETURN;
   }
 
-
-  sm->tol_cg = 0.1; /* we found that there is no need to solve the Laplacian accurately */
+  sm->tol_cg = 0.1; /* we found that there is no need to solve the Laplacian
+                       accurately */
   sm->scheme = SM_SCHEME_STRESS;
   SparseStressMajorizationSmoother_smooth(sm, dim, x, maxit_sm);
   for (int i = 0; i < dim * m; i++) {
@@ -38,7 +38,8 @@ int stress_model(int dim, SparseMatrix B, double *x, int maxit_sm) {
   }
   SparseStressMajorizationSmoother_delete(sm);
 
- RETURN:
-  if (A != B) SparseMatrix_delete(A);
+RETURN:
+  if (A != B)
+    SparseMatrix_delete(A);
   return rc;
 }
