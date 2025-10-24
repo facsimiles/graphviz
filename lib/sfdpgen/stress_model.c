@@ -4,7 +4,6 @@
 #include <sfdpgen/post_process.h>
 #include <sfdpgen/stress_model.h>
 #include <stdbool.h>
-#include <util/alloc.h>
 
 int stress_model(int dim, SparseMatrix B, double **x, int maxit_sm) {
   int m;
@@ -23,11 +22,6 @@ int stress_model(int dim, SparseMatrix B, double **x, int maxit_sm) {
   A = SparseMatrix_remove_diagonal(A);
 
   m = A->m;
-  if (!x) {
-    *x = gv_calloc(m * dim, sizeof(double));
-    srand(123);
-    for (i = 0; i < dim*m; i++) (*x)[i] = drand();
-  }
 
   SparseStressMajorizationSmoother sm =
     SparseStressMajorizationSmoother_new(A, dim, *x);/* weight the long distances */
