@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.0.3)]
 
+### Changed
+
+- Internal timing operations now use `clock()` on all platforms (previously this
+  was only used on Windows). This should result in more accurate timing in
+  verbose informational messages.
+
 ### Fixed
 
 - `diffimg` now notices failures when calling Ghostscript to convert PS images

@@ -46,8 +46,6 @@ extern "C" {
     extern char *toUpper(Expr_t *pgm, char *src);
     extern int deleteObj(Agraph_t * g, Agobj_t * obj);
     extern char *colorx(Expr_t *ex, const char *incolor, char *fmt);
-    extern void gvstart_timer(void);
-    extern double gvelapsed_sec(void);
 
 #ifdef __cplusplus
 }

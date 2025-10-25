@@ -1,7 +1,7 @@
 /// @file
 /// @ingroup common_utils
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,47 +10,15 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#ifndef _WIN32
-
-#include	<sys/types.h>
-#include	<sys/times.h>
-#include	<sys/param.h>
-
-
-
-#ifndef HZ
-#define HZ 60
-#endif
-typedef struct tms mytime_t;
-#define GET_TIME(S) times(&(S))
-#define DIFF_IN_SECS(S,T) ((S.tms_utime + S.tms_stime - T.tms_utime - T.tms_stime)/(double)HZ)
-
-#else
-
-#include	<time.h>
-
-typedef clock_t mytime_t;
-#define GET_TIME(S) S = clock()
-#define DIFF_IN_SECS(S,T) ((S - T) / (double)CLOCKS_PER_SEC)
-
-#endif
-
 #include <common/types.h>
 #include <common/utils.h>
+#include <time.h>
 
-static mytime_t T;
+static clock_t T;
 
-void start_timer(void)
-{
-    GET_TIME(T);
-}
+void start_timer(void) { T = clock(); }
 
-double elapsed_sec(void)
-{
-    mytime_t S;
-    double rv;
-
-    GET_TIME(S);
-    rv = DIFF_IN_SECS(S, T);
-    return rv;
+double elapsed_sec(void) {
+  const clock_t S = clock();
+  return (S - T) / (double)CLOCKS_PER_SEC;
 }
