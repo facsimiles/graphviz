@@ -798,23 +798,6 @@ static UNUSED void psmapOutput(const points_t *ps, size_t start, size_t n) {
    fprintf (stdout, "closepath stroke\n");
 }
 
-typedef struct segitem_s {
-    pointf p;
-    struct segitem_s* next;
-} segitem_t;
-
-#define MARK_FIRST_SEG(L) ((L)->next = (segitem_t*)1)
-#define FIRST_SEG(L) ((L)->next == (segitem_t*)1)
-#define INIT_SEG(P,L) {(L)->next = 0; (L)->p = P;} 
-
-static segitem_t* appendSeg (pointf p, segitem_t* lp)
-{
-    segitem_t* s = gv_alloc(sizeof(segitem_t));
-    INIT_SEG (p, s);
-    lp->next = s;
-    return s;
-}
-
 typedef LIST(size_t) pbs_size_t;
 
 /* Output the polygon determined by the n points in p1, followed
@@ -844,20 +827,18 @@ static void map_bspline_poly(points_t *pbs_p, pbs_size_t *pbs_n, size_t n,
  * New points are appended to the list given by lp. The tail of the
  * list is returned.
  */
-static segitem_t* approx_bezier (pointf *cp, segitem_t* lp)
-{
+static void approx_bezier(pointf *cp, points_t *lp) {
     pointf left[4], right[4];
 
     if (check_control_points(cp)) {
-        if (FIRST_SEG (lp)) INIT_SEG (cp[0], lp);
-        lp = appendSeg (cp[3], lp);
+        if (LIST_IS_EMPTY(lp)) LIST_APPEND(lp, cp[0]);
+        LIST_APPEND(lp, cp[3]);
     }
     else {
         Bezier (cp, 0.5, left, right);
-        lp = approx_bezier (left, lp);
-        lp = approx_bezier (right, lp);
+        approx_bezier(left, lp);
+        approx_bezier(right, lp);
     }
-    return lp;
 }
 
 /* Return the angle of the bisector between the two rays
@@ -927,46 +908,33 @@ static void mkSegPts(const pointf *prv, pointf cur, const pointf *nxt,
  */
 static void map_output_bspline(points_t *pbs, pbs_size_t *pbs_n, bezier *bp,
                                double w2) {
-    segitem_t* segl = gv_alloc(sizeof(segitem_t));
-    segitem_t* segp = segl;
-    segitem_t* segprev;
-    segitem_t* segnext;
+    points_t segments = {0};
     pointf pts[4], pt1[50], pt2[50];
 
-    MARK_FIRST_SEG(segl);
     const size_t nc = (bp->size - 1) / 3; // nc is number of bezier curves
     for (size_t j = 0; j < nc; j++) {
         for (size_t k = 0; k < 4; k++) {
             pts[k] = bp->list[3*j + k];
         }
-        segp = approx_bezier (pts, segp);
+        approx_bezier(pts, &segments);
     }
 
-    segp = segl;
-    segprev = 0;
     size_t cnt = 0;
-    while (segp) {
-        segnext = segp->next;
-        const pointf *prev = segprev == NULL ? NULL : &segprev->p;
-        const pointf *next = segnext == NULL ? NULL : &segnext->p;
-        mkSegPts(prev, segp->p, next, pt1 + cnt, pt2 + cnt, w2);
+    for (size_t i = 0; i < LIST_SIZE(&segments); ++i) {
+        const pointf *prev = i == 0 ? NULL : LIST_AT(&segments, i - 1);
+        const pointf *next =
+          i + 1 < LIST_SIZE(&segments) ? LIST_AT(&segments, i + 1) : NULL;
+        mkSegPts(prev, LIST_GET(&segments, i), next, pt1 + cnt, pt2 + cnt, w2);
         cnt++;
-        if (segnext == NULL || cnt == 50) {
+        if (i + 1 == LIST_SIZE(&segments) || cnt == 50) {
             map_bspline_poly(pbs, pbs_n, cnt, pt1, pt2);
             pt1[0] = pt1[cnt-1];
             pt2[0] = pt2[cnt-1];
             cnt = 1;
         }
-        segprev = segp;
-        segp = segnext;
     }
 
-    /* free segl */
-    while (segl) {
-        segp = segl->next;
-        free (segl);
-        segl = segp;
-    }
+    LIST_FREE(&segments);
 }
 
 static bool is_natural_number(const char *sstr)
