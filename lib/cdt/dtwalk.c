@@ -7,12 +7,11 @@
 */
 
 int dtwalk(Dt_t *dt, int (*userf)(void*, void*), void *data) {
-	void	*obj, *next;
 	int		rv;
 
-	for(obj = dtfirst(dt); obj; )
+	for (void *obj = dtfirst(dt); obj; )
 	{
-		next = dtnext(dt,obj);
+		void *const next = dtnext(dt,obj);
 		if ((rv = userf(obj, data)) < 0)
 			return rv;
 		obj = next;
