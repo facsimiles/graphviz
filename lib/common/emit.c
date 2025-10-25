@@ -1208,8 +1208,7 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	/* page was set by user */
 
         /* determine size of page for image */
-	pageSize.x = gvc->pageSize.x - 2 * margin.x;
-	pageSize.y = gvc->pageSize.y - 2 * margin.y;
+	pageSize = sub_pointf(gvc->pageSize, scale(2, margin));
 
 	if (pageSize.x < EPSILON)
 	    job->pagesArraySize.x = 1;
@@ -1233,9 +1232,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     } else {
 	/* page not set by user, use default from renderer */
 	if (job->render.features) {
-	    pageSize.x = job->device.features->default_pagesize.x - 2*margin.x;
+	    pageSize = sub_pointf(job->device.features->default_pagesize, scale(2, margin));
 	    pageSize.x = fmax(pageSize.x, 0);
-	    pageSize.y = job->device.features->default_pagesize.y - 2*margin.y;
 	    pageSize.y = fmax(pageSize.y, 0);
 	}
 	else
@@ -1279,10 +1277,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     }
 
     /* canvas area, centered if necessary */
-    job->canvasBox.LL.x = margin.x + centering.x;
-    job->canvasBox.LL.y = margin.y + centering.y;
-    job->canvasBox.UR.x = margin.x + centering.x + imageSize.x;
-    job->canvasBox.UR.y = margin.y + centering.y + imageSize.y;
+    job->canvasBox.LL = add_pointf(margin, centering);
+    job->canvasBox.UR = add_pointf(add_pointf(margin, centering), imageSize);
 
     /* size of one page in graph units */
     job->pageSize.x = imageSize.x / job->zoom;
