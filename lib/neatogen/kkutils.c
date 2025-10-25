@@ -41,7 +41,7 @@ void fill_neighbors_vec_unweighted(vtx_data * graph, int vtx, int *vtx_vec)
 void empty_neighbors_vec(vtx_data * graph, int vtx, int *vtx_vec)
 {
     /* a node is NOT a neighbor of itself! */
-    /* unlike the other version ofthis function */
+    /* unlike the other version of this function */
     for (size_t j = 1; j < graph[vtx].nedges; j++) {
 	vtx_vec[graph[vtx].edges[j]] = 0;
     }
