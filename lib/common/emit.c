@@ -1315,7 +1315,6 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     /* rotate back into graph orientation */
     if (job->rotation) {
 	imageSize = exch_xyf(imageSize);
-	pageSize = exch_xyf(pageSize);
 	margin = exch_xyf(margin);
 	centering = exch_xyf(centering);
     }
