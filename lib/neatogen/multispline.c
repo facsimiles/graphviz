@@ -288,7 +288,7 @@ static int ctrlPtIdx(pointf v, Ppoly_t * polys)
 
 /* Generate mult points associated with v.
  * The points will lie on the ray bisecting the angle prev--v--nxt.
- * The first point will aways be v.
+ * The first point will always be v.
  * The rest are positioned equally spaced with maximum spacing SEP.
  * In addition, they all lie within the polygon trip->poly.
  * Parameter s gives the index after which a vertex lies on the
