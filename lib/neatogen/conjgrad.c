@@ -162,7 +162,7 @@ conjugate_gradient_mkernel(float *A, float *x, float *b, int n,
 {
     /* Solves Ax=b using Conjugate-Gradients method */
     /* A is a packed symmetric matrix */
-    /* matrux A is "packed" (only upper triangular portion exists, row-major); */
+    // matrix A is “packed” (only upper triangular portion exists, row-major)
 
     int i, rv = 0;
 
