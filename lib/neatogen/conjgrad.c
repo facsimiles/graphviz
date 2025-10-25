@@ -129,7 +129,7 @@ int conjugate_gradient_f
 	    vectors_scalar_mult(n, Ap, alpha, Ap);
 	    vectors_subtraction(n, r, Ap, r);	/* fast computation of r, the residual */
 
-	    /* Alternaive accurate, but slow, computation of the residual - r */
+	    // Alternative accurate, but slow, computation of the residual - r
 	    /* right_mult_with_vector(A, n, x, Ax); */
 	    /* vectors_subtraction(n,b,Ax,r); */
 
