@@ -227,7 +227,7 @@ float *circuitModel(vtx_data * graph, int nG)
 static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input graph in sparse representation */
 						  int n,	/* Number of nodes */
 						  double **coords,	/* coordinates of nodes (output layout)  */
-						  int dim,	/* dimemsionality of layout */
+						  int dim,	/* dimensionality of layout */
 						  int smart_ini,	/* smart initialization */
 						  int exp,	/* scale exponent */
 						  int reweight_graph,	/* difference model */
@@ -794,7 +794,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 				   int n,	/* Number of nodes */
 				   double **d_coords,	/* coordinates of nodes (output layout) */
 				   node_t ** nodes,	/* original nodes */
-				   int dim,	/* dimemsionality of layout */
+				   int dim,	/* dimensionality of layout */
 				   int opts,    /* options */
 				   int model,	/* model */
 				   int maxi	/* max iterations */

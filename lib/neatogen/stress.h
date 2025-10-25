@@ -36,7 +36,7 @@ PRIVATE int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in s
 					      int n,	/* Number of nodes */
 					      double **coords,	/* coordinates of nodes (output layout)  */
 					      node_t **nodes,	/* original nodes  */
-					      int dim,	/* dimemsionality of layout */
+					      int dim,	/* dimensionality of layout */
 					      int opts,	/* option flags */
 					      int model,	/* model */
 					      int maxi	/* max iterations */
