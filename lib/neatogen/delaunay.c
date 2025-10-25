@@ -110,9 +110,7 @@ static GtsFaceClass *g_face_class(void) {
     return &klass->parent_class;
 }
 
-/* destroy:
- * Destroy each edge using v, then destroy v
- */
+/// destroy each edge using v, then destroy v
 static void
 destroy (GtsVertex* v)
 {
@@ -128,8 +126,7 @@ destroy (GtsVertex* v)
     gts_object_destroy(GTS_OBJECT(v));
 }
 
-/* tri:
- * Main entry point to using GTS for triangulation.
+/* Main entry point to using GTS for triangulation.
  * Input is npt points with x and y coordinates stored either separately
  * in x[] and y[] (sepArr != 0) or consecutively in x[] (sepArr == 0).
  * Optionally, the input can include nsegs line segments, whose endpoint
@@ -323,8 +320,7 @@ static int vcmp(const void *x, const void *y, void *values) {
     return 0;
 }
 
-/* delaunay_tri:
- * Given n points whose coordinates are in the x[] and y[]
+/* Given n points whose coordinates are in the x[] and y[]
  * arrays, compute a Delaunay triangulation of the points.
  * The number of edges in the triangulation is returned in pnedges.
  * The return value itself is an array e of 2*(*pnedges) integers,
@@ -448,8 +444,7 @@ static int addTri(void *face, void *state) {
     return 0;
 }
 
-/* mkSurface:
- * Given n points whose coordinates are in x[] and y[], and nsegs line
+/* Given n points whose coordinates are in x[] and y[], and nsegs line
  * segments whose end point indices are given in segs, return a surface
  * corresponding the constrained Delaunay triangulation.
  * The surface records the line segments, the triangles, and the neighboring
@@ -497,8 +492,7 @@ mkSurface (double *x, double *y, int n, int* segs, int nsegs)
     return sf;
 }
 
-/* get_triangles:
- * Given n points whose coordinates are stored as (x[2*i],x[2*i+1]),
+/* Given n points whose coordinates are stored as (x[2*i],x[2*i+1]),
  * compute a Delaunay triangulation of the points.
  * The number of triangles in the triangulation is returned in tris.
  * The return value t is an array of 3*(*tris) integers,

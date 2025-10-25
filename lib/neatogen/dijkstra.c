@@ -250,8 +250,7 @@ increaseKey_f(heap * h, int increasedVertex, float newDist, int index[],
     index[increasedVertex] = i;
 }
 
-/* dijkstra_f:
- * Weighted shortest paths from vertex.
+/* Weighted shortest paths from vertex.
  * Assume graph is connected.
  */
 void dijkstra_f(int vertex, vtx_data * graph, int n, float *dist)

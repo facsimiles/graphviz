@@ -259,8 +259,7 @@ static void freeClusterData(cluster_data c) {
 }
 #endif
 
-/* user_spline:
- * Attempt to use already existing pos info for spline
+/* Attempt to use already existing pos info for spline
  * Return 1 if successful, 0 otherwise.
  * Assume E_pos != NULL and ED_spl(e) == NULL.
  */
@@ -362,8 +361,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
  /* Indicates the amount of edges with position information */
 typedef enum { NoEdges, SomeEdges, AllEdges } pos_edge;
 
-/* nop_init_edges:
- * Check edges for position info.
+/* Check edges for position info.
  * If position info exists, check for edge label positions.
  * Return number of edges with position info.
  */
@@ -395,8 +393,6 @@ static pos_edge nop_init_edges(Agraph_t * g)
     return NoEdges;
 }
 
-/* freeEdgeInfo:
- */
 static void freeEdgeInfo (Agraph_t * g)
 {
     node_t *n;
@@ -452,8 +448,7 @@ static void add_cluster(Agraph_t * g, Agraph_t * subg)
 
 static void nop_init_graphs(Agraph_t *, attrsym_t *, attrsym_t *);
 
-/* dfs:
- * Process subgraph subg of parent graph g
+/* Process subgraph subg of parent graph g
  * If subg is a cluster, add its bounding box, if any; attach to
  * cluster array of parent, and recursively initialize subg.
  * If not a cluster, recursively call this function on the subgraphs
@@ -477,8 +472,7 @@ dfs(Agraph_t * subg, Agraph_t * parentg, attrsym_t * G_lp, attrsym_t * G_bb)
     }
 }
 
-/* nop_init_graphs:
- * Read in clusters and graph label info.
+/* Read in clusters and graph label info.
  * A subgraph is a cluster if its name starts with "cluster" and
  * it has a valid bb.
  */
@@ -504,8 +498,7 @@ nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
     }
 }
 
-/* init_nop:
- * This assumes all nodes have been positioned.
+/* This assumes all nodes have been positioned.
  * It also assumes none of the relevant fields in A*info_t have been set.
  * The input may provide additional position information for
  * clusters, edges and labels. If certain position information
@@ -640,8 +633,6 @@ static int neatoModel(graph_t * g)
     return MODEL_SHORTPATH;
 }
 
-/* neatoMode:
- */
 static int neatoMode(graph_t * g)
 {
     char *str;
@@ -720,9 +711,7 @@ dfsCycle (vtx_data* graph, int i,int mode, node_t* nodes[])
     ND_onstack(np) = false;
 }
 
-/* acyclic:
- * Do a dfs of the vtx_data, looking for cycles, reversing edges.
- */
+/// do a dfs of the vtx_data, looking for cycles, reversing edges
 static void
 acyclic (vtx_data* graph, int nv, int mode, node_t* nodes[])
 {
@@ -742,8 +731,7 @@ acyclic (vtx_data* graph, int nv, int mode, node_t* nodes[])
 }
 #endif
 
-/* makeGraphData:
- * Create sparse graph representation via arrays.
+/* Create sparse graph representation via arrays.
  * Each node is represented by a vtx_data.
  * The index of each neighbor is stored in the edges array;
  * the corresponding edge lengths and weights go on ewgts and eweights.
@@ -923,8 +911,7 @@ static void initRegular(graph_t * G, int nG)
 #define REGULAR "regular"
 #define RANDOM  "random"
 
-/* setSeed:
- * Analyze "start" attribute. If unset, return dflt.
+/* Analyze "start" attribute. If unset, return dflt.
  * If it begins with self, regular, or random, return set init to same,
  * else set init to dflt.
  * If init is random, look for value integer suffix to use a seed; if not
@@ -972,8 +959,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
     return init;
 }
 
-/* checkExp:
- * Allow various weights for the scale factor in used to calculate stress.
+/* Allow various weights for the scale factor in used to calculate stress.
  * At present, only 1 or 2 are allowed, with 2 the default.
  */
 #define exp_name "stresswt"
@@ -988,8 +974,7 @@ static int checkExp (graph_t * G)
     return exp;
 }
 
-/* checkStart:
- * Analyzes start attribute, setting seed.
+/* Analyzes start attribute, setting seed.
  * If set,
  *   If start is regular, places nodes and returns INIT_REGULAR.
  *   If start is self, returns INIT_SELF.
@@ -1092,8 +1077,7 @@ void dumpOpts (ipsep_options* opp, int nv)
 }
 #endif
 
-/* majorization:
- * Solve stress using majorization.
+/* Solve stress using majorization.
  * Old neato attributes to incorporate:
  *  weight
  * mode will be MODE_MAJOR, MODE_HIER or MODE_IPSEP
@@ -1242,8 +1226,7 @@ static void subset_model(Agraph_t * G, int nG)
     freeGraphData(gp);
 }
 
-/* mds_model:
- * Assume the matrix already contains shortest path values.
+/* Assume the matrix already contains shortest path values.
  * Use the actual lengths provided the input for edges.
  */
 static void mds_model(graph_t * g)
@@ -1263,9 +1246,7 @@ static void mds_model(graph_t * g)
     }
 }
 
-/* kkNeato:
- * Solve using gradient descent a la Kamada-Kawai.
- */
+/// solve using gradient descent a la Kamada-Kawai
 static void kkNeato(Agraph_t * g, int nG, int model)
 {
     if (model == MODEL_SUBSET) {
@@ -1297,9 +1278,7 @@ static void kkNeato(Agraph_t * g, int nG, int model)
     solve_model(g, nG);
 }
 
-/* neatoLayout:
- * Use stress optimization to layout a single component
- */
+/// use stress optimization to layout a single component
 static void
 neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel,
   adjust_data* am)
@@ -1327,8 +1306,7 @@ neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel,
 	majorization(mg, g, nG, layoutMode, layoutModel, Ndim, am);
 }
 
-/* addZ;
- * If dimension == 3 and z attribute is declared,
+/* If dimension == 3 and z attribute is declared,
  * attach z value to nodes if not defined.
  */
 static void addZ (Agraph_t* g)
@@ -1359,8 +1337,7 @@ addCluster (graph_t* g)
 }
 #endif
 
-/* doEdges:
- * Simple wrapper to compute graph's bb, then route edges after
+/* Simple wrapper to compute graph's bb, then route edges after
  * a possible aspect ratio adjustment.
  */
 static void doEdges(Agraph_t* g)
@@ -1369,8 +1346,6 @@ static void doEdges(Agraph_t* g)
     spline_edges0(g, true);
 }
 
-/* neato_layout:
- */
 void neato_layout(Agraph_t * g)
 {
     int layoutMode;

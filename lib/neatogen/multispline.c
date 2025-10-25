@@ -70,8 +70,6 @@ static int cmpItem(void *item1, void *item2) {
     return 0;
 }
 
-/* newItem:
- */
 static void *newItem(void *p, Dtdisc_t *disc) {
     item *objp = p;
     item *newp = gv_alloc(sizeof(item));
@@ -105,8 +103,7 @@ static void addMap(Dt_t * map, int a, int b, int t)
     dtinsert(map, &it);
 }
 
-/* mapSegToTri:
- * Create mapping from indices of side endpoints to triangle id 
+/* Create mapping from indices of side endpoints to triangle id 
  * We use a set rather than a bag because the segments used for lookup
  * will always be a side of a polygon and hence have a unique triangle.
  */
@@ -197,9 +194,7 @@ static int vMap(Dt_t * map, int i)
     return ip->j;
 }
 
-/* mapTri:
- * Map vertex indices from router_t to tripoly_t coordinates.
- */
+/// map vertex indices from router_t to tripoly_t coordinates
 static void mapTri(Dt_t * map, tri * tp)
 {
     for (; tp; tp = tp->nxttri) {
@@ -208,8 +203,6 @@ static void mapTri(Dt_t * map, tri * tp)
     }
 }
 
-/* addTri:
- */
 static tri *
 addTri(int i, int j, tri * oldp)
 {
@@ -220,9 +213,7 @@ addTri(int i, int j, tri * oldp)
     return tp;
 }
 
-/* bisect:
- * Return the angle bisecting the angle pp--cp--np
- */
+/// return the angle bisecting the angle pp--cp--np
 static double bisect(pointf pp, pointf cp, pointf np)
 {
     double theta, phi;
@@ -231,9 +222,7 @@ static double bisect(pointf pp, pointf cp, pointf np)
     return (theta + phi) / 2.0;
 }
 
-/* raySeg:
- * Check if ray v->w intersects segment a--b.
- */
+/// check if ray v->w intersects segment a--b
 static int raySeg(pointf v, pointf w, pointf a, pointf b)
 {
     int wa = wind(v, w, a);
@@ -247,8 +236,7 @@ static int raySeg(pointf v, pointf w, pointf a, pointf b)
     }
 }
 
-/* raySegIntersect:
- * Find the point p where ray v->w intersects segment ai-bi, if any.
+/* Find the point p where ray v->w intersects segment ai-bi, if any.
  * Return 1 on success, 0 on failure
  */
 static int
@@ -260,8 +248,7 @@ raySegIntersect(pointf v, pointf w, pointf a, pointf b, pointf * p)
 	return 0;
 }
 
-/* triPoint:
- * Given the triangle vertex v, and point w so that v->w points
+/* Given the triangle vertex v, and point w so that v->w points
  * into the polygon, return where the ray v->w intersects the
  * polygon. The search uses all of the opposite sides of triangles
  * with v as vertex.
@@ -280,8 +267,7 @@ triPoint(tripoly_t * trip, int vx, pointf v, pointf w, pointf * ip)
     return 1;
 }
 
-/* ctrlPtIdx:
- * Find the index of v in the points polys->ps.
+/* Find the index of v in the points polys->ps.
  * We start at 1 since the point corresponding to 0 
  * will never be used as v.
  */
@@ -300,8 +286,7 @@ static int ctrlPtIdx(pointf v, Ppoly_t * polys)
 
 #define SEP 15
 
-/* mkCtrlPts:
- * Generate mult points associated with v.
+/* Generate mult points associated with v.
  * The points will lie on the ray bisecting the angle prev--v--nxt.
  * The first point will aways be v.
  * The rest are positioned equally spaced with maximum spacing SEP.
@@ -397,8 +382,7 @@ struct router_s {
     tgraph *tg;	  /* graph of triangles */
 };
 
-/* triCenter:
- * Given an array of points and 3 integer indices,
+/* Given an array of points and 3 integer indices,
  * compute and return the center of the triangle.
  */
 static pointf triCenter(pointf * pts, int *idxs)
@@ -414,8 +398,7 @@ static pointf triCenter(pointf * pts, int *idxs)
 
 #define MARGIN 32
 
-/* bbox:
- * Compute bounding box of polygons, and return it
+/* Compute bounding box of polygons, and return it
  * with an added margin of MARGIN.
  * Store total number of points in *np.
  */
@@ -458,8 +441,7 @@ static int *mkTriIndices(surface_t * sf)
     return tris;
 }
 
-/* sharedEdge:
- * Returns a pair of integer (x,y), x < y, where x and y are the
+/* Returns a pair of integer (x,y), x < y, where x and y are the
  * indices of the two vertices of the shared edge.
  */
 static ipair sharedEdge(int *p, int *q)
@@ -492,8 +474,7 @@ static ipair sharedEdge(int *p, int *q)
     return pt;
 }
 
-/* addTriEdge:
- * Add an edge to g, with tail t, head h, and shared
+/* Add an edge to g, with tail t, head h, and shared
  * segment seg.
  */
 static void addTriEdge(tgraph *g, int t, int h, ipair seg) {
@@ -528,8 +509,7 @@ static void freeTriGraph(tgraph * tg)
     free(tg);
 }
 
-/* mkTriGraph:
- * Generate graph with triangles as nodes and an edge iff two triangles
+/* Generate graph with triangles as nodes and an edge iff two triangles
  * share an edge.
  */
 static tgraph *mkTriGraph(surface_t *sf, pointf *pts) {
@@ -651,8 +631,7 @@ router_t *mkRouter(Ppoly_t** obsp, int npoly)
     return rtr;
 }
 
-/* finishEdge:
- * Finish edge generation, clipping to nodes and adding arrowhead
+/* Finish edge generation, clipping to nodes and adding arrowhead
  * if necessary, and adding edge labels
  */
 static void finishEdge(edge_t* e, Ppoly_t spl, int flip) {
@@ -670,8 +649,7 @@ static void finishEdge(edge_t* e, Ppoly_t spl, int flip) {
 
 #define EQPT(p,q) (((p).x==(q).x)&&((p).y==(q).y))
 
-/* tweakEnd:
- * Hack because path routing doesn't know about the interiors
+/* Hack because path routing doesn't know about the interiors
  * of polygons. If the first or last segment of the shortest path
  * lies along one of the polygon boundaries, the path may flip
  * inside the polygon. To avoid this, we shift the point a bit.
@@ -710,8 +688,7 @@ static void tweakPath(Ppoly_t poly, size_t t, Ppolyline_t pl) {
 }
 
 
-/* genroute:
- * Generate splines for e and cohorts.
+/* Generate splines for e and cohorts.
  * Edges go from 0 to t.
  * Return 0 on success.
  */
@@ -828,9 +805,7 @@ finish :
 
 #define NSMALL -0.0000000001
 
-/* inCone:
- * Returns true iff q is in the convex cone a-b-c
- */
+/// returns true iff q is in the convex cone a-b-c
 static int
 inCone (pointf a, pointf b, pointf c, pointf q)
 {
@@ -846,8 +821,7 @@ static pointf southwest = {-1, -1};
 static pointf west = {-1, 0};
 static pointf northwest = {-1, 1};
 
-/* addEndpoint:
- * Add node to graph representing spline end point p inside obstruction obs_id.
+/* Add node to graph representing spline end point p inside obstruction obs_id.
  * For each side of obstruction, add edge from p to corresponding triangle.
  * The node id of the new node in the graph is v_id.
  * If p lies on the side of its node (sides != 0), we limit the triangles
@@ -927,8 +901,7 @@ static void addEndpoint(router_t * rtr, pointf p, node_t* v, int v_id, int sides
     assert(rtr->tg->nodes[v_id].ne > 0 && "no edges were added");
 }
 
-/* edgeToSeg:
- * Given edge from i to j, find segment associated
+/* Given edge from i to j, find segment associated
  * with the edge.
  *
  * This lookup could be made faster by modifying the 
@@ -980,8 +953,7 @@ typedef struct {
     tri *ts;
 } side_t;
 
-/* mkPoly:
- * Construct simple polygon from shortest path from t to s in g.
+/* Construct simple polygon from shortest path from t to s in g.
  * dad gives the indices of the triangles on path.
  * sx used to store index of s in points.
  * index of t is always 0
@@ -1096,9 +1068,7 @@ static tripoly_t *mkPoly(router_t * rtr, int *dad, int s, int t,
     return ps;
 }
 
-/* resetGraph:
- * Remove edges and nodes added for current edge routing
- */
+/// remove edges and nodes added for current edge routing
 static void resetGraph(tgraph *g, int ncnt, int ecnt,
                        size_t *original_edge_count) {
     int i;
@@ -1134,8 +1104,7 @@ typedef struct {
 #define E_WT(e) (e->dist)
 #define UNSEEN (-FLT_MAX)
 
-/* triPath:
- * Find the shortest path with lengths in g from
+/* Find the shortest path with lengths in g from
  * v0 to v1. The returned vector (dad) encodes the
  * shorted path from v1 to v0. That path is given by
  * v1, dad[v1], dad[dad[v1]], ..., v0.
@@ -1188,8 +1157,7 @@ triPath(tgraph * g, int n, int v0, int v1, PQ * pq)
     return dad;
 }
 
-/* makeMultiSpline:
- * FIX: we don't really use the shortest path provided by ED_path,
+/* FIX: we don't really use the shortest path provided by ED_path,
  * so avoid in neato spline code.
  * Return 0 on success.
  */

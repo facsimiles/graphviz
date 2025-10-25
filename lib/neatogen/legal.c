@@ -187,9 +187,7 @@ putSeg (int i, vertex* v)
 	i, v->pos.x, v->pos.y, after(v)->pos.x, after(v)->pos.y);
 }
 
-/* realIntersect:
- * Return true if a real intersection has been found
- */
+/// return true if a real intersection has been found
 static bool realIntersect(vertex *firstv, vertex *secondv, pointf p) {
     const pointf vft = firstv->pos;
     const pointf avft = after(firstv)->pos;
@@ -211,8 +209,7 @@ static bool realIntersect(vertex *firstv, vertex *secondv, pointf p) {
     return false;
 }
 
-/* find_intersection:
- * detect whether segments l and m intersect      
+/* detect whether segments l and m intersect      
  * Return true if found; false otherwise;
  */
 static bool find_intersection(vertex *l, vertex *m) {
@@ -257,8 +254,7 @@ static int gt(const void *a, const void *b) {
     return 0;
 }
 
-/* find_ints:
- * Check for pairwise intersection of polygon sides
+/* Check for pairwise intersection of polygon sides
  * Return 1 if intersection found, 0 for not found, -1 for error.
  */
 static int find_ints(vertex vertex_list[], size_t nvertices) {
@@ -325,8 +321,7 @@ finish :
 #define INBOX(p,bb) ((p.x <= bb.UR.x) && (p.x >= bb.LL.x) && (p.y <= bb.UR.y) && (p.y >= bb.LL.y))
 #define NESTED(a,b) (INBOX(a.LL,b) && INBOX(a.UR,b))
 
-/* findInside:
- * Check if one polygon is inside another. We know that each
+/* Check if one polygon is inside another. We know that each
  * pair is either disjoint or one is inside the other.
  * Return 1 if an intersection is found, 0 otherwise.
  */
@@ -354,8 +349,7 @@ findInside(Ppoly_t ** polys, int n_polys, polygon* polygon_list)
     return 0;
 }
 
-/* Plegal_arrangement:
- * Check that none of the polygons overlap.
+/* Check that none of the polygons overlap.
  * Return 1 if okay; 0 otherwise.
  */
 int Plegal_arrangement(Ppoly_t ** polys, int n_polys)

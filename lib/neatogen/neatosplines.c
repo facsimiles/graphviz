@@ -159,8 +159,7 @@ Dtdisc_t edgeItemDisc = {
     cmpitems,
 };
 
-/* equivEdge:
- * See if we have already encountered an edge between the same
+/* See if we have already encountered an edge between the same
  * node:port pairs. If so, return the earlier edge. If not, 
  * this edge is added to map and returned.
  * We first have to canonicalize the key fields using a lexicographic
@@ -209,8 +208,7 @@ static edge_t *equivEdge(Dt_t * map, edge_t * e)
 }
 
 
-/* makeSelfArcs:
- * Generate loops. We use the library routine makeSelfEdge
+/* Generate loops. We use the library routine makeSelfEdge
  * which also places the labels.
  * We have to handle port labels here.
  * as well as update the bbox from edge labels.
@@ -312,8 +310,7 @@ static pointf circumscribed_polygon_corner_about_ellipse(double a, double b,
   return line_intersection(line0, line1);
 }
 
-/* makeObstacle:
- * Given a node, return an obstacle reflecting the
+/* Given a node, return an obstacle reflecting the
  * node's geometry. pmargin specifies how much space to allow
  * around the polygon. 
  * Returns the constructed polygon on success, NULL on failure.
@@ -492,8 +489,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, bool isOrtho)
     return obs;
 }
 
-/* getPath
- * Construct the shortest path from one endpoint of e to the other.
+/* Construct the shortest path from one endpoint of e to the other.
  * vconfig is a precomputed data structure to help in the computation.
  * If chkPts is true, the function finds the polygons, if any, containing
  * the endpoints and tells the shortest path computation to ignore them. 
@@ -528,8 +524,7 @@ static void makePolyline(edge_t * e) {
     addEdgeLabels(e);
 }
 
-/* makeSpline:
- * Construct a spline connecting the endpoints of e, avoiding the npoly
+/* Construct a spline connecting the endpoints of e, avoiding the npoly
  * obstacles obs.
  * The resultant spline is attached to the edge, the positions of any 
  * edge labels are computed, and the graph's bounding box is recomputed.
@@ -711,8 +706,7 @@ static int spline_edges_(graph_t *g, expand_t *pmargin, int edgetype) {
     return 0;
 }
 
-/* splineEdges:
- * Main wrapper code for generating edges.
+/* Main wrapper code for generating edges.
  * Sets desired separation. 
  * Coalesces equivalent edges (edges * with the same endpoints). 
  * It then calls the edge generating function, and marks the
@@ -769,8 +763,7 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, expand_t*, int),
     return 0;
 }
 
-/* spline_edges1:
- * Construct edges using default algorithm and given splines value.
+/* Construct edges using default algorithm and given splines value.
  * Return 0 on success.
  */
 int spline_edges1(graph_t * g, int edgetype)
@@ -778,8 +771,7 @@ int spline_edges1(graph_t * g, int edgetype)
   return splineEdges(g, spline_edges_, edgetype);
 }
 
-/* spline_edges0:
- * Sets the graph's aspect ratio.
+/* Sets the graph's aspect ratio.
  * Check splines attribute and construct edges using default algorithm.
  * If the splines attribute is defined but equal to "", skip edge routing.
  * 
@@ -822,8 +814,7 @@ shiftClusters (graph_t * g, pointf offset)
     GD_bb(g).LL.y -= offset.y;
 }
 
-/* spline_edges:
- * Compute bounding box, translate graph to origin,
+/* Compute bounding box, translate graph to origin,
  * then construct all edges.
  */
 void spline_edges(graph_t * g)
@@ -843,8 +834,7 @@ void spline_edges(graph_t * g)
     spline_edges0(g, true);
 }
 
-/* scaleEdge:
- * Scale edge by given factor.
+/* Scale edge by given factor.
  * Assume ED_spl != NULL.
  */
 static void scaleEdge(edge_t * e, double xf, double yf)
@@ -901,9 +891,7 @@ static void scaleEdge(edge_t * e, double xf, double yf)
     }
 }
 
-/* scaleBB:
- * Scale bounding box of clusters of g by given factors.
- */
+/// scale bounding box of clusters of g by given factors
 static void scaleBB(graph_t * g, double xf, double yf)
 {
     int i;
@@ -922,8 +910,7 @@ static void scaleBB(graph_t * g, double xf, double yf)
 	scaleBB(GD_clust(g)[i], xf, yf);
 }
 
-/* translateE:
- * Translate edge by offset.
+/* Translate edge by offset.
  * Assume ED_spl(e) != NULL
  */
 static void translateE(edge_t * e, pointf offset)
@@ -1013,8 +1000,7 @@ void neato_translate(Agraph_t * g)
     translateG(g, ll);
 }
 
-/* _neato_set_aspect;
- * Assume all bounding boxes are correct.
+/* Assume all bounding boxes are correct.
  * Return false if no transform is performed. This includes
  * the possibility that a translation was done.
  */
@@ -1100,8 +1086,7 @@ static bool _neato_set_aspect(graph_t * g)
 	return false;
 }
 
-/* neato_set_aspect:
- * Sets aspect ratio if necessary; real work done in _neato_set_aspect;
+/* Sets aspect ratio if necessary; real work done in _neato_set_aspect;
  * This also copies the internal layout coordinates (ND_pos) to the 
  * external ones (ND_coord).
  *

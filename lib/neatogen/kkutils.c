@@ -47,9 +47,7 @@ void empty_neighbors_vec(vtx_data * graph, int vtx, int *vtx_vec)
     }
 }
 
-/* compute_apsp_dijkstra:
- * Assumes the graph has weights
- */
+/// assumes the graph has weights
 static DistType **compute_apsp_dijkstra(vtx_data * graph, int n)
 {
     int i;
