@@ -175,7 +175,6 @@ pointf *simpleSplineRoute(pointf tp, pointf hp, Ppoly_t poly, size_t *n_spl_pts,
                           int polyline) {
     Ppolyline_t pl, spl;
     Ppoint_t eps[2];
-    Pvector_t evs[2];
 
     eps[0].x = tp.x;
     eps[0].y = tp.y;
@@ -193,9 +192,7 @@ pointf *simpleSplineRoute(pointf tp, pointf hp, Ppoly_t poly, size_t *n_spl_pts,
 	    edges[i].a = poly.ps[i];
 	    edges[i].b = poly.ps[(i + 1) % poly.pn];
 	}
-	    evs[0].x = evs[0].y = 0;
-	    evs[1].x = evs[1].y = 0;
-	if (Proutespline(edges, poly.pn, pl, evs, &spl) < 0) {
+	if (Proutespline(edges, poly.pn, pl, (Pvector_t[2]){0}, &spl) < 0) {
             free(edges);
             return NULL;
 	}
