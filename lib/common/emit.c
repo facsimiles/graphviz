@@ -865,11 +865,10 @@ static double bisect (pointf pp, pointf cp, pointf np)
  */
 static void mkSegPts(const pointf *prv, pointf cur, const pointf *nxt,
                      pointf* p1, pointf* p2, double w2) {
-    pointf cp, pp, np;
-    double theta, delx, dely;
+    pointf pp, np;
     pointf p;
 
-    cp = cur;
+    const pointf cp = cur;
     /* if prv or nxt are NULL, use the one given to create a collinear
      * prv or nxt. This could be more efficiently done with special case code, 
      * but this way is more uniform.
@@ -888,9 +887,9 @@ static void mkSegPts(const pointf *prv, pointf cur, const pointf *nxt,
         pp.x = 2*cp.x - np.x;
         pp.y = 2*cp.y - np.y;
     }
-    theta = bisect(pp,cp,np);
-    delx = w2*cos(theta);
-    dely = w2*sin(theta);
+    const double theta = bisect(pp, cp, np);
+    const double delx = w2 * cos(theta);
+    const double dely = w2 * sin(theta);
     p.x = cp.x + delx;
     p.y = cp.y + dely;
     *p1 = p;
