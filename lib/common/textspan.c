@@ -63,17 +63,9 @@ static int fontcmpf(const void *a, const void *b)
 
 static PostscriptAlias* translate_postscript_fontname(char* fontname)
 {
-    static char *key;
-    static PostscriptAlias *result;
-
-    if (key == NULL || strcasecmp(key, fontname)) {
-        free(key);
-        key = gv_strdup(fontname);
-        result = bsearch(key, postscript_alias,
-                         sizeof(postscript_alias) / sizeof(PostscriptAlias),
-                         sizeof(PostscriptAlias), fontcmpf);
-    }
-    return result;
+    return bsearch(fontname, postscript_alias,
+                   sizeof(postscript_alias) / sizeof(PostscriptAlias),
+                   sizeof(PostscriptAlias), fontcmpf);
 }
 
 pointf textspan_size(GVC_t *gvc, textspan_t * span)
