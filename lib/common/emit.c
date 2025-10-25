@@ -866,7 +866,6 @@ static double bisect (pointf pp, pointf cp, pointf np)
 static void mkSegPts(const pointf *prv, pointf cur, const pointf *nxt,
                      pointf* p1, pointf* p2, double w2) {
     pointf pp, np;
-    pointf p;
 
     const pointf cp = cur;
     /* if prv or nxt are NULL, use the one given to create a collinear
@@ -878,24 +877,17 @@ static void mkSegPts(const pointf *prv, pointf cur, const pointf *nxt,
         if (nxt)
             np = *nxt;
         else {
-            np.x = 2*cp.x - pp.x;
-            np.y = 2*cp.y - pp.y;
+            np = scale(2, sub_pointf(cp, pp));
         }
     }
     else {
         np = *nxt;
-        pp.x = 2*cp.x - np.x;
-        pp.y = 2*cp.y - np.y;
+        pp = scale(2, sub_pointf(cp, np));
     }
     const double theta = bisect(pp, cp, np);
-    const double delx = w2 * cos(theta);
-    const double dely = w2 * sin(theta);
-    p.x = cp.x + delx;
-    p.y = cp.y + dely;
-    *p1 = p;
-    p.x = cp.x - delx;
-    p.y = cp.y - dely;
-    *p2 = p;
+    const pointf del = {.x = w2 * cos(theta), .y = w2 * sin(theta)};
+    *p1 = add_pointf(cp, del);
+    *p2 = sub_pointf(cp, del);
 }
 
 /* Construct and output a closed polygon approximating the input
