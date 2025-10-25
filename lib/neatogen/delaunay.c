@@ -641,7 +641,7 @@ v_data *UG_graph(double *x, double *y, int n) {
                     dist_jk = (x[neighbor_k] - x_j) * (x[neighbor_k] - x_j) +
                         (y[neighbor_k] - y_j) * (y[neighbor_k] - y_j);
                     if (dist_jk < dist_ij) {
-                        // remove the edge beteween i and neighbor j
+                        // remove the edge between i and neighbor j
                         delaunay[i].edges[j] = delaunay[i].edges[--delaunay[i].nedges];
                         remove_edge(delaunay, neighbor_j, i);
                         removed = true;
