@@ -882,29 +882,28 @@ static double bisect (pointf pp, pointf cp, pointf np)
  * If p2 is NULL, we use the normal to prv-cur.
  * Assume at least one of prv or nxt is non-NULL.
  */
-static void mkSegPts (segitem_t* prv, segitem_t* cur, segitem_t* nxt,
-        pointf* p1, pointf* p2, double w2)
-{
+static void mkSegPts(const pointf *prv, pointf cur, const pointf *nxt,
+                     pointf* p1, pointf* p2, double w2) {
     pointf cp, pp, np;
     double theta, delx, dely;
     pointf p;
 
-    cp = cur->p;
+    cp = cur;
     /* if prv or nxt are NULL, use the one given to create a collinear
      * prv or nxt. This could be more efficiently done with special case code, 
      * but this way is more uniform.
      */
     if (prv) {
-        pp = prv->p;
+        pp = *prv;
         if (nxt)
-            np = nxt->p;
+            np = *nxt;
         else {
             np.x = 2*cp.x - pp.x;
             np.y = 2*cp.y - pp.y;
         }
     }
     else {
-        np = nxt->p;
+        np = *nxt;
         pp.x = 2*cp.x - np.x;
         pp.y = 2*cp.y - np.y;
     }
@@ -948,7 +947,9 @@ static void map_output_bspline(points_t *pbs, pbs_size_t *pbs_n, bezier *bp,
     size_t cnt = 0;
     while (segp) {
         segnext = segp->next;
-        mkSegPts (segprev, segp, segnext, pt1+cnt, pt2+cnt, w2);
+        const pointf *prev = segprev == NULL ? NULL : &segprev->p;
+        const pointf *next = segnext == NULL ? NULL : &segnext->p;
+        mkSegPts(prev, segp->p, next, pt1 + cnt, pt2 + cnt, w2);
         cnt++;
         if (segnext == NULL || cnt == 50) {
             map_bspline_poly(pbs, pbs_n, cnt, pt1, pt2);
