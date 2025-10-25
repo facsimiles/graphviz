@@ -919,8 +919,7 @@ static void map_output_bspline(points_t *pbs, pbs_size_t *pbs_n, bezier *bp,
         approx_bezier(pts, &segments);
     }
 
-    size_t cnt = 0;
-    for (size_t i = 0; i < LIST_SIZE(&segments); ++i) {
+    for (size_t i = 0, cnt = 0; i < LIST_SIZE(&segments); ++i) {
         const pointf *prev = i == 0 ? NULL : LIST_AT(&segments, i - 1);
         const pointf *next =
           i + 1 < LIST_SIZE(&segments) ? LIST_AT(&segments, i + 1) : NULL;
