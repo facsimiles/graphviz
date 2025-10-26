@@ -467,8 +467,9 @@ Before making the release, it must be decided if it is a *major*, *minor* or
 
 If you are making a change that will require an upcoming major or minor version
 increment, update the planned version for the next release in parentheses after
-the `Unreleased` heading in `CHANGELOG.md`. Remember to also update the diff
-link for this heading at the bottom of `CHANGELOG.md`.
+the `Unreleased` heading in `CHANGELOG.md`. If there is no `Unreleased` heading
+yet, add one. Remember to also update the diff link for this heading at the
+bottom of `CHANGELOG.md`.
 
 #### Stable release versions and development versions numbering convention
 
@@ -540,50 +541,6 @@ See [`gen_version.py`](https://gitlab.com/graphviz/graphviz/-/blob/main/gen_vers
    release is not created, double check your steps and/or inspect
    `gen_version.py` to ensure it is operating correctly. The “deployment” CI
    task will also create a Git tag for the version, e.g. `2.44.1`.
-
-#### Starting development of the next version
-
-1. Decide the tentative next release version. This is normally the latest
-   stable release version with the patch number incremented.
-
-1. Create a new local branch and name it e.g. `start-<version>-dev`
-
-   Example: `start-2.44.2-dev`
-
-1. Add a new `[Unreleased (…)]` heading to `CHANGELOG.md`. At the bottom of
-   the file, add a new entry for the next release.
-
-   Example:
-
-    ```diff
-    +## [Unreleased (2.44.2)]
-    +
-     ## [2.44.1] - 2020-06-29
-    ```
-
-    ```diff
-    +[Unreleased (2.44.2)]: https://gitlab.com/graphviz/graphviz/compare/2.44.1...main
-     [2.44.1]: https://gitlab.com/graphviz/graphviz/compare/2.44.0...2.44.1
-     [2.44.0]: https://gitlab.com/graphviz/graphviz/compare/2.42.4...2.44.0
-     [2.42.4]: https://gitlab.com/graphviz/graphviz/compare/2.42.3...2.42.4
-     [2.42.3]: https://gitlab.com/graphviz/graphviz/compare/2.42.2...2.42.3
-    ```
-
-1. Commit:
-
-    `git add -p`
-
-    Example: `git commit -m "Start 2.44.2 development"`
-
-1. Push:
-
-   Example: `git push origin start-2.44.2-dev`
-
-1. Wait until the pipeline has run for your new branch and check that it's green
-
-1. Create a merge request
-
-1. Merge the merge request
 
 #### Updating the website
 
