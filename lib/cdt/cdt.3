@@ -361,7 +361,7 @@ This is one of \f5DT_SET\fP, \f5DT_OSET\fP, and \f5DT_OBAG\fP.
 \f5int dt_size\fP:
 This contains the number of objects in the dictionary.
 .Tp
-\f5int dt_n\fP:
+\f5size_t dt_n\fP:
 For \f5Dtset\fP,
 this is the number of non-empty chains in the hash table.
 For \f5Dtoset\fP and \f5Dtobag\fP,
@@ -369,11 +369,11 @@ this is the deepest level in the tree (counting from zero.)
 Each level in the tree contains all nodes of equal distance from the root node.
 \f5dt_n\fP and the below two fields are undefined for other methods.
 .Tp
-\f5int dt_max\fP:
+\f5size_t dt_max\fP:
 For \f5Dtset\fP, this is the size of a largest chain.
 For \f5Dtoset\fP and \f5Dtobag\fP, this is the size of a largest level.
 .Tp
-\f5int* dt_count\fP:
+\f5size_t *dt_count\fP:
 For \f5Dtset\fP,
 this is the list of counts for chains of particular sizes.
 For example, \f5dt_count[1]\fP is the number of chains of size \f51\fP.
