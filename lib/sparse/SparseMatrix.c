@@ -385,7 +385,6 @@ void SparseMatrix_delete(SparseMatrix A){
 
 static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
   int *ia, *ja;
-  double *a;
   int *ai;
   int i, j, m = A->m;
   
@@ -412,22 +411,24 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
   ia = A->ia;
   ja = A->ja;
   switch (A->type){
-  case MATRIX_TYPE_REAL:
-    a = A->a;
+  case MATRIX_TYPE_REAL: {
+    const double *const a = A->a;
     for (i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
 	fprintf(f, "%d %d %16.8g\n",i+1, ja[j]+1, a[j]);
       }
     }
     break;
-  case MATRIX_TYPE_COMPLEX:
-    a = A->a;
+  }
+  case MATRIX_TYPE_COMPLEX: {
+    const double *const a = A->a;
     for (i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
 	fprintf(f, "%d %d %16.8g %16.8g\n",i+1, ja[j]+1, a[2*j], a[2*j+1]);
      }
     }
     break;
+  }
   case MATRIX_TYPE_INTEGER:
     ai = A->a;
     for (i = 0; i < m; i++){
