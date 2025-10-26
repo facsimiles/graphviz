@@ -15,7 +15,7 @@
 #include <math.h>
 #include <util/alloc.h>
 
-static double p_iteration_threshold = 1e-3;
+static const double p_iteration_threshold = 1e-3;
 
 bool power_iteration(double **square_mat, int n, int neigs, double **eigs,
 		double *evals) {
