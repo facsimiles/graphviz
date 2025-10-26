@@ -411,7 +411,6 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
   fprintf(f,"%d %d %d\n",A->m,A->n,A->nz);
   ia = A->ia;
   ja = A->ja;
-  a = A->a;
   switch (A->type){
   case MATRIX_TYPE_REAL:
     a = A->a;
