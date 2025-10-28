@@ -53,8 +53,7 @@ static void showPoints(pointf ps[], int pn)
 }
 #endif
 
-/* arrow_clip:
- * Clip arrow to node boundary.
+/* Clip arrow to node boundary.
  * The real work is done elsewhere. Here we get the real edge,
  * check that the edge has arrowheads, and that an endpoint
  * isn't a merge point where several parts of an edge meet.
@@ -98,8 +97,7 @@ arrow_clip(edge_t * fe, node_t * hn,
     }
 }
 
-/* bezier_clip
- * Clip bezier to shape using binary search.
+/* Clip bezier to shape using binary search.
  * The details of the shape are passed in the inside_context;
  * The function providing the inside test is passed as a parameter.
  * left_inside specifies that sp[0] is inside the node,
@@ -152,8 +150,7 @@ void bezier_clip(inside_t * inside_context,
 	    sp[i] = seg[i];
 }
 
-/* shape_clip0:
- * Clip Bezier to node shape using binary search.
+/* Clip Bezier to node shape using binary search.
  * left_inside specifies that curve[0] is inside the node, else
  * curve[3] is taken as inside.
  * Assumes ND_shape(n) and ND_shape(n)->fns->insidefn are non-NULL.
@@ -182,8 +179,7 @@ shape_clip0(inside_t * inside_context, node_t * n, pointf curve[4],
     ND_rw(n) = save_real_size;
 }
 
-/* shape_clip:
- * Clip Bezier to node shape
+/* Clip Bezier to node shape
  * Uses curve[0] to determine which which side is inside the node.
  * NOTE: This test is bad. It is possible for previous call to
  * shape_clip to produce a Bezier with curve[0] moved to the boundary
@@ -212,9 +208,7 @@ void shape_clip(node_t * n, pointf curve[4])
     shape_clip0(&inside_context, n, curve, left_inside);
 }
 
-/* new_spline:
- * Create and attach a new bezier of size sz to the edge d
- */
+/// create and attach a new bezier of size sz to the edge d
 bezier *new_spline(edge_t *e, size_t sz) {
     bezier *rv;
     while (ED_to_orig(e) != NULL && ED_edge_type(e) != NORMAL)
@@ -231,8 +225,7 @@ bezier *new_spline(edge_t *e, size_t sz) {
     return rv;
 }
 
-/* clip_and_install:
- * Given a raw spline (pn control points in ps), representing
+/* Given a raw spline (pn control points in ps), representing
  * a path from edge agtail(fe) ending in node hn, clip the ends to
  * the node boundaries and attach the resulting spline to the
  * edge.
@@ -346,8 +339,7 @@ void add_box(path * P, boxf b)
 	P->boxes[P->nbox++] = b;
 }
 
-/* beginpath:
- * Set up boxes near the tail node.
+/* Set up boxes near the tail node.
  * For regular nodes, the result should be a list of contiguous rectangles
  * such that the last one has the smallest LL.y and its LL.y is above
  * the bottom of the rank (rank.ht1).
@@ -1135,8 +1127,7 @@ static void selfLeft(edge_t *edges[], size_t ind, size_t cnt, double stepx,
     }
 }
 
-/* selfRightSpace:
- * Assume e is self-edge.
+/* Assume e is self-edge.
  * Return extra space necessary on the right for this edge.
  * If the edge does not go on the right, return 0.
  * NOTE: the actual space is determined dynamically by GD_nodesep,
@@ -1163,8 +1154,7 @@ double selfRightSpace(edge_t *e) {
     return sw;
 }
 
-/* makeSelfEdge:
- * The routing is biased towards the right side because this is what
+/* The routing is biased towards the right side because this is what
  * dot supports, and leaves room for.
  * FIX: With this bias, labels tend to be placed on top of each other.
  * Perhaps for self-edges, the label should be centered.
@@ -1209,9 +1199,7 @@ void makeSelfEdge(edge_t *edges[], size_t ind, size_t cnt, double sizex,
     else assert(0);
 }
 
-/* makePortLabels:
- * Add head and tail labels if necessary and update bounding box.
- */
+/// add head and tail labels if necessary and update bounding box
 void makePortLabels(edge_t * e)
 {
     /* Only use this if labelangle or labeldistance is set for the edge;
@@ -1229,10 +1217,7 @@ void makePortLabels(edge_t * e)
     }
 }
 
-/* endPoints:
- * Extract the actual end points of the spline, where
- * they touch the node.
- */
+/// extract the actual end points of the spline, where they touch the node
 static void endPoints(splines * spl, pointf * p, pointf * q)
 {
     bezier bz;
@@ -1253,8 +1238,7 @@ static void endPoints(splines * spl, pointf * p, pointf * q)
     }
 }
 
-/* polylineMidpoint;
- * Find midpoint of polyline.
+/* Find midpoint of polyline.
  * pp and pq are set to the endpoints of the line segment containing it.
  */
 static pointf
@@ -1314,8 +1298,7 @@ edgeMidpoint (graph_t* g, edge_t * e)
     return spf;
 }
 
-/* addEdgeLabels:
- * Adds label, headlabel and taillabel.
+/* Adds label, headlabel and taillabel.
  * Updates bounding box.
  * We use the endpoints of the spline.
  */
@@ -1323,8 +1306,7 @@ void addEdgeLabels(edge_t *e) {
     makePortLabels(e);
 }
 
-/* place_portlabel:
- * place the {head,tail}label (depending on HEAD_P) of edge E
+/* place the {head,tail}label (depending on HEAD_P) of edge E
  * N.B. Assume edges are normalized, so tail is at spl->list[0].list[0]
  * and head is at spl->list[spl->size-l].list[bez->size-1]
  * Return 1 on success
