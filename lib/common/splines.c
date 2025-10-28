@@ -1340,13 +1340,12 @@ int place_portlabel(edge_t * e, bool head_p)
     bezier *bez;
     double dist, angle;
     pointf c[4], pe, pf;
-    char* la;
     char* ld;
 
     if (ED_edge_type(e) == IGNORED)
 	return 0;
     /* add label here only if labelangle or labeldistance is defined; else, use external label */
-    if ((!E_labelangle || *(la = AGXGET(e,E_labelangle)) == '\0') &&
+    if ((!E_labelangle || *AGXGET(e, E_labelangle) == '\0') &&
 	(!E_labeldistance || *(ld = AGXGET(e,E_labeldistance)) == '\0')) {
 	return 0;
     }
