@@ -1314,8 +1314,6 @@ edgeMidpoint (graph_t* g, edge_t * e)
     return spf;
 }
 
-#define MAXLABELWD  (POINTS_PER_INCH/2.0)
-
 /* addEdgeLabels:
  * Adds label, headlabel and taillabel.
  * Updates bounding box.
