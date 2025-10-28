@@ -17,6 +17,7 @@
  */
 
 #include <math.h>
+#include <common/geomprocs.h>
 #include <common/render.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -1296,15 +1297,14 @@ pointf
 edgeMidpoint (graph_t* g, edge_t * e)
 {
     int et = EDGE_TYPE (g);
-    pointf d, spf, p, q;
+    pointf spf, p, q;
 
     endPoints(ED_spl(e), &p, &q);
     if (APPROXEQPT(p, q, MILLIPOINT)) { /* degenerate spline */
 	spf = p;
     }
     else if (et == EDGETYPE_SPLINE || et == EDGETYPE_CURVED) {
-	d.x = (q.x + p.x) / 2.;
-	d.y = (p.y + q.y) / 2.;
+	const pointf d = mid_pointf(p, q);
 	spf = dotneato_closest(ED_spl(e), d);
     }
     else {   /* EDGETYPE_PLINE, EDGETYPE_ORTHO or EDGETYPE_LINE */
