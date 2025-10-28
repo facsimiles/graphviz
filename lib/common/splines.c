@@ -1337,7 +1337,7 @@ void addEdgeLabels(edge_t *e) {
 int place_portlabel(edge_t * e, bool head_p)
 {
     splines *spl;
-    pointf c[4], pe, pf;
+    pointf pe, pf;
 
     if (ED_edge_type(e) == IGNORED)
 	return 0;
@@ -1356,8 +1356,7 @@ int place_portlabel(edge_t * e, bool head_p)
 	    pf = bez->list[0];
 	} else {
 	    pe = bez->list[0];
-	    for (size_t i = 0; i < 4; i++)
-		c[i] = bez->list[i];
+	    const pointf *const c = bez->list; // slice of the first 4 points
 	    pf = Bezier(c, 0.1, NULL, NULL);
 	}
     } else {
@@ -1367,8 +1366,8 @@ int place_portlabel(edge_t * e, bool head_p)
 	    pf = bez->list[bez->size - 1];
 	} else {
 	    pe = bez->list[bez->size - 1];
-	    for (size_t i = 0; i < 4; i++)
-		c[i] = bez->list[bez->size - 4 + i];
+	    // slice of the last 4 points
+	    const pointf *const c = &bez->list[bez->size - 4];
 	    pf = Bezier(c, 0.9, NULL, NULL);
 	}
     }
