@@ -1326,8 +1326,6 @@ void addEdgeLabels(edge_t *e) {
     makePortLabels(e);
 }
 
-#define AGXGET(o,a) agxget(o,a)
-
 /* place_portlabel:
  * place the {head,tail}label (depending on HEAD_P) of edge E
  * N.B. Assume edges are normalized, so tail is at spl->list[0].list[0]
@@ -1342,8 +1340,8 @@ int place_portlabel(edge_t * e, bool head_p)
     if (ED_edge_type(e) == IGNORED)
 	return 0;
     /* add label here only if labelangle or labeldistance is defined; else, use external label */
-    if ((!E_labelangle || streq(AGXGET(e, E_labelangle), "")) &&
-	(!E_labeldistance || streq(AGXGET(e, E_labeldistance), ""))) {
+    if ((!E_labelangle || streq(agxget(e, E_labelangle), "")) &&
+	(!E_labeldistance || streq(agxget(e, E_labeldistance), ""))) {
 	return 0;
     }
 
