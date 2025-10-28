@@ -1336,10 +1336,7 @@ void addEdgeLabels(edge_t *e) {
  */
 int place_portlabel(edge_t * e, bool head_p)
 {
-    textlabel_t *l;
     splines *spl;
-    bezier *bez;
-    double dist, angle;
     pointf c[4], pe, pf;
 
     if (ED_edge_type(e) == IGNORED)
@@ -1350,10 +1347,10 @@ int place_portlabel(edge_t * e, bool head_p)
 	return 0;
     }
 
-    l = head_p ? ED_head_label(e) : ED_tail_label(e);
+    textlabel_t *const l = head_p ? ED_head_label(e) : ED_tail_label(e);
     if ((spl = getsplinepoints(e)) == NULL) return 0;
     if (!head_p) {
-	bez = &spl->list[0];
+	const bezier *const bez = &spl->list[0];
 	if (bez->sflag) {
 	    pe = bez->sp;
 	    pf = bez->list[0];
@@ -1364,7 +1361,7 @@ int place_portlabel(edge_t * e, bool head_p)
 	    pf = Bezier(c, 0.1, NULL, NULL);
 	}
     } else {
-	bez = &spl->list[spl->size - 1];
+	const bezier *const bez = &spl->list[spl->size - 1];
 	if (bez->eflag) {
 	    pe = bez->ep;
 	    pf = bez->list[bez->size - 1];
@@ -1375,9 +1372,10 @@ int place_portlabel(edge_t * e, bool head_p)
 	    pf = Bezier(c, 0.9, NULL, NULL);
 	}
     }
-    angle = atan2(pf.y - pe.y, pf.x - pe.x) +
+    const double angle = atan2(pf.y - pe.y, pf.x - pe.x) +
 	RADIANS(late_double(e, E_labelangle, PORT_LABEL_ANGLE, -180.0));
-    dist = PORT_LABEL_DISTANCE * late_double(e, E_labeldistance, 1.0, 0.0);
+    const double dist =
+      PORT_LABEL_DISTANCE * late_double(e, E_labeldistance, 1.0, 0.0);
     l->pos.x = pe.x + dist * cos(angle);
     l->pos.y = pe.y + dist * sin(angle);
     l->set = true;
