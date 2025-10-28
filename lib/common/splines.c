@@ -1314,7 +1314,6 @@ edgeMidpoint (graph_t* g, edge_t * e)
     return spf;
 }
 
-#define LEFTOF(a,b,c) (((a.y - b.y)*(c.x - b.x) - (c.y - b.y)*(a.x - b.x)) > 0)
 #define MAXLABELWD  (POINTS_PER_INCH/2.0)
 
 /* addEdgeLabels:
