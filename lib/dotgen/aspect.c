@@ -25,15 +25,12 @@
  *   - Provide algorithms for aspect ratios < 1
  */
 
-#define DEF_PASSES 5
-
 void setAspect(Agraph_t *g) {
     char *p;
-    int passes = DEF_PASSES;
 
     p = agget (g, "aspect");
 
-    if (!p || sscanf (p, "%lf,%d", &(double){0}, &passes) <= 0) {
+    if (!p || sscanf (p, "%lf,%d", &(double){0}, &(int){0}) <= 0) {
 	return;
     }
     agwarningf("the aspect attribute has been disabled due to implementation flaws - attribute ignored.\n");
