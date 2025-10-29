@@ -382,13 +382,12 @@ checkLabelOrder (graph_t* g)
     rank_t* rk;
     Agnode_t* u;
     Agnode_t* n;
-    Agedge_t* e;
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	rk = GD_rank(g)+r;
 	for (j = 0; j < rk->n; j++) {
 	    u = rk->v[j];
-	    if ((e = ND_alg(u))) {
+	    if (ND_alg(u)) {
 		if (!lg) lg = agopen ("lg", Agstrictdirected, 0);
 		n = agnode(lg, ITOS(j), 1);
 		agbindrec(n, "info", sizeof(info_t), true);
