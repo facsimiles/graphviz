@@ -30,11 +30,11 @@
 void setAspect(Agraph_t *g) {
     double rv;
     char *p;
-    int r, passes = DEF_PASSES;
+    int passes = DEF_PASSES;
 
     p = agget (g, "aspect");
 
-    if (!p || ((r = sscanf (p, "%lf,%d", &rv, &passes)) <= 0)) {
+    if (!p || sscanf (p, "%lf,%d", &rv, &passes) <= 0) {
 	return;
     }
     agwarningf("the aspect attribute has been disabled due to implementation flaws - attribute ignored.\n");
