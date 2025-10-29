@@ -10,7 +10,6 @@
 
 #include <assert.h>
 #include <dotgen/dot.h>
-#include <stddef.h>
 
 /*
  * Author: Mohammad T. Irfan
