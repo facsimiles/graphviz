@@ -26,9 +26,7 @@
  */
 
 void setAspect(Agraph_t *g) {
-    char *p;
-
-    p = agget (g, "aspect");
+    const char *const p = agget (g, "aspect");
 
     if (!p || sscanf (p, "%lf,%d", &(double){0}, &(int){0}) <= 0) {
 	return;
