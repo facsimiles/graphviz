@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,10 +23,11 @@
  */
 
 void setAspect(Agraph_t *g) {
-    const char *const p = agget (g, "aspect");
+  const char *const p = agget(g, "aspect");
 
-    if (!p || sscanf (p, "%lf,%d", &(double){0}, &(int){0}) <= 0) {
-	return;
-    }
-    agwarningf("the aspect attribute has been disabled due to implementation flaws - attribute ignored.\n");
+  if (!p || sscanf(p, "%lf,%d", &(double){0}, &(int){0}) <= 0) {
+    return;
+  }
+  agwarningf("the aspect attribute has been disabled due to implementation "
+             "flaws - attribute ignored.\n");
 }
