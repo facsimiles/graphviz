@@ -8,7 +8,6 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include <assert.h>
 #include <dotgen/dot.h>
 
 /*
