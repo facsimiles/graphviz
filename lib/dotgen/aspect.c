@@ -9,6 +9,7 @@
  *************************************************************************/
 
 #include <dotgen/dot.h>
+#include <stdio.h>
 
 /*
  * Author: Mohammad T. Irfan
