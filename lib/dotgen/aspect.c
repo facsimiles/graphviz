@@ -12,7 +12,6 @@
 #include <dotgen/dot.h>
 #include <stddef.h>
 #include <util/alloc.h>
-#include <util/bitarray.h>
 
 /*
  * Author: Mohammad T. Irfan
