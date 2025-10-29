@@ -2142,7 +2142,6 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/tclpathplan/demo/pathplan_data/Makefile
 	tclpkg/gv/Makefile
 	tclpkg/gv/demo/Makefile
-	tclpkg/gv/META.gv
 	tests/graphs/Makefile
 	tests/linux.x86/Makefile
 	tests/Makefile
