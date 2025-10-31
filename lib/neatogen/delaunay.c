@@ -338,40 +338,32 @@ static int vcmp(const void *x, const void *y, void *values) {
 int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 {
     GtsSurface* s = tri(x, y, n, NULL, 0, 1);
-    int nedges;
     int* edges;
-    estats stats;
-    estate state;
 
     if (!s) return NULL;
 
-    stats.n = 0;
-    stats.delaunay = NULL;
+    estats stats = {0};
     edgeStats (s, &stats);
-    *pnedges = nedges = stats.n;
+    int nedges = *pnedges = stats.n;
 
     if (nedges) {
 	edges = gv_calloc(2 * nedges, sizeof(int));
-	state.n = 0;
-	state.edges = edges;
-	gts_surface_foreach_edge(s, addEdge, &state);
+	gts_surface_foreach_edge(s, addEdge, &(estate){.edges = edges});
     }
     else {
 	int* vs = gv_calloc(n, sizeof(int));
-	int* ip;
-	int i, hd, tl;
 
 	*pnedges = nedges = n-1;
-	ip = edges = gv_calloc(2 * nedges, sizeof(int));
+	int *ip = edges = gv_calloc(2 * nedges, sizeof(int));
 
-	for (i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	    vs[i] = i;
 
 	gv_sort(vs, n, sizeof(int), vcmp, x[0] == x[1] /* vertical line? */ ? y : x);
 
-	tl = vs[0];
-	for (i = 1; i < n; i++) {
-	    hd = vs[i];
+	int tl = vs[0];
+	for (int i = 1; i < n; i++) {
+	    const int hd = vs[i];
 	    *ip++ = tl;
 	    *ip++ = hd;
 	    tl = hd;

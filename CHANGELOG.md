@@ -4,7 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased (14.0.2)]
+## [Unreleased (14.0.3)]
+
+### Changed
+
+- Internal timing operations now use `clock()` on all platforms (previously this
+  was only used on Windows). This should result in more accurate timing in
+  verbose informational messages.
+- Building Graphviz with expat &lt; 2.2.8 is no longer supported on MinGW.
+
+### Fixed
+
+- `diffimg` now notices failures when calling Ghostscript to convert PS images
+  to PNG and exits instead of continuing.
+- `dtstat` no longer reads/writes out of bounds memory on platforms where
+  `sizeof(int) < sizeof(size_t)`. This was a regression in Graphviz 7.0.1.
+- Some incorrect variable types in the libcdt man page have been corrected.
+
+## [14.0.2] – 2025-10-19
+
+### Changed
+
+- Quartz plugin code paths to support older macOS and iOS versions have been
+  restored. Their removal was a regression in Graphviz 13.0.0.
+- In the CMake build system, whether Quartz-dependent components are built or
+  not can now be controlled by the `-DWITH_QUARTZ={AUTO|ON|OFF}` option.
+- `dot_builtins`, when compiled with the CMake build system, now supports the
+  Quartz plugin if it is enabled at build time.
+
+### Fixed
+
+- Memory corruption when using the Java bindings to render to a string has been
+  corrected. This was a regression in Graphviz 2.49.0.
+- A minor typo in the `gvpr(3)` man page has been fixed.
+- Calling `gvpr(…, NULL)` no longer causes null pointer dereferences.
 
 ## [14.0.1] – 2025-10-05
 
@@ -3338,7 +3371,8 @@ March 13, 2000: Use AM_PROG_LIBTOOL instead of AC_PROG_LIBTOOL
    in configure.in.  John Ellson <ellson@graphviz.org>
 ```
 
-[Unreleased (14.0.2)]: https://gitlab.com/graphviz/graphviz/compare/14.0.1...main
+[Unreleased (14.0.3)]: https://gitlab.com/graphviz/graphviz/compare/14.0.2...main
+[14.0.2]: https://gitlab.com/graphviz/graphviz/compare/14.0.1...14.0.2
 [14.0.1]: https://gitlab.com/graphviz/graphviz/compare/14.0.0...14.0.1
 [14.0.0]: https://gitlab.com/graphviz/graphviz/compare/13.1.2...14.0.0
 [13.1.2]: https://gitlab.com/graphviz/graphviz/compare/13.1.1...13.1.2

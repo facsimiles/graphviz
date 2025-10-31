@@ -722,28 +722,22 @@ static int clust_ht(Agraph_t * g)
 /* set y coordinates of nodes, a rank at a time */
 static void set_ycoords(graph_t * g)
 {
-    int i, j, r;
-    double ht2, maxht, delta, d0, d1;
-    node_t *n;
     edge_t *e;
     rank_t *rank = GD_rank(g);
     graph_t *clust;
-    int lbl;
-
-    ht2 = maxht = 0;
 
     /* scan ranks for tallest nodes.  */
-    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	for (i = 0; i < rank[r].n; i++) {
-	    n = rank[r].v[i];
+    for (int r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	for (int i = 0; i < rank[r].n; i++) {
+	    node_t *const n = rank[r].v[i];
 
 	    /* assumes symmetry, ht1 = ht2 */
-	    ht2 = ND_ht(n) / 2;
+	    double ht2 = ND_ht(n) / 2;
 
 
 	    /* have to look for high self-edge labels, too */
 	    if (ND_other(n).list)
-		for (j = 0; (e = ND_other(n).list[j]); j++) {
+		for (int j = 0; (e = ND_other(n).list[j]); j++) {
 		    if (agtail(e) == aghead(e)) {
 			if (ED_label(e))
 			    ht2 = fmax(ht2, ED_label(e)->dimen.y / 2);
@@ -758,7 +752,7 @@ static void set_ycoords(graph_t * g)
 
 	    /* update nearest enclosing cluster rank ht */
 	    if ((clust = ND_clust(n))) {
-		int yoff = (clust == g ? 0 : late_int (clust, G_margin, CL_OFFSET, 0));
+		int yoff = clust == g ? 0 : late_int (clust, G_margin, CL_OFFSET, 0);
 		if (ND_rank(n) == GD_minrank(clust))
 		    GD_ht2(clust) = fmax(GD_ht2(clust), ht2 + yoff);
 		if (ND_rank(n) == GD_maxrank(clust))
@@ -768,16 +762,16 @@ static void set_ycoords(graph_t * g)
     }
 
     /* scan sub-clusters */
-    lbl = clust_ht(g);
+    const int lbl = clust_ht(g);
 
     /* make the initial assignment of ycoords to leftmost nodes by ranks */
-    maxht = 0;
-    r = GD_maxrank(g);
+    double maxht = 0;
+    int r = GD_maxrank(g);
     ND_coord(rank[r].v[0]).y = rank[r].ht1;
     while (--r >= GD_minrank(g)) {
-	d0 = rank[r + 1].pht2 + rank[r].pht1 + GD_ranksep(g);	/* prim node sep */
-	d1 = rank[r + 1].ht2 + rank[r].ht1 + CL_OFFSET;	/* cluster sep */
-	delta = fmax(d0, d1);
+	const double d0 = rank[r + 1].pht2 + rank[r].pht1 + GD_ranksep(g); // prim node sep
+	const double d1 = rank[r + 1].ht2 + rank[r].ht1 + CL_OFFSET; // cluster sep
+	const double delta = fmax(d0, d1);
 	if (rank[r].n > 0)	/* this may reflect some problem */
 		ND_coord(rank[r].v[0]).y = ND_coord(rank[r + 1].v[0]).y + delta;
 #ifdef DEBUG
@@ -798,10 +792,10 @@ static void set_ycoords(graph_t * g)
 	if (GD_exact_ranksep(g)) {  /* recompute maxht */
 	    maxht = 0;
 	    r = GD_maxrank(g);
-	    d0 = ND_coord(rank[r].v[0]).y;
+	    double d0 = ND_coord(rank[r].v[0]).y;
 	    while (--r >= GD_minrank(g)) {
-		d1 = ND_coord(rank[r].v[0]).y;
-		delta = d1 - d0;
+		const double d1 = ND_coord(rank[r].v[0]).y;
+		const double delta = d1 - d0;
 		maxht = fmax(maxht, delta);
 		d0 = d1;
 	    }
@@ -816,7 +810,7 @@ static void set_ycoords(graph_t * g)
     }
 
     /* copy ycoord assignment from leftmost nodes to others */
-    for (n = GD_nlist(g); n; n = ND_next(n))
+    for (node_t *n = GD_nlist(g); n; n = ND_next(n))
 	ND_coord(n).y = ND_coord(rank[ND_rank(n)].v[0]).y;
 }
 

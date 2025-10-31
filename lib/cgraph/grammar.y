@@ -488,20 +488,14 @@ static void endedge(aagscan_t scanner)
 static char*
 concat (aagscan_t scanner, char* s1, char* s2)
 {
-  char*  s;
-  char   buf[BUFSIZ];
-  char*  sym;
+  agxbuf buf = {0};
   Agraph_t *G = aagget_extra(scanner)->G;
-  size_t len = strlen(s1) + strlen(s2) + 1;
 
-  if (len <= BUFSIZ) sym = buf;
-  else sym = gv_alloc(len);
-  strcpy(sym,s1);
-  strcat(sym,s2);
-  s = agstrdup (G,sym);
+  agxbprint(&buf, "%s%s", s1, s2);
+  char *const s = agstrdup(G, agxbuse(&buf));
   agstrfree(G, s1, false);
   agstrfree(G, s2, false);
-  if (sym != buf) free (sym);
+  agxbfree(&buf);
   return s;
 }
 

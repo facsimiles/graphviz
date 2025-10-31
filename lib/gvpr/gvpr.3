@@ -40,7 +40,7 @@ in-core graphs, application print functions, along with additional options.
 .P
 When called, \fIgvpr()\fP processes any flags provided in the \fIargv\fP array, and compiles
 the \fBgvpr\fP program to be run (provided either via the \fI\-f\fP flag or as an item
-in \fIargv\fP). It then runs the program on each input graph. If \fIopt\->ingraphs\fP is
+in \fIargv\fP). It then runs the program on each input graph. If \fIopts\->ingraphs\fP is
 non-NULL, this is taken as a NULL-terminated array of in-core graphs to be used as input.
 Otherwise, the unprocessed elements of \fIargv\fP are taken to be the names of files containing
 graphs to be processed. (If none remain, \fBgvpr\fP will read from stdin.)

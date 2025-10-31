@@ -733,14 +733,10 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 	  double y0, yt;
 	  pointf tmppt;
 	  size_t tnext;
-	  bool i_d0, i_d1;
-
-	  i_d0 = i_d1 = false;
+	  bool i_d0 = false;
 	  if (fp_equal(LIST_GET(tr, t).lo.y, s.v0.y)) {
 	      if (LIST_GET(tr, t).lo.x > s.v0.x)
 		i_d0 = true;
-	      else
-		i_d1 = true;
 	    }
 	  else
 	    {
@@ -750,8 +746,6 @@ static void add_segment(int segnum, segment_t *seg, traps_t *tr, qnodes_t *qs) {
 
 	      if (less_than(tmppt, LIST_GET(tr, t).lo))
 		i_d0 = true;
-	      else
-		i_d1 = true;
 	    }
 
 	  /* check continuity from the top so that the lower-neighbour */

@@ -1,12 +1,14 @@
-if(IS_DIRECTORY "/System/Library/Frameworks/ApplicationServices.framework")
+if(HAVE_QUARTZ)
 
   add_library(gvplugin_quartz
     gvplugin_quartz.h
+    GVTextLayout.h
     gvdevice_quartz.c
     gvloadimage_quartz.c
     gvplugin_quartz.c
     gvrender_quartz.c
     gvtextlayout_quartz.c
+    GVTextLayout.m
   )
 
   target_include_directories(gvplugin_quartz PRIVATE

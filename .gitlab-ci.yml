@@ -696,6 +696,7 @@ macos-cmake-build:
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LTDL=ON"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_EXPAT=ON"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_GVEDIT=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_QUARTZ=ON"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=ON"
         # disable Ruby bindings because Ruby headers are buggy on macOS
         # https://gitlab.com/graphviz/graphviz/-/issues/2625

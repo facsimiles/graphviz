@@ -103,7 +103,7 @@ endif()
 
 # Specify library version and soversion
 set_target_properties(cgraph PROPERTIES
-  VERSION 8.0.1
+  VERSION 8.0.3
   SOVERSION 8
 )
 

@@ -22,30 +22,68 @@ Entry version   Entry collection          Output
 """
 
 import argparse
+import enum
 import os
 import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 CHANGELOG = Path(__file__).parent / "CHANGELOG.md"
 assert CHANGELOG.exists(), "CHANGELOG.md file missing"
 
 
-def get_version() -> Tuple[int, int, int, str]:
+class Collection(enum.Enum):
+    """release collection, as described above"""
+
+    STABLE = enum.auto()
+    DEVELOPMENT = enum.auto()
+
+
+def git(*argv: Union[str, Path]) -> str:
+    """run git, returning its output"""
+
+    # ensure time-related output is independent of locale
+    env = os.environ.copy()
+    env["TZ"] = "UTC"
+
+    p = subprocess.run(
+        ["git"] + list(argv),
+        stdout=subprocess.PIPE,
+        cwd=Path(__file__).resolve().parent,
+        check=True,
+        env=env,
+        universal_newlines=True,
+    )
+
+    return p.stdout.strip()
+
+
+def get_version() -> Tuple[int, int, int, Collection]:
     """
     Derive a Graphviz version from the changelog information.
 
     Returns a tuple of major version, minor version, patch version,
     "stable"/"development".
+
+    The decision procedure for the last version component is:
+      1. If the top CHANGELOG.md version heading is “Unreleased (…”
+           ⇒ DEVELOPMENT
+      2. If we cannot query Git history information
+           ⇒ STABLE
+      3. If an immediate parent commit of the current commit added the top CHANGELOG.md
+         version heading
+           ⇒ STABLE
+      4. Else
+           ⇒ DEVELOPMENT, and +1 patch
     """
 
     # is this a development revision (as opposed to a stable release)?
     is_development = False
 
     with open(CHANGELOG, encoding="utf-8") as f:
-        for line in f:
+        for lineno, line in enumerate(f, 1):
             # is this a version heading?
             m = re.match(r"## \[(?P<heading>[^\]]*)\]", line)
             if m is None:
@@ -76,9 +114,26 @@ def get_version() -> Tuple[int, int, int, str]:
             raise RuntimeError("no version found")
 
     if is_development:
-        coll = "development"
+        coll = Collection.DEVELOPMENT
     else:
-        coll = "stable"
+        # this is a stable release if one of our parent commits added the release line
+        try:
+            added_in = git("blame", "-l", f"-L{lineno},{lineno}", CHANGELOG).split(" ")[
+                0
+            ]
+            parents = git("log", "--pretty=%P", "-n", "1", "HEAD").split()
+            if added_in in parents:
+                coll = Collection.STABLE
+            else:
+                # bump the patch component, conservatively assuming that the next
+                # release will be a patch release and no changelog-relevant changes have
+                # yet occurred
+                patch += 1
+                coll = Collection.DEVELOPMENT
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            # We do not have Git or we are not in a repository checkout. Assume this is
+            # a snapshot of an official release.
+            coll = Collection.STABLE
 
     return major, minor, patch, coll
 
@@ -136,27 +191,21 @@ date_format = args.date_format or graphviz_date_format
 
 major_version, minor_version, patch_version, collection = get_version()
 
-if collection == "development":
+if collection == Collection.DEVELOPMENT:
     pre_release = "~dev"
 else:
     pre_release = ""
 
 committer_date = "0"
 if pre_release != "" or args.date_format:
-    os.environ["TZ"] = "UTC"
     try:
-        committer_date = subprocess.check_output(
-            [
-                "git",
-                "log",
-                "-n",
-                "1",
-                "--format=%cd",
-                f"--date=format-local:{date_format}",
-            ],
-            cwd=os.path.abspath(os.path.dirname(__file__)),
-            universal_newlines=True,
-        ).strip()
+        committer_date = git(
+            "log",
+            "-n",
+            "1",
+            "--format=%cd",
+            f"--date=format-local:{date_format}",
+        )
     except FileNotFoundError:
         sys.stderr.write("Warning: Git is not installed: setting version date to 0.\n")
     except subprocess.CalledProcessError:

@@ -84,6 +84,15 @@ else()
   set(AUTO_POPPLER OFF)
 endif()
 
+set(WITH_QUARTZ AUTO CACHE STRING
+  "enable Quartz-dependent components (Quartz plugin)")
+set_property(CACHE WITH_QUARTZ PROPERTY STRINGS AUTO ON OFF)
+if(WITH_QUARTZ STREQUAL "AUTO")
+  set(AUTO_QUARTZ ON)
+else()
+  set(AUTO_QUARTZ OFF)
+endif()
+
 set(WITH_RSVG AUTO CACHE STRING
   "enable librsvg-dependent components (Rsvg plugin)")
 set_property(CACHE WITH_RSVG PROPERTY STRINGS AUTO ON OFF)
@@ -191,7 +200,7 @@ endif()
 set(GVPLUGIN_CURRENT 8)
 
 # see configure.ac GVPLUGIN_REVISION
-set(GVPLUGIN_REVISION 2)
+set(GVPLUGIN_REVISION 3)
 
 # Name of the config file used by Graphviz
 set(GVPLUGIN_CONFIG_FILE config${GVPLUGIN_CURRENT})
@@ -379,6 +388,20 @@ else()
   endif()
   set(X11_FOUND 0)
   set(XRENDER_FOUND 0)
+endif()
+
+if(WITH_QUARTZ)
+  if(IS_DIRECTORY "/System/Library/Frameworks/ApplicationServices.framework")
+    message(STATUS "Found Quartz")
+    set(HAVE_QUARTZ 1)
+  elseif(NOT AUTO_QUARTZ)
+    message(FATAL_ERROR "-DWITH_QUARTZ=ON and Quartz not found")
+  else()
+    message(STATUS "Could NOT find Quartz")
+    set(HAVE_QUARTZ 0)
+  endif()
+else()
+  set(HAVE_QUARTZ 0)
 endif()
 
 if(NOT WITH_ZLIB STREQUAL "OFF")

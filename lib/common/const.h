@@ -119,9 +119,6 @@
 #define		TOP		(1<<TOP_IX)
 #define		LEFT		(1<<LEFT_IX)
 
-#define CCW  -1			/* counter clock-wise */
-#define CW    1			/* clock-wise */
-
 /* Obj types  for renderers */
 #define		NONE    0
 #define		NODE    1
@@ -131,18 +128,11 @@
 /* output languages */
 #define		PCL		3	/* Printer Control Language */
 #define		MIF		4	/* Adobe FrameMaker */
-#define		PIC_format	5	/* symbol PIC is used by compilers for 
-					   Position Independent Code */
-#define		TK		15	/* TK canvas */
 
 #define		VTX		21	/* visual thought */
 #define		METAPOST	22
 
 #define		QPDF		30	/* Quartz paged PDF */
-#define		QEPDF		31	/* Quartz embedded PDF */
-
-#define		QBM_FIRST 100	/* first Quartz bitmap format, inclusive */
-#define		QBM_LAST 200	/* last Quartz bitmap format, exclusive */
 
 #define		GVRENDER_PLUGIN	300	/* a plugin supported language */
 #define		NO_SUPPORT	999	/* no support */

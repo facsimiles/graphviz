@@ -559,7 +559,14 @@ SparseMatrix SparseMatrix_from_coordinate_format_not_compacted(SparseMatrix A){
   return SparseMatrix_from_coordinate_arrays_not_compacted(A->nz, A->m, A->n, irn, jcn, a, A->type, A->size);
 }
 
-static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, int n, int *irn, int *jcn, void *val0, int type, size_t sz, int sum_repeated){
+static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
+                                                                 int n,
+                                                                 int *irn,
+                                                                 int *jcn,
+                                                                 const void *val0,
+                                                                 int type,
+                                                                 size_t sz,
+                                                                 int sum_repeated) {
   /* convert a sparse matrix in coordinate form to one in compressed row form.
      nz: number of entries
      irn: row indices 0-based
@@ -570,8 +577,8 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
 
   SparseMatrix A = NULL;
   int *ia, *ja;
-  double *a, *val;
-  int *ai, *vali;
+  double *a;
+  int *ai;
   int i;
 
   assert(m > 0 && n > 0 && nz >= 0);
@@ -588,8 +595,8 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
   }
 
   switch (type){
-  case MATRIX_TYPE_REAL:
-    val = val0;
+  case MATRIX_TYPE_REAL: {
+    const double *const val = val0;
     a = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
@@ -606,8 +613,9 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
-  case MATRIX_TYPE_COMPLEX:
-    val = val0;
+  }
+  case MATRIX_TYPE_COMPLEX: {
+    const double *const val = val0;
     a = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
@@ -618,15 +626,16 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     }
     for (i = 0; i < m; i++) ia[i+1] += ia[i];
     for (i = 0; i < nz; i++){
-      a[2*ia[irn[i]]] = *(val++);
-      a[2*ia[irn[i]]+1] = *(val++);
+      a[2*ia[irn[i]]] = val[2 * i];
+      a[2*ia[irn[i]]+1] = val[2 * i + 1];
       ja[ia[irn[i]]++] = jcn[i];
     }
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
-  case MATRIX_TYPE_INTEGER:
-    vali = val0;
+  }
+  case MATRIX_TYPE_INTEGER: {
+    const int *const vali = val0;
     ai = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
@@ -643,6 +652,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
+  }
   case MATRIX_TYPE_PATTERN:
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
@@ -687,9 +697,10 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m, 
   return A;
 }
 
-
-SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n, int *irn, int *jcn, void *val0, int type, size_t sz){
-  return SparseMatrix_from_coordinate_arrays_internal(nz, m, n, irn, jcn, val0, type, sz, SUM_REPEATED_ALL);
+SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n, int *irn,
+                                                 int *jcn, const void *val,
+                                                 int type, size_t sz) {
+  return SparseMatrix_from_coordinate_arrays_internal(nz, m, n, irn, jcn, val, type, sz, SUM_REPEATED_ALL);
 }
 
 

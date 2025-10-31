@@ -14,10 +14,9 @@
 
 #include "gvplugin_quartz.h"
 #include <stdbool.h>
-#include <TargetConditionals.h>
 #include <util/gv_math.h>
 
-#if !TARGET_OS_IPHONE && defined(HAVE_PANGOCAIRO)
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 && defined(HAVE_PANGOCAIRO)
 
 static const void *memory_data_consumer_get_byte_pointer(void *info)
 {

@@ -82,7 +82,6 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
 {
     size_t pi, minpi;
     double minx;
-    Ppoint_t p1, p2, p3;
     size_t trii, trij, ftrii, ltrii;
     int ei;
     pointnlink_t epnls[2], *lpnlp, *rpnlp, *pnlp;
@@ -119,12 +118,12 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t eps[2], Ppolyline_t * output)
 	if (minx > polyp->ps[pi].x)
 	    minx = polyp->ps[pi].x, minpi = pi;
     }
-    p2 = polyp->ps[minpi];
-    p1 = polyp->ps[minpi == 0 ? polyp->pn - 1 : minpi - 1];
-    p3 = polyp->ps[(minpi == polyp->pn - 1) ? 0 : minpi + 1];
+    const Ppoint_t p2 = polyp->ps[minpi];
+    const Ppoint_t p1 = polyp->ps[minpi == 0 ? polyp->pn - 1 : minpi - 1];
+    const Ppoint_t p3 = polyp->ps[(minpi + 1) % polyp->pn];
     if ((p1.x == p2.x && p2.x == p3.x && p3.y > p2.y) ||
 	ccw(p1, p2, p3) != ISCCW) {
-	for (pi = polyp->pn - 1; polyp->pn > 0 && pi != SIZE_MAX; pi--) {
+	for (pi = polyp->pn - 1; pi != SIZE_MAX; pi--) {
 	    if (pi < polyp->pn - 1
 		&& polyp->ps[pi].x == polyp->ps[pi + 1].x
 		&& polyp->ps[pi].y == polyp->ps[pi + 1].y)

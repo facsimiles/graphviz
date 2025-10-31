@@ -11,8 +11,6 @@ import io
 import os
 import platform
 import re
-import shutil
-import subprocess
 import sys
 import warnings
 from dataclasses import dataclass
@@ -21,7 +19,11 @@ from pathlib import Path
 import pytest
 
 sys.path.append(os.path.dirname(__file__))
-from gvtest import run  # pylint: disable=wrong-import-position
+from gvtest import (  # pylint: disable=wrong-import-position
+    is_ubuntu_2404,
+    is_ubuntu_2504,
+    run,
+)
 
 # Test specifications
 GRAPHDIR = Path(__file__).parent / "graphs"
@@ -39,10 +41,19 @@ class Case:
     format: str
     flags: list[str]
     index: int = 0
+    xfail: bool = True  # is this test case expected to fail?
 
 
 TESTS: list[Case] = [
-    Case("shapes", Path("shapes.gv"), "dot", "gv", []),
+    Case("trivial", Path("trivial.gv"), "dot", "gv", [], xfail=False),
+    Case(
+        "shapes",
+        Path("shapes.gv"),
+        "dot",
+        "gv",
+        [],
+        xfail=not (is_ubuntu_2404() or is_ubuntu_2504()),
+    ),
     Case("shapes", Path("shapes.gv"), "dot", "ps", []),
     Case("crazy", Path("crazy.gv"), "dot", "png", []),
     Case("crazy", Path("crazy.gv"), "dot", "ps", []),
@@ -326,7 +337,7 @@ TESTS: list[Case] = [
 ]
 
 
-def doDiff(output: Path, reference: Path, testname, fmt):
+def doDiff(output: Path, reference: Path, fmt):
     """
     Compare old and new output and report if different.
 
@@ -334,7 +345,6 @@ def doDiff(output: Path, reference: Path, testname, fmt):
         output: File generated during this test run
         reference: Golden copy to compare against
     """
-    OUTFILE = reference.name
     F = fmt.split(":")[0]
     if F in ["ps", "ps2"]:
         with open(output, "rt", encoding="latin-1") as src:
@@ -355,33 +365,20 @@ def doDiff(output: Path, reference: Path, testname, fmt):
                 else:
                     done_setup = re.match(r"%%End.*Setup", line) is not None
 
-        returncode = 0 if dst1.getvalue() == dst2.getvalue() else -1
+        assert dst1.getvalue() == dst2.getvalue()
     elif F == "svg":
         with open(output, "rt", encoding="utf-8") as f:
             a = re.sub(r"^<!--.*-->$", "", f.read(), flags=re.MULTILINE)
         with open(reference, "rt", encoding="utf-8") as f:
             b = re.sub(r"^<!--.*-->$", "", f.read(), flags=re.MULTILINE)
-        returncode = 0 if a.strip() == b.strip() else -1
+        assert a.strip() == b.strip()
     elif F == "png":
         OUTHTML.mkdir(exist_ok=True)
-        returncode = subprocess.call(
-            ["diffimg", output, reference, OUTHTML / f"dif_{reference.name}"],
-        )
-        if returncode != 0:
-            with open(OUTHTML / "index.html", "at", encoding="utf-8") as fd:
-                fd.write("<p>\n")
-                shutil.copyfile(reference, OUTHTML / f"old_{OUTFILE}")
-                fd.write(f'<img src="old_{OUTFILE}" width="192" height="192">\n')
-                shutil.copyfile(output, OUTHTML / f"new_{OUTFILE}")
-                fd.write(f'<img src="new_{OUTFILE}" width="192" height="192">\n')
-                fd.write(f'<img src="dif_{OUTFILE}" width="192" height="192">\n')
-        else:
-            (OUTHTML / f"dif_{OUTFILE}").unlink()
+        run(["diffimg", output, reference, OUTHTML / f"dif_{reference.name}"])
     else:
         with open(reference, "rt", encoding="utf-8") as a:
             with open(output, "rt", encoding="utf-8") as b:
-                returncode = 0 if a.read().strip() == b.read().strip() else -1
-    assert returncode == 0, f"Test {testname}: == Failed == {OUTFILE}"
+                assert a.read().strip() == b.read().strip()
 
 
 def genOutname(name, alg, fmt, index: int):
@@ -411,9 +408,19 @@ def genOutname(name, alg, fmt, index: int):
 
 @pytest.mark.parametrize(
     "name,input,algorithm,format,flags,index",
-    ((c.name, c.input, c.algorithm, c.format, c.flags, c.index) for c in TESTS),
+    (
+        pytest.param(
+            c.name,
+            c.input,
+            c.algorithm,
+            c.format,
+            c.flags,
+            c.index,
+            marks=pytest.mark.xfail(strict=True) if c.xfail else (),
+        )
+        for c in TESTS
+    ),
 )
-@pytest.mark.xfail(strict=True)
 def test_graph(
     name: str,
     input: Path,
@@ -456,4 +463,4 @@ def test_graph(
         )
 
     run(testcmd)
-    doDiff(OUTPATH, REFDIR / OUTFILE, name, format)
+    doDiff(OUTPATH, REFDIR / OUTFILE, format)
