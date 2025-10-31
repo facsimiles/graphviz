@@ -251,7 +251,9 @@ static void doNeighbor(Grid *grid, int i, int j, node_list *nodes) {
   }
 }
 
-static int gridRepulse(cell *cellp, Grid *grid) {
+static int gridRepulse(void *c, void *g) {
+  cell *const cellp = c;
+  Grid *const grid = g;
   node_list *nodes = cellp->nodes;
   int i = cellp->p.i;
   int j = cellp->p.j;

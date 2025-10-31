@@ -40,7 +40,7 @@ extern "C" {
     extern void adjustGrid(Grid * g, int nnodes);
     extern void clearGrid(Grid *);
     extern void addGrid(Grid *, int, int, Agnode_t *);
-    extern void walkGrid(Grid*, int (*)(cell*, Grid*));
+    extern void walkGrid(Grid *, int (*)(void *, void *));
     extern cell *findGrid(Grid *, int, int);
     extern void delGrid(Grid *);
     extern int gLength(cell * p);
