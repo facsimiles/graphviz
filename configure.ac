@@ -1691,31 +1691,22 @@ AM_CONDITIONAL([WITH_QT], [test "$use_qt" = "Yes"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for QUARTZ
 
-case "${host_os}" in
-  *darwin* )
-    AC_ARG_WITH(quartz,
-      [AS_HELP_STRING([--with-quartz=yes],[Quartz framework (Mac OS X)])],
-      [],[with_quartz=yes])
-    case "$with_quartz" in
-      yes )
-        if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
-          use_quartz="Yes"
-          QUARTZ_LIBS='-framework ApplicationServices'
-          AC_SUBST([QUARTZ_LIBS])
-        else
-          use_quartz="No (missing ApplicationServices.framework)"
-        fi
-        ;;
-      * )
-        use_quartz="No (disabled)"
-        ;;
-    esac
-    ;;
-  * )
-    with_quartz=no
-    use_quartz="No (disabled by default - Mac only)"
-    ;;
-esac
+AC_ARG_WITH(quartz,
+  [AS_HELP_STRING([--with-quartz=yes],[Quartz framework (Mac OS X)])],
+  [], [with_quartz=yes])
+
+if test "$with_quartz" != "yes"; then
+  use_quartz="No (disabled by default - Mac only)"
+else
+  if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
+    use_quartz="Yes"
+    QUARTZ_LIBS='-framework ApplicationServices'
+    AC_SUBST([QUARTZ_LIBS])
+    AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the Quartz framework for macOS])
+  else
+    use_quartz="No (missing ApplicationServices.framework)"
+  fi
+fi
 AM_CONDITIONAL(WITH_QUARTZ, [test "$use_quartz" = "Yes"])
 
 dnl -----------------------------------
