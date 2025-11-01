@@ -15,7 +15,7 @@
 #include <math.h>
 #include <util/alloc.h>
 
-static double p_iteration_threshold = 1e-3;
+static const double p_iteration_threshold = 1e-3;
 
 bool power_iteration(double **square_mat, int n, int neigs, double **eigs,
 		double *evals) {
@@ -135,23 +135,21 @@ mult_dense_mat(double **A, float **B, int dim1, int dim2, int dim3,
 {
   // A is dim1 × dim2, B is dim2 × dim3, C = A × B
 
-    double sum;
-    int i, j, k;
-    float *storage = gv_calloc(dim1 * dim3, sizeof(A[0]));
-    float **C = *CC = gv_calloc(dim1, sizeof(A));
+    float *storage = gv_calloc(dim1 * dim3, sizeof(storage[0]));
+    float **const C = *CC = gv_calloc(dim1, sizeof(C[0]));
 
-    for (i = 0; i < dim1; i++) {
+    for (int i = 0; i < dim1; i++) {
 	C[i] = storage;
 	storage += dim3;
     }
 
-    for (i = 0; i < dim1; i++) {
-	for (j = 0; j < dim3; j++) {
-	    sum = 0;
-	    for (k = 0; k < dim2; k++) {
+    for (int i = 0; i < dim1; i++) {
+	for (int j = 0; j < dim3; j++) {
+	    double sum = 0;
+	    for (int k = 0; k < dim2; k++) {
 		sum += A[i][k] * B[k][j];
 	    }
-	    C[i][j] = (float) (sum);
+	    C[i][j] = (float)sum;
 	}
     }
 }
