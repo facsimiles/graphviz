@@ -798,23 +798,6 @@ static UNUSED void psmapOutput(const points_t *ps, size_t start, size_t n) {
    fprintf (stdout, "closepath stroke\n");
 }
 
-typedef struct segitem_s {
-    pointf p;
-    struct segitem_s* next;
-} segitem_t;
-
-#define MARK_FIRST_SEG(L) ((L)->next = (segitem_t*)1)
-#define FIRST_SEG(L) ((L)->next == (segitem_t*)1)
-#define INIT_SEG(P,L) {(L)->next = 0; (L)->p = P;} 
-
-static segitem_t* appendSeg (pointf p, segitem_t* lp)
-{
-    segitem_t* s = gv_alloc(sizeof(segitem_t));
-    INIT_SEG (p, s);
-    lp->next = s;
-    return s;
-}
-
 typedef LIST(size_t) pbs_size_t;
 
 /* Output the polygon determined by the n points in p1, followed
@@ -844,20 +827,18 @@ static void map_bspline_poly(points_t *pbs_p, pbs_size_t *pbs_n, size_t n,
  * New points are appended to the list given by lp. The tail of the
  * list is returned.
  */
-static segitem_t* approx_bezier (pointf *cp, segitem_t* lp)
-{
+static void approx_bezier(pointf *cp, points_t *lp) {
     pointf left[4], right[4];
 
     if (check_control_points(cp)) {
-        if (FIRST_SEG (lp)) INIT_SEG (cp[0], lp);
-        lp = appendSeg (cp[3], lp);
+        if (LIST_IS_EMPTY(lp)) LIST_APPEND(lp, cp[0]);
+        LIST_APPEND(lp, cp[3]);
     }
     else {
         Bezier (cp, 0.5, left, right);
-        lp = approx_bezier (left, lp);
-        lp = approx_bezier (right, lp);
+        approx_bezier(left, lp);
+        approx_bezier(right, lp);
     }
-    return lp;
 }
 
 /* Return the angle of the bisector between the two rays
@@ -882,41 +863,31 @@ static double bisect (pointf pp, pointf cp, pointf np)
  * If p2 is NULL, we use the normal to prv-cur.
  * Assume at least one of prv or nxt is non-NULL.
  */
-static void mkSegPts (segitem_t* prv, segitem_t* cur, segitem_t* nxt,
-        pointf* p1, pointf* p2, double w2)
-{
-    pointf cp, pp, np;
-    double theta, delx, dely;
-    pointf p;
+static void mkSegPts(const pointf *prv, pointf cur, const pointf *nxt,
+                     pointf* p1, pointf* p2, double w2) {
+    pointf pp, np;
 
-    cp = cur->p;
+    const pointf cp = cur;
     /* if prv or nxt are NULL, use the one given to create a collinear
      * prv or nxt. This could be more efficiently done with special case code, 
      * but this way is more uniform.
      */
     if (prv) {
-        pp = prv->p;
+        pp = *prv;
         if (nxt)
-            np = nxt->p;
+            np = *nxt;
         else {
-            np.x = 2*cp.x - pp.x;
-            np.y = 2*cp.y - pp.y;
+            np = scale(2, sub_pointf(cp, pp));
         }
     }
     else {
-        np = nxt->p;
-        pp.x = 2*cp.x - np.x;
-        pp.y = 2*cp.y - np.y;
+        np = *nxt;
+        pp = scale(2, sub_pointf(cp, np));
     }
-    theta = bisect(pp,cp,np);
-    delx = w2*cos(theta);
-    dely = w2*sin(theta);
-    p.x = cp.x + delx;
-    p.y = cp.y + dely;
-    *p1 = p;
-    p.x = cp.x - delx;
-    p.y = cp.y - dely;
-    *p2 = p;
+    const double theta = bisect(pp, cp, np);
+    const pointf del = {.x = w2 * cos(theta), .y = w2 * sin(theta)};
+    *p1 = add_pointf(cp, del);
+    *p2 = sub_pointf(cp, del);
 }
 
 /* Construct and output a closed polygon approximating the input
@@ -928,44 +899,32 @@ static void mkSegPts (segitem_t* prv, segitem_t* cur, segitem_t* nxt,
  */
 static void map_output_bspline(points_t *pbs, pbs_size_t *pbs_n, bezier *bp,
                                double w2) {
-    segitem_t* segl = gv_alloc(sizeof(segitem_t));
-    segitem_t* segp = segl;
-    segitem_t* segprev;
-    segitem_t* segnext;
+    points_t segments = {0};
     pointf pts[4], pt1[50], pt2[50];
 
-    MARK_FIRST_SEG(segl);
     const size_t nc = (bp->size - 1) / 3; // nc is number of bezier curves
     for (size_t j = 0; j < nc; j++) {
         for (size_t k = 0; k < 4; k++) {
             pts[k] = bp->list[3*j + k];
         }
-        segp = approx_bezier (pts, segp);
+        approx_bezier(pts, &segments);
     }
 
-    segp = segl;
-    segprev = 0;
-    size_t cnt = 0;
-    while (segp) {
-        segnext = segp->next;
-        mkSegPts (segprev, segp, segnext, pt1+cnt, pt2+cnt, w2);
+    for (size_t i = 0, cnt = 0; i < LIST_SIZE(&segments); ++i) {
+        const pointf *prev = i == 0 ? NULL : LIST_AT(&segments, i - 1);
+        const pointf *next =
+          i + 1 < LIST_SIZE(&segments) ? LIST_AT(&segments, i + 1) : NULL;
+        mkSegPts(prev, LIST_GET(&segments, i), next, pt1 + cnt, pt2 + cnt, w2);
         cnt++;
-        if (segnext == NULL || cnt == 50) {
+        if (i + 1 == LIST_SIZE(&segments) || cnt == 50) {
             map_bspline_poly(pbs, pbs_n, cnt, pt1, pt2);
             pt1[0] = pt1[cnt-1];
             pt2[0] = pt2[cnt-1];
             cnt = 1;
         }
-        segprev = segp;
-        segp = segnext;
     }
 
-    /* free segl */
-    while (segl) {
-        segp = segl->next;
-        free (segl);
-        segl = segp;
-    }
+    LIST_FREE(&segments);
 }
 
 static bool is_natural_number(const char *sstr)
@@ -1249,8 +1208,7 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	/* page was set by user */
 
         /* determine size of page for image */
-	pageSize.x = gvc->pageSize.x - 2 * margin.x;
-	pageSize.y = gvc->pageSize.y - 2 * margin.y;
+	pageSize = sub_pointf(gvc->pageSize, scale(2, margin));
 
 	if (pageSize.x < EPSILON)
 	    job->pagesArraySize.x = 1;
@@ -1274,9 +1232,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     } else {
 	/* page not set by user, use default from renderer */
 	if (job->render.features) {
-	    pageSize.x = job->device.features->default_pagesize.x - 2*margin.x;
+	    pageSize = sub_pointf(job->device.features->default_pagesize, scale(2, margin));
 	    pageSize.x = fmax(pageSize.x, 0);
-	    pageSize.y = job->device.features->default_pagesize.y - 2*margin.y;
 	    pageSize.y = fmax(pageSize.y, 0);
 	}
 	else
@@ -1320,10 +1277,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     }
 
     /* canvas area, centered if necessary */
-    job->canvasBox.LL.x = margin.x + centering.x;
-    job->canvasBox.LL.y = margin.y + centering.y;
-    job->canvasBox.UR.x = margin.x + centering.x + imageSize.x;
-    job->canvasBox.UR.y = margin.y + centering.y + imageSize.y;
+    job->canvasBox.LL = add_pointf(margin, centering);
+    job->canvasBox.UR = add_pointf(add_pointf(margin, centering), imageSize);
 
     /* size of one page in graph units */
     job->pageSize.x = imageSize.x / job->zoom;
