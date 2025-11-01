@@ -356,8 +356,7 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 
 }
 
-/* inPoly:
- * Return 1 if q is inside polygon vertex[]
+/* Return 1 if q is inside polygon vertex[]
  * Assume points are in CCW order
  */
 static int inPoly(Point vertex[], int n, Point q)

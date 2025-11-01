@@ -175,7 +175,6 @@ pointf *simpleSplineRoute(pointf tp, pointf hp, Ppoly_t poly, size_t *n_spl_pts,
                           int polyline) {
     Ppolyline_t pl, spl;
     Ppoint_t eps[2];
-    Pvector_t evs[2];
 
     eps[0].x = tp.x;
     eps[0].y = tp.y;
@@ -193,9 +192,7 @@ pointf *simpleSplineRoute(pointf tp, pointf hp, Ppoly_t poly, size_t *n_spl_pts,
 	    edges[i].a = poly.ps[i];
 	    edges[i].b = poly.ps[(i + 1) % poly.pn];
 	}
-	    evs[0].x = evs[0].y = 0;
-	    evs[1].x = evs[1].y = 0;
-	if (Proutespline(edges, poly.pn, pl, evs, &spl) < 0) {
+	if (Proutespline(edges, poly.pn, pl, (Pvector_t[2]){0}, &spl) < 0) {
             free(edges);
             return NULL;
 	}
@@ -298,7 +295,6 @@ static pointf *routesplines_(path *pp, size_t *npoints, int polyline) {
     Ppoly_t poly;
     Ppolyline_t pl, spl;
     Ppoint_t eps[2];
-    Pvector_t evs[2];
     int prev, next;
     boxf *boxes;
     edge_t* realedge;
@@ -473,16 +469,15 @@ static pointf *routesplines_(path *pp, size_t *npoints, int polyline) {
 	    edges[edgei].a = polypoints[edgei];
 	    edges[edgei].b = polypoints[(edgei + 1) % poly.pn];
 	}
+	Pvector_t evs[2] = {0};
 	if (pp->start.constrained) {
 	    evs[0].x = cos(pp->start.theta);
 	    evs[0].y = sin(pp->start.theta);
-	} else
-	    evs[0].x = evs[0].y = 0;
+	}
 	if (pp->end.constrained) {
 	    evs[1].x = -cos(pp->end.theta);
 	    evs[1].y = -sin(pp->end.theta);
-	} else
-	    evs[1].x = evs[1].y = 0;
+	}
 
 	if (Proutespline(edges, poly.pn, pl, evs, &spl) < 0) {
 	    free(edges);

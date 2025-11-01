@@ -95,9 +95,7 @@ static void free_3array(double ***rv)
     }
 }
 
-
-/* lenattr:
- * Return 1 if attribute not defined
+/* Return 1 if attribute not defined
  * Return 2 if attribute string bad
  */
 static int lenattr(edge_t* e, Agsym_t* index, double* val)
@@ -118,9 +116,7 @@ static int lenattr(edge_t* e, Agsym_t* index, double* val)
 	return 0;
 }
 
-
-/* degreeKind;
- * Returns degree of n ignoring loops and multiedges.
+/* Returns degree of n ignoring loops and multiedges.
  * Returns 0, 1 or many (2)
  * For case of 1, returns other endpoint of edge.
  */
@@ -150,9 +146,7 @@ static int degreeKind(graph_t * g, node_t * n, node_t ** op)
     return deg;
 }
 
-
-/* prune:
- * np is at end of a chain. If its degree is 0, remove it.
+/* np is at end of a chain. If its degree is 0, remove it.
  * If its degree is 1, remove it and recurse.
  * If its degree > 1, stop.
  * The node next is the next node to be visited during iteration.
@@ -202,8 +196,7 @@ static double setEdgeLen(graph_t * G, node_t * np, Agsym_t* lenx, double dfltlen
     return total_len;
 }
 
-/* scan_graph_mode:
- * Prepare the graph and data structures depending on the layout mode.
+/* Prepare the graph and data structures depending on the layout mode.
  * If Reduce is true, eliminate singletons and trees. Since G may be a
  * subgraph, we remove the nodes from the root graph.
  * Return the number of nodes in the reduced graph.
@@ -396,9 +389,7 @@ void diffeq_model(graph_t * G, int nG)
     }
 }
 
-/* total_e:
- * Return 2*energy of system.
- */
+/// return 2 × energy of system
 static double total_e(graph_t * G, int nG)
 {
     int i, j, d;

@@ -60,8 +60,7 @@ static double B3(double t);
 static double B01(double t);
 static double B23(double t);
 
-/* Proutespline:
- * Given a set of barrier line segments edges as obstacles, a template
+/* Given a set of barrier line segments edges as obstacles, a template
  * path input_route, and endpoint vectors endpoint_slopes, construct a spline
  * fitting the input and endpoint vectors, and return in output_route.
  * Return 0 on success and -1 on failure, including no memory.

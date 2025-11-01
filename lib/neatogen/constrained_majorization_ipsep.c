@@ -57,7 +57,7 @@ int stress_majorization_cola(vtx_data * graph,	/* Input graph in sparse represen
 			     int n,	/* Number of nodes */
 			     double **d_coords,	/* Coordinates of nodes (output layout)  */
 			     node_t ** nodes,	/* Original nodes */
-			     int dim,	/* Dimemsionality of layout */
+			     int dim,	/* Dimensionality of layout */
 			     int model,	/* difference model */
 			     int maxi,	/* max iterations */
 			     ipsep_options * opt)

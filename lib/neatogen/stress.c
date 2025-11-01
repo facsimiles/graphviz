@@ -122,8 +122,7 @@ compute_stress1(double **coords, dist_data * distances, int dim, int n, int exp)
     return sum;
 }
 
-/* initLayout:
- * Initialize node coordinates. If the node already has
+/* Initialize node coordinates. If the node already has
  * a position, use it.
  * Return true if some node is fixed.
  */
@@ -218,8 +217,7 @@ float *circuitModel(vtx_data * graph, int nG)
     return Dij;
 }
 
-/* sparse_stress_subspace_majorization_kD:
- * Optimization of the stress function using sparse distance matrix, within a vector-space
+/* Optimization of the stress function using sparse distance matrix, within a vector-space
  * Fastest and least accurate method
  *
  * NOTE: We use integral shortest path values here, assuming
@@ -229,7 +227,7 @@ float *circuitModel(vtx_data * graph, int nG)
 static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input graph in sparse representation */
 						  int n,	/* Number of nodes */
 						  double **coords,	/* coordinates of nodes (output layout)  */
-						  int dim,	/* dimemsionality of layout */
+						  int dim,	/* dimensionality of layout */
 						  int smart_ini,	/* smart initialization */
 						  int exp,	/* scale exponent */
 						  int reweight_graph,	/* difference model */
@@ -341,7 +339,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
     for (i = 0; i < num_centers; i++)
 	Dij[i] = storage + i * n;
 
-    /* select 'num_centers' pivots that are uniformaly spread over the graph */
+    // select `num_centers` pivots that are uniformly spread over the graph
 
     /* the first pivots is selected randomly */
     node = rand() % n;
@@ -661,9 +659,7 @@ static float *compute_weighted_apsp_packed(vtx_data * graph, int n)
 }
 
 
-/* mdsModel:
- * Update matrix with actual edge lengths
- */
+/// update matrix with actual edge lengths
 float *mdsModel(vtx_data * graph, int nG)
 {
     int i, j;
@@ -694,9 +690,7 @@ float *mdsModel(vtx_data * graph, int nG)
     return Dij;
 }
 
-/* compute_apsp_packed:
- * Assumes integral weights > 0.
- */
+/// assumes integral weights > 0
 float *compute_apsp_packed(vtx_data * graph, int n)
 {
     int i, j, count;
@@ -795,14 +789,12 @@ static void dumpMatrix(float *Dij, int n)
  */
 #define DegType long double
 
-/* stress_majorization_kD_mkernel:
- * At present, if any nodes have pos set, smart_ini is false.
- */
+/// at present, if any nodes have pos set, smart_ini is false
 int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse representation */
 				   int n,	/* Number of nodes */
 				   double **d_coords,	/* coordinates of nodes (output layout) */
 				   node_t ** nodes,	/* original nodes */
-				   int dim,	/* dimemsionality of layout */
+				   int dim,	/* dimensionality of layout */
 				   int opts,    /* options */
 				   int model,	/* model */
 				   int maxi	/* max iterations */

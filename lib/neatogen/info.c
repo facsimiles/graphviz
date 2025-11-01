@@ -16,8 +16,7 @@
 
 Info_t *nodeInfo;		/* Array of node info */
 
-/* compare:
- * returns -1 if p < q.p
+/* returns -1 if p < q.p
  *          0 if p = q.p
  *          1 if p > q.p
  * if q if NULL, returns -1

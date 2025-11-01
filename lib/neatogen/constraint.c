@@ -68,8 +68,7 @@ static int distX(box * b1, box * b2)
     return ((b1->UR.x - b1->LL.x) + (b2->UR.x - b2->LL.x)) / 2;
 }
 
-/* intersectX0:
- * Return true if boxes could overlap if shifted in y but don't,
+/* Return true if boxes could overlap if shifted in y but don't,
  * or if actually overlap and an y move is smallest to remove overlap.
  * Otherwise (no x overlap or a x move is smaller), return false.
  * Assume q pos to above of p pos.
@@ -90,8 +89,7 @@ static int intersectX0(nitem * p, nitem * q)
     return ydelta <= xdelta;
 }
 
-/* intersectY0:
- * Return true if boxes could overlap if shifted in x but don't,
+/* Return true if boxes could overlap if shifted in x but don't,
  * or if actually overlap and an x move is smallest to remove overlap.
  * Otherwise (no y overlap or a y move is smaller), return false.
  * Assume q pos to right of p pos.
@@ -122,8 +120,6 @@ static int intersectX(nitem * p, nitem * q)
   return p->bb.LL.x <= q->bb.UR.x && q->bb.LL.x <= p->bb.UR.x;
 }
 
-/* mapGraphs:
- */
 static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 {
     node_t *n;
@@ -202,8 +198,7 @@ validate(graph_t * g)
 #endif
 
 
-/* mkNConstraintG:
- * Similar to mkConstraintG, except it doesn't enforce orthogonal
+/* Similar to mkConstraintG, except it doesn't enforce orthogonal
  * ordering. If there is overlap, as defined by intersect, the
  * nodes will kept/pushed apart in the current order. If not, no
  * constraint is enforced. If a constraint edge is added, and it
@@ -267,8 +262,7 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
      */
     return cg;
 }
-/* mkConstraintG:
- */
+
 static graph_t *mkConstraintG(Dt_t * list, intersectfn intersect, distfn dist) {
     nitem *p;
     nitem *nxt = NULL;
@@ -379,8 +373,7 @@ static void closeGraph(graph_t * cg)
     agclose(cg);
 }
 
-/* constrainX:
- * Create the X constrains and solve. We use a linear objective function
+/* Create the X constrains and solve. We use a linear objective function
  * (absolute values rather than squares), so we can reuse network simplex.
  * The constraints are encoded as a dag with edges having a minimum length.
  */
@@ -419,9 +412,7 @@ static void constrainX(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
     dtclose(list);
 }
 
-/* constrainY:
- * See constrainX.
- */
+/// see constrainX
 static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
                        int ortho)
 {
@@ -471,8 +462,6 @@ static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
     dtclose(list);
 }
 
-/* overlaps:
- */
 static int overlaps(nitem * p, int cnt)
 {
     int i, j;
@@ -491,8 +480,6 @@ static int overlaps(nitem * p, int cnt)
     return 0;
 }
 
-/* initItem:
- */
 static void initItem(node_t * n, nitem * p, expand_t margin)
 {
     int x = POINTS(SCALE * ND_pos(n)[0]);
@@ -520,8 +507,7 @@ static void initItem(node_t * n, nitem * p, expand_t margin)
     p->bb = b;
 }
 
-/* cAdjust:
- * Use optimization to remove overlaps.
+/* Use optimization to remove overlaps.
  * Modifications;
  *  - do y;x then x;y and use the better one
  *  - for all overlaps (or if overlap with leftmost nodes), add a constraint;
@@ -751,8 +737,7 @@ static pointf computeScaleXY(pointf *aarr, size_t m) {
     return scale;
 }
 
-/* computeScale:
- * For each (x,y) in aarr, scale has to be bigger than the smallest one.
+/* For each (x,y) in aarr, scale has to be bigger than the smallest one.
  * So, the scale is the max min.
  */
 static double computeScale(pointf *aarr, size_t m) {
@@ -770,8 +755,7 @@ static double computeScale(pointf *aarr, size_t m) {
     return sc;
 }
 
-/* scAdjust:
- * Scale the layout.
+/* Scale the layout.
  * equal > 0  => scale uniformly in x and y to remove overlaps
  * equal = 0  => scale separately in x and y to remove overlaps
  * equal < 0  => scale down uniformly in x and y to remove excess space
