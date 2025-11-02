@@ -17,8 +17,8 @@
 
 static const double p_iteration_threshold = 1e-3;
 
-bool power_iteration(double **square_mat, int n, int neigs, double **eigs,
-		double *evals) {
+bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs,
+                     double *evals) {
     /* compute the 'neigs' top eigenvectors of 'square_mat' using power iteration */
 
     int i, j;

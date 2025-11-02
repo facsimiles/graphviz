@@ -49,7 +49,7 @@ PRIVATE void mult_dense_mat_d(double **, float **, int, int, int,
 				 double ***CC);
 PRIVATE void mult_sparse_dense_mat_transpose(vtx_data *, double **, int,
 						int, float ***);
-PRIVATE bool power_iteration(double **, int, int, double **, double *);
+PRIVATE bool power_iteration(double *const *, int, int, double **, double *);
 
 
 /*****************************
