@@ -362,11 +362,8 @@ right_mult_with_vector_transpose(double **matrix,
     }
 }
 
-void
-right_mult_with_vector_d(double **matrix,
-			 int dim1, int dim2,
-			 double *vector, double *result)
-{
+void right_mult_with_vector_d(double *const *matrix, int dim1, int dim2,
+                              double *vector, double *result) {
     // matrix is dim1 × dim2, vector has dim2 components,
     // result = matrix × vector
     int i, j;
