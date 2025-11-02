@@ -677,9 +677,18 @@ int agwrite(Agraph_t * g, void *ofile)
 	    Max_outputline = (int)len;
     }
     write_info_t wr_info = before_write(g);
-    CHKRV(write_hdr(g, ofile, true));
-    CHKRV(write_body(g, ofile, &wr_info));
-    CHKRV(write_trl(g, ofile));
+    if (write_hdr(g, ofile, true) == EOF) {
+	after_write(wr_info);
+	return EOF;
+    }
+    if (write_body(g, ofile, &wr_info) == EOF) {
+	after_write(wr_info);
+	return EOF;
+    }
+    if (write_trl(g, ofile) == EOF) {
+	after_write(wr_info);
+	return EOF;
+    }
     after_write(wr_info);
     Max_outputline = MAX_OUTPUTLINE;
     return AGDISC(g, io)->flush(ofile);
