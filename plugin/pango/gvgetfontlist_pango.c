@@ -243,9 +243,8 @@ typedef struct {
 
 /// list of available fonts
 ///
-/// The i-th entry corresponds to the i-th entry from \p gv_ps_fontdefs. An
-/// entry will have zeroed fields if the corresponding font is unavailable at
-/// runtime.
+/// The i-th entry corresponds to the i-th entry from `gv_ps_fontdefs`. An entry
+/// will have zeroed fields if the corresponding font is unavailable at runtime.
 typedef struct {
   availfont_t fonts[GV_FONT_LIST_SIZE];
 } availfonts_t;
