@@ -20,17 +20,12 @@ static const double p_iteration_threshold = 1e-3;
 bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs) {
     /* compute the 'neigs' top eigenvectors of 'square_mat' using power iteration */
 
-    int i, j;
+    int i;
     double *tmp_vec = gv_calloc(n, sizeof(double));
     double *last_vec = gv_calloc(n, sizeof(double));
-    double *curr_vector;
-    double len;
     double angle;
-    double alpha;
     int iteration = 0;
-    int largest_index;
-    double largest_eval;
-    int Max_iterations = 30 * n;
+    const int Max_iterations = 30 * n;
 
     double tol = 1 - p_iteration_threshold;
 
@@ -40,17 +35,17 @@ bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs)
 
     double *const evals = gv_calloc(neigs, sizeof(evals[0]));
     for (i = 0; i < neigs; i++) {
-	curr_vector = eigs[i];
+	double *const curr_vector = eigs[i];
 	/* guess the i-th eigen vector */
       choose:
-        for (j = 0; j < n; j++)
+        for (int j = 0; j < n; j++)
             curr_vector[j] = rand() % 100;
 	/* orthogonalize against higher eigenvectors */
-	for (j = 0; j < i; j++) {
-	    alpha = -vectors_inner_product(n, eigs[j], curr_vector);
+	for (int j = 0; j < i; j++) {
+	    const double alpha = -vectors_inner_product(n, eigs[j], curr_vector);
 	    scadd(curr_vector, n - 1, alpha, eigs[j]);
 	}
-	len = norm(curr_vector, n - 1);
+	double len = norm(curr_vector, n - 1);
 	if (len < 1e-10) {
 	    // we have chosen a vector colinear with previous ones
 	    goto choose;
@@ -66,8 +61,8 @@ bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs)
 	    copy_vector(n, tmp_vec, curr_vector);
 
 	    /* orthogonalize against higher eigenvectors */
-	    for (j = 0; j < i; j++) {
-		alpha = -vectors_inner_product(n, eigs[j], curr_vector);
+	    for (int j = 0; j < i; j++) {
+		const double alpha = -vectors_inner_product(n, eigs[j], curr_vector);
 		scadd(curr_vector, n - 1, alpha, eigs[j]);
 	    }
 	    len = norm(curr_vector, n - 1);
@@ -88,16 +83,16 @@ bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs)
 	/* compute the smallest eigenvector, which are  */
 	/* probably associated with eigenvalue 0 and for */
 	/* which power-iteration is dangerous */
-	curr_vector = eigs[i];
+	double *const curr_vector = eigs[i];
 	/* guess the i-th eigen vector */
-	for (j = 0; j < n; j++)
+	for (int j = 0; j < n; j++)
 	    curr_vector[j] = rand() % 100;
 	/* orthogonalize against higher eigenvectors */
-	for (j = 0; j < i; j++) {
-	    alpha = -vectors_inner_product(n, eigs[j], curr_vector);
+	for (int j = 0; j < i; j++) {
+	    const double alpha = -vectors_inner_product(n, eigs[j], curr_vector);
 	    scadd(curr_vector, n - 1, alpha, eigs[j]);
 	}
-	len = norm(curr_vector, n - 1);
+	const double len = norm(curr_vector, n - 1);
 	vectors_scalar_mult(n, curr_vector, 1.0 / len, curr_vector);
 	evals[i] = 0;
 
@@ -105,9 +100,9 @@ bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs)
 
     /* sort vectors by their evals, for overcoming possible mis-convergence: */
     for (i = 0; i < neigs - 1; i++) {
-	largest_index = i;
-	largest_eval = evals[largest_index];
-	for (j = i + 1; j < neigs; j++) {
+	int largest_index = i;
+	double largest_eval = evals[largest_index];
+	for (int j = i + 1; j < neigs; j++) {
 	    if (largest_eval < evals[j]) {
 		largest_index = j;
 		largest_eval = evals[largest_index];
@@ -127,7 +122,7 @@ bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs)
     free(tmp_vec);
     free(last_vec);
 
-    return (iteration <= Max_iterations);
+    return iteration <= Max_iterations;
 }
 
 void
