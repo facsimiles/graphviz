@@ -29,7 +29,6 @@
 #include <util/strcasecmp.h>
 
 #define EMPTY(s)		(((s) == 0) || (s)[0] == '\0')
-#define MAX(a,b)     ((a)>(b)?(a):(b))
 #define CHKRV(v)     {if ((v) == EOF) return EOF;}
 
 typedef void iochan_t;
