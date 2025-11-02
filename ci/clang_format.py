@@ -523,7 +523,6 @@ EXCLUDE = (
     "plugin/gs/gvloadimage_gs.c",
     "plugin/lasi/gvrender_lasi.cpp",
     "plugin/pango/gvgetfontlist.h",
-    "plugin/pango/gvgetfontlist_pango.c",
     "plugin/pango/gvloadimage_pango.c",
     "plugin/pango/gvplugin_pango.c",
     "plugin/pango/gvrender_pango.c",
