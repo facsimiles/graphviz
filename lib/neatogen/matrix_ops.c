@@ -17,8 +17,7 @@
 
 static const double p_iteration_threshold = 1e-3;
 
-bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs,
-                     double *evals) {
+bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs) {
     /* compute the 'neigs' top eigenvectors of 'square_mat' using power iteration */
 
     int i, j;
@@ -39,6 +38,7 @@ bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs,
 	neigs = n;
     }
 
+    double *const evals = gv_calloc(neigs, sizeof(evals[0]));
     for (i = 0; i < neigs; i++) {
 	curr_vector = eigs[i];
 	/* guess the i-th eigen vector */
@@ -123,6 +123,7 @@ bool power_iteration(double *const *square_mat, int n, int neigs, double **eigs,
 	}
     }
 
+    free(evals);
     free(tmp_vec);
     free(last_vec);
 
