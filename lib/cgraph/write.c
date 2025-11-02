@@ -358,7 +358,6 @@ static int write_hdr(Agraph_t *g, iochan_t *ofile, bool top,
 }
 
 static int write_trl(Agraph_t *g, iochan_t *ofile, write_info_t *wr_info) {
-    (void)g;
     wr_info->level--;
     CHKRV(indent(g, ofile, *wr_info));
     CHKRV(ioput(g, ofile, "}\n"));
