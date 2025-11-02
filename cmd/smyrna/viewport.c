@@ -101,7 +101,7 @@ void set_viewport_settings_from_template(ViewInfo *vi, Agraph_t *g) {
     vi->gridColor.B = cl.u.RGBA[2];
     vi->gridColor.A = atof(get_attribute_value("gridcoloralpha", vi, g));
 
-    vi->gridSize = (float)atof(buf = get_attribute_value("gridsize", vi, g));
+    vi->gridSize = (float)atof(get_attribute_value("gridsize", vi, g));
 
     vi->gridVisible = atoi(get_attribute_value("gridvisible", vi, g));
 
