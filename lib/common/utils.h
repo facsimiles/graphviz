@@ -34,7 +34,7 @@ extern "C" {
 #define UTILS_API /* nothing */
 #endif
 
-UTILS_API pointf Bezier(pointf *, double, pointf *, pointf *);
+UTILS_API pointf Bezier(const pointf *, double, pointf *, pointf *);
 
 /// @return Computed ymin + ymax
 UTILS_API double attach_attrs_and_arrows(graph_t *, bool *, bool *);
