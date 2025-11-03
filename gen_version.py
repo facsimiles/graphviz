@@ -118,7 +118,7 @@ def get_version() -> Tuple[int, int, int, Collection]:
     else:
         # this is a stable release if one of our parent commits added the release line
         try:
-            blame = git("blame", "-l", f"-L{lineno},{lineno}", "HEAD", CHANGELOG)
+            blame = git("blame", "-l", f"-L{lineno},{lineno}", "HEAD", "--", CHANGELOG)
             added_in = blame.split(" ")[0]
             parents = git("log", "--pretty=%P", "-n", "1", "HEAD").split()
             if added_in in parents:
