@@ -200,10 +200,7 @@ void makeBinaryTree(unsigned depth, edgefn ef) {
     }
 }
 
-typedef struct {
-  unsigned nedges;
-  unsigned *edges;
-} vtx_data;
+typedef LIST(unsigned) vtx_data;
 
 static void constructSierpinski(unsigned v1, unsigned v2, unsigned v3,
                                 unsigned depth, vtx_data *graph) {
@@ -220,20 +217,14 @@ static void constructSierpinski(unsigned v1, unsigned v2, unsigned v3,
     }
     // depth==0, Construct graph:
 
-    unsigned nedges = graph[v1].nedges;
-    graph[v1].edges[nedges++] = v2;
-    graph[v1].edges[nedges++] = v3;
-    graph[v1].nedges = nedges;
+    LIST_APPEND(&graph[v1], v2);
+    LIST_APPEND(&graph[v1], v3);
 
-    nedges = graph[v2].nedges;
-    graph[v2].edges[nedges++] = v1;
-    graph[v2].edges[nedges++] = v3;
-    graph[v2].nedges = nedges;
+    LIST_APPEND(&graph[v2], v1);
+    LIST_APPEND(&graph[v2], v3);
 
-    nedges = graph[v3].nedges;
-    graph[v3].edges[nedges++] = v1;
-    graph[v3].edges[nedges++] = v2;
-    graph[v3].nedges = nedges;
+    LIST_APPEND(&graph[v3], v1);
+    LIST_APPEND(&graph[v3], v2);
 }
 
 void makeSierpinski(unsigned depth, edgefn ef) {
@@ -243,25 +234,20 @@ void makeSierpinski(unsigned depth, edgefn ef) {
     const unsigned n = 3 * (1 + ((unsigned)(pow(3.0, depth) + 0.5) - 1) / 2);
 
     graph = gv_calloc(n + 1, sizeof(vtx_data));
-    unsigned *edges = gv_calloc(4 * n, sizeof(unsigned));
-
-    for (unsigned i = 1; i <= n; i++) {
-	graph[i].edges = edges;
-	edges += 4;
-	graph[i].nedges = 0;
-    }
 
     constructSierpinski(1, 2, 3, depth, graph);
 
     for (unsigned i = 1; i <= n; i++) {
 	// write the neighbors of the node i
-	for (unsigned j = 0; j < graph[i].nedges; j++) {
-	    const unsigned nghbr = graph[i].edges[j];
+	for (size_t j = 0; j < LIST_SIZE(&graph[i]); j++) {
+	    const unsigned nghbr = LIST_GET(&graph[i], j);
 	    if (i < nghbr) ef( i, nghbr);
 	}
     }
 
-    free(graph[1].edges);
+    for (unsigned i = 0; i < n + 1; ++i) {
+	LIST_FREE(&graph[i]);
+    }
     free(graph);
 }
 
@@ -283,29 +269,21 @@ static void constructTetrix(unsigned v1, unsigned v2, unsigned v3, unsigned v4,
         return;
     }
     // depth==0, Construct graph:
-    unsigned nedges = graph[v1].nedges;
-    graph[v1].edges[nedges++] = v2;
-    graph[v1].edges[nedges++] = v3;
-    graph[v1].edges[nedges++] = v4;
-    graph[v1].nedges = nedges;
+    LIST_APPEND(&graph[v1], v2);
+    LIST_APPEND(&graph[v1], v3);
+    LIST_APPEND(&graph[v1], v4);
 
-    nedges = graph[v2].nedges;
-    graph[v2].edges[nedges++] = v1;
-    graph[v2].edges[nedges++] = v3;
-    graph[v2].edges[nedges++] = v4;
-    graph[v2].nedges = nedges;
+    LIST_APPEND(&graph[v2], v1);
+    LIST_APPEND(&graph[v2], v3);
+    LIST_APPEND(&graph[v2], v4);
 
-    nedges = graph[v3].nedges;
-    graph[v3].edges[nedges++] = v1;
-    graph[v3].edges[nedges++] = v2;
-    graph[v3].edges[nedges++] = v4;
-    graph[v3].nedges = nedges;
+    LIST_APPEND(&graph[v3], v1);
+    LIST_APPEND(&graph[v3], v2);
+    LIST_APPEND(&graph[v3], v4);
 
-    nedges = graph[v4].nedges;
-    graph[v4].edges[nedges++] = v1;
-    graph[v4].edges[nedges++] = v2;
-    graph[v4].edges[nedges++] = v3;
-    graph[v4].nedges = nedges;
+    LIST_APPEND(&graph[v4], v1);
+    LIST_APPEND(&graph[v4], v2);
+    LIST_APPEND(&graph[v4], v3);
 }
 
 void makeTetrix(unsigned depth, edgefn ef) {
@@ -315,25 +293,20 @@ void makeTetrix(unsigned depth, edgefn ef) {
     const unsigned n = 4 + 2 * (((unsigned)(pow(4.0, depth) + 0.5) - 1));
 
     graph = gv_calloc(n + 1, sizeof(vtx_data));
-    unsigned *edges = gv_calloc(6 * n, sizeof(unsigned));
-
-    for (unsigned i = 1; i <= n; i++) {
-        graph[i].edges = edges;
-        edges += 6;
-        graph[i].nedges = 0;
-    }
 
     constructTetrix(1, 2, 3, 4, depth, graph);
 
     for (unsigned i = 1; i <= n; i++) {
         // write the neighbors of the node i
-        for (unsigned j = 0; j < graph[i].nedges; j++) {
-            const unsigned nghbr = graph[i].edges[j];
+        for (size_t j = 0; j < LIST_SIZE(&graph[i]); j++) {
+            const unsigned nghbr = LIST_GET(&graph[i], j);
             if (i < nghbr) ef( i, nghbr);
         }
     }
 
-    free(graph[1].edges);
+    for (unsigned i = 0; i < n + 1; ++i) {
+        LIST_FREE(&graph[i]);
+    }
     free(graph);
 }
 
