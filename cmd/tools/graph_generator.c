@@ -202,8 +202,27 @@ void makeBinaryTree(unsigned depth, edgefn ef) {
 
 typedef LIST(unsigned) vtx_data;
 
+/// `vtx_data` destructor
+static void free_vtx(vtx_data data) {
+  LIST_FREE(&data);
+}
+
+typedef LIST(vtx_data) vtx_datas_t;
+
+/// add an item to `graph`, expanding on demand
+static void append(vtx_datas_t *graph, size_t index, unsigned ref) {
+  assert(graph != NULL);
+
+  // expand the list as necessary
+  while (index >= LIST_SIZE(graph)) {
+    LIST_APPEND(graph, (vtx_data){0});
+  }
+
+  LIST_APPEND(LIST_AT(graph, index), ref);
+}
+
 static void constructSierpinski(unsigned v1, unsigned v2, unsigned v3,
-                                unsigned depth, vtx_data *graph) {
+                                unsigned depth, vtx_datas_t *graph) {
     static unsigned last_used_node_name = 3;
 
     if (depth > 0) {
@@ -217,42 +236,36 @@ static void constructSierpinski(unsigned v1, unsigned v2, unsigned v3,
     }
     // depth==0, Construct graph:
 
-    LIST_APPEND(&graph[v1], v2);
-    LIST_APPEND(&graph[v1], v3);
+    append(graph, v1, v2);
+    append(graph, v1, v3);
 
-    LIST_APPEND(&graph[v2], v1);
-    LIST_APPEND(&graph[v2], v3);
+    append(graph, v2, v1);
+    append(graph, v2, v3);
 
-    LIST_APPEND(&graph[v3], v1);
-    LIST_APPEND(&graph[v3], v2);
+    append(graph, v3, v1);
+    append(graph, v3, v2);
 }
 
 void makeSierpinski(unsigned depth, edgefn ef) {
-    vtx_data* graph;
+    vtx_datas_t graph = {.dtor = free_vtx};
 
     depth--;
-    const unsigned n = 3 * (1 + ((unsigned)(pow(3.0, depth) + 0.5) - 1) / 2);
+    constructSierpinski(1, 2, 3, depth, &graph);
 
-    graph = gv_calloc(n + 1, sizeof(vtx_data));
-
-    constructSierpinski(1, 2, 3, depth, graph);
-
-    for (unsigned i = 1; i <= n; i++) {
+    for (unsigned i = 1; i < LIST_SIZE(&graph); i++) {
+	const vtx_data *const g = LIST_AT(&graph, i);
 	// write the neighbors of the node i
-	for (size_t j = 0; j < LIST_SIZE(&graph[i]); j++) {
-	    const unsigned nghbr = LIST_GET(&graph[i], j);
+	for (size_t j = 0; j < LIST_SIZE(g); j++) {
+	    const unsigned nghbr = LIST_GET(g, j);
 	    if (i < nghbr) ef( i, nghbr);
 	}
     }
 
-    for (unsigned i = 0; i < n + 1; ++i) {
-	LIST_FREE(&graph[i]);
-    }
-    free(graph);
+    LIST_FREE(&graph);
 }
 
 static void constructTetrix(unsigned v1, unsigned v2, unsigned v3, unsigned v4,
-                            unsigned depth, vtx_data* graph) {
+                            unsigned depth, vtx_datas_t *graph) {
     static unsigned last_used_node_name = 4;
 
     if (depth > 0) {
@@ -269,45 +282,39 @@ static void constructTetrix(unsigned v1, unsigned v2, unsigned v3, unsigned v4,
         return;
     }
     // depth==0, Construct graph:
-    LIST_APPEND(&graph[v1], v2);
-    LIST_APPEND(&graph[v1], v3);
-    LIST_APPEND(&graph[v1], v4);
+    append(graph, v1, v2);
+    append(graph, v1, v3);
+    append(graph, v1, v4);
 
-    LIST_APPEND(&graph[v2], v1);
-    LIST_APPEND(&graph[v2], v3);
-    LIST_APPEND(&graph[v2], v4);
+    append(graph, v2, v1);
+    append(graph, v2, v3);
+    append(graph, v2, v4);
 
-    LIST_APPEND(&graph[v3], v1);
-    LIST_APPEND(&graph[v3], v2);
-    LIST_APPEND(&graph[v3], v4);
+    append(graph, v3, v1);
+    append(graph, v3, v2);
+    append(graph, v3, v4);
 
-    LIST_APPEND(&graph[v4], v1);
-    LIST_APPEND(&graph[v4], v2);
-    LIST_APPEND(&graph[v4], v3);
+    append(graph, v4, v1);
+    append(graph, v4, v2);
+    append(graph, v4, v3);
 }
 
 void makeTetrix(unsigned depth, edgefn ef) {
-    vtx_data* graph;
+    vtx_datas_t graph = {.dtor = free_vtx};
 
     depth--;
-    const unsigned n = 4 + 2 * (((unsigned)(pow(4.0, depth) + 0.5) - 1));
+    constructTetrix(1, 2, 3, 4, depth, &graph);
 
-    graph = gv_calloc(n + 1, sizeof(vtx_data));
-
-    constructTetrix(1, 2, 3, 4, depth, graph);
-
-    for (unsigned i = 1; i <= n; i++) {
+    for (unsigned i = 1; i < LIST_SIZE(&graph); i++) {
+        const vtx_data *const g = LIST_AT(&graph, i);
         // write the neighbors of the node i
-        for (size_t j = 0; j < LIST_SIZE(&graph[i]); j++) {
-            const unsigned nghbr = LIST_GET(&graph[i], j);
+        for (size_t j = 0; j < LIST_SIZE(g); j++) {
+            const unsigned nghbr = LIST_GET(g, j);
             if (i < nghbr) ef( i, nghbr);
         }
     }
 
-    for (unsigned i = 0; i < n + 1; ++i) {
-        LIST_FREE(&graph[i]);
-    }
-    free(graph);
+    LIST_FREE(&graph);
 }
 
 void makeHypercube(unsigned dim, edgefn ef) {
