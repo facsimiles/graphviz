@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `dtstat` no longer reads/writes out of bounds memory on platforms where
   `sizeof(int) < sizeof(size_t)`. This was a regression in Graphviz 7.0.1.
 - Some incorrect variable types in the libcdt man page have been corrected.
+- `gvgen` no longer triggers Undefined Behavior when asked to generate a binary
+  tree with depth ≥ 32 (e.g. `gvgen -t32`).
 
 ## [14.0.2] – 2025-10-19
 

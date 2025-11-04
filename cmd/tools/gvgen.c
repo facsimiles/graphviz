@@ -29,6 +29,7 @@
 #include "graph_generator.h"
 #include "openFile.h"
 #include <util/exit.h>
+#include <util/prisize_t.h>
 
 typedef enum { unknown, grid, circle, complete, completeb, 
     path, tree, torus, cylinder, mobius, randomg, randomt, ball,
@@ -347,11 +348,19 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    if (setOne(optarg, opts))
 		errexit(c);
 	    break;
-	case 't':
+	case 't': {
 	    graphType = tree;
 	    if (setTwoOpt(optarg, opts, 2))
 		errexit(c);
+	    // detect if `1u << opts->graphSize1` in `makeBinaryTree` will overflow
+	    const size_t max_shift = sizeof(unsigned) * CHAR_BIT - 1;
+	    if (opts->graphSize1 > max_shift && opts->graphSize2 == 2) {
+		fprintf(stderr, "depth of a binary tree must be < %" PRISIZE_T "\n",
+		        max_shift);
+		graphviz_exit(EXIT_FAILURE);
+	    }
 	    break;
+	}
 	case 'T':
 	    graphType = torus;
 	    if (setTwoTwoOpt(optarg, opts, 0))

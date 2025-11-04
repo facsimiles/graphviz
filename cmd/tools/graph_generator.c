@@ -9,7 +9,9 @@
  *************************************************************************/
 
 #include "config.h"
+#include <assert.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -189,6 +191,7 @@ void makeTree(unsigned depth, unsigned nary, edgefn ef) {
 }
 
 void makeBinaryTree(unsigned depth, edgefn ef) {
+    assert(depth < sizeof(unsigned) * CHAR_BIT);
     const unsigned n = (1u << depth) - 1;
 
     for (unsigned i = 1; i <= n; i++) {
