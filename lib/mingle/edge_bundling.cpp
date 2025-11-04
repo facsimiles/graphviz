@@ -119,7 +119,6 @@ static double edge_compatibility_full(const pedge &e1, const pedge &e2) {
   dist2 =  sqr_dist(dim, u1, v2) + sqr_dist(dim, v1, u2);
   if (dist1 > dist2){
     std::swap(u2, v2);
-    dist1 = dist2;
     flipped = true;
   }
   len1 = std::max(dist(dim, u1, v1), SMALL);
