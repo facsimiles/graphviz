@@ -378,7 +378,6 @@ static void edge_attraction_force(double similarity, const pedge &e1,
    so the force is nominal and unitless
   */
   if (similarity > 0){
-    s = edge_length;
     s = similarity*edge_length;
     for (i = 1; i <= np - 2; i++){
       dist = sqr_dist(dim, &x1.data()[i*dim], &x2.data()[i*dim]);
@@ -387,7 +386,6 @@ static void edge_attraction_force(double similarity, const pedge &e1,
       for (j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[i*dim + j] - x1[i*dim + j]);
     }
   } else {/* clip e2 */
-    s = -edge_length;
     s = -similarity*edge_length; 
     for (i = 1; i <= np - 2; i++){
       dist = sqr_dist(dim, &x1.data()[i*dim], &x2.data()[(np - 1 - i)*dim]);
