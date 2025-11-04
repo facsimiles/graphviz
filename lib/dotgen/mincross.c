@@ -377,23 +377,18 @@ fixLabelOrder (graph_t* g, rank_t* rk)
 void
 checkLabelOrder (graph_t* g)
 {
-    int j, r, lo, hi;
     graph_t* lg = NULL;
-    rank_t* rk;
-    Agnode_t* u;
-    Agnode_t* n;
-    Agedge_t* e;
 
-    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	rk = GD_rank(g)+r;
-	for (j = 0; j < rk->n; j++) {
-	    u = rk->v[j];
-	    if ((e = ND_alg(u))) {
+    for (int r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	rank_t *const rk = GD_rank(g)+r;
+	for (int j = 0; j < rk->n; j++) {
+	    Agnode_t *const u = rk->v[j];
+	    if (ND_alg(u)) {
 		if (!lg) lg = agopen ("lg", Agstrictdirected, 0);
-		n = agnode(lg, ITOS(j), 1);
+		Agnode_t *const n = agnode(lg, ITOS(j), 1);
 		agbindrec(n, "info", sizeof(info_t), true);
-		lo = ND_order(aghead(ND_out(u).list[0]));
-		hi = ND_order(aghead(ND_out(u).list[1]));
+		int lo = ND_order(aghead(ND_out(u).list[0]));
+		int hi = ND_order(aghead(ND_out(u).list[1]));
 		if (lo > hi) {
 		    SWAP(&lo, &hi);
 		}
