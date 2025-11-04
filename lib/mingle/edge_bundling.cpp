@@ -13,6 +13,7 @@
 #include <common/globals.h>
 #include <sparse/general.h>
 #include <math.h>
+#include <numeric>
 #include <sparse/SparseMatrix.h>
 #include <mingle/edge_bundling.h>
 #include <time.h>
@@ -25,12 +26,7 @@
 #define SMALL 1.e-10
 
 static double norm(int n, const double *x) {
-  double res = 0;
-  int i;
-
-  for (i = 0; i < n; i++) res += x[i]*x[i];
-  return sqrt(res);
-
+  return sqrt(std::inner_product(x, x + n, x, 0.0));
 }
 
 static double sqr_dist(int dim, const double *x, const double *y) {
