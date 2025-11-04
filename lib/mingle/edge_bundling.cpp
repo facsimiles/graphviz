@@ -368,8 +368,6 @@ static void edge_attraction_force(double similarity, const pedge &e1,
   const std::vector<double> &x1 = e1.x, &x2 = e2.x;
   const int dim = e1.dim;
   const int np = e1.npoints;
-  int i, j;
-  double dist, s, ss;
   const double edge_length = e1.edge_length;
 
   assert(e1.npoints == e2.npoints);
@@ -378,20 +376,20 @@ static void edge_attraction_force(double similarity, const pedge &e1,
    so the force is nominal and unitless
   */
   if (similarity > 0){
-    s = similarity*edge_length;
-    for (i = 1; i <= np - 2; i++){
-      dist = sqr_dist(dim, &x1.data()[i*dim], &x2.data()[i*dim]);
+    const double s = similarity * edge_length;
+    for (int i = 1; i <= np - 2; i++){
+      double dist = sqr_dist(dim, &x1.data()[i * dim], &x2.data()[i * dim]);
       if (dist < SMALL) dist = SMALL;
-      ss = s/(dist+0.1*edge_length*sqrt(dist));
-      for (j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[i*dim + j] - x1[i*dim + j]);
+      const double ss = s / (dist + 0.1 * edge_length * sqrt(dist));
+      for (int j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[i*dim + j] - x1[i*dim + j]);
     }
   } else {/* clip e2 */
-    s = -similarity*edge_length; 
-    for (i = 1; i <= np - 2; i++){
-      dist = sqr_dist(dim, &x1.data()[i*dim], &x2.data()[(np - 1 - i)*dim]);
+    const double s = -similarity * edge_length;
+    for (int i = 1; i <= np - 2; i++){
+      double dist = sqr_dist(dim, &x1.data()[i * dim], &x2.data()[(np - 1 - i) * dim]);
       if (dist < SMALL) dist = SMALL;
-      ss = s/(dist+0.1*edge_length*sqrt(dist));
-      for (j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[(np - 1 - i)*dim + j] - x1[i*dim + j]);
+      const double ss = s / (dist + 0.1 * edge_length * sqrt(dist));
+      for (int j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[(np - 1 - i)*dim + j] - x1[i*dim + j]);
     }
   }
 
