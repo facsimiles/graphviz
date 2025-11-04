@@ -460,7 +460,6 @@ static void agglomerative_ink_bundling_internal(
 
     /* patching edges with the new mid-section */
     for (i = 0; i < R->m; i++){
-      pick = &ja[ia[i]];
       // middle section of edges that will be bundled again
       const pedge &midedge = mid_edges[i];
       npp = midedge.npoints + 2;
