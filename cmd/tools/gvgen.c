@@ -284,11 +284,18 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    if (setTwo(optarg, opts))
 		errexit(c);
 	    break;
-	case 'h':
+	case 'h': {
 	    graphType = hypercube;
 	    if (setOne(optarg, opts))
 		errexit(c);
+	    // detect if `1u << opts->graphSize1` in `makeHypercube` will overflow
+	    const size_t max_shift = sizeof(unsigned) * CHAR_BIT - 1;
+	    if (opts->graphSize1 > max_shift) {
+		fprintf(stderr, "depth of a hypercube must be < %" PRISIZE_T "\n", max_shift);
+		graphviz_exit(EXIT_FAILURE);
+	    }
 	    break;
+	}
 	case 'k':
 	    graphType = complete;
 	    if (setOne(optarg, opts))

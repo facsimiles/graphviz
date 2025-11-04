@@ -338,6 +338,7 @@ void makeTetrix(unsigned depth, edgefn ef) {
 }
 
 void makeHypercube(unsigned dim, edgefn ef) {
+    assert(dim < sizeof(unsigned) * CHAR_BIT);
     const unsigned n = 1u << dim;
 
     for (unsigned i = 0; i < n; i++) {
