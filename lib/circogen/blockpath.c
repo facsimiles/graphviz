@@ -147,14 +147,12 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 		diff--;
 	    }
 
-	    for (size_t mark = 2; diff > 0; ) {
+	    for (size_t mark = 2; diff > 0; ++mark, --diff) {
 		Agnode_t *const tp = LIST_GET(&neighbors_without, 0);
 		Agnode_t *const hp = LIST_GET(&neighbors_without, mark);
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);   // edge custom data
 		DEGREE(tp)++;
 		DEGREE(hp)++;
-		mark++;
-		diff--;
 	    }
 	}
 
