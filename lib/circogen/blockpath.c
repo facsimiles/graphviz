@@ -181,7 +181,9 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    for (mark = 0; mark < no_pair_count; mark++) {
 		hp = neighbors_without[mark];
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);	//node custom data
-		DEGREE(tp)++;
+		if (tp != NULL) {
+		    DEGREE(tp)++;
+		}
 		DEGREE(hp)++;
 	    }
 	}
