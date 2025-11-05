@@ -13,6 +13,7 @@
 #include	<circogen/edgelist.h>
 #include	<stddef.h>
 #include	<stdbool.h>
+#include	<stdint.h>
 #include	<util/agxbuf.h>
 #include	<util/alloc.h>
 #include	<util/list.h>
@@ -118,7 +119,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    Agedge_t *const ex = agfindedge(g, n1, n2);
 	    if (ex) {
 		has_pair_edge = true;
-		if (n1 < n2) {	/* count edge only once */
+		if ((uintptr_t)n1 < (uintptr_t)n2) { // count edge only once
 		    edge_cnt++;
 		    if (ORIGE(ex)) {
 			agdelete(outg, ORIGE(ex));
