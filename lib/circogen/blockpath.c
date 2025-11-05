@@ -138,9 +138,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
     int diff = node_degree - 1 - edge_cnt;
     if (diff > 0) {
 	if ((size_t)diff < LIST_SIZE(&neighbors_without)) {
-	    for (size_t mark = 0; mark < LIST_SIZE(&neighbors_without); mark += 2) {
-		if (mark + 1 >= LIST_SIZE(&neighbors_without))
-		    break;
+	    for (size_t mark = 0; mark + 1 < LIST_SIZE(&neighbors_without); mark += 2) {
 		Agnode_t *const tp = LIST_GET(&neighbors_without, mark);
 		Agnode_t *const hp = LIST_GET(&neighbors_without, mark + 1);
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);   // edge custom data
