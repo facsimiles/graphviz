@@ -105,13 +105,12 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
     Agnode_t *n2;
     int has_pair_edge;
     int diff;
-    int has_pair_count = 0;
     int no_pair_count = 0;
     int node_degree;
     int edge_cnt = 0;
 
     node_degree = DEGREE(n);
-    Agnode_t **neighbors_with = gv_calloc(node_degree, sizeof(Agnode_t*));
+    LIST(Agnode_t *) neighbors_with = {0};
     Agnode_t **neighbors_without = gv_calloc(node_degree, sizeof(Agnode_t*));
 
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
@@ -138,8 +137,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    }
 	}
 	if (has_pair_edge) {
-	    neighbors_with[has_pair_count] = n1;
-	    has_pair_count++;
+	    LIST_APPEND(&neighbors_with, n1);
 	} else {
 	    neighbors_without[no_pair_count] = n1;
 	    no_pair_count++;
@@ -177,7 +175,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	}
 
 	else if (diff == no_pair_count) {
-	    tp = neighbors_with[0];
+	    tp = LIST_IS_EMPTY(&neighbors_with) ? NULL : LIST_GET(&neighbors_with, 0);
 	    for (mark = 0; mark < no_pair_count; mark++) {
 		hp = neighbors_without[mark];
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);	//node custom data
@@ -190,7 +188,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
     }
 
     free(neighbors_without);
-    free(neighbors_with);
+    LIST_FREE(&neighbors_with);
 }
 
 /// Create layout skeleton of ing. Why is returned graph connected?
