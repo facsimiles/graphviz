@@ -105,13 +105,12 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
     Agnode_t *n2;
     int has_pair_edge;
     int diff;
-    int no_pair_count = 0;
     int node_degree;
     int edge_cnt = 0;
 
     node_degree = DEGREE(n);
     LIST(Agnode_t *) neighbors_with = {0};
-    Agnode_t **neighbors_without = gv_calloc(node_degree, sizeof(Agnode_t*));
+    LIST(Agnode_t *) neighbors_without = {0};
 
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	n1 = aghead(e);
@@ -139,23 +138,22 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	if (has_pair_edge) {
 	    LIST_APPEND(&neighbors_with, n1);
 	} else {
-	    neighbors_without[no_pair_count] = n1;
-	    no_pair_count++;
+	    LIST_APPEND(&neighbors_without, n1);
 	}
     }
 
     diff = node_degree - 1 - edge_cnt;
     if (diff > 0) {
-	int mark;
+	size_t mark;
 	Agnode_t *hp;
 	Agnode_t *tp;
 
-	if (diff < no_pair_count) {
-	    for (mark = 0; mark < no_pair_count; mark += 2) {
-		if ((mark + 1) >= no_pair_count)
+	if ((size_t)diff < LIST_SIZE(&neighbors_without)) {
+	    for (mark = 0; mark < LIST_SIZE(&neighbors_without); mark += 2) {
+		if (mark + 1 >= LIST_SIZE(&neighbors_without))
 		    break;
-		tp = neighbors_without[mark];
-		hp = neighbors_without[mark + 1];
+		tp = LIST_GET(&neighbors_without, mark);
+		hp = LIST_GET(&neighbors_without, mark + 1);
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);   // edge custom data
 		DEGREE(tp)++;
 		DEGREE(hp)++;
@@ -164,8 +162,8 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 
 	    mark = 2;
 	    while (diff > 0) {
-		tp = neighbors_without[0];
-		hp = neighbors_without[mark];
+		tp = LIST_GET(&neighbors_without, 0);
+		hp = LIST_GET(&neighbors_without, mark);
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);   // edge custom data
 		DEGREE(tp)++;
 		DEGREE(hp)++;
@@ -174,10 +172,10 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    }
 	}
 
-	else if (diff == no_pair_count) {
+	else if ((size_t)diff == LIST_SIZE(&neighbors_without)) {
 	    tp = LIST_IS_EMPTY(&neighbors_with) ? NULL : LIST_GET(&neighbors_with, 0);
-	    for (mark = 0; mark < no_pair_count; mark++) {
-		hp = neighbors_without[mark];
+	    for (mark = 0; mark < LIST_SIZE(&neighbors_without); mark++) {
+		hp = LIST_GET(&neighbors_without, mark);
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);	//node custom data
 		if (tp != NULL) {
 		    DEGREE(tp)++;
@@ -187,7 +185,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	}
     }
 
-    free(neighbors_without);
+    LIST_FREE(&neighbors_without);
     LIST_FREE(&neighbors_with);
 }
 
