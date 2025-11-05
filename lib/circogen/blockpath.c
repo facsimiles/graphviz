@@ -108,7 +108,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	Agnode_t *n1 = aghead(e);
 	if (n1 == n)
 	    n1 = agtail(e);
-	int has_pair_edge = 0;
+	bool has_pair_edge = false;
 	for (Agedge_t *ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
 	    if (ep == e)
 		continue;
@@ -117,7 +117,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 		n2 = agtail(ep);
 	    Agedge_t *const ex = agfindedge(g, n1, n2);
 	    if (ex) {
-		has_pair_edge = 1;
+		has_pair_edge = true;
 		if (n1 < n2) {	/* count edge only once */
 		    edge_cnt++;
 		    if (ORIGE(ex)) {
