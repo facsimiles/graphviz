@@ -178,7 +178,6 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 ///
 /// @param state Context containing a counter to use for graph copy naming
 static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
-    int counter = 0;
     int nodeCount;
     Agraph_t *outg;
     Agraph_t *g;
@@ -189,7 +188,7 @@ static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
     nodeCount = agnnodes(g);
     deglist_t dl = getList(g);
 
-    while (counter < nodeCount - 3) {
+    for (int counter = 0; counter < nodeCount - 3; ++counter) {
 	currnode = LIST_IS_EMPTY(&dl) ? NULL : LIST_POP_BACK(&dl);
 
 	/* Remove all adjacent nodes since they have to be reinserted */
@@ -213,8 +212,6 @@ static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
 	LIST_SORT(&dl, cmpDegree);
 
 	agdelete(g, currnode);
-
-	counter++;
     }
 
     agclose(g);
