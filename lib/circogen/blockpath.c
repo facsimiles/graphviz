@@ -98,7 +98,6 @@ static deglist_t getList(Agraph_t *g) {
 
 static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 {
-    int diff;
     int node_degree;
     int edge_cnt = 0;
 
@@ -136,7 +135,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	}
     }
 
-    diff = node_degree - 1 - edge_cnt;
+    int diff = node_degree - 1 - edge_cnt;
     if (diff > 0) {
 	size_t mark;
 	Agnode_t *hp;
