@@ -98,7 +98,6 @@ static deglist_t getList(Agraph_t *g) {
 
 static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 {
-    Agnode_t *n2;
     int has_pair_edge;
     int diff;
     int node_degree;
@@ -116,7 +115,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	for (Agedge_t *ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
 	    if (ep == e)
 		continue;
-	    n2 = aghead(ep);
+	    Agnode_t *n2 = aghead(ep);
 	    if (n2 == n)
 		n2 = agtail(ep);
 	    Agedge_t *const ex = agfindedge(g, n1, n2);
