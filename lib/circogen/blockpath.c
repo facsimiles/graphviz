@@ -98,10 +98,9 @@ static deglist_t getList(Agraph_t *g) {
 
 static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 {
-    int node_degree;
     int edge_cnt = 0;
 
-    node_degree = DEGREE(n);
+    const int node_degree = DEGREE(n);
     LIST(Agnode_t *) neighbors_with = {0};
     LIST(Agnode_t *) neighbors_without = {0};
 
