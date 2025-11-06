@@ -197,7 +197,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
 #endif
     
   } else {
-    /* no splines, justsimple edges */
+    /* no splines, just simple edges */
 #ifdef TIME
     clock_t start = clock();
 #endif
