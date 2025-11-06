@@ -41,7 +41,7 @@ static int splines_intersect(size_t dim,
   double *x1 = gv_calloc(len1, sizeof(double));
   double *x2 = gv_calloc(len2, sizeof(double));
 
-  assert(dim <= 3);
+  assert(dim == 2);
 
   /* splines could be a list of 
      1. 3n points
