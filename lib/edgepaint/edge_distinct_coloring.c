@@ -182,7 +182,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
     clock_t start = clock();
 #endif
     assert(ne == nz2);
-    cos_a = 1.;/* for splines we exit conflict check as soon as we find an conflict, so the anle may not be representitive, hence set to constant */
+    cos_a = 1.;/* for splines we exit conflict check as soon as we find an conflict, so the anle may not be representative, hence set to constant */
     for (i = 0; i < nz2; i++){
       for (j = i+1; j < nz2; j++){
 	if (splines_intersect((size_t)dim, cos_critical,
