@@ -740,7 +740,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                         }
                         e = agfindedge(g, n, m);
                         if (!e)
-                            e = agedge(g, n, m, NULL, 1);
+                            agedge(g, n, m, NULL, 1);
                         if (p && *p) {
                             agxbprint(&buf, "render_%s", p);
                             char *const render = agxbuse(&buf);
@@ -749,7 +749,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                                 m = agnode(g, render, 1);
                             e = agfindedge(g, m, n);
                             if (!e)
-                                e = agedge(g, m, n, NULL, 1);
+                                agedge(g, m, n, NULL, 1);
                         }
                         break;
                     }
@@ -769,7 +769,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                         }
                         e = agfindedge(g, m, n);
                         if (!e)
-                            e = agedge(g, m, n, NULL, 1);
+                            agedge(g, m, n, NULL, 1);
                         agxbprint(&buf, "render_%s", p);
                         char *const render = agxbuse(&buf);
                         m = agfindnode(g, render);
@@ -777,7 +777,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                             m = agnode(g, render, 1);
                         e = agfindedge(g, n, m);
                         if (!e)
-                            e = agedge(g, n, m, NULL, 1);
+                            agedge(g, n, m, NULL, 1);
                         break;
                     }
                     default:
