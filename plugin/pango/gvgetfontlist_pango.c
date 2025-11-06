@@ -8,6 +8,11 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+// The “Graphviz PS fonts” referred to in this file are a set of de facto
+// standard fonts that were widely in use before more rigorous standardization.
+// See https://www.graphviz.org/faq/font/#default-fonts-and-postscript-fonts for
+// more information.
+
 #include "config.h"
 
 #include <ctype.h>
