@@ -19,7 +19,6 @@
 #include <sparse/DotIO.h>
 #include <edgepaint/intersection.h>
 #include <sparse/QuadTree.h>
-#include <util/alloc.h>
 #include <util/list.h>
 
 static int splines_intersect(size_t dim,
@@ -31,8 +30,6 @@ static int splines_intersect(size_t dim,
      xsplines1,xsplines2: the first and second splines corresponding to two edges
 
   */
-  size_t len2 = 100;
-  size_t ns2 = 0;
   int iter1 = 0, iter2 = 0;
   double cos_a, tmp[2];
   bool endp1 = false;
@@ -40,7 +37,7 @@ static int splines_intersect(size_t dim,
 
   tmp[0] = tmp[1] = 0;
   LIST(double) x1 = {0};
-  double *x2 = gv_calloc(len2, sizeof(double));
+  LIST(double) x2 = {0};
 
   assert(dim == 2);
 
@@ -89,42 +86,36 @@ static int splines_intersect(size_t dim,
       xsplines2 = strstr(xsplines2, "s,") + 2;
     }
   }
-  while (xsplines2 && sscanf(xsplines2,"%lf,%lf", &(x2[ns2*dim]), &x2[ns2*dim + 1]) == 2){
+  for (double x, y; xsplines2 && sscanf(xsplines2,"%lf,%lf", &x, &y) == 2; ) {
     if (endp2 && iter2 == 0){
-      tmp[0] = x2[ns2*dim]; tmp[1] = x2[ns2*dim + 1];
+      tmp[0] = x;
+      tmp[1] = y;
     } else {
-      ns2++;
+      LIST_APPEND(&x2, x);
+      LIST_APPEND(&x2, y);
     }
     iter2++;
     xsplines2 = strchr(xsplines2, ' ');
     if (!xsplines2) break;
     xsplines2++;
-    if (ns2*dim >= len2){
-      size_t new_len2 = ns2 * dim + MAX(10u, ns2 * dim / 5);
-      x2 = gv_recalloc(x2, len2, new_len2, sizeof(double));
-      len2 = new_len2;
-    }
   }
   if (endp2){/* pad the end point at the last position */
-    ns2++;
-    if (ns2*dim >= len2){
-      size_t new_len2 = ns2 * dim + MAX(10u, ns2 * dim / 5);
-      x2 = gv_recalloc(x2, len2, new_len2, sizeof(double));
-      len2 = new_len2;
-    }
-    x2[(ns2-1)*dim] = tmp[0];  x2[(ns2-1)*dim + 1] = tmp[1]; 
+    LIST_APPEND(&x2, tmp[0]);
+    LIST_APPEND(&x2, tmp[1]);
   }
 
   assert(LIST_SIZE(&x1) % dim == 0);
   for (size_t i = 0; i < LIST_SIZE(&x1) / 2 - 1; i++) {
-    for (size_t j = 0; j < ns2 - 1; j++) {
+    assert(LIST_SIZE(&x2) % dim == 0);
+    for (size_t j = 0; j < LIST_SIZE(&x2) / 2 - 1; j++) {
       cos_a = intersection_angle(LIST_AT(&x1, dim * i),
-                                 LIST_AT(&x1, dim * (i + 1)), &x2[dim * j],
-                                 &x2[dim * (j + 1)]);
+                                 LIST_AT(&x1, dim * (i + 1)),
+                                 LIST_AT(&x2, dim * j),
+                                 LIST_AT(&x2, dim * (j + 1)));
       if (!check_edges_with_same_endpoint && cos_a >= -1) cos_a = fabs(cos_a);
       if (cos_a > cos_critical) {
 	LIST_FREE(&x1);
-	free(x2);
+	LIST_FREE(&x2);
 	return 1;
       }
 
@@ -132,7 +123,7 @@ static int splines_intersect(size_t dim,
   }
 
   LIST_FREE(&x1);
-  free(x2);
+  LIST_FREE(&x2);
   return 0;
 }
 
