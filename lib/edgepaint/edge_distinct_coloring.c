@@ -34,7 +34,8 @@ static int splines_intersect(size_t dim,
   size_t ns1 = 0, ns2 = 0;
   int iter1 = 0, iter2 = 0;
   double cos_a, tmp[2];
-  int endp1 = 0, endp2 = 0;
+  bool endp1 = false;
+  int endp2 = 0;
 
   tmp[0] = tmp[1] = 0;
   double *x1 = gv_calloc(len1, sizeof(double));
@@ -49,7 +50,7 @@ static int splines_intersect(size_t dim,
   */
   if (xsplines1){
     if(strstr(xsplines1, "e,")){
-      endp1 = 1;
+      endp1 = true;
       xsplines1 = strstr(xsplines1, "e,") + 2;
     } else if (strstr(xsplines1, "s,")){
       xsplines1 = strstr(xsplines1, "s,") + 2;
