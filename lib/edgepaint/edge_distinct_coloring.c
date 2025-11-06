@@ -31,11 +31,11 @@ static int splines_intersect(size_t dim,
 
   */
   int iter1 = 0, iter2 = 0;
-  double cos_a, tmp[2];
+  double cos_a;
   bool endp1 = false;
   bool endp2 = false;
 
-  tmp[0] = tmp[1] = 0;
+  double tmp[2] = {0};
   LIST(double) x1 = {0};
   LIST(double) x2 = {0};
 
