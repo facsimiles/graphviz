@@ -113,7 +113,7 @@ static double line_segments_distance(double *p1, double *p2, double *q1, double 
 
 double intersection_angle(double *p1, double *p2, double *q1, double *q2){
 
-  /* give two lines p1--p2 and q1--q2, find their intersection agle
+  /* give two lines p1--p2 and q1--q2, find their intersection angle
      and return Abs[Cos[theta]] of that angle. 
      - If the two lines are very close, treat as if they intersect.
      - If they do not intersect or being very close, return -2.
