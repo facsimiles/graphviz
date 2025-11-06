@@ -26,7 +26,7 @@ static int splines_intersect(size_t dim,
 			     char *xsplines1, char *xsplines2){
   /* cos_critical: cos of critical angle
      check_edges_with_same_endpoint: whether need to treat two splines from
-     .     the same end point specially in ignoring splines that exit/enter the same end pont at around 180
+     .     the same end point specially in ignoring splines that exit/enter the same end point at around 180
      xsplines1,xsplines2: the first and second splines corresponding to two edges
 
   */
