@@ -230,7 +230,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
                                   accuracy, seed, &cdim, &colors);
     if (flag) goto RETURN;
 #ifdef TIME
-    fprintf(stderr, "cpu for color assignmment =%10.3f\n", ((double) (clock() - start))/CLOCKS_PER_SEC);
+    fprintf(stderr, "cpu for color assignment =%10.3f\n", ((double) (clock() - start))/CLOCKS_PER_SEC);
 #endif
   }
 
