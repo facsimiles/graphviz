@@ -243,7 +243,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 		for (n = *form; gv_isdigit(n); n = *++form)
 		    size = size * 10 + (n - '0');
 	    } else if (*form == '*') {
-		form = _Sffmtintf(form + 1, &n);
+		form = _Sffmtintf(form + 1, &(int){0});
 		n = ++argn;
 
 		FMTSET(ft, form, 'I', sizeof(int), 0, 0, 0, 0, NULL, 0);
