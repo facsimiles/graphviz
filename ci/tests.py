@@ -21,6 +21,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_macos,
     is_mingw,
     is_static_build,
+    is_ubuntu_2510,
     run,
     which,
 )
@@ -99,6 +100,10 @@ def test_existence(binary: str):
     if binary == "smyrna" and platform.system() != "Linux":
         check_that_tool_does_not_exist(binary, os_id)
         pytest.skip("smyrna is not built on non-Linux due to lacking dependencies")
+
+    if binary == "smyrna" and is_ubuntu_2510():
+        check_that_tool_does_not_exist(binary, os_id)
+        pytest.skip("smyrna is not built on Ubuntu ≥ 25.10 due to lacking dependencies")
 
     if binary == "gvmap.sh" and platform.system() == "Windows":
         pytest.skip(f"{binary} detection is unreliable on Windows")
