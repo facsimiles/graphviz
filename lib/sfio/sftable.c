@@ -18,11 +18,9 @@
 **	Written by Kiem-Phong Vo.
 */
 
-static char *sffmtint(const char *str, int *v)
-{
-    for (*v = 0; gv_isdigit(*str); ++str)
-	*v = *v * 10 + (*str - '0');
-    *v -= 1;
+static char *sffmtint(const char *str) {
+    for (; gv_isdigit(*str); ++str)
+	;
     return (char *) str;
 }
 

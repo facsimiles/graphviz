@@ -194,7 +194,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		fmt = *form++;
 		goto dot_size;
 	    } else if (*form == '*') {
-		form = _Sffmtintf(form + 1, &(int){0});
+		form = _Sffmtintf(form + 1);
 		n = ++argn;
 
 		FMTSET(ft, form, '.', dot, 0, 0, 0, 0, NULL, 0);
@@ -236,7 +236,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		for (n = *form; gv_isdigit(n); n = *++form)
 		    size = size * 10 + (n - '0');
 	    } else if (*form == '*') {
-		form = _Sffmtintf(form + 1, &(int){0});
+		form = _Sffmtintf(form + 1);
 		n = ++argn;
 
 		FMTSET(ft, form, 'I', sizeof(int), 0, 0, 0, 0, NULL, 0);

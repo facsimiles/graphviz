@@ -137,7 +137,7 @@ extern "C" {
 	uchar sf_dec[200];	/* ascii reps of values < 100   */
 	char *sf_digits;	/* digits for general bases     */
 	int sf_cvinit;		/* initialization state         */
-	char *(*sf_fmtintf) (const char *, int *);
+	char *(*sf_fmtintf)(const char *);
 	uchar sf_cv36[UCHAR_MAX + 1];	/* conversion for base [2-36]   */
 	uchar sf_cv64[UCHAR_MAX + 1];	/* conversion for base [37-64]  */
 	uchar sf_type[UCHAR_MAX + 1];	/* conversion formats&types     */
