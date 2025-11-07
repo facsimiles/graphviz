@@ -167,7 +167,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		    if (*t_str != '*')
 			n_str = (form - 1) - t_str;
 		    else {
-			t_str = _Sffmtintf(t_str + 1, &n);
 			++argn;
 
 			FMTSET(ft, form, LEFTP, 0, 0, 0, 0, 0, NULL, 0);
