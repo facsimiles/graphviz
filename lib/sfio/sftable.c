@@ -18,10 +18,10 @@
 **	Written by Kiem-Phong Vo.
 */
 
-static char *sffmtint(const char *str) {
+static const char *sffmtint(const char *str) {
     for (; gv_isdigit(*str); ++str)
 	;
-    return (char *) str;
+    return str;
 }
 
 /* table for floating point and integer conversions */
