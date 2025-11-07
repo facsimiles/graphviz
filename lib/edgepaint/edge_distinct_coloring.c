@@ -19,28 +19,27 @@
 #include <sparse/DotIO.h>
 #include <edgepaint/intersection.h>
 #include <sparse/QuadTree.h>
-#include <util/alloc.h>
+#include <util/list.h>
 
 static int splines_intersect(size_t dim,
 			     double cos_critical, int check_edges_with_same_endpoint, 
 			     char *xsplines1, char *xsplines2){
   /* cos_critical: cos of critical angle
      check_edges_with_same_endpoint: whether need to treat two splines from
-     .     the same end point specially in ignoring splines that exit/enter the same end pont at around 180
+     .     the same end point specially in ignoring splines that exit/enter the same end point at around 180
      xsplines1,xsplines2: the first and second splines corresponding to two edges
 
   */
-  size_t len1 = 100, len2 = 100;
-  size_t ns1 = 0, ns2 = 0;
   int iter1 = 0, iter2 = 0;
-  double cos_a, tmp[2];
-  int endp1 = 0, endp2 = 0;
+  double cos_a;
+  bool endp1 = false;
+  bool endp2 = false;
 
-  tmp[0] = tmp[1] = 0;
-  double *x1 = gv_calloc(len1, sizeof(double));
-  double *x2 = gv_calloc(len2, sizeof(double));
+  double tmp[2] = {0};
+  LIST(double) x1 = {0};
+  LIST(double) x2 = {0};
 
-  assert(dim <= 3);
+  assert(dim == 2);
 
   /* splines could be a list of 
      1. 3n points
@@ -49,36 +48,28 @@ static int splines_intersect(size_t dim,
   */
   if (xsplines1){
     if(strstr(xsplines1, "e,")){
-      endp1 = 1;
+      endp1 = true;
       xsplines1 = strstr(xsplines1, "e,") + 2;
     } else if (strstr(xsplines1, "s,")){
       xsplines1 = strstr(xsplines1, "s,") + 2;
     }
   }
-  while (xsplines1 && sscanf(xsplines1,"%lf,%lf", &(x1[ns1*dim]), &x1[ns1*dim + 1]) == 2){
+  for (double x, y; xsplines1 && sscanf(xsplines1,"%lf,%lf", &x, &y) == 2; ) {
     if (endp1 && iter1 == 0){
-      tmp[0] = x1[ns1*dim]; tmp[1] = x1[ns1*dim + 1];
+      tmp[0] = x;
+      tmp[1] = y;
     } else {
-      ns1++;
+      LIST_APPEND(&x1, x);
+      LIST_APPEND(&x1, y);
     }
     iter1++;
     xsplines1 = strchr(xsplines1, ' ');
     if (!xsplines1) break;
     xsplines1++;
-    if (ns1*dim >= len1){
-      size_t new_len1 = ns1 * dim + MAX(10u, ns1 * dim / 5);
-      x1 = gv_recalloc(x1, len1, new_len1, sizeof(double));
-      len1 = new_len1;
-    }
   }
   if (endp1){/* pad the end point at the last position */
-    ns1++;
-    if (ns1*dim >= len1){
-      size_t new_len1 = ns1 * dim + MAX(10u, ns1 * dim / 5);
-      x1 = gv_recalloc(x1, len1, new_len1, sizeof(double));
-      len1 = new_len1;
-    }
-    x1[(ns1-1)*dim] = tmp[0];  x1[(ns1-1)*dim + 1] = tmp[1]; 
+    LIST_APPEND(&x1, tmp[0]);
+    LIST_APPEND(&x1, tmp[1]);
   }
 
 
@@ -89,53 +80,50 @@ static int splines_intersect(size_t dim,
   */
   if (xsplines2){
     if(strstr(xsplines2, "e,")){
-      endp2 = 1;
+      endp2 = true;
       xsplines2 = strstr(xsplines2, "e,") + 2;
     } else if (strstr(xsplines2, "s,")){
       xsplines2 = strstr(xsplines2, "s,") + 2;
     }
   }
-  while (xsplines2 && sscanf(xsplines2,"%lf,%lf", &(x2[ns2*dim]), &x2[ns2*dim + 1]) == 2){
+  for (double x, y; xsplines2 && sscanf(xsplines2,"%lf,%lf", &x, &y) == 2; ) {
     if (endp2 && iter2 == 0){
-      tmp[0] = x2[ns2*dim]; tmp[1] = x2[ns2*dim + 1];
+      tmp[0] = x;
+      tmp[1] = y;
     } else {
-      ns2++;
+      LIST_APPEND(&x2, x);
+      LIST_APPEND(&x2, y);
     }
     iter2++;
     xsplines2 = strchr(xsplines2, ' ');
     if (!xsplines2) break;
     xsplines2++;
-    if (ns2*dim >= len2){
-      size_t new_len2 = ns2 * dim + MAX(10u, ns2 * dim / 5);
-      x2 = gv_recalloc(x2, len2, new_len2, sizeof(double));
-      len2 = new_len2;
-    }
   }
   if (endp2){/* pad the end point at the last position */
-    ns2++;
-    if (ns2*dim >= len2){
-      size_t new_len2 = ns2 * dim + MAX(10u, ns2 * dim / 5);
-      x2 = gv_recalloc(x2, len2, new_len2, sizeof(double));
-      len2 = new_len2;
-    }
-    x2[(ns2-1)*dim] = tmp[0];  x2[(ns2-1)*dim + 1] = tmp[1]; 
+    LIST_APPEND(&x2, tmp[0]);
+    LIST_APPEND(&x2, tmp[1]);
   }
 
-  for (size_t i = 0; i < ns1 - 1; i++) {
-    for (size_t j = 0; j < ns2 - 1; j++) {
-      cos_a = intersection_angle(&(x1[dim*i]), &(x1[dim*(i + 1)]), &(x2[dim*j]), &(x2[dim*(j+1)]));
+  assert(LIST_SIZE(&x1) % dim == 0);
+  for (size_t i = 0; i < LIST_SIZE(&x1) / 2 - 1; i++) {
+    assert(LIST_SIZE(&x2) % dim == 0);
+    for (size_t j = 0; j < LIST_SIZE(&x2) / 2 - 1; j++) {
+      cos_a = intersection_angle(LIST_AT(&x1, dim * i),
+                                 LIST_AT(&x1, dim * (i + 1)),
+                                 LIST_AT(&x2, dim * j),
+                                 LIST_AT(&x2, dim * (j + 1)));
       if (!check_edges_with_same_endpoint && cos_a >= -1) cos_a = fabs(cos_a);
       if (cos_a > cos_critical) {
-	free(x1);
-	free(x2);
+	LIST_FREE(&x1);
+	LIST_FREE(&x2);
 	return 1;
       }
 
     }
   }
 
-  free(x1);
-  free(x2);
+  LIST_FREE(&x1);
+  LIST_FREE(&x2);
   return 0;
 }
 
@@ -181,7 +169,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
     clock_t start = clock();
 #endif
     assert(ne == nz2);
-    cos_a = 1.;/* for splines we exit conflict check as soon as we find an conflict, so the anle may not be representitive, hence set to constant */
+    cos_a = 1.;/* for splines we exit conflict check as soon as we find an conflict, so the angle may not be representative, hence set to constant */
     for (i = 0; i < nz2; i++){
       for (j = i+1; j < nz2; j++){
 	if (splines_intersect((size_t)dim, cos_critical,
@@ -196,7 +184,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
 #endif
     
   } else {
-    /* no splines, justsimple edges */
+    /* no splines, just simple edges */
 #ifdef TIME
     clock_t start = clock();
 #endif
@@ -229,7 +217,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
                                   accuracy, seed, &cdim, &colors);
     if (flag) goto RETURN;
 #ifdef TIME
-    fprintf(stderr, "cpu for color assignmment =%10.3f\n", ((double) (clock() - start))/CLOCKS_PER_SEC);
+    fprintf(stderr, "cpu for color assignment =%10.3f\n", ((double) (clock() - start))/CLOCKS_PER_SEC);
 #endif
   }
 
