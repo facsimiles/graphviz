@@ -202,7 +202,7 @@ int sfprint(FILE *f, Sffmt_t *format) {
 	  do_star:
 	    form += 1;		/* fall through */
 	case '*':
-	    form = _Sffmtintf(form, &n);
+	    form = _Sffmtintf(form, &(int){0});
 	    n = ++argn;
 
 	    FMTSET(ft, form, '.', dot, 0, 0, 0, 0, NULL, 0);
