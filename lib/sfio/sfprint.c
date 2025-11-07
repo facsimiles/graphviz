@@ -472,8 +472,10 @@ int sfprint(FILE *f, Sffmt_t *format) {
 			lv = -lv;
 		}
 		if (n_s < 0) {	/* base 10 */
-		    long long nv;
-		    sfucvt(lv, sp, nv, ssp, long long, unsigned long long);
+		    char scratch[41]; // space to print ≤128-bit integer
+		    const int nv = snprintf(scratch, sizeof(scratch), "%lld", lv);
+		    sp -= nv;
+		    memcpy(sp, scratch, (size_t)nv);
 		} else if (n_s > 0) {	/* base power-of-2 */
 		    do {
 			*--sp = ssp[lv & n_s];
