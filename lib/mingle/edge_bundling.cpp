@@ -13,6 +13,7 @@
 #include <common/globals.h>
 #include <sparse/general.h>
 #include <math.h>
+#include <numeric>
 #include <sparse/SparseMatrix.h>
 #include <mingle/edge_bundling.h>
 #include <time.h>
@@ -25,12 +26,7 @@
 #define SMALL 1.e-10
 
 static double norm(int n, const double *x) {
-  double res = 0;
-  int i;
-
-  for (i = 0; i < n; i++) res += x[i]*x[i];
-  return sqrt(res);
-
+  return sqrt(std::inner_product(x, x + n, x, 0.0));
 }
 
 static double sqr_dist(int dim, const double *x, const double *y) {
@@ -119,7 +115,6 @@ static double edge_compatibility_full(const pedge &e1, const pedge &e2) {
   dist2 =  sqr_dist(dim, u1, v2) + sqr_dist(dim, v1, u2);
   if (dist1 > dist2){
     std::swap(u2, v2);
-    dist1 = dist2;
     flipped = true;
   }
   len1 = std::max(dist(dim, u1, v1), SMALL);
@@ -162,32 +157,26 @@ static void fprint_rgb(FILE* fp, int r, int g, int b, int alpha){
 }
 
 void pedge_export_gv(FILE *fp, int ne, const std::vector<pedge> &edges) {
-  double t;
-  int i, j, k, kk, dim, sta, sto;
-  double maxwgt = 0, len, len_total0;
-  int r, g, b;
-  double tt1[3]={0.15,0.5,0.85};
-  double tt2[4]={0.15,0.4,0.6,0.85};
-  double *tt;
+  double maxwgt = 0;
 
   fprintf(fp,"strict graph{\n");
   /* points */
-  for (i = 0; i < ne; i++){
+  for (int i = 0; i < ne; i++){
     const pedge &edge = edges[i];
     const std::vector<double> &x = edge.x;
-    dim = edge.dim;
-    sta = 0;
-    sto = edge.npoints - 1;
+    const int dim = edge.dim;
+    const int sta = 0;
+    const int sto = edge.npoints - 1;
 
     fprintf(fp, "%d [pos=\"", i);
-    for (k = 0; k < dim; k++) {
+    for (int k = 0; k < dim; k++) {
       if (k != 0)  fprintf(fp, ",");
       fprintf(fp, "%f", x[sta*dim+k]);
     }
     fprintf(fp, "\"];\n");
 
     fprintf(fp, "%d [pos=\"", i + ne);
-    for (k = 0; k < dim; k++) {
+    for (int k = 0; k < dim; k++) {
       if (k != 0)  fprintf(fp, ",");
       fprintf(fp, "%f", x[sto*dim+k]);
     }
@@ -196,28 +185,31 @@ void pedge_export_gv(FILE *fp, int ne, const std::vector<pedge> &edges) {
   }
 
   /* figure out max number of bundled original edges in a pedge */
-  for (i = 0; i < ne; i++){
+  for (int i = 0; i < ne; i++){
     const pedge &edge = edges[i];
     if (!edge.wgts.empty()) {
-      for (j = 0; j < edge.npoints - 1; j++) {
+      for (int j = 0; j < edge.npoints - 1; j++) {
         maxwgt = std::max(maxwgt, edge.wgts[j]);
       }
     }
   }
 
   /* spline and colors */
-  for (i = 0; i < ne; i++){
+  for (int i = 0; i < ne; i++){
     fprintf(fp,"%d -- %d [pos=\"", i, i + ne);
     const pedge &edge = edges[i];
     const std::vector<double> &x = edge.x;
-    dim = edge.dim;
+    const int dim = edge.dim;
     /* splines */
-    for (j = 0; j < edge.npoints; j++) {
+    for (int j = 0; j < edge.npoints; j++) {
       if (j != 0) {
 	int mm = 3;
 	fprintf(fp," ");
 	/* there are ninterval+1 points, add 3*ninterval+2 points, get rid of internal ninternal-1 points,
 	  make into 3*ninterval+4 points so that gviz spline rendering can work */
+	const double *tt;
+	const double tt1[] = {0.15, 0.5, 0.85};
+	const double tt2[] = {0.15, 0.4, 0.6, 0.85};
 	if (j == 1 || j == edge.npoints - 1) {
 	  // every interval gets 3 points inserted except the first and last one
 	  tt = tt2;
@@ -225,9 +217,9 @@ void pedge_export_gv(FILE *fp, int ne, const std::vector<pedge> &edges) {
 	} else {
 	  tt = tt1;
 	}
-	for (kk = 1; kk <= mm; kk++){
-	  t = tt[kk-1];
-	  for (k = 0; k < dim; k++) {
+	for (int kk = 1; kk <= mm; kk++){
+	  const double t = tt[kk - 1];
+	  for (int k = 0; k < dim; k++) {
 	    if (k != 0) fprintf(fp,",");
 	    fprintf(fp, "%f", x[(j - 1) * dim + k] * (1 - t) + x[j * dim + k] * t);
 	  }
@@ -235,7 +227,7 @@ void pedge_export_gv(FILE *fp, int ne, const std::vector<pedge> &edges) {
 	}
       }
       if (j == 0 || j == edge.npoints - 1){
-	for (k = 0; k < dim; k++) {
+	for (int k = 0; k < dim; k++) {
 	  if (k != 0) fprintf(fp,",");
 	  fprintf(fp, "%f", x[j*dim+k]);
 	}
@@ -244,30 +236,34 @@ void pedge_export_gv(FILE *fp, int ne, const std::vector<pedge> &edges) {
     /* colors based on how much bundling */
     if (!edge.wgts.empty()) {
       fprintf(fp, "\", wgts=\"");
-      for (j = 0; j < edge.npoints - 1; j++){
+      for (int j = 0; j < edge.npoints - 1; j++){
 	if (j != 0) fprintf(fp,",");
 	fprintf(fp, "%f", edge.wgts[j]);
       }
 
-      len_total0 = 0;
+      double len_total0 = 0;
       fprintf(fp, "\", color=\"");
-      for (j = 0; j < edge.npoints - 1; j++){
-	len = 0;
+      for (int j = 0; j < edge.npoints - 1; j++){
+	double len = 0;
+	int k;
 	for (k = 0; k < dim; k++){
 	  len += (edge.x[dim * j + k] - edge.x[dim * (j + 1) + k]) * (edge.x[dim * j + k] - edge.x[dim * (j + 1) + k]);
 	}
 	len = sqrt(len/k);
 	len_total0 += len;
       }
-      for (j = 0; j < edge.npoints - 1; j++) {
-	len = 0;
+      for (int j = 0; j < edge.npoints - 1; j++) {
+	double len = 0;
+	int k;
 	for (k = 0; k < dim; k++){
 	  len += (edge.x[dim * j + k] - edge.x[dim * (j + 1) + k]) * (edge.x[dim * j + k] - edge.x[dim * (j + 1) + k]);
 	}
 	len = sqrt(len/k);
-	t = edge.wgts[j] / maxwgt;
+	const double t = edge.wgts[j] / maxwgt;
 	// interpolate between red (t = 1) to blue (t = 0)
-	r = 255*t; g = 0; b = 255*(1-t); b = 255*(1-t);
+	const int r = 255 * t;
+	const int g = 0;
+	const int b = 255 * (1 - t);
 	if (j != 0) fprintf(fp,":");
 	fprint_rgb(fp, r, g, b, 85);
 	if (j < edge.npoints - 2) fprintf(fp, ";%f", len / len_total0);
@@ -368,8 +364,6 @@ static void edge_attraction_force(double similarity, const pedge &e1,
   const std::vector<double> &x1 = e1.x, &x2 = e2.x;
   const int dim = e1.dim;
   const int np = e1.npoints;
-  int i, j;
-  double dist, s, ss;
   const double edge_length = e1.edge_length;
 
   assert(e1.npoints == e2.npoints);
@@ -378,22 +372,20 @@ static void edge_attraction_force(double similarity, const pedge &e1,
    so the force is nominal and unitless
   */
   if (similarity > 0){
-    s = edge_length;
-    s = similarity*edge_length;
-    for (i = 1; i <= np - 2; i++){
-      dist = sqr_dist(dim, &x1.data()[i*dim], &x2.data()[i*dim]);
+    const double s = similarity * edge_length;
+    for (int i = 1; i <= np - 2; i++){
+      double dist = sqr_dist(dim, &x1.data()[i * dim], &x2.data()[i * dim]);
       if (dist < SMALL) dist = SMALL;
-      ss = s/(dist+0.1*edge_length*sqrt(dist));
-      for (j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[i*dim + j] - x1[i*dim + j]);
+      const double ss = s / (dist + 0.1 * edge_length * sqrt(dist));
+      for (int j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[i*dim + j] - x1[i*dim + j]);
     }
   } else {/* clip e2 */
-    s = -edge_length;
-    s = -similarity*edge_length; 
-    for (i = 1; i <= np - 2; i++){
-      dist = sqr_dist(dim, &x1.data()[i*dim], &x2.data()[(np - 1 - i)*dim]);
+    const double s = -similarity * edge_length;
+    for (int i = 1; i <= np - 2; i++){
+      double dist = sqr_dist(dim, &x1.data()[i * dim], &x2.data()[(np - 1 - i) * dim]);
       if (dist < SMALL) dist = SMALL;
-      ss = s/(dist+0.1*edge_length*sqrt(dist));
-      for (j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[(np - 1 - i)*dim + j] - x1[i*dim + j]);
+      const double ss = s / (dist + 0.1 * edge_length * sqrt(dist));
+      for (int j = 0; j < dim; j++) force[i*dim + j] += ss*(x2[(np - 1 - i)*dim + j] - x1[i*dim + j]);
     }
   }
 
