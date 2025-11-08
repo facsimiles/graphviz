@@ -455,9 +455,7 @@ finish:
 	free(b);
     }
     free(f_storage);
-    if (coords != NULL) {
-	free(coords);
-    }
+    free(coords);
     free(ordering);
 
     free(levels);
