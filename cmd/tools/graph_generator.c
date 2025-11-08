@@ -9,7 +9,9 @@
  *************************************************************************/
 
 #include "config.h"
+#include <assert.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -189,6 +191,7 @@ void makeTree(unsigned depth, unsigned nary, edgefn ef) {
 }
 
 void makeBinaryTree(unsigned depth, edgefn ef) {
+    assert(depth < sizeof(unsigned) * CHAR_BIT);
     const unsigned n = (1u << depth) - 1;
 
     for (unsigned i = 1; i <= n; i++) {
@@ -197,13 +200,29 @@ void makeBinaryTree(unsigned depth, edgefn ef) {
     }
 }
 
-typedef struct {
-  unsigned nedges;
-  unsigned *edges;
-} vtx_data;
+typedef LIST(unsigned) vtx_data;
+
+/// `vtx_data` destructor
+static void free_vtx(vtx_data data) {
+  LIST_FREE(&data);
+}
+
+typedef LIST(vtx_data) vtx_datas_t;
+
+/// add an item to `graph`, expanding on demand
+static void append(vtx_datas_t *graph, size_t index, unsigned ref) {
+  assert(graph != NULL);
+
+  // expand the list as necessary
+  while (index >= LIST_SIZE(graph)) {
+    LIST_APPEND(graph, (vtx_data){0});
+  }
+
+  LIST_APPEND(LIST_AT(graph, index), ref);
+}
 
 static void constructSierpinski(unsigned v1, unsigned v2, unsigned v3,
-                                unsigned depth, vtx_data *graph) {
+                                unsigned depth, vtx_datas_t *graph) {
     static unsigned last_used_node_name = 3;
 
     if (depth > 0) {
@@ -217,53 +236,36 @@ static void constructSierpinski(unsigned v1, unsigned v2, unsigned v3,
     }
     // depth==0, Construct graph:
 
-    unsigned nedges = graph[v1].nedges;
-    graph[v1].edges[nedges++] = v2;
-    graph[v1].edges[nedges++] = v3;
-    graph[v1].nedges = nedges;
+    append(graph, v1, v2);
+    append(graph, v1, v3);
 
-    nedges = graph[v2].nedges;
-    graph[v2].edges[nedges++] = v1;
-    graph[v2].edges[nedges++] = v3;
-    graph[v2].nedges = nedges;
+    append(graph, v2, v1);
+    append(graph, v2, v3);
 
-    nedges = graph[v3].nedges;
-    graph[v3].edges[nedges++] = v1;
-    graph[v3].edges[nedges++] = v2;
-    graph[v3].nedges = nedges;
+    append(graph, v3, v1);
+    append(graph, v3, v2);
 }
 
 void makeSierpinski(unsigned depth, edgefn ef) {
-    vtx_data* graph;
+    vtx_datas_t graph = {.dtor = free_vtx};
 
     depth--;
-    const unsigned n = 3 * (1 + ((unsigned)(pow(3.0, depth) + 0.5) - 1) / 2);
+    constructSierpinski(1, 2, 3, depth, &graph);
 
-    graph = gv_calloc(n + 1, sizeof(vtx_data));
-    unsigned *edges = gv_calloc(4 * n, sizeof(unsigned));
-
-    for (unsigned i = 1; i <= n; i++) {
-	graph[i].edges = edges;
-	edges += 4;
-	graph[i].nedges = 0;
-    }
-
-    constructSierpinski(1, 2, 3, depth, graph);
-
-    for (unsigned i = 1; i <= n; i++) {
+    for (unsigned i = 1; i < LIST_SIZE(&graph); i++) {
+	const vtx_data *const g = LIST_AT(&graph, i);
 	// write the neighbors of the node i
-	for (unsigned j = 0; j < graph[i].nedges; j++) {
-	    const unsigned nghbr = graph[i].edges[j];
+	for (size_t j = 0; j < LIST_SIZE(g); j++) {
+	    const unsigned nghbr = LIST_GET(g, j);
 	    if (i < nghbr) ef( i, nghbr);
 	}
     }
 
-    free(graph[1].edges);
-    free(graph);
+    LIST_FREE(&graph);
 }
 
 static void constructTetrix(unsigned v1, unsigned v2, unsigned v3, unsigned v4,
-                            unsigned depth, vtx_data* graph) {
+                            unsigned depth, vtx_datas_t *graph) {
     static unsigned last_used_node_name = 4;
 
     if (depth > 0) {
@@ -280,61 +282,43 @@ static void constructTetrix(unsigned v1, unsigned v2, unsigned v3, unsigned v4,
         return;
     }
     // depth==0, Construct graph:
-    unsigned nedges = graph[v1].nedges;
-    graph[v1].edges[nedges++] = v2;
-    graph[v1].edges[nedges++] = v3;
-    graph[v1].edges[nedges++] = v4;
-    graph[v1].nedges = nedges;
+    append(graph, v1, v2);
+    append(graph, v1, v3);
+    append(graph, v1, v4);
 
-    nedges = graph[v2].nedges;
-    graph[v2].edges[nedges++] = v1;
-    graph[v2].edges[nedges++] = v3;
-    graph[v2].edges[nedges++] = v4;
-    graph[v2].nedges = nedges;
+    append(graph, v2, v1);
+    append(graph, v2, v3);
+    append(graph, v2, v4);
 
-    nedges = graph[v3].nedges;
-    graph[v3].edges[nedges++] = v1;
-    graph[v3].edges[nedges++] = v2;
-    graph[v3].edges[nedges++] = v4;
-    graph[v3].nedges = nedges;
+    append(graph, v3, v1);
+    append(graph, v3, v2);
+    append(graph, v3, v4);
 
-    nedges = graph[v4].nedges;
-    graph[v4].edges[nedges++] = v1;
-    graph[v4].edges[nedges++] = v2;
-    graph[v4].edges[nedges++] = v3;
-    graph[v4].nedges = nedges;
+    append(graph, v4, v1);
+    append(graph, v4, v2);
+    append(graph, v4, v3);
 }
 
 void makeTetrix(unsigned depth, edgefn ef) {
-    vtx_data* graph;
+    vtx_datas_t graph = {.dtor = free_vtx};
 
     depth--;
-    const unsigned n = 4 + 2 * (((unsigned)(pow(4.0, depth) + 0.5) - 1));
+    constructTetrix(1, 2, 3, 4, depth, &graph);
 
-    graph = gv_calloc(n + 1, sizeof(vtx_data));
-    unsigned *edges = gv_calloc(6 * n, sizeof(unsigned));
-
-    for (unsigned i = 1; i <= n; i++) {
-        graph[i].edges = edges;
-        edges += 6;
-        graph[i].nedges = 0;
-    }
-
-    constructTetrix(1, 2, 3, 4, depth, graph);
-
-    for (unsigned i = 1; i <= n; i++) {
+    for (unsigned i = 1; i < LIST_SIZE(&graph); i++) {
+        const vtx_data *const g = LIST_AT(&graph, i);
         // write the neighbors of the node i
-        for (unsigned j = 0; j < graph[i].nedges; j++) {
-            const unsigned nghbr = graph[i].edges[j];
+        for (size_t j = 0; j < LIST_SIZE(g); j++) {
+            const unsigned nghbr = LIST_GET(g, j);
             if (i < nghbr) ef( i, nghbr);
         }
     }
 
-    free(graph[1].edges);
-    free(graph);
+    LIST_FREE(&graph);
 }
 
 void makeHypercube(unsigned dim, edgefn ef) {
+    assert(dim < sizeof(unsigned) * CHAR_BIT);
     const unsigned n = 1u << dim;
 
     for (unsigned i = 0; i < n; i++) {
