@@ -327,6 +327,7 @@ static pointf *mkCtrlPts(int s, int mult, pointf prev, pointf v,
     }
 
     if (triPoint(trip, idx, v, w, &q)) {
+	free(ps);
 	return 0;
     }
 
