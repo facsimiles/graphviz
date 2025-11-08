@@ -514,13 +514,8 @@ static void freeTriGraph(tgraph * tg)
  */
 static tgraph *mkTriGraph(surface_t *sf, pointf *pts) {
     tnode *np;
-    int j, i, ne = 0;
+    int j, i, ne;
     int *jp;
-
-    /* ne is twice no. of edges */
-    for (i = 0; i < 3 * sf->nfaces; i++)
-	if (sf->neigh[i] != -1)
-	    ne++;
 
     tgraph *g = gv_alloc(sizeof(tgraph));
 
