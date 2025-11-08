@@ -2308,7 +2308,7 @@ static void poly_init(node_t * n)
 		    // undefined. Therefore we keep the same offset for the end
 		    // point as already calculated for the start point. This may
 		    // occur for shapes which are represented as polygons during
-		    // layout, but are drawn using bezier curves during
+		    // layout, but are drawn using Bézier curves during
 		    // rendering, e.g. for the `cylinder` shape.
 		} else {
 		    for (size_t j = 1; j < sides; j++) {
@@ -2647,7 +2647,7 @@ static double invflip_angle(double angle, int rankdir)
  */
 static pointf compassPoint(inside_t * ictxt, double y, double x)
 {
-    pointf curve[4];		/* bezier control points for a straight line */
+    pointf curve[4];		/* Bézier control points for a straight line */
     node_t *n = ictxt->s.n;
     graph_t* g = agraphof(n);
     int rd = GD_rankdir(g);

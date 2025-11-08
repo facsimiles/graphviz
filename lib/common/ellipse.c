@@ -90,7 +90,7 @@ static void initEllipse(ellipse_t * ep, double cx, double cy, double a,
 typedef double erray_t[2][4][4];
 
   // coefficients for error estimation
-  // while using cubic Bezier curves for approximation
+  // while using cubic Bézier curves for approximation
   // 0 < b/a < 1/4
 static erray_t coeffs3Low = {
     {
@@ -108,7 +108,7 @@ static erray_t coeffs3Low = {
 };
 
   // coefficients for error estimation
-  // while using cubic Bezier curves for approximation
+  // while using cubic Bézier curves for approximation
   // 1/4 <= b/a <= 1
 static erray_t coeffs3High = {
     {
@@ -139,7 +139,7 @@ static double safety3[] = {
 
 /* Estimate the approximation error for a sub-arc of the instance.
  * tA and tB give the start and end angle of the subarc
- * Returns upper bound of the approximation error between the Bezier
+ * Returns upper bound of the approximation error between the Bézier
  * curve and the real ellipse
  */
 static double estimateError(ellipse_t *ep, double etaA, double etaB) {
@@ -170,7 +170,7 @@ static double estimateError(ellipse_t *ep, double etaA, double etaB) {
 
 typedef LIST(pointf) bezier_path_t;
 
-/* append points to a Bezier path
+/* append points to a Bézier path
  * Assume initial call to moveTo to initialize, followed by
  * calls to curveTo and lineTo, and finished with endPath.
  */
@@ -197,7 +197,7 @@ static void endPath(bezier_path_t *polypath) {
 }
 
 /* genEllipticPath:
- * Approximate an elliptical arc via Beziers of degree 3
+ * Approximate an elliptical arc via Béziers of degree 3
  * The path begins and ends with line segments to the center of the ellipse.
  * Returned path must be freed by the caller.
  */
@@ -220,7 +220,7 @@ static Ppolyline_t *genEllipticPath(ellipse_t * ep) {
 
     static const double THRESHOLD = 0.00001; // quality of approximation
 
-    // find the number of Bezier curves needed
+    // find the number of Bézier curves needed
     bool found = false;
     int i, n = 1;
     while (!found && n < 1024) {
@@ -289,7 +289,7 @@ static Ppolyline_t *genEllipticPath(ellipse_t * ep) {
 }
 
 /* ellipticWedge:
- * Return a cubic Bezier for an elliptical wedge, with center ctr, x and y
+ * Return a cubic Bézier for an elliptical wedge, with center ctr, x and y
  * semi-axes xsemi and ysemi, start angle angle0 and end angle angle1.
  * This includes beginning and ending line segments to the ellipse center.
  * Calling function must free storage of returned path.

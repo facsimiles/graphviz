@@ -411,7 +411,7 @@ collinear (pointf * A)
 }
 
 /* straight:
- * Return true if bezier points are collinear
+ * Return true if Bézier points are collinear
  * At present, just check with 4 points, the common case.
  */
 static int straight(pointf *A, size_t n) {
@@ -658,7 +658,7 @@ static void vrml_polygon(GVJ_t *job, pointf *A, size_t np, int filled) {
 
 	z = GETZ(job,obj,p,e);
 
-	/* FIXME: arrow vector ought to follow z coord of bezier */
+	/* FIXME: arrow vector ought to follow z coord of Bézier */
 	gvputs(job,   "Transform {\n");
 	gvprintf(job, "  translation %.3f %.3f %.3f\n", p.x, p.y, z);
 	gvputs(job,   "  children [\n"
