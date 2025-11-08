@@ -29,7 +29,6 @@
 #include <util/strcasecmp.h>
 
 #define EMPTY(s)		(((s) == 0) || (s)[0] == '\0')
-#define MAX(a,b)     ((a)>(b)?(a):(b))
 #define CHKRV(v)     {if ((v) == EOF) return EOF;}
 
 typedef void iochan_t;
@@ -42,7 +41,6 @@ static int ioput(Agraph_t * g, iochan_t * ofile, char *str)
 
 #define MAX_OUTPUTLINE		128
 #define MIN_OUTPUTLINE		 60
-static int Level;
 static int Max_outputline = MAX_OUTPUTLINE;
 static Agsym_t *Tailport, *Headport;
 
@@ -50,6 +48,7 @@ typedef struct {
 	uint64_t *preorder_number;	// of a graph or subgraph
 	uint64_t *node_last_written;	// postorder number of subg when node was last written
 	uint64_t *edge_last_written;	// postorder number of subg when edge was last written
+	int level;                      // indentation level
 } write_info_t;
 
 static int write_body(Agraph_t *g, iochan_t *ofile, write_info_t *wr_info);
@@ -57,10 +56,9 @@ static int write_body(Agraph_t *g, iochan_t *ofile, write_info_t *wr_info);
 static write_info_t before_write(Agraph_t *);
 static void after_write(write_info_t);
 
-static int indent(Agraph_t * g, iochan_t * ofile)
-{
+static int indent(Agraph_t *g, iochan_t *ofile, const write_info_t wr_info) {
     int i;
-    for (i = Level; i > 0; i--)
+    for (i = wr_info.level; i > 0; i--)
 	CHKRV(ioput(g, ofile, "\t"));
     return 0;
 }
@@ -260,7 +258,7 @@ static int write_canonstr(Agraph_t *g, iochan_t *ofile, char *str, bool known) {
 }
 
 static int write_dict(Agraph_t * g, iochan_t * ofile, char *name,
-                      Dict_t * dict, bool top) {
+                      Dict_t * dict, bool top, write_info_t *wr_info) {
     int cnt = 0;
     Dict_t *view;
     Agsym_t *sym, *psym;
@@ -279,23 +277,23 @@ static int write_dict(Agraph_t * g, iochan_t * ofile, char *name,
 		continue;	/* also empty in parent */
 	}
 	if (cnt++ == 0) {
-	    CHKRV(indent(g, ofile));
+	    CHKRV(indent(g, ofile, *wr_info));
 	    CHKRV(ioput(g, ofile, name));
 	    CHKRV(ioput(g, ofile, " ["));
-	    Level++;
+	    wr_info->level++;
 	} else {
 	    CHKRV(ioput(g, ofile, ",\n"));
-	    CHKRV(indent(g, ofile));
+	    CHKRV(indent(g, ofile, *wr_info));
 	}
 	CHKRV(write_canonstr(g, ofile, sym->name, true));
 	CHKRV(ioput(g, ofile, "="));
 	CHKRV(write_canonstr(g, ofile, sym->defval, true));
     }
     if (cnt > 0) {
-	Level--;
+	wr_info->level--;
 	if (cnt > 1) {
 	    CHKRV(ioput(g, ofile, "\n"));
-	    CHKRV(indent(g, ofile));
+	    CHKRV(indent(g, ofile, *wr_info));
 	}
 	CHKRV(ioput(g, ofile, "];\n"));
     }
@@ -304,17 +302,19 @@ static int write_dict(Agraph_t * g, iochan_t * ofile, char *name,
     return 0;
 }
 
-static int write_dicts(Agraph_t *g, iochan_t *ofile, bool top) {
+static int write_dicts(Agraph_t *g, iochan_t *ofile, bool top,
+                       write_info_t *wr_info) {
     Agdatadict_t *def;
     if ((def = agdatadict(g, false))) {
-	CHKRV(write_dict(g, ofile, "graph", def->dict.g, top));
-	CHKRV(write_dict(g, ofile, "node", def->dict.n, top));
-	CHKRV(write_dict(g, ofile, "edge", def->dict.e, top));
+	CHKRV(write_dict(g, ofile, "graph", def->dict.g, top, wr_info));
+	CHKRV(write_dict(g, ofile, "node", def->dict.n, top, wr_info));
+	CHKRV(write_dict(g, ofile, "edge", def->dict.e, top, wr_info));
     }
     return 0;
 }
 
-static int write_hdr(Agraph_t *g, iochan_t *ofile, bool top) {
+static int write_hdr(Agraph_t *g, iochan_t *ofile, bool top,
+                     write_info_t *wr_info) {
     char *name, *sep, *kind, *strict;
     bool root = false;
     bool hasName = true;
@@ -339,7 +339,7 @@ static int write_hdr(Agraph_t *g, iochan_t *ofile, bool top) {
 	sep = name = "";
 	hasName = false;
     }
-    CHKRV(indent(g, ofile));
+    CHKRV(indent(g, ofile, *wr_info));
     CHKRV(ioput(g, ofile, strict));
 
     /* output "<kind>graph" only for root graphs or graphs with names */
@@ -351,17 +351,15 @@ static int write_hdr(Agraph_t *g, iochan_t *ofile, bool top) {
 	CHKRV(write_canonstr(g, ofile, name, false));
     CHKRV(ioput(g, ofile, sep));
     CHKRV(ioput(g, ofile, "{\n"));
-    Level++;
-    CHKRV(write_dicts(g, ofile, top));
+    wr_info->level++;
+    CHKRV(write_dicts(g, ofile, top, wr_info));
     AGATTRWF(g) = true;
     return 0;
 }
 
-static int write_trl(Agraph_t * g, iochan_t * ofile)
-{
-    (void)g;
-    Level--;
-    CHKRV(indent(g, ofile));
+static int write_trl(Agraph_t *g, iochan_t *ofile, write_info_t *wr_info) {
+    wr_info->level--;
+    CHKRV(indent(g, ofile, *wr_info));
     CHKRV(ioput(g, ofile, "}\n"));
     return 0;
 }
@@ -439,15 +437,16 @@ static int write_subgs(Agraph_t *g, iochan_t *ofile, write_info_t *wr_info) {
 	    write_subgs(subg, ofile, wr_info);
 	}
 	else {
-	    CHKRV(write_hdr(subg, ofile, false));
+	    CHKRV(write_hdr(subg, ofile, false, wr_info));
 	    CHKRV(write_body(subg, ofile, wr_info));
-	    CHKRV(write_trl(subg, ofile));
+	    CHKRV(write_trl(subg, ofile, wr_info));
 	}
     }
     return 0;
 }
 
-static int write_edge_name(Agedge_t *e, iochan_t *ofile, bool terminate) {
+static int write_edge_name(Agedge_t *e, iochan_t *ofile, bool terminate,
+                           write_info_t *wr_info) {
     char *p;
     Agraph_t *g;
 
@@ -455,7 +454,7 @@ static int write_edge_name(Agedge_t *e, iochan_t *ofile, bool terminate) {
     g = agraphof(e);
     if (!EMPTY(p)) {
 	if (!terminate) {
-	    Level++;
+	    wr_info->level++;
 	}
 	CHKRV(ioput(g, ofile, "\t[key="));
 	CHKRV(write_canonstr(g, ofile, p, false));
@@ -468,8 +467,7 @@ static int write_edge_name(Agedge_t *e, iochan_t *ofile, bool terminate) {
 
 
 static int write_nondefault_attrs(void *obj, iochan_t * ofile,
-				  Dict_t * defdict)
-{
+				  Dict_t *defdict, write_info_t *wr_info) {
     Agattr_t *data;
     Agsym_t *sym;
     Agraph_t *g;
@@ -477,7 +475,7 @@ static int write_nondefault_attrs(void *obj, iochan_t * ofile,
     int rv;
 
     if (AGTYPE(obj) == AGINEDGE || AGTYPE(obj) == AGOUTEDGE) {
-	CHKRV(rv = write_edge_name(obj, ofile, false));
+	CHKRV(rv = write_edge_name(obj, ofile, false, wr_info));
 	if (rv)
 	    cnt++;
     }
@@ -494,10 +492,10 @@ static int write_nondefault_attrs(void *obj, iochan_t * ofile,
 	    if (data->str[sym->id] != sym->defval) {
 		if (cnt++ == 0) {
 		    CHKRV(ioput(g, ofile, "\t["));
-		    Level++;
+		    wr_info->level++;
 		} else {
 		    CHKRV(ioput(g, ofile, ",\n"));
-		    CHKRV(indent(g, ofile));
+		    CHKRV(indent(g, ofile, *wr_info));
 		}
 		CHKRV(write_canonstr(g, ofile, sym->name, true));
 		CHKRV(ioput(g, ofile, "="));
@@ -506,7 +504,7 @@ static int write_nondefault_attrs(void *obj, iochan_t * ofile,
 	}
     if (cnt > 0) {
 	CHKRV(ioput(g, ofile, "]"));
-	Level--;
+	wr_info->level--;
     }
     AGATTRWF(obj) = true;
     return 0;
@@ -539,10 +537,10 @@ static int write_node(Agraph_t *subg, Agnode_t *n, iochan_t *ofile, Dict_t *d,
     Agraph_t *g;
 
     g = agraphof(n);
-    CHKRV(indent(g, ofile));
+    CHKRV(indent(g, ofile, *wr_info));
     CHKRV(write_nodename(n, ofile));
     if (!attrs_written(n))
-	CHKRV(write_nondefault_attrs(n, ofile, d));
+	CHKRV(write_nondefault_attrs(n, ofile, d, wr_info));
     wr_info->node_last_written[AGSEQ(n)] =
 	wr_info->preorder_number[AGSEQ(subg)];
     return ioput(g, ofile, ";\n");
@@ -606,16 +604,16 @@ static int write_edge(Agraph_t *subg, Agedge_t *e, iochan_t *ofile, Dict_t *d,
     t = AGTAIL(e);
     h = AGHEAD(e);
     g = agraphof(t);
-    CHKRV(indent(g, ofile));
+    CHKRV(indent(g, ofile, *wr_info));
     CHKRV(write_nodename(t, ofile));
     CHKRV(write_port(e, ofile, Tailport));
     CHKRV(ioput(g, ofile, (agisdirected(agraphof(t)) ? " -> " : " -- ")));
     CHKRV(write_nodename(h, ofile));
     CHKRV(write_port(e, ofile, Headport));
     if (!attrs_written(e)) {
-	CHKRV(write_nondefault_attrs(e, ofile, d));
+	CHKRV(write_nondefault_attrs(e, ofile, d, wr_info));
     } else {
-	CHKRV(write_edge_name(e, ofile, true));
+	CHKRV(write_edge_name(e, ofile, true, wr_info));
     }
     wr_info->edge_last_written[AGSEQ(e)] =
 	wr_info->preorder_number[AGSEQ(subg)];
@@ -669,7 +667,6 @@ static void set_attrwf(Agraph_t * g, bool toplevel, bool value)
 int agwrite(Agraph_t * g, void *ofile)
 {
     char* s;
-    Level = 0;			/* re-initialize tab level */
     s = agget(g, "linelength");
     if (s != NULL && gv_isdigit(*s)) {
 	unsigned long len = strtoul(s, NULL, 10);
@@ -677,9 +674,18 @@ int agwrite(Agraph_t * g, void *ofile)
 	    Max_outputline = (int)len;
     }
     write_info_t wr_info = before_write(g);
-    CHKRV(write_hdr(g, ofile, true));
-    CHKRV(write_body(g, ofile, &wr_info));
-    CHKRV(write_trl(g, ofile));
+    if (write_hdr(g, ofile, true, &wr_info) == EOF) {
+	after_write(wr_info);
+	return EOF;
+    }
+    if (write_body(g, ofile, &wr_info) == EOF) {
+	after_write(wr_info);
+	return EOF;
+    }
+    if (write_trl(g, ofile, &wr_info) == EOF) {
+	after_write(wr_info);
+	return EOF;
+    }
     after_write(wr_info);
     Max_outputline = MAX_OUTPUTLINE;
     return AGDISC(g, io)->flush(ofile);
