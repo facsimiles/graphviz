@@ -534,7 +534,6 @@ static tgraph *mkTriGraph(surface_t *sf, pointf *pts) {
     }
 
     for (i = 0; i < sf->nfaces; i++) {
-	np = g->nodes + i;
 	jp = sf->neigh + 3 * i;
         ne = 0;
 	while (ne < 3 && (j = *jp++) != -1) {
