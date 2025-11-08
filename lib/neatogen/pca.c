@@ -29,7 +29,6 @@ PCA_alloc(DistType ** coords, int dim, int n, double **new_coords,
     double **eigs = gv_calloc(new_dim, sizeof(double *));
     for (i = 0; i < new_dim; i++)
 	eigs[i] = gv_calloc(dim, sizeof(double));
-    double *evals = gv_calloc(new_dim, sizeof(double));
 
     double **DD = gv_calloc(dim, sizeof(double *)); // dim×dim matrix: coords×coordsᵀ
     double *storage_ptr = gv_calloc(dim * dim, sizeof(double));
@@ -49,7 +48,7 @@ PCA_alloc(DistType ** coords, int dim, int n, double **new_coords,
 	}
     }
 
-    power_iteration(DD, dim, new_dim, eigs, evals);
+    power_iteration(DD, dim, new_dim, eigs);
 
     for (j = 0; j < new_dim; j++) {
 	for (i = 0; i < n; i++) {
@@ -64,7 +63,6 @@ PCA_alloc(DistType ** coords, int dim, int n, double **new_coords,
     for (i = 0; i < new_dim; i++)
 	free(eigs[i]);
     free(eigs);
-    free(evals);
     free(DD[0]);
     free(DD);
 }
@@ -73,7 +71,6 @@ bool iterativePCA_1D(double **coords, int dim, int n, double *new_direction) {
     vtx_data *laplacian;
     float **mat1 = NULL;
     double **mat = NULL;
-    double eval;
 
     /* Given that first projection of 'coords' is 'coords[0]'
        compute another projection direction 'new_direction'
@@ -91,6 +88,8 @@ bool iterativePCA_1D(double **coords, int dim, int n, double *new_direction) {
     free(mat1);
 
     /* Compute direction */
-    return power_iteration(mat, dim, 1, &new_direction, &eval);
-/* ?? When is mat freed? */
+    const bool result = power_iteration(mat, dim, 1, &new_direction);
+    free(mat[0]);
+    free(mat);
+    return result;
 }

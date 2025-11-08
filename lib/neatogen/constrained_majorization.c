@@ -433,14 +433,10 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	}
     }
 
-    if (coords != NULL) {
-	for (i = 0; i < dim; i++) {
-	    for (int j = 0; j < n; j++) {
-		d_coords[i][j] = coords[i][j];
-	    }
+    for (i = 0; i < dim; i++) {
+	for (int j = 0; j < n; j++) {
+	    d_coords[i][j] = coords[i][j];
 	}
-	free(coords[0]);
-	free(coords);
     }
 
     free(tmp_coords);
@@ -457,6 +453,10 @@ finish:
     if (b) {
 	free(b[0]);
 	free(b);
+    }
+    if (coords != NULL) {
+	free(coords[0]);
+	free(coords);
     }
     free(ordering);
 

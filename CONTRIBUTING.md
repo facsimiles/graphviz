@@ -83,6 +83,8 @@ exceptions:
   instead (`void f(int *x)`).
 * The ISO8601 Format specifiers to `strftime` like `"%F"` and `"%T"` cannot be
   used. These are not implemented in MinGW’s runtime.
+* [Variable-Length Arrays (VLAs)](https://en.wikipedia.org/wiki/Variable-length_array)
+  cannot be used. MSVC does not support VLAs.
 
 POSIX and Linux-/Unix-specific extensions are generally not usable, with a few
 exceptions. E.g. lib/util/strcasecmp.h provides a way to use `strcasecmp`
