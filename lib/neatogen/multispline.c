@@ -513,9 +513,7 @@ static void freeTriGraph(tgraph * tg)
  * share an edge.
  */
 static tgraph *mkTriGraph(surface_t *sf, pointf *pts) {
-    tnode *np;
-    int j, i, ne;
-    int *jp;
+    int j;
 
     tgraph *g = gv_alloc(sizeof(tgraph));
 
@@ -523,21 +521,19 @@ static tgraph *mkTriGraph(surface_t *sf, pointf *pts) {
     g->nnodes = sf->nfaces + 2;
     g->nodes = gv_calloc(g->nnodes, sizeof(tnode));
 
-    for (i = 0; i < sf->nfaces; i++) {
-	np = g->nodes + i;
+    for (int i = 0; i < sf->nfaces; i++) {
+	tnode *const np = g->nodes + i;
 	np->ctr = triCenter(pts, sf->faces + 3 * i);
     }
 
-    for (i = 0; i < sf->nfaces; i++) {
-	jp = sf->neigh + 3 * i;
-        ne = 0;
-	while (ne < 3 && (j = *jp++) != -1) {
+    for (int i = 0; i < sf->nfaces; i++) {
+	int *jp = sf->neigh + 3 * i;
+	for (int ne = 0; ne < 3 && (j = *jp++) != -1; ++ne) {
 	    if (i < j) {
 		ipair seg =
 		    sharedEdge(sf->faces + 3 * i, sf->faces + 3 * j);
 		addTriEdge(g, i, j, seg);
 	    }
-	    ne++;
 	}
     }
 
