@@ -379,7 +379,7 @@ struct router_s {
     int *tris;	/* indices of triangle i are tris[3*i]...tris[3*i+2] */
     Dt_t *trimap; /* map from obstacle side (a,b) to index of adj. triangle */
     int tn;	  /* no. of nodes in tg */
-    tgraph *tg;	  /* graph of triangles */
+    tgraph tg;	  /* graph of triangles */
 };
 
 /* Given an array of points and 3 integer indices,
@@ -506,23 +506,23 @@ static void freeTriGraph(tgraph * tg)
     }
     free(tg->nodes);
     free(tg->edges);
-    free(tg);
+    *tg = (tgraph){0};
 }
 
 /* Generate graph with triangles as nodes and an edge iff two triangles
  * share an edge.
  */
-static tgraph *mkTriGraph(surface_t *sf, pointf *pts) {
+static tgraph mkTriGraph(surface_t *sf, pointf *pts) {
     int j;
 
-    tgraph *g = gv_alloc(sizeof(tgraph));
+    tgraph g = {0};
 
     /* plus 2 for nodes added as endpoints of an edge */
-    g->nnodes = sf->nfaces + 2;
-    g->nodes = gv_calloc(g->nnodes, sizeof(tnode));
+    g.nnodes = sf->nfaces + 2;
+    g.nodes = gv_calloc(g.nnodes, sizeof(tnode));
 
     for (int i = 0; i < sf->nfaces; i++) {
-	tnode *const np = g->nodes + i;
+	tnode *const np = g.nodes + i;
 	np->ctr = triCenter(pts, sf->faces + 3 * i);
     }
 
@@ -532,7 +532,7 @@ static tgraph *mkTriGraph(surface_t *sf, pointf *pts) {
 	    if (i < j) {
 		ipair seg =
 		    sharedEdge(sf->faces + 3 * i, sf->faces + 3 * j);
-		addTriEdge(g, i, j, seg);
+		addTriEdge(&g, i, j, seg);
 	    }
 	}
     }
@@ -546,7 +546,7 @@ void freeRouter(router_t * rtr)
     free(rtr->obs);
     free(rtr->tris);
     dtclose(rtr->trimap);
-    freeTriGraph(rtr->tg);
+    freeTriGraph(&rtr->tg);
     free(rtr);
 }
 
@@ -874,8 +874,8 @@ static void addEndpoint(router_t * rtr, pointf p, node_t* v, int v_id, int sides
 	break;
     }
 
-    rtr->tg->nodes[v_id].ne = 0;
-    rtr->tg->nodes[v_id].ctr = p;
+    rtr->tg.nodes[v_id].ne = 0;
+    rtr->tg.nodes[v_id].ctr = p;
     for (i = starti; i < endi; i++) {
 	ipair seg;
 	seg.i = i;
@@ -886,9 +886,9 @@ static void addEndpoint(router_t * rtr, pointf p, node_t* v, int v_id, int sides
 	t = findMap(rtr->trimap, seg.i, seg.j);
 	if (sides && !inCone (v0, p, v1, pts[seg.i]) && !inCone (v0, p, v1, pts[seg.j]) && !raySeg(p,vr,pts[seg.i],pts[seg.j]))
 	    continue;
-	addTriEdge(rtr->tg, v_id, t, seg);
+	addTriEdge(&rtr->tg, v_id, t, seg);
     }
-    assert(rtr->tg->nodes[v_id].ne > 0 && "no edges were added");
+    assert(rtr->tg.nodes[v_id].ne > 0 && "no edges were added");
 }
 
 /* Given edge from i to j, find segment associated
@@ -898,14 +898,13 @@ static void addEndpoint(router_t * rtr, pointf p, node_t* v, int v_id, int sides
  * shortest path algorithm to store the edges rather than
  * the nodes.
  */
-static ipair edgeToSeg(tgraph * tg, int i, int j)
-{
+static ipair edgeToSeg(tgraph tg, int i, int j) {
     ipair ip = {0, 0};
-    tnode *np = tg->nodes + i;
+    tnode *np = tg.nodes + i;
     tedge *ep;
 
     for (size_t k = 0; k < np->ne; k++) {
-	ep = tg->edges + np->edges[k];
+	ep = tg.edges + np->edges[k];
 	if (ep->t == j || ep->h == j)
 	    return ep->seg;
     }
@@ -1059,11 +1058,11 @@ static tripoly_t *mkPoly(router_t * rtr, int *dad, int s, int t,
 }
 
 /// remove edges and nodes added for current edge routing
-static void resetGraph(tgraph *g, int ncnt, int ecnt,
+static void resetGraph(tgraph g, int ncnt, int ecnt,
                        size_t *original_edge_count) {
     int i;
-    tnode *np = g->nodes;
-    g->nedges = ecnt;
+    tnode *np = g.nodes;
+    g.nedges = ecnt;
     for (i = 0; i < ncnt; i++) {
 	np->ne = original_edge_count[i];
 	np++;
@@ -1099,9 +1098,7 @@ typedef struct {
  * shorted path from v1 to v0. That path is given by
  * v1, dad[v1], dad[dad[v1]], ..., v0.
  */
-static int *
-triPath(tgraph * g, int n, int v0, int v1, PQ * pq)
-{
+static int *triPath(tgraph g, int n, int v0, int v1, PQ *pq) {
     int i, adjn;
     double d;
     tnode *np;
@@ -1121,9 +1118,9 @@ triPath(tgraph * g, int n, int v0, int v1, PQ * pq)
 	N_VAL(pq, i) *= -1;
 	if (i == v1)
 	    break;
-	np = g->nodes + i;
+	np = g.nodes + i;
 	for (size_t j = 0; j < np->ne; j++) {
-	    e = g->edges + np->edges[j];
+	    e = g.edges + np->edges[j];
 	    if (e->t == i)
 		adjn = e->h;
 	    else
@@ -1162,16 +1159,16 @@ int makeMultiSpline(edge_t* e, router_t * rtr, int doPolyline) {
     int *sp;
     int t_id = rtr->tn;
     int h_id = rtr->tn + 1;
-    int ecnt = rtr->tg->nedges;
+    int ecnt = rtr->tg.nedges;
     PPQ pq;
     int ret;
 
     // record the number of edges in each node, so we can drop the added ones
     // later
-    size_t *original_edge_count = gv_calloc(rtr->tg->nnodes,
+    size_t *original_edge_count = gv_calloc(rtr->tg.nnodes,
                                             sizeof(original_edge_count[0]));
-    for (size_t i = 0; i < rtr->tg->nnodes; ++i)
-        original_edge_count[i] = rtr->tg->nodes[i].ne;
+    for (size_t i = 0; i < rtr->tg.nnodes; ++i)
+        original_edge_count[i] = rtr->tg.nodes[i].ne;
 
 	/* Add endpoints to triangle graph */
     addEndpoint(rtr, t_p, t, t_id, ED_tail_port(e).side);
