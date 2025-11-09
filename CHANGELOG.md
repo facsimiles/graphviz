@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tree with depth ≥ 32 (e.g. `gvgen -t32`).
 - `gvgen` no longer triggers Undefined Behavior when asked to generate a
   hypercube with depth ≥ 32 (e.g. `gvgen -h32`).
+- A null pointer dereference in edge pair analysis within the circo algorithm
+  has been fixed.
 
 ## [14.0.2] – 2025-10-19
 

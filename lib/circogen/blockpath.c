@@ -13,6 +13,7 @@
 #include	<circogen/edgelist.h>
 #include	<stddef.h>
 #include	<stdbool.h>
+#include	<stdint.h>
 #include	<util/agxbuf.h>
 #include	<util/alloc.h>
 #include	<util/list.h>
@@ -98,37 +99,27 @@ static deglist_t getList(Agraph_t *g) {
 
 static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 {
-    Agedge_t *e;
-    Agedge_t *ep;
-    Agedge_t *ex;
-    Agnode_t *n1;
-    Agnode_t *n2;
-    int has_pair_edge;
-    int diff;
-    int has_pair_count = 0;
-    int no_pair_count = 0;
-    int node_degree;
     int edge_cnt = 0;
 
-    node_degree = DEGREE(n);
-    Agnode_t **neighbors_with = gv_calloc(node_degree, sizeof(Agnode_t*));
-    Agnode_t **neighbors_without = gv_calloc(node_degree, sizeof(Agnode_t*));
+    const int node_degree = DEGREE(n);
+    LIST(Agnode_t *) neighbors_with = {0};
+    LIST(Agnode_t *) neighbors_without = {0};
 
-    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	n1 = aghead(e);
+    for (Agedge_t *e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	Agnode_t *n1 = aghead(e);
 	if (n1 == n)
 	    n1 = agtail(e);
-	has_pair_edge = 0;
-	for (ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
+	bool has_pair_edge = false;
+	for (Agedge_t *ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
 	    if (ep == e)
 		continue;
-	    n2 = aghead(ep);
+	    Agnode_t *n2 = aghead(ep);
 	    if (n2 == n)
 		n2 = agtail(ep);
-	    ex = agfindedge(g, n1, n2);
+	    Agedge_t *const ex = agfindedge(g, n1, n2);
 	    if (ex) {
-		has_pair_edge = 1;
-		if (n1 < n2) {	/* count edge only once */
+		has_pair_edge = true;
+		if ((uintptr_t)n1 < (uintptr_t)n2) { // count edge only once
 		    edge_cnt++;
 		    if (ORIGE(ex)) {
 			agdelete(outg, ORIGE(ex));
@@ -138,64 +129,55 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    }
 	}
 	if (has_pair_edge) {
-	    neighbors_with[has_pair_count] = n1;
-	    has_pair_count++;
+	    LIST_APPEND(&neighbors_with, n1);
 	} else {
-	    neighbors_without[no_pair_count] = n1;
-	    no_pair_count++;
+	    LIST_APPEND(&neighbors_without, n1);
 	}
     }
 
-    diff = node_degree - 1 - edge_cnt;
+    int diff = node_degree - 1 - edge_cnt;
     if (diff > 0) {
-	int mark;
-	Agnode_t *hp;
-	Agnode_t *tp;
-
-	if (diff < no_pair_count) {
-	    for (mark = 0; mark < no_pair_count; mark += 2) {
-		if ((mark + 1) >= no_pair_count)
-		    break;
-		tp = neighbors_without[mark];
-		hp = neighbors_without[mark + 1];
+	if ((size_t)diff < LIST_SIZE(&neighbors_without)) {
+	    for (size_t mark = 0; mark + 1 < LIST_SIZE(&neighbors_without); mark += 2) {
+		Agnode_t *const tp = LIST_GET(&neighbors_without, mark);
+		Agnode_t *const hp = LIST_GET(&neighbors_without, mark + 1);
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);   // edge custom data
 		DEGREE(tp)++;
 		DEGREE(hp)++;
 		diff--;
 	    }
 
-	    mark = 2;
-	    while (diff > 0) {
-		tp = neighbors_without[0];
-		hp = neighbors_without[mark];
+	    for (size_t mark = 2; diff > 0; ++mark, --diff) {
+		Agnode_t *const tp = LIST_GET(&neighbors_without, 0);
+		Agnode_t *const hp = LIST_GET(&neighbors_without, mark);
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);   // edge custom data
 		DEGREE(tp)++;
 		DEGREE(hp)++;
-		mark++;
-		diff--;
 	    }
 	}
 
-	else if (diff == no_pair_count) {
-	    tp = neighbors_with[0];
-	    for (mark = 0; mark < no_pair_count; mark++) {
-		hp = neighbors_without[mark];
+	else if ((size_t)diff == LIST_SIZE(&neighbors_without)) {
+	    Agnode_t *const tp =
+	      LIST_IS_EMPTY(&neighbors_with) ? NULL : LIST_GET(&neighbors_with, 0);
+	    for (size_t mark = 0; mark < LIST_SIZE(&neighbors_without); mark++) {
+		Agnode_t *const hp = LIST_GET(&neighbors_without, mark);
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), true);	//node custom data
-		DEGREE(tp)++;
+		if (tp != NULL) {
+		    DEGREE(tp)++;
+		}
 		DEGREE(hp)++;
 	    }
 	}
     }
 
-    free(neighbors_without);
-    free(neighbors_with);
+    LIST_FREE(&neighbors_without);
+    LIST_FREE(&neighbors_with);
 }
 
 /// Create layout skeleton of ing. Why is returned graph connected?
 ///
 /// @param state Context containing a counter to use for graph copy naming
 static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
-    int counter = 0;
     int nodeCount;
     Agraph_t *outg;
     Agraph_t *g;
@@ -206,7 +188,7 @@ static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
     nodeCount = agnnodes(g);
     deglist_t dl = getList(g);
 
-    while (counter < nodeCount - 3) {
+    for (int counter = 0; counter < nodeCount - 3; ++counter) {
 	currnode = LIST_IS_EMPTY(&dl) ? NULL : LIST_POP_BACK(&dl);
 
 	/* Remove all adjacent nodes since they have to be reinserted */
@@ -230,8 +212,6 @@ static Agraph_t *remove_pair_edges(Agraph_t *ing, circ_state *state) {
 	LIST_SORT(&dl, cmpDegree);
 
 	agdelete(g, currnode);
-
-	counter++;
     }
 
     agclose(g);
