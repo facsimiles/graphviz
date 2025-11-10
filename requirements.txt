@@ -1,4 +1,4 @@
-black==25.9.0
+black==25.11.0
 cmakelang==0.6.13
 isort==6.1.0
 pexpect==4.9.0
