@@ -763,7 +763,7 @@ static gvrender_engine_t json_engine = {
     0,				/* json_library_shape */
 };
 
-gvrender_features_t render_features_json = {
+static gvrender_features_t render_features_json = {
     GVRENDER_DOES_TRANSFORM	/* not really - uses raw graph coords */
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_TARGETS
