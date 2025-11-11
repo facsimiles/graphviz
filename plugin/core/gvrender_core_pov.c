@@ -697,7 +697,7 @@ static void pov_polyline(GVJ_t *job, pointf *A, size_t n) {
 	free(p);
 }
 
-gvrender_engine_t pov_engine = {
+static gvrender_engine_t pov_engine = {
 	pov_begin_job,
 	0,			/* pov_end_job */
 	pov_begin_graph,
