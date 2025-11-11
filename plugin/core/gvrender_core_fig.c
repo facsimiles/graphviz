@@ -429,7 +429,7 @@ static void fig_polyline(GVJ_t *job, pointf *A, size_t n) {
     figptarray(job, A, n, 0); // open shape
 }
 
-gvrender_engine_t fig_engine = {
+static gvrender_engine_t fig_engine = {
     0,				/* fig_begin_job */
     0,				/* fig_end_job */
     fig_begin_graph,
