@@ -763,14 +763,6 @@ gvrender_engine_t json_engine = {
     0,				/* json_library_shape */
 };
 
-gvrender_features_t render_features_json1 = {
-    GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */  /* flags */
-    0.,                         /* default pad - graph units */
-    NULL,			/* knowncolors */
-    0,				/* sizeof knowncolors */
-    COLOR_STRING,		/* color_type */
-};
-
 gvrender_features_t render_features_json = {
     GVRENDER_DOES_TRANSFORM	/* not really - uses raw graph coords */
 	| GVRENDER_DOES_MAPS
