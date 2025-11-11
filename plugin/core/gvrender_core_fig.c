@@ -468,8 +468,7 @@ static char *fig_knowncolors[] = {
     "black", "blue", "cyan", "green", "magenta", "red", "white", "yellow",
 };
 
-
-gvrender_features_t render_features_fig = {
+static gvrender_features_t render_features_fig = {
     EMIT_COLORS
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     4.,                         /* default pad - graph units */
