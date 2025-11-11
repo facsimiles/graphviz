@@ -74,7 +74,7 @@ static gvlayout_engine_t sfdpgen_engine = {
 };
 #endif
 
-gvlayout_engine_t twopigen_engine = {
+static gvlayout_engine_t twopigen_engine = {
     twopi_layout,
     twopi_cleanup,
 };
