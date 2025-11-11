@@ -353,7 +353,7 @@ static gvrender_features_t render_features_tk = {
     COLOR_STRING,		/* color_type */
 };
 
-gvdevice_features_t device_features_tk = {
+static gvdevice_features_t device_features_tk = {
     0,				/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
