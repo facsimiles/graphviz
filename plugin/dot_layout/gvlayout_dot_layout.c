@@ -18,7 +18,7 @@ typedef enum { LAYOUT_DOT, } layout_type;
 extern void dot_layout(graph_t * g);
 extern void dot_cleanup(graph_t * g);
 
-gvlayout_engine_t dotgen_engine = {
+static gvlayout_engine_t dotgen_engine = {
     dot_layout,
     dot_cleanup,
 };
