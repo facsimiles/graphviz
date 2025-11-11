@@ -62,7 +62,7 @@ static gvlayout_engine_t neatogen_engine = {
     neato_cleanup,
 };
 
-gvlayout_engine_t fdpgen_engine = {
+static gvlayout_engine_t fdpgen_engine = {
     fdp_layout,
     fdp_cleanup,
 };
