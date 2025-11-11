@@ -94,7 +94,7 @@ static gvlayout_engine_t nop2gen_engine = {
     neato_cleanup,
 };
 
-gvlayout_engine_t patchwork_engine = {
+static gvlayout_engine_t patchwork_engine = {
     patchwork_layout,
     patchwork_cleanup,
 };
