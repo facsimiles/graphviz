@@ -24,11 +24,7 @@ static const void *memory_data_consumer_get_byte_pointer(void *info)
 }
 
 static CGDataProviderDirectCallbacks memory_data_provider_callbacks = {
-	0,
-	memory_data_consumer_get_byte_pointer,
-	NULL,
-	NULL,
-	NULL
+    .getBytePointer = memory_data_consumer_get_byte_pointer,
 };
 
 static void quartz_format(GVJ_t *job)
