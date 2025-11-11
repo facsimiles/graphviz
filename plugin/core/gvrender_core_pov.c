@@ -730,7 +730,7 @@ static gvrender_engine_t pov_engine = {
 	0,			/* pov_library_shape */
 };
 
-gvrender_features_t render_features_pov = {
+static gvrender_features_t render_features_pov = {
 	/* flags */
 	GVDEVICE_DOES_LAYERS
 	    | GVRENDER_DOES_MAP_RECTANGLE
