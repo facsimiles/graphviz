@@ -84,7 +84,7 @@ static gvlayout_engine_t circogen_engine = {
     circo_cleanup,
 };
 
-gvlayout_engine_t nop1gen_engine = {
+static gvlayout_engine_t nop1gen_engine = {
     nop1_layout,
     neato_cleanup,
 };
