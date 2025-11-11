@@ -743,7 +743,7 @@ static gvrender_features_t render_features_dot = {
     COLOR_STRING,		/* color_type */
 };
 
-gvrender_features_t render_features_xdot = {
+static gvrender_features_t render_features_xdot = {
     GVRENDER_DOES_TRANSFORM 	/* not really - uses raw graph coords */  
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_TARGETS
