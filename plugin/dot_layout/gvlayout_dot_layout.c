@@ -23,8 +23,7 @@ static gvlayout_engine_t dotgen_engine = {
     dot_cleanup,
 };
 
-
-gvlayout_features_t dotgen_features = {
+static gvlayout_features_t dotgen_features = {
     LAYOUT_USES_RANKDIR,
 };
 
