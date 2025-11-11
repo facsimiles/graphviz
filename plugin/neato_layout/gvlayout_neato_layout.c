@@ -57,7 +57,7 @@ static void nop2_layout(graph_t *g) {
   Nop = 0;
 }
 
-gvlayout_engine_t neatogen_engine = {
+static gvlayout_engine_t neatogen_engine = {
     neato_layout,
     neato_cleanup,
 };
