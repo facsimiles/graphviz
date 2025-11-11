@@ -99,7 +99,7 @@ static gvlayout_engine_t patchwork_engine = {
     patchwork_cleanup,
 };
 
-gvlayout_engine_t osage_engine = {
+static gvlayout_engine_t osage_engine = {
     osage_layout,
     osage_cleanup,
 };
