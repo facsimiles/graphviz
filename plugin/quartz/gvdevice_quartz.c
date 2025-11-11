@@ -23,7 +23,7 @@ static const void *memory_data_consumer_get_byte_pointer(void *info)
 	return info;
 }
 
-CGDataProviderDirectCallbacks memory_data_provider_callbacks = {
+static CGDataProviderDirectCallbacks memory_data_provider_callbacks = {
 	0,
 	memory_data_consumer_get_byte_pointer,
 	NULL,
