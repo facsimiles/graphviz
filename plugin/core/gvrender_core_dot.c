@@ -754,7 +754,7 @@ static gvrender_features_t render_features_xdot = {
     RGBA_BYTE,		/* color_type */
 };
 
-gvdevice_features_t device_features_canon = {
+static gvdevice_features_t device_features_canon = {
     LAYOUT_NOT_REQUIRED,	/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default height, width - device units */
