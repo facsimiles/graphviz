@@ -730,7 +730,7 @@ static void json_end_graph(GVJ_t *job)
     write_graph(g, job, true, &sp);
 }
 
-gvrender_engine_t json_engine = {
+static gvrender_engine_t json_engine = {
     0,				/* json_begin_job */
     0,				/* json_end_job */
     json_begin_graph,
