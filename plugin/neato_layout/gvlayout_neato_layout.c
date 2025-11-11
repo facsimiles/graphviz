@@ -104,7 +104,7 @@ static gvlayout_engine_t osage_engine = {
     osage_cleanup,
 };
 
-gvlayout_features_t neatogen_features = {
+static gvlayout_features_t neatogen_features = {
     0,
 };
 
