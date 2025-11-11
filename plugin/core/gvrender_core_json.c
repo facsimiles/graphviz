@@ -774,7 +774,7 @@ static gvrender_features_t render_features_json = {
     COLOR_STRING,		/* color_type */
 };
 
-gvdevice_features_t device_features_json_nop = {
+static gvdevice_features_t device_features_json_nop = {
     LAYOUT_NOT_REQUIRED,	/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},			/* default page width, height - points */
