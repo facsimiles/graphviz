@@ -68,7 +68,7 @@ static gvlayout_engine_t fdpgen_engine = {
 };
 
 #ifdef SFDP
-gvlayout_engine_t sfdpgen_engine = {
+static gvlayout_engine_t sfdpgen_engine = {
     sfdp_layout,
     sfdp_cleanup,
 };
