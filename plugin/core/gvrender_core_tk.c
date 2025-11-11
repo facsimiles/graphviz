@@ -344,7 +344,7 @@ static gvrender_engine_t tkgen_engine = {
     0,				/* tkgen_library_shape */
 };
 
-gvrender_features_t render_features_tk = {
+static gvrender_features_t render_features_tk = {
     GVRENDER_Y_GOES_DOWN
 	| GVRENDER_NO_WHITE_BG, /* flags */
     4.,                         /* default pad - graph units */
