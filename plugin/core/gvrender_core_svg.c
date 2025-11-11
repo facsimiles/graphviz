@@ -38,6 +38,7 @@
 #include <util/agxbuf.h>
 #include <util/strcasecmp.h>
 #include <util/unreachable.h>
+#include <util/unused.h>
 #include <util/xml.h>
 
 #define LOCALNAMEPREFIX		'%'
@@ -813,7 +814,7 @@ static gvdevice_features_t device_features_svg = {
     {72., 72.},			/* default dpi */
 };
 
-gvdevice_features_t device_features_svgz = {
+static UNUSED gvdevice_features_t device_features_svgz = {
     GVDEVICE_DOES_TRUECOLOR|GVDEVICE_DOES_LAYERS|GVDEVICE_BINARY_FORMAT|GVDEVICE_COMPRESSED_FORMAT, /* flags */
     {0., 0.},			/* default margin - points */
     {0., 0.},			/* default page width, height - points */
