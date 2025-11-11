@@ -747,7 +747,7 @@ static gvrender_features_t render_features_pov = {
 	RENDERER_COLOR_TYPE	/* set renderer color type */
 };
 
-gvdevice_features_t device_features_pov = {
+static gvdevice_features_t device_features_pov = {
 	GVDEVICE_DOES_TRUECOLOR,	/* flags */
 	{0.0, 0.0},		/* default margin - points */
 	{0.0, 0.0},		/* default page width, height - points */
