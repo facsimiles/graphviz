@@ -79,7 +79,7 @@ static gvlayout_engine_t twopigen_engine = {
     twopi_cleanup,
 };
 
-gvlayout_engine_t circogen_engine = {
+static gvlayout_engine_t circogen_engine = {
     circo_layout,
     circo_cleanup,
 };
