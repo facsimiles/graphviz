@@ -849,7 +849,7 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
     for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	ND_mark(n) = false;
 	ctx->N_nodes++;
-	for (size_t i = 0; (e = ND_out(n).list[i]); i++)
+	for (size_t i = 0; ND_out(n).list[i]; i++)
 	    ctx->N_edges++;
     }
 
@@ -868,7 +868,7 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
 	}
 	ND_tree_in(n).list = gv_calloc(i + 1, sizeof(edge_t *));
 	ND_tree_in(n).size = 0;
-	for (i = 0; (e = ND_out(n).list[i]); i++);
+	for (i = 0; ND_out(n).list[i]; i++);
 	ND_tree_out(n).list = gv_calloc(i + 1, sizeof(edge_t *));
 	ND_tree_out(n).size = 0;
     }
@@ -879,13 +879,11 @@ static bool init_graph(network_simplex_ctx_t *ctx, graph_t *g) {
  * Compute no. of nodes and edges in the graph
  */
 static void graphSize(graph_t *g, size_t *nn, size_t *ne) {
-    edge_t *e;
-   
     size_t nnodes = 0;
     size_t nedges = 0;
     for (node_t *n = GD_nlist(g); n; n = ND_next(n)) {
 	nnodes++;
-	for (size_t i = 0; (e = ND_out(n).list[i]); i++) {
+	for (size_t i = 0; ND_out(n).list[i]; i++) {
 	    nedges++;
 	}
     }

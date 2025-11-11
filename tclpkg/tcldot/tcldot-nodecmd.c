@@ -75,7 +75,7 @@ static int nodecmd_internal(ClientData clientData, Tcl_Interp *interp, int argc,
       Tcl_AppendResult(interp, "head node \"", argv[2], "\" not found.", NULL);
       return TCL_ERROR;
     }
-    if (!(e = agfindedge(g, n, head))) {
+    if (!agfindedge(g, n, head)) {
       Tcl_AppendResult(interp, "edge \"", argv[0], " - ", obj2cmd(head),
                        "\" not found.", NULL);
       return TCL_ERROR;
