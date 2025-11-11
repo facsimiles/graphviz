@@ -89,7 +89,7 @@ static gvlayout_engine_t nop1gen_engine = {
     neato_cleanup,
 };
 
-gvlayout_engine_t nop2gen_engine = {
+static gvlayout_engine_t nop2gen_engine = {
     nop2_layout,
     neato_cleanup,
 };
