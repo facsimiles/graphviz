@@ -765,7 +765,7 @@ static char *svg_knowncolors[] = {
     "yellow", "yellowgreen"
 };
 
-gvrender_engine_t svg_engine = {
+static gvrender_engine_t svg_engine = {
     svg_begin_job,
     0,				/* svg_end_job */
     svg_begin_graph,
