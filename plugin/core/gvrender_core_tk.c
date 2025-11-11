@@ -311,7 +311,7 @@ static void tkgen_polyline(GVJ_t *job, pointf *A, size_t n) {
     }
 }
 
-gvrender_engine_t tkgen_engine = {
+static gvrender_engine_t tkgen_engine = {
     tkgen_begin_job,
     0,				/* tkgen_end_job */
     tkgen_begin_graph,
