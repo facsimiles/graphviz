@@ -761,7 +761,7 @@ static gvdevice_features_t device_features_canon = {
     {72.,72.},			/* default dpi */
 };
 
-gvdevice_features_t device_features_dot = {
+static gvdevice_features_t device_features_dot = {
     0,				/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},			/* default page width, height - points */
