@@ -669,7 +669,7 @@ void core_loadimage_xdot(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     xdot_str (job, "", us->name);
 }
 
-gvrender_engine_t dot_engine = {
+static gvrender_engine_t dot_engine = {
     0,				/* dot_begin_job */
     0,				/* dot_end_job */
     dot_begin_graph,
