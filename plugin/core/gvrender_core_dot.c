@@ -702,7 +702,7 @@ static gvrender_engine_t dot_engine = {
     0,				/* dot_library_shape */
 };
 
-gvrender_engine_t xdot_engine = {
+static gvrender_engine_t xdot_engine = {
     0,				/* xdot_begin_job */
     0,				/* xdot_end_job */
     dot_begin_graph,
