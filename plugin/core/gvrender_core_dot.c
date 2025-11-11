@@ -735,7 +735,7 @@ static gvrender_engine_t xdot_engine = {
     0,				/* xdot_library_shape */
 };
 
-gvrender_features_t render_features_dot = {
+static gvrender_features_t render_features_dot = {
     GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */  /* flags */
     0.,                         /* default pad - graph units */
     NULL,			/* knowncolors */
