@@ -35,6 +35,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
 #include <util/gv_ctype.h>
@@ -1305,14 +1306,15 @@ neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel,
 static void addZ (Agraph_t* g)
 {
     node_t* n;
-    char    buf[BUFSIZ];
+    agxbuf buf = {0};
 
     if (Ndim >= 3 && N_z) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    snprintf(buf, sizeof(buf), "%lf", POINTS_PER_INCH * ND_pos(n)[2]);
-	    agxset(n, N_z, buf);
+	    agxbprint(&buf, "%lf", POINTS_PER_INCH * ND_pos(n)[2]);
+	    agxset(n, N_z, agxbuse(&buf));
 	}
     }
+    agxbfree(&buf);
 }
 
 #ifdef IPSEPCOLA
