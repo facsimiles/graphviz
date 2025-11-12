@@ -87,7 +87,7 @@ bool user_pos(attrsym_t *posptr, attrsym_t *pinptr, node_t *np, int nG) {
 	    if (PSinputscale > 0.0) {
 		int i;
 		for (i = 0; i < Ndim; i++)
-		    pvec[i] = pvec[i] / PSinputscale;
+		    pvec[i] /= PSinputscale;
 	    }
 	    if (Ndim > 3)
 		jitter_d(np, nG, 3);
