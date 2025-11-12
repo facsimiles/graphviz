@@ -19,9 +19,6 @@
 #include "config.h"
 
 #include <time.h>
-#ifndef _WIN32
-#include <unistd.h>
-#endif
 #include <neatogen/neato.h>
 #include <pack/pack.h>
 #include <neatogen/stress.h>
@@ -947,11 +944,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
 	long seed;
 	/* Check for seed value */
 	if (!gv_isdigit(*p) || sscanf(p, "%ld", &seed) < 1) {
-#if defined(_WIN32)
 	    seed = (unsigned) time(NULL);
-#else
-	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);
-#endif
 	    agset(G, "start", ITOS(seed));
 	}
 	*seedp = seed;
