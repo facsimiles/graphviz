@@ -27,17 +27,14 @@
 /* uses PRIVATE interface */
 #define FDP_PRIVATE 1
 
+#include <fdpgen/dbg.h>
+#include <fdpgen/grid.h>
 #include <math.h>
+#include <neatogen/neato.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <time.h>
-#ifndef _WIN32
-#include <unistd.h>
-#endif
-#include <fdpgen/dbg.h>
-#include <fdpgen/grid.h>
-#include <neatogen/neato.h>
 
 #ifndef HAVE_SRAND48
 #define srand48 srand
@@ -486,11 +483,7 @@ static pointf initPositions(graph_t *g, bport_t *pp) {
   if (T_smode == INIT_RANDOM)
     local_seed = T_seed;
   else {
-#if defined(_WIN32)
     local_seed = (long)time(NULL);
-#else
-    local_seed = getpid() ^ time(NULL);
-#endif
   }
   srand48(local_seed);
 
