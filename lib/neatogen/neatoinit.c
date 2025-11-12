@@ -606,7 +606,7 @@ static int neatoModel(graph_t * g)
 {
     char *p = agget(g, "model");
 
-    if (!p || streq(p, ""))    /* if p is NULL or "" */
+    if (!p || streq(p, ""))
 	return MODEL_SHORTPATH;
     if (streq(p, "circuit"))
 	return MODEL_CIRCUIT;
