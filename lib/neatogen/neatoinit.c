@@ -411,15 +411,14 @@ static void freeEdgeInfo (Agraph_t * g)
  * Scans for a correct bb attribute. If available, sets it
  * in the graph and returns 1.
  */
-#define BS "%lf,%lf,%lf,%lf"
-
 static int chkBB(Agraph_t * g, attrsym_t * G_bb, boxf* bbp)
 {
     char *s;
     boxf bb;
 
     s = agxget(g, G_bb);
-    if (sscanf(s, BS, &bb.LL.x, &bb.LL.y, &bb.UR.x, &bb.UR.y) == 4) {
+    if (sscanf(s, "%lf,%lf,%lf,%lf", &bb.LL.x, &bb.LL.y, &bb.UR.x,
+               &bb.UR.y) == 4) {
 	if (bb.LL.y > bb.UR.y) {
 	/* If the LL.y coordinate is bigger than the UR.y coordinate,
          * we assume the input was produced using -y, so we normalize
