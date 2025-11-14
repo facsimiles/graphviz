@@ -1174,10 +1174,9 @@ deployment:
             - job_execution_timeout
 
 .docker_template: &docker_definition
-  # Docker:28.5.2 hash as of 2025-11-12
-  image: docker@sha256:2a232a42256f70d78e3cc5d2b5d6b3276710a0de0596c145f627ecfae90282ac
+  image: docker:29.0.0-cli
   services:
-    - docker:dind
+    - docker:29.0.0-dind
   before_script:
     # Docker prefers passwords passed on stdin rather than as arguments,
     # presumably because stdin isn't visible to other processes.
