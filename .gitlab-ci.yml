@@ -1149,7 +1149,7 @@ windows-mingw64-cmake-test:
 
 deployment:
     stage: deploy
-    image: registry.gitlab.com/gitlab-org/release-cli:latest
+    image: registry.gitlab.com/gitlab-org/release-cli:latest@sha256:3f52d526f48e8d10625c722fa6d6423ee82aadeae1b1aa91f07b62551d96dacf
     # do not re-run this job for new Git tags of previously seen commits
     except:
         - tags
@@ -1174,9 +1174,9 @@ deployment:
             - job_execution_timeout
 
 .docker_template: &docker_definition
-  image: docker:29.0.0-cli
+  image: docker:29.0.0-cli@sha256:87858a6dd14149240f4a2c33e0ec0f32a5ac1bb2548c04f5a20694ea25cb6157
   services:
-    - docker:29.0.0-dind
+    - docker:29.0.0-dind@sha256:96789d56621ae702a2f8aa316c87a1a1875dd3f02bf67cdcb56a524a09fa3af9
   before_script:
     # Docker prefers passwords passed on stdin rather than as arguments,
     # presumably because stdin isn't visible to other processes.
