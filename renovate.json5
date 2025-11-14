@@ -16,10 +16,6 @@
       "pinDigests": true,
     },
   ],
-  "gitlabci": {
-    // We don't have anything useful to update in .gitlab-ci.yml
-    "enabled": false
-  },
   // We need to support an older version of python that not all PyPI packages support.
   "constraints": {
     "python": "3.9"
