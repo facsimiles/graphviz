@@ -97,7 +97,7 @@ arrow_clip(edge_t * fe, node_t * hn,
     }
 }
 
-/* Clip bezier to shape using binary search.
+/* Clip Bézier to shape using binary search.
  * The details of the shape are passed in the inside_context;
  * The function providing the inside test is passed as a parameter.
  * left_inside specifies that sp[0] is inside the node,
@@ -150,7 +150,7 @@ void bezier_clip(inside_t * inside_context,
 	    sp[i] = seg[i];
 }
 
-/* Clip Bezier to node shape using binary search.
+/* Clip Bézier to node shape using binary search.
  * left_inside specifies that curve[0] is inside the node, else
  * curve[3] is taken as inside.
  * Assumes ND_shape(n) and ND_shape(n)->fns->insidefn are non-NULL.
@@ -179,11 +179,11 @@ shape_clip0(inside_t * inside_context, node_t * n, pointf curve[4],
     ND_rw(n) = save_real_size;
 }
 
-/* Clip Bezier to node shape
+/* Clip Bézier to node shape
  * Uses curve[0] to determine which which side is inside the node.
  * NOTE: This test is bad. It is possible for previous call to
- * shape_clip to produce a Bezier with curve[0] moved to the boundary
- * for which insidefn(curve[0]) is true. Thus, if the new Bezier is
+ * shape_clip to produce a Bézier with curve[0] moved to the boundary
+ * for which insidefn(curve[0]) is true. Thus, if the new Bézier is
  * fed back to shape_clip, it will again assume left_inside is true.
  * To be safe, shape_clip0 should guarantee that the computed boundary
  * point fails insidefn.
@@ -208,7 +208,7 @@ void shape_clip(node_t * n, pointf curve[4])
     shape_clip0(&inside_context, n, curve, left_inside);
 }
 
-/// create and attach a new bezier of size sz to the edge d
+/// create and attach a new Bézier of size sz to the edge d
 bezier *new_spline(edge_t *e, size_t sz) {
     bezier *rv;
     while (ED_to_orig(e) != NULL && ED_edge_type(e) != NORMAL)

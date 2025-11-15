@@ -163,7 +163,7 @@ pointf coord(node_t * n)
 #define W_DEGREE 5
 
 /*
- *	Evaluate a Bezier curve at a particular parameter value
+ *	Evaluate a Bézier curve at a particular parameter value
  *      Fill in control points for resulting sub-curves if "Left" and
  *	"Right" are non-null.
  *
@@ -368,8 +368,8 @@ pointf dotneato_closest(splines * spl, pointf pt)
     }
 
     bz = spl->list[besti];
-    /* Pick best Bezier. If bestj is the last point in the B-spline, decrement.
-     * Then set j to be the first point in the corresponding Bezier by dividing
+    /* Pick best Bézier. If bestj is the last point in the B-spline, decrement.
+     * Then set j to be the first point in the corresponding Bézier by dividing
      * then multiplying be 3. Thus, 0,1,2 => 0; 3,4,5 => 3, etc.
      */
     if (bestj == bz.size-1)

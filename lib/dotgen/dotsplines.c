@@ -157,7 +157,7 @@ static void swap_spline(splines *s) {
     SWAP(&s->list[i], &s->list[sz - 1 - i]);
   }
 
-  // swap beziers
+  // swap Béziers
   for (size_t i = 0; i < sz; ++i) {
     swap_bezier(&s->list[i]);
   }

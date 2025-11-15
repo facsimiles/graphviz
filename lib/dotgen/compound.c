@@ -99,7 +99,7 @@ static graph_t *getCluster(char *cluster_name, Dt_t *map) {
  * Possibly unnecessary with double values, but harmless.
  */
 
-/* Return the number of times the Bezier control polygon crosses
+/* Return the number of times the Bézier control polygon crosses
  * the vertical line x = xcoord.
  */
 static int countVertCross(pointf * pts, double xcoord)
@@ -120,7 +120,7 @@ static int countVertCross(pointf * pts, double xcoord)
     return num_crossings;
 }
 
-/* Return the number of times the Bezier control polygon crosses
+/* Return the number of times the Bézier control polygon crosses
  * the horizontal line y = ycoord.
  */
 static int countHorzCross(pointf * pts, double ycoord)
@@ -141,7 +141,7 @@ static int countHorzCross(pointf * pts, double ycoord)
     return num_crossings;
 }
 
-/* Given 4 Bezier control points pts, corresponding to the portion
+/* Given 4 Bézier control points pts, corresponding to the portion
  * of an initial spline with path parameter in the range
  * 0.0 <= tmin <= t <= tmax <= 1.0, return t where the spline 
  * first crosses a vertical line segment
@@ -172,7 +172,7 @@ findVertical(pointf * pts, double tmin, double tmax,
 	    return -1.0;
     }
 
-    /* split the Bezier into halves, trying the first half first. */
+    /* split the Bézier into halves, trying the first half first. */
     Bezier(pts, 0.5, Left, Right);
     t = findVertical(Left, tmin, (tmin + tmax) / 2.0, xcoord, ymin, ymax);
     if (t >= 0.0)
@@ -182,7 +182,7 @@ findVertical(pointf * pts, double tmin, double tmax,
 
 }
 
-/* Given 4 Bezier control points pts, corresponding to the portion
+/* Given 4 Bézier control points pts, corresponding to the portion
  * of an initial spline with path parameter in the range
  * 0.0 <= tmin <= t <= tmax <= 1.0, return t where the spline 
  * first crosses a horizontal line segment
@@ -213,7 +213,7 @@ findHorizontal(pointf * pts, double tmin, double tmax,
 	    return -1.0;
     }
 
-    /* split the Bezier into halves, trying the first half first. */
+    /* split the Bézier into halves, trying the first half first. */
     Bezier(pts, 0.5, Left, Right);
     t = findHorizontal(Left, tmin, (tmin + tmax) / 2.0, ycoord, xmin,
 		       xmax);
@@ -293,22 +293,22 @@ static void makeCompoundEdge(edge_t *e, Dt_t *clustMap) {
 	      agnameof(agtail(e)), agnameof(aghead(e)));
 	return;
     }
-    bezier *bez = ED_spl(e)->list; // original Bezier for e
+    bezier *bez = ED_spl(e)->list; // original Bézier for e
     const size_t size = bez->size;
 
     node_t *head = aghead(e);
     node_t *tail = agtail(e);
 
-    /* allocate new Bezier */
-    bezier nbez = {0}; // new Bezier for `e`
+    /* allocate new Bézier */
+    bezier nbez = {0}; // new Bézier for `e`
     nbez.eflag = bez->eflag;
     nbez.sflag = bez->sflag;
 
-    /* if Bezier has four points, almost collinear,
+    /* if Bézier has four points, almost collinear,
      * make line - unimplemented optimization?
      */
 
-    /* If head cluster defined, find first Bezier
+    /* If head cluster defined, find first Bézier
      * crossing head cluster, and truncate spline to
      * box edge.
      * Otherwise, leave end alone.
@@ -368,7 +368,7 @@ static void makeCompoundEdge(edge_t *e, Dt_t *clustMap) {
 	    nbez.ep = bez->ep;
     }
 
-    /* If tail cluster defined, find last Bezier
+    /* If tail cluster defined, find last Bézier
      * crossing tail cluster, and truncate spline to
      * box edge.
      * Otherwise, leave end alone.
@@ -431,7 +431,7 @@ static void makeCompoundEdge(edge_t *e, Dt_t *clustMap) {
 	    nbez.sp = bez->sp;
     }
 
-    /* complete Bezier, free garbage and attach new Bezier to edge 
+    /* complete Bézier, free garbage and attach new Bézier to edge 
      */
     nbez.size = endi - starti + 1;
     nbez.list = gv_calloc(nbez.size, sizeof(pointf));

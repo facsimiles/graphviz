@@ -404,7 +404,7 @@ static void quartzgen_polygon(GVJ_t *job, pointf *A, size_t n, int filled) {
 }
 
 static void quartzgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
-    /* convert bezier into the current path */
+    /* convert Bézier into the current path */
     CGContextRef context = job->context;
     CGContextMoveToPoint(context, A[0].x, A[0].y);
     for (size_t i = 1; i < n; i += 3)

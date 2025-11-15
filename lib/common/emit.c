@@ -748,7 +748,7 @@ static bool check_control_points(pointf *cp)
     return dis1 < HW * HW && dis2 < HW * HW;
 }
 
-/* update bounding box to contain a bezier segment */
+/* update bounding box to contain a Bézier segment */
 void update_bb_bz(boxf *bb, pointf *cp)
 {
 
@@ -819,9 +819,9 @@ static void map_bspline_poly(points_t *pbs_p, pbs_size_t *pbs_n, size_t n,
 #endif
 }
 
-/* Approximate Bezier by line segments. If the four points are
+/* Approximate Bézier by line segments. If the four points are
  * almost colinear, as determined by check_control_points, we store
- * the segment cp[0]-cp[3]. Otherwise we split the Bezier into 2 and recurse. 
+ * the segment cp[0]-cp[3]. Otherwise we split the Bézier into 2 and recurse. 
  * Since 2 contiguous segments share an endpoint, we actually store
  * the segments as a list of points.
  * New points are appended to the list given by lp. The tail of the
@@ -902,7 +902,7 @@ static void map_output_bspline(points_t *pbs, pbs_size_t *pbs_n, bezier *bp,
     points_t segments = {0};
     pointf pts[4], pt1[50], pt2[50];
 
-    const size_t nc = (bp->size - 1) / 3; // nc is number of bezier curves
+    const size_t nc = (bp->size - 1) / 3; // nc is number of Bézier curves
     for (size_t j = 0; j < nc; j++) {
         for (size_t k = 0; k < 4; k++) {
             pts[k] = bp->list[3*j + k];
@@ -1924,9 +1924,9 @@ static double approxLen (pointf* pts)
  * the fraction t of the arc length. The new parts are store in left and right.
  * The caller needs to free the allocated points.
  *
- * In the current implementation, we find the Bezier that should contain t by
+ * In the current implementation, we find the Bézier that should contain t by
  * treating the control points as a polyline.
- * We then split that Bezier.
+ * We then split that Bézier.
  */
 static void splitBSpline(bezier *bz, double t, bezier *left, bezier *right) {
     const size_t cnt = (bz->size - 1) / 3;
@@ -2197,7 +2197,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1], arrowsize, penwidth, bz.eflag);
 	    }
 	}
-	/* if more than one color - then generate parallel beziers, one per color */
+	/* if more than one color - then generate parallel Béziers, one per color */
 	else if (numc) {
 	    /* calculate and save offset vector spline and initialize first offset spline */
 	    tmpspl.size = offspl.size = ED_spl(e)->size;
@@ -2214,7 +2214,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		for (j = 0; j < bz.size - 1; j += 3) {
 		    pf0 = pf3;
 		    pf1 = bz.list[j + 1];
-		    /* calculate perpendicular vectors for each bezier point */
+		    /* calculate perpendicular vectors for each Bézier point */
 		    if (j == 0)	/* first segment, no previous pf2 */
 			offlist[j] = computeoffset_p(pf0, pf1, SEP);
 		    else	/* i.e. pf2 is available from previous segment */
@@ -2617,7 +2617,7 @@ static void emit_end_edge(GVJ_t * job)
 	if (obj->url_bsplinemap_poly_n) {
 	    for (size_t nump = obj->url_bsplinemap_n[0], i = 1;
 	         i < obj->url_bsplinemap_poly_n; i++) {
-		/* additional polygon maps around remaining bezier pieces */
+		/* additional polygon maps around remaining Bézier pieces */
 		obj->url_map_n = obj->url_bsplinemap_n[i];
 		obj->url_map_p = &(obj->url_bsplinemap_p[nump]);
 		gvrender_begin_anchor(job,

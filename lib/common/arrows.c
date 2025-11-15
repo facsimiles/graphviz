@@ -344,7 +344,7 @@ size_t arrowStartClip(edge_t* e, pointf * ps, size_t startp,
 }
 
 /* arrowOrthoClip:
- * For orthogonal routing, we know each Bezier of spl is a horizontal or vertical
+ * For orthogonal routing, we know each Bézier of spl is a horizontal or vertical
  * line segment. We need to guarantee the B-spline stays this way. At present, we shrink
  * the arrows if necessary to fit the last segment at either end. Alternatively, we could
  * maintain the arrow size by dropping the 3 points of spl, and adding a new spl encoding
@@ -1030,7 +1030,7 @@ static pointf arrow_type_dot(GVJ_t *job, pointf p, pointf u, double arrowsize,
 }
 
 
-/* Draw a concave semicircle using a single cubic bezier curve that touches p at its midpoint.
+/* Draw a concave semicircle using a single cubic Bézier curve that touches p at its midpoint.
  * See http://digerati-illuminatus.blogspot.com.au/2008/05/approximating-semicircle-with-cubic.html for details.
  */
 static pointf arrow_type_curve(GVJ_t *job, pointf p, pointf u, double arrowsize,

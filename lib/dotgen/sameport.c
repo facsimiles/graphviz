@@ -128,7 +128,7 @@ static void sameport(node_t *u, edge_list_t l)
     x2 = x * r + ND_coord(u).x;
     y2 = y * r + ND_coord(u).y;
     {				/* now move (x1,y1) to the node boundary */
-	pointf curve[4];		/* bezier control points for a straight line */
+	pointf curve[4];		/* Bézier control points for a straight line */
 	curve[0].x = x1;
 	curve[0].y = y1;
 	curve[1].x = (2 * x1 + x2) / 3;
