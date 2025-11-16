@@ -332,11 +332,8 @@ void osage_layout(Agraph_t *g)
 
 static void cleanup_graphs (Agraph_t *g)
 {
-    graph_t *subg;
-    int i;
-    
-    for (i = 1; i <= GD_n_cluster(g); i++) {
-        subg = GD_clust(g)[i];
+    for (int i = 1; i <= GD_n_cluster(g); i++) {
+        graph_t *const subg = GD_clust(g)[i];
 	free_label(GD_label(subg));
         cleanup_graphs (subg);
     }
