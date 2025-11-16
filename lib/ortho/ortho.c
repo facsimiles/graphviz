@@ -78,28 +78,16 @@ static pointf midPt(const cell *cp) {
  * midpoint of the side.
  */
 static pointf sidePt(const snode ptr, const cell* cp) {
-    pointf pt;
     if (cp == ptr.cells[1]) {
 	if (ptr.isVert) {
-	    pt.x = cp->bb.LL.x;
-	    pt.y = MID(cp->bb.LL.y,cp->bb.UR.y);
+	    return (pointf){.x = cp->bb.LL.x, .y = MID(cp->bb.LL.y, cp->bb.UR.y)};
 	}
-	else {
-	    pt.x = MID(cp->bb.LL.x,cp->bb.UR.x);
-	    pt.y = cp->bb.LL.y;
-	}
+	return (pointf){.x = MID(cp->bb.LL.x, cp->bb.UR.x), .y = cp->bb.LL.y};
     }
-    else {
-	if (ptr.isVert) {
-	    pt.x = cp->bb.UR.x;
-	    pt.y = MID(cp->bb.LL.y,cp->bb.UR.y);
-	}
-	else {
-	    pt.x = MID(cp->bb.LL.x,cp->bb.UR.x);
-	    pt.y = cp->bb.UR.y;
-	}
+    if (ptr.isVert) {
+	return (pointf){.x = cp->bb.UR.x, .y = MID(cp->bb.LL.y, cp->bb.UR.y)};
     }
-    return pt;
+    return (pointf){.x = MID(cp->bb.LL.x, cp->bb.UR.x), .y = cp->bb.UR.y};
 }
 
 /* setSet:
