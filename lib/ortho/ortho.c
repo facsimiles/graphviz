@@ -124,11 +124,9 @@ setSeg (segment* sp, bool dir, double fix, double b1, double b2, int l1, int l2)
 static route
 convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 {
-    route rte;
     snode* ptr;
     snode* next;
     snode* prev;  /* node in shortest path just previous to next */
-    size_t sz = 0;
     cell* cp;
     cell* ncp;
     segment seg;
@@ -136,11 +134,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
     int l1, l2;
     pointf bp1, prevbp = {0.0,0.0};  /* bend points */
 
-	/* count no. of nodes in shortest path */
-    for (ptr = fst; ptr; ptr = N_DAD(ptr)) sz++;
-    rte.n = 0;
-    assert(sz >= 2);
-    rte.segs = gv_calloc(sz - 2, sizeof(segment));  /* at most sz-2 segments */
+    LIST(segment) rte = {0};
 
     seg.prev = seg.next = 0;
     ptr = prev = N_DAD(fst);
@@ -184,7 +178,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 		b2 = ncp->bb.LL.y;
 	    }
 	    setSeg (&seg, !ptr->isVert, fix, b1, b2, l1, l2);
-	    rte.segs[rte.n++] = seg;
+	    LIST_APPEND(&rte, seg);
 	    cp = ncp;
 	    prevbp = bp1;
 	    bp1 = bp2;
@@ -205,7 +199,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 		    b2 = ncp->bb.LL.y;
 		}
 		setSeg (&seg, !next->isVert, fix, b1, b2, l1, l2);
-		rte.segs[rte.n++] = seg;
+		LIST_APPEND(&rte, seg);
 	    }
 	    ptr = next;
 	}
@@ -213,15 +207,16 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 	next = N_DAD(next);
     }
 
-    rte.segs = gv_recalloc(rte.segs, sz - 2, rte.n, sizeof(segment));
-    for (size_t i=0; i<rte.n; i++) {
+    route ret = {0};
+    LIST_DETACH(&rte, &ret.segs, &ret.n);
+    for (size_t i = 0; i < ret.n; i++) {
 	if (i > 0)
-	    rte.segs[i].prev = rte.segs + (i-1);
-	if (i < rte.n-1)
-	    rte.segs[i].next = rte.segs + (i+1);
+	    ret.segs[i].prev = ret.segs + (i - 1);
+	if (i < ret.n - 1)
+	    ret.segs[i].next = ret.segs + (i + 1);
     }
 
-    return rte;
+    return ret;
 }
 
 typedef struct {
