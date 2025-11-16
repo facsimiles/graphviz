@@ -77,12 +77,10 @@ static pointf midPt(const cell *cp) {
  * Given a cell and an snode on one of its sides, return the
  * midpoint of the side.
  */
-static pointf
-sidePt (snode* ptr, cell* cp)
-{
+static pointf sidePt(const snode ptr, cell* cp) {
     pointf pt;
-    if (cp == ptr->cells[1]) {
-	if (ptr->isVert) {
+    if (cp == ptr.cells[1]) {
+	if (ptr.isVert) {
 	    pt.x = cp->bb.LL.x;
 	    pt.y = MID(cp->bb.LL.y,cp->bb.UR.y);
 	}
@@ -92,7 +90,7 @@ sidePt (snode* ptr, cell* cp)
 	}
     }
     else {
-	if (ptr->isVert) {
+	if (ptr.isVert) {
 	    pt.x = cp->bb.UR.x;
 	    pt.y = MID(cp->bb.LL.y,cp->bb.UR.y);
 	}
@@ -163,7 +161,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 	cp = ptr->cells[1];
     else
 	cp = ptr->cells[0];
-    bp1 = sidePt (ptr, cp);
+    bp1 = sidePt(*ptr, cp);
     while (N_DAD(next)!=NULL) {
 	ncp = cellOf (prev, next);
 	updateWts (g, ncp, N_EDGE(ptr));
@@ -173,7 +171,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 	    if (ptr->isVert != next->isVert)
 		bp2 = midPt (ncp);
 	    else
-		bp2 = sidePt(next, ncp);
+		bp2 = sidePt(*next, ncp);
 	    if (ptr->isVert) {   /* horizontal segment */
 		if (ptr == N_DAD(fst)) l1 = B_NODE;
 		else if (prevbp.y > bp1.y) l1 = B_UP;
@@ -206,7 +204,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 	    prevbp = bp1;
 	    bp1 = bp2;
 	    if (ptr->isVert != next->isVert && N_DAD(next) == lst) {
-		bp2 = sidePt(next, ncp);
+		bp2 = sidePt(*next, ncp);
 		l2 = B_NODE;
 		if (next->isVert) {   /* horizontal segment */
 		    if (prevbp.y > bp1.y) l1 = B_UP;
