@@ -70,7 +70,6 @@ layout (Agraph_t* g, int depth)
     Agnode_t*  n;
     Agraph_t*  subg;
     pointf* pts;
-    boxf rootbb;
     pointf p;
     pack_info pinfo;
     pack_mode pmode;
@@ -143,8 +142,7 @@ layout (Agraph_t* g, int depth)
     pts = putRects((size_t)total, gs, &pinfo);
     free (pinfo.vals);
 
-    rootbb.LL = (pointf){DBL_MAX, DBL_MAX};
-    rootbb.UR = (pointf){-DBL_MAX, -DBL_MAX};
+    boxf rootbb = {.LL = {DBL_MAX, DBL_MAX}, .UR = {-DBL_MAX, -DBL_MAX}};
 
     /* reposition children relative to GD_bb(g) */
     for (j = 0; j < total; j++) {
@@ -176,11 +174,7 @@ layout (Agraph_t* g, int depth)
 
         pointf pt = GD_label(g)->dimen;
 	if (total == 0) {
-            rootbb.LL.x = 0;
-            rootbb.LL.y = 0;
-            rootbb.UR.x = pt.x;
-            rootbb.UR.y = pt.y;
-
+            rootbb = (boxf){.UR = pt};
 	}
         d = pt.x - (rootbb.UR.x - rootbb.LL.x);
         if (d > 0) {            /* height of label is added below */
@@ -230,8 +224,7 @@ layout (Agraph_t* g, int depth)
 	}
     }
 
-    rootbb.UR = sub_pointf(rootbb.UR, rootbb.LL);
-    rootbb.LL = sub_pointf(rootbb.LL, rootbb.LL);
+    rootbb = (boxf){.UR = sub_pointf(rootbb.UR, rootbb.LL)};
     GD_bb(g) = rootbb;
 
     if (Verbose > 1) {
