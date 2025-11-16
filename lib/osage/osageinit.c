@@ -274,7 +274,6 @@ reposition (Agraph_t* g, int depth)
 static void
 mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
 {
-    graph_t* subg;
     clist_t  list = {0};
     clist_t* clist;
 
@@ -286,7 +285,7 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
     else
         clist = pclist;
 
-    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+    for (graph_t *subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
         if (is_a_cluster(subg)) {
 	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
 	    do_graph_label (subg);
