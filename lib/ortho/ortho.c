@@ -77,7 +77,7 @@ static pointf midPt(const cell *cp) {
  * Given a cell and an snode on one of its sides, return the
  * midpoint of the side.
  */
-static pointf sidePt(const snode ptr, cell* cp) {
+static pointf sidePt(const snode ptr, const cell* cp) {
     pointf pt;
     if (cp == ptr.cells[1]) {
 	if (ptr.isVert) {
