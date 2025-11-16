@@ -92,9 +92,9 @@ layout (Agraph_t* g, int depth)
     }
 
     nv = agnnodes(g);
-    total = (nv - nvs) + GD_n_cluster(g);
+    total = nv - nvs + GD_n_cluster(g);
 
-    if ((total == 0) && (GD_label(g) == NULL)) {
+    if (total == 0 && GD_label(g) == NULL) {
 	GD_bb(g).LL.x = GD_bb(g).LL.y = 0;
 	GD_bb(g).UR.x = GD_bb(g).UR.y = DFLT_SZ;
 	return;
@@ -104,7 +104,7 @@ layout (Agraph_t* g, int depth)
     if (pmode < l_graph) pinfo.mode = l_graph;
 
         /* add user sort values if necessary */
-    if ((pinfo.mode == l_array) && (pinfo.flags & PK_USER_VALS)) {
+    if (pinfo.mode == l_array && (pinfo.flags & PK_USER_VALS)) {
 	cattr = agattr_text(root, AGRAPH, "sortv", 0);
 	vattr = agattr_text(root, AGNODE, "sortv", 0);
 	if (cattr || vattr)
@@ -201,8 +201,8 @@ layout (Agraph_t* g, int depth)
 	margin = 0;
     rootbb.LL.x -= margin;
     rootbb.UR.x += margin;
-    rootbb.LL.y -= (margin + GD_border(g)[BOTTOM_IX].y);
-    rootbb.UR.y += (margin + GD_border(g)[TOP_IX].y);
+    rootbb.LL.y -= margin + GD_border(g)[BOTTOM_IX].y;
+    rootbb.UR.y += margin + GD_border(g)[TOP_IX].y;
 
     if (Verbose > 1) {
 	indent (depth);
