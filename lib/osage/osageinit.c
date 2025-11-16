@@ -230,10 +230,7 @@ layout (Agraph_t* g, int depth)
 static void
 reposition (Agraph_t* g, int depth)
 {
-    boxf sbb, bb = GD_bb(g);
-    Agnode_t* n;
-    Agraph_t* subg;
-    int i;
+    boxf bb = GD_bb(g);
 
     if (Verbose > 1) {
 	indent (depth);
@@ -242,7 +239,7 @@ reposition (Agraph_t* g, int depth)
 
     /* translate nodes in g but not in a subcluster */
     if (depth) {
-        for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+        for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
             if (PARENT(n) != g)
                 continue;
             ND_coord(n).x += bb.LL.x;
@@ -255,10 +252,10 @@ reposition (Agraph_t* g, int depth)
     }
 
     /* translate top-level clusters and recurse */
-    for (i = 1; i <= GD_n_cluster(g); i++) {
-        subg = GD_clust(g)[i];
+    for (int i = 1; i <= GD_n_cluster(g); i++) {
+        Agraph_t *const subg = GD_clust(g)[i];
         if (depth) {
-            sbb = GD_bb(subg);
+            boxf sbb = GD_bb(subg);
             sbb.LL.x += bb.LL.x;
             sbb.LL.y += bb.LL.y;
             sbb.UR.x += bb.LL.x;
