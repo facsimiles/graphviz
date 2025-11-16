@@ -342,9 +342,7 @@ static void cleanup_graphs (Agraph_t *g)
 
 void osage_cleanup(Agraph_t *g)
 {
-    node_t *n;
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    for (node_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
         for (edge_t *e = agfstout(g, n); e; e = agnxtout(g, e)) {
             gv_cleanup_edge(e);
         }
