@@ -70,7 +70,7 @@ layout (Agraph_t* g, int depth)
     Agnode_t*  n;
     Agraph_t*  subg;
     pointf* pts;
-    boxf bb, rootbb;
+    boxf rootbb;
     pointf p;
     pack_info pinfo;
     pack_mode pmode;
@@ -129,9 +129,7 @@ layout (Agraph_t* g, int depth)
 	for (n = agfstnode (g); n; n = agnxtnode (g,n)) {
 	    if (ND_alg(n)) continue;
 	    ND_alg(n) = g;
-	    bb.LL.y = bb.LL.x = 0;
-	    bb.UR.x = ND_xsize(n);
-	    bb.UR.y = ND_ysize(n);
+	    const boxf bb = {.UR = {.x = ND_xsize(n), .y = ND_ysize(n)}};
 	    gs[j] = bb;
 	    if (pinfo.vals && vattr) {
 		pinfo.vals[j] = late_int (n, vattr, 0, 0);
@@ -151,11 +149,9 @@ layout (Agraph_t* g, int depth)
     /* reposition children relative to GD_bb(g) */
     for (j = 0; j < total; j++) {
 	p = pts[j];
-	bb = gs[j];
-	bb.LL.x += p.x;
-	bb.UR.x += p.x;
-	bb.LL.y += p.y;
-	bb.UR.y += p.y;
+	boxf bb = gs[j];
+	bb.LL = add_pointf(bb.LL, p);
+	bb.UR = add_pointf(bb.UR, p);
 	EXPANDBB(&rootbb, bb);
 	if (j < GD_n_cluster(g)) {
 	    subg = children[j];
@@ -215,7 +211,7 @@ layout (Agraph_t* g, int depth)
     for (j = 0; j < total; j++) {
 	if (j < GD_n_cluster(g)) {
 	    subg = children[j];
-	    bb = GD_bb(subg);
+	    boxf bb = GD_bb(subg);
 	    bb.LL = sub_pointf(bb.LL, rootbb.LL);
 	    bb.UR = sub_pointf(bb.UR, rootbb.LL);
 	    GD_bb(subg) = bb;
