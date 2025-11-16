@@ -65,15 +65,8 @@ static void cluster_init_graph(graph_t * g)
 static void
 layout (Agraph_t* g, int depth)
 {
-    int i, j, total, nv;
     int nvs = 0;       /* no. of nodes in subclusters */
-    Agnode_t*  n;
-    Agraph_t*  subg;
-    pointf* pts;
-    pointf p;
     pack_info pinfo;
-    pack_mode pmode;
-    double margin;
     Agsym_t* cattr = NULL;
     Agsym_t* vattr = NULL;
     Agraph_t* root = g->root;
@@ -84,21 +77,21 @@ layout (Agraph_t* g, int depth)
     }
 
     /* Lay out subclusters */
-    for (i = 1; i <= GD_n_cluster(g); i++) {
-        subg = GD_clust(g)[i];
+    for (int i = 1; i <= GD_n_cluster(g); i++) {
+        Agraph_t *const subg = GD_clust(g)[i];
 	layout (subg, depth+1);
 	nvs += agnnodes (subg);
     }
 
-    nv = agnnodes(g);
-    total = nv - nvs + GD_n_cluster(g);
+    const int nv = agnnodes(g);
+    const int total = nv - nvs + GD_n_cluster(g);
 
     if (total == 0 && GD_label(g) == NULL) {
 	GD_bb(g) = (boxf){.UR = {.x = DFLT_SZ, .y = DFLT_SZ}};
 	return;
     }
     
-    pmode = getPackInfo(g, l_array, DFLT_MARGIN, &pinfo);
+    const pack_mode pmode = getPackInfo(g, l_array, DFLT_MARGIN, &pinfo);
     if (pmode < l_graph) pinfo.mode = l_graph;
 
         /* add user sort values if necessary */
@@ -114,9 +107,9 @@ layout (Agraph_t* g, int depth)
 
     boxf *gs = gv_calloc(total, sizeof(boxf));
     void **children = gv_calloc(total, sizeof(void*));
-    j = 0;
-    for (i = 1; i <= GD_n_cluster(g); i++) {
-	subg = GD_clust(g)[i];
+    int j = 0;
+    for (int i = 1; i <= GD_n_cluster(g); i++) {
+	Agraph_t *const subg = GD_clust(g)[i];
 	gs[j] = GD_bb(subg);
 	if (pinfo.vals && cattr) {
 	    pinfo.vals[j] = late_int (subg, cattr, 0, 0);
@@ -125,7 +118,7 @@ layout (Agraph_t* g, int depth)
     }
   
     if (nv-nvs > 0) {
-	for (n = agfstnode (g); n; n = agnxtnode (g,n)) {
+	for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    if (ND_alg(n)) continue;
 	    ND_alg(n) = g;
 	    const boxf bb = {.UR = {.x = ND_xsize(n), .y = ND_ysize(n)}};
@@ -139,20 +132,20 @@ layout (Agraph_t* g, int depth)
 
 	/* pack rectangles */
     assert(total >= 0);
-    pts = putRects((size_t)total, gs, &pinfo);
+    pointf *const pts = putRects((size_t)total, gs, &pinfo);
     free (pinfo.vals);
 
     boxf rootbb = {.LL = {DBL_MAX, DBL_MAX}, .UR = {-DBL_MAX, -DBL_MAX}};
 
     /* reposition children relative to GD_bb(g) */
     for (j = 0; j < total; j++) {
-	p = pts[j];
+	const pointf p = pts[j];
 	boxf bb = gs[j];
 	bb.LL = add_pointf(bb.LL, p);
 	bb.UR = add_pointf(bb.UR, p);
 	EXPANDBB(&rootbb, bb);
 	if (j < GD_n_cluster(g)) {
-	    subg = children[j];
+	    Agraph_t *const subg = children[j];
 	    GD_bb(subg) = bb;
 	    if (Verbose > 1) {
 		indent (depth);
@@ -160,7 +153,7 @@ layout (Agraph_t* g, int depth)
 	    }
 	}
 	else {
-	    n = children[j];
+	    Agnode_t *const n = children[j];
 	    ND_coord(n) = mid_pointf (bb.LL, bb.UR);
 	    if (Verbose > 1) {
 		indent (depth);
@@ -184,10 +177,7 @@ layout (Agraph_t* g, int depth)
         }
     }
 
-    if (depth > 0)
-	margin = pinfo.margin/2.0;
-    else
-	margin = 0;
+    const double margin = depth > 0 ? pinfo.margin / 2.0 : 0;
     rootbb.LL.x -= margin;
     rootbb.UR.x += margin;
     rootbb.LL.y -= margin + GD_border(g)[BOTTOM_IX].y;
@@ -204,7 +194,7 @@ layout (Agraph_t* g, int depth)
      */
     for (j = 0; j < total; j++) {
 	if (j < GD_n_cluster(g)) {
-	    subg = children[j];
+	    Agraph_t *const subg = children[j];
 	    boxf bb = GD_bb(subg);
 	    bb.LL = sub_pointf(bb.LL, rootbb.LL);
 	    bb.UR = sub_pointf(bb.UR, rootbb.LL);
@@ -215,7 +205,7 @@ layout (Agraph_t* g, int depth)
 	    }
 	}
 	else {
-	    n = children[j];
+	    Agnode_t *const n = children[j];
 	    ND_coord(n) = sub_pointf (ND_coord(n), rootbb.LL);
 	    if (Verbose > 1) {
 		indent (depth);
