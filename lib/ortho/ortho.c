@@ -192,7 +192,6 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 	    prevbp = bp1;
 	    bp1 = bp2;
 	    if (ptr->isVert != next->isVert && N_DAD(next) == lst) {
-		bp2 = sidePt(*next, ncp);
 		l2 = B_NODE;
 		if (next->isVert) {   /* horizontal segment */
 		    if (prevbp.y > bp1.y) l1 = B_UP;
