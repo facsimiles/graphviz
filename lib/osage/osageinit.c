@@ -95,8 +95,7 @@ layout (Agraph_t* g, int depth)
     total = nv - nvs + GD_n_cluster(g);
 
     if (total == 0 && GD_label(g) == NULL) {
-	GD_bb(g).LL.x = GD_bb(g).LL.y = 0;
-	GD_bb(g).UR.x = GD_bb(g).UR.y = DFLT_SZ;
+	GD_bb(g) = (boxf){.UR = {.x = DFLT_SZ, .y = DFLT_SZ}};
 	return;
     }
     
