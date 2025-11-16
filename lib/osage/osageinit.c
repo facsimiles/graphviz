@@ -112,7 +112,7 @@ layout (Agraph_t* g, int depth)
 	Agraph_t *const subg = GD_clust(g)[i];
 	gs[j] = GD_bb(subg);
 	if (pinfo.vals && cattr) {
-	    pinfo.vals[j] = late_int (subg, cattr, 0, 0);
+	    pinfo.vals[j] = (packval_t)late_int(subg, cattr, 0, 0);
 	}
 	children[j++] = subg;
     }
@@ -124,7 +124,7 @@ layout (Agraph_t* g, int depth)
 	    const boxf bb = {.UR = {.x = ND_xsize(n), .y = ND_ysize(n)}};
 	    gs[j] = bb;
 	    if (pinfo.vals && vattr) {
-		pinfo.vals[j] = late_int (n, vattr, 0, 0);
+		pinfo.vals[j] = (packval_t)late_int(n, vattr, 0, 0);
 	    }
 	    children[j++] = n;
 	}
