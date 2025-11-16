@@ -134,7 +134,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
     segment seg;
     double fix, b1, b2;
     int l1, l2;
-    pointf bp1, bp2, prevbp = {0.0,0.0};  /* bend points */
+    pointf bp1, prevbp = {0.0,0.0};  /* bend points */
 
 	/* count no. of nodes in shortest path */
     for (ptr = fst; ptr; ptr = N_DAD(ptr)) sz++;
@@ -156,10 +156,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 
         /* add seg if path bends or at end */
 	if (ptr->isVert != next->isVert || N_DAD(next) == lst) {
-	    if (ptr->isVert != next->isVert)
-		bp2 = midPt (ncp);
-	    else
-		bp2 = sidePt(*next, ncp);
+	    const pointf bp2 = ptr->isVert != next->isVert ? midPt (ncp) : sidePt(*next, ncp);
 	    if (ptr->isVert) {   /* horizontal segment */
 		if (ptr == N_DAD(fst)) l1 = B_NODE;
 		else if (prevbp.y > bp1.y) l1 = B_UP;
