@@ -203,22 +203,26 @@ static void heapify_f(heap *h, int i, float dist[]) {
     }
 }
 
-static void initHeap_f(heap *h, int startVertex, float dist[], int n) {
+static heap initHeap_f(int startVertex, float dist[], int n) {
     int i, count;
     int j;			/* We cannot use an unsigned value in this loop */
-    h->data = gv_calloc(n - 1, sizeof(int));
-    h->heapSize = n - 1;
-    h->index = gv_calloc(n, sizeof(int));
+    heap h = {
+      .data = gv_calloc(n - 1, sizeof(int)),
+      .heapSize = n - 1,
+      .index = gv_calloc(n, sizeof(int))
+    };
 
     for (count = 0, i = 0; i < n; i++)
 	if (i != startVertex) {
-	    h->data[count] = i;
-	    h->index[i] = count;
+	    h.data[count] = i;
+	    h.index[i] = count;
 	    count++;
 	}
 
     for (j = (n - 1) / 2; j >= 0; j--)
-	heapify_f(h, j, dist);
+	heapify_f(&h, j, dist);
+
+    return h;
 }
 
 static bool extractMax_f(heap *h, int *max, float dist[]) {
@@ -260,7 +264,6 @@ static void increaseKey_f(heap *h, int increasedVertex, float newDist,
  */
 void dijkstra_f(int vertex, vtx_data * graph, int n, float *dist)
 {
-    heap H;
     int closestVertex = 0, neighbor;
     float closestDist;
 
@@ -271,7 +274,7 @@ void dijkstra_f(int vertex, vtx_data * graph, int n, float *dist)
     for (size_t i = 1; i < graph[vertex].nedges; i++)
 	dist[graph[vertex].edges[i]] = graph[vertex].ewgts[i];
 
-    initHeap_f(&H, vertex, dist, n);
+    heap H = initHeap_f(vertex, dist, n);
 
     while (extractMax_f(&H, &closestVertex, dist)) {
 	closestDist = dist[closestVertex];
@@ -291,7 +294,6 @@ void dijkstra_f(int vertex, vtx_data * graph, int n, float *dist)
 // mostly copied from dijkstra_f above
 // returns the number of terms built
 int dijkstra_sgd(graph_sgd *graph, int source, term_sgd *terms) {
-    heap h;
     float *dists = gv_calloc(graph->n, sizeof(float));
     for (size_t i= 0; i < graph->n; i++) {
         dists[i] = FLT_MAX;
@@ -303,7 +305,7 @@ int dijkstra_sgd(graph_sgd *graph, int source, term_sgd *terms) {
         dists[target] = graph->weights[i];
     }
     assert(graph->n <= INT_MAX);
-    initHeap_f(&h, source, dists, (int)graph->n);
+    heap h = initHeap_f(source, dists, (int)graph->n);
 
     int closest = 0, offset = 0;
     while (extractMax_f(&h, &closest, dists)) {
