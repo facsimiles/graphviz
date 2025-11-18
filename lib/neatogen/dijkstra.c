@@ -40,7 +40,8 @@ static int left(int i) { return 2 * i; }
 
 static int right(int i) { return 2 * i + 1; }
 
-#define parent(i) ((i)/2)
+static int parent(int i) { return i / 2; }
+
 #define insideHeap(h,i) ((i)<h->heapSize)
 #define greaterPriority(h,i,j,dist) (dist[h->data[i]]<dist[h->data[j]])
 #define exchange(h,i,j,index) { \
