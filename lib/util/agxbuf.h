@@ -1,6 +1,26 @@
 /**
  * @file
  * @ingroup cgraph_utils
+ * @brief Dynamically expanding string buffers
+ *
+ * Incrementally constructing a string in C is not something easily available
+ * out-of-the-box. You either need to statically know the size of the string
+ * upfront or rely on non-standard APIs like `asprintf` and `open_memstream`.
+ *
+ * This header implements a self-contained, reasonably efficient alternative.
+ * You can think of this as similar to C++’s `std::ostringstream` or Python’s
+ * `io.StringIO`.
+ *
+ * `agxbuf` includes Short String Optimization (SSO), a technique to pack small
+ * strings into the bytes of the structure itself rather than an out-of-line
+ * heap buffer. The point of this is to save memory and/or runtime by avoiding
+ * allocator calls. In contrast to most other SSO implementations (e.g. those in
+ * the `std::string` implementations of many C++ standard libraries), `agxbuf`
+ * biases heavily towards saving memory over runtime performance. That is, the
+ * maximum length of string is eligible for SSO, at the expense of more runtime
+ * code branches. The thinking here (that should periodically be reconsidered)
+ * is that expensive Graphviz runs typically hit memory limits before runtime
+ * limits, and thus would benefit more from saving memory than running faster.
  */
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property
