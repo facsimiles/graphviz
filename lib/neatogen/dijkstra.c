@@ -95,23 +95,26 @@ static void freeHeap(heap * h)
     free(h->data);
 }
 
-static void initHeap(heap *h, int startVertex, Word dist[], int n) {
+static heap initHeap(int startVertex, Word dist[], int n) {
     int i, count;
     int j;    /* We cannot use an unsigned value in this loop */
-    if (n == 1) h->data = NULL;
-    else h->data = gv_calloc(n - 1, sizeof(int));
-    h->heapSize = n - 1;
-    h->index = gv_calloc(n, sizeof(int));
+    heap h = {0};
+    if (n == 1) h.data = NULL;
+    else h.data = gv_calloc(n - 1, sizeof(int));
+    h.heapSize = n - 1;
+    h.index = gv_calloc(n, sizeof(int));
 
     for (count = 0, i = 0; i < n; i++)
 	if (i != startVertex) {
-	    h->data[count] = i;
-	    h->index[i] = count;
+	    h.data[count] = i;
+	    h.index[i] = count;
 	    count++;
 	}
 
     for (j = (n - 1) / 2; j >= 0; j--)
-	heapify(h, j, dist);
+	heapify(&h, j, dist);
+
+    return h;
 }
 
 static bool extractMax(heap *h, int *max, Word dist[]) {
@@ -149,7 +152,6 @@ static void increaseKey(heap *h, int increasedVertex, Word newDist, Word dist[])
 
 void ngdijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
 {
-    heap H;
     int closestVertex, neighbor;
     DistType closestDist, prevClosestDist = MAX_DIST;
 
@@ -160,7 +162,7 @@ void ngdijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
     for (size_t i = 1; i < graph[vertex].nedges; i++)
 	dist[graph[vertex].edges[i]] = (DistType) graph[vertex].ewgts[i];
 
-    initHeap(&H, vertex, dist, n);
+    heap H = initHeap(vertex, dist, n);
 
     while (extractMax(&H, &closestVertex, dist)) {
 	closestDist = dist[closestVertex];
