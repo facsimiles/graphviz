@@ -377,7 +377,7 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
 
   /* no overlap at all! */
   if (*max_overlap < 1 && shrink){
-    double scale_sta = fmin(1, *max_overlap * 1.0001);
+    const double scale_sta = fmin(1, *max_overlap * 1.0001);
     const double scale_sto = 1;
 
     if (Verbose) fprintf(stderr," no overlap (overlap = %f), rescale to shrink\n", *max_overlap - 1);
