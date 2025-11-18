@@ -45,6 +45,7 @@ static int parent(int i) { return i / 2; }
 typedef struct {
     int *data;
     int heapSize;
+    int *index;
 } heap;
 
 static bool insideHeap(const heap *h, int i) { return i < h->heapSize; }
@@ -57,19 +58,18 @@ static bool greaterPriority_f(const heap *h, int i, int j, const float *dist) {
   return dist[h->data[i]] < dist[h->data[j]];
 }
 
-static void assign(heap *h, int i, int j, int *index) {
+static void assign(heap *h, int i, int j) {
   h->data[i] = h->data[j];
-  index[h->data[i]] = i;
+  h->index[h->data[i]] = i;
 }
 
-static void exchange(heap *h, int i, int j, int *index) {
+static void exchange(heap *h, int i, int j) {
   SWAP(&h->data[i], &h->data[j]);
-  index[h->data[i]] = i;
-  index[h->data[j]] = j;
+  h->index[h->data[i]] = i;
+  h->index[h->data[j]] = j;
 }
 
-static void heapify(heap * h, int i, int index[], Word dist[])
-{
+static void heapify(heap *h, int i, Word dist[]) {
     int l, r, largest;
     while (1) {
 	l = left(i);
@@ -84,71 +84,67 @@ static void heapify(heap * h, int i, int index[], Word dist[])
 	if (largest == i)
 	    break;
 
-	exchange(h, largest, i, index);
+	exchange(h, largest, i);
 	i = largest;
     }
 }
 
 static void freeHeap(heap * h)
 {
+    free(h->index);
     free(h->data);
 }
 
-static void
-initHeap(heap * h, int startVertex, int index[], Word dist[], int n)
-{
+static void initHeap(heap *h, int startVertex, Word dist[], int n) {
     int i, count;
     int j;    /* We cannot use an unsigned value in this loop */
     if (n == 1) h->data = NULL;
     else h->data = gv_calloc(n - 1, sizeof(int));
     h->heapSize = n - 1;
+    h->index = gv_calloc(n, sizeof(int));
 
     for (count = 0, i = 0; i < n; i++)
 	if (i != startVertex) {
 	    h->data[count] = i;
-	    index[i] = count;
+	    h->index[i] = count;
 	    count++;
 	}
 
     for (j = (n - 1) / 2; j >= 0; j--)
-	heapify(h, j, index, dist);
+	heapify(h, j, dist);
 }
 
-static bool extractMax(heap * h, int *max, int index[], Word dist[])
-{
+static bool extractMax(heap *h, int *max, Word dist[]) {
     if (h->heapSize == 0)
 	return false;
 
     *max = h->data[0];
     h->data[0] = h->data[h->heapSize - 1];
-    index[h->data[0]] = 0;
+    h->index[h->data[0]] = 0;
     h->heapSize--;
-    heapify(h, 0, index, dist);
+    heapify(h, 0, dist);
 
     return true;
 }
 
-static void
-increaseKey(heap * h, int increasedVertex, Word newDist, int index[],
-	    Word dist[])
-{
+static void increaseKey(heap *h, int increasedVertex, Word newDist, Word dist[]) {
     int placeInHeap;
     int i;
 
     if (dist[increasedVertex] <= newDist)
 	return;
 
-    placeInHeap = index[increasedVertex];
+    placeInHeap = h->index[increasedVertex];
 
     dist[increasedVertex] = newDist;
 
     i = placeInHeap;
     while (i > 0 && dist[h->data[parent(i)]] > newDist) {	/* can write here: greaterPriority(i,parent(i),dist) */
-	assign(h, i, parent(i), index);
+	assign(h, i, parent(i));
 	i = parent(i);
     }
     h->data[i] = increasedVertex;
-    index[increasedVertex] = i;
+    h->index[increasedVertex] = i;
 }
 
 void ngdijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
@@ -157,8 +153,6 @@ void ngdijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
     int closestVertex, neighbor;
     DistType closestDist, prevClosestDist = MAX_DIST;
 
-    int *index = gv_calloc(n, sizeof(int));
-
     /* initial distances with edge weights: */
     for (int i = 0; i < n; i++)
 	dist[i] = MAX_DIST;
@@ -166,16 +160,16 @@ void ngdijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
     for (size_t i = 1; i < graph[vertex].nedges; i++)
 	dist[graph[vertex].edges[i]] = (DistType) graph[vertex].ewgts[i];
 
-    initHeap(&H, vertex, index, dist, n);
+    initHeap(&H, vertex, dist, n);
 
-    while (extractMax(&H, &closestVertex, index, dist)) {
+    while (extractMax(&H, &closestVertex, dist)) {
 	closestDist = dist[closestVertex];
 	if (closestDist == MAX_DIST)
 	    break;
 	for (size_t i = 1; i < graph[closestVertex].nedges; i++) {
 	    neighbor = graph[closestVertex].edges[i];
 	    increaseKey(&H, neighbor, closestDist +
-			(DistType)graph[closestVertex].ewgts[i], index, dist);
+			(DistType)graph[closestVertex].ewgts[i], dist);
 	}
 	prevClosestDist = closestDist;
     }
@@ -185,11 +179,9 @@ void ngdijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
 	if (dist[i] == MAX_DIST)	/* 'i' is not connected to 'vertex' */
 	    dist[i] = prevClosestDist + 10;
     freeHeap(&H);
-    free(index);
 }
 
-static void heapify_f(heap * h, int i, int index[], float dist[])
-{
+static void heapify_f(heap *h, int i, float dist[]) {
     int l, r, largest;
     while (1) {
 	l = left(i);
@@ -204,65 +196,61 @@ static void heapify_f(heap * h, int i, int index[], float dist[])
 	if (largest == i)
 	    break;
 
-	exchange(h, largest, i, index);
+	exchange(h, largest, i);
 	i = largest;
     }
 }
 
-static void
-initHeap_f(heap * h, int startVertex, int index[], float dist[], int n)
-{
+static void initHeap_f(heap *h, int startVertex, float dist[], int n) {
     int i, count;
     int j;			/* We cannot use an unsigned value in this loop */
     h->data = gv_calloc(n - 1, sizeof(int));
     h->heapSize = n - 1;
+    h->index = gv_calloc(n, sizeof(int));
 
     for (count = 0, i = 0; i < n; i++)
 	if (i != startVertex) {
 	    h->data[count] = i;
-	    index[i] = count;
+	    h->index[i] = count;
 	    count++;
 	}
 
     for (j = (n - 1) / 2; j >= 0; j--)
-	heapify_f(h, j, index, dist);
+	heapify_f(h, j, dist);
 }
 
-static bool extractMax_f(heap * h, int *max, int index[], float dist[])
-{
+static bool extractMax_f(heap *h, int *max, float dist[]) {
     if (h->heapSize == 0)
 	return false;
 
     *max = h->data[0];
     h->data[0] = h->data[h->heapSize - 1];
-    index[h->data[0]] = 0;
+    h->index[h->data[0]] = 0;
     h->heapSize--;
-    heapify_f(h, 0, index, dist);
+    heapify_f(h, 0, dist);
 
     return true;
 }
 
-static void
-increaseKey_f(heap * h, int increasedVertex, float newDist, int index[],
-	      float dist[])
-{
+static void increaseKey_f(heap *h, int increasedVertex, float newDist,
+                          float dist[]) {
     int placeInHeap;
     int i;
 
     if (dist[increasedVertex] <= newDist)
 	return;
 
-    placeInHeap = index[increasedVertex];
+    placeInHeap = h->index[increasedVertex];
 
     dist[increasedVertex] = newDist;
 
     i = placeInHeap;
     while (i > 0 && dist[h->data[parent(i)]] > newDist) {	/* can write here: greaterPriority(i,parent(i),dist) */
-	assign(h, i, parent(i), index);
+	assign(h, i, parent(i));
 	i = parent(i);
     }
     h->data[i] = increasedVertex;
-    index[increasedVertex] = i;
+    h->index[increasedVertex] = i;
 }
 
 /* Weighted shortest paths from vertex.
@@ -273,7 +261,6 @@ void dijkstra_f(int vertex, vtx_data * graph, int n, float *dist)
     heap H;
     int closestVertex = 0, neighbor;
     float closestDist;
-    int *index = gv_calloc(n, sizeof(int));
 
     /* initial distances with edge weights: */
     for (int i = 0; i < n; i++)
@@ -282,21 +269,20 @@ void dijkstra_f(int vertex, vtx_data * graph, int n, float *dist)
     for (size_t i = 1; i < graph[vertex].nedges; i++)
 	dist[graph[vertex].edges[i]] = graph[vertex].ewgts[i];
 
-    initHeap_f(&H, vertex, index, dist, n);
+    initHeap_f(&H, vertex, dist, n);
 
-    while (extractMax_f(&H, &closestVertex, index, dist)) {
+    while (extractMax_f(&H, &closestVertex, dist)) {
 	closestDist = dist[closestVertex];
 	if (closestDist == FLT_MAX)
 	    break;
 	for (size_t i = 1; i < graph[closestVertex].nedges; i++) {
 	    neighbor = graph[closestVertex].edges[i];
 	    increaseKey_f(&H, neighbor, closestDist + graph[closestVertex].ewgts[i],
-			  index, dist);
+			  dist);
 	}
     }
 
     freeHeap(&H);
-    free(index);
 }
 
 // single source shortest paths that also builds terms as it goes
@@ -304,7 +290,6 @@ void dijkstra_f(int vertex, vtx_data * graph, int n, float *dist)
 // returns the number of terms built
 int dijkstra_sgd(graph_sgd *graph, int source, term_sgd *terms) {
     heap h;
-    int *indices = gv_calloc(graph->n, sizeof(int));
     float *dists = gv_calloc(graph->n, sizeof(float));
     for (size_t i= 0; i < graph->n; i++) {
         dists[i] = FLT_MAX;
@@ -316,10 +301,10 @@ int dijkstra_sgd(graph_sgd *graph, int source, term_sgd *terms) {
         dists[target] = graph->weights[i];
     }
     assert(graph->n <= INT_MAX);
-    initHeap_f(&h, source, indices, dists, (int)graph->n);
+    initHeap_f(&h, source, dists, (int)graph->n);
 
     int closest = 0, offset = 0;
-    while (extractMax_f(&h, &closest, indices, dists)) {
+    while (extractMax_f(&h, &closest, dists)) {
         float d = dists[closest];
         if (d == FLT_MAX) {
             break;
@@ -338,11 +323,10 @@ int dijkstra_sgd(graph_sgd *graph, int source, term_sgd *terms) {
             size_t target = graph->targets[i];
             float weight = graph->weights[i];
             assert(target <= INT_MAX);
-            increaseKey_f(&h, (int)target, d+weight, indices, dists);
+            increaseKey_f(&h, (int)target, d+weight, dists);
         }
     }
     freeHeap(&h);
-    free(indices);
     free(dists);
     return offset;
 }
