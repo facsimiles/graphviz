@@ -98,11 +98,11 @@ static void freeHeap(heap * h)
 static heap initHeap(int startVertex, Word dist[], int n) {
     int i, count;
     int j;    /* We cannot use an unsigned value in this loop */
-    heap h = {0};
-    if (n == 1) h.data = NULL;
-    else h.data = gv_calloc(n - 1, sizeof(int));
-    h.heapSize = n - 1;
-    h.index = gv_calloc(n, sizeof(int));
+    heap h = {
+      .data = gv_calloc(n - 1, sizeof(int)),
+      .heapSize = n - 1,
+      .index = gv_calloc(n, sizeof(int))
+    };
 
     for (count = 0, i = 0; i < n; i++)
 	if (i != startVertex) {
