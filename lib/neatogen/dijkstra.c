@@ -36,7 +36,8 @@ typedef DistType Word;
    data[i]=vertexNum <==> index[vertexNum]=i
 */
 
-#define left(i) (2*(i))
+static int left(int i) { return 2 * i; }
+
 #define right(i) (2*(i)+1)
 #define parent(i) ((i)/2)
 #define insideHeap(h,i) ((i)<h->heapSize)
