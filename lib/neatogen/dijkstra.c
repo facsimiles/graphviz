@@ -42,12 +42,6 @@ static int right(int i) { return 2 * i + 1; }
 
 static int parent(int i) { return i / 2; }
 
-#define exchange(h,i,j,index) { \
-		SWAP(&h->data[i], &h->data[j]); \
-		index[h->data[i]]=i; \
-		index[h->data[j]]=j; \
-}
-
 typedef struct {
     int *data;
     int heapSize;
@@ -66,6 +60,12 @@ static bool greaterPriority_f(const heap *h, int i, int j, const float *dist) {
 static void assign(heap *h, int i, int j, int *index) {
   h->data[i] = h->data[j];
   index[h->data[i]] = i;
+}
+
+static void exchange(heap *h, int i, int j, int *index) {
+  SWAP(&h->data[i], &h->data[j]);
+  index[h->data[i]] = i;
+  index[h->data[j]] = j;
 }
 
 static void heapify(heap * h, int i, int index[], Word dist[])
