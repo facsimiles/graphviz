@@ -42,7 +42,6 @@ static int right(int i) { return 2 * i + 1; }
 
 static int parent(int i) { return i / 2; }
 
-#define greaterPriority(h,i,j,dist) (dist[h->data[i]]<dist[h->data[j]])
 #define exchange(h,i,j,index) { \
 		SWAP(&h->data[i], &h->data[j]); \
 		index[h->data[i]]=i; \
@@ -55,6 +54,14 @@ typedef struct {
 } heap;
 
 static bool insideHeap(const heap *h, int i) { return i < h->heapSize; }
+
+static bool greaterPriority(const heap *h, int i, int j, const Word *dist) {
+  return dist[h->data[i]] < dist[h->data[j]];
+}
+
+static bool greaterPriority_f(const heap *h, int i, int j, const float *dist) {
+  return dist[h->data[i]] < dist[h->data[j]];
+}
 
 static void assign(heap *h, int i, int j, int *index) {
   h->data[i] = h->data[j];
@@ -187,11 +194,11 @@ static void heapify_f(heap * h, int i, int index[], float dist[])
     while (1) {
 	l = left(i);
 	r = right(i);
-	if (insideHeap(h, l) && greaterPriority(h, l, i, dist))
+	if (insideHeap(h, l) && greaterPriority_f(h, l, i, dist))
 	    largest = l;
 	else
 	    largest = i;
-	if (insideHeap(h, r) && greaterPriority(h, r, largest, dist))
+	if (insideHeap(h, r) && greaterPriority_f(h, r, largest, dist))
 	    largest = r;
 
 	if (largest == i)
