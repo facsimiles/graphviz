@@ -41,7 +41,6 @@ typedef DistType Word;
 #define parent(i) ((i)/2)
 #define insideHeap(h,i) ((i)<h->heapSize)
 #define greaterPriority(h,i,j,dist) (dist[h->data[i]]<dist[h->data[j]])
-#define assign(h,i,j,index) {h->data[i]=h->data[j]; index[h->data[i]]=i;}
 #define exchange(h,i,j,index) { \
 		SWAP(&h->data[i], &h->data[j]); \
 		index[h->data[i]]=i; \
@@ -52,6 +51,11 @@ typedef struct {
     int *data;
     int heapSize;
 } heap;
+
+static void assign(heap *h, int i, int j, int *index) {
+  h->data[i] = h->data[j];
+  index[h->data[i]] = i;
+}
 
 static void heapify(heap * h, int i, int index[], Word dist[])
 {
