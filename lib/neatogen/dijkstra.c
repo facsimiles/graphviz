@@ -42,7 +42,6 @@ static int right(int i) { return 2 * i + 1; }
 
 static int parent(int i) { return i / 2; }
 
-#define insideHeap(h,i) ((i)<h->heapSize)
 #define greaterPriority(h,i,j,dist) (dist[h->data[i]]<dist[h->data[j]])
 #define exchange(h,i,j,index) { \
 		SWAP(&h->data[i], &h->data[j]); \
@@ -54,6 +53,8 @@ typedef struct {
     int *data;
     int heapSize;
 } heap;
+
+static bool insideHeap(const heap *h, int i) { return i < h->heapSize; }
 
 static void assign(heap *h, int i, int j, int *index) {
   h->data[i] = h->data[j];
