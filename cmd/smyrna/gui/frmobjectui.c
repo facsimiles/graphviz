@@ -231,10 +231,11 @@ static void create_filtered_list(const char *prefix, attr_list *sl,
 	return;
     /*locate first occurrence */
     LIST_SYNC(&sl->attributes);
-    attr_t *at = bsearch(prefix, LIST_FRONT(&sl->attributes),
-                         LIST_SIZE(&sl->attributes), sizeof(attr_t), cmp);
-    if (!at)
+    attr_t **attrp = bsearch(prefix, LIST_FRONT(&sl->attributes),
+                             LIST_SIZE(&sl->attributes), sizeof(attr_t *), cmp);
+    if (!attrp)
 	return;
+    attr_t *at = *attrp;
 
     /*go backward to get the first */
     for (int res = 0; at->index > 0 && res == 0; ) {
