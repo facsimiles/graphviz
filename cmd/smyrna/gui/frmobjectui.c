@@ -453,7 +453,6 @@ _BB void on_attrAddBtn_clicked(GtkWidget *widget, void *user_data) {
 	attr->name = safestrdup(attr_name);
 	attr->type = attr_alpha;
 	attr->value = gv_strdup("");
-	attr->widget = NULL;
 	attr_list_add(t->attributes, attr);
     }
     attr->propagate = 0;
