@@ -604,9 +604,6 @@ void showAttrsWidget(void) {
 
 static void gvpr_select(const char *attrname, const char *regex_str,
                         int objType) {
-
-    char *bf2;
-
     agxbuf sf = {0};
 
     if (objType == AGNODE)
@@ -614,7 +611,7 @@ static void gvpr_select(const char *attrname, const char *regex_str,
     else if (objType == AGEDGE)
 	agxbprint(&sf, "E[%s==\"%s\"]{selected = \"1\"}", attrname, regex_str);
 
-    bf2 = agxbdisown(&sf);
+    char *const bf2 = agxbdisown(&sf);
 
     enum { argc = 2 };
     char *argv[argc + 1] = {"smyrna", bf2};
