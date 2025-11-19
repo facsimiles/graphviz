@@ -327,6 +327,9 @@ static void filter_attributes(const char *prefix, topview *t) {
 	}
     }
 
+    LIST_FREE(&fl->attributes);
+    free(fl);
+
     tmp = (objKind == AGNODE && sel_node)
        || (objKind == AGEDGE && sel_edge)
        || (objKind == AGRAPH && sel_graph);
