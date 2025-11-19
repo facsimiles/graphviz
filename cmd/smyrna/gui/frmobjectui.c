@@ -146,9 +146,6 @@ static void attr_list_add(attr_list *l, attr_t *a) {
 	return;
     LIST_APPEND(&l->attributes, a);
     LIST_SORT(&l->attributes, attr_compare);
-    /*update indices */
-    for (size_t id = 0; id < LIST_SIZE(&l->attributes); ++id)
-	LIST_GET(&l->attributes, id)->index = id;
 }
 
 static attr_data_type get_attr_data_type(char c)
@@ -235,26 +232,25 @@ static void create_filtered_list(const char *prefix, attr_list *sl,
                              LIST_SIZE(&sl->attributes), sizeof(attr_t *), cmp);
     if (!attrp)
 	return;
-    attr_t *at = *attrp;
 
     /*go backward to get the first */
-    for (int res = 0; at->index > 0 && res == 0; ) {
-	at = LIST_GET(&sl->attributes, at->index - 1);
-	res = strncasecmp(prefix, at->name, strlen(prefix));
+    for (int res = 0; attrp > LIST_FRONT(&sl->attributes) && res == 0; ) {
+	--attrp;
+	res = strncasecmp(prefix, (*attrp)->name, strlen(prefix));
     }
     // step forward past the non-matching one we landed on
-    if (strncasecmp(prefix, at->name, strlen(prefix)) != 0) {
-	at = LIST_GET(&sl->attributes, at->index + 1);
+    if (strncasecmp(prefix, (*attrp)->name, strlen(prefix)) != 0) {
+	++attrp;
     }
     // copy matching entries
     for (int res = 0; res == 0; ) {
-	res = strncasecmp(prefix, at->name, strlen(prefix));
-	if (res == 0 && at->objType[objKind] == 1)
-	    attr_list_add(tl, new_attr_ref(at));
-	if (at->index == LIST_SIZE(&sl->attributes) - 1) {
+	res = strncasecmp(prefix, (*attrp)->name, strlen(prefix));
+	if (res == 0 && (*attrp)->objType[objKind] == 1)
+	    attr_list_add(tl, new_attr_ref(*attrp));
+	if (attrp == LIST_BACK(&sl->attributes)) {
 	    break;
 	}
-	at = LIST_GET(&sl->attributes, at->index + 1);
+	++attrp;
     }
 }
 
@@ -458,7 +454,6 @@ _BB void on_attrAddBtn_clicked(GtkWidget *widget, void *user_data) {
     attr = binarySearch(t->attributes, attr_name);
     if (!attr) {
 	attr = new_attr();
-	attr->index = 0;
 	attr->name = safestrdup(attr_name);
 	attr->type = attr_alpha;
 	attr->value = gv_strdup("");
@@ -505,7 +500,6 @@ attr_list *load_attr_list(Agraph_t * g)
 	for (size_t i = 0; fgets(buffer, sizeof(buffer), file) != NULL; ++i) {
 	    attr = new_attr();
 	    a = strtok(buffer, ",");
-	    attr->index = i;
 	    attr->type = get_attr_data_type(a[0]);
 	    for (int idx = 0; (a = strtok(NULL, ",")); ++idx) {
 		/*C,(0)color, (1)black, (2)EDGE Or NODE Or CLUSTER, (3)ALL_ENGINES */

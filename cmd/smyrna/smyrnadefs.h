@@ -59,7 +59,6 @@ typedef enum {attr_alpha,attr_float,attr_int,attr_bool} attr_data_type;
 typedef enum {smyrna_all,smyrna_2D,smyrna_3D,smyrna_fisheye,smyrna_all_but_fisheye} smyrna_view_mode;
 
 typedef struct {
-	size_t index;
 	char* name;
 	char* value;
 	char* defValG;
