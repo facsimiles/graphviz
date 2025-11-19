@@ -606,7 +606,6 @@ static void gvpr_select(const char *attrname, const char *regex_str,
                         int objType) {
 
     char *bf2;
-    int i, argc;
 
     agxbuf sf = {0};
 
@@ -617,17 +616,13 @@ static void gvpr_select(const char *attrname, const char *regex_str,
 
     bf2 = agxbdisown(&sf);
 
-    argc = 1;
-    if (*bf2 != '\0')
-	argc++;
     char *argv[3] = {0};
     size_t j = 0;
     argv[j++] = "smyrna";
     argv[j++] = bf2;
 
     run_gvpr(view->g[view->activeGraph], j, argv);
-    for (i = 1; i < argc; i++)
-	free(argv[i]);
+    free(bf2);
     set_header_text();
 }
 
