@@ -111,19 +111,19 @@ static attr_list *attr_list_new(bool with_widgets) {
 
     if (with_widgets) {
 	for (id = 0; id < MAX_FILTERED_ATTR_COUNT; id++) {
-	    l->fLabels[id] = (GtkLabel *) gtk_label_new("");
+	    l->fLabels[id] = gtk_label_new("");
 
-	    gtk_widget_add_events((GtkWidget *) l->fLabels[id],
+	    gtk_widget_add_events(l->fLabels[id],
 				  GDK_BUTTON_MOTION_MASK |
 				  GDK_POINTER_MOTION_MASK |
 				  GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS |
 				  GDK_BUTTON_RELEASE_MASK |
 				  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
 
-	    gtk_widget_show((GtkWidget *) l->fLabels[id]);
-	    Color_Widget_bg("blue", (GtkWidget *) l->fLabels[id]);
+	    gtk_widget_show(l->fLabels[id]);
+	    Color_Widget_bg("blue", l->fLabels[id]);
 	    gtk_fixed_put((GtkFixed *) glade_xml_get_widget(xml, "fixed6"),
-			  (GtkWidget *) l->fLabels[id], 10, 110 + id * 13);
+			  l->fLabels[id], 10, 110 + id * 13);
 	}
     }
     return l;

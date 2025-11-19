@@ -76,7 +76,7 @@ typedef LIST(attr_t *) attrs_t;
 typedef struct
 {
 	attrs_t attributes;
-	GtkLabel* fLabels[MAX_FILTERED_ATTR_COUNT];
+	void *fLabels[MAX_FILTERED_ATTR_COUNT];
 }attr_list;
 
     typedef struct 
