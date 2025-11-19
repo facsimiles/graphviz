@@ -616,12 +616,10 @@ static void gvpr_select(const char *attrname, const char *regex_str,
 
     bf2 = agxbdisown(&sf);
 
-    char *argv[3] = {0};
-    size_t j = 0;
-    argv[j++] = "smyrna";
-    argv[j++] = bf2;
+    enum { argc = 2 };
+    char *argv[argc + 1] = {"smyrna", bf2};
 
-    run_gvpr(view->g[view->activeGraph], j, argv);
+    run_gvpr(view->g[view->activeGraph], argc, argv);
     free(bf2);
     set_header_text();
 }
