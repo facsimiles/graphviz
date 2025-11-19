@@ -241,11 +241,19 @@ static void create_filtered_list(const char *prefix, attr_list *sl,
 	at = LIST_GET(&sl->attributes, at->index - 1);
 	res = strncasecmp(prefix, at->name, strlen(prefix));
     }
-    for (int res = 0; at->index < LIST_SIZE(&sl->attributes) && res == 0; ) {
+    // step forward past the non-matching one we landed on
+    if (strncasecmp(prefix, at->name, strlen(prefix)) != 0) {
 	at = LIST_GET(&sl->attributes, at->index + 1);
+    }
+    // copy matching entries
+    for (int res = 0; res == 0; ) {
 	res = strncasecmp(prefix, at->name, strlen(prefix));
 	if (res == 0 && at->objType[objKind] == 1)
 	    attr_list_add(tl, new_attr_ref(at));
+	if (at->index == LIST_SIZE(&sl->attributes) - 1) {
+	    break;
+	}
+	at = LIST_GET(&sl->attributes, at->index + 1);
     }
 }
 
