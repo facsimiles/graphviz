@@ -388,7 +388,6 @@ parse_prog *parseProg(char *input, int isFile) {
   FILE *str;
   char *guard = NULL;
   char *action = NULL;
-  bool more;
   parse_blocks_t blocklist = {0};
   case_infos_t edgelist = {.dtor = free_case_info};
   case_infos_t nodelist = {.dtor = free_case_info};
@@ -426,8 +425,7 @@ parse_prog *parseProg(char *input, int isFile) {
   }
 
   begg_stmt = NULL;
-  more = true;
-  while (more) {
+  for (bool more = true; more;) {
     switch (parseCase(str, &guard, &gline, &action, &line)) {
     case Begin:
       bindAction(Begin, action, line, &prog->begin_stmt, &prog->l_begin);
