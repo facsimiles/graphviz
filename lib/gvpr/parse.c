@@ -457,10 +457,12 @@ parse_prog *parseProg(char *input, int isFile) {
       break;
     case Node:
       addCase(&nodelist, guard, gline, action, line);
+      guard = NULL;
       action = NULL;
       break;
     case Edge:
       addCase(&edgelist, guard, gline, action, line);
+      guard = NULL;
       action = NULL;
       break;
     case Error: /* to silence warnings */
@@ -469,6 +471,8 @@ parse_prog *parseProg(char *input, int isFile) {
     default:
       UNREACHABLE();
     }
+    free(guard);
+    guard = NULL;
     free(action);
   }
 
