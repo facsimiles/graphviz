@@ -390,7 +390,6 @@ parse_prog *parseProg(char *input, int isFile) {
   case_infos_t edgelist = {.dtor = free_case_info};
   case_infos_t nodelist = {.dtor = free_case_info};
   int l_beging = 0;
-  char *begg_stmt;
 
   lineno = col0 = startLine = kwLine = 1;
   parse_prog *prog = calloc(1, sizeof(parse_prog));
@@ -421,7 +420,7 @@ parse_prog *parseProg(char *input, int isFile) {
     return NULL;
   }
 
-  begg_stmt = NULL;
+  char *begg_stmt = NULL;
   for (bool more = true; more;) {
     char *guard = NULL;
     int gline = 0;
