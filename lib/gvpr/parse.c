@@ -429,6 +429,7 @@ parse_prog *parseProg(char *input, int isFile) {
     switch (parseCase(str, &guard, &gline, &action, &line)) {
     case Begin:
       bindAction(Begin, action, line, &prog->begin_stmt, &prog->l_begin);
+      action = NULL;
       break;
     case BeginG:
       if (action && (begg_stmt || !LIST_IS_EMPTY(&nodelist) ||
@@ -441,21 +442,26 @@ parse_prog *parseProg(char *input, int isFile) {
         begg_stmt = NULL;
       }
       bindAction(BeginG, action, line, &begg_stmt, &l_beging);
+      action = NULL;
       break;
     case End:
       bindAction(End, action, line, &prog->end_stmt, &prog->l_end);
+      action = NULL;
       break;
     case EndG:
       bindAction(EndG, action, line, &prog->endg_stmt, &prog->l_endg);
+      action = NULL;
       break;
     case Eof:
       more = false;
       break;
     case Node:
       addCase(&nodelist, guard, gline, action, line);
+      action = NULL;
       break;
     case Edge:
       addCase(&edgelist, guard, gline, action, line);
+      action = NULL;
       break;
     case Error: /* to silence warnings */
       more = false;
@@ -463,6 +469,8 @@ parse_prog *parseProg(char *input, int isFile) {
     default:
       UNREACHABLE();
     }
+    free(action);
+    action = NULL;
   }
 
   if (begg_stmt || !LIST_IS_EMPTY(&nodelist) ||
