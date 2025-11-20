@@ -387,7 +387,6 @@ static void free_case_info(case_info c) {
 parse_prog *parseProg(char *input, int isFile) {
   FILE *str;
   char *guard = NULL;
-  char *action = NULL;
   parse_blocks_t blocklist = {0};
   case_infos_t edgelist = {.dtor = free_case_info};
   case_infos_t nodelist = {.dtor = free_case_info};
@@ -426,6 +425,7 @@ parse_prog *parseProg(char *input, int isFile) {
 
   begg_stmt = NULL;
   for (bool more = true; more;) {
+    char *action = NULL;
     switch (parseCase(str, &guard, &gline, &action, &line)) {
     case Begin:
       bindAction(Begin, action, line, &prog->begin_stmt, &prog->l_begin);
@@ -470,7 +470,6 @@ parse_prog *parseProg(char *input, int isFile) {
       UNREACHABLE();
     }
     free(action);
-    action = NULL;
   }
 
   if (begg_stmt || !LIST_IS_EMPTY(&nodelist) ||
