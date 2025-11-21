@@ -507,7 +507,7 @@ static int betweenclust(edge_t * e)
 {
     while (ED_to_orig(e))
 	e = ED_to_orig(e);
-    return (ND_clust(agtail(e)) != ND_clust(aghead(e)));
+    return ND_clust(agtail(e)) != ND_clust(aghead(e));
 }
 
 static void do_ordering_node(graph_t *g, node_t *n, bool outflag) {
@@ -529,8 +529,7 @@ static void do_ordering_node(graph_t *g, node_t *n, bool outflag) {
     }
     if (ne <= 1)
 	return;
-    /* write null terminator at end of list.
-       requires +1 in TE_list alloccation */
+    // Write null terminator at end of list. Requires +1 in TE_list allocation.
     sortlist[ne] = 0;
     qsort(sortlist, ne, sizeof(sortlist[0]), edgeidcmpf);
     for (ne = 1; (f = sortlist[ne]); ne++) {
@@ -690,7 +689,7 @@ static int out_cross(node_t * v, node_t * w)
 
 	for (e1 = ND_out(v).list; *e1; e1++) {
 	    t = ND_order(aghead(*e1)) - inv;
-	    if (t > 0 || (t == 0 && (ED_head_port(*e1)).p.x > (ED_head_port(*e2)).p.x))
+	    if (t > 0 || (t == 0 && ED_head_port(*e1).p.x > ED_head_port(*e2).p.x))
 		cross += ED_xpenalty(*e1) * cnt;
 	}
     }
