@@ -141,52 +141,6 @@ extern "C" {
 	uchar sf_type[UCHAR_MAX + 1];	/* conversion formats&types     */
     } Sftab_t;
 
-/* sfucvt() converts decimal integers to ASCII */
-#define SFDIGIT(v,scale,digit) \
-	{ if(v < 5*scale) \
-		if(v < 2*scale) \
-			if(v < 1*scale) \
-				{ digit = '0'; } \
-			else	{ digit = '1'; v -= 1*scale; } \
-		else	if(v < 3*scale) \
-				{ digit = '2'; v -= 2*scale; } \
-			else if(v < 4*scale) \
-				{ digit = '3'; v -= 3*scale; } \
-			else	{ digit = '4'; v -= 4*scale; } \
-	  else	if(v < 7*scale) \
-			if(v < 6*scale) \
-				{ digit = '5'; v -= 5*scale; } \
-			else	{ digit = '6'; v -= 6*scale; } \
-		else	if(v < 8*scale) \
-				{ digit = '7'; v -= 7*scale; } \
-			else if(v < 9*scale) \
-				{ digit = '8'; v -= 8*scale; } \
-			else	{ digit = '9'; v -= 9*scale; } \
-	}
-#define sfucvt(v,s,n,list,type,utype) \
-	{ while((utype)v >= 10000) \
-	  {	n = v; v = (type)(((utype)v)/10000); \
-		n = (type)((utype)n - ((utype)v)*10000); \
-	  	s -= 4; SFDIGIT(n,1000,s[0]); SFDIGIT(n,100,s[1]); \
-			s[2] = *(list = (char*)_Sfdec + (n <<= 1)); s[3] = *(list+1); \
-	  } \
-	  if(v < 100) \
-	  { if(v < 10) \
-	    { 	s -= 1; s[0] = (char)('0'+v); \
-	    } else \
-	    { 	s -= 2; s[0] = *(list = (char*)_Sfdec + (v <<= 1)); s[1] = *(list+1); \
-	    } \
-	  } else \
-	  { if(v < 1000) \
-	    { 	s -= 3; SFDIGIT(v,100,s[0]); \
-			s[1] = *(list = (char*)_Sfdec + (v <<= 1)); s[2] = *(list+1); \
-	    } else \
-	    {	s -= 4; SFDIGIT(v,1000,s[0]); SFDIGIT(v,100,s[1]); \
-			s[2] = *(list = (char*)_Sfdec + (v <<= 1)); s[3] = *(list+1); \
-	    } \
-	  } \
-	}
-
     extern Sftab_t _Sftable;
 
     extern char *_sfcvt(void *, int, int *, int *, int);

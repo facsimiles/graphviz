@@ -10,6 +10,8 @@
 
 #include	<limits.h>
 #include	<sfio/sfhdr.h>
+#include	<stdio.h>
+#include	<string.h>
 
 /*	Convert a floating point value to ASCII
 **
@@ -63,12 +65,12 @@ char *_sfcvt(void * dv, int n_digit, int *decpt, int *sign, int format)
 	if ((v = (int) dval) != 0) {	/* translate the integer part */
 	    dval -= (double) v;
 
-	    sfucvt(v, sp, n, ep, long, ulong);
+	    n = snprintf(Buf, sizeof(Buf), "%ld", v);
+	    memmove(Buf + SF_INTPART - n, Buf, n);
 
-	    n = buf - sp;
 	    if ((*decpt += (int) n) >= SF_IDIGITS)
 		return SF_INFINITE;
-	    buf = sp;
+	    buf = Buf + SF_INTPART - n;
 	    sp = Buf + SF_INTPART;
 	} else
 	    n = 0;
