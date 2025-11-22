@@ -1582,11 +1582,11 @@ static void setup_page(GVJ_t * job)
 
 static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 {
-    char *pn, *pe;
+    char *pe;
 
     if (job->numLayers <= 1)
 	return true;
-    pn = late_string(n, N_layer, "");
+    char *const pn = late_string(n, N_layer, "");
     if (selectedlayer(job, pn))
 	return true;
     if (pn[0])
