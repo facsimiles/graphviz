@@ -130,7 +130,8 @@ install: build
 		$(CURDIR)/debian/tmp/usr/lib/*.so
 
 	# Move from debian/tmp to the appropriate packages, rename one binary
-	dh_install --sourcedir=debian/tmp --list-missing
+	dh_install --sourcedir=debian/tmp
+	dh_missing --sourcedir=debian/tmp
 	mv $(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/sbin/dot \
 		$(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/sbin/libgraphviz$(GRAPHVIZ_SONAME)-config-update
 
