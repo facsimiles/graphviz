@@ -77,31 +77,17 @@ static pointf midPt(const cell *cp) {
  * Given a cell and an snode on one of its sides, return the
  * midpoint of the side.
  */
-static pointf
-sidePt (snode* ptr, cell* cp)
-{
-    pointf pt;
-    if (cp == ptr->cells[1]) {
-	if (ptr->isVert) {
-	    pt.x = cp->bb.LL.x;
-	    pt.y = MID(cp->bb.LL.y,cp->bb.UR.y);
+static pointf sidePt(const snode ptr, const cell* cp) {
+    if (cp == ptr.cells[1]) {
+	if (ptr.isVert) {
+	    return (pointf){.x = cp->bb.LL.x, .y = MID(cp->bb.LL.y, cp->bb.UR.y)};
 	}
-	else {
-	    pt.x = MID(cp->bb.LL.x,cp->bb.UR.x);
-	    pt.y = cp->bb.LL.y;
-	}
+	return (pointf){.x = MID(cp->bb.LL.x, cp->bb.UR.x), .y = cp->bb.LL.y};
     }
-    else {
-	if (ptr->isVert) {
-	    pt.x = cp->bb.UR.x;
-	    pt.y = MID(cp->bb.LL.y,cp->bb.UR.y);
-	}
-	else {
-	    pt.x = MID(cp->bb.LL.x,cp->bb.UR.x);
-	    pt.y = cp->bb.UR.y;
-	}
+    if (ptr.isVert) {
+	return (pointf){.x = cp->bb.UR.x, .y = MID(cp->bb.LL.y, cp->bb.UR.y)};
     }
-    return pt;
+    return (pointf){.x = MID(cp->bb.LL.x, cp->bb.UR.x), .y = cp->bb.UR.y};
 }
 
 /* setSet:
@@ -138,23 +124,17 @@ setSeg (segment* sp, bool dir, double fix, double b1, double b2, int l1, int l2)
 static route
 convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 {
-    route rte;
     snode* ptr;
     snode* next;
     snode* prev;  /* node in shortest path just previous to next */
-    size_t sz = 0;
     cell* cp;
     cell* ncp;
     segment seg;
     double fix, b1, b2;
     int l1, l2;
-    pointf bp1, bp2, prevbp = {0.0,0.0};  /* bend points */
+    pointf bp1, prevbp = {0.0,0.0};  /* bend points */
 
-	/* count no. of nodes in shortest path */
-    for (ptr = fst; ptr; ptr = N_DAD(ptr)) sz++;
-    rte.n = 0;
-    assert(sz >= 2);
-    rte.segs = gv_calloc(sz - 2, sizeof(segment));  /* at most sz-2 segments */
+    LIST(segment) rte = {0};
 
     seg.prev = seg.next = 0;
     ptr = prev = N_DAD(fst);
@@ -163,17 +143,14 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 	cp = ptr->cells[1];
     else
 	cp = ptr->cells[0];
-    bp1 = sidePt (ptr, cp);
+    bp1 = sidePt(*ptr, cp);
     while (N_DAD(next)!=NULL) {
 	ncp = cellOf (prev, next);
 	updateWts (g, ncp, N_EDGE(ptr));
 
         /* add seg if path bends or at end */
 	if (ptr->isVert != next->isVert || N_DAD(next) == lst) {
-	    if (ptr->isVert != next->isVert)
-		bp2 = midPt (ncp);
-	    else
-		bp2 = sidePt(next, ncp);
+	    const pointf bp2 = ptr->isVert != next->isVert ? midPt (ncp) : sidePt(*next, ncp);
 	    if (ptr->isVert) {   /* horizontal segment */
 		if (ptr == N_DAD(fst)) l1 = B_NODE;
 		else if (prevbp.y > bp1.y) l1 = B_UP;
@@ -201,12 +178,11 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 		b2 = ncp->bb.LL.y;
 	    }
 	    setSeg (&seg, !ptr->isVert, fix, b1, b2, l1, l2);
-	    rte.segs[rte.n++] = seg;
+	    LIST_APPEND(&rte, seg);
 	    cp = ncp;
 	    prevbp = bp1;
 	    bp1 = bp2;
 	    if (ptr->isVert != next->isVert && N_DAD(next) == lst) {
-		bp2 = sidePt(next, ncp);
 		l2 = B_NODE;
 		if (next->isVert) {   /* horizontal segment */
 		    if (prevbp.y > bp1.y) l1 = B_UP;
@@ -223,7 +199,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 		    b2 = ncp->bb.LL.y;
 		}
 		setSeg (&seg, !next->isVert, fix, b1, b2, l1, l2);
-		rte.segs[rte.n++] = seg;
+		LIST_APPEND(&rte, seg);
 	    }
 	    ptr = next;
 	}
@@ -231,15 +207,16 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 	next = N_DAD(next);
     }
 
-    rte.segs = gv_recalloc(rte.segs, sz - 2, rte.n, sizeof(segment));
-    for (size_t i=0; i<rte.n; i++) {
+    route ret = {0};
+    LIST_DETACH(&rte, &ret.segs, &ret.n);
+    for (size_t i = 0; i < ret.n; i++) {
 	if (i > 0)
-	    rte.segs[i].prev = rte.segs + (i-1);
-	if (i < rte.n-1)
-	    rte.segs[i].next = rte.segs + (i+1);
+	    ret.segs[i].prev = ret.segs + (i - 1);
+	if (i < ret.n - 1)
+	    ret.segs[i].next = ret.segs + (i + 1);
     }
 
-    return rte;
+    return ret;
 }
 
 typedef struct {
