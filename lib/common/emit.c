@@ -989,8 +989,7 @@ static bool selectedLayer(GVC_t *gvc, int layerNum, int numLayers,
     return rval;
 }
 
-static bool selectedlayer(GVJ_t *job, char *spec)
-{
+static bool selectedlayer(GVJ_t *job, const char *spec) {
     return selectedLayer (job->gvc, job->layerNum, job->numLayers, spec);
 }
 
