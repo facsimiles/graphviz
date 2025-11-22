@@ -519,7 +519,6 @@ int isConnected(Agraph_t *g) {
   for (n = agfstnode(g); n; n = agnxtnode(g, n))
     unmark(&stk, n);
 
-  n = agfstnode(g);
   cnt = dfs(g, agfstnode(g), NULL, &stk);
   freeStk(&stk);
   if (cnt != (size_t)agnnodes(g))
