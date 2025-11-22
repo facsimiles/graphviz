@@ -1008,7 +1008,7 @@ static bool selectedlayer(GVJ_t *job, const char *spec) {
  * efficient way to do this, but this is simple and until we find people
  * using huge numbers of layers, it should be adequate.
  */
-static int *parse_layerselect(GVC_t *gvc, char *p) {
+static int *parse_layerselect(GVC_t *gvc, const char *p) {
     int* laylist = gv_calloc(gvc->numLayers + 2, sizeof(int));
     int i, cnt = 0;
     for (i = 1; i <=gvc->numLayers; i++) {
