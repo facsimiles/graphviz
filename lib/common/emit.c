@@ -1600,12 +1600,12 @@ static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 
 static bool edge_in_layer(GVJ_t *job, edge_t * e)
 {
-    char *pe, *pn;
+    char *pn;
     int cnt;
 
     if (job->numLayers <= 1)
 	return true;
-    pe = late_string(e, E_layer, "");
+    const char *const pe = late_string(e, E_layer, "");
     if (selectedlayer(job, pe))
 	return true;
     if (pe[0])
