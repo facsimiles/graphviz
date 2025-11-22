@@ -252,9 +252,9 @@ static void scale_coord(int dim, int m, double *x, double scale){
   }
 }
 
-static double overlap_scaling(int dim, int m, double *x, double *width,
-                              double scale_sta, double scale_sto,
-                              double epsilon, int maxiter) {
+static void overlap_scaling(int dim, int m, double *x, double *width,
+                            double scale_sta, double scale_sto, double epsilon,
+                            int maxiter) {
   /* do a bisection between scale_sta and scale_sto, up to maxiter iterations or till interval <= epsilon, to find the best scaling to avoid overlap
      m: number of points
      x: the coordinates
@@ -282,7 +282,7 @@ static double overlap_scaling(int dim, int m, double *x, double *width,
     if (!C || C->nz == 0) {
       if (Verbose) fprintf(stderr," shrinking with %f works\n", scale_sta);
       SparseMatrix_delete(C);
-      return scale_sta;
+      return;
     }
     scale_coord(dim, m, x, 1./scale_sta);
     SparseMatrix_delete(C);
@@ -325,7 +325,6 @@ static double overlap_scaling(int dim, int m, double *x, double *width,
 
   /* final scaling */
   scale_coord(dim, m, x, scale_best);
-  return scale_best;
 }
  
 OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, 
@@ -378,12 +377,12 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
 
   /* no overlap at all! */
   if (*max_overlap < 1 && shrink){
-    double scale_sta = fmin(1, *max_overlap * 1.0001);
+    const double scale_sta = fmin(1, *max_overlap * 1.0001);
     const double scale_sto = 1;
 
     if (Verbose) fprintf(stderr," no overlap (overlap = %f), rescale to shrink\n", *max_overlap - 1);
 
-    scale_sta = overlap_scaling(dim, m, x, width, scale_sta, scale_sto, 0.0001, 15);
+    overlap_scaling(dim, m, x, width, scale_sta, scale_sto, 0.0001, 15);
 
     *max_overlap = 1;
     goto RETURN;
