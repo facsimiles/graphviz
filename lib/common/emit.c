@@ -1622,7 +1622,7 @@ static bool clust_in_layer(GVJ_t *job, graph_t * sg)
     const char *const pg = late_string(sg, agattr_text(sg, AGRAPH, "layer", 0), "");
     if (selectedlayer(job, pg))
 	return true;
-    if (pg[0])
+    if (!streq(pg, ""))
 	return false;
     for (node_t *n = agfstnode(sg); n; n = agnxtnode(sg, n))
 	if (node_in_layer(job, sg, n))
