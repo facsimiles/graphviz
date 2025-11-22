@@ -1583,7 +1583,7 @@ static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 {
     if (job->numLayers <= 1)
 	return true;
-    char *const pn = late_string(n, N_layer, "");
+    const char *const pn = late_string(n, N_layer, "");
     if (selectedlayer(job, pn))
 	return true;
     if (!streq(pn, ""))
@@ -1591,7 +1591,7 @@ static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
     if (agfstedge(g, n) == NULL)
 	return true;
     for (edge_t *e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	char *const pe = late_string(e, E_layer, "");
+	const char *const pe = late_string(e, E_layer, "");
 	if (streq(pe, "") || selectedlayer(job, pe))
 	    return true;
     }
