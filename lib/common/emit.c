@@ -1617,12 +1617,11 @@ static bool edge_in_layer(GVJ_t *job, edge_t * e)
 
 static bool clust_in_layer(GVJ_t *job, graph_t * sg)
 {
-    char *pg;
     node_t *n;
 
     if (job->numLayers <= 1)
 	return true;
-    pg = late_string(sg, agattr_text(sg, AGRAPH, "layer", 0), "");
+    const char *const pg = late_string(sg, agattr_text(sg, AGRAPH, "layer", 0), "");
     if (selectedlayer(job, pg))
 	return true;
     if (pg[0])
