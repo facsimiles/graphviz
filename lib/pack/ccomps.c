@@ -507,7 +507,6 @@ Agraph_t **cccomps(Agraph_t *g, size_t *ncc, char *pfx) {
  * Returns -1 if the graph is error.
  */
 int isConnected(Agraph_t *g) {
-  size_t cnt = 0;
   stk_t stk;
 
   if (agnnodes(g) == 0)
@@ -517,7 +516,7 @@ int isConnected(Agraph_t *g) {
   for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n))
     unmark(&stk, n);
 
-  cnt = dfs(g, agfstnode(g), NULL, &stk);
+  const size_t cnt = dfs(g, agfstnode(g), NULL, &stk);
   freeStk(&stk);
   if (cnt != (size_t)agnnodes(g))
     return 0;
