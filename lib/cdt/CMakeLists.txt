@@ -65,7 +65,7 @@ endif()
 
 # Specify library version and soversion
 set_target_properties(cdt PROPERTIES
-  VERSION 6.0.1
+  VERSION 6.0.2
   SOVERSION 6
 )
 
