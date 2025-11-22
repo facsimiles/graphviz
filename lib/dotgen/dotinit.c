@@ -355,13 +355,11 @@ static void
 attachPos (Agraph_t* g)
 {
     node_t* np;
-    double* ps = gv_calloc(2 * agnnodes(g), sizeof(double));
 
     for (np = agfstnode(g); np; np = agnxtnode(g, np)) {
-	ND_pos(np) = ps;
-	ps[0] = PS2INCH(ND_coord(np).x);
-	ps[1] = PS2INCH(ND_coord(np).y);
-	ps += 2;
+	ND_pos(np) = gv_calloc(2, sizeof(double));
+	ND_pos(np)[0] = PS2INCH(ND_coord(np).x);
+	ND_pos(np)[1] = PS2INCH(ND_coord(np).y);
     }
 }
 
@@ -371,17 +369,12 @@ attachPos (Agraph_t* g)
 static void
 resetCoord (Agraph_t* g)
 {
-    node_t* np = agfstnode(g);
-    double* sp = ND_pos(np);
-    double* ps = sp;
-
-    for (np = agfstnode(g); np; np = agnxtnode(g, np)) {
-	ND_pos(np) = 0;
-	ND_coord(np).x = INCH2PS(ps[0]);
-	ND_coord(np).y = INCH2PS(ps[1]);
-	ps += 2;
+    for (node_t *np = agfstnode(g); np; np = agnxtnode(g, np)) {
+	ND_coord(np).x = INCH2PS(ND_pos(np)[0]);
+	ND_coord(np).y = INCH2PS(ND_pos(np)[1]);
+	free(ND_pos(np));
+	ND_pos(np) = NULL;
     }
-    free (sp);
 }
 
 static void
