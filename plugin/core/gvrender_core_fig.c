@@ -429,7 +429,7 @@ static void fig_polyline(GVJ_t *job, pointf *A, size_t n) {
     figptarray(job, A, n, 0); // open shape
 }
 
-gvrender_engine_t fig_engine = {
+static gvrender_engine_t fig_engine = {
     0,				/* fig_begin_job */
     0,				/* fig_end_job */
     fig_begin_graph,
@@ -468,8 +468,7 @@ static char *fig_knowncolors[] = {
     "black", "blue", "cyan", "green", "magenta", "red", "white", "yellow",
 };
 
-
-gvrender_features_t render_features_fig = {
+static gvrender_features_t render_features_fig = {
     EMIT_COLORS
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     4.,                         /* default pad - graph units */
@@ -478,7 +477,7 @@ gvrender_features_t render_features_fig = {
     RGBA_BYTE,			/* color_type */
 };
 
-gvdevice_features_t device_features_fig = {
+static gvdevice_features_t device_features_fig = {
     EMIT_COLORS
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     {0.,0.},			/* default margin - points */

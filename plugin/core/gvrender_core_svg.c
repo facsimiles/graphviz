@@ -38,6 +38,7 @@
 #include <util/agxbuf.h>
 #include <util/strcasecmp.h>
 #include <util/unreachable.h>
+#include <util/unused.h>
 #include <util/xml.h>
 
 #define LOCALNAMEPREFIX		'%'
@@ -765,7 +766,7 @@ static char *svg_knowncolors[] = {
     "yellow", "yellowgreen"
 };
 
-gvrender_engine_t svg_engine = {
+static gvrender_engine_t svg_engine = {
     svg_begin_job,
     0,				/* svg_end_job */
     svg_begin_graph,
@@ -798,7 +799,7 @@ gvrender_engine_t svg_engine = {
     0,				/* svg_library_shape */
 };
 
-gvrender_features_t render_features_svg = {
+static gvrender_features_t render_features_svg = {
     GVRENDER_Y_GOES_DOWN | GVRENDER_DOES_TRANSFORM | GVRENDER_DOES_LABELS | GVRENDER_DOES_MAPS | GVRENDER_DOES_TARGETS | GVRENDER_DOES_TOOLTIPS,	/* flags */
     4.,				/* default pad - graph units */
     svg_knowncolors,		/* knowncolors */
@@ -806,14 +807,14 @@ gvrender_features_t render_features_svg = {
     RGBA_BYTE,			/* color_type */
 };
 
-gvdevice_features_t device_features_svg = {
+static gvdevice_features_t device_features_svg = {
     GVDEVICE_DOES_TRUECOLOR|GVDEVICE_DOES_LAYERS,  /* flags */
     {0., 0.},			/* default margin - points */
     {0., 0.},			/* default page width, height - points */
     {72., 72.},			/* default dpi */
 };
 
-gvdevice_features_t device_features_svgz = {
+static UNUSED gvdevice_features_t device_features_svgz = {
     GVDEVICE_DOES_TRUECOLOR|GVDEVICE_DOES_LAYERS|GVDEVICE_BINARY_FORMAT|GVDEVICE_COMPRESSED_FORMAT, /* flags */
     {0., 0.},			/* default margin - points */
     {0., 0.},			/* default page width, height - points */

@@ -730,7 +730,7 @@ static void json_end_graph(GVJ_t *job)
     write_graph(g, job, true, &sp);
 }
 
-gvrender_engine_t json_engine = {
+static gvrender_engine_t json_engine = {
     0,				/* json_begin_job */
     0,				/* json_end_job */
     json_begin_graph,
@@ -763,15 +763,7 @@ gvrender_engine_t json_engine = {
     0,				/* json_library_shape */
 };
 
-gvrender_features_t render_features_json1 = {
-    GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */  /* flags */
-    0.,                         /* default pad - graph units */
-    NULL,			/* knowncolors */
-    0,				/* sizeof knowncolors */
-    COLOR_STRING,		/* color_type */
-};
-
-gvrender_features_t render_features_json = {
+static gvrender_features_t render_features_json = {
     GVRENDER_DOES_TRANSFORM	/* not really - uses raw graph coords */
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_TARGETS
@@ -782,14 +774,14 @@ gvrender_features_t render_features_json = {
     COLOR_STRING,		/* color_type */
 };
 
-gvdevice_features_t device_features_json_nop = {
+static gvdevice_features_t device_features_json_nop = {
     LAYOUT_NOT_REQUIRED,	/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},			/* default page width, height - points */
     {72.,72.},			/* default dpi */
 };
 
-gvdevice_features_t device_features_json = {
+static gvdevice_features_t device_features_json = {
     0,				/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},			/* default page width, height - points */

@@ -697,7 +697,7 @@ static void pov_polyline(GVJ_t *job, pointf *A, size_t n) {
 	free(p);
 }
 
-gvrender_engine_t pov_engine = {
+static gvrender_engine_t pov_engine = {
 	pov_begin_job,
 	0,			/* pov_end_job */
 	pov_begin_graph,
@@ -730,7 +730,7 @@ gvrender_engine_t pov_engine = {
 	0,			/* pov_library_shape */
 };
 
-gvrender_features_t render_features_pov = {
+static gvrender_features_t render_features_pov = {
 	/* flags */
 	GVDEVICE_DOES_LAYERS
 	    | GVRENDER_DOES_MAP_RECTANGLE
@@ -747,7 +747,7 @@ gvrender_features_t render_features_pov = {
 	RENDERER_COLOR_TYPE	/* set renderer color type */
 };
 
-gvdevice_features_t device_features_pov = {
+static gvdevice_features_t device_features_pov = {
 	GVDEVICE_DOES_TRUECOLOR,	/* flags */
 	{0.0, 0.0},		/* default margin - points */
 	{0.0, 0.0},		/* default page width, height - points */

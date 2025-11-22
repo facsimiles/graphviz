@@ -57,54 +57,54 @@ static void nop2_layout(graph_t *g) {
   Nop = 0;
 }
 
-gvlayout_engine_t neatogen_engine = {
+static gvlayout_engine_t neatogen_engine = {
     neato_layout,
     neato_cleanup,
 };
 
-gvlayout_engine_t fdpgen_engine = {
+static gvlayout_engine_t fdpgen_engine = {
     fdp_layout,
     fdp_cleanup,
 };
 
 #ifdef SFDP
-gvlayout_engine_t sfdpgen_engine = {
+static gvlayout_engine_t sfdpgen_engine = {
     sfdp_layout,
     sfdp_cleanup,
 };
 #endif
 
-gvlayout_engine_t twopigen_engine = {
+static gvlayout_engine_t twopigen_engine = {
     twopi_layout,
     twopi_cleanup,
 };
 
-gvlayout_engine_t circogen_engine = {
+static gvlayout_engine_t circogen_engine = {
     circo_layout,
     circo_cleanup,
 };
 
-gvlayout_engine_t nop1gen_engine = {
+static gvlayout_engine_t nop1gen_engine = {
     nop1_layout,
     neato_cleanup,
 };
 
-gvlayout_engine_t nop2gen_engine = {
+static gvlayout_engine_t nop2gen_engine = {
     nop2_layout,
     neato_cleanup,
 };
 
-gvlayout_engine_t patchwork_engine = {
+static gvlayout_engine_t patchwork_engine = {
     patchwork_layout,
     patchwork_cleanup,
 };
 
-gvlayout_engine_t osage_engine = {
+static gvlayout_engine_t osage_engine = {
     osage_layout,
     osage_cleanup,
 };
 
-gvlayout_features_t neatogen_features = {
+static gvlayout_features_t neatogen_features = {
     0,
 };
 
