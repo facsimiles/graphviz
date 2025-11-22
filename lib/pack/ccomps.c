@@ -38,11 +38,9 @@ static void mark(const stk_t *stk, Agnode_t *n) { stk->markfn(n, 1); }
 /// unset a mark on `n`
 static void unmark(const stk_t *stk, Agnode_t *n) { stk->markfn(n, 0); }
 
-static void initStk(stk_t *sp, void (*actionfn)(Agnode_t *, void *),
-                    bool (*markfn)(Agnode_t *, int)) {
-  sp->data = (node_stack_t){0};
-  sp->actionfn = actionfn;
-  sp->markfn = markfn;
+static stk_t initStk(void (*actionfn)(Agnode_t *, void *),
+                     bool (*markfn)(Agnode_t *, int)) {
+  return (stk_t){.actionfn = actionfn, .markfn = markfn};
 }
 
 static void freeStk(stk_t *sp) { LIST_FREE(&sp->data); }
@@ -125,7 +123,6 @@ Agraph_t **pccomps(Agraph_t *g, size_t *ncc, char *pfx, bool *pinned) {
   Agraph_t *out = NULL;
   Agnode_t *n;
   bool pin = false;
-  stk_t stk;
 
   if (agnnodes(g) == 0) {
     *ncc = 0;
@@ -134,7 +131,7 @@ Agraph_t **pccomps(Agraph_t *g, size_t *ncc, char *pfx, bool *pinned) {
 
   LIST(Agraph_t *) ccs = {0};
 
-  initStk(&stk, insertFn, markFn);
+  stk_t stk = initStk(insertFn, markFn);
   for (n = agfstnode(g); n; n = agnxtnode(g, n))
     unmark(&stk, n);
 
@@ -187,7 +184,6 @@ Agraph_t **ccomps(Agraph_t *g, size_t *ncc, char *pfx) {
   agxbuf name = {0};
   Agraph_t *out;
   Agnode_t *n;
-  stk_t stk;
 
   if (agnnodes(g) == 0) {
     *ncc = 0;
@@ -195,7 +191,7 @@ Agraph_t **ccomps(Agraph_t *g, size_t *ncc, char *pfx) {
   }
 
   LIST(Agraph_t *) ccs = {0};
-  initStk(&stk, insertFn, markFn);
+  stk_t stk = initStk(insertFn, markFn);
   for (n = agfstnode(g); n; n = agnxtnode(g, n))
     unmark(&stk, n);
 
@@ -443,7 +439,6 @@ Agraph_t **cccomps(Agraph_t *g, size_t *ncc, char *pfx) {
   Agraph_t *out;
   Agraph_t *dout;
   Agnode_t *dn;
-  stk_t stk;
   int sz = (int)sizeof(ccgraphinfo_t);
 
   if (agnnodes(g) == 0) {
@@ -462,7 +457,7 @@ Agraph_t **cccomps(Agraph_t *g, size_t *ncc, char *pfx) {
   size_t ccs_length = (size_t)agnnodes(dg);
   LIST(Agraph_t *) ccs = {0};
   LIST_RESERVE(&ccs, ccs_length);
-  initStk(&stk, insertFn, clMarkFn);
+  stk_t stk = initStk(insertFn, clMarkFn);
 
   for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
     if (marked(&stk, dn))
@@ -507,12 +502,10 @@ Agraph_t **cccomps(Agraph_t *g, size_t *ncc, char *pfx) {
  * Returns -1 if the graph is error.
  */
 int isConnected(Agraph_t *g) {
-  stk_t stk;
-
   if (agnnodes(g) == 0)
     return 1;
 
-  initStk(&stk, NULL, markFn);
+  stk_t stk = initStk(NULL, markFn);
   for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n))
     unmark(&stk, n);
 
