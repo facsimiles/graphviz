@@ -1592,7 +1592,7 @@ static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 	return true;
     if (pn[0])
 	return false;		/* Only check edges if pn = "" */
-    if ((e = agfstedge(g, n)) == NULL)
+    if (agfstedge(g, n) == NULL)
 	return true;
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	pe = late_string(e, E_layer, "");
