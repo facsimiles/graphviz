@@ -591,7 +591,7 @@ static void xlib_finalize(GVJ_t *firstjob) {
 
 #ifdef HAVE_SYS_INOTIFY_H
   if (watching_file_p)
-    ret = inotify_rm_watch(inotify_fd, wd);
+    (void)inotify_rm_watch(inotify_fd, wd);
 #endif
 
   XCloseDisplay(dpy);
