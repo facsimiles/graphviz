@@ -243,8 +243,8 @@ void print_padding(int n){
   for (i = 0; i < n; i++) fputs (" ", stderr);
 }
 
-static Multilevel Multilevel_establish(Multilevel grid,
-                                       const Multilevel_control ctrl) {
+static void Multilevel_establish(Multilevel grid,
+                                 const Multilevel_control ctrl) {
   Multilevel cgrid;
   SparseMatrix P, R, A, cA;
 
@@ -262,10 +262,10 @@ static Multilevel Multilevel_establish(Multilevel grid,
     fprintf(stderr, " maxlevel reached, coarsening stops\n");
   }
 #endif
-    return grid;
+    return;
   }
   Multilevel_coarsen(A, &cA, &P, &R);
-  if (!cA) return grid;
+  if (!cA) return;
 
   cgrid = Multilevel_init(cA);
   grid->next = cgrid;
@@ -274,9 +274,7 @@ static Multilevel Multilevel_establish(Multilevel grid,
   cgrid->P = P;
   grid->R = R;
   cgrid->prev = grid;
-  cgrid = Multilevel_establish(cgrid, ctrl);
-  return grid;
-  
+  Multilevel_establish(cgrid, ctrl);
 }
 
 Multilevel Multilevel_new(SparseMatrix A0,
@@ -289,7 +287,7 @@ Multilevel Multilevel_new(SparseMatrix A0,
     A = SparseMatrix_get_real_adjacency_matrix_symmetrized(A);
   }
   grid = Multilevel_init(A);
-  grid = Multilevel_establish(grid, ctrl);
+  Multilevel_establish(grid, ctrl);
   if (A != A0) grid->delete_top_level_A = true; // be sure to clean up later
   return grid;
 }
