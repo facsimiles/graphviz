@@ -1617,8 +1617,6 @@ static bool edge_in_layer(GVJ_t *job, edge_t * e)
 
 static bool clust_in_layer(GVJ_t *job, graph_t * sg)
 {
-    node_t *n;
-
     if (job->numLayers <= 1)
 	return true;
     const char *const pg = late_string(sg, agattr_text(sg, AGRAPH, "layer", 0), "");
@@ -1626,7 +1624,7 @@ static bool clust_in_layer(GVJ_t *job, graph_t * sg)
 	return true;
     if (pg[0])
 	return false;
-    for (n = agfstnode(sg); n; n = agnxtnode(sg, n))
+    for (node_t *n = agfstnode(sg); n; n = agnxtnode(sg, n))
 	if (node_in_layer(job, sg, n))
 	    return true;
     return false;
