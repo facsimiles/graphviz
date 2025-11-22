@@ -507,7 +507,6 @@ Agraph_t **cccomps(Agraph_t *g, size_t *ncc, char *pfx) {
  * Returns -1 if the graph is error.
  */
 int isConnected(Agraph_t *g) {
-  int ret = 1;
   size_t cnt = 0;
   stk_t stk;
 
@@ -521,6 +520,6 @@ int isConnected(Agraph_t *g) {
   cnt = dfs(g, agfstnode(g), NULL, &stk);
   freeStk(&stk);
   if (cnt != (size_t)agnnodes(g))
-    ret = 0;
-  return ret;
+    return 0;
+  return 1;
 }
