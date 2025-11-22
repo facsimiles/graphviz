@@ -952,8 +952,8 @@ static int layer_index(GVC_t *gvc, char *str, int all)
     return -1;
 }
 
-static bool selectedLayer(GVC_t *gvc, int layerNum, int numLayers, char *spec)
-{
+static bool selectedLayer(GVC_t *gvc, int layerNum, int numLayers,
+                          const char *spec) {
     int n0, n1;
     char *w0, *w1;
     char *buf_part_p = NULL, *buf_p = NULL, *cur, *part_in_p;
