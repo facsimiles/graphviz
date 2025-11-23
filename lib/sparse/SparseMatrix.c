@@ -453,8 +453,6 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
 }
 
 static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
-  int *ja;
-  
   switch (A->type){
   case MATRIX_TYPE_REAL:
     fprintf(f,"%%%%MatrixMarket matrix coordinate real general\n");
@@ -476,7 +474,7 @@ static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
 
   fprintf(f,"%d %d %d\n",A->m,A->n,A->nz);
   const int *const ia = A->ia;
-  ja = A->ja;
+  const int *const ja = A->ja;
   switch (A->type){
   case MATRIX_TYPE_REAL: {
     const double *const a = A->a;
