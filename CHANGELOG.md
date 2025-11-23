@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Some Undefined Behavior in sparse matrix calculations has been removed.
+- In the Autotools build system, when the PHP interpreter (`php`) is available
+  but `php-config` is not, building the PHP bindings is no longer enabled. This
+  was a regression in Graphviz 2.42.0. #2788
 
 ## [14.0.5] – 2025-11-28
 
