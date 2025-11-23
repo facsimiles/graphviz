@@ -579,8 +579,6 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
 
   if (m <=0 || n <= 0 || nz < 0) return NULL;
   A = SparseMatrix_general_new(m, n, nz, type, sz, FORMAT_CSR);
-  assert(A);
-  if (!A) return NULL;
   ia = A->ia;
   ja = A->ja;
 
