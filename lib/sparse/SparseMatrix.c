@@ -454,7 +454,6 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
 
 static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
   int *ia, *ja;
-  int *ai;
   int i;
   
   switch (A->type){
@@ -494,8 +493,8 @@ static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
     }
     break;
   }
-  case MATRIX_TYPE_INTEGER:
-    ai = A->a;
+  case MATRIX_TYPE_INTEGER: {
+    const int *const ai = A->a;
     for (i = 0; i < A->nz; i++){
       fprintf(f, "%d %d %d\n",ia[i]+1, ja[i]+1, ai[i]);
     }
@@ -505,6 +504,7 @@ static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
       fprintf(f, "%d %d\n",ia[i]+1, ja[i]+1);
     }
     break;
+  }
   default:
     UNREACHABLE();
   }
