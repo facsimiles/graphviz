@@ -955,7 +955,6 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
   }
 
   C = SparseMatrix_new(m, B->n, nz, type, FORMAT_CSR);
-  if (!C) goto RETURN;
   ic = C->ia;
   jc = C->ja;
   
