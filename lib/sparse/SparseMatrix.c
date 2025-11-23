@@ -1087,7 +1087,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
 
   if (A->type != B->type || B->type != C->type){
 #ifdef DEBUG
-    printf("in SparseMatrix_multiply, the matrix types do not match, right now only multiplication of matrices of the same type is supported\n");
+    printf("in SparseMatrix_multiply3, the matrix types do not match, right now only multiplication of matrices of the same type is supported\n");
 #endif
     return NULL;
   }
@@ -1110,7 +1110,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
 	  if (mask[jc[k]] != -i - 2){
 	    if (sadd_overflow(nz, 1, &nz)) {
 #ifdef DEBUG_PRINT
-	      fprintf(stderr,"overflow in SparseMatrix_multiply !!!\n");
+	      fprintf(stderr, "overflow in SparseMatrix_multiply3 !!!\n");
 #endif
 	      free(mask);
 	      return NULL;
