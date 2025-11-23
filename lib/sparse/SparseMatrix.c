@@ -711,7 +711,6 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
   nzmax = A->nz + B->nz;/* just assume that no entries overlaps for speed */
 
   C = SparseMatrix_new(m, n, nzmax, A->type, FORMAT_CSR);
-  if (!C) goto RETURN;
   ic = C->ia;
   jc = C->ja;
 
@@ -820,7 +819,6 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
   }
   C->nz = nz;
 
- RETURN:
   free(mask);
 
   return C;
