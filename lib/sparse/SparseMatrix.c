@@ -1123,7 +1123,6 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
   }
 
   D = SparseMatrix_new(m, C->n, nz, type, FORMAT_CSR);
-  if (!D) goto RETURN;
   id = D->ia;
   jd = D->ja;
   
@@ -1157,7 +1156,6 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
   
   D->nz = nz;
 
- RETURN:
   free(mask);
   return D;
 }
