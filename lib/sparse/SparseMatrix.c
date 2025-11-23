@@ -1108,14 +1108,13 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
 	ll = jb[l];
 	for (k = ic[ll]; k < ic[ll+1]; k++){
 	  if (mask[jc[k]] != -i - 2){
-	    if ((nz+1) <= nz) {
+	    if (sadd_overflow(nz, 1, &nz)) {
 #ifdef DEBUG_PRINT
 	      fprintf(stderr,"overflow in SparseMatrix_multiply !!!\n");
 #endif
 	      free(mask);
 	      return NULL;
 	    }
-	    nz++;
 	    mask[jc[k]] = -i - 2;
 	  }
 	}
