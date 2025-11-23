@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/unreachable.h>
 
 static size_t size_of_matrix_type(int type){
   size_t size = 0;
@@ -503,10 +504,8 @@ static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
       fprintf(f, "%d %d\n",ia[i]+1, ja[i]+1);
     }
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    return;
   default:
-    return;
+    UNREACHABLE();
   }
 }
 
