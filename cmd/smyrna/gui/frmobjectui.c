@@ -111,19 +111,19 @@ static attr_list *attr_list_new(bool with_widgets) {
 
     if (with_widgets) {
 	for (id = 0; id < MAX_FILTERED_ATTR_COUNT; id++) {
-	    l->fLabels[id] = (GtkLabel *) gtk_label_new("");
+	    l->fLabels[id] = gtk_label_new("");
 
-	    gtk_widget_add_events((GtkWidget *) l->fLabels[id],
+	    gtk_widget_add_events(l->fLabels[id],
 				  GDK_BUTTON_MOTION_MASK |
 				  GDK_POINTER_MOTION_MASK |
 				  GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS |
 				  GDK_BUTTON_RELEASE_MASK |
 				  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
 
-	    gtk_widget_show((GtkWidget *) l->fLabels[id]);
-	    Color_Widget_bg("blue", (GtkWidget *) l->fLabels[id]);
+	    gtk_widget_show(l->fLabels[id]);
+	    Color_Widget_bg("blue", l->fLabels[id]);
 	    gtk_fixed_put((GtkFixed *) glade_xml_get_widget(xml, "fixed6"),
-			  (GtkWidget *) l->fLabels[id], 10, 110 + id * 13);
+			  l->fLabels[id], 10, 110 + id * 13);
 	}
     }
     return l;
@@ -146,9 +146,6 @@ static void attr_list_add(attr_list *l, attr_t *a) {
 	return;
     LIST_APPEND(&l->attributes, a);
     LIST_SORT(&l->attributes, attr_compare);
-    /*update indices */
-    for (size_t id = 0; id < LIST_SIZE(&l->attributes); ++id)
-	LIST_GET(&l->attributes, id)->index = id;
 }
 
 static attr_data_type get_attr_data_type(char c)
@@ -231,21 +228,29 @@ static void create_filtered_list(const char *prefix, attr_list *sl,
 	return;
     /*locate first occurrence */
     LIST_SYNC(&sl->attributes);
-    attr_t *at = bsearch(prefix, LIST_FRONT(&sl->attributes),
-                         LIST_SIZE(&sl->attributes), sizeof(attr_t), cmp);
-    if (!at)
+    attr_t **attrp = bsearch(prefix, LIST_FRONT(&sl->attributes),
+                             LIST_SIZE(&sl->attributes), sizeof(attr_t *), cmp);
+    if (!attrp)
 	return;
 
     /*go backward to get the first */
-    for (int res = 0; at->index > 0 && res == 0; ) {
-	at = LIST_GET(&sl->attributes, at->index - 1);
-	res = strncasecmp(prefix, at->name, strlen(prefix));
+    for (int res = 0; attrp > LIST_FRONT(&sl->attributes) && res == 0; ) {
+	--attrp;
+	res = strncasecmp(prefix, (*attrp)->name, strlen(prefix));
     }
-    for (int res = 0; at->index < LIST_SIZE(&sl->attributes) && res == 0; ) {
-	at = LIST_GET(&sl->attributes, at->index + 1);
-	res = strncasecmp(prefix, at->name, strlen(prefix));
-	if (res == 0 && at->objType[objKind] == 1)
-	    attr_list_add(tl, new_attr_ref(at));
+    // step forward past the non-matching one we landed on
+    if (strncasecmp(prefix, (*attrp)->name, strlen(prefix)) != 0) {
+	++attrp;
+    }
+    // copy matching entries
+    for (int res = 0; res == 0; ) {
+	res = strncasecmp(prefix, (*attrp)->name, strlen(prefix));
+	if (res == 0 && (*attrp)->objType[objKind] == 1)
+	    attr_list_add(tl, new_attr_ref(*attrp));
+	if (attrp == LIST_BACK(&sl->attributes)) {
+	    break;
+	}
+	++attrp;
     }
 }
 
@@ -326,6 +331,9 @@ static void filter_attributes(const char *prefix, topview *t) {
 	    break;
 	}
     }
+
+    LIST_FREE(&fl->attributes);
+    free(fl);
 
     tmp = (objKind == AGNODE && sel_node)
        || (objKind == AGEDGE && sel_edge)
@@ -446,11 +454,9 @@ _BB void on_attrAddBtn_clicked(GtkWidget *widget, void *user_data) {
     attr = binarySearch(t->attributes, attr_name);
     if (!attr) {
 	attr = new_attr();
-	attr->index = 0;
 	attr->name = safestrdup(attr_name);
 	attr->type = attr_alpha;
 	attr->value = gv_strdup("");
-	attr->widget = NULL;
 	attr_list_add(t->attributes, attr);
     }
     attr->propagate = 0;
@@ -494,7 +500,6 @@ attr_list *load_attr_list(Agraph_t * g)
 	for (size_t i = 0; fgets(buffer, sizeof(buffer), file) != NULL; ++i) {
 	    attr = new_attr();
 	    a = strtok(buffer, ",");
-	    attr->index = i;
 	    attr->type = get_attr_data_type(a[0]);
 	    for (int idx = 0; (a = strtok(NULL, ",")); ++idx) {
 		/*C,(0)color, (1)black, (2)EDGE Or NODE Or CLUSTER, (3)ALL_ENGINES */
@@ -601,10 +606,6 @@ void showAttrsWidget(void) {
 
 static void gvpr_select(const char *attrname, const char *regex_str,
                         int objType) {
-
-    char *bf2;
-    int i, argc;
-
     agxbuf sf = {0};
 
     if (objType == AGNODE)
@@ -612,19 +613,13 @@ static void gvpr_select(const char *attrname, const char *regex_str,
     else if (objType == AGEDGE)
 	agxbprint(&sf, "E[%s==\"%s\"]{selected = \"1\"}", attrname, regex_str);
 
-    bf2 = agxbdisown(&sf);
+    char *const bf2 = agxbdisown(&sf);
 
-    argc = 1;
-    if (*bf2 != '\0')
-	argc++;
-    char *argv[3] = {0};
-    size_t j = 0;
-    argv[j++] = "smyrna";
-    argv[j++] = bf2;
+    enum { argc = 2 };
+    char *argv[argc + 1] = {"smyrna", bf2};
 
-    run_gvpr(view->g[view->activeGraph], j, argv);
-    for (i = 1; i < argc; i++)
-	free(argv[i]);
+    run_gvpr(view->g[view->activeGraph], argc, argv);
+    free(bf2);
     set_header_text();
 }
 
