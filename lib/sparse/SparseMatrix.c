@@ -519,7 +519,7 @@ void SparseMatrix_export(FILE *f, SparseMatrix A){
     SparseMatrix_export_coord(f, A);
     break;
   default:
-    assert(0);
+    UNREACHABLE();
   }
 }
 
@@ -595,8 +595,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
     a = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
-	assert(0);
-	return NULL;
+	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
@@ -614,8 +613,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
     a = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
-	assert(0);
-	return NULL;
+	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
@@ -634,8 +632,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
     ai = A->a;
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
-	assert(0);
-	return NULL;
+	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
@@ -651,8 +648,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
   case MATRIX_TYPE_PATTERN:
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
-	assert(0);
-	return NULL;
+	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
@@ -666,8 +662,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
   case MATRIX_TYPE_UNKNOWN:
     for (i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
-	assert(0);
-	return NULL;
+	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
@@ -680,8 +675,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
     ia[0] = 0;
     break;
   default:
-    assert(0);
-    return NULL;
+    UNREACHABLE();
   }
   A->nz = nz;
 
@@ -915,8 +909,7 @@ void SparseMatrix_multiply_vector(SparseMatrix A, double *v, double **res) {
     }
     break;
   default:
-    assert(0);
-    u = NULL;
+    UNREACHABLE();
   }
   *res = u;
 
@@ -1496,10 +1489,8 @@ SparseMatrix SparseMatrix_divide_row_by_degree(SparseMatrix A){
     }
     break;
   }
-  case MATRIX_TYPE_INTEGER:{
-    assert(0);/* this operation would not make sense for int matrix */
-    break;
-  }
+  case MATRIX_TYPE_INTEGER:
+    UNREACHABLE(); // this operation would not make sense for int matrix 
   case MATRIX_TYPE_PATTERN:{
     break;
   }
@@ -1833,7 +1824,7 @@ SparseMatrix SparseMatrix_to_square_matrix(SparseMatrix A, int bipartite_options
   case BIPARTITE_ALWAYS:
     break;
   default:
-    assert(0);
+    UNREACHABLE();
   }
   B = SparseMatrix_get_augmented(A);
   SparseMatrix_delete(A);
