@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/overflow.h>
 #include <util/unreachable.h>
 
 static size_t size_of_matrix_type(int type){
@@ -940,14 +941,13 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
       jj = ja[j];
       for (k = ib[jj]; k < ib[jj+1]; k++){
 	if (mask[jb[k]] != -i - 2){
-	  if ((nz+1) <= nz) {
+	  if (sadd_overflow(nz, 1, &nz)) {
 #ifdef DEBUG_PRINT
 	    fprintf(stderr,"overflow in SparseMatrix_multiply !!!\n");
 #endif
 	    free(mask);
 	    return NULL;
 	  }
-	  nz++;
 	  mask[jb[k]] = -i - 2;
 	}
       }
