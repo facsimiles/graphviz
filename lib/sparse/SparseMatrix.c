@@ -294,7 +294,7 @@ static SparseMatrix SparseMatrix_init(int m, int n, int type, size_t sz, int for
   return A;
 }
 
-static SparseMatrix SparseMatrix_alloc(SparseMatrix A, int nz){
+static void SparseMatrix_alloc(SparseMatrix A, int nz) {
   int format = A->format;
   size_t nz_t = (size_t) nz; /* size_t is 64 bit on 64 bit machine. Using nz*A->size can overflow. */
 
@@ -314,7 +314,6 @@ static SparseMatrix SparseMatrix_alloc(SparseMatrix A, int nz){
     break;
   }
   A->nzmax = nz;
-  return A;
 }
 
 static SparseMatrix SparseMatrix_realloc(SparseMatrix A, int nz){
@@ -358,7 +357,7 @@ SparseMatrix SparseMatrix_new(int m, int n, int nz, int type, int format){
   sz = size_of_matrix_type(type);
   A = SparseMatrix_init(m, n, type, sz, format);
 
-  if (nz > 0) A = SparseMatrix_alloc(A, nz);
+  if (nz > 0) SparseMatrix_alloc(A, nz);
   return A;
 
 }
@@ -371,7 +370,7 @@ SparseMatrix SparseMatrix_general_new(int m, int n, int nz, int type, size_t sz,
 
   A = SparseMatrix_init(m, n, type, sz, format);
 
-  if (nz > 0) A = SparseMatrix_alloc(A, nz);
+  if (nz > 0) SparseMatrix_alloc(A, nz);
   return A;
 
 }
