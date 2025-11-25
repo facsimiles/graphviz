@@ -348,8 +348,8 @@ static availfonts_t gv_get_ps_fontlist(PangoFontMap *fontmap) {
     gv_ps_fontdef = gv_ps_fontdefs + j;
     gv_afs->gv_ps_fontname = gv_ps_fontdef->fontname;
     strview_t family_name = {0};
-    /* Search the installed system font families for the current
-       Graphvis PS font family name, i.e. AvantGarde */
+    // Search the installed system font families for the current
+    // Graphvis PS font family name, for example AvantGarde
     for (i = 0; i < n_families; i++) {
       family = families[i];
       name = pango_font_family_get_name(family);
