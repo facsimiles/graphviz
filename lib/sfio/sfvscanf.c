@@ -300,7 +300,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	if (v < 0)
 	    goto done;
 	else if (v == 0) { // extf did not use input stream
-	    FMTGET(ft, form, fmt, size, flags, width, n, base);
+	    FMTGET(ft, form, fmt, size, flags, width, (int){0}, base);
 	    if ((ft->flags & SFFMT_VALUE) && !(ft->flags & SFFMT_SKIP))
 		value = argv.vp;
 	} else { // v > 0: number of input bytes consumed
