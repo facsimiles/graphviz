@@ -68,7 +68,7 @@ static const unsigned char *setclass(const unsigned char *form, bool *accept) {
 int sfvscanf(FILE *f, Sffmt_t *ft) {
     int inp, shift, base, width;
     ssize_t size;
-    int fmt, flags, dot, n_assign, v, n, n_input;
+    int fmt, flags, dot, n_assign, v, n_input;
     char *sp;
     char accept[SF_MAXDIGITS];
 
@@ -527,7 +527,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    } else
 		size = 0;
 
-	    n = 0;
+	    int n = 0;
 	    if (fmt == 's') {
 		do {
 		    if (gv_isspace(inp))
