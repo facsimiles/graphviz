@@ -74,8 +74,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 
     Argv_t argv;
 
-    int argn;
-
     void *value;		/* location to assign scanned value */
     const char *t_str;
     ssize_t n_str;
@@ -96,7 +94,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
     argv.ft = ft;
 
     form = argv.ft->form;
-    argn = -1;
 
     assert(ft != NULL && ft->extf != NULL);
 
@@ -167,7 +164,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		    if (*t_str != '*')
 			n_str = (form - 1) - t_str;
 		    else {
-			++argn;
 
 			FMTSET(ft, form, LEFTP, 0, 0, 0, 0, 0, NULL, 0);
 			n = ft->extf(&argv, ft);
@@ -195,7 +191,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		goto dot_size;
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1);
-		++argn;
 
 		FMTSET(ft, form, '.', dot, 0, 0, 0, 0, NULL, 0);
 		if (ft->extf(&argv, ft) < 0)
@@ -237,7 +232,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		    size = size * 10 + (n - '0');
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1);
-		n = ++argn;
 
 		FMTSET(ft, form, 'I', sizeof(int), 0, 0, 0, 0, NULL, 0);
 		if (ft->extf(&argv, ft) < 0)
@@ -301,7 +295,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    }
 	}
 
-	++argn;
 	FMTSET(ft, form, fmt, size, flags, width, 0, base, t_str, n_str);
 	v = ft->extf(&argv, ft);
 
