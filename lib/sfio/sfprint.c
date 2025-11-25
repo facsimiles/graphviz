@@ -90,11 +90,11 @@ int sfprint(FILE *f, Sffmt_t *format) {
 
     while ((n = *form)) {
 	if (n != '%') {		/* collect the non-pattern chars */
-	    sp = (char *) form++;
-	    while (*form && *form != '%')
-		form += 1;
-	    n = form - sp;
-	    SFwrite(f, sp, n);
+	    size_t form_len = 1;
+	    while (form[form_len] != '\0' && form[form_len] != '%')
+		++form_len;
+	    SFwrite(f, form, form_len);
+	    form += form_len;
 	    continue;
 	} else
 	    form += 1;
