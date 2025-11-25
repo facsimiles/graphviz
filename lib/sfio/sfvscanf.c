@@ -227,8 +227,8 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    size = 0;
 	    flags = (flags & ~SFFMT_TYPES) | SFFMT_IFLAG;
 	    if (gv_isdigit(*form)) {
-		for (n = *form; gv_isdigit(n); n = *++form)
-		    size = size * 10 + (n - '0');
+		for (; gv_isdigit(*form); ++form)
+		    size = size * 10 + (*form - '0');
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1);
 
