@@ -166,8 +166,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		    else {
 
 			FMTSET(ft, form, LEFTP, 0, 0, 0, 0, 0, NULL, 0);
-			n = ft->extf(&argv, ft);
-			if (n < 0)
+			if (ft->extf(&argv, ft) < 0)
 			    goto done;
 			assert(ft->flags & SFFMT_VALUE);
 			if ((t_str = argv.s) && (n_str = (int)ft->size) < 0)
