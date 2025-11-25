@@ -195,7 +195,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		goto dot_size;
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1);
-		n = ++argn;
+		++argn;
 
 		FMTSET(ft, form, '.', dot, 0, 0, 0, 0, NULL, 0);
 		if (ft->extf(&argv, ft) < 0)
