@@ -386,15 +386,10 @@ static void free_case_info(case_info c) {
 /// parses input into gpr sections
 parse_prog *parseProg(char *input, int isFile) {
   FILE *str;
-  char *guard = NULL;
-  char *action = NULL;
-  bool more;
   parse_blocks_t blocklist = {0};
   case_infos_t edgelist = {.dtor = free_case_info};
   case_infos_t nodelist = {.dtor = free_case_info};
-  int line = 0, gline = 0;
   int l_beging = 0;
-  char *begg_stmt;
 
   lineno = col0 = startLine = kwLine = 1;
   parse_prog *prog = calloc(1, sizeof(parse_prog));
@@ -425,12 +420,16 @@ parse_prog *parseProg(char *input, int isFile) {
     return NULL;
   }
 
-  begg_stmt = NULL;
-  more = true;
-  while (more) {
+  char *begg_stmt = NULL;
+  for (bool more = true; more;) {
+    char *guard = NULL;
+    int gline = 0;
+    char *action = NULL;
+    int line = 0;
     switch (parseCase(str, &guard, &gline, &action, &line)) {
     case Begin:
       bindAction(Begin, action, line, &prog->begin_stmt, &prog->l_begin);
+      action = NULL;
       break;
     case BeginG:
       if (action && (begg_stmt || !LIST_IS_EMPTY(&nodelist) ||
@@ -443,21 +442,28 @@ parse_prog *parseProg(char *input, int isFile) {
         begg_stmt = NULL;
       }
       bindAction(BeginG, action, line, &begg_stmt, &l_beging);
+      action = NULL;
       break;
     case End:
       bindAction(End, action, line, &prog->end_stmt, &prog->l_end);
+      action = NULL;
       break;
     case EndG:
       bindAction(EndG, action, line, &prog->endg_stmt, &prog->l_endg);
+      action = NULL;
       break;
     case Eof:
       more = false;
       break;
     case Node:
       addCase(&nodelist, guard, gline, action, line);
+      guard = NULL;
+      action = NULL;
       break;
     case Edge:
       addCase(&edgelist, guard, gline, action, line);
+      guard = NULL;
+      action = NULL;
       break;
     case Error: /* to silence warnings */
       more = false;
@@ -465,6 +471,8 @@ parse_prog *parseProg(char *input, int isFile) {
     default:
       UNREACHABLE();
     }
+    free(guard);
+    free(action);
   }
 
   if (begg_stmt || !LIST_IS_EMPTY(&nodelist) ||
