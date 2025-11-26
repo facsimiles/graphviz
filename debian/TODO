@@ -11,8 +11,6 @@ TODO for graphviz
     see debian/rules.
   * Think about putting the configuration file into /var, see the discussion
     with Alexander on the 10th of August.
-  * Adjust --build and --host options to ./configure so as to support cross-
-    compilation correctly.
   * The Conflicts between libgv-perl and older graphviz might go away since the
     location of perl files was adapted to follow the perl policy. To be checked
     with piuparts.
