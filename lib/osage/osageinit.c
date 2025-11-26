@@ -99,14 +99,14 @@ layout (Agraph_t* g, int depth)
 	cattr = agattr_text(root, AGRAPH, "sortv", 0);
 	vattr = agattr_text(root, AGNODE, "sortv", 0);
 	if (cattr || vattr)
-	    pinfo.vals = gv_calloc(total, sizeof(packval_t));
+	    pinfo.vals = gv_calloc(total+1, sizeof(packval_t));
 	else
 	    agwarningf("Graph %s has array packing with user values but no \"sortv\" attributes are defined.",
 		agnameof(g));
     }
 
-    boxf *gs = gv_calloc(total, sizeof(boxf));
-    void **children = gv_calloc(total, sizeof(void*));
+    boxf *gs = gv_calloc(total+1, sizeof(boxf));
+    void **children = gv_calloc(total+1, sizeof(void*));
     int j = 0;
     for (int i = 1; i <= GD_n_cluster(g); i++) {
 	Agraph_t *const subg = GD_clust(g)[i];
@@ -154,10 +154,12 @@ layout (Agraph_t* g, int depth)
 	}
 	else {
 	    Agnode_t *const n = children[j];
-	    ND_coord(n) = mid_pointf (bb.LL, bb.UR);
-	    if (Verbose > 1) {
-		indent (depth);
-		fprintf (stderr, "%s : %f %f\n", agnameof(n), ND_coord(n).x, ND_coord(n).y);
+	    if (n) {
+	        ND_coord(n) = mid_pointf (bb.LL, bb.UR);
+	        if (Verbose > 1) {
+		    indent (depth);
+		    fprintf (stderr, "%s : %f %f\n", agnameof(n), ND_coord(n).x, ND_coord(n).y);
+		}
 	    }
 	}
     }
@@ -206,10 +208,12 @@ layout (Agraph_t* g, int depth)
 	}
 	else {
 	    Agnode_t *const n = children[j];
-	    ND_coord(n) = sub_pointf (ND_coord(n), rootbb.LL);
-	    if (Verbose > 1) {
-		indent (depth);
-		fprintf (stderr, "%s : %f %f\n", agnameof(n), ND_coord(n).x, ND_coord(n).y);
+	    if (n) {
+	        ND_coord(n) = sub_pointf (ND_coord(n), rootbb.LL);
+	        if (Verbose > 1) {
+		    indent (depth);
+		    fprintf (stderr, "%s : %f %f\n", agnameof(n), ND_coord(n).x, ND_coord(n).y);
+		}
 	    }
 	}
     }
