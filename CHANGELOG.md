@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - When filtering attribute lists, Smyrna no longer accesses out of bounds memory
   or misses results.
+- osage should now handle clusters that become empty when nodes are incorrectly
+  assigned to sibling clusters. #2721
 
 ## [14.0.4] – 2025-11-15
 

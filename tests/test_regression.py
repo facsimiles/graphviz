@@ -6041,10 +6041,6 @@ def test_2717():
 
 
 @pytest.mark.skipif(which("osage") is None, reason="osage is not available")
-@pytest.mark.xfail(
-    strict=which("dot") is not None and is_asan_instrumented(which("dot")),
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2721",
-)
 def test_2721():
     """
     osage should not crash when processing this graph
