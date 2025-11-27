@@ -477,7 +477,7 @@ static void placeFixed(ginfo *info, PointSet *ps, pointf *place,
  * First graph (i == 0) is centered on the origin if possible.
  */
 static void placeGraph(size_t i, ginfo *info, PointSet *ps, pointf *place,
-                       int step, unsigned int margin, boxf *bbs) {
+                       int step, unsigned int margin, const boxf *bbs) {
   int x, y;
   int bnd;
   boxf bb = bbs[info->index];
