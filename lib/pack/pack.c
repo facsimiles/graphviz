@@ -416,7 +416,7 @@ static int genPoly(Agraph_t *root, Agraph_t *g, ginfo *info, int ssize,
  * If so, add cells to pointset, store point in place and return true.
  */
 static int fits(int x, int y, ginfo *info, PointSet *ps, pointf *place,
-                int step, boxf *bbs) {
+                int step, const boxf *bbs) {
   pointf *cells = info->cells;
   int n = info->nc;
   int i;
