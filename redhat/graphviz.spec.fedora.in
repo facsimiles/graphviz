@@ -134,7 +134,7 @@ of graphs (as in nodes and edges, not as in bar-charts).
 %if %{LICENSE}
 %license COPYING
 %endif
-%doc COPYING AUTHORS CHANGELOG.md NEWS README
+%doc COPYING AUTHORS CHANGELOG.md NEWS README.md
 
 #-- graphviz-nox rpm --------------------------------------------------
 %package nox
@@ -164,7 +164,7 @@ LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
 %if %{LICENSE}
 %license COPYING
 %endif
-%doc COPYING AUTHORS CHANGELOG.md NEWS README
+%doc COPYING AUTHORS CHANGELOG.md NEWS README.md
 %{_bindir}/dot_builtins
 %{_bindir}/dot_sandbox
 %{_bindir}/acyclic
@@ -316,7 +316,7 @@ Graphviz commands with X11 dependencies
 %if %{LICENSE}
 %license COPYING
 %endif
-%doc COPYING AUTHORS CHANGELOG.md NEWS README
+%doc COPYING AUTHORS CHANGELOG.md NEWS README.md
 %{_bindir}/vimdot
 %{_mandir}/man1/vimdot.1*
 %if %{GTK}
