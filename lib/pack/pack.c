@@ -711,7 +711,7 @@ static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
   return places;
 }
 
-static pointf *polyRects(size_t ng, boxf *gs, pack_info *pinfo) {
+static pointf *polyRects(size_t ng, const boxf *gs, pack_info *pinfo) {
   int stepSize;
   Dict_t *ps;
 
