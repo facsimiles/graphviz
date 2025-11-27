@@ -599,7 +599,7 @@ static void INC(bool m, size_t *c, size_t *r, size_t nc, size_t nr) {
   }
 }
 
-static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
+static pointf *arrayRects(size_t ng, const boxf *gs, pack_info *pinfo) {
   size_t nr = 0, nc;
   size_t r, c;
   ainfo *info;
