@@ -60,7 +60,7 @@ typedef struct {
  * quadratic equation a×l² + b×l + c, where a, b and
  * c are defined below.
  */
-static int computeStep(size_t ng, boxf *bbs, unsigned int margin) {
+static int computeStep(size_t ng, const boxf *bbs, unsigned int margin) {
   double l1, l2;
   double a, b, c, d, r;
   double W, H; /* width and height of graph, with margin */
