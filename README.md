@@ -6,7 +6,7 @@ from AT&amp;T Research and Lucent Bell Labs
 
 * https://graphviz.org/
 
-See doc/build.html within the source tree or https://graphviz.org/doc/build.html for prerequisites and detailed build notes.
+See https://graphviz.org/doc/build.html for prerequisites and detailed build notes.
 
 ## main GIT Repository
 
