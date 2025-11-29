@@ -402,16 +402,16 @@ static bool inBox(Point p, Point origin_point, Point corner) {
            p.y >= origin_point.y;
 }
 
-static void transCopy(Point * inp, int cnt, Point off, Point * outp)
-{
+static Point *transCopy(Point *inp, int cnt, Point off) {
+    Point *const out = gv_calloc((size_t)cnt, sizeof(out[0]));
     int i;
 
     for (i = 0; i < cnt; i++) {
-	outp->x = inp->x + off.x;
-	outp->y = inp->y + off.y;
+	out[i].x = inp->x + off.x;
+	out[i].y = inp->y + off.y;
 	inp++;
-	outp++;
     }
+    return out;
 }
 
 bool polyOverlap(Point p, Poly *pp, Point q, Poly *qp) {
@@ -437,11 +437,9 @@ bool polyOverlap(Point p, Poly *pp, Point q, Poly *qp) {
 	return dx * dx + dy * dy <= d * d / 4.0;
     }
 
-    Point *const tp2 = gv_calloc(maxcnt, sizeof(Point));
-    Point *const tp1 = gv_calloc(maxcnt, sizeof(Point));
+    Point *const tp1 = transCopy(pp->verts, pp->nverts, p);
+    Point *const tp2 = transCopy(qp->verts, qp->nverts, q);
 
-    transCopy(pp->verts, pp->nverts, p, tp1);
-    transCopy(qp->verts, qp->nverts, q, tp2);
     bool result = edgesIntersect(tp1, tp2, pp->nverts, qp->nverts) ||
 	    (inBox(*tp1, oq, cq) && inPoly(tp2, qp->nverts, *tp1)) ||
 	    (inBox(*tp2, op, cp) && inPoly(tp1, pp->nverts, *tp2));
