@@ -2649,9 +2649,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		            seg_pts[seg_idx] = seg_end_pt;
 
 		            /* Render this segment as polyline (straight lines, not bezier) */
-		            if (seg_pt_count > 1) {
-		                gvrender_polyline(job, seg_pts, seg_pt_count);
-		            }
+		            gvrender_polyline(job, seg_pts, seg_pt_count);
 		            free(seg_pts);
 
 		            /* Prepare for next segment */
