@@ -2219,16 +2219,13 @@ static bool process_corner(corner_info_t *corners, size_t *num_corners,
                           double radius, bool seg1_horiz, bool seg2_vert)
 {
     /* Check if we already detected this corner (skip duplicates) */
-    bool already_detected = false;
     const double DUP_TOL = 0.01;
     for (size_t j = 0; j < *num_corners; j++) {
         pointf existing_corner = pts[corners[j].idx];
         if (hypot(curr.x - existing_corner.x, curr.y - existing_corner.y) < DUP_TOL) {
-            already_detected = true;
-            break;
+            return false;
         }
     }
-    if (already_detected) return false;
 
     corner_info_t *ci = &corners[(*num_corners)++];
     ci->idx = i;
