@@ -332,7 +332,7 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 	    return 1;
 
 	/* Advance rules. */
-	if ((cross == 0) && !bHA && !aHB) {
+	if (cross == 0 && !bHA && !aHB) {
 	    if (inflag == Pin)
 		advance(b, ba, m);
 	    else
@@ -350,7 +350,7 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 		advance(a, aa, n);
 	}
 
-    } while (((aa < n) || (ba < m)) && (aa < 2 * n) && (ba < 2 * m));
+    } while ((aa < n || ba < m) && aa < 2 * n && ba < 2 * m);
 
     return 0;
 
