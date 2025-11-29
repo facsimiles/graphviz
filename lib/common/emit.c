@@ -2113,20 +2113,18 @@ static size_t find_prev_distinct(const pointf *pts, size_t i) {
 
 /* find_next_distinct:
  * Find the next point that is not a duplicate of pts[i].
- * Returns -1 if no such point exists.
+ * Returns `SIZE_MAX` if no such point exists.
  */
-static int
-find_next_distinct(const pointf *pts, size_t i, size_t n)
-{
+static size_t find_next_distinct(const pointf *pts, size_t i, size_t n) {
     const double TOLERANCE = 0.01;
     for (size_t j = i + 1; j < n; j++) {
         double dx = pts[j].x - pts[i].x;
         double dy = pts[j].y - pts[i].y;
         if (hypot(dx, dy) > TOLERANCE) {
-            return (int)j;
+            return j;
         }
     }
-    return -1;
+    return SIZE_MAX;
 }
 
 
@@ -2268,9 +2266,9 @@ static void find_ortho_corners(const pointf *pts, size_t n, double radius,
 
     for (size_t i = 0; i < n; i++) {
         const size_t prev_idx = find_prev_distinct(pts, i);
-        int next_idx = find_next_distinct(pts, i, n);
+        const size_t next_idx = find_next_distinct(pts, i, n);
 
-        if (prev_idx == SIZE_MAX || next_idx < 0) continue;
+        if (prev_idx == SIZE_MAX || next_idx == SIZE_MAX) continue;
 
         pointf prev = pts[prev_idx];
         pointf curr = pts[i];
