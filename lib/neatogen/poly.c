@@ -295,10 +295,6 @@ pintersect(Point originp, Point cornerp, Point originq, Point cornerq)
 	    (originp.y <= cornerq.y) && (originq.y <= cornerp.y));
 }
 
-#define Pin 1
-#define Qin 2
-#define Unknown 0
-
 #define advance(A,B,N) (B++, A = (A+1)%N)
 
 static int edgesIntersect(Point * P, Point * Q, int n, int m)
@@ -312,7 +308,6 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
     double cross;
     int bHA, aHB;
     Point p;
-    int inflag = Unknown;
     /* int      i = 0; */
     /* int      Reset = 0; */
 
@@ -327,16 +322,13 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 	bHA = leftOf(P[a1], P[a], Q[b]);
 	aHB = leftOf(Q[b1], Q[b], P[a]);
 
-	/* If A & B intersect, update inflag. */
+	// do A & B intersect?
 	if (intersection(P[a1], P[a], Q[b1], Q[b], &p))
 	    return 1;
 
 	/* Advance rules. */
 	if (cross == 0 && !bHA && !aHB) {
-	    if (inflag == Pin)
-		advance(b, ba, m);
-	    else
-		advance(a, aa, n);
+	    advance(a, aa, n);
 	} else if (cross >= 0)
 	    if (bHA)
 		advance(a, aa, n);
