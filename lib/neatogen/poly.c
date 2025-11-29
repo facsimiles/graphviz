@@ -291,8 +291,8 @@ int makePoly(Poly *pp, Agnode_t *n, double xmargin, double ymargin) {
 static int
 pintersect(Point originp, Point cornerp, Point originq, Point cornerq)
 {
-    return ((originp.x <= cornerq.x) && (originq.x <= cornerp.x) &&
-	    (originp.y <= cornerq.y) && (originq.y <= cornerp.y));
+    return originp.x <= cornerq.x && originq.x <= cornerp.x &&
+	   originp.y <= cornerq.y && originq.y <= cornerp.y;
 }
 
 #define advance(A,B,N) (B++, A = (A+1)%N)
