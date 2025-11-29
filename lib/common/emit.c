@@ -952,8 +952,8 @@ static int layer_index(GVC_t *gvc, char *str, int all)
     return -1;
 }
 
-static bool selectedLayer(GVC_t *gvc, int layerNum, int numLayers, char *spec)
-{
+static bool selectedLayer(GVC_t *gvc, int layerNum, int numLayers,
+                          const char *spec) {
     int n0, n1;
     char *w0, *w1;
     char *buf_part_p = NULL, *buf_p = NULL, *cur, *part_in_p;
@@ -989,8 +989,7 @@ static bool selectedLayer(GVC_t *gvc, int layerNum, int numLayers, char *spec)
     return rval;
 }
 
-static bool selectedlayer(GVJ_t *job, char *spec)
-{
+static bool selectedlayer(GVJ_t *job, const char *spec) {
     return selectedLayer (job->gvc, job->layerNum, job->numLayers, spec);
 }
 
@@ -1009,7 +1008,7 @@ static bool selectedlayer(GVJ_t *job, char *spec)
  * efficient way to do this, but this is simple and until we find people
  * using huge numbers of layers, it should be adequate.
  */
-static int *parse_layerselect(GVC_t *gvc, char *p) {
+static int *parse_layerselect(GVC_t *gvc, const char *p) {
     int* laylist = gv_calloc(gvc->numLayers + 2, sizeof(int));
     int i, cnt = 0;
     for (i = 1; i <=gvc->numLayers; i++) {
@@ -1582,21 +1581,18 @@ static void setup_page(GVJ_t * job)
 
 static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 {
-    char *pn, *pe;
-    edge_t *e;
-
     if (job->numLayers <= 1)
 	return true;
-    pn = late_string(n, N_layer, "");
+    const char *const pn = late_string(n, N_layer, "");
     if (selectedlayer(job, pn))
 	return true;
-    if (pn[0])
-	return false;		/* Only check edges if pn = "" */
-    if ((e = agfstedge(g, n)) == NULL)
+    if (!streq(pn, ""))
+	return false;
+    if (agfstedge(g, n) == NULL)
 	return true;
-    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	pe = late_string(e, E_layer, "");
-	if (pe[0] == '\0' || selectedlayer(job, pe))
+    for (edge_t *e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	const char *const pe = late_string(e, E_layer, "");
+	if (streq(pe, "") || selectedlayer(job, pe))
 	    return true;
     }
     return false;
@@ -1604,19 +1600,16 @@ static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 
 static bool edge_in_layer(GVJ_t *job, edge_t * e)
 {
-    char *pe, *pn;
-    int cnt;
-
     if (job->numLayers <= 1)
 	return true;
-    pe = late_string(e, E_layer, "");
+    const char *const pe = late_string(e, E_layer, "");
     if (selectedlayer(job, pe))
 	return true;
-    if (pe[0])
+    if (!streq(pe, ""))
 	return false;
-    for (cnt = 0; cnt < 2; cnt++) {
-	pn = late_string(cnt < 1 ? agtail(e) : aghead(e), N_layer, "");
-	if (pn[0] == '\0' || selectedlayer(job, pn))
+    for (int cnt = 0; cnt < 2; cnt++) {
+	const char *const pn = late_string(cnt < 1 ? agtail(e) : aghead(e), N_layer, "");
+	if (streq(pn, "") || selectedlayer(job, pn))
 	    return true;
     }
     return false;
@@ -1624,17 +1617,14 @@ static bool edge_in_layer(GVJ_t *job, edge_t * e)
 
 static bool clust_in_layer(GVJ_t *job, graph_t * sg)
 {
-    char *pg;
-    node_t *n;
-
     if (job->numLayers <= 1)
 	return true;
-    pg = late_string(sg, agattr_text(sg, AGRAPH, "layer", 0), "");
+    const char *const pg = late_string(sg, agattr_text(sg, AGRAPH, "layer", 0), "");
     if (selectedlayer(job, pg))
 	return true;
-    if (pg[0])
+    if (!streq(pg, ""))
 	return false;
-    for (n = agfstnode(sg); n; n = agnxtnode(sg, n))
+    for (node_t *n = agfstnode(sg); n; n = agnxtnode(sg, n))
 	if (node_in_layer(job, sg, n))
 	    return true;
     return false;

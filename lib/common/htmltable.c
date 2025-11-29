@@ -451,7 +451,6 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color, html
     pointf rule_pt;
     double rule_length;
     double base;
-    boxf pts = cp->data.box;
     pointf pos = env->pos;
 
     if (!color)
@@ -459,7 +458,7 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color, html
     gvrender_set_fillcolor(job, color);
     gvrender_set_pencolor(job, color);
 
-    pts = cp->data.box;
+    boxf pts = cp->data.box;
     pts.LL.x += pos.x;
     pts.UR.x += pos.x;
     pts.LL.y += pos.y;
