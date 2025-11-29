@@ -2329,8 +2329,6 @@ static void
 draw_ortho_corner_markers(GVJ_t *job, const corner_info_t *corners,
                           size_t num_corners, double radius, char *edge_color)
 {
-    if (num_corners == 0) return;
-
     for (size_t i = 0; i < num_corners; i++) {
         const corner_info_t *ci = &corners[i];
 
