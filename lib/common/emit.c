@@ -2611,28 +2611,9 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		                seg_end_pt = bz.list[bz.size - 1];
 		            }
 
-		            /* Count non-corner points between seg_start_idx and seg_end_idx */
-		            size_t seg_pt_count = 1;  /* seg_start_pt */
-		            for (size_t pt = seg_start_idx + 1; pt < seg_end_idx; pt++) {
-		                /* Skip if this point is AT a corner position (handles duplicates) */
-		                bool at_corner = false;
-		                for (size_t cc = 0; cc < LIST_SIZE(&corners); cc++) {
-		                    pointf corner_pt = bz.list[LIST_GET(&corners, cc).idx];
-		                    if (hypot(bz.list[pt].x - corner_pt.x, bz.list[pt].y - corner_pt.y) < CORNER_TOL) {
-		                        at_corner = true;
-		                        break;
-		                    }
-		                }
-		                if (!at_corner) {
-		                    seg_pt_count++;
-		                }
-		            }
-		            seg_pt_count++;  /* seg_end_pt */
-
 		            /* Build segment */
-		            pointf *seg_pts = gv_calloc(seg_pt_count, sizeof(pointf));
-		            seg_pts[0] = seg_start_pt;
-		            size_t seg_idx = 1;
+		            LIST(pointf) seg_pts = {0};
+		            LIST_APPEND(&seg_pts, seg_start_pt);
 		            for (size_t pt = seg_start_idx + 1; pt < seg_end_idx; pt++) {
 		                bool at_corner = false;
 		                for (size_t cc = 0; cc < LIST_SIZE(&corners); cc++) {
@@ -2643,14 +2624,14 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		                    }
 		                }
 		                if (!at_corner) {
-		                    seg_pts[seg_idx++] = bz.list[pt];
+		                    LIST_APPEND(&seg_pts, bz.list[pt]);
 		                }
 		            }
-		            seg_pts[seg_idx] = seg_end_pt;
+		            LIST_APPEND(&seg_pts, seg_end_pt);
 
 		            /* Render this segment as polyline (straight lines, not bezier) */
-		            gvrender_polyline(job, seg_pts, seg_pt_count);
-		            free(seg_pts);
+		            gvrender_polyline(job, LIST_FRONT(&seg_pts), LIST_SIZE(&seg_pts));
+		            LIST_FREE(&seg_pts);
 
 		            /* Prepare for next segment */
 		            if (c < LIST_SIZE(&corners)) {
