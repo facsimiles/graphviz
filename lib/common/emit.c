@@ -2325,12 +2325,11 @@ static void render_corner_arc(GVJ_t *job, const Ppolyline_t *wedge,
 static void draw_ortho_corner_markers(GVJ_t *job, const corners_t *corners,
                                       double radius, char *edge_color) {
     for (size_t i = 0; i < LIST_SIZE(corners); i++) {
-        const corner_info_t *ci = LIST_AT(corners, i);
+        const corner_info_t ci = LIST_GET(corners, i);
 
         /* Generate wedge path */
-        Ppolyline_t *wedge = ellipticWedge(ci->wedge_center,
-                                           radius, radius,
-                                           ci->angle1, ci->angle2);
+        Ppolyline_t *wedge = ellipticWedge(ci.wedge_center, radius, radius,
+                                           ci.angle1, ci.angle2);
 
         if (wedge && wedge->pn > 4) {
             /* Extract only the arc portion (skip center at start and close path at end) */
