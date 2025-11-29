@@ -27,17 +27,14 @@ static bool ISCIRCLE(const Poly *p) { return p->kind & CIRCLE; }
 static size_t maxcnt = 0;
 static Point *tp1 = NULL;
 static Point *tp2 = NULL;
-static Point *tp3 = NULL;
 
 void polyFree(void)
 {
     maxcnt = 0;
     free(tp1);
     free(tp2);
-    free(tp3);
     tp1 = NULL;
     tp2 = NULL;
-    tp3 = NULL;
 }
 
 void breakPoly(Poly * pp)
@@ -355,8 +352,7 @@ static bool inPoly(Point vertex[], int n, Point q) {
     double x;			/* x intersection of e with ray */
     double crossings = 0;	/* number of edge/ray crossings */
 
-    if (tp3 == NULL)
-	tp3 = gv_calloc(maxcnt, sizeof(Point));
+    Point *const tp3 = gv_calloc((size_t)n, sizeof(Point));
 
     /* Shift so that q is the origin. */
     for (i = 0; i < n; i++) {
@@ -371,6 +367,7 @@ static bool inPoly(Point vertex[], int n, Point q) {
 	/* if edge is horizontal, test to see if the point is on it */
 	if (tp3[i].y == 0 && tp3[i1].y == 0) {
 	    if (tp3[i].x * tp3[i1].x < 0) {
+		free(tp3);
 		return true;
 	    } else {
 		continue;
@@ -385,8 +382,10 @@ static bool inPoly(Point vertex[], int n, Point q) {
 		/ (double) (tp3[i1].y - tp3[i].y);
 
 	    /* if intersect at origin, we've found intersection */
-	    if (x == 0)
+	    if (x == 0) {
+		free(tp3);
 		return true;
+	    }
 
 	    /* crosses ray if strictly positive intersection. */
 	    if (x > 0) {
@@ -398,6 +397,7 @@ static bool inPoly(Point vertex[], int n, Point q) {
 	    }
 	}
     }
+    free(tp3);
 
     /* q inside if an odd number of crossings. */
     return (int)crossings % 2 == 1;
