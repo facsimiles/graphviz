@@ -347,11 +347,10 @@ static bool edgesIntersect(Point *P, Point *Q, int n, int m) {
 
 }
 
-/* Return 1 if q is inside polygon vertex[]
+/* Return true if q is inside polygon vertex[]
  * Assume points are in CCW order
  */
-static int inPoly(Point vertex[], int n, Point q)
-{
+static bool inPoly(Point vertex[], int n, Point q) {
     int i, i1;			/* point index; i1 = i-1 mod n */
     double x;			/* x intersection of e with ray */
     double crossings = 0;	/* number of edge/ray crossings */
@@ -372,7 +371,7 @@ static int inPoly(Point vertex[], int n, Point q)
 	/* if edge is horizontal, test to see if the point is on it */
 	if (tp3[i].y == 0 && tp3[i1].y == 0) {
 	    if (tp3[i].x * tp3[i1].x < 0) {
-		return 1;
+		return true;
 	    } else {
 		continue;
 	    }
@@ -387,7 +386,7 @@ static int inPoly(Point vertex[], int n, Point q)
 
 	    /* if intersect at origin, we've found intersection */
 	    if (x == 0)
-		return 1;;
+		return true;
 
 	    /* crosses ray if strictly positive intersection. */
 	    if (x > 0) {
@@ -401,10 +400,7 @@ static int inPoly(Point vertex[], int n, Point q)
     }
 
     /* q inside if an odd number of crossings. */
-    if ((int)crossings % 2 == 1)
-	return 1;
-    else
-	return 0;
+    return (int)crossings % 2 == 1;
 }
 
 static bool inBox(Point p, Point origin_point, Point corner) {
