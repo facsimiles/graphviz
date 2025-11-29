@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-CDT_VERSION = "6:1:0"
+CDT_VERSION = "6:2:0"
 
 pkgextraincludedir = $(pkgincludedir)
 

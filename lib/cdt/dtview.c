@@ -11,9 +11,8 @@ static void* dtvsearch(Dt_t* dt, void* obj, int type)
 {
 	Dt_t		*d, *p;
 	void *o = NULL, *n, *ok, *nk;
-	int		cmp, lk, sz, ky;
+	int		cmp, sz, ky;
 	Dtcompar_f	cmpf;
-	(void)lk;
 
 	/* these operations only happen at the top level */
 	if(type&(DT_INSERT|DT_DELETE|DT_CLEAR|DT_RENEW))
@@ -36,7 +35,7 @@ static void* dtvsearch(Dt_t* dt, void* obj, int type)
 		for(d = dt; d; d = d->view)
 		{	if (!(o = d->meth->searchf(d, obj, type)))
 				continue;
-			_DTDSC(d->disc,ky,sz,lk,cmpf);
+			_DTDSC(d->disc, ky, sz, (int){0}, cmpf);
 			ok = _DTKEY(o,ky,sz);
 
 			if(n) /* get the right one among all dictionaries */
