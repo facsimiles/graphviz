@@ -451,11 +451,10 @@ int polyOverlap(Point p, Poly * pp, Point q, Poly * qp)
     if (ISBOX(pp) && ISBOX(qp))
 	return 1;
     if (ISCIRCLE(pp) && ISCIRCLE(qp)) {
-	double d =
-	    (pp->corner.x - pp->origin.x + qp->corner.x - qp->origin.x);
+	double d = pp->corner.x - pp->origin.x + qp->corner.x - qp->origin.x;
 	double dx = p.x - q.x;
 	double dy = p.y - q.y;
-	if ((dx * dx + dy * dy) > (d * d) / 4.0)
+	if (dx * dx + dy * dy > d * d / 4.0)
 	    return 0;
 	else
 	    return 1;
@@ -468,7 +467,7 @@ int polyOverlap(Point p, Poly * pp, Point q, Poly * qp)
 
     transCopy(pp->verts, pp->nverts, p, tp1);
     transCopy(qp->verts, qp->nverts, q, tp2);
-    return (edgesIntersect(tp1, tp2, pp->nverts, qp->nverts) ||
+    return edgesIntersect(tp1, tp2, pp->nverts, qp->nverts) ||
 	    (inBox(*tp1, oq, cq) && inPoly(tp2, qp->nverts, *tp1)) ||
-	    (inBox(*tp2, op, cp) && inPoly(tp1, pp->nverts, *tp2)));
+	    (inBox(*tp2, op, cp) && inPoly(tp1, pp->nverts, *tp2));
 }
