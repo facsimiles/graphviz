@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added option `neato -n3` for fit ends of edges to nodes' borders when edge
   trajectory is set. #2736
+- Orthogonal edges now support rounded corners via the `radius` edge attribute.
+  When `splines=ortho` is set and an edge has `radius > 0`, corners are rendered
+  as smooth arcs instead of sharp angles. The radius value controls the size of
+  the corner arc. Default is 0 (square corners).
 
 ### Fixed
 
