@@ -420,8 +420,7 @@ static void transCopy(Point * inp, int cnt, Point off, Point * outp)
     }
 }
 
-int polyOverlap(Point p, Poly * pp, Point q, Poly * qp)
-{
+bool polyOverlap(Point p, Poly *pp, Point q, Poly *qp) {
     Point op, cp;
     Point oq, cq;
 
@@ -433,18 +432,15 @@ int polyOverlap(Point p, Poly * pp, Point q, Poly * qp)
 
     /* If bounding boxes don't overlap, done */
     if (!pintersect(op, cp, oq, cq))
-	return 0;
+	return false;
 
     if (ISBOX(pp) && ISBOX(qp))
-	return 1;
+	return true;
     if (ISCIRCLE(pp) && ISCIRCLE(qp)) {
 	double d = pp->corner.x - pp->origin.x + qp->corner.x - qp->origin.x;
 	double dx = p.x - q.x;
 	double dy = p.y - q.y;
-	if (dx * dx + dy * dy > d * d / 4.0)
-	    return 0;
-	else
-	    return 1;
+	return dx * dx + dy * dy <= d * d / 4.0;
     }
 
     if (tp1 == NULL) {

@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <util/api.h>
 
 #ifdef __cplusplus
@@ -27,7 +28,7 @@ extern "C" {
     } Poly;
 
 PRIVATE void polyFree(void);
-PRIVATE int polyOverlap(Point, Poly *, Point, Poly *);
+PRIVATE bool polyOverlap(Point, Poly *, Point, Poly *);
 PRIVATE int makePoly(Poly *, Agnode_t *, double, double);
 PRIVATE int makeAddPoly(Poly *, Agnode_t *, double, double);
 PRIVATE void breakPoly(Poly *);
