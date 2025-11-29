@@ -879,21 +879,15 @@ else
       use_php="No (swig does not support -php or -php7 option)"
     else
       AC_CHECK_PROG(PHP,php,php)
-      if test "$PHP" = ""; then
-        use_php="No (php not available)"
+      AC_CHECK_PROG(PHPCONFIG,php-config,php-config)
+      if test "$PHPCONFIG" = ""; then
+        use_php="No (php-config not available)"
       else
-        AC_CHECK_PROG(PHPCONFIG,php-config,php-config)
-        if test "$PHPCONFIG" = ""; then
-          use_php="No (php-config not available)"
-        else
-          PHP_INCLUDES="`$PHPCONFIG --includes`"
-          PHP_INSTALL_DIR="`$PHPCONFIG --extension-dir`"
-          PHP_INSTALL_DATADIR="/usr/share/php"
-          PHP_LIBS="`$PHPCONFIG --ldflags` `$PHPCONFIG --libs`"
-        fi
-      fi
-      if test "$PHP" != ""; then
-	    use_php="Yes"
+        use_php="Yes"
+        PHP_INCLUDES="`$PHPCONFIG --includes`"
+        PHP_INSTALL_DIR="`$PHPCONFIG --extension-dir`"
+        PHP_INSTALL_DATADIR="/usr/share/php"
+        PHP_LIBS="`$PHPCONFIG --ldflags` `$PHPCONFIG --libs`"
         AC_SUBST([PHP_INCLUDES])
         AC_SUBST([PHP_INSTALL_DIR])
         AC_SUBST([PHP_INSTALL_DATADIR])
