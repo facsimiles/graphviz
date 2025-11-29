@@ -20,6 +20,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -2096,20 +2097,18 @@ taperfun (edge_t* e)
 
 /* find_prev_distinct:
  * Find the previous point that is not a duplicate of pts[i].
- * Returns -1 if no such point exists.
+ * Returns `SIZE_MAX` if no such point exists.
  */
-static int
-find_prev_distinct(const pointf *pts, size_t i)
-{
+static size_t find_prev_distinct(const pointf *pts, size_t i) {
     const double TOLERANCE = 0.01;
-    for (int j = (int)i - 1; j >= 0; j--) {
+    for (size_t j = i - 1; j != SIZE_MAX; j--) {
         double dx = pts[j].x - pts[i].x;
         double dy = pts[j].y - pts[i].y;
         if (hypot(dx, dy) > TOLERANCE) {
             return j;
         }
     }
-    return -1;
+    return SIZE_MAX;
 }
 
 /* find_next_distinct:
@@ -2268,10 +2267,10 @@ static void find_ortho_corners(const pointf *pts, size_t n, double radius,
     size_t num_corners = 0;
 
     for (size_t i = 0; i < n; i++) {
-        int prev_idx = find_prev_distinct(pts, i);
+        const size_t prev_idx = find_prev_distinct(pts, i);
         int next_idx = find_next_distinct(pts, i, n);
 
-        if (prev_idx < 0 || next_idx < 0) continue;
+        if (prev_idx == SIZE_MAX || next_idx < 0) continue;
 
         pointf prev = pts[prev_idx];
         pointf curr = pts[i];
