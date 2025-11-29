@@ -2301,9 +2301,10 @@ static void render_corner_arc(GVJ_t *job, const Ppolyline_t *wedge,
                               size_t arc_start_idx, size_t arc_point_count,
                               char *edge_color)
 {
-    pointf *arc_points = gv_calloc(arc_point_count, sizeof(pointf));
+    LIST(pointf) arc_points = {0};
+    LIST_RESERVE(&arc_points, arc_point_count);
     for (size_t j = 0; j < arc_point_count; j++) {
-        arc_points[j] = wedge->ps[arc_start_idx + j];
+        LIST_APPEND(&arc_points, wedge->ps[arc_start_idx + j]);
     }
 
     /* Draw only the arc curve (no straight edges back to center) */
@@ -2312,9 +2313,9 @@ static void render_corner_arc(GVJ_t *job, const Ppolyline_t *wedge,
     } else {
         gvrender_set_pencolor(job, DEFAULT_COLOR);
     }
-    gvrender_polyline(job, arc_points, arc_point_count);
+    gvrender_polyline(job, LIST_FRONT(&arc_points), arc_point_count);
 
-    free(arc_points);
+    LIST_FREE(&arc_points);
 }
 
 /* draw_ortho_corner_markers:
