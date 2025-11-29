@@ -297,8 +297,7 @@ pintersect(Point originp, Point cornerp, Point originq, Point cornerq)
 
 #define advance(A,B,N) (B++, A = (A+1)%N)
 
-static int edgesIntersect(Point * P, Point * Q, int n, int m)
-{
+static bool edgesIntersect(Point *P, Point *Q, int n, int m) {
     int a = 0;
     int b = 0;
     int aa = 0;
@@ -324,7 +323,7 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 
 	// do A & B intersect?
 	if (intersection(P[a1], P[a], Q[b1], Q[b], &p))
-	    return 1;
+	    return true;
 
 	/* Advance rules. */
 	if (cross == 0 && !bHA && !aHB) {
@@ -344,7 +343,7 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 
     } while ((aa < n || ba < m) && aa < 2 * n && ba < 2 * m);
 
-    return 0;
+    return false;
 
 }
 
