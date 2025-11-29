@@ -25,13 +25,10 @@ static bool ISBOX(const Poly *p) { return p->kind & BOX; }
 static bool ISCIRCLE(const Poly *p) { return p->kind & CIRCLE; }
 
 static size_t maxcnt = 0;
-static Point *tp1 = NULL;
 
 void polyFree(void)
 {
     maxcnt = 0;
-    free(tp1);
-    tp1 = NULL;
 }
 
 void breakPoly(Poly * pp)
@@ -441,15 +438,14 @@ bool polyOverlap(Point p, Poly *pp, Point q, Poly *qp) {
     }
 
     Point *const tp2 = gv_calloc(maxcnt, sizeof(Point));
-    if (tp1 == NULL) {
-	tp1 = gv_calloc(maxcnt, sizeof(Point));
-    }
+    Point *const tp1 = gv_calloc(maxcnt, sizeof(Point));
 
     transCopy(pp->verts, pp->nverts, p, tp1);
     transCopy(qp->verts, qp->nverts, q, tp2);
     bool result = edgesIntersect(tp1, tp2, pp->nverts, qp->nverts) ||
 	    (inBox(*tp1, oq, cq) && inPoly(tp2, qp->nverts, *tp1)) ||
 	    (inBox(*tp2, op, cp) && inPoly(tp1, pp->nverts, *tp2));
+    free(tp1);
     free(tp2);
     return result;
 }
