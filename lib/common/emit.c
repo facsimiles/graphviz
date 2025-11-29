@@ -2574,7 +2574,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		char *radius_attr = agget(e, "radius");
 		if (radius_attr && radius_attr[0]) {
 		    radius = atof(radius_attr);
-		    want_rounded = (radius > 0);
+		    want_rounded = radius > 0;
 		}
 
 		/* If no explicit radius, use default when style=rounded */
