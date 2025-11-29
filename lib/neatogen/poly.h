@@ -27,7 +27,6 @@ extern "C" {
 	int kind;
     } Poly;
 
-PRIVATE void polyFree(void);
 PRIVATE bool polyOverlap(Point, Poly *, Point, Poly *);
 PRIVATE int makePoly(Poly *, Agnode_t *, double, double);
 PRIVATE int makeAddPoly(Poly *, Agnode_t *, double, double);

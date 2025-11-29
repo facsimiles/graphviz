@@ -24,13 +24,6 @@ static const int CIRCLE = 2;
 static bool ISBOX(const Poly *p) { return p->kind & BOX; }
 static bool ISCIRCLE(const Poly *p) { return p->kind & CIRCLE; }
 
-static size_t maxcnt = 0;
-
-void polyFree(void)
-{
-    maxcnt = 0;
-}
-
 void breakPoly(Poly * pp)
 {
     free(pp->verts);
@@ -200,8 +193,6 @@ int makeAddPoly(Poly *pp, Agnode_t *n, double xmargin, double ymargin) {
     pp->nverts = (int)sides;
     bbox(verts, sides, &pp->origin, &pp->corner);
 
-    if (sides > maxcnt)
-	maxcnt = sides;
     return 0;
 }
 
@@ -274,8 +265,6 @@ int makePoly(Poly *pp, Agnode_t *n, double xmargin, double ymargin) {
     pp->nverts = (int)sides;
     bbox(verts, sides, &pp->origin, &pp->corner);
 
-    if (sides > maxcnt)
-	maxcnt = sides;
     return 0;
 }
 
