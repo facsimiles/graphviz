@@ -36,12 +36,8 @@ static size_t size_of_matrix_type(int type){
   case MATRIX_TYPE_PATTERN:
     size = 0;
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    size = 0;
-    break;
   default:
-    size = 0;
-    break;
+    UNREACHABLE();
   }
 
   return size;
@@ -128,12 +124,8 @@ SparseMatrix SparseMatrix_transpose(SparseMatrix A){
       }
     }
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    SparseMatrix_delete(B);
-    return NULL;
   default:
-    SparseMatrix_delete(B);
-    return NULL;
+    UNREACHABLE();
   }
 
 
@@ -254,12 +246,8 @@ bool SparseMatrix_is_symmetric(SparseMatrix A, bool test_pattern_symmetry_only) 
     }
     res = true;
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    goto RETURN;
-    break;
   default:
-    goto RETURN;
-    break;
+    UNREACHABLE();
   }
 
   if (!test_pattern_symmetry_only) {
@@ -405,10 +393,8 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
   case MATRIX_TYPE_PATTERN:
     fprintf(f,"%%%%MatrixMarket matrix coordinate pattern general\n");
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    return;
   default:
-    return;
+    UNREACHABLE();
   }
 
   fprintf(f,"%d %d %d\n",A->m,A->n,A->nz);
@@ -449,10 +435,8 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
       }
     }
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    return;
   default:
-    return;
+    UNREACHABLE();
   }
 
 }
@@ -471,10 +455,8 @@ static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
   case MATRIX_TYPE_PATTERN:
     fprintf(f,"%%%%MatrixMarket matrix coordinate pattern general\n");
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    return;
   default:
-    return;
+    UNREACHABLE();
   }
 
   fprintf(f,"%d %d %d\n",A->m,A->n,A->nz);
@@ -662,21 +644,6 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
     for (i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    for (i = 0; i < nz; i++){
-      if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
-	UNREACHABLE();
-      }
-      ia[irn[i]+1]++;
-    }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    memcpy(A->a, val0, A->size*((size_t)nz));
-    for (i = 0; i < nz; i++){
-      ja[ia[irn[i]]++] = jcn[i];
-    }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
-    ia[0] = 0;
-    break;
   default:
     UNREACHABLE();
   }
@@ -818,10 +785,8 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
     }
     break;
   }
-  case MATRIX_TYPE_UNKNOWN:
-    break;
   default:
-    break;
+    UNREACHABLE();
   }
   C->nz = nz;
 
@@ -1061,16 +1026,12 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
       ic[i+1] = nz;
     }
     break;
-  case MATRIX_TYPE_UNKNOWN:
   default:
-    SparseMatrix_delete(C);
-    C = NULL; goto RETURN;
-    break;
+    UNREACHABLE();
   }
   
   C->nz = nz;
 
- RETURN:
   free(mask);
   return C;
 }
@@ -1360,10 +1321,8 @@ SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A){
     A->nz = nz;
     break;
   }
-  case MATRIX_TYPE_UNKNOWN:
-    return NULL;
   default:
-    return NULL;
+    UNREACHABLE();
   }
 
   return A;
@@ -1440,10 +1399,8 @@ SparseMatrix SparseMatrix_remove_upper(SparseMatrix A){/* remove diag and upper 
     A->nz = nz;
     break;
   }
-  case MATRIX_TYPE_UNKNOWN:
-    return NULL;
   default:
-    return NULL;
+    UNREACHABLE();
   }
 
   A->is_pattern_symmetric = false;
@@ -1491,10 +1448,8 @@ SparseMatrix SparseMatrix_divide_row_by_degree(SparseMatrix A){
   case MATRIX_TYPE_PATTERN:{
     break;
   }
-  case MATRIX_TYPE_UNKNOWN:
-    return NULL;
   default:
-    return NULL;
+    UNREACHABLE();
   }
 
   return A;
@@ -1961,14 +1916,8 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
       }
     }
     break;
-  case MATRIX_TYPE_UNKNOWN:
-    free(rmask);
-    free(cmask);
-    return NULL;
   default:
-    free(rmask);
-    free(cmask);
-    return NULL;
+    UNREACHABLE();
   }
 
   B = SparseMatrix_from_coordinate_arrays(nz, nrow, ncol, irn, jcn, v, A->type, A->size);
