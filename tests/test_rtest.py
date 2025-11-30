@@ -225,6 +225,7 @@ TESTS: list[Case] = [
     Case("polypoly", Path("polypoly.gv"), "dot", "ps", []),
     Case("polypoly", Path("polypoly.gv"), "dot", "png", []),
     Case("ports", Path("ports.gv"), "dot", "gv", []),
+    Case("radius", Path("radius.gv"), "dot", "gv", [], xfail=False),
     Case("rotate", Path("crazy.gv"), "dot", "png", ["-Glandscape"]),
     Case("rotate", Path("crazy.gv"), "dot", "ps", ["-Glandscape"]),
     Case("rotate", Path("crazy.gv"), "dot", "png", ["-Grotate=90"], 1),

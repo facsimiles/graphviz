@@ -1,0 +1,6 @@
+digraph {
+  splines=ortho;
+  nodesep=1.0;
+  x -> y[radius=8];
+  z -> y;
+}
