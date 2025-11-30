@@ -362,7 +362,12 @@ SparseMatrix SparseMatrix_new(int m, int n, int nz, int type, int format){
   return A;
 
 }
-SparseMatrix SparseMatrix_general_new(int m, int n, int nz, int type, size_t sz, int format){
+
+/// a generalized version of `SparseMatrix_new`
+///
+/// Allows elements to be any data structure, not just real/int/complex etc
+static SparseMatrix SparseMatrix_general_new(int m, int n, int nz, int type,
+                                             size_t sz, int format) {
   /* return a sparse matrix skeleton with row dimension m and storage nz. If nz == 0, 
      only row pointers are allocated. this is more general and allow elements to be 
      any data structure, not just real/int/complex etc

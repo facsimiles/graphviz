@@ -45,10 +45,7 @@ typedef struct SparseMatrix_struct* SparseMatrix;
 
 enum {MATRIX_TYPE_REAL = 1<<0, MATRIX_TYPE_COMPLEX = 1<<1, MATRIX_TYPE_INTEGER = 1<<2, MATRIX_TYPE_PATTERN = 1<<3, MATRIX_TYPE_UNKNOWN = 1<<4};
 
-/* SparseMatrix_general is more general and allow elements to be 
-   any data structure, not just real/int/complex etc */
 SparseMatrix SparseMatrix_new(int m, int n, int nz, int type, int format);
-SparseMatrix SparseMatrix_general_new(int m, int n, int nz, int type, size_t sz, int format);
 
 /* this version sum repeated entries */
 SparseMatrix SparseMatrix_from_coordinate_format(SparseMatrix A);
