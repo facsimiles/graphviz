@@ -60,7 +60,7 @@ typedef struct {
  * quadratic equation a×l² + b×l + c, where a, b and
  * c are defined below.
  */
-static int computeStep(size_t ng, boxf *bbs, unsigned int margin) {
+static int computeStep(size_t ng, const boxf *bbs, unsigned int margin) {
   double l1, l2;
   double a, b, c, d, r;
   double W, H; /* width and height of graph, with margin */
@@ -416,7 +416,7 @@ static int genPoly(Agraph_t *root, Agraph_t *g, ginfo *info, int ssize,
  * If so, add cells to pointset, store point in place and return true.
  */
 static int fits(int x, int y, ginfo *info, PointSet *ps, pointf *place,
-                int step, boxf *bbs) {
+                int step, const boxf *bbs) {
   pointf *cells = info->cells;
   int n = info->nc;
   int i;
@@ -477,7 +477,7 @@ static void placeFixed(ginfo *info, PointSet *ps, pointf *place,
  * First graph (i == 0) is centered on the origin if possible.
  */
 static void placeGraph(size_t i, ginfo *info, PointSet *ps, pointf *place,
-                       int step, unsigned int margin, boxf *bbs) {
+                       int step, unsigned int margin, const boxf *bbs) {
   int x, y;
   int bnd;
   boxf bb = bbs[info->index];
@@ -599,7 +599,7 @@ static void INC(bool m, size_t *c, size_t *r, size_t nc, size_t nr) {
   }
 }
 
-static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
+static pointf *arrayRects(size_t ng, const boxf *gs, pack_info *pinfo) {
   size_t nr = 0, nc;
   size_t r, c;
   ainfo *info;
@@ -711,7 +711,7 @@ static pointf *arrayRects(size_t ng, boxf *gs, pack_info *pinfo) {
   return places;
 }
 
-static pointf *polyRects(size_t ng, boxf *gs, pack_info *pinfo) {
+static pointf *polyRects(size_t ng, const boxf *gs, pack_info *pinfo) {
   int stepSize;
   Dict_t *ps;
 

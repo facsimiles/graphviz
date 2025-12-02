@@ -105,12 +105,12 @@ layout (Agraph_t* g, int depth)
 		agnameof(g));
     }
 
-    boxf *gs = gv_calloc(total+1, sizeof(boxf));
+    LIST(boxf) gs = {0};
     void **children = gv_calloc(total+1, sizeof(void*));
     int j = 0;
     for (int i = 1; i <= GD_n_cluster(g); i++) {
 	Agraph_t *const subg = GD_clust(g)[i];
-	gs[j] = GD_bb(subg);
+	LIST_APPEND(&gs, GD_bb(subg));
 	if (pinfo.vals && cattr) {
 	    pinfo.vals[j] = (packval_t)late_int(subg, cattr, 0, 0);
 	}
@@ -122,7 +122,7 @@ layout (Agraph_t* g, int depth)
 	    if (ND_alg(n)) continue;
 	    ND_alg(n) = g;
 	    const boxf bb = {.UR = {.x = ND_xsize(n), .y = ND_ysize(n)}};
-	    gs[j] = bb;
+	    LIST_APPEND(&gs, bb);
 	    if (pinfo.vals && vattr) {
 		pinfo.vals[j] = (packval_t)late_int(n, vattr, 0, 0);
 	    }
@@ -131,16 +131,17 @@ layout (Agraph_t* g, int depth)
     }
 
 	/* pack rectangles */
-    assert(total >= 0);
-    pointf *const pts = putRects((size_t)total, gs, &pinfo);
+    pointf *const pts = putRects(LIST_SIZE(&gs),
+                                 LIST_IS_EMPTY(&gs) ? NULL : LIST_FRONT(&gs),
+                                 &pinfo);
     free (pinfo.vals);
 
     boxf rootbb = {.LL = {DBL_MAX, DBL_MAX}, .UR = {-DBL_MAX, -DBL_MAX}};
 
     /* reposition children relative to GD_bb(g) */
-    for (j = 0; j < total; j++) {
+    for (j = 0; (size_t)j < LIST_SIZE(&gs); j++) {
 	const pointf p = pts[j];
-	boxf bb = gs[j];
+	boxf bb = LIST_GET(&gs, (size_t)j);
 	bb.LL = add_pointf(bb.LL, p);
 	bb.UR = add_pointf(bb.UR, p);
 	EXPANDBB(&rootbb, bb);
@@ -226,7 +227,7 @@ layout (Agraph_t* g, int depth)
 	fprintf (stderr, "%s : %f %f %f %f\n", agnameof(g), rootbb.LL.x, rootbb.LL.y, rootbb.UR.x, rootbb.UR.y);
     }
 
-    free (gs);
+    LIST_FREE(&gs);
     free (children);
     free (pts);
 }
