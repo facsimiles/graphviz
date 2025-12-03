@@ -68,13 +68,11 @@ static const unsigned char *setclass(const unsigned char *form, bool *accept) {
 int sfvscanf(FILE *f, Sffmt_t *ft) {
     int inp, shift, base, width;
     ssize_t size;
-    int fmt, flags, dot, n_assign, v, n, n_input;
+    int fmt, flags, dot, n_assign, v, n_input;
     char *sp;
     char accept[SF_MAXDIGITS];
 
     Argv_t argv;
-
-    int argn;
 
     void *value;		/* location to assign scanned value */
     const char *t_str;
@@ -96,7 +94,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
     argv.ft = ft;
 
     form = argv.ft->form;
-    argn = -1;
 
     assert(ft != NULL && ft->extf != NULL);
 
@@ -167,11 +164,9 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		    if (*t_str != '*')
 			n_str = (form - 1) - t_str;
 		    else {
-			++argn;
 
 			FMTSET(ft, form, LEFTP, 0, 0, 0, 0, 0, NULL, 0);
-			n = ft->extf(&argv, ft);
-			if (n < 0)
+			if (ft->extf(&argv, ft) < 0)
 			    goto done;
 			assert(ft->flags & SFFMT_VALUE);
 			if ((t_str = argv.s) && (n_str = (int)ft->size) < 0)
@@ -195,7 +190,6 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 		goto dot_size;
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1);
-		n = ++argn;
 
 		FMTSET(ft, form, '.', dot, 0, 0, 0, 0, NULL, 0);
 		if (ft->extf(&argv, ft) < 0)
@@ -233,11 +227,10 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    size = 0;
 	    flags = (flags & ~SFFMT_TYPES) | SFFMT_IFLAG;
 	    if (gv_isdigit(*form)) {
-		for (n = *form; gv_isdigit(n); n = *++form)
-		    size = size * 10 + (n - '0');
+		for (; gv_isdigit(*form); ++form)
+		    size = size * 10 + (*form - '0');
 	    } else if (*form == '*') {
 		form = _Sffmtintf(form + 1);
-		n = ++argn;
 
 		FMTSET(ft, form, 'I', sizeof(int), 0, 0, 0, 0, NULL, 0);
 		if (ft->extf(&argv, ft) < 0)
@@ -301,14 +294,13 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    }
 	}
 
-	++argn;
 	FMTSET(ft, form, fmt, size, flags, width, 0, base, t_str, n_str);
 	v = ft->extf(&argv, ft);
 
 	if (v < 0)
 	    goto done;
 	else if (v == 0) { // extf did not use input stream
-	    FMTGET(ft, form, fmt, size, flags, width, n, base);
+	    FMTGET(ft, form, fmt, size, flags, width, (int){0}, base);
 	    if ((ft->flags & SFFMT_VALUE) && !(ft->flags & SFFMT_SKIP))
 		value = argv.vp;
 	} else { // v > 0: number of input bytes consumed
@@ -535,7 +527,7 @@ int sfvscanf(FILE *f, Sffmt_t *ft) {
 	    } else
 		size = 0;
 
-	    n = 0;
+	    int n = 0;
 	    if (fmt == 's') {
 		do {
 		    if (gv_isspace(inp))
