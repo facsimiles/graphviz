@@ -71,10 +71,6 @@ typedef struct {
 
 static int chain_idx;
 static size_t mon_idx;
-	/* Table to hold all the monotone */
-	/* polygons . Each monotone polygon */
-	/* is a circularly linked list */
-static monchain_t* mchain;
 	/* chain init. information. This */
 	/* is used to decide which */
 	/* monotone polygon to split if */
@@ -590,7 +586,10 @@ monotonate_trapezoids(int nsegs, segment_t *seg, traps_t *tr,
     int i;
     bitarray_t visited = bitarray_new(LIST_SIZE(tr));
 
-    mchain = gv_calloc(LIST_SIZE(tr), sizeof(monchain_t));
+    // Table to hold all the monotone polygons. Each monotone polygon is a
+    // circularly linked list
+    monchain_t *const mchain = gv_calloc(LIST_SIZE(tr), sizeof(monchain_t));
+
     vert = gv_calloc(nsegs + 1, sizeof(vertexchain_t));
     mon = gv_calloc(nsegs, sizeof(int));
 
