@@ -257,8 +257,11 @@ get_vertex_positions (int v0, int v1, int *ip, int *iq)
 /* v0 and v1 are specified in anti-clockwise order with respect to 
  * the current monotone polygon mcur. Split the current polygon into 
  * two polygons using the diagonal (v0, v1) 
+ *
+ * @param chain Monotone polygon chain to operate on
  */
-static size_t make_new_monotone_poly(size_t mcur, int v0, int v1) {
+static size_t make_new_monotone_poly(monchain_t *chain, size_t mcur, int v0,
+                                     int v1) {
   int p, q, ip, iq;
   const size_t mnew = newmon();
   int i, j, nf0, nf1;
@@ -278,18 +281,18 @@ static size_t make_new_monotone_poly(size_t mcur, int v0, int v1) {
   i = new_chain_element();	/* for the new list */
   j = new_chain_element();
 
-  mchain[i].vnum = v0;
-  mchain[j].vnum = v1;
+  chain[i].vnum = v0;
+  chain[j].vnum = v1;
 
-  mchain[i].next = mchain[p].next;
-  mchain[mchain[p].next].prev = i;
-  mchain[i].prev = j;
-  mchain[j].next = i;
-  mchain[j].prev = mchain[q].prev;
-  mchain[mchain[q].prev].next = j;
+  chain[i].next = chain[p].next;
+  chain[chain[p].next].prev = i;
+  chain[i].prev = j;
+  chain[j].next = i;
+  chain[j].prev = chain[q].prev;
+  chain[chain[q].prev].next = j;
 
-  mchain[p].next = q;
-  mchain[q].prev = p;
+  chain[p].next = q;
+  chain[q].prev = p;
 
   nf0 = vp0->nextfree;
   nf1 = vp1->nextfree;
@@ -297,7 +300,7 @@ static size_t make_new_monotone_poly(size_t mcur, int v0, int v1) {
   vp0->vnext[ip] = v1;
 
   vp0->vpos[nf0] = i;
-  vp0->vnext[nf0] = mchain[mchain[i].next].vnum;
+  vp0->vnext[nf0] = chain[chain[i].next].vnum;
   vp1->vpos[nf1] = j;
   vp1->vnext[nf1] = v0;
 
@@ -362,13 +365,13 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	  v1 = t->lseg;
 	  if (from == t->d1)
 	    {
-	      mnew = make_new_monotone_poly(mcur, v1, v0);
+	      mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 	      traverse_polygon(visited, decomp, seg, tr, mcur, t->d1, trnum, flip, TR_FROM_UP);
 	      traverse_polygon(visited, decomp, seg, tr, mnew, t->d0, trnum, flip, TR_FROM_UP);
 	    }
 	  else
 	    {
-	      mnew = make_new_monotone_poly(mcur, v0, v1);
+	      mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 	      traverse_polygon (visited, decomp, seg, tr, mcur, t->d0, trnum, flip, TR_FROM_UP);
 	      traverse_polygon (visited, decomp, seg, tr, mnew, t->d1, trnum, flip, TR_FROM_UP);
 	    }
@@ -389,13 +392,13 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	  v1 = LIST_GET(tr, t->u0).rseg;
 	  if (from == t->u1)
 	    {
-	      mnew = make_new_monotone_poly(mcur, v1, v0);
+	      mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 	      traverse_polygon(visited, decomp, seg, tr, mcur, t->u1, trnum, flip, TR_FROM_DN);
 	      traverse_polygon(visited, decomp, seg, tr, mnew, t->u0, trnum, flip, TR_FROM_DN);
 	    }
 	  else
 	    {
-	      mnew = make_new_monotone_poly(mcur, v0, v1);
+	      mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 	      traverse_polygon(visited, decomp, seg, tr, mcur, t->u0, trnum, flip, TR_FROM_DN);
 	      traverse_polygon(visited, decomp, seg, tr, mnew, t->u1, trnum, flip, TR_FROM_DN);
 	    }
@@ -417,7 +420,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	  if ((dir == TR_FROM_DN && t->d1 == from) ||
 	      (dir == TR_FROM_UP && t->u1 == from))
 	    {
-	      mnew = make_new_monotone_poly(mcur, v1, v0);
+	      mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 	      traverse_polygon(visited, decomp, seg, tr, mcur, t->u1, trnum, flip, TR_FROM_DN);
 	      traverse_polygon(visited, decomp, seg, tr, mcur, t->d1, trnum, flip, TR_FROM_UP);
 	      traverse_polygon(visited, decomp, seg, tr, mnew, t->u0, trnum, flip, TR_FROM_DN);
@@ -425,7 +428,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	    }
 	  else
 	    {
-	      mnew = make_new_monotone_poly(mcur, v0, v1);
+	      mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 	      traverse_polygon(visited, decomp, seg, tr, mcur, t->u0, trnum, flip, TR_FROM_DN);
 	      traverse_polygon(visited, decomp, seg, tr, mcur, t->d0, trnum, flip, TR_FROM_UP);
 	      traverse_polygon(visited, decomp, seg, tr, mnew, t->u1, trnum, flip, TR_FROM_DN);
@@ -440,7 +443,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 
 	      if (dir == TR_FROM_UP && t->u0 == from)
 		{
-		  mnew = make_new_monotone_poly(mcur, v1, v0);
+		  mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u0, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->d0, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->u1, trnum, flip, TR_FROM_DN);
@@ -448,7 +451,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 		}
 	      else
 		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1);
+		  mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u1, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d0, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d1, trnum, flip, TR_FROM_UP);
@@ -461,7 +464,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	      v1 = LIST_GET(tr, t->u0).rseg;	
 	      if (dir == TR_FROM_UP && t->u1 == from)
 		{
-		  mnew = make_new_monotone_poly(mcur, v1, v0);
+		  mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u1, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->d1, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->d0, trnum, flip, TR_FROM_UP);
@@ -469,7 +472,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 		}
 	      else
 		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1);
+		  mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u0, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d0, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d1, trnum, flip, TR_FROM_UP);
@@ -485,7 +488,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	      v1 = t->lseg;
 	      if (!(dir == TR_FROM_DN && t->d0 == from))
 		{
-		  mnew = make_new_monotone_poly(mcur, v1, v0);
+		  mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u1, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d1, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u0, trnum, flip, TR_FROM_DN);
@@ -493,7 +496,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 		}
 	      else
 		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1);
+		  mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d0, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->u0, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->u1, trnum, flip, TR_FROM_DN);
@@ -507,7 +510,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 
 	      if (dir == TR_FROM_DN && t->d1 == from)
 		{
-		  mnew = make_new_monotone_poly(mcur, v1, v0);
+		  mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d1, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->u1, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->u0, trnum, flip, TR_FROM_DN);
@@ -515,7 +518,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 		}
 	      else
 		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1);
+		  mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u0, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d0, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u1, trnum, flip, TR_FROM_DN);
@@ -530,7 +533,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 	      v1 = t->lseg;
 	      if (dir == TR_FROM_UP)
 		{
-		  mnew = make_new_monotone_poly(mcur, v1, v0);
+		  mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u0, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u1, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->d1, trnum, flip, TR_FROM_UP);
@@ -538,7 +541,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 		}
 	      else
 		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1);
+		  mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d1, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d0, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->u0, trnum, flip, TR_FROM_DN);
@@ -552,7 +555,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 
 	      if (dir == TR_FROM_UP)
 		{
-		  mnew = make_new_monotone_poly(mcur, v1, v0);
+		  mnew = make_new_monotone_poly(mchain, mcur, v1, v0);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u0, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->u1, trnum, flip, TR_FROM_DN);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->d1, trnum, flip, TR_FROM_UP);
@@ -560,7 +563,7 @@ static void traverse_polygon(bitarray_t *visited, boxes_t *decomp,
 		}
 	      else
 		{
-		  mnew = make_new_monotone_poly(mcur, v0, v1);
+		  mnew = make_new_monotone_poly(mchain, mcur, v0, v1);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d1, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mcur, t->d0, trnum, flip, TR_FROM_UP);
 		  traverse_polygon(visited, decomp, seg, tr, mnew, t->u0, trnum, flip, TR_FROM_DN);
