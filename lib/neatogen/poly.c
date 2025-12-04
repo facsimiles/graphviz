@@ -24,22 +24,6 @@ static const int CIRCLE = 2;
 static bool ISBOX(const Poly *p) { return p->kind & BOX; }
 static bool ISCIRCLE(const Poly *p) { return p->kind & CIRCLE; }
 
-static size_t maxcnt = 0;
-static Point *tp1 = NULL;
-static Point *tp2 = NULL;
-static Point *tp3 = NULL;
-
-void polyFree(void)
-{
-    maxcnt = 0;
-    free(tp1);
-    free(tp2);
-    free(tp3);
-    tp1 = NULL;
-    tp2 = NULL;
-    tp3 = NULL;
-}
-
 void breakPoly(Poly * pp)
 {
     free(pp->verts);
@@ -209,8 +193,6 @@ int makeAddPoly(Poly *pp, Agnode_t *n, double xmargin, double ymargin) {
     pp->nverts = (int)sides;
     bbox(verts, sides, &pp->origin, &pp->corner);
 
-    if (sides > maxcnt)
-	maxcnt = sides;
     return 0;
 }
 
@@ -283,26 +265,19 @@ int makePoly(Poly *pp, Agnode_t *n, double xmargin, double ymargin) {
     pp->nverts = (int)sides;
     bbox(verts, sides, &pp->origin, &pp->corner);
 
-    if (sides > maxcnt)
-	maxcnt = sides;
     return 0;
 }
 
 static int
 pintersect(Point originp, Point cornerp, Point originq, Point cornerq)
 {
-    return ((originp.x <= cornerq.x) && (originq.x <= cornerp.x) &&
-	    (originp.y <= cornerq.y) && (originq.y <= cornerp.y));
+    return originp.x <= cornerq.x && originq.x <= cornerp.x &&
+	   originp.y <= cornerq.y && originq.y <= cornerp.y;
 }
-
-#define Pin 1
-#define Qin 2
-#define Unknown 0
 
 #define advance(A,B,N) (B++, A = (A+1)%N)
 
-static int edgesIntersect(Point * P, Point * Q, int n, int m)
-{
+static bool edgesIntersect(Point *P, Point *Q, int n, int m) {
     int a = 0;
     int b = 0;
     int aa = 0;
@@ -312,7 +287,6 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
     double cross;
     int bHA, aHB;
     Point p;
-    int inflag = Unknown;
     /* int      i = 0; */
     /* int      Reset = 0; */
 
@@ -327,16 +301,13 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 	bHA = leftOf(P[a1], P[a], Q[b]);
 	aHB = leftOf(Q[b1], Q[b], P[a]);
 
-	/* If A & B intersect, update inflag. */
+	// do A & B intersect?
 	if (intersection(P[a1], P[a], Q[b1], Q[b], &p))
-	    return 1;
+	    return true;
 
 	/* Advance rules. */
-	if ((cross == 0) && !bHA && !aHB) {
-	    if (inflag == Pin)
-		advance(b, ba, m);
-	    else
-		advance(a, aa, n);
+	if (cross == 0 && !bHA && !aHB) {
+	    advance(a, aa, n);
 	} else if (cross >= 0)
 	    if (bHA)
 		advance(a, aa, n);
@@ -350,23 +321,21 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 		advance(a, aa, n);
 	}
 
-    } while (((aa < n) || (ba < m)) && (aa < 2 * n) && (ba < 2 * m));
+    } while ((aa < n || ba < m) && aa < 2 * n && ba < 2 * m);
 
-    return 0;
+    return false;
 
 }
 
-/* Return 1 if q is inside polygon vertex[]
+/* Return true if q is inside polygon vertex[]
  * Assume points are in CCW order
  */
-static int inPoly(Point vertex[], int n, Point q)
-{
+static bool inPoly(Point vertex[], int n, Point q) {
     int i, i1;			/* point index; i1 = i-1 mod n */
     double x;			/* x intersection of e with ray */
     double crossings = 0;	/* number of edge/ray crossings */
 
-    if (tp3 == NULL)
-	tp3 = gv_calloc(maxcnt, sizeof(Point));
+    Point *const tp3 = gv_calloc((size_t)n, sizeof(Point));
 
     /* Shift so that q is the origin. */
     for (i = 0; i < n; i++) {
@@ -381,7 +350,8 @@ static int inPoly(Point vertex[], int n, Point q)
 	/* if edge is horizontal, test to see if the point is on it */
 	if (tp3[i].y == 0 && tp3[i1].y == 0) {
 	    if (tp3[i].x * tp3[i1].x < 0) {
-		return 1;
+		free(tp3);
+		return true;
 	    } else {
 		continue;
 	    }
@@ -395,8 +365,10 @@ static int inPoly(Point vertex[], int n, Point q)
 		/ (double) (tp3[i1].y - tp3[i].y);
 
 	    /* if intersect at origin, we've found intersection */
-	    if (x == 0)
-		return 1;;
+	    if (x == 0) {
+		free(tp3);
+		return true;
+	    }
 
 	    /* crosses ray if strictly positive intersection. */
 	    if (x > 0) {
@@ -408,12 +380,10 @@ static int inPoly(Point vertex[], int n, Point q)
 	    }
 	}
     }
+    free(tp3);
 
     /* q inside if an odd number of crossings. */
-    if ((int)crossings % 2 == 1)
-	return 1;
-    else
-	return 0;
+    return (int)crossings % 2 == 1;
 }
 
 static bool inBox(Point p, Point origin_point, Point corner) {
@@ -421,20 +391,19 @@ static bool inBox(Point p, Point origin_point, Point corner) {
            p.y >= origin_point.y;
 }
 
-static void transCopy(Point * inp, int cnt, Point off, Point * outp)
-{
+static Point *transCopy(Point *inp, int cnt, Point off) {
+    Point *const out = gv_calloc((size_t)cnt, sizeof(out[0]));
     int i;
 
     for (i = 0; i < cnt; i++) {
-	outp->x = inp->x + off.x;
-	outp->y = inp->y + off.y;
+	out[i].x = inp->x + off.x;
+	out[i].y = inp->y + off.y;
 	inp++;
-	outp++;
     }
+    return out;
 }
 
-int polyOverlap(Point p, Poly * pp, Point q, Poly * qp)
-{
+bool polyOverlap(Point p, Poly *pp, Point q, Poly *qp) {
     Point op, cp;
     Point oq, cq;
 
@@ -446,29 +415,24 @@ int polyOverlap(Point p, Poly * pp, Point q, Poly * qp)
 
     /* If bounding boxes don't overlap, done */
     if (!pintersect(op, cp, oq, cq))
-	return 0;
+	return false;
 
     if (ISBOX(pp) && ISBOX(qp))
-	return 1;
+	return true;
     if (ISCIRCLE(pp) && ISCIRCLE(qp)) {
-	double d =
-	    (pp->corner.x - pp->origin.x + qp->corner.x - qp->origin.x);
+	double d = pp->corner.x - pp->origin.x + qp->corner.x - qp->origin.x;
 	double dx = p.x - q.x;
 	double dy = p.y - q.y;
-	if ((dx * dx + dy * dy) > (d * d) / 4.0)
-	    return 0;
-	else
-	    return 1;
+	return dx * dx + dy * dy <= d * d / 4.0;
     }
 
-    if (tp1 == NULL) {
-	tp1 = gv_calloc(maxcnt, sizeof(Point));
-	tp2 = gv_calloc(maxcnt, sizeof(Point));
-    }
+    Point *const tp1 = transCopy(pp->verts, pp->nverts, p);
+    Point *const tp2 = transCopy(qp->verts, qp->nverts, q);
 
-    transCopy(pp->verts, pp->nverts, p, tp1);
-    transCopy(qp->verts, qp->nverts, q, tp2);
-    return (edgesIntersect(tp1, tp2, pp->nverts, qp->nverts) ||
+    bool result = edgesIntersect(tp1, tp2, pp->nverts, qp->nverts) ||
 	    (inBox(*tp1, oq, cq) && inPoly(tp2, qp->nverts, *tp1)) ||
-	    (inBox(*tp2, op, cp) && inPoly(tp1, pp->nverts, *tp2)));
+	    (inBox(*tp2, op, cp) && inPoly(tp1, pp->nverts, *tp2));
+    free(tp1);
+    free(tp2);
+    return result;
 }

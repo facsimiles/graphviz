@@ -69,7 +69,6 @@ static void freeNodes(void)
     for (size_t i = 0; i < nsites; i++) {
 	breakPoly(&nodeInfo[i].poly);
     }
-    polyFree();
     if (nodeInfo != NULL) {
 	free(nodeInfo->verts); // Free vertices
     }
