@@ -122,9 +122,14 @@ def get_version() -> Tuple[int, int, int, Collection]:
                 "blame", "-l", f"-L{lineno},{lineno}", "HEAD", "--", "CHANGELOG.md"
             )
             added_in = blame.split(" ")[0]
+            me = git("rev-parse", "HEAD")
             parents = git("log", "--pretty=%P", "-n", "1", "HEAD").split()
             if added_in in parents:
                 coll = Collection.STABLE
+            elif added_in == me:
+                # we are the release commit pre-merge, so treat this as part of the
+                # previous development series
+                coll = Collection.DEVELOPMENT
             else:
                 # bump the patch component, conservatively assuming that the next
                 # release will be a patch release and no changelog-relevant changes have
