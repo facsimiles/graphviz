@@ -4,15 +4,13 @@ TODO for graphviz
   * Check the dependencies for all bindings, e.g. libgv-guile doesn't seem to
     depend on any guile package.
   * The handling of the libgv-php5 package could be better. An idea would be to
-    have a debian/libgv-php5.install.in file, which would be preprocessed, so
-    that the appropriate path is computed at build-time (using the output of
-    the “php-config5 --extension-dir” command).
+    compute the appropriate path at build-time (using the output of the
+    “php-config --extension-dir” command) for insertion into
+    debian/libgv-php5.install.in during preprocessing.
   * That should really be done for all languages needing extra work,
     see debian/rules.
   * Think about putting the configuration file into /var, see the discussion
     with Alexander on the 10th of August.
-  * Adjust --build and --host options to ./configure so as to support cross-
-    compilation correctly.
   * The Conflicts between libgv-perl and older graphviz might go away since the
     location of perl files was adapted to follow the perl policy. To be checked
     with piuparts.

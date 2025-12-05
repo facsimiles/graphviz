@@ -17,7 +17,7 @@ GVPR_SONAME       = 2
 XDOT_SONAME       = 4
 GRAPHVIZ_SONAME	  = 4
 
-PHP_EXTENSION_DIR = $(shell php-config5 --extension-dir)
+PHP_EXTENSION_DIR = $(shell php-config --extension-dir)
 PHP_PACKAGE       = $(CURDIR)/debian/libgv-php5
 
 LUA_VERSION       = 5.1
