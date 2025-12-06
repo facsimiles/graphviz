@@ -561,7 +561,6 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
   int *ia, *ja;
   double *a;
   int *ai;
-  int i;
 
   assert(m > 0 && n > 0 && nz >= 0);
 
@@ -570,7 +569,7 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
   ia = A->ia;
   ja = A->ja;
 
-  for (i = 0; i <= m; i++){
+  for (int i = 0; i <= m; i++){
     ia[i] = 0;
   }
 
@@ -578,70 +577,70 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
   case MATRIX_TYPE_REAL: {
     const double *const val = val0;
     a = A->a;
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
 	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
+    for (int i = 0; i < nz; i++){
       a[ia[irn[i]]] = val[i];
       ja[ia[irn[i]]++] = jcn[i];
     }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
+    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
   }
   case MATRIX_TYPE_COMPLEX: {
     const double *const val = val0;
     a = A->a;
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
 	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
+    for (int i = 0; i < nz; i++){
       a[2*ia[irn[i]]] = val[2 * i];
       a[2*ia[irn[i]]+1] = val[2 * i + 1];
       ja[ia[irn[i]]++] = jcn[i];
     }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
+    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
   }
   case MATRIX_TYPE_INTEGER: {
     const int *const vali = val0;
     ai = A->a;
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
 	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
+    for (int i = 0; i < nz; i++){
       ai[ia[irn[i]]] = vali[i];
       ja[ia[irn[i]]++] = jcn[i];
     }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
+    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
   }
   case MATRIX_TYPE_PATTERN:
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
 	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
+    for (int i = 0; i < nz; i++){
       ja[ia[irn[i]]++] = jcn[i];
     }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
+    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
   default:
