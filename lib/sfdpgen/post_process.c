@@ -789,7 +789,6 @@ void TriangleSmoother_smooth(TriangleSmoother sm, int dim, double *x){
 /* ================================ spring and spring-electrical based smoother ================ */
 SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_control ctrl, double *x){
   int i, j, k, l, m = A->m, *ia = A->ia, *ja = A->ja, *id, *jd;
-  int nz;
   double *d, *dd;
   SparseMatrix ID = NULL;
 
@@ -805,7 +804,7 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
 
   for (i = 0; i < m ;i++){
     avg_dist[i] = 0;
-    nz = 0;
+    int nz = 0;
     for (j = ia[i]; j < ia[i+1]; j++){
       if (i == ja[j]) continue;
       avg_dist[i] += distance(x, dim, i, ja[j]);
@@ -818,7 +817,7 @@ SpringSmoother SpringSmoother_new(SparseMatrix A, int dim, spring_electrical_con
 
   for (i = 0; i < m; i++) mask[i] = -1;
 
-  nz = 0;
+  int nz = 0;
   for (i = 0; i < m; i++){
     mask[i] = i;
     for (j = ia[i]; j < ia[i+1]; j++){
