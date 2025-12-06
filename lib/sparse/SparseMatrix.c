@@ -1942,7 +1942,6 @@ SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A){
 }
 
 SparseMatrix SparseMatrix_from_dense(int m, int n, double *x){
-  /* wrap a mxn matrix into a sparse matrix. the {i,j} entry of the matrix is in x[i*n+j], 0<=i<m; 0<=j<n */
   int i, j, *ja;
   double *a;
   SparseMatrix A = SparseMatrix_new(m, n, m*n, MATRIX_TYPE_REAL, FORMAT_CSR);
