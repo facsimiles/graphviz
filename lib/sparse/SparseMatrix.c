@@ -1138,7 +1138,6 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
   case MATRIX_TYPE_REAL:
     {
       double *a = A->a;
-      nz = 0;
       sta = ia[0];
       for (i = 0; i < A->m; i++){
 	for (j = sta; j < ia[i+1]; j++){
@@ -1159,7 +1158,6 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
   case MATRIX_TYPE_COMPLEX:
     {
       double *a = A->a;
-      nz = 0;
       sta = ia[0];
       for (i = 0; i < A->m; i++) {
         for (j = sta; j < ia[i+1]; j++) {
@@ -1182,7 +1180,6 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
   case MATRIX_TYPE_INTEGER:
     {
       int *a = A->a;
-      nz = 0;
       sta = ia[0];
       for (i = 0; i < A->m; i++){
 	for (j = sta; j < ia[i+1]; j++){
@@ -1202,7 +1199,6 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
     break;
   case MATRIX_TYPE_PATTERN:
     {
-      nz = 0;
       sta = ia[0];
       for (i = 0; i < A->m; i++){
 	for (j = sta; j < ia[i+1]; j++){
