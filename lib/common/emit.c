@@ -20,6 +20,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -2096,38 +2097,34 @@ taperfun (edge_t* e)
 
 /* find_prev_distinct:
  * Find the previous point that is not a duplicate of pts[i].
- * Returns -1 if no such point exists.
+ * Returns `SIZE_MAX` if no such point exists.
  */
-static int
-find_prev_distinct(const pointf *pts, size_t i)
-{
+static size_t find_prev_distinct(const pointf *pts, size_t i) {
     const double TOLERANCE = 0.01;
-    for (int j = (int)i - 1; j >= 0; j--) {
+    for (size_t j = i - 1; j != SIZE_MAX; j--) {
         double dx = pts[j].x - pts[i].x;
         double dy = pts[j].y - pts[i].y;
         if (hypot(dx, dy) > TOLERANCE) {
             return j;
         }
     }
-    return -1;
+    return SIZE_MAX;
 }
 
 /* find_next_distinct:
  * Find the next point that is not a duplicate of pts[i].
- * Returns -1 if no such point exists.
+ * Returns `SIZE_MAX` if no such point exists.
  */
-static int
-find_next_distinct(const pointf *pts, size_t i, size_t n)
-{
+static size_t find_next_distinct(const pointf *pts, size_t i, size_t n) {
     const double TOLERANCE = 0.01;
     for (size_t j = i + 1; j < n; j++) {
         double dx = pts[j].x - pts[i].x;
         double dy = pts[j].y - pts[i].y;
         if (hypot(dx, dy) > TOLERANCE) {
-            return (int)j;
+            return j;
         }
     }
-    return -1;
+    return SIZE_MAX;
 }
 
 
@@ -2212,28 +2209,28 @@ static void calculate_wedge_parameters(corner_info_t *ci, pointf curr,
     }
 }
 
+typedef LIST(corner_info_t) corners_t;
+
 /* process_corner:
  * Process a detected orthogonal corner and add it to the corners array.
  * Returns true if the corner was added, false if it was a duplicate.
  */
-static bool process_corner(corner_info_t *corners, size_t *num_corners,
-                          const pointf *pts, size_t i, pointf curr,
-                          double dx1, double dy1, double dx2, double dy2,
-                          double radius, bool seg1_horiz, bool seg2_vert)
-{
+static bool process_corner(corners_t *corners, const pointf *pts, size_t i,
+                           pointf curr, double dx1, double dy1, double dx2,
+                           double dy2, double radius, bool seg1_horiz,
+                           bool seg2_vert) {
     /* Check if we already detected this corner (skip duplicates) */
-    bool already_detected = false;
     const double DUP_TOL = 0.01;
-    for (size_t j = 0; j < *num_corners; j++) {
-        pointf existing_corner = pts[corners[j].idx];
+    for (size_t j = 0; j < LIST_SIZE(corners); j++) {
+        const corner_info_t ci = LIST_GET(corners, j);
+        pointf existing_corner = pts[ci.idx];
         if (hypot(curr.x - existing_corner.x, curr.y - existing_corner.y) < DUP_TOL) {
-            already_detected = true;
-            break;
+            return false;
         }
     }
-    if (already_detected) return false;
 
-    corner_info_t *ci = &corners[(*num_corners)++];
+    LIST_APPEND(corners, (corner_info_t){0});
+    corner_info_t *const ci = LIST_BACK(corners);
     ci->idx = i;
 
     /* Normalize direction vectors */
@@ -2258,20 +2255,18 @@ static bool process_corner(corner_info_t *corners, size_t *num_corners,
 
 /* find_ortho_corners:
  * Identify all orthogonal corners and compute truncation/arc information.
- * Fills corners array and sets *num_corners_out to the count.
+ * Fills corners array.
  * Caller must pre-allocate corners array with at least n elements.
  */
 static void find_ortho_corners(const pointf *pts, size_t n, double radius,
-                                corner_info_t *corners, size_t *num_corners_out)
-{
+                               corners_t *corners) {
     const double TOL = 0.1;
-    size_t num_corners = 0;
 
     for (size_t i = 0; i < n; i++) {
-        int prev_idx = find_prev_distinct(pts, i);
-        int next_idx = find_next_distinct(pts, i, n);
+        const size_t prev_idx = find_prev_distinct(pts, i);
+        const size_t next_idx = find_next_distinct(pts, i, n);
 
-        if (prev_idx < 0 || next_idx < 0) continue;
+        if (prev_idx == SIZE_MAX || next_idx == SIZE_MAX) continue;
 
         pointf prev = pts[prev_idx];
         pointf curr = pts[i];
@@ -2292,12 +2287,10 @@ static void find_ortho_corners(const pointf *pts, size_t n, double radius,
         bool is_corner = (seg1_horiz && seg2_vert) || (seg1_vert && seg2_horiz);
 
         if (is_corner) {
-            process_corner(corners, &num_corners, pts, i, curr,
-                         dx1, dy1, dx2, dy2, radius, seg1_horiz, seg2_vert);
+            process_corner(corners, pts, i, curr, dx1, dy1, dx2, dy2, radius,
+                           seg1_horiz, seg2_vert);
         }
     }
-
-    *num_corners_out = num_corners;
 }
 
 /* render_corner_arc:
@@ -2308,9 +2301,10 @@ static void render_corner_arc(GVJ_t *job, const Ppolyline_t *wedge,
                               size_t arc_start_idx, size_t arc_point_count,
                               char *edge_color)
 {
-    pointf *arc_points = gv_calloc(arc_point_count, sizeof(pointf));
+    LIST(pointf) arc_points = {0};
+    LIST_RESERVE(&arc_points, arc_point_count);
     for (size_t j = 0; j < arc_point_count; j++) {
-        arc_points[j] = wedge->ps[arc_start_idx + j];
+        LIST_APPEND(&arc_points, wedge->ps[arc_start_idx + j]);
     }
 
     /* Draw only the arc curve (no straight edges back to center) */
@@ -2319,28 +2313,23 @@ static void render_corner_arc(GVJ_t *job, const Ppolyline_t *wedge,
     } else {
         gvrender_set_pencolor(job, DEFAULT_COLOR);
     }
-    gvrender_polyline(job, arc_points, arc_point_count);
+    gvrender_polyline(job, LIST_FRONT(&arc_points), arc_point_count);
 
-    free(arc_points);
+    LIST_FREE(&arc_points);
 }
 
 /* draw_ortho_corner_markers:
  * Draw 90-degree arc curves at orthogonal edge corners.
  * Draws only the arc portion (not the straight wedge edges).
  */
-static void
-draw_ortho_corner_markers(GVJ_t *job, const corner_info_t *corners,
-                          size_t num_corners, double radius, char *edge_color)
-{
-    if (num_corners == 0) return;
-
-    for (size_t i = 0; i < num_corners; i++) {
-        const corner_info_t *ci = &corners[i];
+static void draw_ortho_corner_markers(GVJ_t *job, const corners_t *corners,
+                                      double radius, char *edge_color) {
+    for (size_t i = 0; i < LIST_SIZE(corners); i++) {
+        const corner_info_t ci = LIST_GET(corners, i);
 
         /* Generate wedge path */
-        Ppolyline_t *wedge = ellipticWedge(ci->wedge_center,
-                                           radius, radius,
-                                           ci->angle1, ci->angle2);
+        Ppolyline_t *wedge = ellipticWedge(ci.wedge_center, radius, radius,
+                                           ci.angle1, ci.angle2);
 
         if (wedge && wedge->pn > 4) {
             /* Extract only the arc portion (skip center at start and close path at end) */
@@ -2585,7 +2574,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		char *radius_attr = agget(e, "radius");
 		if (radius_attr && radius_attr[0]) {
 		    radius = atof(radius_attr);
-		    want_rounded = (radius > 0);
+		    want_rounded = radius > 0;
 		}
 
 		/* If no explicit radius, use default when style=rounded */
@@ -2595,84 +2584,63 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 
 		if (is_ortho && want_rounded && radius > 0) {
 		    /* Truncate edge at corners and draw arcs */
-		    corner_info_t *corners = gv_calloc(bz.size, sizeof(corner_info_t));
-		    size_t num_corners = 0;
-		    find_ortho_corners(bz.list, bz.size, radius, corners, &num_corners);
+		    corners_t corners = {0};
+		    LIST_RESERVE(&corners, bz.size);
+		    find_ortho_corners(bz.list, bz.size, radius, &corners);
 
-		    if (num_corners > 0) {
+		    if (!LIST_IS_EMPTY(&corners)) {
 		        /* Sort corners by index */
-		        qsort(corners, num_corners, sizeof(corner_info_t), compare_corners);
+		        LIST_SORT(&corners, compare_corners);
 
 		        /* Render segments between corners */
 		        const double CORNER_TOL = 0.01;
 		        size_t seg_start_idx = 0;
 		        pointf seg_start_pt = bz.list[0];
 
-		        for (size_t c = 0; c <= num_corners; c++) {
+		        for (size_t c = 0; c <= LIST_SIZE(&corners); c++) {
 		            size_t seg_end_idx;
 		            pointf seg_end_pt;
 
-		            if (c < num_corners) {
+		            if (c < LIST_SIZE(&corners)) {
 		                /* Segment ends at this corner's trunc_prev */
-		                seg_end_idx = corners[c].idx;
-		                seg_end_pt = corners[c].trunc_prev;
+		                seg_end_idx = LIST_GET(&corners, c).idx;
+		                seg_end_pt = LIST_GET(&corners, c).trunc_prev;
 		            } else {
 		                /* Last segment ends at final point */
 		                seg_end_idx = bz.size - 1;
 		                seg_end_pt = bz.list[bz.size - 1];
 		            }
 
-		            /* Count non-corner points between seg_start_idx and seg_end_idx */
-		            size_t seg_pt_count = 1;  /* seg_start_pt */
-		            for (size_t pt = seg_start_idx + 1; pt < seg_end_idx; pt++) {
-		                /* Skip if this point is AT a corner position (handles duplicates) */
-		                bool at_corner = false;
-		                for (size_t cc = 0; cc < num_corners; cc++) {
-		                    pointf corner_pt = bz.list[corners[cc].idx];
-		                    if (hypot(bz.list[pt].x - corner_pt.x, bz.list[pt].y - corner_pt.y) < CORNER_TOL) {
-		                        at_corner = true;
-		                        break;
-		                    }
-		                }
-		                if (!at_corner) {
-		                    seg_pt_count++;
-		                }
-		            }
-		            seg_pt_count++;  /* seg_end_pt */
-
 		            /* Build segment */
-		            pointf *seg_pts = gv_calloc(seg_pt_count, sizeof(pointf));
-		            seg_pts[0] = seg_start_pt;
-		            size_t seg_idx = 1;
+		            LIST(pointf) seg_pts = {0};
+		            LIST_APPEND(&seg_pts, seg_start_pt);
 		            for (size_t pt = seg_start_idx + 1; pt < seg_end_idx; pt++) {
 		                bool at_corner = false;
-		                for (size_t cc = 0; cc < num_corners; cc++) {
-		                    pointf corner_pt = bz.list[corners[cc].idx];
+		                for (size_t cc = 0; cc < LIST_SIZE(&corners); cc++) {
+		                    pointf corner_pt = bz.list[LIST_GET(&corners, cc).idx];
 		                    if (hypot(bz.list[pt].x - corner_pt.x, bz.list[pt].y - corner_pt.y) < CORNER_TOL) {
 		                        at_corner = true;
 		                        break;
 		                    }
 		                }
 		                if (!at_corner) {
-		                    seg_pts[seg_idx++] = bz.list[pt];
+		                    LIST_APPEND(&seg_pts, bz.list[pt]);
 		                }
 		            }
-		            seg_pts[seg_idx] = seg_end_pt;
+		            LIST_APPEND(&seg_pts, seg_end_pt);
 
 		            /* Render this segment as polyline (straight lines, not bezier) */
-		            if (seg_pt_count > 1) {
-		                gvrender_polyline(job, seg_pts, seg_pt_count);
-		            }
-		            free(seg_pts);
+		            gvrender_polyline(job, LIST_FRONT(&seg_pts), LIST_SIZE(&seg_pts));
+		            LIST_FREE(&seg_pts);
 
 		            /* Prepare for next segment */
-		            if (c < num_corners) {
+		            if (c < LIST_SIZE(&corners)) {
 		                /* Skip all duplicates of this corner */
-		                size_t next_idx = corners[c].idx + 1;
+		                size_t next_idx = LIST_GET(&corners, c).idx + 1;
 		                while (next_idx < bz.size) {
 		                    bool at_corner = false;
-		                    for (size_t cc = 0; cc < num_corners; cc++) {
-		                        pointf corner_pt = bz.list[corners[cc].idx];
+		                    for (size_t cc = 0; cc < LIST_SIZE(&corners); cc++) {
+		                        pointf corner_pt = bz.list[LIST_GET(&corners, cc).idx];
 		                        if (hypot(bz.list[next_idx].x - corner_pt.x,
 		                                 bz.list[next_idx].y - corner_pt.y) < CORNER_TOL) {
 		                            at_corner = true;
@@ -2683,17 +2651,17 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		                    next_idx++;
 		                }
 		                seg_start_idx = next_idx;
-		                seg_start_pt = corners[c].trunc_next;
+		                seg_start_pt = LIST_GET(&corners, c).trunc_next;
 		            }
 		        }
 
 		        /* Draw corner arcs to fill the gaps */
-		        draw_ortho_corner_markers(job, corners, num_corners, radius, color);
+		        draw_ortho_corner_markers(job, &corners, radius, color);
 		    } else {
 		        /* No corners found, render normally */
 		        gvrender_beziercurve(job, bz.list, bz.size, 0);
 		    }
-		    free(corners);
+		    LIST_FREE(&corners);
 		} else {
 		    /* Non-orthogonal edge, render normally */
 		    gvrender_beziercurve(job, bz.list, bz.size, 0);
