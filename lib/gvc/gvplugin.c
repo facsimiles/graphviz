@@ -74,10 +74,8 @@ bool gvplugin_install(GVC_t *gvc, api_t api, const char *typestr, int quality,
                       gvplugin_package_t *package,
                       gvplugin_installed_t *typeptr)
 {
-    char *t;
-
     /* duplicate typestr to later save in the plugin list */
-    t = strdup(typestr);
+    char *const t = strdup(typestr);
     if (t == NULL)
         return false;
 
