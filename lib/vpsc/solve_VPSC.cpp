@@ -289,8 +289,8 @@ double IncVPSC::mostViolated(ConstraintList &l, Constraint* &v) {
 	// downwards.  There is always at least 1 element in the
 	// vector because of search.
 	if(deletePoint != end && minSlack<-0.0000001) {
-		*deletePoint = l[l.size()-1];
-		l.resize(l.size()-1);
+		*deletePoint = l.back();
+		l.pop_back();
 	}
 	if (RECTANGLE_OVERLAP_LOGGING) {
 		ofstream f(LOGFILE,ios::app);
