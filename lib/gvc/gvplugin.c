@@ -74,7 +74,6 @@ bool gvplugin_install(GVC_t *gvc, api_t api, const char *typestr, int quality,
                       gvplugin_package_t *package,
                       gvplugin_installed_t *typeptr)
 {
-    gvplugin_available_t *plugin;
     char *t;
 
     /* duplicate typestr to later save in the plugin list */
@@ -112,7 +111,7 @@ bool gvplugin_install(GVC_t *gvc, api_t api, const char *typestr, int quality,
         pnext = &(*pnext)->next;
     }
 
-    plugin = gv_alloc(sizeof(gvplugin_available_t));
+    gvplugin_available_t *const plugin = gv_alloc(sizeof(gvplugin_available_t));
     plugin->next = *pnext;
     *pnext = plugin;
     plugin->typestr = t;
