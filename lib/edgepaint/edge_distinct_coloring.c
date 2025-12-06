@@ -135,7 +135,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
   SparseMatrix A, B, C;
   int *irn, *jcn, nz, nz2 = 0;
   double cos_critical = cos(angle/180*3.14159), cos_a;
-  int u1, v1, u2, v2, i, j;
+  int u1, v1, u2, v2, j;
   double *colors = NULL;
   int flag, ne;
   char **xsplines = NULL;
@@ -152,7 +152,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
   nz = A->nz;
 
   /* get rid of self edges */
-  for (i = 0; i < nz; i++){
+  for (int i = 0; i < nz; i++){
     if (irn[i] != jcn[i]){
       irn[nz2] = irn[i];
       jcn[nz2++] = jcn[i];
@@ -170,7 +170,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
 #endif
     assert(ne == nz2);
     cos_a = 1.;/* for splines we exit conflict check as soon as we find an conflict, so the angle may not be representative, hence set to constant */
-    for (i = 0; i < nz2; i++){
+    for (int i = 0; i < nz2; i++){
       for (j = i+1; j < nz2; j++){
 	if (splines_intersect((size_t)dim, cos_critical,
 	                      check_edges_with_same_endpoint, xsplines[i],
@@ -190,7 +190,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
 #endif
     
     
-    for (i = 0; i < nz2; i++){
+    for (int i = 0; i < nz2; i++){
       u1 = irn[i]; v1 = jcn[i];
       for (j = i+1; j < nz2; j++){
 	u2 = irn[j]; v2 = jcn[j];
@@ -232,7 +232,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
   free(colors);
   free(x);
   if (xsplines){
-    for (i = 0; i < ne; i++){
+    for (int i = 0; i < ne; i++){
       free(xsplines[i]);
     }
     free(xsplines);
