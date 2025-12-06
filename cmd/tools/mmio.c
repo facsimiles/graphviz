@@ -95,7 +95,8 @@ int mm_read_mtx_crd_size(FILE * f, int *M, int *N, int *nz)
     int num_items_read;
 
     /* set return null parameter values, in case we exit with errors */
-    *M = *N = *nz = 0;
+    *M = *N = 0;
+    *nz = 0;
 
     /* now continue scanning until you reach the end-of-comments */
     do {
