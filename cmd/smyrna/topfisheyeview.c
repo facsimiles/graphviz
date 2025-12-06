@@ -198,7 +198,6 @@ static void drawtopfishnodes(topview * t)
 
     //drawing nodes
     glPointSize(7);
-    level = 0;
     glBegin(GL_POINTS);
     for (level = 0; level < hp->nlevels; level++) {
 	for (v = 0; v < hp->nvtxs[level]; v++) {
