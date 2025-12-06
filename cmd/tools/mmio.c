@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <sparse/SparseMatrix.h>
+#include <util/prisize_t.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
 
@@ -89,8 +90,7 @@ int mm_read_banner(FILE * f, MM_typecode * matcode)
     return 0;
 }
 
-int mm_read_mtx_crd_size(FILE * f, int *M, int *N, int *nz)
-{
+int mm_read_mtx_crd_size(FILE * f, int *M, int *N, size_t *nz) {
     char line[MM_MAX_LINE_LENGTH];
     int num_items_read;
 
@@ -105,12 +105,12 @@ int mm_read_mtx_crd_size(FILE * f, int *M, int *N, int *nz)
     } while (line[0] == '%');
 
     /* line[] is either blank or has M,N, nz */
-    if (sscanf(line, "%d %d %d", M, N, nz) == 3)
+    if (sscanf(line, "%d %d %" PRISIZE_T, M, N, nz) == 3)
 	return 0;
 
     else
 	do {
-	    num_items_read = fscanf(f, "%d %d %d", M, N, nz);
+	    num_items_read = fscanf(f, "%d %d %" PRISIZE_T, M, N, nz);
 	    if (num_items_read == EOF)
 		return MM_PREMATURE_EOF;
 	}

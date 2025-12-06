@@ -28,6 +28,7 @@
 #include "mmio.h"
 #include <sparse/SparseMatrix.h>
 #include <util/agxbuf.h>
+#include <util/prisize_t.h>
 #include <util/unreachable.h>
 #include "matrix_market.h"
 #include <getopt.h>
@@ -110,7 +111,7 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
     }
     agxbuf xb = {0};
     if (with_label) {
-	agxbprint (&xb, "%s. %d nodes, %d edges.", name, A->m, A->nz);
+	agxbprint(&xb, "%s. %d nodes, %" PRISIZE_T " edges.", name, A->m, A->nz);
 	agattr_text(g, AGRAPH, "label", agxbuse (&xb));
     }
 

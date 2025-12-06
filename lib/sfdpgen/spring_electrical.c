@@ -29,6 +29,7 @@
 #include <util/alloc.h>
 #include <util/bitarray.h>
 #include <util/list.h>
+#include <util/prisize_t.h>
 
 /// another parameter
 /// fₐ(i, j) = C × dist(i , j)² ÷ K × dᵢⱼ, fᵣ(i, j) = K³⁻ᵖ ÷ dist(i, j)⁻ᵖ
@@ -357,7 +358,10 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0,
                            counts[0] + 0.85 * counts[1] + 3.3 * counts[2]);
     } else {
       if (Verbose) {
-        fprintf(stderr, "\r                iter = %d, step = %f Fnorm = %f nz = %d  K = %f                                  ",iter, step, Fnorm, A->nz,K);
+        fprintf(stderr,
+                "\r                iter = %d, step = %f Fnorm = %f nz = %"
+                PRISIZE_T "  K = %f                                  ", iter,
+                step, Fnorm, A->nz, K);
       }
     }
 
@@ -366,7 +370,8 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0,
 
 #ifdef DEBUG_PRINT
     if (Verbose) {
-      fprintf(stderr, "\n iter = %d, step = %f Fnorm = %f nz = %d  K = %f   ",iter, step, Fnorm, A->nz, K);
+      fprintf(stderr, "\n iter = %d, step = %f Fnorm = %f nz = %" PRISIZE_T
+              "  K = %f   ", iter, step, Fnorm, A->nz, K);
     }
 #endif
 
@@ -1052,9 +1057,8 @@ static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_n
 
   LIST_SYNC(&irn);
   LIST_SYNC(&jcn);
-  assert(LIST_SIZE(&irn) <= INT_MAX);
-  SparseMatrix B = SparseMatrix_from_coordinate_arrays((int)LIST_SIZE(&irn), id,
-                                                       id, LIST_FRONT(&irn),
+  SparseMatrix B = SparseMatrix_from_coordinate_arrays(LIST_SIZE(&irn), id, id,
+                                                       LIST_FRONT(&irn),
                                                        LIST_FRONT(&jcn), NULL,
                                                        MATRIX_TYPE_PATTERN,
                                                        sizeof(double));

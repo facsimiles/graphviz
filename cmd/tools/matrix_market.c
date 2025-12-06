@@ -18,7 +18,7 @@
 SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
   MM_typecode matcode;
   double *val = NULL;
-  int *vali = NULL, m, n, nz;
+  int *vali = NULL, m, n;
   void *vp = NULL;
   SparseMatrix A = NULL;
   int c;
@@ -36,6 +36,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
   }
 
   /* find out size of sparse matrix .... */
+  size_t nz;
   if (mm_read_mtx_crd_size(f, &m, &n, &nz) != 0) {
     return NULL;
   }
@@ -48,7 +49,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
   switch (type) {
   case MATRIX_TYPE_REAL:
     val = gv_calloc(nz, sizeof(double));
-    for (int i = 0; i < nz; i++) {
+    for (size_t i = 0; i < nz; i++) {
       int num = fscanf(f, "%d %d %lg\n", &I[i], &J[i], &val[i]);
       if (num != 3) {
         goto done;
@@ -60,8 +61,8 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
       J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
       val = gv_recalloc(val, nz, 2 * nz, sizeof(double));
-      const int nzold = nz;
-      for (int i = 0; i < nzold; i++) {
+      const size_t nzold = nz;
+      for (size_t i = 0; i < nzold; i++) {
         if (I[i] != J[i]) {
           I[nz] = J[i];
           J[nz] = I[i];
@@ -72,8 +73,8 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
       J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
       val = gv_recalloc(val, nz, 2 * nz, sizeof(double));
-      const int nzold = nz;
-      for (int i = 0; i < nzold; i++) {
+      const size_t nzold = nz;
+      for (size_t i = 0; i < nzold; i++) {
         if (I[i] == J[i]) { // skew symm should have no diag
           goto done;
         }
@@ -88,7 +89,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
     break;
   case MATRIX_TYPE_INTEGER:
     vali = gv_calloc(nz, sizeof(int));
-    for (int i = 0; i < nz; i++) {
+    for (size_t i = 0; i < nz; i++) {
       int num = fscanf(f, "%d %d %d\n", &I[i], &J[i], &vali[i]);
       if (num != 3) {
         goto done;
@@ -100,8 +101,8 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
       J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
       vali = gv_recalloc(vali, nz, 2 * nz, sizeof(int));
-      const int nzold = nz;
-      for (int i = 0; i < nzold; i++) {
+      const size_t nzold = nz;
+      for (size_t i = 0; i < nzold; i++) {
         if (I[i] != J[i]) {
           I[nz] = J[i];
           J[nz] = I[i];
@@ -112,8 +113,8 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
       J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
       vali = gv_recalloc(vali, nz, 2 * nz, sizeof(int));
-      const int nzold = nz;
-      for (int i = 0; i < nzold; i++) {
+      const size_t nzold = nz;
+      for (size_t i = 0; i < nzold; i++) {
         if (I[i] == J[i]) { // skew symm should have no diag
           goto done;
         }
@@ -127,7 +128,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
     vp = vali;
     break;
   case MATRIX_TYPE_PATTERN:
-    for (int i = 0; i < nz; i++) {
+    for (size_t i = 0; i < nz; i++) {
       int num = fscanf(f, "%d %d\n", &I[i], &J[i]);
       if (num != 2) {
         goto done;
@@ -138,8 +139,8 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
     if (matcode.shape == MS_SYMMETRIC || matcode.shape == MS_SKEW) {
       I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
       J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      const int nzold = nz;
-      for (int i = 0; i < nzold; i++) {
+      const size_t nzold = nz;
+      for (size_t i = 0; i < nzold; i++) {
         if (I[i] != J[i]) {
           I[nz] = J[i];
           J[nz++] = I[i];
@@ -152,7 +153,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
   case MATRIX_TYPE_COMPLEX: {
     val = gv_calloc(2 * nz, sizeof(double));
     double *const v = val;
-    for (int i = 0; i < nz; i++) {
+    for (size_t i = 0; i < nz; i++) {
       int num =
           fscanf(f, "%d %d %lg %lg\n", &I[i], &J[i], &v[2 * i], &v[2 * i + 1]);
       if (num != 4) {
@@ -165,8 +166,8 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
       J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
       val = gv_recalloc(val, 2 * nz, 4 * nz, sizeof(double));
-      const int nzold = nz;
-      for (int i = 0; i < nzold; i++) {
+      const size_t nzold = nz;
+      for (size_t i = 0; i < nzold; i++) {
         if (I[i] != J[i]) {
           I[nz] = J[i];
           J[nz] = I[i];
@@ -179,8 +180,8 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
       J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
       val = gv_recalloc(val, 2 * nz, 4 * nz, sizeof(double));
-      const int nzold = nz;
-      for (int i = 0; i < nzold; i++) {
+      const size_t nzold = nz;
+      for (size_t i = 0; i < nzold; i++) {
         if (I[i] == J[i]) { // skew symm should have no diag
           goto done;
         }
@@ -194,8 +195,8 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
       J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
       val = gv_recalloc(val, 2 * nz, 4 * nz, sizeof(double));
-      const int nzold = nz;
-      for (int i = 0; i < nzold; i++) {
+      const size_t nzold = nz;
+      for (size_t i = 0; i < nzold; i++) {
         if (I[i] != J[i]) {
           I[nz] = J[i];
           J[nz] = I[i];

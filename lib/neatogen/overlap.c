@@ -12,6 +12,7 @@
 #include <neatogen/overlap.h>
 #include <stdatomic.h>
 #include <util/alloc.h>
+#include <util/prisize_t.h>
 
 #if defined(HAVE_GTS) && defined(SFDP)
 
@@ -211,7 +212,7 @@ check_overlap_RETURN:
   SparseMatrix_delete(A);
   A = SparseMatrix_symmetrize(B, false);
   SparseMatrix_delete(B);
-  if (Verbose) fprintf(stderr, "found %d clashes\n", A->nz);
+  if (Verbose) fprintf(stderr, "found %" PRISIZE_T " clashes\n", A->nz);
   return A;
 }
 

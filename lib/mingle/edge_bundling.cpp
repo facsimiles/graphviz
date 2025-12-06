@@ -21,6 +21,7 @@
 #include <mingle/ink.h>
 #include <mingle/agglomerative_bundling.h>
 #include <string.h>
+#include <util/prisize_t.h>
 #include <vector>
 
 #define SMALL 1.e-10
@@ -402,7 +403,9 @@ static void force_directed_edge_bundling(SparseMatrix A,
   double fnorm_a, fnorm_t, edge_length, start;
   
   if (Verbose > 1)
-    fprintf(stderr, "total interaction pairs = %d out of %d, avg neighbors per edge = %f\n",A->nz, A->m*A->m, A->nz/(double) A->m);
+    fprintf(stderr, "total interaction pairs = %" PRISIZE_T
+            " out of %d, avg neighbors per edge = %f\n", A->nz, A->m * A->m,
+            (double)A->nz / A->m);
 
   std::vector<double> force_t(dim * np);
   std::vector<double> force_a(dim * np);

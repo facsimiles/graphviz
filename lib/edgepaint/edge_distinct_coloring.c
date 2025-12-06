@@ -20,6 +20,7 @@
 #include <edgepaint/intersection.h>
 #include <sparse/QuadTree.h>
 #include <util/list.h>
+#include <util/prisize_t.h>
 
 static int splines_intersect(size_t dim,
 			     double cos_critical, int check_edges_with_same_endpoint, 
@@ -133,7 +134,7 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
   double *x = NULL;
   int dim = 2;
   SparseMatrix A, B, C;
-  int *irn, *jcn, nz, nz2 = 0;
+  int *irn, *jcn, nz2 = 0;
   double cos_critical = cos(angle/180*3.14159), cos_a;
   int u1, v1, u2, v2, j;
   double *colors = NULL;
@@ -149,10 +150,10 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
 
 
   irn = A->ia; jcn = A->ja;
-  nz = A->nz;
+  const size_t nz = A->nz;
 
   /* get rid of self edges */
-  for (int i = 0; i < nz; i++){
+  for (size_t i = 0; i < nz; i++){
     if (irn[i] != jcn[i]){
       irn[nz2] = irn[i];
       jcn[nz2++] = jcn[i];
@@ -222,7 +223,8 @@ Agraph_t *edge_distinct_coloring(const char *color_scheme, int *lightness,
   }
 
   if (Verbose)
-    fprintf(stderr,"The edge conflict graph has %d nodes and %d edges\n", C->m, C->nz);
+    fprintf(stderr, "The edge conflict graph has %d nodes and %" PRISIZE_T
+            " edges\n", C->m, C->nz);
 
   attach_edge_colors(g, cdim, colors);
 
