@@ -105,7 +105,7 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
   /* use up to dist 2 neighbor. This is used in overcoming pherical effect with ideal distance of
      2-neighbors equal graph distance etc.
    */
-  int i, j, k, l, m = A->m, *ia = A->ia, *ja = A->ja, *iw, *jw, *id, *jd;
+  int j, k, l, m = A->m, *ia = A->ia, *ja = A->ja, *iw, *jw, *id, *jd;
   double *d, *w, *lambda;
   double diag_d, diag_w, dist, s = 0, stop = 0, sbot = 0;
   SparseMatrix ID;
@@ -122,12 +122,12 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
   sm->maxit_cg = floor(sqrt(A->m));
 
   lambda = sm->lambda = gv_calloc(m, sizeof(double));
-  for (i = 0; i < m; i++) sm->lambda[i] = lambda0;
+  for (int i = 0; i < m; i++) sm->lambda[i] = lambda0;
   int *mask = gv_calloc(m, sizeof(int));
 
   double *avg_dist = gv_calloc(m, sizeof(double));
 
-  for (i = 0; i < m ;i++){
+  for (int i = 0; i < m ;i++){
     avg_dist[i] = 0;
     int nz = 0;
     for (j = ia[i]; j < ia[i+1]; j++){
@@ -139,11 +139,10 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
     avg_dist[i] /= nz;
   }
 
-
-  for (i = 0; i < m; i++) mask[i] = -1;
+  for (int i = 0; i < m; i++) mask[i] = -1;
 
   int nz = 0;
-  for (i = 0; i < m; i++){
+  for (int i = 0; i < m; i++){
     mask[i] = i;
     for (j = ia[i]; j < ia[i+1]; j++){
       k = ja[j];
@@ -177,7 +176,7 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
   iw[0] = id[0] = 0;
 
   nz = 0;
-  for (i = 0; i < m; i++){
+  for (int i = 0; i < m; i++){
     mask[i] = i+m;
     diag_d = diag_w = 0;
     for (j = ia[i]; j < ia[i+1]; j++){
@@ -277,7 +276,7 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
     id[i+1] = nz;
   }
   s = stop/sbot;
-  for (i = 0; i < nz; i++) d[i] *= s;
+  for (int i = 0; i < nz; i++) d[i] *= s;
 
   sm->scaling = s;
   sm->Lw->nz = nz;
