@@ -76,7 +76,7 @@ def main():
         if platform not in platforms:
             platforms.append(platform)
         with open(filename, "rt", encoding="utf-8") as fp:
-            for line in fp.readlines():
+            for line in fp:
                 item = [item.strip() for item in line.split(":")]
                 if len(item) >= 2:
                     if item[1] == "":
