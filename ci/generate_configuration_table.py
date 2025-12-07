@@ -63,10 +63,10 @@ def main():
             "No": f' style="color: {no_color};"',
         }
 
-    table = {}
-    table_sections = []
-    component_names = {}
-    platforms = set()
+    table: dict[str, dict[str, dict[str, str]]] = {}
+    table_sections: list[str] = []
+    component_names: dict[str, list[str]] = {}
+    platforms: set[str] = set()
 
     for filename in opts.filename:
         os_path = os.path.dirname(filename)
