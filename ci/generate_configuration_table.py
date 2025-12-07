@@ -128,7 +128,7 @@ def main():
     print(f"{indent}<tr>")
     indent += "  "
     print(f"{indent}<th></th>")
-    for platform in platforms:
+    for platform in sorted(platforms):
         print(f"{indent}<th>{platform}</th>")
     indent = indent[:-2]
     print(f"{indent} </tr>")
@@ -142,7 +142,7 @@ def main():
             print(f"{indent}<tr>")
             indent += "  "
             print(f"{indent}<td>{component_name}</td>")
-            for platform in platforms:
+            for platform in sorted(platforms):
                 component_value = table[section_name][component_name][platform]
                 short_value = re.sub("(Yes|No).*", "\\1", component_value)
                 color_style = styles[short_value]
