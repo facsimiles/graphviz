@@ -66,15 +66,14 @@ def main():
     table = {}
     table_sections = []
     component_names = {}
-    platforms = []
+    platforms = set()
 
     for filename in opts.filename:
         os_path = os.path.dirname(filename)
         os_version_id = os.path.basename(os_path)
         os_id = os.path.basename(os.path.dirname(os_path))
         platform = f"{os_id.capitalize()} {os_version_id}"
-        if platform not in platforms:
-            platforms.append(platform)
+        platforms.add(platform)
         with open(filename, "rt", encoding="utf-8") as fp:
             for line in fp:
                 item = [item.strip() for item in line.split(":")]
