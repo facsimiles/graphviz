@@ -1952,6 +1952,7 @@ AC_ARG_WITH(smyrna,
 
 if test "$with_smyrna" != "yes"; then
   use_smyrna="No (disabled)"
+  SMYRNA_DATA_TO_PACKAGE=
 else
   if test "$use_gtk" != "Yes"; then
      AC_MSG_WARN(SMYRNA requires GTK)
@@ -1975,10 +1976,13 @@ else
   fi
   if test "$requires" != ""; then
      use_smyrna="No (requires:$requires)"
+     SMYRNA_DATA_TO_PACKAGE=
   else
      use_smyrna="Yes"
+     SMYRNA_DATA_TO_PACKAGE=usr/share/graphviz/smyrna
   fi
 fi
+AC_SUBST([SMYRNA_DATA_TO_PACKAGE])
 AM_CONDITIONAL(WITH_SMYRNA, [test "$use_smyrna" = "Yes"])
 
 dnl -----------------------------------
@@ -2045,6 +2049,7 @@ AM_CONDITIONAL(WITH_CGRAPH, [true])
 # Generate Makefiles
 AC_CONFIG_FILES(Makefile
 	debian/changelog
+	debian/graphviz.install
 	debian/libgv-php5.install
 	doc/Makefile
 	doc/info/Makefile
