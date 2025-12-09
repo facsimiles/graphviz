@@ -19,6 +19,7 @@ noinst_HEADERS = \
   list.h \
   list-private.h \
   lockfile.h \
+  mutex.h \
   optional.h \
   overflow.h \
   path.h \
@@ -35,8 +36,14 @@ noinst_HEADERS = \
   xml.h
 noinst_LTLIBRARIES = libutil_C.la
 
+if WITH_PTHREAD
+MUTEX=mutex-pthread.c
+else
+MUTEX=mutex-c11.c
+endif
+
 libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c list.c \
-	random.c xml.c
+	$(MUTEX) random.c xml.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 
-EXTRA_DIST = README
+EXTRA_DIST = mutex-cxx.cc README

@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When seeding random number generators with `time(NULL)`, the result of
   `getpid()` is no longer also mixed in. Previously this was the case on
   non-Windows platforms, impeding reproducibility and portability.
+- Graphviz libraries and programs depend on a threading library, either C11
+  threads, C++ threads, or POSIX threads. If both C11 threads and POSIX threads
+  are available during compilation, the default selected is POSIX threads.
 
 ### Fixed
 

@@ -38,6 +38,7 @@
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/mutex.h>
 #include <util/streq.h>
 #include <util/strview.h>
 #include <util/tokenize.h>
@@ -3719,6 +3720,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
     emit_end_graph(job);
 }
 
+static mutex_t *_Atomic strings_lock;
 static Dict_t *strings;
 static Dtdisc_t stringdict = {
     .link = -1, // link - allocate separate holder objects
@@ -3726,12 +3728,17 @@ static Dtdisc_t stringdict = {
 };
 
 bool emit_once(char *str) {
+    mutex_lazy_init_or_die(&strings_lock);
+
+    gv_mutex_lock(strings_lock);
     if (strings == 0)
 	strings = dtopen(&stringdict, Dtoset);
     if (!dtsearch(strings, str)) {
 	dtinsert(strings, gv_strdup(str));
+	gv_mutex_unlock(strings_lock);
 	return true;
     }
+    gv_mutex_unlock(strings_lock);
     return false;
 }
 
@@ -3740,6 +3747,11 @@ void emit_once_reset(void)
     if (strings) {
 	dtclose(strings);
 	strings = 0;
+
+	if (strings_lock != NULL) {
+	    gv_mutex_free(strings_lock);
+	}
+	strings_lock = NULL;
     }
 }
 

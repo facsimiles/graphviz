@@ -790,6 +790,17 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /experimental:c11atomics")
 endif()
 
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  message(STATUS "using C++11 threads")
+else()
+  find_package(Threads REQUIRED)
+  if(CMAKE_USE_PTHREADS_INIT)
+    message(STATUS "using POSIX threads")
+  else()
+    message(STATUS "using C11 threads")
+  endif()
+endif()
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # enable LTO in release builds

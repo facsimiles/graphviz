@@ -283,6 +283,19 @@ AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17(noext,mandatory)
 AC_PROG_OBJC
 
+# enable POSIX threads or fallback to C11 threads
+AX_PTHREAD([
+  LIBS="$PTHREAD_LIBS $LIBS"
+  CFLAGS+=" $PTHREAD_CFLAGS"
+  CXXFLAGS+=" $PTHREAD_CFLAGS"
+  CC="$PTHREAD_CC"
+  CXX="$PTHREAD_CXX"
+  use_pthread="Yes"
+],[
+  use_pthread="No (falling back to C11 threads)"
+])
+AM_CONDITIONAL(WITH_PTHREAD, [test "$use_pthread" = "Yes"])
+
 dnl ===========================================================================
 dnl Set GCC compiler flags
 
@@ -2195,6 +2208,7 @@ echo "  gts:           $use_gts"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  ltdl:          $use_ltdl"
 echo "  ortho:         $use_ortho"
+echo "  pthreads:      $use_pthread"
 echo "  sfdp:          $use_sfdp"
 echo "  swig:          $use_swig ( $SWIG_VERSION )"
 echo "  shared:        $use_shared"
