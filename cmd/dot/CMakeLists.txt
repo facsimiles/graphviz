@@ -101,7 +101,7 @@ if(BUILD_SHARED_LIBS)
     target_link_libraries(dot_builtins PRIVATE ${GTS_LINK_LIBRARIES})
   endif()
 
-  if(LASI_FOUND)
+  if(Freetype_FOUND AND LASI_FOUND AND PANGOCAIRO_FOUND)
     target_link_libraries(dot_builtins PRIVATE gvplugin_lasi)
   endif()
 

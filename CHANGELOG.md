@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - In the CMake build system, when `WITH_SMYRNA` is `AUTO` or unset, Smyrna
   enabling depends on the presence of Pangocairo.
+- In the CMake build system, versions of `dot` with plugins built in are only
+  linked against enabled plugins. #2795
 
 ## [14.1.0] – 2025-12-06
 
