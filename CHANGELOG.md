@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased (14.1.1)]
+## [14.1.1] – 2025-12-13
 
 ### Changed
 
@@ -3419,7 +3419,7 @@ March 13, 2000: Use AM_PROG_LIBTOOL instead of AC_PROG_LIBTOOL
    in configure.in.  John Ellson <ellson@graphviz.org>
 ```
 
-[Unreleased (14.1.1)]: https://gitlab.com/graphviz/graphviz/compare/14.1.0...main
+[14.1.1]: https://gitlab.com/graphviz/graphviz/compare/14.1.0...14.1.1
 [14.1.0]: https://gitlab.com/graphviz/graphviz/compare/14.0.5...14.1.0
 [14.0.5]: https://gitlab.com/graphviz/graphviz/compare/14.0.4...14.0.5
 [14.0.4]: https://gitlab.com/graphviz/graphviz/compare/14.0.2...14.0.4
