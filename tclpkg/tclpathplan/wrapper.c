@@ -51,13 +51,13 @@ int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
     rv = 1;
     {
-	struct position vft, vsd, avft, avsd;
+	struct position vft, vsd, avft;
 	for (size_t i = 0; i < LIST_SIZE(&ilist); i++) {
 	    struct intersection inter = LIST_GET(&ilist, i);
 	    vft = inter.firstv->pos;
 	    avft = after(inter.firstv)->pos;
 	    vsd = inter.secondv->pos;
-	    avsd = after(inter.secondv)->pos;
+	    const struct position avsd = after(inter.secondv)->pos;
 	    if ((!is_exactly_equal(vft.x, avft.x) && !is_exactly_equal(vsd.x, avsd.x)) ||
 		(is_exactly_equal(vft.x, avft.x) && !eq_pt(vft, inter) && !eq_pt(avft, inter)) ||
 		(is_exactly_equal(vsd.x, avsd.x) && !eq_pt(vsd, inter) && !eq_pt(avsd, inter))) {
