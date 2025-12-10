@@ -583,6 +583,7 @@ ubuntu-24.04-cmake-minimal-build:
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_sfdp=OFF"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_SMYRNA=OFF"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_TCL=OFF"
     tags:
         - saas-linux-small-amd64
     variables:
