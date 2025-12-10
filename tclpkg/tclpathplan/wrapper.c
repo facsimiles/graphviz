@@ -10,6 +10,7 @@
 
 #include <pathplan/pathgeom.h>
 #include "Plegal_arrangement.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "simple.h"
@@ -17,6 +18,10 @@
 #include <util/gv_math.h>
 #include <util/list.h>
 #include <util/prisize_t.h>
+
+static bool eq_pt(const struct position v, const struct intersection w) {
+  return is_exactly_equal(v.x, w.x) && is_exactly_equal(v.y, w.y);
+}
 
 int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
@@ -44,8 +49,6 @@ int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
     find_ints(vertex_list, nverts, &ilist);
 
-#define EQ_PT(v,w) \
-  (is_exactly_equal((v).x, (w).x) && is_exactly_equal((v).y, (w).y))
     rv = 1;
     {
 	struct position vft, vsd, avft, avsd;
@@ -56,8 +59,8 @@ int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 	    vsd = inter.secondv->pos;
 	    avsd = after(inter.secondv)->pos;
 	    if ((vft.x != avft.x && vsd.x != avsd.x) ||
-		(vft.x == avft.x && !EQ_PT(vft, inter) && !EQ_PT(avft, inter)) ||
-		(vsd.x == avsd.x && !EQ_PT(vsd, inter) && !EQ_PT(avsd, inter))) {
+		(vft.x == avft.x && !eq_pt(vft, inter) && !eq_pt(avft, inter)) ||
+		(vsd.x == avsd.x && !eq_pt(vsd, inter) && !eq_pt(avsd, inter))) {
 		rv = 0;
 		fprintf(stderr, "\nintersection %" PRISIZE_T " at %.3f %.3f\n",
 			i, inter.x, inter.y);
