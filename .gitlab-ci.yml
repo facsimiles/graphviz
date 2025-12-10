@@ -585,6 +585,7 @@ ubuntu-24.04-cmake-minimal-build:
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=OFF"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_TCL=OFF"
         - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_SWIG=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_GDK=OFF"
     tags:
         - saas-linux-small-amd64
     variables:
