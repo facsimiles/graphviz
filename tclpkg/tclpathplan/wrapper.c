@@ -25,7 +25,6 @@ static bool eq_pt(const struct position v, const struct intersection w) {
 
 int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
-    int rv;
     intersections_t ilist = {0};
 
     struct polygon *polygon_list = gv_calloc(n_polys, sizeof(struct polygon));
@@ -49,7 +48,7 @@ int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
     find_ints(vertex_list, nverts, &ilist);
 
-    rv = 1;
+    int rv = 1;
     for (size_t i = 0; i < LIST_SIZE(&ilist); i++) {
         struct intersection inter = LIST_GET(&ilist, i);
         const struct position vft = inter.firstv->pos;
