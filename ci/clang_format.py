@@ -557,7 +557,6 @@ EXCLUDE = (
     "tclpkg/tclpathplan/makecw.c",
     "tclpkg/tclpathplan/simple.h",
     "tclpkg/tclpathplan/tclpathplan.c",
-    "tclpkg/tclpathplan/wrapper.c",
     "tclpkg/tclstubs/tclStubLib.c",
     "windows/include/unistd/unistd.h",
 )
