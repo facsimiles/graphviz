@@ -51,10 +51,9 @@ int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 
     rv = 1;
     {
-	struct position vft;
 	for (size_t i = 0; i < LIST_SIZE(&ilist); i++) {
 	    struct intersection inter = LIST_GET(&ilist, i);
-	    vft = inter.firstv->pos;
+	    const struct position vft = inter.firstv->pos;
 	    const struct position avft = after(inter.firstv)->pos;
 	    const struct position vsd = inter.secondv->pos;
 	    const struct position avsd = after(inter.secondv)->pos;
