@@ -58,9 +58,9 @@ int Plegal_arrangement(Ppoly_t **polys, size_t n_polys) {
 	    avft = after(inter.firstv)->pos;
 	    vsd = inter.secondv->pos;
 	    avsd = after(inter.secondv)->pos;
-	    if ((vft.x != avft.x && vsd.x != avsd.x) ||
-		(vft.x == avft.x && !eq_pt(vft, inter) && !eq_pt(avft, inter)) ||
-		(vsd.x == avsd.x && !eq_pt(vsd, inter) && !eq_pt(avsd, inter))) {
+	    if ((!is_exactly_equal(vft.x, avft.x) && !is_exactly_equal(vsd.x, avsd.x)) ||
+		(is_exactly_equal(vft.x, avft.x) && !eq_pt(vft, inter) && !eq_pt(avft, inter)) ||
+		(is_exactly_equal(vsd.x, avsd.x) && !eq_pt(vsd, inter) && !eq_pt(avsd, inter))) {
 		rv = 0;
 		fprintf(stderr, "\nintersection %" PRISIZE_T " at %.3f %.3f\n",
 			i, inter.x, inter.y);
