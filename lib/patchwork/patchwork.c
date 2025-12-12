@@ -14,6 +14,7 @@
 #include <patchwork/tree_map.h>
 #include <common/render.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 
 typedef struct treenode_t treenode_t;
 struct treenode_t {
@@ -60,7 +61,7 @@ static double fullArea (treenode_t* p, attrsym_t* mp)
 static double getArea (void* obj, attrsym_t* ap)
 {
     double area = late_double (obj, ap, DFLT_SZ, 0);
-    if (area == 0) area = DFLT_SZ;
+    if (is_exactly_zero(area)) area = DFLT_SZ;
     area *= SCALE;
     return area;
 }
