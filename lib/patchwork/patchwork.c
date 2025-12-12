@@ -145,14 +145,12 @@ static int nodecmp(const void *x, const void *y) {
 
 static void layoutTree(treenode_t * tree)
 {
-    treenode_t* cp;
-
     /* if (tree->kind == AGNODE) return; */
     if (tree->n_children == 0) return;
 
     size_t nc = tree->n_children;
     treenode_t** nodes = gv_calloc(nc, sizeof(treenode_t*));
-    cp = tree->leftchild;
+    treenode_t *cp = tree->leftchild;
     for (size_t i = 0; i < nc; i++) {
 	nodes[i] = cp;
 	cp = cp->rightsib;
