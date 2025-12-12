@@ -160,15 +160,12 @@ static void layoutTree(treenode_t * tree)
     for (size_t i = 0; i < nc; i++) {
 	areas_sorted[i] = nodes[i]->area;
     }
-    rectangle crec;
     double disc, delta, m, h = tree->r.size[1], w = tree->r.size[0];
-    crec.x[0] = tree->r.x[0];
-    crec.x[1] = tree->r.x[1];
     delta = h - w;
     disc = sqrt(delta*delta + 4.0*tree->child_area);
     m = (h + w - disc)/2.0;
-    crec.size[0] = w - m;
-    crec.size[1] = h - m;
+    const rectangle crec = {.x = {tree->r.x[0], tree->r.x[1]},
+                            .size = {w - m, h - m}};
     rectangle *const recs = tree_map(nc, areas_sorted, crec);
     if (Verbose)
 	fprintf (stderr, "rec %f %f %f %f\n", tree->r.x[0], tree->r.x[1], tree->r.size[0], tree->r.size[1]);
