@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <sparse/SparseMatrix.h>
 #include <sparse/general.h>
+#include <limits.h>
 #include <math.h>
 #include <sparse/QuadTree.h>
 #include <stdbool.h>
@@ -484,12 +485,13 @@ static void conn_comp(int n, SparseMatrix A, int *groups, SparseMatrix *poly_poi
   int *comps_ptr = SparseMatrix_weakly_connected_components(BB, &ncomps, &comps);
   SparseMatrix_delete(B);
   SparseMatrix_delete(BB);
-  *poly_point_map = SparseMatrix_new(ncomps, n, n, MATRIX_TYPE_PATTERN, FORMAT_CSR);
+  *poly_point_map = SparseMatrix_new(ncomps, n, (size_t)n, MATRIX_TYPE_PATTERN,
+                                     FORMAT_CSR);
   free((*poly_point_map)->ia);
   free((*poly_point_map)->ja);
   (*poly_point_map)->ia = comps_ptr;
   (*poly_point_map)->ja = comps;
-  (*poly_point_map)->nz = n;
+  (*poly_point_map)->nz = (size_t)n;
 
 }
 
@@ -647,8 +649,7 @@ static void get_polygon_solids(int nt, SparseMatrix E, int ncomps,
   int DEBUG_CYCLE = 0;
   SparseMatrix B;
 
-  ne = E->nz;
-  edge_table = gv_calloc(ne * 2, sizeof(int));
+  edge_table = gv_calloc(E->nz * 2, sizeof(int));
 
   half_edges = SparseMatrix_new(n, n, 1, MATRIX_TYPE_INTEGER, FORMAT_COORD);
 
@@ -677,7 +678,7 @@ static void get_polygon_solids(int nt, SparseMatrix E, int ncomps,
       }
     }
   }
-  assert(E->nz >= ne);
+  assert(E->nz >= (size_t)ne);
 
   cycle = gv_calloc(ne * 2, sizeof(int));
   B = SparseMatrix_from_coordinate_format_not_compacted(half_edges);
@@ -1003,7 +1004,8 @@ static int make_map_internal(bool include_OK_points, int n, int dim, double *x0,
     int k, t, np=nedgep;
     if (graph && np){
       fprintf(stderr,"add art np = %d\n",np);
-      nz = graph->nz;
+      assert(graph->nz <= INT_MAX);
+      nz = (int)graph->nz;
       y = gv_calloc(dim * n + dim * nz * np, sizeof(double));
       for (i = 0; i < n*dim; i++) y[i] = x[i];
       grouping = gv_calloc(n + nz * np, sizeof(int));

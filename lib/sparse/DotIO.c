@@ -17,6 +17,7 @@
 #include <sparse/color_palette.h>
 #include <sparse/colorutil.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
@@ -108,8 +109,8 @@ SparseMatrix SparseMatrix_import_dot(Agraph_t *g, int dim,
     ND_id(n) = i++;
 
   if (format == FORMAT_COORD){
-    A = SparseMatrix_new(i, i, nedges, MATRIX_TYPE_REAL, format);
-    A->nz = nedges;
+    A = SparseMatrix_new(i, i, (size_t)nedges, MATRIX_TYPE_REAL, format);
+    A->nz = (size_t)nedges;
     I = A->ia;
     J = A->ja;
     val = A->a;
@@ -202,7 +203,10 @@ SparseMatrix SparseMatrix_import_dot(Agraph_t *g, int dim,
     agerrorf("Error: graph %s has missing \"pos\" information", agnameof(g));
 
   size_t sz = sizeof(double);
-  if (format == FORMAT_CSR) A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type, sz);
+  if (format == FORMAT_CSR) {
+    A = SparseMatrix_from_coordinate_arrays((size_t)nedges, nnodes, nnodes, I,
+                                            J, val, type, sz);
+  }
 
 done:
   if (format != FORMAT_COORD){
@@ -379,8 +383,8 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
       i++;
     }
   }
-  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val,
-                                          type, sizeof(double));
+  A = SparseMatrix_from_coordinate_arrays((size_t)nedges, nnodes, nnodes, I, J,
+                                          val, type, sizeof(double));
 
   /* get clustering info */
   *clusters = gv_calloc(nnodes, sizeof(int));
@@ -607,7 +611,8 @@ void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme){
       i++;
     }
   }
-  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type, sz);
+  A = SparseMatrix_from_coordinate_arrays((size_t)nedges, nnodes, nnodes, I, J,
+                                          val, type, sz);
 
   int *clusters = gv_calloc(nnodes, sizeof(int));
 

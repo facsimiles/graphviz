@@ -143,7 +143,7 @@ static void maximal_independent_edge_set_heavest_edge_pernode_supernodes_first(S
 
 static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA,
                                         SparseMatrix *P, SparseMatrix *R) {
-  int nc, nzc, n, i;
+  int nc, n, i;
   int *irn = NULL, *jcn = NULL;
   double *val = NULL;
   int j;
@@ -168,7 +168,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA,
   irn = gv_calloc(n, sizeof(int));
   jcn = gv_calloc(n, sizeof(int));
   val = gv_calloc(n, sizeof(double));
-  nzc = 0; 
+  size_t nzc = 0; 
   for (i = 0; i < ncluster; i++){
     for (j = clusterp[i]; j < clusterp[i+1]; j++){
       assert(clusterp[i+1] > clusterp[i]);
@@ -177,7 +177,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA,
       val[nzc++] = 1.;
    }
   }
-  assert(nzc == n);
+  assert(nzc == (size_t)n);
   *P = SparseMatrix_from_coordinate_arrays(nzc, n, nc, irn, jcn, val,
                                            MATRIX_TYPE_REAL, sizeof(double));
   *R = SparseMatrix_transpose(*P);

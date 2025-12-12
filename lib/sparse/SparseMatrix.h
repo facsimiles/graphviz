@@ -28,8 +28,8 @@ enum {BIPARTITE_RECT = 0, BIPARTITE_PATTERN_UNSYM, BIPARTITE_UNSYM, BIPARTITE_AL
 struct SparseMatrix_struct {
   int m; /* row dimension */
   int n; /* column dimension */
-  int nz;/* The actual length used is nz, for CSR/CSC matrix this is the same as ia[n] */
-  int nzmax; /* the current length of ja and a (if exists) allocated.*/
+  size_t nz; ///< the actual length used is nz, for CSR/CSC matrix this is the same as ia[n]
+  size_t nzmax; ///< the current length of ja and a (if exists) allocated
   int type; /* whether it is real/complex matrix, or pattern only */
   int *ia; /* row pointer for CSR format, or row indices for coordinate format. 0-based */
   int *ja; /* column indices. 0-based */
@@ -45,17 +45,23 @@ typedef struct SparseMatrix_struct* SparseMatrix;
 
 enum {MATRIX_TYPE_REAL = 1<<0, MATRIX_TYPE_COMPLEX = 1<<1, MATRIX_TYPE_INTEGER = 1<<2, MATRIX_TYPE_PATTERN = 1<<3};
 
-SparseMatrix SparseMatrix_new(int m, int n, int nz, int type, int format);
+SparseMatrix SparseMatrix_new(int m, int n, size_t nz, int type, int format);
 
 /* this version sum repeated entries */
 SparseMatrix SparseMatrix_from_coordinate_format(SparseMatrix A);
 SparseMatrix SparseMatrix_from_coordinate_format_not_compacted(SparseMatrix A);
 
-SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n, int *irn,
-                                                 int *jcn, const void *val,
-                                                 int type, size_t sz);
+SparseMatrix SparseMatrix_from_coordinate_arrays(size_t nz, int m, int n,
+                                                 int *irn, int *jcn,
+                                                 const void *val, int type,
+                                                 size_t sz);
 
-SparseMatrix SparseMatrix_from_coordinate_arrays_not_compacted(int nz, int m, int n, int *irn, int *jcn, void *val, int type, size_t sz);
+SparseMatrix SparseMatrix_from_coordinate_arrays_not_compacted(size_t nz, int m,
+                                                               int n, int *irn,
+                                                               int *jcn,
+                                                               void *val,
+                                                               int type,
+                                                               size_t sz);
 
 void SparseMatrix_export(FILE *f, SparseMatrix A);/* export into MM format except the header */
 
@@ -105,6 +111,9 @@ SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A);
 
 void SparseMatrix_distance_matrix(SparseMatrix A, double **dist_matrix);
 
+/// wrap a m×n matrix into a sparse matrix
+///
+/// The {i,j}-th entry of the matrix is in x[i×n+j], 0≤i<m; 0≤j<n
 SparseMatrix SparseMatrix_from_dense(int m, int n, double *x);
 
 #ifdef __cplusplus

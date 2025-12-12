@@ -19,6 +19,7 @@
 #include <stdbool.h>
 #include <util/alloc.h>
 #include <util/overflow.h>
+#include <util/prisize_t.h>
 #include <util/unreachable.h>
 
 static size_t size_of_matrix_type(int type){
@@ -61,7 +62,8 @@ SparseMatrix SparseMatrix_make_undirected(SparseMatrix A){
 SparseMatrix SparseMatrix_transpose(SparseMatrix A){
   if (!A) return NULL;
 
-  int *ia = A->ia, *ja = A->ja, *ib, *jb, nz = A->nz, m = A->m, n = A->n, type = A->type, format = A->format;
+  int *ia = A->ia, *ja = A->ja, *ib, *jb, m = A->m, n = A->n, type = A->type, format = A->format;
+  const size_t nz = A->nz;
   SparseMatrix B;
   int i, j;
 
@@ -283,52 +285,50 @@ static SparseMatrix SparseMatrix_init(int m, int n, int type, size_t sz, int for
   return A;
 }
 
-static void SparseMatrix_alloc(SparseMatrix A, int nz) {
+static void SparseMatrix_alloc(SparseMatrix A, size_t nz) {
   int format = A->format;
-  size_t nz_t = (size_t) nz; /* size_t is 64 bit on 64 bit machine. Using nz*A->size can overflow. */
 
   A->a = NULL;
   switch (format){
   case FORMAT_COORD:
-    A->ia = gv_calloc(nz_t, sizeof(int));
-    A->ja = gv_calloc(nz_t, sizeof(int));
-    A->a = gv_calloc(nz_t, A->size);
+    A->ia = gv_calloc(nz, sizeof(int));
+    A->ja = gv_calloc(nz, sizeof(int));
+    A->a = gv_calloc(nz, A->size);
     break;
   case FORMAT_CSR:
   default:
-    A->ja = gv_calloc(nz_t, sizeof(int));
-    if (A->size > 0 && nz_t > 0) {
-      A->a = gv_calloc(nz_t, A->size);
+    A->ja = gv_calloc(nz, sizeof(int));
+    if (A->size > 0 && nz > 0) {
+      A->a = gv_calloc(nz, A->size);
     }
     break;
   }
   A->nzmax = nz;
 }
 
-static SparseMatrix SparseMatrix_realloc(SparseMatrix A, int nz){
+static SparseMatrix SparseMatrix_realloc(SparseMatrix A, size_t nz) {
   int format = A->format;
-  size_t nz_t = (size_t) nz; /* size_t is 64 bit on 64 bit machine. Using nz*A->size can overflow. */
 
   switch (format){
   case FORMAT_COORD:
-    A->ia = gv_recalloc(A->ia, A->nzmax, nz_t, sizeof(int));
-    A->ja = gv_recalloc(A->ja, A->nzmax, nz_t, sizeof(int));
+    A->ia = gv_recalloc(A->ia, A->nzmax, nz, sizeof(int));
+    A->ja = gv_recalloc(A->ja, A->nzmax, nz, sizeof(int));
     if (A->size > 0) {
       if (A->a){
-	A->a = gv_recalloc(A->a, A->nzmax, nz_t, A->size);
+	A->a = gv_recalloc(A->a, A->nzmax, nz, A->size);
       } else {
-	A->a = gv_calloc(nz_t, A->size);
+	A->a = gv_calloc(nz, A->size);
       }
     } 
     break;
   case FORMAT_CSR:
   default:
-    A->ja = gv_recalloc(A->ja, A->nzmax, nz_t, sizeof(int));
+    A->ja = gv_recalloc(A->ja, A->nzmax, nz, sizeof(int));
     if (A->size > 0) {
       if (A->a){
-	A->a = gv_recalloc(A->a, A->nzmax, nz_t, A->size);
+	A->a = gv_recalloc(A->a, A->nzmax, nz, A->size);
       } else {
-	A->a = gv_calloc(nz_t, A->size);
+	A->a = gv_calloc(nz, A->size);
       }
     }
     break;
@@ -337,7 +337,7 @@ static SparseMatrix SparseMatrix_realloc(SparseMatrix A, int nz){
   return A;
 }
 
-SparseMatrix SparseMatrix_new(int m, int n, int nz, int type, int format){
+SparseMatrix SparseMatrix_new(int m, int n, size_t nz, int type, int format) {
   /* return a sparse matrix skeleton with row dimension m and storage nz. If nz == 0, 
      only row pointers are allocated */
   SparseMatrix A;
@@ -354,7 +354,7 @@ SparseMatrix SparseMatrix_new(int m, int n, int nz, int type, int format){
 /// a generalized version of `SparseMatrix_new`
 ///
 /// Allows elements to be any data structure, not just real/int/complex etc
-static SparseMatrix SparseMatrix_general_new(int m, int n, int nz, int type,
+static SparseMatrix SparseMatrix_general_new(int m, int n, size_t nz, int type,
                                              size_t sz, int format) {
   /* return a sparse matrix skeleton with row dimension m and storage nz. If nz == 0, 
      only row pointers are allocated. this is more general and allow elements to be 
@@ -397,7 +397,7 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
     UNREACHABLE();
   }
 
-  fprintf(f,"%d %d %d\n",A->m,A->n,A->nz);
+  fprintf(f, "%d %d %" PRISIZE_T "\n", A->m, A->n, A->nz);
   const int *const ia = A->ia;
   const int *const ja = A->ja;
   switch (A->type){
@@ -459,32 +459,32 @@ static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
     UNREACHABLE();
   }
 
-  fprintf(f,"%d %d %d\n",A->m,A->n,A->nz);
+  fprintf(f, "%d %d %" PRISIZE_T "\n", A->m, A->n, A->nz);
   const int *const ia = A->ia;
   const int *const ja = A->ja;
   switch (A->type){
   case MATRIX_TYPE_REAL: {
     const double *const a = A->a;
-    for (int i = 0; i < A->nz; i++) {
+    for (size_t i = 0; i < A->nz; i++) {
       fprintf(f, "%d %d %16.8g\n",ia[i]+1, ja[i]+1, a[i]);
     }
     break;
   }
   case MATRIX_TYPE_COMPLEX: {
     const double *const a = A->a;
-    for (int i = 0; i < A->nz; i++) {
+    for (size_t i = 0; i < A->nz; i++) {
       fprintf(f, "%d %d %16.8g %16.8g\n",ia[i]+1, ja[i]+1, a[2*i], a[2*i+1]);
     }
     break;
   }
   case MATRIX_TYPE_INTEGER: {
     const int *const ai = A->a;
-    for (int i = 0; i < A->nz; i++) {
+    for (size_t i = 0; i < A->nz; i++) {
       fprintf(f, "%d %d %d\n",ia[i]+1, ja[i]+1, ai[i]);
     }
     break;
   case MATRIX_TYPE_PATTERN:
-    for (int i = 0; i < A->nz; i++){
+    for (size_t i = 0; i < A->nz; i++){
       fprintf(f, "%d %d\n",ia[i]+1, ja[i]+1);
     }
     break;
@@ -541,8 +541,8 @@ SparseMatrix SparseMatrix_from_coordinate_format_not_compacted(SparseMatrix A){
   return SparseMatrix_from_coordinate_arrays_not_compacted(A->nz, A->m, A->n, irn, jcn, a, A->type, A->size);
 }
 
-static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
-                                                                 int n,
+static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(size_t nz,
+                                                                 int m, int n,
                                                                  int *irn,
                                                                  int *jcn,
                                                                  const void *val0,
@@ -561,16 +561,15 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
   int *ia, *ja;
   double *a;
   int *ai;
-  int i;
 
-  assert(m > 0 && n > 0 && nz >= 0);
+  assert(m > 0 && n > 0);
 
-  if (m <=0 || n <= 0 || nz < 0) return NULL;
+  if (m <=0 || n <= 0) return NULL;
   A = SparseMatrix_general_new(m, n, nz, type, sz, FORMAT_CSR);
   ia = A->ia;
   ja = A->ja;
 
-  for (i = 0; i <= m; i++){
+  for (int i = 0; i <= m; i++){
     ia[i] = 0;
   }
 
@@ -578,70 +577,70 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
   case MATRIX_TYPE_REAL: {
     const double *const val = val0;
     a = A->a;
-    for (i = 0; i < nz; i++){
+    for (size_t i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
 	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
+    for (size_t i = 0; i < nz; i++){
       a[ia[irn[i]]] = val[i];
       ja[ia[irn[i]]++] = jcn[i];
     }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
+    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
   }
   case MATRIX_TYPE_COMPLEX: {
     const double *const val = val0;
     a = A->a;
-    for (i = 0; i < nz; i++){
+    for (size_t i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
 	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
+    for (size_t i = 0; i < nz; i++){
       a[2*ia[irn[i]]] = val[2 * i];
       a[2*ia[irn[i]]+1] = val[2 * i + 1];
       ja[ia[irn[i]]++] = jcn[i];
     }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
+    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
   }
   case MATRIX_TYPE_INTEGER: {
     const int *const vali = val0;
     ai = A->a;
-    for (i = 0; i < nz; i++){
+    for (size_t i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
 	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
+    for (size_t i = 0; i < nz; i++){
       ai[ia[irn[i]]] = vali[i];
       ja[ia[irn[i]]++] = jcn[i];
     }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
+    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
   }
   case MATRIX_TYPE_PATTERN:
-    for (i = 0; i < nz; i++){
+    for (size_t i = 0; i < nz; i++){
       if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
 	UNREACHABLE();
       }
       ia[irn[i]+1]++;
     }
-    for (i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (i = 0; i < nz; i++){
+    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
+    for (size_t i = 0; i < nz; i++){
       ja[ia[irn[i]]++] = jcn[i];
     }
-    for (i = m; i > 0; i--) ia[i] = ia[i - 1];
+    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
     ia[0] = 0;
     break;
   default:
@@ -656,14 +655,19 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(int nz, int m,
   return A;
 }
 
-SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n, int *irn,
-                                                 int *jcn, const void *val,
-                                                 int type, size_t sz) {
+SparseMatrix SparseMatrix_from_coordinate_arrays(size_t nz, int m, int n,
+                                                 int *irn, int *jcn,
+                                                 const void *val, int type,
+                                                 size_t sz) {
   return SparseMatrix_from_coordinate_arrays_internal(nz, m, n, irn, jcn, val, type, sz, SUM_REPEATED_ALL);
 }
 
-
-SparseMatrix SparseMatrix_from_coordinate_arrays_not_compacted(int nz, int m, int n, int *irn, int *jcn, void *val0, int type, size_t sz){
+SparseMatrix SparseMatrix_from_coordinate_arrays_not_compacted(size_t nz, int m,
+                                                               int n, int *irn,
+                                                               int *jcn,
+                                                               void *val0,
+                                                               int type,
+                                                               size_t sz) {
   return SparseMatrix_from_coordinate_arrays_internal(nz, m, n, irn, jcn, val0, type, sz, SUM_REPEATED_NONE);
 }
 
@@ -672,7 +676,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
   SparseMatrix C = NULL;
   int *mask = NULL;
   int *ia = A->ia, *ja = A->ja, *ib = B->ia, *jb = B->ja, *ic, *jc;
-  int i, j, nz, nzmax;
+  int i, j;
 
   assert(A && B);
   assert(A->format == B->format && A->format == FORMAT_CSR);/* other format not yet supported */
@@ -681,7 +685,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
   n = A->n;
   if (m != B->m || n != B->n) return NULL;
 
-  nzmax = A->nz + B->nz;/* just assume that no entries overlaps for speed */
+  const size_t nzmax = A->nz + B->nz; // just assume that no entries overlaps for speed
 
   C = SparseMatrix_new(m, n, nzmax, A->type, FORMAT_CSR);
   ic = C->ia;
@@ -691,7 +695,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
 
   for (i = 0; i < n; i++) mask[i] = -1;
 
-  nz = 0;
+  size_t nz = 0;
   ic[0] = 0;
   switch (A->type){
   case MATRIX_TYPE_REAL:{
@@ -700,7 +704,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
     double *c = C->a;
     for (i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
-	mask[ja[j]] = nz;
+	mask[ja[j]] = (int)nz;
 	jc[nz] = ja[j];
 	c[nz] = a[j];
 	nz++;
@@ -713,7 +717,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
 	  c[mask[jb[j]]] += b[j];
 	}
       }
-      ic[i+1] = nz;
+      ic[i + 1] = (int)nz;
     }
     break;
   }
@@ -723,7 +727,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
     double *c = C->a;
     for (i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
-	mask[ja[j]] = nz;
+	mask[ja[j]] = (int)nz;
 	jc[nz] = ja[j];
 	c[2*nz] = a[2*j];
 	c[2*nz+1] = a[2*j+1];
@@ -740,7 +744,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
 	  c[2*mask[jb[j]]+1] += b[2*j+1];
 	}
       }
-      ic[i+1] = nz;
+      ic[i + 1] = (int)nz;
     }
     break;
   }
@@ -750,7 +754,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
     int *c = C->a;
     for (i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
-	mask[ja[j]] = nz;
+	mask[ja[j]] = (int)nz;
 	jc[nz] = ja[j];
 	c[nz] = a[j];
 	nz++;
@@ -764,14 +768,14 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
 	  c[mask[jb[j]]] += b[j];
 	}
       }
-      ic[i+1] = nz;
+      ic[i + 1] = (int)nz;
     }
     break;
   }
   case MATRIX_TYPE_PATTERN:{
     for (i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
-	mask[ja[j]] = nz;
+	mask[ja[j]] = (int)nz;
 	jc[nz] = ja[j];
 	nz++;
       }
@@ -781,7 +785,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
 	  nz++;
 	} 
       }
-      ic[i+1] = nz;
+      ic[i + 1] = (int)nz;
     }
     break;
   }
@@ -886,7 +890,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
   SparseMatrix C = NULL;
   int *mask = NULL;
   int *ia = A->ia, *ja = A->ja, *ib = B->ia, *jb = B->ja, *ic, *jc;
-  int i, j, k, jj, type, nz;
+  int i, j, k, jj, type;
 
   assert(A->format == B->format && A->format == FORMAT_CSR);/* other format not yet supported */
 
@@ -905,13 +909,13 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 
   for (i = 0; i < B->n; i++) mask[i] = -1;
 
-  nz = 0;
+  size_t nz = 0;
   for (i = 0; i < m; i++){
     for (j = ia[i]; j < ia[i+1]; j++){
       jj = ja[j];
       for (k = ib[jj]; k < ib[jj+1]; k++){
 	if (mask[jb[k]] != -i - 2){
-	  if (sadd_overflow(nz, 1, &nz)) {
+	  if (size_overflow(nz, 1, &nz)) {
 #ifdef DEBUG_PRINT
 	    fprintf(stderr,"overflow in SparseMatrix_multiply !!!\n");
 #endif
@@ -942,7 +946,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 	  jj = ja[j];
 	  for (k = ib[jj]; k < ib[jj+1]; k++){
 	    if (mask[jb[k]] < ic[i]){
-	      mask[jb[k]] = nz;
+	      mask[jb[k]] = (int)nz;
 	      jc[nz] = jb[k];
 	      c[nz] = a[j]*b[k];
 	      nz++;
@@ -952,7 +956,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 	    }
 	  }
 	}
-	ic[i+1] = nz;
+	ic[i + 1] = (int)nz;
       }
     }
     break;
@@ -967,7 +971,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 	  jj = ja[j];
 	  for (k = ib[jj]; k < ib[jj+1]; k++){
 	    if (mask[jb[k]] < ic[i]){
-	      mask[jb[k]] = nz;
+	      mask[jb[k]] = (int)nz;
 	      jc[nz] = jb[k];
 	      c[2*nz] = a[2*j]*b[2*k] - a[2*j+1]*b[2*k+1];/*real part */
 	      c[2*nz+1] = a[2*j]*b[2*k+1] + a[2*j+1]*b[2*k];/*img part */
@@ -979,7 +983,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 	    }
 	  }
 	}
-	ic[i+1] = nz;
+	ic[i + 1] = (int)nz;
       }
     }
     break;
@@ -994,7 +998,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 	  jj = ja[j];
 	  for (k = ib[jj]; k < ib[jj+1]; k++){
 	    if (mask[jb[k]] < ic[i]){
-	      mask[jb[k]] = nz;
+	      mask[jb[k]] = (int)nz;
 	      jc[nz] = jb[k];
 	      c[nz] = a[j]*b[k];
 	      nz++;
@@ -1004,7 +1008,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 	    }
 	  }
 	}
-	ic[i+1] = nz;
+	ic[i + 1] = (int)nz;
       }
     }
     break;
@@ -1015,7 +1019,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 	jj = ja[j];
 	for (k = ib[jj]; k < ib[jj+1]; k++){
 	  if (mask[jb[k]] < ic[i]){
-	    mask[jb[k]] = nz;
+	    mask[jb[k]] = (int)nz;
 	    jc[nz] = jb[k];
 	    nz++;
 	  } else {
@@ -1023,7 +1027,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
 	  }
 	}
       }
-      ic[i+1] = nz;
+      ic[i + 1] = (int)nz;
     }
     break;
   default:
@@ -1043,7 +1047,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
   SparseMatrix D = NULL;
   int *mask = NULL;
   int *ia = A->ia, *ja = A->ja, *ib = B->ia, *jb = B->ja, *ic = C->ia, *jc = C->ja, *id, *jd;
-  int i, j, k, l, ll, jj, type, nz;
+  int i, j, k, l, ll, jj, type;
 
   assert(A->format == B->format && A->format == FORMAT_CSR);/* other format not yet supported */
 
@@ -1066,7 +1070,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
 
   for (i = 0; i < C->n; i++) mask[i] = -1;
 
-  nz = 0;
+  size_t nz = 0;
   for (i = 0; i < m; i++){
     for (j = ia[i]; j < ia[i+1]; j++){
       jj = ja[j];
@@ -1074,7 +1078,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
 	ll = jb[l];
 	for (k = ic[ll]; k < ic[ll+1]; k++){
 	  if (mask[jc[k]] != -i - 2){
-	    if (sadd_overflow(nz, 1, &nz)) {
+	    if (size_overflow(nz, 1, &nz)) {
 #ifdef DEBUG_PRINT
 	      fprintf(stderr, "overflow in SparseMatrix_multiply3 !!!\n");
 #endif
@@ -1106,7 +1110,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
         ll = jb[l];
         for (k = ic[ll]; k < ic[ll+1]; k++){
           if (mask[jc[k]] < id[i]){
-            mask[jc[k]] = nz;
+            mask[jc[k]] = (int)nz;
             jd[nz] = jc[k];
             d[nz] = a[j]*b[l]*c[k];
             nz++;
@@ -1117,7 +1121,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
         }
       }
     }
-    id[i+1] = nz;
+    id[i + 1] = (int)nz;
   }
   
   D->nz = nz;
@@ -1129,7 +1133,8 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
 SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
   /* sum repeated entries in the same row, i.e., {1,1}->1, {1,1}->2 becomes {1,1}->3 */
   int *ia = A->ia, *ja = A->ja, type = A->type, n = A->n;
-  int *mask = NULL, nz = 0, i, j, sta;
+  int *mask = NULL, i, j, sta;
+  size_t nz = 0;
 
   mask = gv_calloc((size_t)n, sizeof(int));
   for (i = 0; i < n; i++) mask[i] = -1;
@@ -1138,28 +1143,26 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
   case MATRIX_TYPE_REAL:
     {
       double *a = A->a;
-      nz = 0;
       sta = ia[0];
       for (i = 0; i < A->m; i++){
 	for (j = sta; j < ia[i+1]; j++){
 	  if (mask[ja[j]] < ia[i]){
 	    ja[nz] = ja[j];
 	    a[nz] = a[j];
-	    mask[ja[j]] = nz++;
+	    mask[ja[j]] = (int)nz++;
 	  } else {
 	    assert(ja[mask[ja[j]]] == ja[j]);
 	    a[mask[ja[j]]] += a[j];
 	  }
 	}
 	sta = ia[i+1];
-	ia[i+1] = nz;
+	ia[i + 1] = (int)nz;
       }
     }
     break;
   case MATRIX_TYPE_COMPLEX:
     {
       double *a = A->a;
-      nz = 0;
       sta = ia[0];
       for (i = 0; i < A->m; i++) {
         for (j = sta; j < ia[i+1]; j++) {
@@ -1167,7 +1170,7 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
             ja[nz] = ja[j];
             a[2 * nz] = a[2 * j];
             a[2 * nz + 1] = a[2 * j + 1];
-            mask[ja[j]] = nz++;
+            mask[ja[j]] = (int)nz++;
           } else {
             assert(ja[mask[ja[j]]] == ja[j]);
             a[2 * mask[ja[j]]] += a[2 * j];
@@ -1175,46 +1178,44 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
           }
         }
         sta = ia[i + 1];
-        ia[i + 1] = nz;
+        ia[i + 1] = (int)nz;
       }
     }
     break;
   case MATRIX_TYPE_INTEGER:
     {
       int *a = A->a;
-      nz = 0;
       sta = ia[0];
       for (i = 0; i < A->m; i++){
 	for (j = sta; j < ia[i+1]; j++){
 	  if (mask[ja[j]] < ia[i]){
 	    ja[nz] = ja[j];
 	    a[nz] = a[j];
-	    mask[ja[j]] = nz++;
+	    mask[ja[j]] = (int)nz++;
 	  } else {
 	    assert(ja[mask[ja[j]]] == ja[j]);
 	    a[mask[ja[j]]] += a[j];
 	  }
 	}
 	sta = ia[i+1];
-	ia[i+1] = nz;	
+	ia[i + 1] = (int)nz;
       }
     }
     break;
   case MATRIX_TYPE_PATTERN:
     {
-      nz = 0;
       sta = ia[0];
       for (i = 0; i < A->m; i++){
 	for (j = sta; j < ia[i+1]; j++){
 	  if (mask[ja[j]] < ia[i]){
 	    ja[nz] = ja[j];
-	    mask[ja[j]] = nz++;
+	    mask[ja[j]] = (int)nz++;
 	  } else {
 	    assert(ja[mask[ja[j]]] == ja[j]);
 	  }
 	}
 	sta = ia[i+1];
-	ia[i+1] = nz;
+	ia[i + 1] = (int)nz;
       }
     }
     break;
@@ -1229,21 +1230,18 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
 
 SparseMatrix SparseMatrix_coordinate_form_add_entry(SparseMatrix A, int irn,
                                                     int jcn, const void *val) {
-  int nz, nzmax;
-
-  static const int nentries = 1;
+  static const size_t nentries = 1;
   
   assert(A->format == FORMAT_COORD);
-  nz = A->nz;
+  const size_t nz = A->nz;
 
   if (nz + nentries >= A->nzmax){
-    nzmax = nz + nentries;
-    nzmax += 10;
+    const size_t nzmax = nz + nentries + 10;
     A = SparseMatrix_realloc(A, nzmax);
   }
   A->ia[nz] = irn;
   A->ja[nz] = jcn;
-  if (A->size) memcpy((char*) A->a + ((size_t)nz)*A->size/sizeof(char), val, A->size*((size_t)nentries));
+  if (A->size) memcpy((char *)A->a + nz * A->size / sizeof(char), val, A->size * nentries);
   if (irn >= A->m) A->m = irn + 1;
   if (jcn >= A->n) A->n = jcn + 1;
   A->nz += nentries;
@@ -1252,11 +1250,11 @@ SparseMatrix SparseMatrix_coordinate_form_add_entry(SparseMatrix A, int irn,
 
 
 SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A){
-  int i, j, *ia, *ja, nz, sta;
+  int i, j, *ia, *ja, sta;
 
   if (!A) return A;
 
-  nz = 0;
+  size_t nz = 0;
   ia = A->ia;
   ja = A->ja;
   sta = ia[0];
@@ -1271,7 +1269,7 @@ SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A){
 	}
       }
       sta = ia[i+1];
-      ia[i+1] = nz;
+      ia[i + 1] = (int)nz;
     }
     A->nz = nz;
     break;
@@ -1288,7 +1286,7 @@ SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A){
 	}
       }
       sta = ia[i+1];
-      ia[i+1] = nz;
+      ia[i + 1] = (int)nz;
     }
     A->nz = nz;
     break;
@@ -1303,7 +1301,7 @@ SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A){
 	}
       }
       sta = ia[i+1];
-      ia[i+1] = nz;
+      ia[i + 1] = (int)nz;
     }
     A->nz = nz;
     break;
@@ -1316,7 +1314,7 @@ SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A){
 	}
       }
       sta = ia[i+1];
-      ia[i+1] = nz;
+      ia[i + 1] = (int)nz;
     }
     A->nz = nz;
     break;
@@ -1330,11 +1328,11 @@ SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A){
 
 
 SparseMatrix SparseMatrix_remove_upper(SparseMatrix A){/* remove diag and upper diag */
-  int i, j, *ia, *ja, nz, sta;
+  int i, j, *ia, *ja, sta;
 
   if (!A) return A;
 
-  nz = 0;
+  size_t nz = 0;
   ia = A->ia;
   ja = A->ja;
   sta = ia[0];
@@ -1349,7 +1347,7 @@ SparseMatrix SparseMatrix_remove_upper(SparseMatrix A){/* remove diag and upper 
 	}
       }
       sta = ia[i+1];
-      ia[i+1] = nz;
+      ia[i + 1] = (int)nz;
     }
     A->nz = nz;
     break;
@@ -1366,7 +1364,7 @@ SparseMatrix SparseMatrix_remove_upper(SparseMatrix A){/* remove diag and upper 
 	}
       }
       sta = ia[i+1];
-      ia[i+1] = nz;
+      ia[i + 1] = (int)nz;
     }
     A->nz = nz;
     break;
@@ -1381,7 +1379,7 @@ SparseMatrix SparseMatrix_remove_upper(SparseMatrix A){/* remove diag and upper 
 	}
       }
       sta = ia[i+1];
-      ia[i+1] = nz;
+      ia[i + 1] = (int)nz;
     }
     A->nz = nz;
     break;
@@ -1394,7 +1392,7 @@ SparseMatrix SparseMatrix_remove_upper(SparseMatrix A){/* remove diag and upper 
 	}
       }
       sta = ia[i+1];
-      ia[i+1] = nz;
+      ia[i + 1] = (int)nz;
     }
     A->nz = nz;
     break;
@@ -1458,13 +1456,13 @@ SparseMatrix SparseMatrix_divide_row_by_degree(SparseMatrix A){
 
 SparseMatrix SparseMatrix_get_real_adjacency_matrix_symmetrized(SparseMatrix A){
   /* symmetric, all entries to 1, diaginal removed */
-  int i, *ia, *ja, nz, m, n;
+  int *ia, *ja, m, n;
   double *a;
   SparseMatrix B;
 
   if (!A) return A;
   
-  nz = A->nz;
+  const size_t nz = A->nz;
   ia = A->ia;
   ja = A->ja;
   n = A->n;
@@ -1475,15 +1473,15 @@ SparseMatrix SparseMatrix_get_real_adjacency_matrix_symmetrized(SparseMatrix A){
   B = SparseMatrix_new(m, n, nz, MATRIX_TYPE_PATTERN, FORMAT_CSR);
 
   memcpy(B->ia, ia, sizeof(int)*((size_t)(m+1)));
-  memcpy(B->ja, ja, sizeof(int)*((size_t)nz));
+  memcpy(B->ja, ja, sizeof(int) * nz);
   B->nz = A->nz;
 
   A = SparseMatrix_symmetrize(B, true);
   SparseMatrix_delete(B);
   A = SparseMatrix_remove_diagonal(A);
-  A->a = gv_calloc((size_t)A->nz, sizeof(double));
+  A->a = gv_calloc(A->nz, sizeof(double));
   a = A->a;
-  for (i = 0; i < A->nz; i++) a[i] = 1.;
+  for (size_t i = 0; i < A->nz; i++) a[i] = 1.;
   A->type = MATRIX_TYPE_REAL;
   A->size = sizeof(double);
   return A;
@@ -1520,7 +1518,7 @@ SparseMatrix SparseMatrix_copy(SparseMatrix A){
   if (A->ia[A->m] != 0) {
     memcpy(B->ja, A->ja, sizeof(int)*((size_t)(A->ia[A->m])));
   }
-  if (A->a) memcpy(B->a, A->a, A->size*((size_t)A->nz));
+  if (A->a) memcpy(B->a, A->a, A->size * A->nz);
   B->is_pattern_symmetric = A->is_pattern_symmetric;
   B->is_symmetric = A->is_symmetric;
   B->is_undirected = A->is_undirected;
@@ -1551,7 +1549,7 @@ static void SparseMatrix_level_sets(SparseMatrix A, int root, int *nlevel,
      nlevel: max distance to root from any node (in the connected comp)
      levelset_ptr, levelset: the level sets
    */
-  int i, j, sta = 0, sto = 1, nz, ii;
+  int i, j, sta = 0, sto = 1, ii;
   int m = A->m, *ia = A->ia, *ja = A->ja;
 
   if (!(*levelset_ptr)) *levelset_ptr = gv_calloc((size_t)(m + 2), sizeof(int));
@@ -1568,7 +1566,7 @@ static void SparseMatrix_level_sets(SparseMatrix A, int root, int *nlevel,
   (*levelset)[0] = root;
   (*mask)[root] = 1;
   *nlevel = 1;
-  nz = 1;
+  size_t nz = 1;
   sta = 0; sto = 1;
   while (sto > sta){
     for (i = sta; i < sto; i++){
@@ -1581,9 +1579,9 @@ static void SparseMatrix_level_sets(SparseMatrix A, int root, int *nlevel,
 	}
       }
     }
-    (*levelset_ptr)[++(*nlevel)] = nz;
+    (*levelset_ptr)[++(*nlevel)] = (int)nz;
     sta = sto;
-    sto = nz;
+    sto = (int)nz;
   }
   (*nlevel)--;
   if (reinitialize_mask) for (i = 0; i < (*levelset_ptr)[*nlevel]; i++) (*mask)[(*levelset)[i]] = UNMASKED;
@@ -1722,20 +1720,21 @@ SparseMatrix SparseMatrix_get_augmented(SparseMatrix A){
   /* convert matrix A to an augmente dmatrix {{0,A},{A^T,0}} */
   int *irn = NULL, *jcn = NULL;
   void *val = NULL;
-  int nz = A->nz, type = A->type;
+  size_t nz = A->nz;
+  int type = A->type;
   int m = A->m, n = A->n, i, j;
   SparseMatrix B = NULL;
   if (!A) return NULL;
   if (nz > 0){
-    irn = gv_calloc((size_t)nz * 2, sizeof(int));
-    jcn = gv_calloc((size_t)nz * 2, sizeof(int));
+    irn = gv_calloc(nz * 2, sizeof(int));
+    jcn = gv_calloc(nz * 2, sizeof(int));
   }
 
   if (A->a){
     assert(A->size != 0 && nz > 0);
-    val = gv_calloc(2 * (size_t)nz, A->size);
-    memcpy(val, A->a, A->size*((size_t)nz));
-    memcpy(((char*) val) + ((size_t)nz)*A->size, A->a, A->size*((size_t)nz));
+    val = gv_calloc(2 * nz, A->size);
+    memcpy(val, A->a, A->size * nz);
+    memcpy((char *)val + nz * A->size, A->a, A->size * nz);
   }
 
   nz = 0;
@@ -1789,7 +1788,8 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
      column cindices[i] will be the new column i.
      if rindices = NULL, it is assume that 1 -- nrow is needed. Same for cindices/ncol.
    */
-  int nz = 0, i, j, *irn, *jcn, *ia = A->ia, *ja = A->ja, m = A->m, n = A->n;
+  size_t nz = 0;
+  int i, j, *irn, *jcn, *ia = A->ia, *ja = A->ja, m = A->m, n = A->n;
   int *cmask, *rmask;
   void *v = NULL;
   SparseMatrix B = NULL;
@@ -1841,9 +1841,9 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
   case MATRIX_TYPE_REAL:{
     double *a = A->a;
     double *val;
-    irn = gv_calloc((size_t)nz, sizeof(int));
-    jcn = gv_calloc((size_t)nz, sizeof(int));
-    val = gv_calloc((size_t)nz, sizeof(double));
+    irn = gv_calloc(nz, sizeof(int));
+    jcn = gv_calloc(nz, sizeof(int));
+    val = gv_calloc(nz, sizeof(double));
 
     nz = 0;
     for (i = 0; i < m; i++){
@@ -1862,9 +1862,9 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
     double *a = A->a;
     double *val;
 
-    irn = gv_calloc((size_t)nz, sizeof(int));
-    jcn = gv_calloc((size_t)nz, sizeof(int));
-    val = gv_calloc(2 * (size_t)nz, sizeof(double));
+    irn = gv_calloc(nz, sizeof(int));
+    jcn = gv_calloc(nz, sizeof(int));
+    val = gv_calloc(2 * nz, sizeof(double));
 
     nz = 0;
     for (i = 0; i < m; i++){
@@ -1885,9 +1885,9 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
     int *a = A->a;
     int *val;
 
-    irn = gv_calloc((size_t)nz, sizeof(int));
-    jcn = gv_calloc((size_t)nz, sizeof(int));
-    val = gv_calloc((size_t)nz, sizeof(int));
+    irn = gv_calloc(nz, sizeof(int));
+    jcn = gv_calloc(nz, sizeof(int));
+    val = gv_calloc(nz, sizeof(int));
 
     nz = 0;
     for (i = 0; i < m; i++){
@@ -1904,8 +1904,8 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
     break;
   }
   case MATRIX_TYPE_PATTERN:
-    irn = gv_calloc((size_t)nz, sizeof(int));
-    jcn = gv_calloc((size_t)nz, sizeof(int));
+    irn = gv_calloc(nz, sizeof(int));
+    jcn = gv_calloc(nz, sizeof(int));
     nz = 0;
      for (i = 0; i < m; i++){
       if (rmask[i] < 0) continue;
@@ -1934,12 +1934,11 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
 
 SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A){
   double *a;
-  int i;
 
   free(A->a);
-  A->a = gv_calloc((size_t)A->nz, sizeof(double));
+  A->a = gv_calloc(A->nz, sizeof(double));
   a = A->a;
-  for (i = 0; i < A->nz; i++) a[i] = 1.;
+  for (size_t i = 0; i < A->nz; i++) a[i] = 1.;
   A->type = MATRIX_TYPE_REAL;
   A->size = sizeof(double);
   return A;
@@ -1947,10 +1946,10 @@ SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A){
 }
 
 SparseMatrix SparseMatrix_from_dense(int m, int n, double *x){
-  /* wrap a mxn matrix into a sparse matrix. the {i,j} entry of the matrix is in x[i*n+j], 0<=i<m; 0<=j<n */
   int i, j, *ja;
   double *a;
-  SparseMatrix A = SparseMatrix_new(m, n, m*n, MATRIX_TYPE_REAL, FORMAT_CSR);
+  SparseMatrix A = SparseMatrix_new(m, n, (size_t)m * (size_t)n,
+                                    MATRIX_TYPE_REAL, FORMAT_CSR);
 
   A->ia[0] = 0;
   for (i = 1; i <= m; i++) (A->ia)[i] = (A->ia)[i-1] + n;
@@ -1964,7 +1963,7 @@ SparseMatrix SparseMatrix_from_dense(int m, int n, double *x){
     }
     ja += n; a += j;
   }
-  A->nz = m*n;
+  A->nz = (size_t)m * (size_t)n;
   return A;
 
 }

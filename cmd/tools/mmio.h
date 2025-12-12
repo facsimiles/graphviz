@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <stddef.h>
 #include <stdio.h>
 
 #define MM_MAX_LINE_LENGTH 100025
@@ -36,7 +37,7 @@ typedef struct {
 } MM_typecode;
 
 int mm_read_banner(FILE * f, MM_typecode * matcode);
-int mm_read_mtx_crd_size(FILE * f, int *M, int *N, int *nz);
+int mm_read_mtx_crd_size(FILE * f, int *M, int *N, size_t *nz);
 
 /********************* Matrix Market error codes ***************************/
 
