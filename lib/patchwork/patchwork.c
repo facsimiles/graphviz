@@ -145,7 +145,6 @@ static int nodecmp(const void *x, const void *y) {
 
 static void layoutTree(treenode_t * tree)
 {
-    rectangle *recs;
     treenode_t* cp;
 
     /* if (tree->kind == AGNODE) return; */
@@ -173,7 +172,7 @@ static void layoutTree(treenode_t * tree)
     m = (h + w - disc)/2.0;
     crec.size[0] = w - m;
     crec.size[1] = h - m;
-    recs = tree_map(nc, areas_sorted, crec);
+    rectangle *const recs = tree_map(nc, areas_sorted, crec);
     if (Verbose)
 	fprintf (stderr, "rec %f %f %f %f\n", tree->r.x[0], tree->r.x[1], tree->r.size[0], tree->r.size[1]);
     for (size_t i = 0; i < nc; i++) {
