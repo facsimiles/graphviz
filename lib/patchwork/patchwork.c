@@ -145,7 +145,6 @@ static int nodecmp(const void *x, const void *y) {
 
 static void layoutTree(treenode_t * tree)
 {
-    /* if (tree->kind == AGNODE) return; */
     if (tree->n_children == 0) return;
 
     size_t nc = tree->n_children;
