@@ -160,9 +160,9 @@ static void layoutTree(treenode_t * tree)
     for (size_t i = 0; i < nc; i++) {
 	areas_sorted[i] = nodes[i]->area;
     }
-    double disc, delta, m, h = tree->r.size[1], w = tree->r.size[0];
+    double delta, m, h = tree->r.size[1], w = tree->r.size[0];
     delta = h - w;
-    disc = sqrt(delta*delta + 4.0*tree->child_area);
+    const double disc = sqrt(delta * delta + 4.0 * tree->child_area);
     m = (h + w - disc)/2.0;
     const rectangle crec = {.x = {tree->r.x[0], tree->r.x[1]},
                             .size = {w - m, h - m}};
