@@ -74,11 +74,8 @@ bool gvplugin_install(GVC_t *gvc, api_t api, const char *typestr, int quality,
                       gvplugin_package_t *package,
                       gvplugin_installed_t *typeptr)
 {
-    gvplugin_available_t *plugin, **pnext;
-    char *t;
-
     /* duplicate typestr to later save in the plugin list */
-    t = strdup(typestr);
+    char *const t = strdup(typestr);
     if (t == NULL)
         return false;
 
@@ -86,7 +83,7 @@ bool gvplugin_install(GVC_t *gvc, api_t api, const char *typestr, int quality,
     const strview_t type = strview(typestr, ':');
 
     /* point to the beginning of the linked list of plugins for this api */
-    pnext = &gvc->apis[api];
+    gvplugin_available_t **pnext = &gvc->apis[api];
 
     /* keep alpha-sorted and insert new duplicates ahead of old */
     while (*pnext) {
@@ -112,7 +109,7 @@ bool gvplugin_install(GVC_t *gvc, api_t api, const char *typestr, int quality,
         pnext = &(*pnext)->next;
     }
 
-    plugin = gv_alloc(sizeof(gvplugin_available_t));
+    gvplugin_available_t *const plugin = gv_alloc(sizeof(gvplugin_available_t));
     plugin->next = *pnext;
     *pnext = plugin;
     plugin->typestr = t;

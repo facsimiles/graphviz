@@ -106,7 +106,7 @@ layout (Agraph_t* g, int depth)
     }
 
     LIST(boxf) gs = {0};
-    void **children = gv_calloc(total+1, sizeof(void*));
+    LIST(void *) children = {0};
     int j = 0;
     for (int i = 1; i <= GD_n_cluster(g); i++) {
 	Agraph_t *const subg = GD_clust(g)[i];
@@ -114,7 +114,8 @@ layout (Agraph_t* g, int depth)
 	if (pinfo.vals && cattr) {
 	    pinfo.vals[j] = (packval_t)late_int(subg, cattr, 0, 0);
 	}
-	children[j++] = subg;
+	LIST_APPEND(&children, subg);
+	++j;
     }
   
     if (nv-nvs > 0) {
@@ -126,7 +127,8 @@ layout (Agraph_t* g, int depth)
 	    if (pinfo.vals && vattr) {
 		pinfo.vals[j] = (packval_t)late_int(n, vattr, 0, 0);
 	    }
-	    children[j++] = n;
+	    LIST_APPEND(&children, n);
+	    ++j;
 	}
     }
 
@@ -139,14 +141,14 @@ layout (Agraph_t* g, int depth)
     boxf rootbb = {.LL = {DBL_MAX, DBL_MAX}, .UR = {-DBL_MAX, -DBL_MAX}};
 
     /* reposition children relative to GD_bb(g) */
-    for (j = 0; (size_t)j < LIST_SIZE(&gs); j++) {
-	const pointf p = pts[j];
-	boxf bb = LIST_GET(&gs, (size_t)j);
+    for (size_t i = 0; i < LIST_SIZE(&gs); ++i) {
+	const pointf p = pts[i];
+	boxf bb = LIST_GET(&gs, i);
 	bb.LL = add_pointf(bb.LL, p);
 	bb.UR = add_pointf(bb.UR, p);
 	EXPANDBB(&rootbb, bb);
-	if (j < GD_n_cluster(g)) {
-	    Agraph_t *const subg = children[j];
+	if (i < (size_t)GD_n_cluster(g)) {
+	    Agraph_t *const subg = LIST_GET(&children, i);
 	    GD_bb(subg) = bb;
 	    if (Verbose > 1) {
 		indent (depth);
@@ -154,7 +156,7 @@ layout (Agraph_t* g, int depth)
 	    }
 	}
 	else {
-	    Agnode_t *const n = children[j];
+	    Agnode_t *const n = LIST_GET(&children, i);
 	    if (n) {
 	        ND_coord(n) = mid_pointf (bb.LL, bb.UR);
 	        if (Verbose > 1) {
@@ -195,9 +197,9 @@ layout (Agraph_t* g, int depth)
      * This makes the repositioning simpler; we just translate the clusters and nodes in g by
      * the final bb.ll of g.
      */
-    for (j = 0; j < total; j++) {
-	if (j < GD_n_cluster(g)) {
-	    Agraph_t *const subg = children[j];
+    for (size_t i = 0; i < LIST_SIZE(&children); ++i) {
+	if (i < (size_t)GD_n_cluster(g)) {
+	    Agraph_t *const subg = LIST_GET(&children, i);
 	    boxf bb = GD_bb(subg);
 	    bb.LL = sub_pointf(bb.LL, rootbb.LL);
 	    bb.UR = sub_pointf(bb.UR, rootbb.LL);
@@ -208,7 +210,7 @@ layout (Agraph_t* g, int depth)
 	    }
 	}
 	else {
-	    Agnode_t *const n = children[j];
+	    Agnode_t *const n = LIST_GET(&children, i);
 	    if (n) {
 	        ND_coord(n) = sub_pointf (ND_coord(n), rootbb.LL);
 	        if (Verbose > 1) {
@@ -228,7 +230,7 @@ layout (Agraph_t* g, int depth)
     }
 
     LIST_FREE(&gs);
-    free (children);
+    LIST_FREE(&children);
     free (pts);
 }
 

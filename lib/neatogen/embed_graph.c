@@ -37,7 +37,6 @@ void embed_graph(vtx_data * graph, int n, int dim, DistType *** Coords,
     int i, j;
     int node;
     DistType *storage = gv_calloc(n * dim, sizeof(DistType));
-    DistType **coords = *Coords;
     DistType *dist = gv_calloc(n, sizeof(DistType)); // this vector stores  the
                                                      // distances of each nodes
                                                      // to the selected “pivots”
@@ -45,7 +44,7 @@ void embed_graph(vtx_data * graph, int n, int dim, DistType *** Coords,
     DistType max_dist = 0;
 
     /* this matrix stores the distance between each node and each "pivot" */
-    *Coords = coords = gv_calloc(dim, sizeof(DistType *));
+    DistType **coords = *Coords = gv_calloc(dim, sizeof(DistType *));
     for (i = 0; i < dim; i++)
 	coords[i] = storage + i * n;
 
