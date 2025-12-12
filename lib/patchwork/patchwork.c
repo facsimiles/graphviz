@@ -15,6 +15,7 @@
 #include <common/render.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
+#include <util/list.h>
 
 typedef struct treenode_t treenode_t;
 struct treenode_t {
@@ -148,17 +149,18 @@ static void layoutTree(treenode_t * tree)
     if (tree->n_children == 0) return;
 
     size_t nc = tree->n_children;
-    treenode_t** nodes = gv_calloc(nc, sizeof(treenode_t*));
+    LIST(treenode_t *) nodes = {0};
+    LIST_RESERVE(&nodes, nc);
     treenode_t *cp = tree->leftchild;
     for (size_t i = 0; i < nc; i++) {
-	nodes[i] = cp;
+	LIST_APPEND(&nodes, cp);
 	cp = cp->rightsib;
     }
 
-    qsort(nodes, nc, sizeof(treenode_t *), nodecmp);
+    LIST_SORT(&nodes, nodecmp);
     double* areas_sorted = gv_calloc(nc, sizeof(double));
     for (size_t i = 0; i < nc; i++) {
-	areas_sorted[i] = nodes[i]->area;
+	areas_sorted[i] = LIST_GET(&nodes, i)->area;
     }
     const double h = tree->r.size[1];
     const double w = tree->r.size[0];
@@ -171,7 +173,7 @@ static void layoutTree(treenode_t * tree)
     if (Verbose)
 	fprintf (stderr, "rec %f %f %f %f\n", tree->r.x[0], tree->r.x[1], tree->r.size[0], tree->r.size[1]);
     for (size_t i = 0; i < nc; i++) {
-	nodes[i]->r = recs[i];
+	LIST_GET(&nodes, i)->r = recs[i];
 	if (Verbose)
 	    fprintf (stderr, "%f - %f %f %f %f = %f (%f %f %f %f)\n", areas_sorted[i],
         	recs[i].x[0]-recs[i].size[0]*0.5, recs[i].x[1]-recs[i].size[1]*0.5,
@@ -179,7 +181,7 @@ static void layoutTree(treenode_t * tree)
         	recs[i].x[0], recs[i].x[1],  recs[i].size[0], recs[i].size[1]);
 
     }
-    free (nodes);
+    LIST_FREE(&nodes);
     free (areas_sorted);
     free (recs);
 
