@@ -6211,6 +6211,32 @@ def test_2734():
             gradient = this_gradient
 
 
+@pytest.mark.xfail(
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2796", strict=True
+)
+def test_2796():
+    """
+    Graphviz should be able to triangulate the points in this graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2796
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2796.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # process this
+    p = subprocess.run(
+        ["dot", "-Tpdf", "-o", os.devnull, input],
+        stderr=subprocess.PIPE,
+        check=True,
+        text=True,
+    )
+
+    assert (
+        re.search(r"\btrouble in init_rank\b", p.stderr) is None
+    ), "triangulation failed"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
