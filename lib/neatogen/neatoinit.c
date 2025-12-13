@@ -19,9 +19,6 @@
 #include "config.h"
 
 #include <time.h>
-#ifndef _WIN32
-#include <unistd.h>
-#endif
 #include <neatogen/neato.h>
 #include <pack/pack.h>
 #include <neatogen/stress.h>
@@ -38,6 +35,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
 #include <util/gv_ctype.h>
@@ -89,7 +87,7 @@ bool user_pos(attrsym_t *posptr, attrsym_t *pinptr, node_t *np, int nG) {
 	    if (PSinputscale > 0.0) {
 		int i;
 		for (i = 0; i < Ndim; i++)
-		    pvec[i] = pvec[i] / PSinputscale;
+		    pvec[i] /= PSinputscale;
 	    }
 	    if (Ndim > 3)
 		jitter_d(np, nG, 3);
@@ -413,15 +411,14 @@ static void freeEdgeInfo (Agraph_t * g)
  * Scans for a correct bb attribute. If available, sets it
  * in the graph and returns 1.
  */
-#define BS "%lf,%lf,%lf,%lf"
-
 static int chkBB(Agraph_t * g, attrsym_t * G_bb, boxf* bbp)
 {
     char *s;
     boxf bb;
 
     s = agxget(g, G_bb);
-    if (sscanf(s, BS, &bb.LL.x, &bb.LL.y, &bb.UR.x, &bb.UR.y) == 4) {
+    if (sscanf(s, "%lf,%lf,%lf,%lf", &bb.LL.x, &bb.LL.y, &bb.UR.x,
+               &bb.UR.y) == 4) {
 	if (bb.LL.y > bb.UR.y) {
 	/* If the LL.y coordinate is bigger than the UR.y coordinate,
          * we assume the input was produced using -y, so we normalize
@@ -609,7 +606,7 @@ static int neatoModel(graph_t * g)
 {
     char *p = agget(g, "model");
 
-    if (!p || streq(p, ""))    /* if p is NULL or "" */
+    if (!p || streq(p, ""))
 	return MODEL_SHORTPATH;
     if (streq(p, "circuit"))
 	return MODEL_CIRCUIT;
@@ -947,11 +944,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
 	long seed;
 	/* Check for seed value */
 	if (!gv_isdigit(*p) || sscanf(p, "%ld", &seed) < 1) {
-#if defined(_WIN32)
 	    seed = (unsigned) time(NULL);
-#else
-	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);
-#endif
 	    agset(G, "start", ITOS(seed));
 	}
 	*seedp = seed;
@@ -1312,14 +1305,15 @@ neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel,
 static void addZ (Agraph_t* g)
 {
     node_t* n;
-    char    buf[BUFSIZ];
+    agxbuf buf = {0};
 
     if (Ndim >= 3 && N_z) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    snprintf(buf, sizeof(buf), "%lf", POINTS_PER_INCH * ND_pos(n)[2]);
-	    agxset(n, N_z, buf);
+	    agxbprint(&buf, "%lf", POINTS_PER_INCH * ND_pos(n)[2]);
+	    agxset(n, N_z, agxbuse(&buf));
 	}
     }
+    agxbfree(&buf);
 }
 
 #ifdef IPSEPCOLA
