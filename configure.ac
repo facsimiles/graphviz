@@ -128,7 +128,7 @@ case "${host_os}" in
 	;;
   *darwin* )
 	DARWIN=yes
-	AC_DEFINE_UNQUOTED(DARWIN,1,[Define for any Darwin-based OS.])
+	AC_DEFINE(DARWIN,1,[Define for any Darwin-based OS.])
 	BROWSER="open"
 	JSHEXT=jnilib
 	SHARED_LIBRARY_SUFFIX=.dylib
@@ -197,7 +197,7 @@ if test "$enable_shared" != "no"; then
         use_shared="Yes"
 	case "${host_os}" in
   		*uwin* | *cygwin* | *mingw32* )
-			AC_DEFINE_UNQUOTED(GVDLL,1, [Define for DLLs on Windows.])
+			AC_DEFINE(GVDLL,1,[Define for DLLs on Windows.])
 		;;
 	esac
 
@@ -1131,8 +1131,7 @@ if test "$use_tcl" = ""; then
   if test "${TCL_SUPPORTS_STUBS}" = "1"; then
     use_tcl="Yes"
     TCL_CFLAGS="${TCL_CFLAGS} -DUSE_TCL_STUBS"
-    AC_DEFINE_UNQUOTED(HAVE_TCL,1,
-	[Define if you have the tcl library])
+    AC_DEFINE(HAVE_TCL,1,[Define if you have the tcl library])
   else
     AC_MSG_WARN([Tcl does not have STUBs support, perhaps it is too old?  The Tcl packages will not be built])
     use_tcl="No (no STUBs support)"
@@ -1195,7 +1194,7 @@ else
   ],[])
 
   if test "$use_expat" = "Yes"; then
-    AC_DEFINE_UNQUOTED([HAVE_EXPAT],[1],[Define if you have the expat library])
+    AC_DEFINE([HAVE_EXPAT],[1],[Define if you have the expat library])
   fi
 fi
 
@@ -1236,8 +1235,7 @@ else
 fi
 if test "$use_devil" = ""; then
   use_devil="Yes"
-  AC_DEFINE_UNQUOTED(HAVE_DEVIL,1,
-    [Define if you have the DevIL library])
+  AC_DEFINE(HAVE_DEVIL,1,[Define if you have the DevIL library])
   AC_SUBST([DEVIL_INCLUDES])
   AC_SUBST([DEVIL_LIBS])
 fi
@@ -1261,7 +1259,7 @@ LDFLAGS="$LDFLAGS $Z_LIBS"
 AC_CHECK_HEADER(zlib.h,
 	[AC_CHECK_LIB(z,main,
 		[Z_LIBS="$Z_LIBS -lz"
-		AC_DEFINE_UNQUOTED(HAVE_LIBZ,1,[Define if you have the Z library])],
+		AC_DEFINE(HAVE_LIBZ,1,[Define if you have the Z library])],
 			AC_MSG_WARN(Optional z library not available))],
 	AC_MSG_WARN(Optional z library not available - no zlib.h))
 	LDFLAGS="$LDFLAGS $Z_LIBS"
@@ -1282,8 +1280,7 @@ if test "$with_webp" != "yes"; then
 else
   PKG_CHECK_MODULES(WEBP, [libwebp],[
     use_webp="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_WEBP,1,
-      [Define if you have the webp library])
+    AC_DEFINE(HAVE_WEBP,1,[Define if you have the webp library])
     AC_SUBST([WEBP_CFLAGS])
     AC_SUBST([WEBP_LIBS])
   ],[
@@ -1304,8 +1301,7 @@ if test "$with_poppler" != "yes"; then
 else
   PKG_CHECK_MODULES(POPPLER, [poppler-glib],[
     use_poppler="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_POPPLER,1,
-      [Define if you have the poppler library])
+    AC_DEFINE(HAVE_POPPLER,1,[Define if you have the poppler library])
     AC_SUBST([POPPLER_CFLAGS])
     AC_SUBST([POPPLER_LIBS])
   ],[
@@ -1372,8 +1368,7 @@ if test "$with_pangocairo" != "yes"; then
 else
   PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.22.0],[
     use_pangocairo="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
-      [Define if you have the pangocairo library])
+    AC_DEFINE(HAVE_PANGOCAIRO,1,[Define if you have the pangocairo library])
     AC_SUBST([PANGOCAIRO_CFLAGS])
     AC_SUBST([PANGOCAIRO_LIBS])
   ],[
@@ -1406,8 +1401,7 @@ else
   else
     PKG_CHECK_MODULES(LASI, [lasi],[
       use_lasi="Yes"
-      AC_DEFINE_UNQUOTED(HAVE_LASI,1,
-        [Define if you have the lasi library])
+      AC_DEFINE(HAVE_LASI,1,[Define if you have the lasi library])
       AC_SUBST([LASI_CFLAGS])
       AC_SUBST([LASI_LIBS])
     ],[
@@ -1548,8 +1542,7 @@ if test "$with_gts" != "yes"; then
 else
   PKG_CHECK_MODULES(GTS, [gts],[
     use_gts="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_GTS,1,
-      [Define if you have the gts library])
+    AC_DEFINE(HAVE_GTS,1,[Define if you have the gts library])
     AC_SUBST([GTS_CFLAGS])
     AC_SUBST([GTS_LIBS])
   ],[
@@ -1696,7 +1689,7 @@ else
     use_quartz="Yes"
     QUARTZ_LIBS='-framework ApplicationServices'
     AC_SUBST([QUARTZ_LIBS])
-    AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the Quartz framework for macOS])
+    AC_DEFINE(HAVE_QUARTZ,1,[Define if you have the Quartz framework for macOS])
   else
     use_quartz="No (missing ApplicationServices.framework)"
   fi
@@ -1774,27 +1767,27 @@ if test "$use_gd" = ""; then
      fi
   ])
   if test "$have_gdlib" != ""; then
-      AC_DEFINE_UNQUOTED(HAVE_GDLIB,1,[Define if you have the gdlib library])
+      AC_DEFINE(HAVE_GDLIB,1,[Define if you have the gdlib library])
       for f in $GD_FEATURES ; do
 	    if test "$f" = "GD_PNG"; then
-                AC_DEFINE_UNQUOTED(HAVE_GD_PNG,1,[Define if the GD library supports PNG])
+                AC_DEFINE(HAVE_GD_PNG,1,[Define if the GD library supports PNG])
 	    fi
 	    if test "$f" = "GD_JPEG"; then
-                AC_DEFINE_UNQUOTED(HAVE_GD_JPEG,1,[Define if the GD library supports JPEG])
+                AC_DEFINE(HAVE_GD_JPEG,1,[Define if the GD library supports JPEG])
 	    fi
 	    if test "$f" = "GD_XPM"; then
-                AC_DEFINE_UNQUOTED(HAVE_GD_XPM,1,[Define if the GD library supports XPM])
+                AC_DEFINE(HAVE_GD_XPM,1,[Define if the GD library supports XPM])
 	    fi
 	    if test "$f" = "GD_FONTCONFIG"; then
-                AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library supports FONTCONFIG])
+                AC_DEFINE(HAVE_GD_FONTCONFIG,1,[Define if the GD library supports FONTCONFIG])
 		        have_gd_fontconfig=1
 	    fi
 	    if test "$f" = "GD_FREETYPE"; then
-                AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library supports FREETYPE])
+                AC_DEFINE(HAVE_GD_FREETYPE,1,[Define if the GD library supports FREETYPE])
 		        have_gd_freetype=1
 	    fi
 	    if test "$f" = "GD_GIF"; then
-                AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library supports GIF])
+                AC_DEFINE(HAVE_GD_GIF,1,[Define if the GD library supports GIF])
 	    fi
       done
 
@@ -1837,7 +1830,7 @@ if test "$use_gd" = ""; then
     ])
     if test "$use_gd" = ""; then
       AC_CHECK_LIB(gd,main,[
-          AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if you have the GD library])
+          AC_DEFINE(HAVE_LIBGD,1,[Define if you have the GD library])
           use_gd="Yes"
         ],[
           AC_MSG_WARN(Optional GD library not available)
@@ -1880,7 +1873,7 @@ else
     AC_CHECK_LIB(glut,main,
       [GLUT_LIBS="$GLUT_LIBS -lglut"
       use_glut="Yes"
-      AC_DEFINE_UNQUOTED(HAVE_GLUT,1,[Define if you have the GLUT library])],
+      AC_DEFINE(HAVE_GLUT,1,[Define if you have the GLUT library])],
       use_glut="No (missing libglut)"
       AC_MSG_WARN(Optional glut library not available),
       []),
@@ -1939,7 +1932,7 @@ if test "$with_sfdp" != "yes"; then
   use_sfdp="No (disabled)"
 else
   use_sfdp="Yes"
-  AC_DEFINE_UNQUOTED(SFDP,1,[Define if you want SFDP])
+  AC_DEFINE(SFDP,1,[Define if you want SFDP])
 fi
 AM_CONDITIONAL(WITH_SFDP, [test "$use_sfdp" = "Yes"])
 
@@ -1996,7 +1989,7 @@ if test "$with_ortho" != "yes"; then
   use_ortho="No (disabled)"
 else
   use_ortho="Yes"
-  AC_DEFINE_UNQUOTED(ORTHO,1,[Define if you want ORTHO])
+  AC_DEFINE(ORTHO,1,[Define if you want ORTHO])
 fi
 AM_CONDITIONAL(WITH_ORTHO, [test "$use_ortho" = "Yes"])
 
@@ -2011,7 +2004,7 @@ if test "$with_digcola" != "yes"; then
   use_digcola="No (disabled)"
 else
   use_digcola="Yes"
-  AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
+  AC_DEFINE(DIGCOLA,1,[Define if you want DIGCOLA])
 fi
 
 dnl -----------------------------------
@@ -2027,7 +2020,7 @@ else
     use_ipsepcola="No (requires: digcola)"
   else
     use_ipsepcola="Yes"
-    AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
+    AC_DEFINE(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
     IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
     IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la'
     AC_SUBST([IPSEPCOLA_INCLUDES])
@@ -2041,7 +2034,7 @@ AM_CONDITIONAL(WITH_IPSEPCOLA, [test "$use_ipsepcola" = "Yes"])
 # This is a historical artifact ... there are no other choices these days
 # This #define is never used in our sources,
 #    but apparently may still be in use by others
-AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Historical artifact - always true])
+AC_DEFINE(WITH_CGRAPH,1,[Historical artifact - always true])
 AM_CONDITIONAL(WITH_CGRAPH, [true])
 
 # -----------------------------------------------------------------------
