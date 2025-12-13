@@ -338,6 +338,18 @@ ubuntu-25.04-build:
     variables:
       IMAGE: ubuntu-25.04
 
+ubuntu-25.10-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-25.10
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-25.10
+
 out-of-source-build:
     <<: *deb_build_definition
     script:
@@ -933,6 +945,18 @@ ubuntu-25.04-test:
         - saas-linux-small-amd64
     variables:
       IMAGE: ubuntu-25.04
+
+ubuntu-25.10-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "ubuntu-25.10-build"
+          artifacts: true
+    tags:
+        - saas-linux-small-amd64
+    variables:
+      IMAGE: ubuntu-25.10
 
 rocky8-test:
     <<: *linux_test_definition

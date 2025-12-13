@@ -78,7 +78,7 @@ def main():
         with open(filename, "rt", encoding="utf-8") as fp:
             for line in fp.readlines():
                 item = [item.strip() for item in line.split(":")]
-                if len(item) == 2:
+                if len(item) >= 2:
                     if item[1] == "":
                         section_name = item[0]
                         if section_name not in table:
@@ -86,7 +86,7 @@ def main():
                             table_sections.append(section_name)
                             component_names[section_name] = []
                     else:
-                        component_name, component_value = item
+                        component_name, component_value, *_ = item
                         short_value = re.sub("(Yes|No).*", "\\1", component_value)
                         if opts.short:
                             component_value = short_value
