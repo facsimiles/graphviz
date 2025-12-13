@@ -98,24 +98,21 @@ layout (Agraph_t* g, int depth)
     if (pinfo.mode == l_array && (pinfo.flags & PK_USER_VALS)) {
 	cattr = agattr_text(root, AGRAPH, "sortv", 0);
 	vattr = agattr_text(root, AGNODE, "sortv", 0);
-	if (cattr || vattr)
-	    pinfo.vals = gv_calloc(total+1, sizeof(packval_t));
-	else
+	if (cattr == NULL && vattr == NULL)
 	    agwarningf("Graph %s has array packing with user values but no \"sortv\" attributes are defined.",
 		agnameof(g));
     }
 
     LIST(boxf) gs = {0};
     LIST(void *) children = {0};
-    int j = 0;
+    LIST(packval_t) vals = {0};
     for (int i = 1; i <= GD_n_cluster(g); i++) {
 	Agraph_t *const subg = GD_clust(g)[i];
 	LIST_APPEND(&gs, GD_bb(subg));
-	if (pinfo.vals && cattr) {
-	    pinfo.vals[j] = (packval_t)late_int(subg, cattr, 0, 0);
+	if (cattr) {
+	    LIST_APPEND(&vals, (packval_t)late_int(subg, cattr, 0, 0));
 	}
 	LIST_APPEND(&children, subg);
-	++j;
     }
   
     if (nv-nvs > 0) {
@@ -124,19 +121,18 @@ layout (Agraph_t* g, int depth)
 	    ND_alg(n) = g;
 	    const boxf bb = {.UR = {.x = ND_xsize(n), .y = ND_ysize(n)}};
 	    LIST_APPEND(&gs, bb);
-	    if (pinfo.vals && vattr) {
-		pinfo.vals[j] = (packval_t)late_int(n, vattr, 0, 0);
+	    if (vattr) {
+		LIST_APPEND(&vals, (packval_t)late_int(n, vattr, 0, 0));
 	    }
 	    LIST_APPEND(&children, n);
-	    ++j;
 	}
     }
 
 	/* pack rectangles */
+    pinfo.vals = LIST_IS_EMPTY(&vals) ? NULL : LIST_FRONT(&vals);
     pointf *const pts = putRects(LIST_SIZE(&gs),
                                  LIST_IS_EMPTY(&gs) ? NULL : LIST_FRONT(&gs),
                                  &pinfo);
-    free (pinfo.vals);
 
     boxf rootbb = {.LL = {DBL_MAX, DBL_MAX}, .UR = {-DBL_MAX, -DBL_MAX}};
 
@@ -229,6 +225,7 @@ layout (Agraph_t* g, int depth)
 	fprintf (stderr, "%s : %f %f %f %f\n", agnameof(g), rootbb.LL.x, rootbb.LL.y, rootbb.UR.x, rootbb.UR.y);
     }
 
+    LIST_FREE(&vals);
     LIST_FREE(&gs);
     LIST_FREE(&children);
     free (pts);
