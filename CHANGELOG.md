@@ -6,9 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.1.1)]
 
+### Changed
+
 - When seeding random number generators with `time(NULL)`, the result of
   `getpid()` is no longer also mixed in. Previously this was the case on
   non-Windows platforms, impeding reproducibility and portability.
+
+### Fixed
+
+- In the CMake build system, when `WITH_SMYRNA` is `AUTO` or unset, Smyrna
+  enabling depends on the presence of Pangocairo.
+- In the CMake build system, versions of `dot` with plugins built in are only
+  linked against enabled plugins. #2795
 
 ## [14.1.0] – 2025-12-06
 

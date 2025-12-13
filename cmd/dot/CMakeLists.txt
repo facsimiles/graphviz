@@ -59,12 +59,15 @@ if(BUILD_SHARED_LIBS)
     gvc
     gvplugin_core
     gvplugin_dot_layout
-    gvplugin_kitty
     gvplugin_neato_layout
     gvplugin_vt
     pathplan
     xdot
   )
+
+  if(PANGOCAIRO_FOUND)
+    target_link_libraries(dot_builtins PRIVATE gvplugin_kitty)
+  endif()
 
   if(WIN32)
     target_link_libraries(dot_builtins PRIVATE gvplugin_gdiplus)
@@ -98,7 +101,7 @@ if(BUILD_SHARED_LIBS)
     target_link_libraries(dot_builtins PRIVATE ${GTS_LINK_LIBRARIES})
   endif()
 
-  if(LASI_FOUND)
+  if(Freetype_FOUND AND LASI_FOUND AND PANGOCAIRO_FOUND)
     target_link_libraries(dot_builtins PRIVATE gvplugin_lasi)
   endif()
 
@@ -133,12 +136,15 @@ else()
     gvc
     gvplugin_core
     gvplugin_dot_layout
-    gvplugin_kitty
     gvplugin_neato_layout
     gvplugin_vt
     pathplan
     xdot
   )
+
+  if(PANGOCAIRO_FOUND)
+    target_link_libraries(dot PRIVATE gvplugin_kitty)
+  endif()
 
   if(WIN32)
     target_link_libraries(dot PRIVATE gvplugin_gdiplus)
