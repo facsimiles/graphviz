@@ -63,20 +63,19 @@ def main():
             "No": f' style="color: {no_color};"',
         }
 
-    table = {}
-    table_sections = []
-    component_names = {}
-    platforms = []
+    table: dict[str, dict[str, dict[str, str]]] = {}
+    table_sections: list[str] = []
+    component_names: dict[str, list[str]] = {}
+    platforms: set[str] = set()
 
     for filename in opts.filename:
         os_path = os.path.dirname(filename)
         os_version_id = os.path.basename(os_path)
         os_id = os.path.basename(os.path.dirname(os_path))
         platform = f"{os_id.capitalize()} {os_version_id}"
-        if platform not in platforms:
-            platforms.append(platform)
+        platforms.add(platform)
         with open(filename, "rt", encoding="utf-8") as fp:
-            for line in fp.readlines():
+            for line in fp:
                 item = [item.strip() for item in line.split(":")]
                 if len(item) >= 2:
                     if item[1] == "":
@@ -128,7 +127,7 @@ def main():
     print(f"{indent}<tr>")
     indent += "  "
     print(f"{indent}<th></th>")
-    for platform in platforms:
+    for platform in sorted(platforms):
         print(f"{indent}<th>{platform}</th>")
     indent = indent[:-2]
     print(f"{indent} </tr>")
@@ -142,7 +141,7 @@ def main():
             print(f"{indent}<tr>")
             indent += "  "
             print(f"{indent}<td>{component_name}</td>")
-            for platform in platforms:
+            for platform in sorted(platforms):
                 component_value = table[section_name][component_name][platform]
                 short_value = re.sub("(Yes|No).*", "\\1", component_value)
                 color_style = styles[short_value]
