@@ -130,7 +130,7 @@ int agclose(Agraph_t * g)
 
     if (g->desc.has_attrs)
 	if (agraphattr_delete(g)) return FAILURE;
-    agrecclose((Agobj_t *) g);
+    agrecclose(&g->base);
     agfreeid(g, AGRAPH, AGID(g));
 
     if (par) {
