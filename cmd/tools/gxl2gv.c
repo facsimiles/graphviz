@@ -23,6 +23,7 @@
 #include    <util/gv_ctype.h>
 #include    <util/list.h>
 #include    <util/startswith.h>
+#include    <util/streq.h>
 #include    <util/unreachable.h>
 #ifdef HAVE_EXPAT
 #include    <expat.h>
@@ -204,7 +205,7 @@ static int get_xml_attr(char *attrname, const char **atts)
 {
     int count = 0;
     while (atts[count] != NULL) {
-	if (strcmp(attrname, atts[count]) == 0) {
+	if (streq(attrname, atts[count])) {
 	    return count + 1;
 	}
 	count += 2;
@@ -227,7 +228,7 @@ static void
 setNodeAttr(Agnode_t * np, char *name, char *value, userdata_t * ud,
   bool is_html)
 {
-    if (strcmp(name, "name") == 0) {
+    if (streq(name, "name")) {
 	setName(ud->nameMap, &np->base, value);
     } else {
 	Agsym_t *ap = agattr_text(root, AGNODE, name, 0);
@@ -271,7 +272,7 @@ setEdgeAttr(Agedge_t * ep, char *name, char *value, userdata_t * ud,
     Agsym_t *ap;
     char *attrname;
 
-    if (strcmp(name, "headport") == 0) {
+    if (streq(name, "headport")) {
 	if (ud->edgeinverted)
 	    attrname = "tailport";
 	else
@@ -279,7 +280,7 @@ setEdgeAttr(Agedge_t * ep, char *name, char *value, userdata_t * ud,
 	ap = agattr_text(root, AGEDGE, attrname, 0);
 	if (!ap)
 	    ap = agattr_text(root, AGEDGE, attrname, defval);
-    } else if (strcmp(name, "tailport") == 0) {
+    } else if (streq(name, "tailport")) {
 	if (ud->edgeinverted)
 	    attrname = "headport";
 	else
@@ -323,9 +324,9 @@ setGraphAttr(Agraph_t * g, char *name, char *value, userdata_t * ud)
 {
     Agsym_t *ap;
 
-    if ((g == root) && !strcmp(name, "strict") && !strcmp(value, "true")) {
+    if ((g == root) && streq(name, "strict") && streq(value, "true")) {
 	g->desc.strict = true;
-    } else if (strcmp(name, "name") == 0)
+    } else if (streq(name, "name"))
 	setName(ud->nameMap, &g->base, value);
     else {
 	ap = agattr_text(root, AGRAPH, name, 0);
@@ -366,9 +367,9 @@ startElementHandler(void *userData, const char *name, const char **atts)
     userdata_t *ud = userData;
     Agraph_t *g = NULL;
 
-    if (strcmp(name, "gxl") == 0) {
+    if (streq(name, "gxl")) {
 	/* do nothing */
-    } else if (strcmp(name, "graph") == 0) {
+    } else if (streq(name, "graph")) {
 	const char *edgeMode = "";
 	char buf[NAMEBUF];	/* holds % + number */
 
@@ -389,9 +390,9 @@ startElementHandler(void *userData, const char *name, const char **atts)
 	}
 
 	if (LIST_IS_EMPTY(&Gstack)) {
-	    if (strcmp(edgeMode, "directed") == 0) {
+	    if (streq(edgeMode, "directed")) {
 		g = agopen((char *) id, Agdirected, &AgDefaultDisc);
-	    } else if (strcmp(edgeMode, "undirected") == 0) {
+	    } else if (streq(edgeMode, "undirected")) {
 		g = agopen((char *) id, Agundirected, &AgDefaultDisc);
 	    } else {
 		fprintf(stderr,
@@ -421,19 +422,19 @@ startElementHandler(void *userData, const char *name, const char **atts)
 	    setGraphAttr(G, GXL_HYPER, (char *) atts[pos], ud);
 	}
 
-    } else if (strcmp(name, "node") == 0) {
+    } else if (streq(name, "node")) {
 	Current_class = TAG_NODE;
 	pos = get_xml_attr("id", atts);
 	if (pos > 0) {
 	    const char *attrname;
 	    attrname = atts[pos];
 
-	    if (attrname != NULL && strcmp(attrname, "") != 0) {
+	    if (attrname != NULL && !streq(attrname, "")) {
 		bind_node(attrname);
 	    }
 	}
 
-    } else if (strcmp(name, "edge") == 0) {
+    } else if (streq(name, "edge")) {
 	const char *head = "", *tail = "";
 	char *tname;
 	Agnode_t *t;
@@ -459,9 +460,9 @@ startElementHandler(void *userData, const char *name, const char **atts)
 	t = AGTAIL(E);
 	tname = agnameof(t);
 
-	if (strcmp(tname, tail) == 0) {
+	if (streq(tname, tail)) {
 	    ud->edgeinverted = false;
-	} else if (strcmp(tname, head) == 0) {
+	} else if (streq(tname, head)) {
 	    ud->edgeinverted = true;
 	}
 
@@ -479,50 +480,50 @@ startElementHandler(void *userData, const char *name, const char **atts)
 	if (pos > 0) {
 	    setEdgeAttr(E, GXL_ID, (char *) atts[pos], ud, false);
 	}
-    } else if (strcmp(name, "attr") == 0) {
+    } else if (streq(name, "attr")) {
 	const char *attrname = atts[get_xml_attr("name", atts)];
 
 	agxbput(&ud->xml_attr_name, attrname);
 	pos = get_xml_attr("kind", atts);
 
 	if (pos > 0) {
-	    if (strcmp("node", atts[pos]) == 0)
+	    if (streq("node", atts[pos]))
 		ud->globalAttrType = TAG_NODE;
-	    else if (strcmp("edge", atts[pos]) == 0)
+	    else if (streq("edge", atts[pos]))
 		ud->globalAttrType = TAG_EDGE;
-	    else if (strcmp("graph", atts[pos]) == 0)
+	    else if (streq("graph", atts[pos]))
 		ud->globalAttrType = TAG_GRAPH;
-	    else if (strcmp("HTML-like string", atts[pos]) == 0)
+	    else if (streq("HTML-like string", atts[pos]))
 		ud->globalAttrType = TAG_HTML_LIKE_STRING;
 	} else {
 	    ud->globalAttrType = TAG_NONE;
 	}
 
-    } else if (strcmp(name, "string") == 0
-	       || strcmp(name, "bool") == 0
-	       || strcmp(name, "int") == 0 || strcmp(name, "float") == 0) {
+    } else if (streq(name, "string")
+	       || streq(name, "bool")
+	       || streq(name, "int") || streq(name, "float")) {
 
 	ud->listen = true;
 	if (ud->compositeReadState) {
 	    agxbprint(&ud->composite_buffer, "<%s>", name);
 	}
-    } else if (strcmp(name, "rel") == 0 || strcmp(name, "relend") == 0) {
+    } else if (streq(name, "rel") || streq(name, "relend")) {
 	fprintf(stderr, "%s element is ignored by DOT\n", name);
-    } else if (strcmp(name, "type") == 0) {
+    } else if (streq(name, "type")) {
 	pos = get_xml_attr("xlink:href", atts);
 	if (pos > 0) {
 	    setAttr(GXL_TYPE, (char *) atts[pos], ud, false);
 	}
-    } else if (strcmp(name, "locator") == 0) {
+    } else if (streq(name, "locator")) {
 	pos = get_xml_attr("xlink:href", atts);
 	if (pos > 0) {
 	    const char *href = atts[pos];
 	    agxbprint(&ud->xml_attr_value, "%s%s", GXL_LOC, href);
 	}
-    } else if (strcmp(name, "seq") == 0
-	       || strcmp(name, "set") == 0
-	       || strcmp(name, "bag") == 0
-	       || strcmp(name, "tup") == 0 || strcmp(name, "enum") == 0) {
+    } else if (streq(name, "seq")
+	       || streq(name, "set")
+	       || streq(name, "bag")
+	       || streq(name, "tup") || streq(name, "enum")) {
 
 	ud->compositeReadState = true;
 	agxbprint(&ud->composite_buffer, "<%s>", name);
@@ -538,19 +539,19 @@ static void endElementHandler(void *userData, const char *name)
 {
     userdata_t *ud = userData;
 
-    if (strcmp(name, "graph") == 0) {
+    if (streq(name, "graph")) {
 	pop_subg();
 	ud->closedElementType = TAG_GRAPH;
-    } else if (strcmp(name, "node") == 0) {
+    } else if (streq(name, "node")) {
 	Current_class = TAG_GRAPH;
 	N = 0;
 	ud->closedElementType = TAG_NODE;
-    } else if (strcmp(name, "edge") == 0) {
+    } else if (streq(name, "edge")) {
 	Current_class = TAG_GRAPH;
 	E = 0;
 	ud->closedElementType = TAG_EDGE;
 	ud->edgeinverted = false;
-    } else if (strcmp(name, "attr") == 0) {
+    } else if (streq(name, "attr")) {
 	agxbuf new_name = {0};
 	char *value;
 
@@ -586,17 +587,17 @@ static void endElementHandler(void *userData, const char *name)
 	}
 	agxbfree(&new_name);
 	ud->globalAttrType = TAG_NONE;
-    } else if (strcmp(name, "string") == 0
-	       || strcmp(name, "bool") == 0
-	       || strcmp(name, "int") == 0 || strcmp(name, "float") == 0) {
+    } else if (streq(name, "string")
+	       || streq(name, "bool")
+	       || streq(name, "int") || streq(name, "float")) {
 	ud->listen = false;
 	if (ud->compositeReadState) {
 	    agxbprint(&ud->composite_buffer, "</%s>", name);
 	}
-    } else if (strcmp(name, "seq") == 0
-	       || strcmp(name, "set") == 0
-	       || strcmp(name, "bag") == 0
-	       || strcmp(name, "tup") == 0 || strcmp(name, "enum") == 0) {
+    } else if (streq(name, "seq")
+	       || streq(name, "set")
+	       || streq(name, "bag")
+	       || streq(name, "tup") || streq(name, "enum")) {
 	agxbprint(&ud->composite_buffer, "</%s>", name);
     }
 }
