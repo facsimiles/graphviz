@@ -326,7 +326,7 @@ setGraphAttr(Agraph_t * g, char *name, char *value, userdata_t * ud)
     if ((g == root) && !strcmp(name, "strict") && !strcmp(value, "true")) {
 	g->desc.strict = true;
     } else if (strcmp(name, "name") == 0)
-	setName(ud->nameMap, (Agobj_t *) g, value);
+	setName(ud->nameMap, &g->base, value);
     else {
 	ap = agattr_text(root, AGRAPH, name, 0);
 	if (ap)
