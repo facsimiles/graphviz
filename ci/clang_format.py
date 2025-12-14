@@ -95,7 +95,6 @@ EXCLUDE = (
     "cmd/tools/mm2gv.c",
     "cmd/tools/mmio.c",
     "cmd/tools/mmio.h",
-    "cmd/tools/nop.c",
     "cmd/tools/sccmap.c",
     "cmd/tools/tred.c",
     "cmd/tools/unflatten.c",
