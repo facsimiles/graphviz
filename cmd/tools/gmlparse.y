@@ -557,7 +557,7 @@ static void addEdgePos(Agedge_t *ep, attrs_t *alist, agxbuf *xb) {
 	}
 	else {
 	    fprintf (stderr, "non-point field in line attribute");
-	    unknown ((Agobj_t*)ep, ap, xb);
+	    unknown(&ep->base, ap, xb);
 	}
     }
     agsafeset (ep, "pos", agxbuse (xb), "");
