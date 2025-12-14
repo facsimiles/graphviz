@@ -684,7 +684,7 @@ static void write_graph(Agraph_t *g, GVJ_t *job, bool top, state_t *sp) {
     indent(job, sp->Level++);
     gvputs(job, "{\n");
     write_hdr(g, job, top, sp);
-    write_attrs((Agobj_t*)g, job, sp);
+    write_attrs(&g->base, job, sp);
     if (top) {
 	gvputs(job, ",\n");
 	indent(job, sp->Level);
