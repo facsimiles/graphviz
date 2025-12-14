@@ -281,14 +281,14 @@ static void cloneGraph(Agraph_t *tgt, Agraph_t *src) {
   edgepair_t *ep = data;
 
   for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
-    if (!copy(tgt, OBJ(t))) {
+    if (!copy(tgt, &t->base)) {
       exerror("error cloning node %s from graph %s", agnameof(t),
               agnameof(src));
     }
   }
   for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
     for (e = agfstout(src, t); e; e = agnxtout(src, e)) {
-      if (!(ne = (Agedge_t *)copy(tgt, OBJ(e)))) {
+      if (!(ne = (Agedge_t *)copy(tgt, &e->base))) {
         name = agnameof(AGMKOUT(e));
         if (name)
           exerror("error cloning edge (%s,%s)[%s] from graph %s",
