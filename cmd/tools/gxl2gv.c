@@ -228,7 +228,7 @@ setNodeAttr(Agnode_t * np, char *name, char *value, userdata_t * ud,
   bool is_html)
 {
     if (strcmp(name, "name") == 0) {
-	setName(ud->nameMap, (Agobj_t *) np, value);
+	setName(ud->nameMap, &np->base, value);
     } else {
 	Agsym_t *ap = agattr_text(root, AGNODE, name, 0);
 	if (!ap)
