@@ -468,7 +468,7 @@ static void write_edge(Agedge_t *e, GVJ_t *job, bool top, state_t *sp) {
 	gvprintf(job, "\"tail\": %d,\n", ND_gid(agtail(e)));
 	indent(job, sp->Level);
 	gvprintf(job, "\"head\": %d", ND_gid(aghead(e)));
-    	write_attrs((Agobj_t*)e, job, sp);
+    	write_attrs(&e->base, job, sp);
 	gvputs(job, "\n");
 	sp->Level--;
 	indent(job, sp->Level);
