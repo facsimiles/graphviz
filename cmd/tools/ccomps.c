@@ -337,7 +337,7 @@ static void deriveClusters(Agraph_t *dg, Agraph_t *g) {
     if (is_a_cluster(subg)) {
       Agnode_t *const dn = agnode(dg, agnameof(subg), 1);
       agbindrec(dn, "nodeinfo", sizeof(nodeinfo_t), true);
-      ND_ptr(dn) = (Agobj_t *)subg;
+      ND_ptr(dn) = &subg->base;
       for (Agnode_t *n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
         if (ND_ptr(n)) {
           fprintf(stderr,
@@ -345,7 +345,7 @@ static void deriveClusters(Agraph_t *dg, Agraph_t *g) {
                   "\"%s\" and \"%s\"\n",
                   agnameof(n), agnameof(subg), agnameof(ND_dn(n)));
         }
-        ND_ptr(n) = (Agobj_t *)dn;
+        ND_ptr(n) = &dn->base;
       }
     } else {
       deriveClusters(dg, subg);
