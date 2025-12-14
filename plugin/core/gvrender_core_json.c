@@ -537,7 +537,7 @@ static void write_node(Agnode_t *n, GVJ_t *job, bool top, state_t *sp) {
 	indent(job, sp->Level);
 	gvputs(job, "\"name\": ");
 	stoj(agnameof(n), sp, job);
-    	write_attrs((Agobj_t*)n, job, sp);
+    	write_attrs(&n->base, job, sp);
 	gvputs(job, "\n");
 	sp->Level--;
 	indent(job, sp->Level);
