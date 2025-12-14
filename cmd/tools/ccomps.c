@@ -367,8 +367,8 @@ static Agraph_t *deriveGraph(Agraph_t *g) {
       continue;
     Agnode_t *const dn = agnode(dg, agnameof(n), 1);
     agbindrec(dn, "nodeinfo", sizeof(nodeinfo_t), true);
-    ND_ptr(dn) = (Agobj_t *)n;
-    ND_ptr(n) = (Agobj_t *)dn;
+    ND_ptr(dn) = &n->base;
+    ND_ptr(n) = &dn->base;
   }
 
   for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
