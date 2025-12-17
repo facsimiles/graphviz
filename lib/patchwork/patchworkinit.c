@@ -17,6 +17,7 @@
 #include    <pack/pack.h>
 #include    <neatogen/neatoprocs.h>
 #include    <stdbool.h>
+#include    <stddef.h>
 #include    <util/list.h>
 
 /* the following code shamelessly copied from lib/fdpgen/layout.c
@@ -83,9 +84,11 @@ static void patchwork_init_node_edge(graph_t * g)
     node_t *n;
     edge_t *e;
     int i = 0;
-    rdata* alg = gv_calloc(agnnodes(g), sizeof(rdata));
+    assert(agnnodes(g) >= 0);
+    const size_t nnodes = (size_t)agnnodes(g);
+    rdata* alg = gv_calloc(nnodes, sizeof(rdata));
 
-    GD_neato_nlist(g) = gv_calloc(agnnodes(g) + 1, sizeof(node_t*));
+    GD_neato_nlist(g) = gv_calloc(nnodes + 1, sizeof(node_t*));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), true);  // node custom data
 	ND_alg(n) = alg + i;
