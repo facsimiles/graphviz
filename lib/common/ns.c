@@ -1252,14 +1252,6 @@ void tchk(network_simplex_ctx_t *ctx)
 	fprintf(stderr, "something missing\n");
 }
 
-void check_fast_node(node_t * n)
-{
-    node_t *nptr = GD_nlist(agraphof(n));
-    while (nptr && nptr != n)
-	nptr = ND_next(nptr);
-    assert(nptr != NULL);
-}
-
 static void dump_node(FILE *sink, node_t *n) {
     if (ND_node_type(n)) {
       fprintf(sink, "%p", n);

@@ -1904,25 +1904,6 @@ static void mincross_options(graph_t * g)
 }
 
 #ifdef DEBUG
-void check_exchange(node_t * v, node_t * w)
-{
-    int i, r;
-    node_t *u;
-
-    if (ND_clust(v) == NULL && ND_clust(w) == NULL)
-	return;
-    assert(ND_clust(v) == NULL || ND_clust(w) == NULL);
-    assert(ND_rank(v) == ND_rank(w));
-    assert(ND_order(v) < ND_order(w));
-    r = ND_rank(v);
-
-    for (i = ND_order(v) + 1; i < ND_order(w); i++) {
-	u = GD_rank(dot_root(v))[r].v[i];
-	if (ND_clust(u))
-	    abort();
-    }
-}
-
 void check_vlists(graph_t * g)
 {
     int c, i, j, r;
