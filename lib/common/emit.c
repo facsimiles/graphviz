@@ -38,6 +38,7 @@
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/lockfile.h>
 #include <util/streq.h>
 #include <util/strview.h>
 #include <util/tokenize.h>
@@ -3726,21 +3727,30 @@ static Dtdisc_t stringdict = {
 };
 
 bool emit_once(char *str) {
+    // use stderr as a mutual exclusion mechanism for `strings`
+    lockfile(stderr);
+
     if (strings == 0)
 	strings = dtopen(&stringdict, Dtoset);
     if (!dtsearch(strings, str)) {
 	dtinsert(strings, gv_strdup(str));
+	unlockfile(stderr);
 	return true;
     }
+    unlockfile(stderr);
     return false;
 }
 
 void emit_once_reset(void)
 {
+    // use stderr as a mutual exclusion mechanism for `strings`
+    lockfile(stderr);
+
     if (strings) {
 	dtclose(strings);
 	strings = 0;
     }
+    unlockfile(stderr);
 }
 
 static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
