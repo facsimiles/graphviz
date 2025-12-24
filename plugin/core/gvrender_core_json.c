@@ -468,7 +468,7 @@ static void write_edge(Agedge_t *e, GVJ_t *job, bool top, state_t *sp) {
 	gvprintf(job, "\"tail\": %d,\n", ND_gid(agtail(e)));
 	indent(job, sp->Level);
 	gvprintf(job, "\"head\": %d", ND_gid(aghead(e)));
-    	write_attrs((Agobj_t*)e, job, sp);
+    	write_attrs(&e->base, job, sp);
 	gvputs(job, "\n");
 	sp->Level--;
 	indent(job, sp->Level);
@@ -537,7 +537,7 @@ static void write_node(Agnode_t *n, GVJ_t *job, bool top, state_t *sp) {
 	indent(job, sp->Level);
 	gvputs(job, "\"name\": ");
 	stoj(agnameof(n), sp, job);
-    	write_attrs((Agobj_t*)n, job, sp);
+    	write_attrs(&n->base, job, sp);
 	gvputs(job, "\n");
 	sp->Level--;
 	indent(job, sp->Level);
@@ -684,7 +684,7 @@ static void write_graph(Agraph_t *g, GVJ_t *job, bool top, state_t *sp) {
     indent(job, sp->Level++);
     gvputs(job, "{\n");
     write_hdr(g, job, top, sp);
-    write_attrs((Agobj_t*)g, job, sp);
+    write_attrs(&g->base, job, sp);
     if (top) {
 	gvputs(job, ",\n");
 	indent(job, sp->Level);

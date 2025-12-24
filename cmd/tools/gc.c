@@ -279,7 +279,7 @@ static int eval(Agraph_t * g, int root)
     }
 
     if ((flags & CL) && root)
-        agapply(g, (Agobj_t *) g, cntCluster, &cl_count, false);
+        agapply(g, &g->base, cntCluster, &cl_count, false);
 
     emit(g, root, cl_count);
 

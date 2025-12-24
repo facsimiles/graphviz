@@ -837,7 +837,7 @@ static void addOutputGraph(Gpr_t *state, gvpropts *uopts) {
   Agraph_t *g = state->outgraph;
 
   if ((agroot(g) == state->curgraph) && !uopts->ingraphs)
-    g = (Agraph_t *)cloneO(0, (Agobj_t *)g);
+    g = (Agraph_t *)cloneO(0, &g->base);
 
   uopts->outgraphs = gv_recalloc(uopts->outgraphs, uopts->n_outgraphs,
                                  uopts->n_outgraphs + 1, sizeof(Agraph_t *));

@@ -557,7 +557,7 @@ static void addEdgePos(Agedge_t *ep, attrs_t *alist, agxbuf *xb) {
 	}
 	else {
 	    fprintf (stderr, "non-point field in line attribute");
-	    unknown ((Agobj_t*)ep, ap, xb);
+	    unknown(&ep->base, ap, xb);
 	}
     }
     agsafeset (ep, "pos", agxbuse (xb), "");
@@ -640,7 +640,7 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
 	g = agopen (name, Agundirected, 0);
 
     if (!parent && L) {
-	addAttrs ((Agobj_t*)g, L, xb, unk);
+	addAttrs(&g->base, L, xb, unk);
     } 
     for (size_t i = 0; i < LIST_SIZE(&graph->nodelist); ++i) {
 	gmlnode *const np = LIST_GET(&graph->nodelist, i);
@@ -649,7 +649,7 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
 	   graphviz_exit (1);
         }
 	n = agnode (g, np->id, 1);
-	addAttrs((Agobj_t*)n, &np->attrlist, xb, unk);
+	addAttrs(&n->base, &np->attrlist, xb, unk);
     }
 
     for (size_t i = 0; i < LIST_SIZE(&graph->edgelist); ++i) {
@@ -665,14 +665,14 @@ static Agraph_t *mkGraph(gmlgraph *graph, Agraph_t *parent, char *name,
 	n = agnode (g, ep->source, 1);
 	h = agnode (g, ep->target, 1);
 	e = agedge (g, n, h, NULL, 1);
-	addAttrs((Agobj_t*)e, &ep->attrlist, xb, unk);
+	addAttrs(&e->base, &ep->attrlist, xb, unk);
     }
     for (size_t i = 0; i < LIST_SIZE(&graph->graphlist); ++i) {
 	gmlgraph *const gp = LIST_GET(&graph->graphlist, i);
 	mkGraph (gp, g, NULL, xb, unk);
     }
 
-    addAttrs((Agobj_t*)g, &graph->attrlist, xb, unk);
+    addAttrs(&g->base, &graph->attrlist, xb, unk);
 
     return g;
 }
