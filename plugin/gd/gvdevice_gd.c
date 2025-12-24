@@ -121,12 +121,10 @@ static void gd_format(GVJ_t * job)
     }
 
     switch (job->device.id) {
-#ifdef HAVE_GD_GIF
     case FORMAT_GIF:
 	gdImageTrueColorToPalette(im, 0, 256);
 	gdImageGifCtx(im, &gd_context.ctx);
         break;
-#endif
 
 #ifdef HAVE_GD_JPEG
     case FORMAT_JPEG:
@@ -162,7 +160,6 @@ static void gd_format(GVJ_t * job)
 	gdImageGd2(im, job->output_file, GD2_CHUNKSIZE, GD2_COMPRESSED);
 	break;
 
-#ifdef HAVE_GD_GIF
     case FORMAT_WBMP:
 	{
 	    /* Use black for the foreground color for the B&W wbmp image. */
@@ -170,7 +167,6 @@ static void gd_format(GVJ_t * job)
 	    gdImageWBMPCtx(im, black, &gd_context.ctx);
 	}
 	break;
-#endif
 
 	break;
     default:
@@ -206,11 +202,8 @@ static gvdevice_features_t device_features_gd_no_writer = {
 
 gvplugin_installed_t gvdevice_gd_types[] = {
 #ifdef HAVE_PANGOCAIRO
-
-#ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif:cairo", 10, &gd_engine, &device_features_gd},
     {FORMAT_WBMP, "wbmp:cairo", 5, &gd_engine, &device_features_gd},
-#endif
 
 #ifdef HAVE_GD_JPEG
     {FORMAT_JPEG, "jpe:cairo", 5, &gd_engine, &device_features_gd},

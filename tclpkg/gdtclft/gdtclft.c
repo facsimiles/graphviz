@@ -84,9 +84,7 @@ static cmdDataOptions subcmdVec[] = {
 #ifdef HAVE_LIBZ
     {"createFromGD2", tclGdCreateCmd, 1, 1, 0, 0, 2, "filehandle"},
 #endif
-#ifdef HAVE_GD_GIF
     {"createFromGIF", tclGdCreateCmd, 1, 1, 0, 0, 2, "filehandle"},
-#endif
 #ifdef HAVE_GD_JPEG
     {"createFromJPEG", tclGdCreateCmd, 1, 1, 0, 0, 2, "filehandle"},
 #endif
@@ -103,9 +101,7 @@ static cmdDataOptions subcmdVec[] = {
 #ifdef HAVE_LIBZ
     {"writeGD2", tclGdWriteCmd, 2, 2, 0, 1, 3, "gdhandle filehandle"},
 #endif
-#ifdef HAVE_GD_GIF
     {"writeGIF", tclGdWriteCmd, 2, 2, 0, 1, 3, "gdhandle filehandle"},
-#endif
 #ifdef HAVE_GD_JPEG
     {"writeJPEG", tclGdWriteCmd, 2, 2, 0, 1, 3, "gdhandle filehandle"},
 #endif
@@ -477,10 +473,8 @@ static int tclGdCreateCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
     } else if (streq(&cmd[10], "GD2")) {
       im = gdImageCreateFromGd2(filePtr);
 #endif
-#ifdef HAVE_GD_GIF
     } else if (streq(&cmd[10], "GIF")) {
       im = gdImageCreateFromGif(filePtr);
-#endif
 #ifdef HAVE_GD_JPEG
     } else if (streq(&cmd[10], "JPEG")) {
       im = gdImageCreateFromJpeg(filePtr);
@@ -603,10 +597,8 @@ static int tclGdWriteCmd(Tcl_Interp *interp, int argc, Tcl_Obj *const objv[]) {
 #define GD2_COMPRESSED 2
     gdImageGd2(im, filePtr, GD2_CHUNKSIZE, GD2_COMPRESSED);
 #endif
-#ifdef HAVE_GD_GIF
   } else if (streq(&cmd[5], "GIF")) {
     gdImageGif(im, filePtr);
-#endif
 #ifdef HAVE_GD_JPEG
   } else if (streq(&cmd[5], "JPEG")) {
 #define JPEG_QUALITY -1

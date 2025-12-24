@@ -175,12 +175,8 @@ static void gdgen_end_page(GVJ_t * job)
 	gdImageSaveAlpha(im, basecolor == transparent);
 	switch (job->render.id) {
 	case FORMAT_GIF:
-#ifdef HAVE_GD_GIF
 	    gdImageTrueColorToPalette(im, 0, 256);
 	    gdImageGifCtx(im, &gd_context.ctx);
-#else
-            (void)gd_context;
-#endif
 	    break;
 	case FORMAT_JPEG:
 #ifdef HAVE_GD_JPEG
@@ -203,7 +199,6 @@ static void gdgen_end_page(GVJ_t * job)
 #endif
 	    break;
 
-#ifdef HAVE_GD_GIF
 	case FORMAT_WBMP:
 	    {
 	        /* Use black for the foreground color for the B&W wbmp image. */
@@ -211,7 +206,6 @@ static void gdgen_end_page(GVJ_t * job)
 		gdImageWBMPCtx(im, black, &gd_context.ctx);
 	    }
 	    break;
-#endif
 
 	case FORMAT_GD:
 	    gdImageGd(im, job->output_file);
@@ -579,16 +573,13 @@ static gvrender_features_t render_features_gd = {
     RGBA_BYTE,			/* color_type */
 };
 
-#if defined(HAVE_GD_GIF) || defined(HAVE_GD_JPEG)
 static gvdevice_features_t device_features_gd = {
     GVDEVICE_BINARY_FORMAT,	/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},			/* default dpi */
 };
-#endif
 
-#if defined(HAVE_GD_GIF) || defined(HAVE_GD_PNG)
 static gvdevice_features_t device_features_gd_tc = {
     GVDEVICE_BINARY_FORMAT
       | GVDEVICE_DOES_TRUECOLOR,/* flags */
@@ -596,7 +587,6 @@ static gvdevice_features_t device_features_gd_tc = {
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},			/* default dpi */
 };
-#endif
 
 static gvdevice_features_t device_features_gd_tc_no_writer = {
     GVDEVICE_BINARY_FORMAT
@@ -613,10 +603,8 @@ gvplugin_installed_t gvrender_gd_types[] = {
 };
 
 gvplugin_installed_t gvdevice_gd_types2[] = {
-#ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif:gd", 1, NULL, &device_features_gd_tc},  /* pretend gif is truecolor because it supports transparency */
     {FORMAT_WBMP, "wbmp:gd", 1, NULL, &device_features_gd},
-#endif
 
 #ifdef HAVE_GD_JPEG
     {FORMAT_JPEG, "jpe:gd", 1, NULL, &device_features_gd},

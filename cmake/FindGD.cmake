@@ -75,9 +75,6 @@ if(GD_LIBRARY)
     if("GD_FREETYPE" IN_LIST GD_FEATURES_LIST)
       set(HAVE_GD_FREETYPE 1)
     endif()
-    if("GD_GIF" IN_LIST GD_FEATURES_LIST)
-      set(HAVE_GD_GIF 1)
-    endif()
   elseif(APPLE OR GDLIB_FOUND)
     # At time of writing, Macports does not package libgd. So assume the user
     # obtained this through Homebrew and hard code the options the Homebrew
@@ -86,7 +83,6 @@ if(GD_LIBRARY)
     set(HAVE_GD_JPEG 1)
     set(HAVE_GD_FONTCONFIG 1)
     set(HAVE_GD_FREETYPE 1)
-    set(HAVE_GD_GIF 1)
   else()
     message(
       WARNING
