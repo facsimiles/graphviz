@@ -167,8 +167,6 @@ static void gd_format(GVJ_t * job)
 	    gdImageWBMPCtx(im, black, &gd_context.ctx);
 	}
 	break;
-
-	break;
     default:
 	break;
     }
