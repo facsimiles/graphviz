@@ -383,8 +383,6 @@ interpolate_zcoord(GVJ_t *job, pointf p1, pointf fst, double fstz, pointf snd, d
     edge_t *e = obj->u.e;
     double len, d, rv;
 
-    if (fstz == sndz)
-	return fstz;
     if (ND_rank(agtail(e)) != ND_rank(aghead(e))) {
 	if (snd.y == fst.y)
 	    rv = (fstz + sndz) / 2.0;
