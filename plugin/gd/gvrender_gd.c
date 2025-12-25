@@ -346,7 +346,7 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	    job->obj->pencolor.u.index,
 	    span->font->size * job->zoom,
 	    d2i(job->dpi.x),
-	    job->rotation ? (M_PI / 2) : 0,
+	    job->rotation ? M_PI / 2 : 0,
 	    fontname,
 	    span->str);
 }

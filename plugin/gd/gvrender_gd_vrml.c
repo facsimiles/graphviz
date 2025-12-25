@@ -220,7 +220,7 @@ static void vrml_end_page(GVJ_t *job)
     /* Roughly fill 3/4 view assuming FOV angle of M_PI/4.
      * Small graphs and non-square aspect ratios will upset this.
      */
-    z = (0.6667*d)/tan(M_PI/8.0) + state->MinZ;  /* fill 3/4 of view */
+    z = 0.6667 * d / tan(M_PI / 8.0) + state->MinZ; // fill ¾ of view
 
     if (!state->Saw_skycolor)
 	gvputs(job,   " Background { skyColor 1 1 1 }\n");
@@ -364,7 +364,7 @@ static void vrml_textspan(GVJ_t *job, pointf p, textspan_t * span)
 	color_index(state->im, obj->pencolor),
 	span->font->size,
         DEFAULT_DPI,
-	job->rotation ? (M_PI / 2) : 0,
+	job->rotation ? M_PI / 2 : 0,
 	span->font->name,
 	span->str);
 }
@@ -461,7 +461,7 @@ nearTail (GVJ_t* job, pointf a, Agedge_t* e)
     pointf tp = gvrender_ptf(job, ND_coord(agtail(e)));
     pointf hp = gvrender_ptf(job, ND_coord(aghead(e)));
 
-    return (DIST2(a, tp) < DIST2(a, hp));
+    return DIST2(a, tp) < DIST2(a, hp);
 }
 
     /* this is gruesome, but how else can we get z coord */
@@ -501,9 +501,9 @@ static void vrml_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
     }
     gvputs(job,   " ]\n");
     gvprintf(job, "  crossSection [ %.3f %.3f, %.3f %.3f, %.3f %.3f, %.3f %.3f ]\n",
-	    (obj->penwidth), (obj->penwidth), -(obj->penwidth),
-	    (obj->penwidth), -(obj->penwidth), -(obj->penwidth),
-	    (obj->penwidth), -(obj->penwidth));
+	    obj->penwidth, obj->penwidth, -obj->penwidth,
+	    obj->penwidth, -obj->penwidth, -obj->penwidth,
+	    obj->penwidth, -obj->penwidth);
     gvputs(job,   "}\n");
     gvprintf(job, " appearance DEF E%d Appearance {\n", AGSEQ(e));
     gvputs(job,   "   material Material {\n"
