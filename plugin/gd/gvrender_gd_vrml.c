@@ -236,7 +236,6 @@ static void vrml_begin_node(GVJ_t *job)
     obj_state_t *obj = job->obj;
     node_t *n = obj->u.n;
     double z = obj->z;
-    int width, height;
     int transparent;
     state_t *state = job->context;
 
@@ -249,8 +248,8 @@ static void vrml_begin_node(GVJ_t *job)
 		agerrorf("failed to open file for writing PNG node image\n");
 	}
 
-	width  = (ND_lw(n) + ND_rw(n)) * state->Scale + 2 * NODE_PAD;
-	height = (ND_ht(n)           ) * state->Scale + 2 * NODE_PAD;
+	const int width  = d2i((ND_lw(n) + ND_rw(n)) * state->Scale + 2 * NODE_PAD);
+	const int height = d2i((ND_ht(n)           ) * state->Scale + 2 * NODE_PAD);
 	state->im = gdImageCreate(width, height);
 
 	/* make background transparent */
