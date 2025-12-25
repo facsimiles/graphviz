@@ -374,7 +374,7 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 	pen = obj->pencolor.u.index;
     }
 
-    width = obj->penwidth * job->zoom;
+    width = d2i(obj->penwidth * job->zoom);
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
