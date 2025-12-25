@@ -146,6 +146,23 @@ static inline void argb2rgba(size_t width, size_t height, unsigned char *data) {
     memcpy((b), tmp_, sizeof(*(b)));                                           \
   } while (0)
 
+/// convert a double-precision floating-point to integer
+///
+/// Values below or above the range of representable integers are clamped. The
+/// caller should verify this lossy conversion is acceptable/desirable.
+///
+/// @param v Double value to convert
+/// @return Closest integer value
+static inline int d2i(double v) {
+  if (v > INT_MAX) {
+    return INT_MAX;
+  }
+  if (v < INT_MIN) {
+    return INT_MIN;
+  }
+  return (int)v;
+}
+
 /// convert a double-precision floating-point to single-precision
 ///
 /// Values below or above the range of representable floats are clamped. There

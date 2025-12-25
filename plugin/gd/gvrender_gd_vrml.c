@@ -35,6 +35,7 @@
 #include <common/render.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/strview.h>
 
 /* for wind() */
@@ -155,7 +156,7 @@ static int color_index(gdImagePtr im, gvcolor_t color)
 static int set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 {
     obj_state_t *obj = job->obj;
-    int i, pen, pencolor, transparent, width, dashstyle[20];
+    int i, pen, pencolor, transparent, dashstyle[20];
 
     pen = pencolor = color_index(im, obj->pencolor);
     transparent = gdImageGetTransparent(im);
@@ -174,7 +175,7 @@ static int set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
         gdImageSetStyle(im, dashstyle, 12);
         pen = gdStyled;
     }
-    width = obj->penwidth * job->scale.x;
+    int width = d2i(obj->penwidth * job->scale.x);
     if (width < PENWIDTH_NORMAL)
         width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
