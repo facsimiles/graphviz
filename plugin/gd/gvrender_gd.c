@@ -30,6 +30,7 @@
 #include <gdfontl.h>
 #include <gdfontg.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/unreachable.h>
 
 enum {
@@ -344,7 +345,7 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     gdgen_text(im, spf, epf,
 	    job->obj->pencolor.u.index,
 	    span->font->size * job->zoom,
-	    job->dpi.x,
+	    d2i(job->dpi.x),
 	    job->rotation ? (M_PI / 2) : 0,
 	    fontname,
 	    span->str);
