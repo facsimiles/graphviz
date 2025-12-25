@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <float.h>
 #include <limits.h>
+#include <math.h>
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -312,7 +313,7 @@ finishSegment (GVJ_t *job, edge_t *e)
     z -= o_z;
     const double theta =
       acos(2 * y / state->EdgeLen) + (p0.y > p1.y ? M_PI : 0);
-    if (!x && !z)   /* parallel  to y-axis */
+    if (fabs(x) < 0.0005 && !z) // parallel to y-axis
 	x = 1;
 
     const double y0 = (state->HeadHt - state->TailHt) / 2.0;
