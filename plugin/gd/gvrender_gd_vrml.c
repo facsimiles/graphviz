@@ -37,6 +37,7 @@
 #include <util/alloc.h>
 #include <util/gv_math.h>
 #include <util/strview.h>
+#include <util/unreachable.h>
 
 /* for wind() */
 #include <pathplan/pathutil.h>
@@ -670,6 +671,8 @@ static void vrml_polygon(GVJ_t *job, pointf *A, size_t np, int filled) {
 	              "  ]\n"
 	              "}\n");
 	break;
+    default:
+	UNREACHABLE();
     }
 }
 
