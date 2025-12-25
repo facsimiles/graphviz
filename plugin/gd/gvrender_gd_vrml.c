@@ -780,7 +780,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	gvprintf(job, "  translation %.3f %.3f %.3f\n", A[0].x, A[0].y, z);
 	gvputs(job,   "  children [\n"
 	              "    Shape {\n");
-	gvprintf(job, "      geometry Sphere {radius %.3f }\n", (double) rx);
+	gvprintf(job, "      geometry Sphere {radius %.3f }\n", rx);
 	gvprintf(job, "      appearance USE E%d\n", AGSEQ(e));
 	gvputs(job,   "    }\n"
 	              "  ]\n"
