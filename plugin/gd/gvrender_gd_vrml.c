@@ -381,20 +381,16 @@ interpolate_zcoord(GVJ_t *job, pointf p1, pointf fst, double fstz, pointf snd, d
 {
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
-    double len, d, rv;
+    double len, d;
 
     if (ND_rank(agtail(e)) != ND_rank(aghead(e))) {
 	if (is_exactly_zero(snd.y - fst.y) || is_exactly_equal(snd.y - fst.y, -0.0))
-	    rv = (fstz + sndz) / 2.0;
-	else
-	    rv = fstz + (sndz - fstz) * (p1.y - fst.y) / (snd.y - fst.y);
+	    return (fstz + sndz) / 2.0;
+	return fstz + (sndz - fstz) * (p1.y - fst.y) / (snd.y - fst.y);
     } 
-    else {
-	len = DIST(fst, snd);
-	d = DIST(p1, fst)/len;
-	rv = fstz + d*(sndz - fstz);
-    }
-    return rv;
+    len = DIST(fst, snd);
+    d = DIST(p1, fst) / len;
+    return fstz + d * (sndz - fstz);
 }
 
 /* collinear:
