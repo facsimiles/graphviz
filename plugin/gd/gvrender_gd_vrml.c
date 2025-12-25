@@ -785,6 +785,9 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	gvputs(job,   "    }\n"
 	              "  ]\n"
 	              "}\n");
+	break;
+    default:
+	UNREACHABLE();
     }
 }
 
