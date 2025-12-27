@@ -81,11 +81,11 @@ static char **Files;
 
 static char *useString = "Usage: gvcolor [-?] <files>\n\
   -? - print usage\n\
-If no files are specified, stdin is used\n";
+If no files are specified, stdin is used";
 
 static void usage(int v)
 {
-    printf("%s",useString);
+    puts(useString);
     graphviz_exit(v);
 }
 
