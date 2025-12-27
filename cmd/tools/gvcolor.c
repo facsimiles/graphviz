@@ -158,7 +158,7 @@ static void color(Agraph_t * g)
 	    setcolor(p, ND_x(n));
 	p = agget(n, "pos");
 	sscanf(p, "%lf,%lf", &x, &y);
-	ND_relrank(n) = (LR ? x : y);
+	ND_relrank(n) = LR ? x : y;
 	maxrank = fmax(maxrank, ND_relrank(n));
     }
     if (LR != Forward)
