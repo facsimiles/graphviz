@@ -116,7 +116,6 @@ static void init(int argc, char *argv[])
 static void color(Agraph_t * g)
 {
     int j, cnt;
-    Agnode_t *v;
     Agedge_t *e;
     char *p;
     double x, y, maxrank = 0.0;
@@ -178,7 +177,7 @@ static void color(Agraph_t * g)
 	double sum[NC] = {0};
 	cnt = 0;
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	    v = aghead(e);
+	    Agnode_t *v = aghead(e);
 	    if (v == n)
 		v = agtail(e);
 	    d = ND_relrank(v) - ND_relrank(n) - 0.01;
