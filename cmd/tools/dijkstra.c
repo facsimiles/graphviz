@@ -25,6 +25,7 @@
 #include <getopt.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/gv_math.h>
 #include <util/unreachable.h>
 
 static char *CmdName;
@@ -115,7 +116,7 @@ static void update(Dict_t * Q, Agnode_t * dest, Agnode_t * src, double len)
     double newlen = getdist(src) + len;
     double oldlen = getdist(dest);
 
-    if (oldlen == 0) {		/* first time to see dest */
+    if (is_exactly_zero(oldlen)) { // first time to see dest
 	setdist(dest, newlen);
 	if (doPath) setprev(dest, src);
 	dtinsert(Q, dest);
