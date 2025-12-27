@@ -99,11 +99,8 @@ static void init(int argc, char *argv[])
 	case '?':
 	    if (optopt == '\0' || optopt == '?')
 		usage(0);
-	    else {
-		fprintf(stderr, "gvcolor: option -%c unrecognized\n",
-			optopt);
-		usage(1);
-	    }
+	    fprintf(stderr, "gvcolor: option -%c unrecognized\n", optopt);
+	    usage(1);
 	    break;
 	default:
 	    fprintf(stderr, "gvcolor: unexpected error\n");
