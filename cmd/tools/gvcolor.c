@@ -115,7 +115,6 @@ static void init(int argc, char *argv[])
 
 static void color(Agraph_t * g)
 {
-    int cnt;
     char *p;
     double x, y, maxrank = 0.0;
     double d, lowsat, highsat;
@@ -166,7 +165,7 @@ static void color(Agraph_t * g)
 	Agnode_t *const n = LIST_GET(&nlist, i);
 
 	/* skip nodes that were manually colored */
-	cnt = 0;
+	int cnt = 0;
 	for (int j = 0; j < NC; j++)
 	    if (!is_exactly_zero(ND_x(n)[j]))
 		cnt++;
