@@ -98,6 +98,8 @@ static int readc(FILE *str, agxbuf *ostr) {
           case '/':
             col0 = 0;
             return ' ';
+          default: // swallow character
+            break;
           }
         }
       }
