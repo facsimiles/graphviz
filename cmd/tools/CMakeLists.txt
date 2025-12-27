@@ -360,6 +360,7 @@ endif()
 
 target_link_libraries(gvcolor PRIVATE
   cgraph
+  util
 )
 
 tool_defaults(gvcolor)

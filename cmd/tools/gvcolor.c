@@ -22,7 +22,6 @@
 /* if NC changes, a bunch of scanf calls below are in trouble */
 #define	NC	3		/* size of HSB color vector */
 
-#include <assert.h>
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>
 #include "colorxlate.h"
@@ -30,9 +29,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <util/agxbuf.h>
-#include <util/alloc.h>
 #include <util/gv_math.h>
 #include <util/exit.h>
+#include <util/list.h>
 
 typedef struct {
     Agrec_t h;
@@ -116,8 +115,8 @@ static void init(int argc, char *argv[])
 
 static void color(Agraph_t * g)
 {
-    int nn, j, cnt;
-    Agnode_t *n, *v, **nlist;
+    int j, cnt;
+    Agnode_t *n, *v;
     Agedge_t *e;
     char *p;
     double x, y, maxrank = 0.0;
@@ -147,13 +146,9 @@ static void color(Agraph_t * g)
     }
 
     /* assemble the sorted list of nodes and store the initial colors */
-    nn = agnnodes(g);
-    assert(nn >= 0);
-    size_t nnodes = (size_t)nn;
-    nlist = gv_calloc(nnodes, sizeof(Agnode_t *));
-    size_t i = 0;
+    LIST(Agnode_t *) nlist = {0};
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	nlist[i++] = n;
+	LIST_APPEND(&nlist, n);
 	if ((p = agget(n, "color")))
 	    setcolor(p, ND_x(n));
 	p = agget(n, "pos");
@@ -162,15 +157,15 @@ static void color(Agraph_t * g)
 	maxrank = fmax(maxrank, ND_relrank(n));
     }
     if (LR != Forward)
-	for (i = 0; i < nnodes; i++) {
-	    n = nlist[i];
+	for (size_t i = 0; i < LIST_SIZE(&nlist); i++) {
+	    n = LIST_GET(&nlist, i);
 	    ND_relrank(n) = maxrank - ND_relrank(n);
 	}
-    qsort(nlist, nnodes, sizeof(Agnode_t *), cmpf);
+    LIST_SORT(&nlist, cmpf);
 
     /* this is the pass that pushes the colors through the edges */
-    for (i = 0; i < nnodes; i++) {
-	n = nlist[i];
+    for (size_t i = 0; i < LIST_SIZE(&nlist); i++) {
+	n = LIST_GET(&nlist, i);
 
 	/* skip nodes that were manually colored */
 	cnt = 0;
@@ -203,11 +198,11 @@ static void color(Agraph_t * g)
     }
 
     /* apply saturation adjustment and convert color to string */
-    for (i = 0; i < nnodes; i++) {
+    for (size_t i = 0; i < LIST_SIZE(&nlist); i++) {
 	double h, s, b, t;
 	char buf[64];
 
-	n = nlist[i];
+	n = LIST_GET(&nlist, i);
 
 	t = 0.0;
 	for (j = 0; j < NC; j++)
@@ -232,7 +227,7 @@ static void color(Agraph_t * g)
 	snprintf(buf, sizeof(buf), "%f %f %f", h, s, b);
 	agset(n, "color", buf);
     }
-    free (nlist);
+    LIST_FREE(&nlist);
 }
 
 int main(int argc, char **argv)
