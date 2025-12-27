@@ -56,18 +56,8 @@ double MinRankSaturation;
 double MaxRankSaturation;
 
 static int cmpf(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  Agnode_t **n0 = (Agnode_t **)x;
-  Agnode_t **n1 = (Agnode_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  Agnode_t *const *n0 = x;
+  Agnode_t *const *n1 = y;
     double relrank0 = ND_relrank(*n0);
     double relrank1 = ND_relrank(*n1);
     if (relrank0 < relrank1)
