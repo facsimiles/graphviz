@@ -117,7 +117,7 @@ static void color(Agraph_t * g)
 {
     char *p;
     double x, y, maxrank = 0.0;
-    double d, lowsat, highsat;
+    double lowsat, highsat;
 
     if (agattr_text(g, AGNODE, "pos", 0) == NULL) {
 	fprintf(stderr,
@@ -178,8 +178,7 @@ static void color(Agraph_t * g)
 	    Agnode_t *v = aghead(e);
 	    if (v == n)
 		v = agtail(e);
-	    d = ND_relrank(v) - ND_relrank(n) - 0.01;
-	    if (d < 0) {
+	    if (ND_relrank(v) - ND_relrank(n) - 0.01 < 0) {
 		double t = 0.0;
 		for (int j = 0; j < NC; j++) {
 		    t += ND_x(v)[j];
