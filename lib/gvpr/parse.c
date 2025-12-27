@@ -260,7 +260,7 @@ static int endBracket(FILE *ins, agxbuf *outs, char bc, char ec) {
  *  returning <string>
  * As a side-effect, set startLine to beginning of content.
  */
-static char *parseBracket(FILE *str, agxbuf *buf, int bc, int ec) {
+static char *parseBracket(FILE *str, agxbuf *buf, char bc, int ec) {
   int c;
 
   c = skipWS(str);
