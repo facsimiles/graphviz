@@ -116,7 +116,7 @@ static void init(int argc, char *argv[])
 static void color(Agraph_t * g)
 {
     int j, cnt;
-    Agnode_t *n, *v;
+    Agnode_t *v;
     Agedge_t *e;
     char *p;
     double x, y, maxrank = 0.0;
@@ -147,7 +147,7 @@ static void color(Agraph_t * g)
 
     /* assemble the sorted list of nodes and store the initial colors */
     LIST(Agnode_t *) nlist = {0};
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	LIST_APPEND(&nlist, n);
 	if ((p = agget(n, "color")))
 	    setcolor(p, ND_x(n));
@@ -158,14 +158,14 @@ static void color(Agraph_t * g)
     }
     if (LR != Forward)
 	for (size_t i = 0; i < LIST_SIZE(&nlist); i++) {
-	    n = LIST_GET(&nlist, i);
+	    Agnode_t *const n = LIST_GET(&nlist, i);
 	    ND_relrank(n) = maxrank - ND_relrank(n);
 	}
     LIST_SORT(&nlist, cmpf);
 
     /* this is the pass that pushes the colors through the edges */
     for (size_t i = 0; i < LIST_SIZE(&nlist); i++) {
-	n = LIST_GET(&nlist, i);
+	Agnode_t *const n = LIST_GET(&nlist, i);
 
 	/* skip nodes that were manually colored */
 	cnt = 0;
@@ -202,7 +202,7 @@ static void color(Agraph_t * g)
 	double h, s, b, t;
 	char buf[64];
 
-	n = LIST_GET(&nlist, i);
+	Agnode_t *const n = LIST_GET(&nlist, i);
 
 	t = 0.0;
 	for (j = 0; j < NC; j++)
