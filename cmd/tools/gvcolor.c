@@ -121,7 +121,7 @@ static void color(Agraph_t * g)
     Agedge_t *e;
     char *p;
     double x, y, maxrank = 0.0;
-    double sum[NC], d, lowsat, highsat;
+    double d, lowsat, highsat;
 
     if (agattr_text(g, AGNODE, "pos", 0) == NULL) {
 	fprintf(stderr,
@@ -180,8 +180,7 @@ static void color(Agraph_t * g)
 	if (cnt > 0)
 	    continue;
 
-	for (j = 0; j < NC; j++)
-	    sum[j] = 0.0;
+	double sum[NC] = {0};
 	cnt = 0;
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	    v = aghead(e);
