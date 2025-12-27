@@ -154,7 +154,7 @@ static void post(Agraph_t * g)
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	dist = getdist(v);
-	if (dist) {
+	if (!is_exactly_zero(dist)) {
 	    dist--;
 	    snprintf(buf, sizeof(buf), "%.3lf", dist);
 	    agxset(v, sym, buf);
