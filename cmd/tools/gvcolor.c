@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/exit.h>
 
 typedef struct {
@@ -187,7 +188,7 @@ static void color(Agraph_t * g)
 	/* skip nodes that were manually colored */
 	cnt = 0;
 	for (j = 0; j < NC; j++)
-	    if (ND_x(n)[j] != 0.0)
+	    if (!is_exactly_zero(ND_x(n)[j]))
 		cnt++;
 	if (cnt > 0)
 	    continue;
