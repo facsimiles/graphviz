@@ -101,6 +101,9 @@ static int readc(FILE *str, agxbuf *ostr) {
           default: // swallow character
             break;
           }
+          break;
+        default: // swallow character
+          break;
         }
       }
       break;
