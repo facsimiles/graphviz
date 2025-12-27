@@ -277,8 +277,8 @@ static char *parseBracket(FILE *str, agxbuf *buf, char bc, char ec) {
       error(ERROR_ERROR, "unclosed bracket %c%c expression, start line %d", bc,
             ec, startLine);
     return 0;
-  } else
-    return agxbdisown(buf);
+  }
+  return agxbdisown(buf);
 }
 
 static char *parseAction(FILE *str, agxbuf *buf) {
