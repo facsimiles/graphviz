@@ -115,7 +115,7 @@ static void init(int argc, char *argv[])
 
 static void color(Agraph_t * g)
 {
-    int j, cnt;
+    int cnt;
     char *p;
     double x, y, maxrank = 0.0;
     double d, lowsat, highsat;
@@ -167,7 +167,7 @@ static void color(Agraph_t * g)
 
 	/* skip nodes that were manually colored */
 	cnt = 0;
-	for (j = 0; j < NC; j++)
+	for (int j = 0; j < NC; j++)
 	    if (!is_exactly_zero(ND_x(n)[j]))
 		cnt++;
 	if (cnt > 0)
@@ -182,7 +182,7 @@ static void color(Agraph_t * g)
 	    d = ND_relrank(v) - ND_relrank(n) - 0.01;
 	    if (d < 0) {
 		double t = 0.0;
-		for (j = 0; j < NC; j++) {
+		for (int j = 0; j < NC; j++) {
 		    t += ND_x(v)[j];
 		    sum[j] += ND_x(v)[j];
 		}
@@ -191,7 +191,7 @@ static void color(Agraph_t * g)
 	    }
 	}
 	if (cnt)
-	    for (j = 0; j < NC; j++)
+	    for (int j = 0; j < NC; j++)
 		ND_x(n)[j] = sum[j] / cnt;
     }
 
@@ -203,7 +203,7 @@ static void color(Agraph_t * g)
 	Agnode_t *const n = LIST_GET(&nlist, i);
 
 	t = 0.0;
-	for (j = 0; j < NC; j++)
+	for (int j = 0; j < NC; j++)
 	    t += ND_x(n)[j];
 	if (t > 0.0) {
 	    h = ND_x(n)[0];
