@@ -222,7 +222,7 @@ static void color(Agraph_t * g)
 		    + s * (MaxRankSaturation - MinRankSaturation);
 	    } else
 		s = 1.0;
-	    s = s * ND_x(n)[1];
+	    s *= ND_x(n)[1];
 	    b = ND_x(n)[2];
 	} else {
 	    h = Defcolor[0];
