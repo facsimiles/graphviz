@@ -50,7 +50,7 @@ static char *smyrnaGlade;
  */
 char *smyrnaPath(char *suffix) {
   static size_t baselen;
-  const char pathSep[] = {PATH_SEPARATOR, '\0'};
+  const char pathSep = PATH_SEPARATOR;
   assert(smyrnaDir);
 
   if (baselen == 0) {
@@ -58,7 +58,7 @@ char *smyrnaPath(char *suffix) {
   }
   size_t len = baselen + strlen(suffix);
   char *buf = gv_calloc(len, sizeof(char));
-  snprintf(buf, len, "%s%s%s", smyrnaDir, pathSep, suffix);
+  snprintf(buf, len, "%s%c%s", smyrnaDir, pathSep, suffix);
   return buf;
 }
 
