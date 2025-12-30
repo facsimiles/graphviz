@@ -215,7 +215,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     }
 
     if (levels_gap > 0) {
-	double scale_ratio;
 	const double sum1 = n * (n - 1) / 2;
 	double sum2 = 0;
 	for (int count = 0, i = 0; i < n - 1; i++) {
@@ -224,10 +223,9 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 		sum2 += distance_kD(d_coords, dim, i, j) / Dij[count];
 	    }
 	}
-	scale_ratio = sum2 / sum1;
-	/* double scale_ratio=10; */
+	const float scale_ratio = (float)(sum2 / sum1);
 	for (int i = 0; i < length; i++) {
-	    Dij[i] *= (float) scale_ratio;
+	    Dij[i] *= scale_ratio;
 	}
     }
 
