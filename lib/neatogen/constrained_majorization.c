@@ -123,14 +123,13 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	if (levels_gap > 0) {
 	    /* ensure that levels are separated in the initial layout */
 	    double displacement = 0;
-	    int stop;
 	    for (int i = 0; i < num_levels; i++) {
 		displacement +=
 		    MAX(0.0,
 			levels_gap - (y[ordering[levels[i]]] +
 				      displacement -
 				      y[ordering[levels[i] - 1]]));
-		stop = i < num_levels - 1 ? levels[i + 1] : n;
+		const int stop = i < num_levels - 1 ? levels[i + 1] : n;
 		for (int j = levels[i]; j < stop; j++) {
 		    y[ordering[j]] += displacement;
 		}
