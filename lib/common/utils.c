@@ -26,6 +26,7 @@
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
+#include <util/list.h>
 #include <util/path.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
@@ -234,24 +235,24 @@ Agnodeinfo_t* ND_info(node_t * n) { return ((Agnodeinfo_t*)AGDATA(n));}
 #define PATHSEP ":"
 #endif
 
-static strview_t *mkDirlist(const char *list) {
-    size_t cnt = 0;
-    strview_t *dirs = gv_calloc(1, sizeof(strview_t));
+typedef LIST(strview_t) strviews_t;
+
+static strviews_t mkDirlist(const char *list) {
+    strviews_t dirs = {0};
 
     for (tok_t t = tok(list, PATHSEP); !tok_end(&t); tok_next(&t)) {
         strview_t dir = tok_get(&t);
-        dirs = gv_recalloc(dirs, cnt + 1, cnt + 2, sizeof(strview_t));
-        dirs[cnt++] = dir;
+        LIST_APPEND(&dirs, dir);
     }
     return dirs;
 }
 
-static char *findPath(const strview_t *dirs, const char *str) {
+static char *findPath(const strviews_t dirs, const char *str) {
     static agxbuf safefilename;
 
-    for (const strview_t *dp = dirs; dp != NULL && dp->data != NULL; dp++) {
-	agxbprint(&safefilename, "%.*s%c%s", (int)dp->size, dp->data, PATH_SEPARATOR,
-	          str);
+    for (size_t i = 0; i < LIST_SIZE(&dirs); ++i) {
+	const strview_t d = LIST_GET(&dirs, i);
+	agxbprint(&safefilename, "%.*s%c%s", (int)d.size, d.data, PATH_SEPARATOR, str);
 	char *filename = agxbuse(&safefilename);
 	if (access(filename, R_OK) == 0)
 	    return filename;
@@ -263,7 +264,7 @@ const char *safefile(const char *filename)
 {
     static bool onetime = true;
     static char *pathlist = NULL;
-    static strview_t *dirs;
+    static strviews_t dirs;
 
     if (!filename || !filename[0])
 	return NULL;
@@ -280,7 +281,7 @@ const char *safefile(const char *filename)
 
     if (Gvfilepath != NULL) {
 	if (pathlist == NULL) {
-	    free(dirs);
+	    LIST_FREE(&dirs);
 	    pathlist = Gvfilepath;
 	    dirs = mkDirlist(pathlist);
 	}
@@ -297,14 +298,13 @@ const char *safefile(const char *filename)
     }
 
     if (pathlist != Gvimagepath) {
-	free (dirs);
-	dirs = NULL;
+	LIST_FREE(&dirs);
 	pathlist = Gvimagepath;
 	if (pathlist && *pathlist)
 	    dirs = mkDirlist(pathlist);
     }
 
-    if (*filename == PATH_SEPARATOR || !dirs)
+    if (*filename == PATH_SEPARATOR || LIST_IS_EMPTY(&dirs))
 	return filename;
 
     return findPath(dirs, filename);

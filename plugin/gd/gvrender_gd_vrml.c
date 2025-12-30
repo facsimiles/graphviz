@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <float.h>
 #include <limits.h>
+#include <math.h>
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -34,7 +35,9 @@
 #include <common/render.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/strview.h>
+#include <util/unreachable.h>
 
 /* for wind() */
 #include <pathplan/pathutil.h>
@@ -154,7 +157,7 @@ static int color_index(gdImagePtr im, gvcolor_t color)
 static int set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 {
     obj_state_t *obj = job->obj;
-    int i, pen, pencolor, transparent, width, dashstyle[20];
+    int i, pen, pencolor, transparent, dashstyle[20];
 
     pen = pencolor = color_index(im, obj->pencolor);
     transparent = gdImageGetTransparent(im);
@@ -173,7 +176,7 @@ static int set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
         gdImageSetStyle(im, dashstyle, 12);
         pen = gdStyled;
     }
-    width = obj->penwidth * job->scale.x;
+    int width = d2i(obj->penwidth * job->scale.x);
     if (width < PENWIDTH_NORMAL)
         width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
@@ -217,7 +220,7 @@ static void vrml_end_page(GVJ_t *job)
     /* Roughly fill 3/4 view assuming FOV angle of M_PI/4.
      * Small graphs and non-square aspect ratios will upset this.
      */
-    z = (0.6667*d)/tan(M_PI/8.0) + state->MinZ;  /* fill 3/4 of view */
+    z = 0.6667 * d / tan(M_PI / 8.0) + state->MinZ; // fill ¾ of view
 
     if (!state->Saw_skycolor)
 	gvputs(job,   " Background { skyColor 1 1 1 }\n");
@@ -234,7 +237,6 @@ static void vrml_begin_node(GVJ_t *job)
     obj_state_t *obj = job->obj;
     node_t *n = obj->u.n;
     double z = obj->z;
-    int width, height;
     int transparent;
     state_t *state = job->context;
 
@@ -247,8 +249,8 @@ static void vrml_begin_node(GVJ_t *job)
 		agerrorf("failed to open file for writing PNG node image\n");
 	}
 
-	width  = (ND_lw(n) + ND_rw(n)) * state->Scale + 2 * NODE_PAD;
-	height = (ND_ht(n)           ) * state->Scale + 2 * NODE_PAD;
+	const int width  = d2i((ND_lw(n) + ND_rw(n)) * state->Scale + 2 * NODE_PAD);
+	const int height = d2i((ND_ht(n)           ) * state->Scale + 2 * NODE_PAD);
 	state->im = gdImageCreate(width, height);
 
 	/* make background transparent */
@@ -312,7 +314,7 @@ finishSegment (GVJ_t *job, edge_t *e)
     z -= o_z;
     const double theta =
       acos(2 * y / state->EdgeLen) + (p0.y > p1.y ? M_PI : 0);
-    if (!x && !z)   /* parallel  to y-axis */
+    if (fabs(x) < 0.0005 && fabs(z) < 0.0005) // parallel to y-axis
 	x = 1;
 
     const double y0 = (state->HeadHt - state->TailHt) / 2.0;
@@ -362,7 +364,7 @@ static void vrml_textspan(GVJ_t *job, pointf p, textspan_t * span)
 	color_index(state->im, obj->pencolor),
 	span->font->size,
         DEFAULT_DPI,
-	job->rotation ? (M_PI / 2) : 0,
+	job->rotation ? M_PI / 2 : 0,
 	span->font->name,
 	span->str);
 }
@@ -380,22 +382,16 @@ interpolate_zcoord(GVJ_t *job, pointf p1, pointf fst, double fstz, pointf snd, d
 {
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
-    double len, d, rv;
+    double len, d;
 
-    if (fstz == sndz)
-	return fstz;
     if (ND_rank(agtail(e)) != ND_rank(aghead(e))) {
-	if (snd.y == fst.y)
-	    rv = (fstz + sndz) / 2.0;
-	else
-	    rv = fstz + (sndz - fstz) * (p1.y - fst.y) / (snd.y - fst.y);
+	if (is_exactly_zero(snd.y - fst.y) || is_exactly_equal(snd.y - fst.y, -0.0))
+	    return (fstz + sndz) / 2.0;
+	return fstz + (sndz - fstz) * (p1.y - fst.y) / (snd.y - fst.y);
     } 
-    else {
-	len = DIST(fst, snd);
-	d = DIST(p1, fst)/len;
-	rv = fstz + d*(sndz - fstz);
-    }
-    return rv;
+    len = DIST(fst, snd);
+    d = DIST(p1, fst) / len;
+    return fstz + d * (sndz - fstz);
 }
 
 /* collinear:
@@ -465,7 +461,7 @@ nearTail (GVJ_t* job, pointf a, Agedge_t* e)
     pointf tp = gvrender_ptf(job, ND_coord(agtail(e)));
     pointf hp = gvrender_ptf(job, ND_coord(aghead(e)));
 
-    return (DIST2(a, tp) < DIST2(a, hp));
+    return DIST2(a, tp) < DIST2(a, hp);
 }
 
     /* this is gruesome, but how else can we get z coord */
@@ -505,9 +501,9 @@ static void vrml_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
     }
     gvputs(job,   " ]\n");
     gvprintf(job, "  crossSection [ %.3f %.3f, %.3f %.3f, %.3f %.3f, %.3f %.3f ]\n",
-	    (obj->penwidth), (obj->penwidth), -(obj->penwidth),
-	    (obj->penwidth), -(obj->penwidth), -(obj->penwidth),
-	    (obj->penwidth), -(obj->penwidth));
+	    obj->penwidth, obj->penwidth, -obj->penwidth,
+	    obj->penwidth, -obj->penwidth, -obj->penwidth,
+	    obj->penwidth, -obj->penwidth);
     gvputs(job,   "}\n");
     gvprintf(job, " appearance DEF E%d Appearance {\n", AGSEQ(e));
     gvputs(job,   "   material Material {\n"
@@ -675,6 +671,8 @@ static void vrml_polygon(GVJ_t *job, pointf *A, size_t np, int filled) {
 	              "  ]\n"
 	              "}\n");
 	break;
+    default:
+	UNREACHABLE();
     }
 }
 
@@ -782,11 +780,14 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	gvprintf(job, "  translation %.3f %.3f %.3f\n", A[0].x, A[0].y, z);
 	gvputs(job,   "  children [\n"
 	              "    Shape {\n");
-	gvprintf(job, "      geometry Sphere {radius %.3f }\n", (double) rx);
+	gvprintf(job, "      geometry Sphere {radius %.3f }\n", rx);
 	gvprintf(job, "      appearance USE E%d\n", AGSEQ(e));
 	gvputs(job,   "    }\n"
 	              "  ]\n"
 	              "}\n");
+	break;
+    default:
+	UNREACHABLE();
     }
 }
 

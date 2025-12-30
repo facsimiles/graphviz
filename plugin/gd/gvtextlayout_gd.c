@@ -41,26 +41,26 @@ char *gd_alternate_fontlist(const char *font) {
     if ((p = strchr(font, '-')) || (p = strchr(font, '_')))
 	fontlist.size = (size_t)(p - font);
 
-    if ((strcasecmp(font, "times-bold") == 0)
+    if (strcasecmp(font, "times-bold") == 0
 	|| strview_case_str_eq(fontlist, "timesbd")
 	|| strview_case_str_eq(fontlist, "timesb"))
 	fontlist = strview("timesbd;Timesbd;TIMESBD;timesb;Timesb;TIMESB", '\0');
 
-    else if ((strcasecmp(font, "times-italic") == 0)
+    else if (strcasecmp(font, "times-italic") == 0
 	     || strview_case_str_eq(fontlist, "timesi"))
 	fontlist = strview("timesi;Timesi;TIMESI", '\0');
 
-    else if ((strcasecmp(font, "timesnewroman") == 0)
-	     || (strcasecmp(font, "timesnew") == 0)
-	     || (strcasecmp(font, "timesroman") == 0)
+    else if (strcasecmp(font, "timesnewroman") == 0
+	     || strcasecmp(font, "timesnew") == 0
+	     || strcasecmp(font, "timesroman") == 0
 	     || strview_case_str_eq(fontlist, "times"))
 	fontlist = strview("times;Times;TIMES", '\0');
 
-    else if ((strcasecmp(font, "arial-bold") == 0)
+    else if (strcasecmp(font, "arial-bold") == 0
 	     || strview_case_str_eq(fontlist, "arialb"))
 	fontlist = strview("arialb;Arialb;ARIALB", '\0');
 
-    else if ((strcasecmp(font, "arial-italic") == 0)
+    else if (strcasecmp(font, "arial-italic") == 0
 	     || strview_case_str_eq(fontlist, "ariali"))
 	fontlist = strview("ariali;Ariali;ARIALI", '\0');
 

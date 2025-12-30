@@ -30,6 +30,7 @@
 #include <gdfontl.h>
 #include <gdfontg.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/unreachable.h>
 
 enum {
@@ -344,8 +345,8 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     gdgen_text(im, spf, epf,
 	    job->obj->pencolor.u.index,
 	    span->font->size * job->zoom,
-	    job->dpi.x,
-	    job->rotation ? (M_PI / 2) : 0,
+	    d2i(job->dpi.x),
+	    job->rotation ? M_PI / 2 : 0,
 	    fontname,
 	    span->str);
 }
@@ -373,7 +374,7 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 	pen = obj->pencolor.u.index;
     }
 
-    width = obj->penwidth * job->zoom;
+    width = d2i(obj->penwidth * job->zoom);
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
