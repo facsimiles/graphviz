@@ -66,7 +66,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     double y_0;
     int length;
     int smart_ini = opts & opt_smart_init;
-    DistType diameter;
     float *Dij = NULL;
     /* to compensate noises, we never consider gaps smaller than 'abs_tol' */
     double abs_tol = 1e-2;
@@ -209,13 +208,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	start_timer();
     }
 
-    diameter = -1;
     length = n + n * (n - 1) / 2;
-    for (i = 0; i < length; i++) {
-	if (Dij[i] > diameter) {
-	    diameter = (int) Dij[i];
-	}
-    }
 
     if (!smart_ini) {
 	/* for numerical stability, scale down layout            */
