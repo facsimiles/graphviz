@@ -73,7 +73,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     /* Additionally, we never consider gaps smaller than 'abs_tol'*<avg_gap> */
     double relative_tol = levels_sep_tol;
     int *ordering = NULL, *levels = NULL;
-    float constant_term;
     double degree;
     int step;
     float val;
@@ -278,7 +277,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     /* compute constant term in stress sum
      * which is \sum_{i<j} w_{ij}d_{ij}^2
      */
-    constant_term = (float) (n * (n - 1) / 2);
+    const double constant_term = n * (n - 1) / 2;
 
     if (Verbose)
 	fprintf(stderr, ": %.2f sec", elapsed_sec());
