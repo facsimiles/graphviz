@@ -59,7 +59,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     float *f_storage = NULL;
     float **coords = NULL;
 
-    double conj_tol = tolerance_cg;	/* tolerance of Conjugate Gradient */
+    const double conj_tol = tolerance_cg; // tolerance of Conjugate Gradient
     CMajEnv *cMajEnv = NULL;
     double y_0;
     int length;
