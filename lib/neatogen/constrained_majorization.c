@@ -68,7 +68,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     /* Additionally, we never consider gaps smaller than 'abs_tol'*<avg_gap> */
     const double relative_tol = levels_sep_tol;
     int *ordering = NULL, *levels = NULL;
-    double degree;
     float val;
     double old_stress, new_stress;
     bool converged;
@@ -283,7 +282,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     degrees = gv_calloc(n, sizeof(double));
     set_vector_val(n, 0, degrees);
     for (int i = 0, count = 0; i < n - 1; i++) {
-	degree = 0;
+	double degree = 0;
 	count++;		// skip main diag entry
 	for (int j = 1; j < n - i; j++, count++) {
 	    val = lap2[count];
@@ -346,7 +345,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	    }
 
 	    count++;		/* save place for the main diagonal entry */
-	    degree = 0;
+	    double degree = 0;
 	    for (int j = 0; j < len; j++, count++) {
 		val = lap1[count] *= dist_accumulator[j];
 		degree += val;
