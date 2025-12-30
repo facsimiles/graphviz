@@ -46,7 +46,6 @@ static char *smyrnaGlade;
  * and constructs a complete pathname.
  * The returned string is malloced, so the application should free
  * it later.
- * Returns NULL on error.
  */
 char *smyrnaPath(char *suffix) {
   static size_t baselen;
