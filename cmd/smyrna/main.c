@@ -31,6 +31,7 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_find_me.h>
@@ -48,17 +49,12 @@ static char *smyrnaGlade;
  * it later.
  */
 char *smyrnaPath(char *suffix) {
-  static size_t baselen;
   const char pathSep = PATH_SEPARATOR;
   assert(smyrnaDir);
 
-  if (baselen == 0) {
-    baselen = strlen(smyrnaDir) + 2;
-  }
-  size_t len = baselen + strlen(suffix);
-  char *buf = gv_calloc(len, sizeof(char));
-  snprintf(buf, len, "%s%c%s", smyrnaDir, pathSep, suffix);
-  return buf;
+  agxbuf buf = {0};
+  agxbprint(&buf, "%s%c%s", smyrnaDir, pathSep, suffix);
+  return agxbdisown(&buf);
 }
 
 static char *useString = "Usage: smyrna [-v?] <file>\n\
