@@ -68,7 +68,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     /* Additionally, we never consider gaps smaller than 'abs_tol'*<avg_gap> */
     const double relative_tol = levels_sep_tol;
     int *ordering = NULL, *levels = NULL;
-    double new_stress;
     bool converged;
     int len;
     int num_levels;
@@ -366,7 +365,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	 * remember that the Laplacians are negated, so we subtract 
 	 * instead of add and vice versa
 	 */
-	new_stress = 0;
+	double new_stress = 0;
 	for (int k = 0; k < dim; k++) {
 	    new_stress += vectors_inner_productf(n, coords[k], b[k]);
 	}
