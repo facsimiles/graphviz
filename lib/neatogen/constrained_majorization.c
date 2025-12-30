@@ -56,7 +56,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     float **b = NULL;
     double *degrees = NULL;
     float *lap2 = NULL;
-    int lap_length;
     float *f_storage = NULL;
     float **coords = NULL;
 
@@ -277,7 +276,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	**************************/
 
     lap2 = Dij;
-    lap_length = n + n * (n - 1) / 2;
+    const int lap_length = n + n * (n - 1) / 2;
     square_vec(lap_length, lap2);
     /* compute off-diagonal entries */
     invert_vec(lap_length, lap2);
