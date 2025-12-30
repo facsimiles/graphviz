@@ -61,7 +61,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 
     const double conj_tol = tolerance_cg; // tolerance of Conjugate Gradient
     CMajEnv *cMajEnv = NULL;
-    int smart_ini = opts & opt_smart_init;
+    const bool smart_ini = !!(opts & opt_smart_init);
     float *Dij = NULL;
     /* to compensate noises, we never consider gaps smaller than 'abs_tol' */
     double abs_tol = 1e-2;
