@@ -61,7 +61,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 
     const double conj_tol = tolerance_cg; // tolerance of Conjugate Gradient
     CMajEnv *cMajEnv = NULL;
-    double y_0;
     int length;
     int smart_ini = opts & opt_smart_init;
     float *Dij = NULL;
@@ -249,7 +248,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     }
 
     /* for the y-coords, don't center them, but translate them so y[0]=0 */
-    y_0 = d_coords[1][0];
+    const double y_0 = d_coords[1][0];
     for (int i = 0; i < n; i++) {
 	d_coords[1][i] -= y_0;
     }
