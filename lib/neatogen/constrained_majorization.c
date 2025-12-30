@@ -215,9 +215,9 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     }
 
     if (levels_gap > 0) {
-	double sum2, scale_ratio;
+	double scale_ratio;
 	const double sum1 = n * (n - 1) / 2;
-	sum2 = 0;
+	double sum2 = 0;
 	for (int count = 0, i = 0; i < n - 1; i++) {
 	    count++;		// skip self distance
 	    for (int j = i + 1; j < n; j++, count++) {
