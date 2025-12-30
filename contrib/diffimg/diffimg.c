@@ -97,12 +97,7 @@ static gdImagePtr imageLoad(const char *filename) {
     graphviz_exit(EX_UNAVAILABLE);
 #endif
   } else if (strcasecmp(ext, ".gif") == 0) {
-#ifdef HAVE_GD_GIF
     im = gdImageCreateFromGif(f);
-#else
-    fprintf(stderr, "GIF support is not available\n");
-    graphviz_exit(EX_UNAVAILABLE);
-#endif
   } else if (strcasecmp(ext, ".jpg") == 0) {
 #ifdef HAVE_GD_JPEG
     im = gdImageCreateFromJpeg(f);

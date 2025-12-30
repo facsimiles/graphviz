@@ -55,11 +55,9 @@ static gdImagePtr gd_loadimage(usershape_t *us) {
 		us->data = gdImageCreateFromPng(us->f);
 		break;
 #endif
-#ifdef HAVE_GD_GIF
 	    case FT_GIF:
 		us->data = gdImageCreateFromGif(us->f);
 		break;
-#endif
 #ifdef HAVE_GD_JPEG
 	    case FT_JPEG:
 		us->data = gdImageCreateFromJpeg(us->f);
@@ -255,9 +253,7 @@ static gvloadimage_engine_t engine_cairo = {
 gvplugin_installed_t gvloadimage_gd_types[] = {
     {FORMAT_GD_GD, "gd:gd", 1, &engine, NULL},
     {FORMAT_GD2_GD, "gd2:gd", 1, &engine, NULL},
-#ifdef HAVE_GD_GIF
     {FORMAT_GIF_GD, "gif:gd", 1, &engine, NULL},
-#endif
 #ifdef HAVE_GD_JPEG
     {FORMAT_JPG_GD, "jpeg:gd", 1, &engine, NULL},
     {FORMAT_JPG_GD, "jpe:gd", 1, &engine, NULL},
@@ -277,10 +273,8 @@ gvplugin_installed_t gvloadimage_gd_types[] = {
     {FORMAT_GD_PS, "gd:lasi", 1, &engine_ps, NULL},
     {FORMAT_GD2_PS, "gd2:ps", 1, &engine_ps, NULL},
     {FORMAT_GD2_PS, "gd2:lasi", 1, &engine_ps, NULL},
-#ifdef HAVE_GD_GIF
     {FORMAT_GIF_PS, "gif:ps", 1, &engine_ps, NULL},
     {FORMAT_GIF_PS, "gif:lasi", 1, &engine_ps, NULL},
-#endif
 #ifdef HAVE_GD_JPEG
     {FORMAT_JPG_PS, "jpeg:ps", 1, &engine_ps, NULL},
     {FORMAT_JPG_PS, "jpg:ps", 1, &engine_ps, NULL},
@@ -305,9 +299,7 @@ gvplugin_installed_t gvloadimage_gd_types[] = {
 #ifdef HAVE_PANGOCAIRO
     {FORMAT_GD_CAIRO, "gd:cairo", 1, &engine_cairo, NULL},
     {FORMAT_GD2_CAIRO, "gd2:cairo", 1, &engine_cairo, NULL},
-#ifdef HAVE_GD_GIF
     {FORMAT_GIF_CAIRO, "gif:cairo", 1, &engine_cairo, NULL},
-#endif
 #ifdef HAVE_GD_JPEG
     {FORMAT_JPG_CAIRO, "jpeg:cairo", 1, &engine_cairo, NULL},
     {FORMAT_JPG_CAIRO, "jpg:cairo", 1, &engine_cairo, NULL},

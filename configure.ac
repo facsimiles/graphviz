@@ -1744,7 +1744,7 @@ if test "$use_gd" = ""; then
    PKG_CHECK_MODULES([GDLIB], [gdlib >= 2.0.33],[
       have_gdlib=1
 # FIXME - why no features in the gdlib.pc?
-      GD_FEATURES="GD_PNG GD_JPEG GD_XPM GD_FONTCONFIG GD_FREETYPE GD_GIF"
+      GD_FEATURES="GD_PNG GD_JPEG GD_XPM GD_FONTCONFIG GD_FREETYPE"
    ],[
       AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
       if test -n "$GDLIB_CONFIG"; then
@@ -1785,9 +1785,6 @@ if test "$use_gd" = ""; then
 	    if test "$f" = "GD_FREETYPE"; then
                 AC_DEFINE(HAVE_GD_FREETYPE,1,[Define if the GD library supports FREETYPE])
 		        have_gd_freetype=1
-	    fi
-	    if test "$f" = "GD_GIF"; then
-                AC_DEFINE(HAVE_GD_GIF,1,[Define if the GD library supports GIF])
 	    fi
       done
 
