@@ -39,6 +39,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_asan_instrumented,
     is_autotools,
     is_cmake,
+    is_fedora_43,
     is_macos,
     is_mingw,
     is_rocky,
@@ -1261,7 +1262,20 @@ def test_1594():
 
 
 @pytest.mark.parametrize(
-    "device", ("png:cairo:gd", "png:cairo:gdiplus", "png:cairo:gdk", "png:cairo:quartz")
+    "device",
+    (
+        "png:cairo:gd",
+        "png:cairo:gdiplus",
+        pytest.param(
+            "png:cairo:gdk",
+            marks=pytest.mark.xfail(
+                is_fedora_43(),
+                strict=True,
+                reason="https://gitlab.com/graphviz/graphviz/-/issues/2732",
+            ),
+        ),
+        "png:cairo:quartz",
+    ),
 )
 def test_1617(device: str):
     """
@@ -6141,7 +6155,14 @@ def test_2731():
                 reason="GDK plugin not supported",
             ),
         ),
-        "jpg",
+        pytest.param(
+            "jpg",
+            marks=pytest.mark.xfail(
+                is_fedora_43(),
+                strict=True,
+                reason="https://gitlab.com/graphviz/graphviz/-/issues/2732",
+            ),
+        ),
         "jpg:cairo:gd",
     ),
 )
