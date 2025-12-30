@@ -50,11 +50,7 @@ static char *smyrnaGlade;
  */
 char *smyrnaPath(char *suffix) {
   static size_t baselen;
-#ifdef _WIN32
-  char *pathSep = "\\";
-#else
-  char *pathSep = "/";
-#endif
+  const char pathSep[] = {PATH_SEPARATOR, '\0'};
   assert(smyrnaDir);
 
   if (baselen == 0) {
