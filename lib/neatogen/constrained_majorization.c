@@ -49,7 +49,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	** This function imposes HIERARCHY CONSTRAINTS  **
 	*************************************************/
 
-    int k;
     bool directionalityExist = false;
     float *lap1 = NULL;
     float *dist_accumulator = NULL;
@@ -306,7 +305,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 
     b = gv_calloc(dim, sizeof(float *));
     b[0] = gv_calloc(dim * n, sizeof(float));
-    for (k = 1; k < dim; k++) {
+    for (int k = 1; k < dim; k++) {
 	b[k] = b[0] + k * n;
     }
 
@@ -333,7 +332,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	    /* put into 'dist_accumulator' all squared distances 
 	     * between 'i' and 'i'+1,...,'n'-1
 	     */
-	    for (k = 0; k < dim; k++) {
+	    for (int k = 0; k < dim; k++) {
 		set_vector_valf(len, coords[k][i], tmp_coords);
 		vectors_mult_additionf(len, tmp_coords, -1, coords[k] + i + 1);
 		square_vec(len, tmp_coords);
@@ -363,7 +362,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	}
 
 	/* Now compute b[] (L^(X(t))*X(t)) */
-	for (k = 0; k < dim; k++) {
+	for (int k = 0; k < dim; k++) {
 	    /* b[k] := lap1*coords[k] */
 	    right_mult_with_vector_ff(lap1, n, coords[k], b[k]);
 	}
@@ -373,12 +372,12 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	 * instead of add and vice versa
 	 */
 	new_stress = 0;
-	for (k = 0; k < dim; k++) {
+	for (int k = 0; k < dim; k++) {
 	    new_stress += vectors_inner_productf(n, coords[k], b[k]);
 	}
 	new_stress *= 2;
 	new_stress += constant_term;	// only after mult by 2              
-	for (k = 0; k < dim; k++) {
+	for (int k = 0; k < dim; k++) {
 	    right_mult_with_vector_ff(lap2, n, coords[k], tmp_coords);
 	    new_stress -= vectors_inner_productf(n, coords[k], tmp_coords);
 	}
@@ -393,7 +392,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	 */
 	old_stress = new_stress;
 
-	for (k = 0; k < dim; k++) {
+	for (int k = 0; k < dim; k++) {
 	    /* now we find the optimizer of trace(X'LX)+X'B by solving 'dim' 
 	     * system of equations, thereby obtaining the new coordinates.
 	     * If we use the constraints (given by the var's: 'ordering', 
