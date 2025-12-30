@@ -89,7 +89,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	******************************************************************/
 
     if (smart_ini) {
-	double *x;
 	double *y;
 	if (dim > 2) {
 	    /* the dim==2 case is handled below                      */
@@ -103,7 +102,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	    }
 	}
 
-	x = d_coords[0];
+	double *const x = d_coords[0];
 	y = d_coords[1];
 	if (compute_y_coords(graph, n, y, n)) {
 	    iterations = -1;
