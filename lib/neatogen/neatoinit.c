@@ -35,6 +35,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
@@ -686,13 +687,13 @@ dfsCycle (vtx_data* graph, int i,int mode, node_t* nodes[])
     /* if mode is IPSEP make it an in-edge
      * at both ends, so that an edge constraint won't be generated!
      */
-    double x = mode==MODE_IPSEP?-1.0:1.0;
+    const int8_t x = mode == MODE_IPSEP ? -1 : 1;
 
     np = nodes[i];
     ND_mark(np) = true;
     ND_onstack(np) = true;
     for (size_t e = 1; e < graph[i].nedges; e++) {
-	if (graph[i].edists[e] == 1.0) continue;  /* in edge */
+	if (graph[i].edists[e] == 1) continue; // in edge
 	j = graph[i].edges[e];
 	hp = nodes[j];
 	if (ND_onstack(hp)) {  /* back edge: reverse it */
@@ -700,7 +701,7 @@ dfsCycle (vtx_data* graph, int i,int mode, node_t* nodes[])
             size_t f;
             for (f = 1; f < graph[j].nedges && graph[j].edges[f] != i; f++) ;
             assert (f < graph[j].nedges);
-            graph[j].edists[f] = -1.0;
+            graph[j].edists[f] = -1;
         }
 	else if (!ND_mark(hp)) dfsCycle(graph, j, mode, nodes);
 
@@ -753,7 +754,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
     edge_t *ep;
     float *eweights = NULL;
 #ifdef DIGCOLA
-    float *edists = NULL;
+    int8_t *edists = NULL;
 #endif
     PointMap *ps = newPM();
     int i, idx;
@@ -777,7 +778,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 	eweights = gv_calloc(edges_size, sizeof(float));
 #ifdef DIGCOLA
     if (haveDir)
-	edists = gv_calloc(edges_size, sizeof(float));
+	edists = gv_calloc(edges_size, sizeof(int8_t));
 #endif
 
     i = 0;
@@ -833,7 +834,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
                     if(s && startswith(s, "none")) {
                         *edists++ = 0;
                     } else {
-                        *edists++ = np == aghead(ep) ? 1.0 : -1.0;
+                        *edists++ = np == aghead(ep) ? 1 : -1;
                     }
                 }
 #endif
@@ -1025,7 +1026,7 @@ void dumpData(graph_t * g, vtx_data * gp, int nv, int ne)
 	if (gp[i].edists) {
 	    fputs("  edists", stderr);
 	    for (size_t j = 0; j < n; j++) {
-		fprintf(stderr, "  %3f", gp[i].edists[j]);
+		fprintf(stderr, "  %" PRId8, gp[i].edists[j]);
 	    }
 	    fputs("\n", stderr);
 	}
