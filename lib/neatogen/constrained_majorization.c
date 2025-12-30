@@ -69,7 +69,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     const double relative_tol = levels_sep_tol;
     int *ordering = NULL, *levels = NULL;
     bool converged;
-    int len;
     int num_levels;
 
     if (graph[0].edists != NULL) {
@@ -319,7 +318,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	set_vector_val(n, 0, degrees);
 	sqrt_vecf(lap_length, lap2, lap1);
 	for (int count = 0, i = 0; i < n - 1; i++) {
-	    len = n - i - 1;
+	    const int len = n - i - 1;
 	    /* init 'dist_accumulator' with zeros */
 	    set_vector_valf(n, 0, dist_accumulator);
 
