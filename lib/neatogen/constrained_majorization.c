@@ -68,7 +68,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     /* Additionally, we never consider gaps smaller than 'abs_tol'*<avg_gap> */
     const double relative_tol = levels_sep_tol;
     int *ordering = NULL, *levels = NULL;
-    double old_stress, new_stress;
+    double new_stress;
     bool converged;
     int len;
     int num_levels;
@@ -308,7 +308,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     dist_accumulator = gv_calloc(n, sizeof(float));
     lap1 = gv_calloc(lap_length, sizeof(float));
 
-    old_stress = DBL_MAX;	/* at least one iteration */
+    double old_stress = DBL_MAX; // at least one iteration
 
     cMajEnv =
 	initConstrainedMajorization(lap2, n, ordering, levels, num_levels);
