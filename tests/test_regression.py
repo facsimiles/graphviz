@@ -6260,9 +6260,6 @@ def test_2796():
 
 @pytest.mark.skipif(not is_cmake(), reason="only relevant in CMake builds")
 @pytest.mark.skipif(is_static_build(), reason="only relevant in shared library builds")
-@pytest.mark.xfail(
-    strict=False, reason="https://gitlab.com/graphviz/graphviz/-/issues/2798"
-)
 def test_2798(tmp_path: Path):
     """
     are the CMake exported configs enough to build the examples?

@@ -21,6 +21,7 @@ add_library(gvpr
 
 target_include_directories(gvpr
   PUBLIC
+    $<INSTALL_INTERFACE:include>
     $<INSTALL_INTERFACE:include/graphviz>
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
