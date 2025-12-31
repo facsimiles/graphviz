@@ -76,12 +76,11 @@ static int transparent, basecolor;
 
 static void gdgen_begin_page(GVJ_t * job)
 {
-    char *bgcolor_str = NULL, *truecolor_str = NULL;
     bool truecolor_p = false;	/* try to use cheaper paletted mode */
     gdImagePtr im = NULL;
 
-    truecolor_str = agget(job->gvc->g, "truecolor");	/* allow user to force truecolor */
-    bgcolor_str = agget(job->gvc->g, "bgcolor");
+    const char *const truecolor_str = agget(job->gvc->g, "truecolor"); // allow user to force truecolor
+    const char *const bgcolor_str = agget(job->gvc->g, "bgcolor");
 
     if (truecolor_str && truecolor_str[0])
 	truecolor_p = mapbool(truecolor_str);
@@ -156,19 +155,15 @@ static void gdgen_end_page(GVJ_t * job)
 {
     gdImagePtr im = job->context;
 
-    gd_context_t gd_context = {{0}, 0};
-
-    gd_context.ctx.putBuf = gvdevice_gd_putBuf;
-    gd_context.ctx.putC = gvdevice_gd_putC;
-    gd_context.job = job;
+    gd_context_t gd_context = {
+	.ctx = {.putBuf = gvdevice_gd_putBuf, .putC = gvdevice_gd_putC},
+	.job = job,
+    };
 
     if (!im)
 	return;
     if (job->external_context) {
 	/* leave image in memory to be handled by Gdtclft output routines */
-#ifdef MYTRACE
-	fprintf(stderr, "gdgen_end_graph (to memory)\n");
-#endif
     } else {
 	/* Only save the alpha channel in outputs that support it if
 	   the base color was transparent.   Otherwise everything
@@ -226,9 +221,6 @@ static void gdgen_end_page(GVJ_t * job)
 	    UNREACHABLE();
 	}
 	gdImageDestroy(im);
-#ifdef MYTRACE
-	fprintf(stderr, "gdgen_end_graph (to file)\n");
-#endif
 	job->context = NULL;
     }
 }
@@ -240,14 +232,16 @@ static void gdgen_end_page(GVJ_t * job)
 
 void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, char *str)
 {
-    gdFTStringExtra strex;
     point sp, ep; /* start point, end point, in pixels */
 
     PF2P(spf, sp);
     PF2P(epf, ep);
 
-    strex.flags = gdFTEX_RESOLUTION;
-    strex.hdpi = strex.vdpi = fontdpi;
+    gdFTStringExtra strex = {
+        .flags = gdFTEX_RESOLUTION,
+        .hdpi = fontdpi,
+        .vdpi = fontdpi,
+    };
 
     if (strchr(fontname, '/'))
         strex.flags |= gdFTEX_FONTPATHNAME;
@@ -261,7 +255,6 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
         gdImageLine(im, sp.x, sp.y, ep.x, ep.y, fontcolor);
     } else {
 #ifdef HAVE_GD_FREETYPE
-        char *err;
         int brect[8];
 #ifdef HAVE_GD_FONTCONFIG
         char* fontlist = fontname;
@@ -269,7 +262,7 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
         extern char *gd_alternate_fontlist(const char *font);
         char* fontlist = gd_alternate_fontlist(fontname);
 #endif
-        err = gdImageStringFTEx(im, brect, fontcolor,
+        const char *const err = gdImageStringFTEx(im, brect, fontcolor,
                 fontlist, fontsize, fontangle, sp.x, sp.y, str, &strex);
 #ifndef HAVE_GD_FONTCONFIG
         free(fontlist);
@@ -302,9 +295,6 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     pointf spf, epf;
     double spanwidth = span->size.x * job->zoom * job->dpi.x / POINTS_PER_INCH;
     char* fontname;
-#ifdef HAVE_GD_FONTCONFIG
-    PostscriptAlias *pA;
-#endif
 
     if (!im)
 	return;
@@ -335,7 +325,7 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     }
 
 #ifdef HAVE_GD_FONTCONFIG
-    pA = span->font->postscript_alias;
+    PostscriptAlias *const pA = span->font->postscript_alias;
     if (pA)
 	fontname = gd_psfontResolve (pA);
     else
@@ -354,7 +344,7 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 {
     obj_state_t *obj = job->obj;
-    int i, pen, width, dashstyle[20];
+    int i, pen, dashstyle[20];
 
     if (obj->pen == PEN_DASHED) {
 	for (i = 0; i < 10; i++)
@@ -374,7 +364,7 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 	pen = obj->pencolor.u.index;
     }
 
-    width = d2i(obj->penwidth * job->zoom);
+    int width = d2i(obj->penwidth * job->zoom);
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
@@ -402,18 +392,16 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 static void gdgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
     obj_state_t *obj = job->obj;
     gdImagePtr im = job->context;
-    pointf p0, p1, V[4];
-    int step, pen;
-    bool pen_ok, fill_ok;
+    pointf V[4];
     gdImagePtr brush = NULL;
     gdPoint F[4];
 
     if (!im)
 	return;
 
-    pen = gdgen_set_penstyle(job, im, &brush);
-    pen_ok = pen != gdImageGetTransparent(im);
-    fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
+    const int pen = gdgen_set_penstyle(job, im, &brush);
+    const bool pen_ok = pen != gdImageGetTransparent(im);
+    const bool fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
 
     if (pen_ok || fill_ok) {
         V[3] = A[0];
@@ -423,9 +411,9 @@ static void gdgen_bezier(GVJ_t *job, pointf *A, size_t n, int filled) {
 	    V[0] = V[3];
 	    for (size_t j = 1; j <= 3; j++)
 	        V[j] = A[i + j];
-	    p0 = V[0];
-	    for (step = 1; step <= BEZIERSUBDIVISION; step++) {
-	        p1 = Bezier(V, (double)step / BEZIERSUBDIVISION, NULL, NULL);
+	    pointf p0 = V[0];
+	    for (int step = 1; step <= BEZIERSUBDIVISION; step++) {
+	        const pointf p1 = Bezier(V, (double)step / BEZIERSUBDIVISION, NULL, NULL);
 	        PF2P(p0, F[1]);
 	        PF2P(p1, F[2]);
 	        if (pen_ok)
@@ -447,15 +435,13 @@ static void gdgen_polygon(GVJ_t *job, pointf *A, size_t n, int filled) {
     obj_state_t *obj = job->obj;
     gdImagePtr im = job->context;
     gdImagePtr brush = NULL;
-    int pen;
-    bool pen_ok, fill_ok;
 
     if (!im)
 	return;
 
-    pen = gdgen_set_penstyle(job, im, &brush);
-    pen_ok = pen != gdImageGetTransparent(im);
-    fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
+    const int pen = gdgen_set_penstyle(job, im, &brush);
+    const bool pen_ok = pen != gdImageGetTransparent(im);
+    const bool fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
 
     if (pen_ok || fill_ok) {
         if (n > points_allocated) {
@@ -481,20 +467,17 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     obj_state_t *obj = job->obj;
     gdImagePtr im = job->context;
-    double dx, dy;
-    int pen;
-    bool pen_ok, fill_ok;
     gdImagePtr brush = NULL;
 
     if (!im)
 	return;
 
-    pen = gdgen_set_penstyle(job, im, &brush);
-    pen_ok = pen != gdImageGetTransparent(im);
-    fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
+    const int pen = gdgen_set_penstyle(job, im, &brush);
+    const bool pen_ok = pen != gdImageGetTransparent(im);
+    const bool fill_ok = filled && obj->fillcolor.u.index != gdImageGetTransparent(im);
 
-    dx = 2 * (A[1].x - A[0].x);
-    dy = 2 * (A[1].y - A[0].y);
+    const double dx = 2 * (A[1].x - A[0].x);
+    const double dy = 2 * (A[1].y - A[0].y);
 
     if (fill_ok)
 	gdImageFilledEllipse(im, ROUND(A[0].x), ROUND(A[0].y),
@@ -509,21 +492,18 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 
 static void gdgen_polyline(GVJ_t *job, pointf *A, size_t n) {
     gdImagePtr im = job->context;
-    pointf p, p1;
-    int pen;
-    bool pen_ok;
     gdImagePtr brush = NULL;
 
     if (!im)
 	return;
 
-    pen = gdgen_set_penstyle(job, im, &brush);
-    pen_ok = pen != gdImageGetTransparent(im);
+    const int pen = gdgen_set_penstyle(job, im, &brush);
+    const bool pen_ok = pen != gdImageGetTransparent(im);
 
     if (pen_ok) {
-        p = A[0];
+        pointf p = A[0];
         for (size_t i = 1; i < n; i++) {
-	    p1 = A[i];
+	    const pointf p1 = A[i];
 	    gdImageLine(im, ROUND(p.x), ROUND(p.y),
 		        ROUND(p1.x), ROUND(p1.y), pen);
 	    p = p1;

@@ -17,6 +17,7 @@
 #include <gvc/gvplugin_textlayout.h>
 #include <gd.h>
 #include <common/const.h>
+#include <util/agxbuf.h>
 #include <util/strcasecmp.h>
 #include <util/strview.h>
 
@@ -77,29 +78,23 @@ char *gd_alternate_fontlist(const char *font) {
 }
 #endif				/* HAVE_GD_FONTCONFIG */
 
-/* gd_psfontResolve:
- *  * Construct alias for postscript fontname.
- *   * NB. Uses a static array - non-reentrant.
- *    */
-
-#define ADD_ATTR(a) \
-  if (a) { \
-        strcat(buf, comma ? " " : ", "); \
-        comma = 1; \
-        strcat(buf, a); \
-  }
-
+/// construct alias for postscript fontname
 char* gd_psfontResolve (PostscriptAlias* pa)
 {
-    static char buf[1024];
-    int comma=0;
-    strcpy(buf, pa->family);
+    agxbuf buf = {0};
+    agxbput(&buf, pa->family);
 
-    ADD_ATTR(pa->weight);
-    ADD_ATTR(pa->stretch);
-    ADD_ATTR(pa->style);
+    const char *separator = " ";
+    const char *const attributes[] = {pa->weight, pa->stretch, pa->style};
+    for (size_t i = 0; i < sizeof(attributes) / sizeof(attributes[0]); ++i) {
+        const char *const a = attributes[i];
+        if (a != NULL) {
+            agxbprint(&buf, "%s%s", separator, a);
+            separator = ", ";
+        }
+    }
    
-    return buf;
+    return agxbdisown(&buf);
 }
 
 static bool gd_textlayout(textspan_t * span, char **fontpath)
@@ -142,6 +137,7 @@ static bool gd_textlayout(textspan_t * span, char **fontpath)
 	    fontsize = FONTSIZE_TOO_SMALL;
 	}
 	/* call gdImageStringFT with null *im to get brect and to set font cache */
+	bool fontlist_needs_free = false;
 #ifdef HAVE_GD_FONTCONFIG
 	gdFTUseFontConfig(1);  /* tell gd that we really want to use fontconfig, 'cos it s not the default */
 	pA = span->font->postscript_alias;
@@ -151,13 +147,14 @@ static bool gd_textlayout(textspan_t * span, char **fontpath)
 	    fontlist = fontname;
 #else
 	fontlist = gd_alternate_fontlist(fontname);
+	fontlist_needs_free = true;
 #endif
 
 	err = gdImageStringFTEx(NULL, brect, -1, fontlist,
 				fontsize, 0, 0, 0, span->str, &strex);
-#ifndef HAVE_GD_FONTCONFIG
-	free(fontlist);
-#endif
+	if (fontlist_needs_free) {
+	    free(fontlist);
+	}
 
 	if (err) {
 	    agerrorf("%s\n", err);
