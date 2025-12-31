@@ -23,8 +23,10 @@
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>
 #include <getopt.h>
+#include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/exit.h>
+#include <util/gv_math.h>
 #include <util/unreachable.h>
 
 static char *CmdName;
@@ -115,7 +117,7 @@ static void update(Dict_t * Q, Agnode_t * dest, Agnode_t * src, double len)
     double newlen = getdist(src) + len;
     double oldlen = getdist(dest);
 
-    if (oldlen == 0) {		/* first time to see dest */
+    if (is_exactly_zero(oldlen)) { // first time to see dest
 	setdist(dest, newlen);
 	if (doPath) setprev(dest, src);
 	dtinsert(Q, dest);
@@ -137,8 +139,8 @@ static void post(Agraph_t * g)
 {
     Agnode_t *v;
     Agnode_t *prev;
-    char buf[256];
-    char dflt[256];
+    agxbuf buf = {0};
+    agxbuf dflt_buf = {0};
     Agsym_t *sym;
     Agsym_t *psym = NULL;
     double dist, oldmax;
@@ -149,14 +151,15 @@ static void post(Agraph_t * g)
 	psym = agattr_text(g, AGNODE, "prev", "");
 
     if (setall)
-	snprintf(dflt, sizeof(dflt), "%.3lf", HUGE_VAL);
+	agxbprint(&dflt_buf, "%.3lf", HUGE_VAL);
+    const char *const dflt = agxbuse(&dflt_buf);
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	dist = getdist(v);
-	if (dist) {
+	if (!is_exactly_zero(dist)) {
 	    dist--;
-	    snprintf(buf, sizeof(buf), "%.3lf", dist);
-	    agxset(v, sym, buf);
+	    agxbprint(&buf, "%.3lf", dist);
+	    agxset(v, sym, agxbuse(&buf));
 	    if (doPath && (prev = getprev(v)))
 		agxset(v, psym, agnameof(prev));
 	    if (maxdist < dist)
@@ -175,13 +178,15 @@ static void post(Agraph_t * g)
 	    if (oldmax > maxdist)
 		maxdist = oldmax;
 	}
-	snprintf(buf, sizeof(buf), "%.3lf", maxdist);
-	agxset(g, sym, buf);
+	agxbprint(&buf, "%.3lf", maxdist);
+	agxset(g, sym, agxbuse(&buf));
     } else {
-	snprintf(buf, sizeof(buf), "%.3lf", maxdist);
-	agattr_text(g, AGRAPH, "maxdist", buf);
+	agxbprint(&buf, "%.3lf", maxdist);
+	agattr_text(g, AGRAPH, "maxdist", agxbuse(&buf));
     }
 
+    agxbfree(&dflt_buf);
+    agxbfree(&buf);
     agclean(g, AGNODE, "dijkstra");
     agclean(g, AGEDGE, "dijkstra");
 }

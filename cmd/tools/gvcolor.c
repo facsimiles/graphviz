@@ -22,7 +22,6 @@
 /* if NC changes, a bunch of scanf calls below are in trouble */
 #define	NC	3		/* size of HSB color vector */
 
-#include <assert.h>
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>
 #include "colorxlate.h"
@@ -30,8 +29,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <util/agxbuf.h>
-#include <util/alloc.h>
+#include <util/gv_math.h>
 #include <util/exit.h>
+#include <util/list.h>
 
 typedef struct {
     Agrec_t h;
@@ -55,18 +55,8 @@ double MinRankSaturation;
 double MaxRankSaturation;
 
 static int cmpf(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  Agnode_t **n0 = (Agnode_t **)x;
-  Agnode_t **n1 = (Agnode_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  Agnode_t *const *n0 = x;
+  Agnode_t *const *n1 = y;
     double relrank0 = ND_relrank(*n0);
     double relrank1 = ND_relrank(*n1);
     if (relrank0 < relrank1)
@@ -90,11 +80,11 @@ static char **Files;
 
 static char *useString = "Usage: gvcolor [-?] <files>\n\
   -? - print usage\n\
-If no files are specified, stdin is used\n";
+If no files are specified, stdin is used";
 
 static void usage(int v)
 {
-    printf("%s",useString);
+    puts(useString);
     graphviz_exit(v);
 }
 
@@ -108,11 +98,8 @@ static void init(int argc, char *argv[])
 	case '?':
 	    if (optopt == '\0' || optopt == '?')
 		usage(0);
-	    else {
-		fprintf(stderr, "gvcolor: option -%c unrecognized\n",
-			optopt);
-		usage(1);
-	    }
+	    fprintf(stderr, "gvcolor: option -%c unrecognized\n", optopt);
+	    usage(1);
 	    break;
 	default:
 	    fprintf(stderr, "gvcolor: unexpected error\n");
@@ -128,12 +115,9 @@ static void init(int argc, char *argv[])
 
 static void color(Agraph_t * g)
 {
-    int nn, j, cnt;
-    Agnode_t *n, *v, **nlist;
-    Agedge_t *e;
     char *p;
     double x, y, maxrank = 0.0;
-    double sum[NC], d, lowsat, highsat;
+    double lowsat, highsat;
 
     if (agattr_text(g, AGNODE, "pos", 0) == NULL) {
 	fprintf(stderr,
@@ -159,50 +143,44 @@ static void color(Agraph_t * g)
     }
 
     /* assemble the sorted list of nodes and store the initial colors */
-    nn = agnnodes(g);
-    assert(nn >= 0);
-    size_t nnodes = (size_t)nn;
-    nlist = gv_calloc(nnodes, sizeof(Agnode_t *));
-    size_t i = 0;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	nlist[i++] = n;
+    LIST(Agnode_t *) nlist = {0};
+    for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	LIST_APPEND(&nlist, n);
 	if ((p = agget(n, "color")))
 	    setcolor(p, ND_x(n));
 	p = agget(n, "pos");
 	sscanf(p, "%lf,%lf", &x, &y);
-	ND_relrank(n) = (LR ? x : y);
+	ND_relrank(n) = LR ? x : y;
 	maxrank = fmax(maxrank, ND_relrank(n));
     }
     if (LR != Forward)
-	for (i = 0; i < nnodes; i++) {
-	    n = nlist[i];
+	for (size_t i = 0; i < LIST_SIZE(&nlist); i++) {
+	    Agnode_t *const n = LIST_GET(&nlist, i);
 	    ND_relrank(n) = maxrank - ND_relrank(n);
 	}
-    qsort(nlist, nnodes, sizeof(Agnode_t *), cmpf);
+    LIST_SORT(&nlist, cmpf);
 
     /* this is the pass that pushes the colors through the edges */
-    for (i = 0; i < nnodes; i++) {
-	n = nlist[i];
+    for (size_t i = 0; i < LIST_SIZE(&nlist); i++) {
+	Agnode_t *const n = LIST_GET(&nlist, i);
 
 	/* skip nodes that were manually colored */
-	cnt = 0;
-	for (j = 0; j < NC; j++)
-	    if (ND_x(n)[j] != 0.0)
+	int cnt = 0;
+	for (int j = 0; j < NC; j++)
+	    if (!is_exactly_zero(ND_x(n)[j]))
 		cnt++;
 	if (cnt > 0)
 	    continue;
 
-	for (j = 0; j < NC; j++)
-	    sum[j] = 0.0;
+	double sum[NC] = {0};
 	cnt = 0;
-	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	    v = aghead(e);
+	for (Agedge_t *e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	    Agnode_t *v = aghead(e);
 	    if (v == n)
 		v = agtail(e);
-	    d = ND_relrank(v) - ND_relrank(n) - 0.01;
-	    if (d < 0) {
+	    if (ND_relrank(v) - ND_relrank(n) - 0.01 < 0) {
 		double t = 0.0;
-		for (j = 0; j < NC; j++) {
+		for (int j = 0; j < NC; j++) {
 		    t += ND_x(v)[j];
 		    sum[j] += ND_x(v)[j];
 		}
@@ -211,19 +189,19 @@ static void color(Agraph_t * g)
 	    }
 	}
 	if (cnt)
-	    for (j = 0; j < NC; j++)
+	    for (int j = 0; j < NC; j++)
 		ND_x(n)[j] = sum[j] / cnt;
     }
 
     /* apply saturation adjustment and convert color to string */
-    for (i = 0; i < nnodes; i++) {
+    for (size_t i = 0; i < LIST_SIZE(&nlist); i++) {
 	double h, s, b, t;
 	char buf[64];
 
-	n = nlist[i];
+	Agnode_t *const n = LIST_GET(&nlist, i);
 
 	t = 0.0;
-	for (j = 0; j < NC; j++)
+	for (int j = 0; j < NC; j++)
 	    t += ND_x(n)[j];
 	if (t > 0.0) {
 	    h = ND_x(n)[0];
@@ -235,7 +213,7 @@ static void color(Agraph_t * g)
 		    + s * (MaxRankSaturation - MinRankSaturation);
 	    } else
 		s = 1.0;
-	    s = s * ND_x(n)[1];
+	    s *= ND_x(n)[1];
 	    b = ND_x(n)[2];
 	} else {
 	    h = Defcolor[0];
@@ -245,7 +223,7 @@ static void color(Agraph_t * g)
 	snprintf(buf, sizeof(buf), "%f %f %f", h, s, b);
 	agset(n, "color", buf);
     }
-    free (nlist);
+    LIST_FREE(&nlist);
 }
 
 int main(int argc, char **argv)

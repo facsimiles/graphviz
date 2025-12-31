@@ -98,8 +98,12 @@ static int readc(FILE *str, agxbuf *ostr) {
           case '/':
             col0 = 0;
             return ' ';
+          default: // swallow character
             break;
           }
+          break;
+        default: // swallow character
+          break;
         }
       }
       break;
@@ -256,10 +260,8 @@ static int endBracket(FILE *ins, agxbuf *outs, char bc, char ec) {
  *  returning <string>
  * As a side-effect, set startLine to beginning of content.
  */
-static char *parseBracket(FILE *str, agxbuf *buf, int bc, int ec) {
-  int c;
-
-  c = skipWS(str);
+static char *parseBracket(FILE *str, agxbuf *buf, char bc, char ec) {
+  int c = skipWS(str);
   if (c < 0)
     return 0;
   if (c != bc) {
@@ -267,14 +269,14 @@ static char *parseBracket(FILE *str, agxbuf *buf, int bc, int ec) {
     return 0;
   }
   startLine = lineno;
-  c = endBracket(str, buf, bc, (char)ec);
+  c = endBracket(str, buf, bc, ec);
   if (c < 0) {
     if (!getErrorErrors())
       error(ERROR_ERROR, "unclosed bracket %c%c expression, start line %d", bc,
             ec, startLine);
     return 0;
-  } else
-    return agxbdisown(buf);
+  }
+  return agxbdisown(buf);
 }
 
 static char *parseAction(FILE *str, agxbuf *buf) {

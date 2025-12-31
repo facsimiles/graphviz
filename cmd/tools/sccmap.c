@@ -243,7 +243,7 @@ static void process(Agraph_t * G)
     if (Verbose)
 	fprintf(stderr, "%d %d %d %u %.4f %d %.4f\n",
 		agnnodes(G), agnedges(G), nc, state.Comp,
-		state.N_nodes_in_nontriv_SCC / (double) agnnodes(G),
+		(double)state.N_nodes_in_nontriv_SCC / agnnodes(G),
 		Maxdegree, nontree_frac);
     else if (!Silent)
 	fprintf(stderr, "%d nodes, %d edges, %u strong components\n",
