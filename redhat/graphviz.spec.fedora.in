@@ -336,7 +336,7 @@ Graphviz plugins that depend on x11 - most installations will want this.
 
 # run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-x
-LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
+[ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
 
 %postun plugins-x
 [ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
