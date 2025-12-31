@@ -389,7 +389,7 @@ based renderer.)
 
 # run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-gd
-LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
+[ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
 
 %postun plugins-gd
 [ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
@@ -411,7 +411,7 @@ Graphviz plugin for Kitty terminal rendering.
 
 # run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-kitty
-LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
+[ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
 
 %postun plugins-kitty
 [ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
@@ -434,7 +434,7 @@ Graphviz plugin for vt terminal rendering.
 
 # run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-vt
-LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
+[ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
 
 %postun plugins-vt
 [ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
@@ -458,7 +458,7 @@ Graphviz plugin for webp image rendering.
 
 # run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-webp
-LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
+[ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
 
 %postun plugins-webp
 [ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
@@ -485,7 +485,7 @@ supported directly by the cairo+pango based renderer in the base graphviz rpm.)
 
 # run "dot -c" to generate plugin config in {_libdir}/graphviz/config{pluginsver}
 %post plugins-devil
-LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c
+[ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
 
 %postun plugins-devil
 [ -x %{_bindir}/dot ] && LD_LIBRARY_PATH=%{_libdir} %{_bindir}/dot -c || :
