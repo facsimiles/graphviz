@@ -426,7 +426,6 @@ Graphviz plugin for Kitty terminal rendering.
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for vt format
 Requires:         %{name}-x = %{version}-%{release}
-Obsoletes:        %{name}-vt <= 2.41
 Provides:         %{name}-vt = %{version}-%{release}
 
 %description plugins-vt
