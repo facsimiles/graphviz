@@ -614,9 +614,10 @@ extoken_fn(Expr_t* ex)
 				ex_lval.id = dtmatch(ex->symbols, s);
 				if (!ex_lval.id)
 				{
-					const size_t size = sizeof(Exid_t) + strlen(s) - EX_NAMELEN + 1;
+					const size_t s_size = strlen(s) + 1;
+					const size_t size = sizeof(Exid_t) + s_size - EX_NAMELEN;
 					ex_lval.id = gv_arena_alloc(&ex->vm, alignof(Exid_t), size);
-					strcpy(ex_lval.id->name, s);
+					memcpy(ex_lval.id->name, s, s_size);
 					ex_lval.id->lex = NAME;
 
 					/*
