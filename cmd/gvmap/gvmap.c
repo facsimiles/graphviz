@@ -235,7 +235,7 @@ init(int argc, char **argv, params_t* pm)
     case 'c': {
       char stmp[3]; // two character string plus '\0'
       if (sscanf(optarg,"_opacity=%2s", stmp) > 0 && strlen(stmp) == 2){
-        strncpy(pm->opacity, stmp, sizeof(pm->opacity));
+        memcpy(pm->opacity, stmp, sizeof(pm->opacity));
       } else if (sscanf(optarg, "%d", &r) > 0 && r >= COLOR_SCHEME_NONE &&
                  r <= COLOR_SCHEME_GREY) {
         pm->color_scheme = r;
