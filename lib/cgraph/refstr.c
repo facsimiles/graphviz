@@ -362,7 +362,6 @@ char *agstrbind_text(Agraph_t * g, const char *s)
 
 static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
     refstr_t *r;
-    size_t sz;
 
     if (s == NULL)
 	 return NULL;
@@ -371,7 +370,8 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
     if (r)
 	r->refcnt++;
     else {
-	sz = sizeof(refstr_t) + strlen(s) + 1;
+	const size_t s_size = strlen(s) + 1;
+	const size_t sz = sizeof(refstr_t) + s_size;
 	if (g)
 	    r = gv_calloc(sz, sizeof(char));
 	else {
@@ -382,7 +382,7 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
 	}
 	r->refcnt = 1;
 	r->is_html = is_html;
-	strcpy(r->s, s);
+	memcpy(r->s, s, s_size);
 	strdict_add(strdict, r);
     }
     return r->s;
