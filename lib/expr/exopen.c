@@ -53,9 +53,7 @@ exopen(Exdisc_t* disc)
 	program->file[0] = stdin;
 	program->file[1] = stdout;
 	program->file[2] = stderr;
-	strcpy(program->main.name, "main");
-	program->main.lex = PROCEDURE;
-	program->main.index = PROCEDURE;
+	program->main = (Exid_t){.lex = PROCEDURE, .index = PROCEDURE, .name = "main"};
 	dtinsert(program->symbols, &program->main);
 	for (sym = exbuiltin; *sym->name; sym++)
 		dtinsert(program->symbols, sym);
