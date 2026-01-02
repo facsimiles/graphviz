@@ -965,7 +965,7 @@ static Extype_t exsubstr(Expr_t *ex, Exnode_t *exnode, void *env) {
 
 	v.string = gv_arena_alloc(&ex->ve, 1, (size_t)l.integer + 1);
 	if (exnode->data.string.repl) {
-		strncpy(v.string, s.string + i.integer, (size_t)l.integer);
+		memcpy(v.string, s.string + i.integer, (size_t)l.integer);
 	} else
 		strcpy(v.string, s.string + i.integer);
 	return v;
