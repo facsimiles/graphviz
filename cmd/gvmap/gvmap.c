@@ -138,7 +138,6 @@ init(int argc, char **argv, params_t* pm)
   int c;
   double s;
   int v, r;
-  char stmp[3];  /* two character string plus '\0' */
 
   pm->outfile = NULL;
   pm->opacity[0] = '\0';
@@ -233,7 +232,8 @@ init(int argc, char **argv, params_t* pm)
 	    usage(cmd,1);
       }
       break;
-    case 'c':
+    case 'c': {
+      char stmp[3]; // two character string plus '\0'
       if (sscanf(optarg,"_opacity=%2s", stmp) > 0 && strlen(stmp) == 2){
         strncpy(pm->opacity, stmp, sizeof(pm->opacity));
       } else if (sscanf(optarg, "%d", &r) > 0 && r >= COLOR_SCHEME_NONE &&
@@ -247,6 +247,7 @@ init(int argc, char **argv, params_t* pm)
         usage(cmd, 1);
       }
       break;
+    }
     case 'd':
       if (sscanf(optarg,"%d",&v) <= 0){
         usage(cmd,1);
