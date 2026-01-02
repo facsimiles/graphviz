@@ -948,20 +948,20 @@ static Extype_t exsubstr(Expr_t *ex, Exnode_t *exnode, void *env) {
 	Extype_t i;
 	Extype_t l;
 	Extype_t v;
-	int len;
 
 	s = eval(ex, exnode->data.string.base, env);
-	len = strlen(s.string);
+	const size_t len = strlen(s.string);
 	i = eval(ex, exnode->data.string.pat, env);
-	if (i.integer < 0 || len < i.integer)
+	if (i.integer < 0 || len < (unsigned long long)i.integer)
 		exerror("illegal start index in substr(%s,%lld)", s.string, i.integer);
 	if (exnode->data.string.repl) {
 		l = eval(ex, exnode->data.string.repl, env);
-		if (l.integer < 0 || len - i.integer < l.integer)
+		if (l.integer < 0 ||
+		    len - (unsigned long long)i.integer < (unsigned long long)l.integer)
 	    exerror("illegal length in substr(%s,%lld,%lld)",
 	            s.string, i.integer, l.integer);
 	} else
-		l.integer = len - i.integer;
+		l.integer = (long long)(len - (unsigned long long)i.integer);
 
 	v.string = gv_arena_alloc(&ex->ve, 1, (size_t)l.integer + 1);
 	if (exnode->data.string.repl) {
