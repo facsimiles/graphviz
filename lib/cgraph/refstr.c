@@ -376,7 +376,7 @@ static char *agstrdup_internal(Agraph_t *g, const char *s, bool is_html) {
 	    r = gv_calloc(sz, sizeof(char));
 	else {
 	    r = malloc(sz);
-	    if (sz > 0 && r == NULL) {
+	    if (r == NULL) {
 	        return NULL;
 	    }
 	}
