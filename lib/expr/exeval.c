@@ -967,7 +967,7 @@ static Extype_t exsubstr(Expr_t *ex, Exnode_t *exnode, void *env) {
 	if (exnode->data.string.repl) {
 		memcpy(v.string, s.string + i.integer, (size_t)l.integer);
 	} else
-		strcpy(v.string, s.string + i.integer);
+		memcpy(v.string, s.string + i.integer, len - (size_t)i.integer);
 	return v;
 }
 
