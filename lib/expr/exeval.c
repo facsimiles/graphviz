@@ -339,7 +339,7 @@ prformat(void* vp, Sffmt_t* dp)
                 gv_arena_free(&fmt->expr->vm, s, TIME_LEN);
                 exerror("printf: out of memory");
             } else {
-                strncpy(format, txt.data, txt.size);
+                memcpy(format, txt.data, txt.size);
                 format[txt.size] = '\0';
                 strftime(s, TIME_LEN, format, stm);
                 *(char **)vp = s;
