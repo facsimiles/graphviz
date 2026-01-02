@@ -150,8 +150,9 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 				keyname = v.string;
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, keyname)))
 			{
-				b = gv_arena_alloc(&ex->vm, alignof(Exassoc_t), sizeof(Exassoc_t) + strlen(keyname));
-				strcpy(b->name, keyname);
+				const size_t keyname_len = strlen(keyname);
+				b = gv_arena_alloc(&ex->vm, alignof(Exassoc_t), sizeof(Exassoc_t) + keyname_len);
+				memcpy(b->name, keyname, keyname_len + 1);
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
 			}
