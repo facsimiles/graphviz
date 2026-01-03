@@ -6302,6 +6302,25 @@ def test_2798(tmp_path: Path):
     run(args, env=env)
 
 
+@pytest.mark.xfail(
+    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2801"
+)
+def test_2801():
+    """
+    `colorscheme` should work correctly
+    https://gitlab.com/graphviz/graphviz/-/issues/2801
+    """
+
+    # locate our associated test case in this directory
+    input = Path(__file__).parent / "2801.dot"
+    assert input.exists(), "unexpectedly missing test case"
+
+    # process this
+    warnings = run(["dot", "-Tpng", "-o", os.devnull, input], stderr=subprocess.STDOUT)
+
+    assert "is not a known color" not in warnings, "`colorscheme` not working"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
