@@ -445,6 +445,8 @@ who will be affected by a new Graphviz release.
   [@alecbcs on Github](https://github.com/alecbcs)
 * [SUSE](https://software.opensuse.org/package/graphviz),
   Christian Vögl cvoegl@suse.de
+* [vcpkg](https://vcpkg.link/ports/graphviz),
+  [@dg0yt on Gitlab](https://gitlab.com/dg0yt)
 * [Winget](https://github.com/microsoft/winget-pkgs),
   [@GordonSmith on Github](https://github.com/GordonSmith)
 
