@@ -61,7 +61,7 @@ endif()
 # Installation location of library files
 install(
   TARGETS gvpr
-  EXPORT gvprConfig
+  EXPORT graphvizTargets
   RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
   LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
@@ -99,12 +99,3 @@ set_target_properties(gvpr PROPERTIES
   VERSION 2.0.5
   SOVERSION 2
 )
-
-if(BUILD_SHARED_LIBS)
-  install(
-    EXPORT gvprConfig
-    FILE gvprConfig.cmake
-    NAMESPACE graphviz::
-    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
-  )
-endif()

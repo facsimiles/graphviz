@@ -88,7 +88,7 @@ endif()
 # Installation location of library files
 install(
   TARGETS gvc
-  EXPORT gvcConfig
+  EXPORT graphvizTargets
   RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
   LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
@@ -153,14 +153,5 @@ if(WIN32 AND ZLIB_FOUND AND install_win_dependency_dlls)
     FILES
       ${ZLIB_RUNTIME_LIBRARY}
     DESTINATION ${BINARY_INSTALL_DIR}
-  )
-endif()
-
-if(BUILD_SHARED_LIBS)
-  install(
-    EXPORT gvcConfig
-    FILE gvcConfig.cmake
-    NAMESPACE graphviz::
-    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
   )
 endif()

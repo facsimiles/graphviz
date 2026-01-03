@@ -49,6 +49,12 @@ endif()
 
 if(BUILD_SHARED_LIBS)
   install(
+    EXPORT graphvizTargets
+    FILE graphvizTargets.cmake
+    NAMESPACE graphviz::
+    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
+  )
+  install(
     FILES graphvizConfig.cmake
     DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
   )

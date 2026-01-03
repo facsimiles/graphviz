@@ -20,7 +20,7 @@ target_include_directories(xdot
 # Installation location of library files
 install(
   TARGETS xdot
-  EXPORT xdotConfig
+  EXPORT graphvizTargets
   RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
   LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
@@ -58,12 +58,3 @@ set_target_properties(xdot PROPERTIES
   VERSION 4.0.0
   SOVERSION 4
 )
-
-if(BUILD_SHARED_LIBS)
-  install(
-    EXPORT xdotConfig
-    FILE xdotConfig.cmake
-    NAMESPACE graphviz::
-    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
-  )
-endif()
