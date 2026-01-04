@@ -299,9 +299,7 @@ Ppolyline_t *ellipticWedge(pointf ctr, double xsemi, double ysemi,
 			   double angle0, double angle1)
 {
     ellipse_t ell;
-    Ppolyline_t *pp;
 
     initEllipse(&ell, ctr.x, ctr.y, xsemi, ysemi, angle0, angle1);
-    pp = genEllipticPath(&ell);
-    return pp;
+    return genEllipticPath(&ell);
 }
