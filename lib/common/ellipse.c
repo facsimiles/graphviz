@@ -203,7 +203,6 @@ static void endPath(bezier_path_t *polypath) {
  * Returned path must be freed by the caller.
  */
 static Ppolyline_t *genEllipticPath(ellipse_t * ep) {
-    double yBDot;
     double t;
     double alpha;
     Ppolyline_t *polypath = gv_alloc(sizeof(Ppolyline_t));
@@ -239,7 +238,7 @@ static Ppolyline_t *genEllipticPath(ellipse_t * ep) {
     double xB = ep->cx + aCosEtaB;
     double yB = ep->cy + bSinEtaB;
     double xBDot = -aSinEtaB;
-    yBDot = bCosEtaB;
+    double yBDot = bCosEtaB;
 
     bezier_path_t bezier_path = {0};
     moveTo(&bezier_path, ep->cx, ep->cy);
