@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   effect of this is that code using these files to access Graphviz headers can
   now prefix their include paths, e.g. `#include <graphviz/gvc.h>` instead of
   `#include <gvc.h>`. #2798
+- The `colorscheme` attribute when applied to edge labels works once again. This
+  was a regression in Graphviz 11.0.0. #2801
 
 ## [14.1.1] – 2025-12-13
 

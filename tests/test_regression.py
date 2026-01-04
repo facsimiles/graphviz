@@ -6302,9 +6302,6 @@ def test_2798(tmp_path: Path):
     run(args, env=env)
 
 
-@pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2801"
-)
 def test_2801():
     """
     `colorscheme` should work correctly

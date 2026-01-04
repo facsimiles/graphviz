@@ -2365,7 +2365,6 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 
 #define SEP 2.0
 
-    char *previous_color_scheme = setColorScheme(agget(e, "colorscheme"));
     if (ED_spl(e)) {
 	arrowsize = late_double(e, E_arrowsz, 1.0, 0.0);
 	color = late_string(e, E_color, "");
@@ -2682,10 +2681,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	}
     }
 
-done:;
-    char *color_scheme = setColorScheme(previous_color_scheme);
-    free(color_scheme);
-    free(previous_color_scheme);
+done:
     agxbfree(&buf);
 }
 
@@ -3071,9 +3067,13 @@ static void emit_edge(GVJ_t * job, edge_t * e)
 	    }
 	}
 
+	char *const previous_color_scheme = setColorScheme(agget(e, "colorscheme"));
 	emit_begin_edge(job, e, styles);
 	emit_edge_graphics (job, e, styles);
 	emit_end_edge(job);
+	char *const our_color_scheme = setColorScheme(previous_color_scheme);
+	free(previous_color_scheme);
+	free(our_color_scheme);
     }
 }
 
