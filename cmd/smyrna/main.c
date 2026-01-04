@@ -31,6 +31,7 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/exit.h>
 #include <util/gv_find_me.h>
@@ -46,24 +47,14 @@ static char *smyrnaGlade;
  * and constructs a complete pathname.
  * The returned string is malloced, so the application should free
  * it later.
- * Returns NULL on error.
  */
 char *smyrnaPath(char *suffix) {
-  static size_t baselen;
-#ifdef _WIN32
-  char *pathSep = "\\";
-#else
-  char *pathSep = "/";
-#endif
+  const char pathSep = PATH_SEPARATOR;
   assert(smyrnaDir);
 
-  if (baselen == 0) {
-    baselen = strlen(smyrnaDir) + 2;
-  }
-  size_t len = baselen + strlen(suffix);
-  char *buf = gv_calloc(len, sizeof(char));
-  snprintf(buf, len, "%s%s%s", smyrnaDir, pathSep, suffix);
-  return buf;
+  agxbuf buf = {0};
+  agxbprint(&buf, "%s%c%s", smyrnaDir, pathSep, suffix);
+  return agxbdisown(&buf);
 }
 
 static char *useString = "Usage: smyrna [-v?] <file>\n\
