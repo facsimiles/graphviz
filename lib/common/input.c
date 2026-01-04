@@ -707,10 +707,11 @@ void graph_init(graph_t * g, bool use_rankdir)
     State = GVBEGIN;
     EdgeLabelsDone = 0;
 
-    GD_drawing(g)->dpi = 0.0;
-    if (((p = agget(g, "dpi")) && p[0])
-	|| ((p = agget(g, "resolution")) && p[0]))
-	GD_drawing(g)->dpi = atof(p);
+    GD_drawing(g)->dpi = late_double(g, agfindgraphattr(g, "dpi"),
+                                     late_double(g,
+                                                 agfindgraphattr(g,
+                                                                 "resolution"),
+                                                 0, 0), 0);
 
     do_graph_label(g);
 

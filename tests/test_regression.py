@@ -7278,7 +7278,6 @@ def test_library_so_version(lib: str):
     ), "Autotools and Debian lintian overrides disagree on library version"
 
 
-@pytest.mark.xfail(strict=True)
 def test_negative_dpi():
     """can Graphviz deal with an illegal negative `dpi` value?"""
 
