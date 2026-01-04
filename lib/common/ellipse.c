@@ -135,7 +135,9 @@ static const double safety3[] = {
  * This method handles rational functions where the numerator is
  * quadratic and the denominator is linear
  */
-#define RationalFunction(x,c) ((x * (x * c[0] + c[1]) + c[2]) / (x + c[3]))
+static double RationalFunction(double x, const double *c) {
+  return (x * (x * c[0] + c[1]) + c[2]) / (x + c[3]);
+}
 
 /* Estimate the approximation error for a sub-arc of the instance.
  * tA and tB give the start and end angle of the subarc
