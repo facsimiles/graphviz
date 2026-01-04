@@ -203,7 +203,6 @@ static void endPath(bezier_path_t *polypath) {
  * Returned path must be freed by the caller.
  */
 static Ppolyline_t *genEllipticPath(ellipse_t * ep) {
-    double aCosEtaB;
     double bSinEtaB;
     double aSinEtaB;
     double bCosEtaB;
@@ -239,7 +238,7 @@ static Ppolyline_t *genEllipticPath(ellipse_t * ep) {
 
     double cosEtaB = cos(etaB);
     double sinEtaB = sin(etaB);
-    aCosEtaB = ep->a * cosEtaB;
+    double aCosEtaB = ep->a * cosEtaB;
     bSinEtaB = ep->b * sinEtaB;
     aSinEtaB = ep->a * sinEtaB;
     bCosEtaB = ep->b * cosEtaB;
