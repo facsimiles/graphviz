@@ -3331,7 +3331,7 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
 {
     GVJ_t *firstjob = job->gvc->active_jobs;
 
-    if (GD_drawing(g)->dpi != 0) {
+    if (GD_drawing(g)->dpi > 0) {
         job->dpi.x = job->dpi.y = GD_drawing(g)->dpi;
     }
     else if (firstjob && firstjob->device_sets_dpi) {
