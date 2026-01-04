@@ -92,7 +92,7 @@ typedef double erray_t[2][4][4];
   // coefficients for error estimation
   // while using cubic Bézier curves for approximation
   // 0 < b/a < 1/4
-static erray_t coeffs3Low = {
+static const erray_t coeffs3Low = {
     {
 	{3.85268, -21.229, -0.330434, 0.0127842},
 	{-1.61486, 0.706564, 0.225945, 0.263682},
@@ -110,7 +110,7 @@ static erray_t coeffs3Low = {
   // coefficients for error estimation
   // while using cubic Bézier curves for approximation
   // 1/4 <= b/a <= 1
-static erray_t coeffs3High = {
+static const erray_t coeffs3High = {
     {
 	{0.0899116, -19.2349, -4.11711, 0.183362},
 	{0.138148, -1.45804, 1.32044, 1.38474},
@@ -152,8 +152,7 @@ static double estimateError(ellipse_t *ep, double etaA, double etaB) {
     double cos6 = cos(6 * eta);
 
     // select the right coefficient's set according to b/a
-    double (*coeffs)[4][4];
-    coeffs = x < 0.25 ? coeffs3Low : coeffs3High;
+    const double (*coeffs)[4][4] = x < 0.25 ? coeffs3Low : coeffs3High;
 
     c0 = RationalFunction(x, coeffs[0][0])
        + cos2 * RationalFunction(x, coeffs[0][1])
