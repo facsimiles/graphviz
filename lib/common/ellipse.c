@@ -127,7 +127,7 @@ static const erray_t coeffs3High = {
 
   // safety factor to convert the "best" error approximation
   // into a "max bound" error
-static double safety3[] = {
+static const double safety3[] = {
     0.001, 4.98, 0.207, 0.0067
 };
 
