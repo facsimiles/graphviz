@@ -1906,10 +1906,7 @@ static char *default_pencolor(agxbuf *buf, const char *pencolor,
 
 static double approxLen (pointf* pts)
 {
-    double d = DIST(pts[0],pts[1]);
-    d += DIST(pts[1],pts[2]);
-    d += DIST(pts[2],pts[3]);
-    return d;
+    return DIST(pts[0], pts[1]) + DIST(pts[1], pts[2]) + DIST(pts[2], pts[3]);
 }
  
 /* Given B-spline bz and 0 < t < 1, split bz so that left corresponds to
