@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.1.2)]
 
+### Changed
+
+- Support for HP-UX has been removed.
+
 ### Fixed
 
 - On MinGW, Smyrna consistently uses `/` as a path separator.

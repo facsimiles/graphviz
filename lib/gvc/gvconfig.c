@@ -457,11 +457,6 @@ static bool is_plugin(const char *filepath) {
     if (len < 1 || gv_isdigit(filepath[len - 1])) {
 	return false;
     }
-#elif ((defined(__hpux__) || defined(__hpux)) && !(defined(__ia64)))
-    static const char SL[] = ".sl.";
-    if (len < strlen(SL) || !startswith(filepath + len - strlen(SL), SL)) {
-	return false;
-    }
 #else
     static const char SO[] = ".so.";
     if (len < strlen(SO) || !startswith(filepath + len - strlen(SO), SO)) {
