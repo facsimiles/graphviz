@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - On MinGW, Smyrna consistently uses `/` as a path separator.
+- In the CMake build system, building a statically linked `dot` with the Quartz
+  plugin enabled has been repaired.
 
 ## [14.1.1] – 2025-12-13
 
