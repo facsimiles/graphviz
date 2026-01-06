@@ -768,6 +768,27 @@ macos-cmake-build:
     tags:
         - saas-macos-medium-m1
 
+macos-cmake-static-build:
+    <<: *macos_build_definition
+    needs: []
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror -Wno-error=implicit-fallthrough"
+        - export CXXFLAGS="-Werror"
+        - export CMAKE_OPTIONS="-Dwith_cxx_api=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LTDL=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_EXPAT=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_GVEDIT=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_QUARTZ=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=ON"
+        # disable Ruby bindings because Ruby headers are buggy on macOS
+        # https://gitlab.com/graphviz/graphviz/-/issues/2625
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_RUBY=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -DBUILD_SHARED_LIBS=OFF"
+    tags:
+        - saas-macos-medium-m1
+
 windows-cmake-Win32-release-build:
     <<: *windows_build_definition
     before_script:
