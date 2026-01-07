@@ -150,8 +150,9 @@ static Extype_t getdyn(Expr_t *ex, Exnode_t *exnode, void *env,
 				keyname = v.string;
 			if (!(b = dtmatch(exnode->data.variable.symbol->local, keyname)))
 			{
-				b = gv_arena_alloc(&ex->vm, alignof(Exassoc_t), sizeof(Exassoc_t) + strlen(keyname));
-				strcpy(b->name, keyname);
+				const size_t keyname_len = strlen(keyname);
+				b = gv_arena_alloc(&ex->vm, alignof(Exassoc_t), sizeof(Exassoc_t) + keyname_len);
+				memcpy(b->name, keyname, keyname_len + 1);
 				b->key = v;
 				dtinsert(exnode->data.variable.symbol->local, b);
 			}
@@ -338,7 +339,7 @@ prformat(void* vp, Sffmt_t* dp)
                 gv_arena_free(&fmt->expr->vm, s, TIME_LEN);
                 exerror("printf: out of memory");
             } else {
-                strncpy(format, txt.data, txt.size);
+                memcpy(format, txt.data, txt.size);
                 format[txt.size] = '\0';
                 strftime(s, TIME_LEN, format, stm);
                 *(char **)vp = s;
@@ -947,26 +948,26 @@ static Extype_t exsubstr(Expr_t *ex, Exnode_t *exnode, void *env) {
 	Extype_t i;
 	Extype_t l;
 	Extype_t v;
-	int len;
 
 	s = eval(ex, exnode->data.string.base, env);
-	len = strlen(s.string);
+	const size_t len = strlen(s.string);
 	i = eval(ex, exnode->data.string.pat, env);
-	if (i.integer < 0 || len < i.integer)
+	if (i.integer < 0 || len < (unsigned long long)i.integer)
 		exerror("illegal start index in substr(%s,%lld)", s.string, i.integer);
 	if (exnode->data.string.repl) {
 		l = eval(ex, exnode->data.string.repl, env);
-		if (l.integer < 0 || len - i.integer < l.integer)
+		if (l.integer < 0 ||
+		    len - (unsigned long long)i.integer < (unsigned long long)l.integer)
 	    exerror("illegal length in substr(%s,%lld,%lld)",
 	            s.string, i.integer, l.integer);
 	} else
-		l.integer = len - i.integer;
+		l.integer = (long long)(len - (unsigned long long)i.integer);
 
-	v.string = gv_arena_alloc(&ex->ve, 1, l.integer + 1);
+	v.string = gv_arena_alloc(&ex->ve, 1, (size_t)l.integer + 1);
 	if (exnode->data.string.repl) {
-		strncpy(v.string, s.string + i.integer, l.integer);
+		memcpy(v.string, s.string + i.integer, (size_t)l.integer);
 	} else
-		strcpy(v.string, s.string + i.integer);
+		memcpy(v.string, s.string + i.integer, len - (size_t)i.integer);
 	return v;
 }
 

@@ -97,7 +97,7 @@ static char *bbOf(Expr_t *pgm, char *pt, bool getll) {
     if (getll) {
       size_t len = (size_t)(p - pt);
       char *const s = exstralloc(pgm, len + 1);
-      strncpy(s, pt, len);
+      memcpy(s, pt, len);
       s[len] = '\0';
       return s;
     }
@@ -117,7 +117,7 @@ static char *xyOf(Expr_t *pgm, char *pt, bool getx) {
     if (getx) {
       size_t len = (size_t)(p - pt);
       char *const v = exstralloc(pgm, len + 1);
-      strncpy(v, pt, len);
+      memcpy(v, pt, len);
       v[len] = '\0';
       return v;
     }
