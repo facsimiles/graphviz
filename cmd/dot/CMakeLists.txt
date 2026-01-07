@@ -174,6 +174,10 @@ else()
     target_link_libraries(dot PRIVATE gvplugin_webp)
   endif()
 
+  if(HAVE_QUARTZ)
+    target_link_libraries(dot PRIVATE gvplugin_quartz)
+  endif()
+
   install(
     TARGETS dot
     RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
