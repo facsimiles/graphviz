@@ -491,7 +491,7 @@ int lockGraph(Agraph_t *g, int v) {
     if (data->lock.zombie)
       agclose(g);
     else
-      data->lock = (lock_t){0};
+      data->lock = (gvlock_t){0};
   }
   return oldv;
 }

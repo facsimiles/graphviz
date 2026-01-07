@@ -38,11 +38,11 @@ extern "C" {
 typedef struct {
   bool locked: 1; ///< is the lock currently taken?
   bool zombie: 1; ///< was a deletion request recorded while locked?
-} lock_t;
+} gvlock_t;
 
     typedef struct {
 	Agrec_t h;
-	lock_t lock;
+	gvlock_t lock;
     } gval_t;
 
     typedef struct {
