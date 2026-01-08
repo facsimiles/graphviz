@@ -6258,6 +6258,50 @@ def test_2796():
     ), "triangulation failed"
 
 
+@pytest.mark.skipif(not is_cmake(), reason="only relevant in CMake builds")
+@pytest.mark.skipif(is_static_build(), reason="only relevant in shared library builds")
+def test_2798(tmp_path: Path):
+    """
+    are the CMake exported configs enough to build the examples?
+    https://gitlab.com/graphviz/graphviz/-/issues/2798
+    """
+
+    # a directory containing a CMake file that describes building the examples
+    src = Path(__file__).parent / "2798"
+
+    # suppress any compiler path tweaks because we do not want to be able to see paths
+    # in the Graphviz source tree
+    env = os.environ.copy()
+    for v in (
+        "CPATH",  # GNU CPP
+        "C_INCLUDE_PATH",  # GNU CPP
+        "CPLUS_INCLUDE_PATH",  # GNU CPP
+        "OBJC_INCLUDE_PATH",  # GNU CPP
+        "LIBRARY_PATH",  # GNU LD
+        "LD_LIBRARY_PATH",  # *nix ld.so
+        "DYLD_LIBRARY_PATH",  # macOS dyld
+        "INCLUDE",  # MSVC
+        "LIB",  # MSVC
+        "LIBPATH",  # MSVC
+    ):
+        if v in env:
+            del env[v]
+
+    # configure this
+    args = ["cmake", "-B", tmp_path, "-S", src]
+    if platform.system() == "Windows" and not is_mingw():
+        args += ["-A", os.environ["project_platform"]]
+    run(args, env=env)
+
+    # compile the examples
+    args = ["cmake", "--build", tmp_path, "--parallel=1", "--verbose"]
+    if platform.system() == "Windows" and not is_mingw():
+        # Windows decides which C Run-Time (CRT) library to link based on the
+        # configuration, which must be the same our dependencies were linked against
+        args += [f"--config={os.environ['configuration']}"]
+    run(args, env=env)
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(

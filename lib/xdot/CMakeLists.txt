@@ -10,6 +10,7 @@ add_library(xdot
 
 target_include_directories(xdot
   PUBLIC
+    $<INSTALL_INTERFACE:include>
     $<INSTALL_INTERFACE:include/graphviz>
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>

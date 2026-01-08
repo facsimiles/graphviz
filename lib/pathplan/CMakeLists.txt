@@ -24,6 +24,7 @@ add_library(pathplan
 
 target_include_directories(pathplan
   PUBLIC
+    $<INSTALL_INTERFACE:include>
     $<INSTALL_INTERFACE:include/graphviz>
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>

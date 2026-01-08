@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - On MinGW, Smyrna consistently uses `/` as a path separator.
 - In the CMake build system, building a statically linked `dot` with the Quartz
   plugin enabled has been repaired.
+- The configuration files exported by the CMake build system have an additional
+  install interface of `include`, adding to the existing `include/graphviz`. The
+  effect of this is that code using these files to access Graphviz headers can
+  now prefix their include paths, e.g. `#include <graphviz/gvc.h>` instead of
+  `#include <gvc.h>`. #2798
 
 ## [14.1.1] – 2025-12-13
 
