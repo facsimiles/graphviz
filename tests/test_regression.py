@@ -7276,3 +7276,13 @@ def test_library_so_version(lib: str):
     assert (
         version[0] - version[2] == overrides_version2
     ), "Autotools and Debian lintian overrides disagree on library version"
+
+
+def test_negative_dpi():
+    """can Graphviz deal with an illegal negative `dpi` value?"""
+
+    # locate our associated test case in this directory
+    src = Path(__file__).parent / "negative-dpi.dot"
+    assert src.exists(), "unexpectedly missing test case"
+
+    run(["dot", "-Tpng", "-o", os.devnull, src], timeout=10)

@@ -1,0 +1,4 @@
+digraph {
+  dpi=-42;
+  a -> b;
+}

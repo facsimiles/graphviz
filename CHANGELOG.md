@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `#include <gvc.h>`. #2798
 - The `colorscheme` attribute when applied to edge labels works once again. This
   was a regression in Graphviz 11.0.0. #2801
+- The `dpi` and `resolution` graph attributes are now constrained to a minimum
+  value of `0.0`. This was already stated in the documentation but not enforced
+  by the code.
 
 ## [14.1.1] – 2025-12-13
 
