@@ -30,7 +30,7 @@
 #include <util/strcasecmp.h>
 #include <util/unreachable.h>
 
-static char* colorscheme;
+static _Thread_local char *colorscheme;
 
 static void hsv2rgb(double h, double s, double v,
 			double *r, double *g, double *b)
