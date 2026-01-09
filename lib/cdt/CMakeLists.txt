@@ -30,7 +30,7 @@ target_include_directories(cdt PRIVATE
 # Installation location of library files
 install(
   TARGETS cdt
-  EXPORT cdtConfig
+  EXPORT graphvizTargets
   RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
   LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
@@ -68,12 +68,3 @@ set_target_properties(cdt PROPERTIES
   VERSION 6.0.2
   SOVERSION 6
 )
-
-if(BUILD_SHARED_LIBS)
-  install(
-    EXPORT cdtConfig
-    FILE cdtConfig.cmake
-    NAMESPACE graphviz::
-    DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/graphviz
-  )
-endif()
