@@ -134,11 +134,6 @@ case "${host_os}" in
 	SHARED_LIBRARY_SUFFIX=.dylib
 	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
 	;;
-  hpux* )
-	BROWSER="xdg-open"
-	JSHEXT=so
-	SHARED_LIBRARY_SUFFIX=.sl
-	;;
   * )
 	BROWSER="xdg-open"
 	JSHEXT=so
@@ -315,9 +310,6 @@ fi
 
 if test "${GCC}" != "yes" ; then
     case "${build}" in
-        *-*-hpux* )
-	    CFLAGS="${CFLAGS} -Wp,-H30000"
-            ;;
         *-dec-osf* )
             CFLAGS="${CFLAGS} -ieee"
             ;;

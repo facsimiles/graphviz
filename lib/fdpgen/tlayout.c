@@ -436,7 +436,7 @@ static pointf initPositions(graph_t *g, bport_t *pp) {
     }
   }
 
-  size = T_K * (sqrt((double)nG) + 1.0);
+  size = T_K * (sqrt(nG) + 1.0);
   T_Wd = T_Ht = EXPFACTOR * (size / 2.0);
   if (n_pos == 1) {
     ctr.x = bb.LL.x;
