@@ -163,7 +163,6 @@ EXCLUDE = (
     "lib/common/colorprocs.h",
     "lib/common/colxlate.c",
     "lib/common/const.h",
-    "lib/common/ellipse.c",
     "lib/common/emit.c",
     "lib/common/geom.c",
     "lib/common/geom.h",
