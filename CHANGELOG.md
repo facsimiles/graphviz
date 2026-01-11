@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `dpi` and `resolution` graph attributes are now constrained to a minimum
   value of `0.0`. This was already stated in the documentation but not enforced
   by the code.
+- Compilation from source no longer fails on Solaris with symbol conflicts due
+  to `lock_t` usage. #2802
 
 ## [14.1.1] – 2025-12-13
 
