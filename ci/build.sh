@@ -58,7 +58,6 @@ if [ "${build_system}" = "cmake" ]; then
         mv build/*.zip ${DIR}/
         mv build/*.exe ${DIR}/
     elif [[ ${id} == cygwin* ]]; then
-        mv build/*.zip ${DIR}/
         mv build/*.tar.bz2 ${DIR}/
     else
         echo "Error: ID=${ID} is unknown" >&2
