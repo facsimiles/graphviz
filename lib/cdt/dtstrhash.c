@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include	<assert.h>
 #include	<cdt/dthdr.h>
 #include	<limits.h>

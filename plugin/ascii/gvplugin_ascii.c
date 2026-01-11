@@ -4,6 +4,8 @@
 /// This device does not attempt to examine your terminal dimensions. It simply
 /// assumes you want output of the dimensions of the renderer graph.
 
+#include "config.h"
+
 #include <aalib.h>
 #include <assert.h>
 #include <gvc/gvplugin.h>

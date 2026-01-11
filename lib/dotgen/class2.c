@@ -11,6 +11,8 @@
 
 /* classify edges for mincross/nodepos/splines, using given ranks */
 
+#include "config.h"
+
 #include <dotgen/dot.h>
 #include <stdbool.h>
 #include <stdlib.h>

@@ -14,6 +14,8 @@
  * create temporary edges.
  */
 
+#include "config.h"
+
 #include <dotgen/dot.h>
 #include <stdbool.h>
 

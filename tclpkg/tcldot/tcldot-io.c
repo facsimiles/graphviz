@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "../tcl-compat.h"
 #include <assert.h>
 #include <cgraph/rdr.h>

@@ -1,5 +1,7 @@
 #define UNDERLINE
 
+#include "config.h"
+
 #include <gvpr/trieFA.h>
 
 TrieState           TrieStateTbl[70] = {

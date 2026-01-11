@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <sparse/general.h>
 #include <common/geom.h>
 #include <common/arith.h>

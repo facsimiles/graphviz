@@ -13,6 +13,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include    <circogen/circular.h>
 #include    <neatogen/adjust.h>
 #include    <pack/pack.h>

@@ -15,6 +15,8 @@
  * convert \x character constants in s in place
  */
 
+#include "config.h"
+
 #include <ast/ast.h>
 
 void stresc(char *s)

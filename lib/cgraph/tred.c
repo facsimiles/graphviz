@@ -20,6 +20,8 @@
  * Contributors: Details at https://graphviz.org
  */
 
+#include "config.h"
+
 #include <cgraph/cghdr.h>
 #include <stdbool.h>
 #include <stdio.h>

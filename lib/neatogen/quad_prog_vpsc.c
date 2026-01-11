@@ -22,6 +22,8 @@
  * Tim Dwyer, 2006
  **********************************************************/
 
+#include "config.h"
+
 #include <common/geomprocs.h>
 #include <neatogen/digcola.h>
 #include <stdbool.h>

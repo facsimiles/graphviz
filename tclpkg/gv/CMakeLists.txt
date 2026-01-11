@@ -239,6 +239,7 @@ if(ENABLE_SWIG)
     )
     set_property(
       TARGET gv_php
+      APPEND
       PROPERTY INCLUDE_DIRECTORIES ${PHP_INCLUDE_DIRS}
     )
     set(PHP_FLAGS "")

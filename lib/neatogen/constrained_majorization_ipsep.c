@@ -31,6 +31,8 @@
  * Tim Dwyer, 2006
  **********************************************************/
 
+#include "config.h"
+
 #include <neatogen/digcola.h>
 #include <stdbool.h>
 #include <util/alloc.h>

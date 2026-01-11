@@ -2,6 +2,9 @@
  * @file
  * @ingroup cgraph_app
  */
+
+#include "config.h"
+
 #include <assert.h>
 #include <cgraph/cghdr.h>
 #include <stddef.h>

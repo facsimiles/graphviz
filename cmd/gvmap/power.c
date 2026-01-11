@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <util/alloc.h>
 #include "power.h"
 #include <sparse/SparseMatrix.h>

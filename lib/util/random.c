@@ -1,6 +1,8 @@
 /// @file
 /// @brief Implementation of random number generation functionality
 
+#include "config.h"
+
 #include <assert.h>
 #include <limits.h>
 #include <stdint.h>

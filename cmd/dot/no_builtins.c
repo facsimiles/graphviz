@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <gvc/gvplugin.h>
 
 lt_symlist_t lt_preloaded_symbols[] = {{0, 0}};

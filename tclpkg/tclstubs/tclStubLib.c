@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 /* this dummy file is here to fool libtool and automake */
 #include "tcl.h"
 

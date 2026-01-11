@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <cgraph/cgraph.h>
 #include <common/render.h>
 #include <common/utils.h>

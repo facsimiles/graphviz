@@ -1,6 +1,8 @@
 /// @file
 /// @brief C implementation of `gv_fopen`
 
+#include "config.h"
+
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>

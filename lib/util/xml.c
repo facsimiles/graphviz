@@ -4,6 +4,10 @@
  * @ingroup common_utils
  */
 
+#ifndef TEST_XML
+#include "config.h"
+#endif
+
 #include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>

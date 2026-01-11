@@ -8,9 +8,10 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include "mainwindow.h"
 #include "config.h"
+
 #include "csettings.h"
+#include "mainwindow.h"
 #include "mdichild.h"
 #include <QStringList>
 #include <QtWidgets>

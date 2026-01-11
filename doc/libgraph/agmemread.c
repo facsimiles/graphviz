@@ -1,3 +1,5 @@
+#include "config.h"
+
 typedef struct {
     const char *data;
     int len;

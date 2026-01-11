@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <cassert>
 #include <cstddef>
 #include <memory>

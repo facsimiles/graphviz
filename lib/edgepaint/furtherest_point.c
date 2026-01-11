@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <sparse/general.h>
 #include <sparse/QuadTree.h>
 #include <edgepaint/furtherest_point.h>

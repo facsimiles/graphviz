@@ -12,6 +12,8 @@
 /* Module for clipping splines to cluster boxes.
  */
 
+#include "config.h"
+
 #include	<dotgen/dot.h>
 #include	<math.h>
 #include	<stdbool.h>

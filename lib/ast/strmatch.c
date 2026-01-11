@@ -43,6 +43,8 @@
  * BUG: unbalanced ) terminates top level pattern
  */
 
+#include "config.h"
+
 #include <ast/ast.h>
 #include <ctype.h>
 #include <stddef.h>

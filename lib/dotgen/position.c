@@ -17,6 +17,8 @@
  * created and correctly separated.
  */
 
+#include "config.h"
+
 #include <common/geomprocs.h>
 #include <dotgen/dot.h>
 #include <dotgen/aspect.h>

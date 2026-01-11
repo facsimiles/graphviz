@@ -1,6 +1,8 @@
 /// \file
 /// \brief Device that renders using ANSI terminal colors
 
+#include "config.h"
+
 #include <assert.h>
 #include <gvc/gvplugin.h>
 #include <gvc/gvplugin_device.h>

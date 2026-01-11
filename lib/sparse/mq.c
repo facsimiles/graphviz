@@ -55,6 +55,8 @@
 
 */
 
+#include "config.h"
+
 #define STANDALONE
 #include <limits.h>
 #include <sparse/general.h>

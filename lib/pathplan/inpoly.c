@@ -15,6 +15,8 @@
  * The polygon must be convex with vertices in CW order.
  */
 
+#include "config.h"
+
 #include <pathplan/pathutil.h>
 #include <pathplan/vispath.h>
 #include <stdbool.h>

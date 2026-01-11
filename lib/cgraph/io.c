@@ -12,6 +12,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <stddef.h>
 #include <stdio.h>
 #include <cgraph/cghdr.h>

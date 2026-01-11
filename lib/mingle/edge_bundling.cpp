@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <algorithm>
 #include <common/types.h>
 #include <common/globals.h>

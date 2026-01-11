@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "toolboxcallbacks.h"
 #include "viewport.h"
 

@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "menucallbacks.h"
 #include "viewport.h"
 #include "tvnodes.h"

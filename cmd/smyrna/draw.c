@@ -13,6 +13,9 @@
 XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 		for now keep them at the bottom
 */
+
+#include "config.h"
+
 #include "draw.h"
 #include <common/colorprocs.h>
 #include "smyrna_utils.h"

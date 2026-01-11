@@ -14,6 +14,8 @@
  * Written by Emden Gansner
  */
 
+#include "config.h"
+
 #include "builddate.h"
 #include <assert.h>
 #include <ast/error.h>

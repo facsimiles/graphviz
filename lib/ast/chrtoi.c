@@ -15,6 +15,8 @@
  * convert a 0 terminated character constant string to an int
  */
 
+#include "config.h"
+
 #include <ast/ast.h>
 #include <limits.h>
 #include <stddef.h>

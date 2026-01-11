@@ -16,6 +16,8 @@
  * Adaptagrams repository.
  */
 
+#include "config.h"
+
 #include <algorithm>
 #include <set>
 #include <cassert>

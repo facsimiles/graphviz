@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by the code.
 - Compilation from source no longer fails on Solaris with symbol conflicts due
   to `lock_t` usage. #2802
+- When compiling Graphviz from source, `_FILE_OFFSET_BITS` is set consistently
+  in all compilation jobs. #2803
 
 ## [14.1.1] – 2025-12-13
 

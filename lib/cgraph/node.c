@@ -11,6 +11,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <assert.h>
 #include <cgraph/cghdr.h>
 #include <cgraph/node_set.h>

@@ -1,3 +1,7 @@
+#ifndef NO_CONFIG // defined by ../../tests/test_gv_find_me.c
+#include "config.h"
+#endif
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>

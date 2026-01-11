@@ -16,6 +16,8 @@
 
 ******************************************/
 
+#include "config.h"
+
 #include <neatogen/bfs.h>
 #include <util/list.h>
 

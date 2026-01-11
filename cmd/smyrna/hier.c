@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "smyrnadefs.h"
 #include "hier.h"
 #include <math.h>

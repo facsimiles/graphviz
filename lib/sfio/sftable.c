@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include	<limits.h>
 #include	<sfio/sfhdr.h>
 #include	<stddef.h>

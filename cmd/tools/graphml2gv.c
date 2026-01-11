@@ -13,6 +13,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
 
 #include    "convert.h"
 #include    <assert.h>

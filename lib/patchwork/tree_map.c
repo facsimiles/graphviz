@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <common/render.h>
 #include <math.h>
 #include <patchwork/tree_map.h>

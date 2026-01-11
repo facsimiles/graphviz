@@ -7,6 +7,9 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
+
+#include "config.h"
+
 #include "smyrna_utils.h"
 #include <assert.h>
 #include <common/types.h>

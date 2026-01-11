@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "gml2gv.h"
 #include <stdbool.h>
 #include <stdlib.h>

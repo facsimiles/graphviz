@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <ortho/rawgraph.h>
 #include <stddef.h>
 #include <util/alloc.h>

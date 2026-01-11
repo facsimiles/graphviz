@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <neatogen/geometry.h>
 #include <neatogen/edges.h>
 #include <neatogen/hedges.h>

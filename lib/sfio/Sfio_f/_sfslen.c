@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include	<sfio/sfhdr.h>
 
 ssize_t sfslen(void) { return _Sfi; }

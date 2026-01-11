@@ -18,6 +18,8 @@
  * Updated by Emden Gansner
  */
 
+#include "config.h"
+
 #include <assert.h>
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>

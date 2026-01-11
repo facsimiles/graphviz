@@ -16,6 +16,8 @@
  * Adaptagrams repository.
  */
 
+#include "config.h"
+
 #include <vpsc/constraint.h>
 #include <cassert>
 Constraint::Constraint(Variable *left_, Variable *right_, double gap_)

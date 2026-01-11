@@ -9,6 +9,9 @@
  *************************************************************************/
 
 /* solves the system ab=c using gauss reduction */
+
+#include "config.h"
+
 #include <assert.h>
 #include <common/render.h>
 #include <math.h>

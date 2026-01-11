@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "topviewfuncs.h"
 #include "topviewsettings.h"
 #include "gui.h"

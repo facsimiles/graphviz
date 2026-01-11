@@ -17,6 +17,8 @@
  * component.
  */
 
+#include "config.h"
+
 #include <dotgen/dot.h>
 #include <stddef.h>
 #include <stdint.h>

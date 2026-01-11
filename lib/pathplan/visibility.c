@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <assert.h>
 #include <pathplan/vis.h>
 #include <stdbool.h>

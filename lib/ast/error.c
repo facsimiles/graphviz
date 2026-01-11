@@ -12,6 +12,8 @@
  * standalone mini error implementation
  */
 
+#include "config.h"
+
 #include <ast/ast.h>
 #include <ast/error.h>
 #include <stddef.h>

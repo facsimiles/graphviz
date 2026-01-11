@@ -16,6 +16,8 @@
  * because mincross may compare nodes in different clusters.
  */
 
+#include "config.h"
+
 #include <assert.h>
 #include <cgraph/cgraph.h>
 #include <dotgen/dot.h>

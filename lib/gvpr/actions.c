@@ -12,6 +12,8 @@
  *  Code for main functions in gpr
  */
 
+#include "config.h"
+
 #include <ast/ast.h>
 #include <ast/error.h>
 #include <cgraph/agstrcanon.h>

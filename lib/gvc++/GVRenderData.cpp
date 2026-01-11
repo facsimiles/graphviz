@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "GVRenderData.h"
 #include <gvc/gvc.h>
 

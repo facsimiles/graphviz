@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "glutrender.h"
 #include "viewport.h"
 #include "arcball.h"

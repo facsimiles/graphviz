@@ -16,6 +16,8 @@
 
 ************************************************/
 
+#include "config.h"
+
 #include <neatogen/dijkstra.h>
 #include <neatogen/bfs.h>
 #include <neatogen/kkutils.h>

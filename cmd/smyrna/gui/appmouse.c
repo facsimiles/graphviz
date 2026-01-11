@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "appmouse.h"
 #include "topfisheyeview.h"
 #include "arcball.h"

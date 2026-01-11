@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include    <circogen/circular.h>
 #include    <circogen/blocktree.h>
 #include    <circogen/circpos.h>

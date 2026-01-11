@@ -15,6 +15,8 @@
  * expression library
  */
 
+#include "config.h"
+
 #include <expr/exlib.h>
 #include <stdlib.h>
 #include <stdio.h>

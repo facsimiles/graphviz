@@ -14,6 +14,8 @@
  * Written by Emden Gansner
  */
 
+#include "config.h"
+
 #include <gvpr/gvpr.h>
 #include <util/exit.h>
 

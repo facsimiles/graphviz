@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <stddef.h>
 #include <gvc/gvc.h>
 #include <gvc/gvplugin.h>

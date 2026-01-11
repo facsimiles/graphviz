@@ -13,6 +13,8 @@
  *	merge edges with specified samehead/sametail onto the same port
  */
 
+#include "config.h"
+
 #include <math.h>
 #include	<dotgen/dot.h>
 #include	<stdbool.h>

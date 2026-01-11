@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <float.h>
 #include <math.h>
 #include <neatogen/digcola.h>

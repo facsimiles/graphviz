@@ -48,6 +48,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "config.h"
+
 #include <assert.h>
 #include <common/render.h>
 #include <limits.h>

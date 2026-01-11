@@ -22,6 +22,8 @@
 /**                                                                                 **/
 /*************************************************************************************/
 
+#include "config.h"
+
 #include <glcomp/glcompdefs.h>
 #define ARCBALL_C
 #include "smyrnadefs.h"

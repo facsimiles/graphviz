@@ -1,3 +1,7 @@
+#ifndef NO_CONFIG // defined by test_list.c
+#include "config.h"
+#endif
+
 #include <assert.h>
 #include <errno.h>
 #include <stdbool.h>

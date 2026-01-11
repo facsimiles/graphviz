@@ -19,6 +19,8 @@
  * Updated by Emden Gansner
  */
 
+#include "config.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 

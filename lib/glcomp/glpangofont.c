@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <glcomp/glpangofont.h>
 #include <stdlib.h>
 

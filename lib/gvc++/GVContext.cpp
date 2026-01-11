@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "GVContext.h"
 #include <gvc/gvc.h>
 

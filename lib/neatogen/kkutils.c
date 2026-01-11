@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <neatogen/bfs.h>
 #include <neatogen/dijkstra.h>
 #include <neatogen/kkutils.h>

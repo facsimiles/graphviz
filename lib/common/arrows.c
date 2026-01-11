@@ -11,6 +11,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
 
 #include <assert.h>
 #include <common/geomprocs.h>

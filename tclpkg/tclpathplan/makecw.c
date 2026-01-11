@@ -17,6 +17,8 @@
  * ellson@graphviz.org    October 2nd, 1996
  */
 
+#include "config.h"
+
 #include "makecw.h"
 #include <pathplan/pathutil.h>
 #include <stddef.h>

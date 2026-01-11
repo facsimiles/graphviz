@@ -1,6 +1,10 @@
 /// @file
 /// @brief Implementation of the arena.h API
 
+#ifndef NO_CONFIG // defined by test_arena.c
+#include "config.h"
+#endif
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>

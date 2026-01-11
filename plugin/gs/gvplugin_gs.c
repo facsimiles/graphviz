@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <gvc/gvplugin.h>
 
 extern gvplugin_installed_t gvloadimage_gs_types[];
