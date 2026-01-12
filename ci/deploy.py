@@ -17,20 +17,17 @@ import stat
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
 
 # logging output stream, setup in main()
 log = None
 
 
-def upload(dry_run: bool, version: str, path: Path, name: Optional[str] = None) -> str:
+def upload(dry_run: bool, version: str, path: Path) -> str:
     """
     upload a file to the Graphviz generic package with the given version
     """
 
-    # use the path as the name if no other was given
-    if name is None:
-        name = str(path)
+    name = path.name
 
     # Gitlab upload file_name field only allows letters, numbers, dot, dash, and
     # underscore
@@ -209,7 +206,7 @@ def main() -> int:
             # fixup permissions, o-rwx g-wx
             path.chmod(mode & ~stat.S_IRWXO & ~stat.S_IWGRP & ~stat.S_IXGRP)
 
-            url = upload(skip_release, package_version, path, leaf)
+            url = upload(skip_release, package_version, path)
             assets.append(url)
 
             webentry = {
@@ -224,7 +221,7 @@ def main() -> int:
             # if this is a standalone Windows or macOS package, also provide checksum(s)
             if is_macos_artifact(leaf) or is_windows_artifact(leaf):
                 c = checksum(path)
-                url = upload(skip_release, package_version, c, c.name)
+                url = upload(skip_release, package_version, c)
                 assets.append(url)
                 webentry[c.suffix[1:]] = url
 
