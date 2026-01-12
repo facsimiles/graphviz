@@ -34,7 +34,7 @@ git --version
 GV_VERSION=$(python3 gen_version.py)
 META_DATA_DIR=Metadata/${ID}/${VERSION_ID}
 mkdir -p ${META_DATA_DIR}
-DIR=$(pwd)/Packages/${ID}/${VERSION_ID}
+DIR=$(pwd)/Packages/${CI_JOB_NAME}
 mkdir -p ${DIR}
 ARCH=$( uname -m )
 build_system=${build_system:-autotools}
@@ -48,16 +48,16 @@ if [ "${build_system}" = "cmake" ]; then
     cpack
     popd
     if [[ ${id} == ubuntu* ]]; then
-        mv build/Graphviz-${GV_VERSION}-Linux.deb ${DIR}/graphviz-${GV_VERSION}-cmake.deb
+        mv build/Graphviz-${GV_VERSION}-Linux.deb ${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-cmake.deb
     elif [[ ${id} == fedora* || ${id} == rocky* ]]; then
-        mv build/Graphviz-${GV_VERSION}-Linux.rpm ${DIR}/graphviz-${GV_VERSION}-cmake.rpm
+        mv build/Graphviz-${GV_VERSION}-Linux.rpm ${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-cmake.rpm
     elif [[ ${id} == darwin* ]]; then
-        mv build/*.zip ${DIR}/
+        mv build/Graphviz-${GV_VERSION}-Darwin.zip ${DIR}/${ID}_${VERSION_ID}_Graphviz-${GV_VERSION}-${ID}.zip
     elif [[ ${id} == msys* ]]; then
-        mv build/*.zip ${DIR}/
-        mv build/*.exe ${DIR}/
+        mv build/Graphviz-${GV_VERSION}-win64.zip ${DIR}/${ID}_${VERSION_ID}_Graphviz-${GV_VERSION}-win64.zip
+        mv build/Graphviz-${GV_VERSION}-win64.exe ${DIR}/${ID}_${VERSION_ID}_Graphviz-${GV_VERSION}-win64.exe
     elif [[ ${id} == cygwin* ]]; then
-        mv build/*.tar.bz2 ${DIR}/
+        mv build/Graphviz-${GV_VERSION}-CYGWIN-1.tar.bz2 ${DIR}/${ID}_${VERSION_ID}_Graphviz-${GV_VERSION}-CYGWIN-1.tar.bz2
     else
         echo "Error: ID=${ID} is unknown" >&2
         exit 1
@@ -80,20 +80,20 @@ else
     if [[ ${id} == ubuntu* ]]; then
         tar xfz graphviz-${GV_VERSION}.tar.gz
         (cd graphviz-${GV_VERSION}; fakeroot make -f debian/rules binary) | tee >(ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
-        tar cf - *.deb *.ddeb | xz -9 -c - >${DIR}/graphviz-${GV_VERSION}-debs.tar.xz
+        tar cf - *.deb *.ddeb | xz -9 -c - >${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-debs.tar.xz
     elif [[ ${id} == fedora* || ${id} == rocky* ]]; then
         rm -rf ${HOME}/rpmbuild
         rpmbuild -ta graphviz-${GV_VERSION}.tar.gz | tee >(ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
         pushd ${HOME}/rpmbuild/RPMS
         mv */*.rpm ./
-        tar cf - *.rpm | xz -9 -c - >${DIR}/graphviz-${GV_VERSION}-rpms.tar.xz
+        tar cf - *.rpm | xz -9 -c - >${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-rpms.tar.xz
         popd
     elif [[ ${id} == darwin* ]]; then
         tar xfz graphviz-${GV_VERSION}.tar.gz
         pushd graphviz-${GV_VERSION}
         ./configure --disable-dependency-tracking --prefix=/usr/local/graphviz --with-quartz=yes
         make pkg
-        cp graphviz-${ARCH}.pkg ${DIR}/graphviz-${GV_VERSION}-${ARCH}.pkg
+        cp graphviz-${ARCH}.pkg ${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-${ARCH}.pkg
         popd
     elif [[ ${id} == cygwin* || ${id} == msys* ]]; then
         if [[ ${id} == msys* ]]; then
@@ -108,7 +108,7 @@ else
             ./configure --disable-dependency-tracking ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
             make
             make install
-            tar cf - -C build . | xz -9 -c - > ${DIR}/graphviz-${GV_VERSION}-${ARCH}.tar.xz
+            tar cf - -C build . | xz -9 -c - > ${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-${ARCH}.tar.xz
         else
             tar xfz graphviz-${GV_VERSION}.tar.gz
             pushd graphviz-${GV_VERSION}
@@ -116,7 +116,7 @@ else
             make
             make install
             popd
-            tar cf - -C graphviz-${GV_VERSION}/build . | xz -9 -c - > ${DIR}/graphviz-${GV_VERSION}-${ARCH}.tar.xz
+            tar cf - -C graphviz-${GV_VERSION}/build . | xz -9 -c - > ${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-${ARCH}.tar.xz
         fi
     else
         echo "Error: ID=${ID} is unknown" >&2

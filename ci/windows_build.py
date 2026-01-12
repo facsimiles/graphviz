@@ -214,15 +214,13 @@ def main(args: list[str]) -> int:
     )
 
     # create artifacts to archive
-    ident = "windows"
-    version_id = "10"
-    packages = (
-        root / "Packages" / ident / version_id / "cmake" / os.environ["configuration"]
-    )
+    prefix = f"windows_10_cmake_{os.environ['configuration']}_"
+    packages = root / "Packages" / os.environ["CI_JOB_NAME"]
     packages.mkdir(parents=True)
     for src in itertools.chain(build.glob("*.exe"), build.glob("*.zip")):
-        print(f"+ mv {shlex.join(str(a) for a in [src, packages])}", flush=True)
-        shutil.move(src, packages)
+        dst = packages / f"{prefix}{src.name}"
+        print(f"+ mv {shlex.join(str(a) for a in [src, dst])}", flush=True)
+        shutil.move(src, dst)
 
     return 0
 

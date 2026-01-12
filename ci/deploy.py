@@ -93,14 +93,14 @@ def checksum(path: Path) -> Path:
     return check
 
 
-def is_macos_artifact(path: Path) -> bool:
+def is_macos_artifact(name: str) -> bool:
     """is this a deployment artifact for macOS?"""
-    return re.search(r"\bDarwin\b", str(path)) is not None
+    return re.search(r"\bDarwin\b", name) is not None
 
 
-def is_windows_artifact(path: Path) -> bool:
+def is_windows_artifact(name: str) -> bool:
     """is this a deployment artifact for Windows?"""
-    return re.search(r"\bwindows\b", str(path)) is not None
+    return re.search(r"\bwindows\b", name) is not None
 
 
 def get_format(path: Path) -> str:
@@ -209,32 +209,28 @@ def main() -> int:
             # fixup permissions, o-rwx g-wx
             path.chmod(mode & ~stat.S_IRWXO & ~stat.S_IWGRP & ~stat.S_IXGRP)
 
-            url = upload(
-                skip_release, package_version, path, str(path)[len("Packages/") :]
-            )
+            url = upload(skip_release, package_version, path, leaf)
             assets.append(url)
 
             webentry = {
                 "format": get_format(path),
                 "url": url,
             }
-            if "win32" in str(path):
+            if "win32" in leaf:
                 webentry["bits"] = 32
-            elif "win64" in str(path):
+            elif "win64" in leaf:
                 webentry["bits"] = 64
 
             # if this is a standalone Windows or macOS package, also provide
             # checksum(s)
-            if is_macos_artifact(path) or is_windows_artifact(path):
+            if is_macos_artifact(leaf) or is_windows_artifact(leaf):
                 c = checksum(path)
-                url = upload(
-                    skip_release, package_version, c, str(c)[len("Packages/") :]
-                )
+                url = upload(skip_release, package_version, c, c.name)
                 assets.append(url)
                 webentry[c.suffix[1:]] = url
 
             # only expose a subset of the Windows artifacts
-            if "/windows/10/cmake/Release/" in str(path):
+            if "windows_10_cmake_Release_" in leaf:
                 webdata["windows"].append(webentry)
 
     # various release pages truncate the viewable artifacts to 100 or even 50
