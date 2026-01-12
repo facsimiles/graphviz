@@ -16,18 +16,6 @@
 extern "C" {
 #endif
 
-#ifdef GVDLL
-#ifdef LAB_GAMUT_EXPORTS
-#define LAB_GAMUT_API __declspec(dllexport)
-#else
-#define LAB_GAMUT_API __declspec(dllimport)
-#endif
-#endif
-
-#ifndef LAB_GAMUT_API
-#define LAB_GAMUT_API /* nothing */
-#endif
-
 /** lookup table for the visible spectrum of the CIELAB color space
  *
  * This table is entries of 4-tuples of the form (L*, a*, b* lower bound,
@@ -38,10 +26,8 @@ extern "C" {
  * More information about CIELAB:
  *   https://en.wikipedia.org/wiki/CIELAB_color_space
  */
-LAB_GAMUT_API extern const signed char lab_gamut_data[];
-LAB_GAMUT_API extern const size_t lab_gamut_data_size;
-
-#undef LAB_GAMUT_API
+extern const signed char lab_gamut_data[];
+extern const size_t lab_gamut_data_size;
 
 #ifdef __cplusplus
 }
