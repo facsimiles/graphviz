@@ -31,6 +31,7 @@ fi
 # validate we have Git and echo version into log
 git --version
 
+GV_VERSION=$(python3 gen_version.py)
 META_DATA_DIR=Metadata/${ID}/${VERSION_ID}
 mkdir -p ${META_DATA_DIR}
 DIR=$(pwd)/Packages/${ID}/${VERSION_ID}
@@ -47,10 +48,8 @@ if [ "${build_system}" = "cmake" ]; then
     cpack
     popd
     if [[ ${id} == ubuntu* ]]; then
-        GV_VERSION=$(python3 gen_version.py)
         mv build/Graphviz-${GV_VERSION}-Linux.deb ${DIR}/graphviz-${GV_VERSION}-cmake.deb
     elif [[ ${id} == fedora* || ${id} == rocky* ]]; then
-        GV_VERSION=$(python3 gen_version.py)
         mv build/Graphviz-${GV_VERSION}-Linux.rpm ${DIR}/graphviz-${GV_VERSION}-cmake.rpm
     elif [[ ${id} == darwin* ]]; then
         mv build/*.zip ${DIR}/
@@ -64,7 +63,6 @@ if [ "${build_system}" = "cmake" ]; then
         exit 1
     fi
 elif [[ "${CONFIGURE_OPTIONS:-}" =~ "--enable-static" ]]; then
-    GV_VERSION=$(python3 gen_version.py)
     if [ "${use_autogen:-no}" = "yes" ]; then
         ./autogen.sh
         ./configure --disable-dependency-tracking ${CONFIGURE_OPTIONS:-} --prefix=$( pwd )/build | tee >(./ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
@@ -79,7 +77,6 @@ elif [[ "${CONFIGURE_OPTIONS:-}" =~ "--enable-static" ]]; then
         popd
     fi
 else
-    GV_VERSION=$(python3 gen_version.py)
     if [[ ${id} == ubuntu* ]]; then
         tar xfz graphviz-${GV_VERSION}.tar.gz
         (cd graphviz-${GV_VERSION}; fakeroot make -f debian/rules binary) | tee >(ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
