@@ -19,7 +19,7 @@ else
     VERSION_ID=$( uname -r | sed "s/\([0-9\.]*\).*/\1/")
 fi
 
-if [[ ${ID} == msys* ]]; then
+if [ "${ID}" = "msys2" ]; then
     # MSYS2/MinGW doesn't have VERSION_ID in /etc/os-release
     VERSION_ID=$( uname -r )
 fi
