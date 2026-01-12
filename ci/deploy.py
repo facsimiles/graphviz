@@ -221,8 +221,7 @@ def main() -> int:
             elif "win64" in leaf:
                 webentry["bits"] = 64
 
-            # if this is a standalone Windows or macOS package, also provide
-            # checksum(s)
+            # if this is a standalone Windows or macOS package, also provide checksum(s)
             if is_macos_artifact(leaf) or is_windows_artifact(leaf):
                 c = checksum(path)
                 url = upload(skip_release, package_version, c, c.name)
