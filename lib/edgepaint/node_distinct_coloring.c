@@ -138,11 +138,10 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
 
   if (scheme == COLOR_LAB){
     /* convert from LAB to RGB */
-    color_rgb rgb;
     color_lab lab;
     for (int i = 0; i < n; i++){
       lab = color_lab_init(colors[i*cdim], colors[i*cdim+1], colors[i*cdim+2]);
-      rgb = LAB2RGB(lab);
+      const color_rgb rgb = LAB2RGB(lab);
       colors[i*cdim] = (rgb.r)/255;
       colors[i*cdim+1] = (rgb.g)/255;
       colors[i*cdim+2] = (rgb.b)/255;
