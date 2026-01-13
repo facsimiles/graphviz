@@ -32,7 +32,6 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              double *color_diff0,
                                              double *color_diff_sum0) {
   /* here we assume the graph is connected. And that the matrix is symmetric */
-  double width;
   double *a = NULL;
   double dist_max;
   double color_diff = 0, color_diff_old;
@@ -91,7 +90,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   /* cube [0, cspace_size]^3: only uised if not LAB */
   const double cspace_size = 0.7;
   double center[] = {cspace_size * 0.5, cspace_size * 0.5, cspace_size * 0.5};
-  width = cspace_size*0.5;
+  const double width = cspace_size * 0.5;
 
   /* randomly assign colors first */
   srand(seed);
