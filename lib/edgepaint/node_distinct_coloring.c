@@ -33,7 +33,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              double *color_diff_sum0) {
   /* here we assume the graph is connected. And that the matrix is symmetric */
   double dist_max;
-  double color_diff = 0, color_diff_old;
+  double color_diff_old;
   double color_diff_sum = 0, color_diff_sum_old, *cc;
   int iter = 0;
   static const int iter_max = 100;
@@ -96,7 +96,8 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   double *x = gv_calloc(cdim * n, sizeof(double));
   double *wgt = weightedQ ? gv_calloc(n, sizeof(double)) : NULL;
 
-  color_diff = 0; color_diff_old = -1;
+  double color_diff = 0;
+  color_diff_old = -1;
   color_diff_sum = 0; color_diff_sum_old = -1;
 
   while (iter++ < iter_max && (color_diff > color_diff_old || (color_diff == color_diff_old && color_diff_sum > color_diff_sum_old))){
