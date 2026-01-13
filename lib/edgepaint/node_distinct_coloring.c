@@ -32,7 +32,6 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              double *color_diff0,
                                              double *color_diff_sum0) {
   /* here we assume the graph is connected. And that the matrix is symmetric */
-  double *a = NULL;
   double dist_max;
   double color_diff = 0, color_diff_old;
   double color_diff_sum = 0, color_diff_sum_old, *cc;
@@ -83,9 +82,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   assert(n == A->m);
   const int *ia = A->ia;
   const int *ja = A->ja;
-  if (A->type == MATRIX_TYPE_REAL && A->a){
-    a = A->a;
-  } 
+  const double *const a = A->type == MATRIX_TYPE_REAL ? A->a : NULL;
 
   /* cube [0, cspace_size]^3: only uised if not LAB */
   const double cspace_size = 0.7;
