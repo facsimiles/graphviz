@@ -32,7 +32,6 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              double *color_diff0,
                                              double *color_diff_sum0) {
   /* here we assume the graph is connected. And that the matrix is symmetric */
-  int k = 0;
   double width;
   double *a = NULL;
   double dist_max;
@@ -108,7 +107,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
     color_diff_old = color_diff;
     color_diff_sum_old = color_diff_sum;
     for (int i = 0; i < n; i++){
-      k = 0;
+      int k = 0;
       for (int j = ia[i]; j < ia[i+1]; j++){
 	if (ja[j] == i) continue;
 	memcpy(&(x[k*cdim]), &(colors[ja[j]*cdim]), sizeof(double)*cdim);
