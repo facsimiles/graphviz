@@ -40,7 +40,6 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   double color_diff_sum = 0, color_diff_sum_old, *cc;
   int iter = 0;
   static const int iter_max = 100;
-  double cspace_size = 0.7;
   double red[3];
   double black[] = {0, 0, 0};
 
@@ -91,6 +90,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   } 
 
   /* cube [0, cspace_size]^3: only uised if not LAB */
+  const double cspace_size = 0.7;
   double center[] = {cspace_size * 0.5, cspace_size * 0.5, cspace_size * 0.5};
   width = cspace_size*0.5;
 
