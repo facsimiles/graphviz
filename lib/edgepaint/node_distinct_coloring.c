@@ -32,7 +32,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              double *color_diff0,
                                              double *color_diff_sum0) {
   /* here we assume the graph is connected. And that the matrix is symmetric */
-  int i, j, *ia, *ja, n, k = 0;
+  int j, *ia, *ja, n, k = 0;
   double width;
   double *a = NULL;
   double dist_max;
@@ -60,7 +60,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
       LAB2RGB_real_01(colors);
       *color_diff0 = 1000; *color_diff_sum0 = 1000;
     } else {
-      for (i = 0; i < cdim; i++) colors[i] = 0;
+      for (int i = 0; i < cdim; i++) colors[i] = 0;
       *color_diff0 = sqrt(cdim); *color_diff_sum0 = sqrt(cdim); 
     }
     return;
@@ -75,8 +75,8 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
       *color_diff0 = 1000; *color_diff_sum0 = 1000;
 
     } else {
-      for (i = 0; i < cdim; i++) colors[i] = 0;
-      for (i = 0; i < cdim; i++) colors[cdim+i] = 0;
+      for (int i = 0; i < cdim; i++) colors[i] = 0;
+      for (int i = 0; i < cdim; i++) colors[cdim+i] = 0;
       colors[cdim] = 0.5;
       *color_diff0 = sqrt(cdim); *color_diff_sum0 = sqrt(cdim); 
     }
@@ -96,7 +96,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
 
   /* randomly assign colors first */
   srand(seed);
-  for (i = 0; i < n*cdim; i++) colors[i] = cspace_size*drand();
+  for (int i = 0; i < n*cdim; i++) colors[i] = cspace_size*drand();
 
   double *x = gv_calloc(cdim * n, sizeof(double));
   double *wgt = weightedQ ? gv_calloc(n, sizeof(double)) : NULL;
@@ -107,7 +107,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   while (iter++ < iter_max && (color_diff > color_diff_old || (color_diff == color_diff_old && color_diff_sum > color_diff_sum_old))){
     color_diff_old = color_diff;
     color_diff_sum_old = color_diff_sum;
-    for (i = 0; i < n; i++){
+    for (int i = 0; i < n; i++){
       k = 0;
       for (j = ia[i]; j < ia[i+1]; j++){
 	if (ja[j] == i) continue;
@@ -140,7 +140,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
     /* convert from LAB to RGB */
     color_rgb rgb;
     color_lab lab;
-    for (i = 0; i < n; i++){
+    for (int i = 0; i < n; i++){
       lab = color_lab_init(colors[i*cdim], colors[i*cdim+1], colors[i*cdim+2]);
       rgb = LAB2RGB(lab);
       colors[i*cdim] = (rgb.r)/255;
