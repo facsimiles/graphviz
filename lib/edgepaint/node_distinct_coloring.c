@@ -33,7 +33,6 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              double *color_diff_sum0) {
   /* here we assume the graph is connected. And that the matrix is symmetric */
   int i, j, *ia, *ja, n, k = 0;
-  double center[3];
   double width;
   double *a = NULL;
   double dist_max;
@@ -92,7 +91,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   } 
 
   /* cube [0, cspace_size]^3: only uised if not LAB */
-  center[0] = center[1] = center[2] = cspace_size*0.5;
+  double center[] = {cspace_size * 0.5, cspace_size * 0.5, cspace_size * 0.5};
   width = cspace_size*0.5;
 
   /* randomly assign colors first */
