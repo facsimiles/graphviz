@@ -16,11 +16,13 @@
 #include <edgepaint/node_distinct_coloring.h>
 #include <edgepaint/lab.h>
 #include <edgepaint/furtherest_point.h>
+#include <math.h>
 #include <sparse/color_palette.h>
 #include <stdbool.h>
 #include <string.h>
 #include <util/alloc.h>
 #include <util/debug.h>
+#include <util/gv_math.h>
 #include <util/random.h>
 
 static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
@@ -31,7 +33,6 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              double *color_diff_sum0) {
   /* here we assume the graph is connected. And that the matrix is symmetric */
   int i, j, *ia, *ja, n, k = 0;
-  int max_level;
   double center[3];
   double width;
   double *a = NULL;
@@ -44,8 +45,7 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   double red[3], black[3], min;
 
   assert(accuracy > 0);
-  max_level = MAX(1, -log(accuracy)/log(2.));
-  max_level = MIN(30, max_level);
+  const int max_level = d2i(fmin(30, fmax(1, -log(accuracy) / log(2.))));
 
   {
     color_rgb rgb = { .r = 255*0.5, .g = 0, .b = 0 };
