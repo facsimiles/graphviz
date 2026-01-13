@@ -42,7 +42,8 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
   int iter = 0;
   static const int iter_max = 100;
   double cspace_size = 0.7;
-  double red[3], black[3], min;
+  double red[3], min;
+  double black[] = {0, 0, 0};
 
   assert(accuracy > 0);
   const int max_level = d2i(fmin(30, fmax(1, -log(accuracy) / log(2.))));
