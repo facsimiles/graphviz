@@ -33,7 +33,7 @@ def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     """
 
     # dump the command being run for the user to observe if the test fails
-    print(f"+ {shlex.join(str(x) for x in args)}")
+    print(f"+ {shlex.join(str(x) for x in args)}", flush=True)
 
     is_stdout_decoded = kwargs.get("universal_newlines") or kwargs.get("text")
 
@@ -230,7 +230,7 @@ def dot(
         kwargs["input"] = source
 
     # dump the command being run for the user to observe if the test fails
-    print(f"+ {shlex.join(str(x) for x in args)}")
+    print(f"+ {shlex.join(str(x) for x in args)}", flush=True)
 
     proc = subprocess.run(args, stdout=subprocess.PIPE, check=True, **kwargs)
     return proc.stdout
@@ -489,7 +489,7 @@ def run_c(
 
         # dump the command being run for the user to observe if the test fails
         argv = [exe] + args
-        print(f"+ {shlex.join(str(x) for x in argv)}")
+        print(f"+ {shlex.join(str(x) for x in argv)}", flush=True)
 
         input_bytes = None
         if input is not None:
