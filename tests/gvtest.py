@@ -16,7 +16,9 @@ ROOT = Path(__file__).resolve().parent.parent
 """absolute path to the root of the repository"""
 
 
-def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
+def run_raw(
+    args: list[Union[Path, str]], timeout_ok: Optional[bool] = False, **kwargs
+) -> Optional[Union[bytes, str]]:
     """
     execute an external command
 
@@ -26,6 +28,7 @@ def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
 
     Args:
         args: Command and options to execute.
+        timeout_ok: True if timeout should be treated as success.
         kwargs: Optional extra arguments to `subprocess.run`.
 
     Return:
@@ -43,7 +46,13 @@ def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     else:
         is_stdout_captured = False
 
-    proc = subprocess.run(args, check=False, **kwargs)
+    try:
+        proc = subprocess.run(args, check=False, **kwargs)
+    except subprocess.TimeoutExpired as e:
+        if not timeout_ok:
+            raise
+        stdout = e.stdout
+        return stdout
 
     if proc.returncode != 0:
         if is_stdout_captured:
@@ -56,7 +65,9 @@ def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     return proc.stdout
 
 
-def run(args: list[Union[Path, str]], **kwargs) -> Optional[str]:
+def run(
+    args: list[Union[Path, str]], timeout_ok: Optional[bool] = False, **kwargs
+) -> Optional[str]:
     """
     execute an external command that takes/returns textual input/output
 
@@ -65,12 +76,13 @@ def run(args: list[Union[Path, str]], **kwargs) -> Optional[str]:
 
     Args:
         args: Command and options to execute.
+        timeout_ok: True if timeout should be treated as success.
         kwargs: Optional extra arguments to `subprocess.run`.
 
     Return:
         The command’s stdout output.
     """
-    return run_raw(args, text=True, **kwargs)
+    return run_raw(args, text=True, timeout_ok=timeout_ok, **kwargs)
 
 
 def compile_c(
