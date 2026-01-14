@@ -263,7 +263,6 @@ getRankseps (Agraph_t* g, uint64_t maxrank)
 {
     char *p;
     char *endp;
-    char c;
     uint64_t rk = 1;
     double* ranks = gv_calloc(maxrank + 1, sizeof(double));
     double xf = 0.0, delx = 0.0, d;
@@ -274,7 +273,7 @@ getRankseps (Agraph_t* g, uint64_t maxrank)
 	    xf += delx;
 	    ranks[rk++] = xf;
 	    p = endp;
-	    while ((c = *p) && (gv_isspace(c) || c == ':'))
+	    while (gv_isspace(*p) || *p == ':')
 		p++;
 	}
     }
