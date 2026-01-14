@@ -43,7 +43,11 @@ def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     else:
         is_stdout_captured = False
 
-    proc = subprocess.run(args, check=False, **kwargs)
+    try:
+        proc = subprocess.run(args, check=False, **kwargs)
+    except subprocess.TimeoutExpired as e:
+        stdout = e.stdout
+        return stdout
 
     if proc.returncode != 0:
         if is_stdout_captured:
