@@ -82,7 +82,6 @@ void twopi_layout(Agraph_t * g)
     bool setRoot = false;
     bool setLocalRoot = false;
     pointf sc;
-    int r;
     Agsym_t* rootattr;
 
     if (agnnodes(g) == 0) return;
@@ -106,8 +105,8 @@ void twopi_layout(Agraph_t * g)
     }
 
     if ((s = agget(g, "scale")) && *s) {
-	if ((r = sscanf (s, "%lf,%lf",&sc.x,&sc.y))) {
-	    if (r == 1) sc.y = sc.x;
+	if (sscanf(s, "%lf,%lf", &sc.x, &sc.y) == 1) {
+	    sc.y = sc.x;
 	}
     }
 
