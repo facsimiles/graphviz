@@ -118,10 +118,10 @@ def run(args: list[Union[str, Path]], root: Union[str, Path]):
     assert arg0 is not None, "{args[0]} not found in installation {root}"
     argv = [arg0] + args[1:] + ["-o", os.devnull]
 
-    print(f"+ env {prefix} {shlex.join(str(x) for x in argv)}")
+    print(f"+ env {prefix} {shlex.join(str(x) for x in argv)}", flush=True)
     proc = subprocess.run(argv, check=False)
     if proc.returncode != 0:
-        print(f"warning: command returned {proc.returncode}")
+        print(f"warning: command returned {proc.returncode}", file=sys.stderr)
 
 
 def pretty_time(duration: float):
@@ -152,7 +152,7 @@ def main(args: list[str]) -> int:
         roots += [exe.parents[1]]
     headers = ["test case"] + roots
 
-    print(f"Comparing {[str(r) for r in roots]}…")
+    print(f"Comparing {[str(r) for r in roots]}…", flush=True)
 
     results: list[list[str]] = []
     for name, cmd in TESTS.items():
@@ -180,7 +180,8 @@ def main(args: list[str]) -> int:
             print(
                 tabulate.tabulate(
                     results + [row], headers=headers, tablefmt="simple_outline"
-                )
+                ),
+                flush=True,
             )
         results += [row]
 
