@@ -1596,7 +1596,7 @@ def test_1648_1(fmt: str):
     kwargs = {}
     kwargs["input"] = source
     if output_is_a_window:
-        kwargs["timeout"]=2
+        kwargs["timeout"] = 2
 
     # run this through Graphviz
     run(
