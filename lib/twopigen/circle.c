@@ -198,7 +198,7 @@ static void setChildSubtreeSpans(Agraph_t * g, Agnode_t * n)
 	if (SPARENT(next) != n)
 	    continue;		/* handles loops */
 
-	if (SPAN(next) != 0.0)
+	if (!is_exactly_zero(SPAN(next)))
 	    continue;		/* multiedges */
 	assert(STSIZE(next) <= UINT64_C(1) << 53);
 	SPAN(next) = ratio * (double)STSIZE(next);
