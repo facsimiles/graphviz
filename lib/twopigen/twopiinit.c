@@ -79,7 +79,7 @@ void twopi_layout(Agraph_t * g)
 {
     Agnode_t *ctr = 0;
     char *s;
-    int setRoot = 0;
+    bool setRoot = false;
     int setLocalRoot = 0;
     pointf sc;
     int r;
@@ -94,11 +94,11 @@ void twopi_layout(Agraph_t * g)
 	    if (!ctr) {
 		agwarningf("specified root node \"%s\" was not found.", s);
 		agerr(AGPREV, "Using default calculation for root node\n");
-		setRoot = 1;
+		setRoot = true;
 	    }
 	}
 	else {
-	    setRoot = 1;
+	    setRoot = true;
 	}
     }
     if ((rootattr = agattr_text(g, AGNODE, "root", 0))) {
