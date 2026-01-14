@@ -187,7 +187,11 @@ static void setChildSubtreeSpans(Agraph_t * g, Agnode_t * n)
 {
     Agnode_t *next;
 
-    double ratio = SPAN(n) / STSIZE(n);
+    // Only integers up to 2⁵³ can be precisely stored in an IEEE 754 double. We
+    // do not expect subtree size to exceed this.
+    assert(STSIZE(n) <= UINT64_C(1) << 53);
+
+    const double ratio = SPAN(n) / (double)STSIZE(n);
     for (Agedge_t *ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
 	if ((next = agtail(ep)) == n)
 	    next = aghead(ep);
@@ -196,7 +200,8 @@ static void setChildSubtreeSpans(Agraph_t * g, Agnode_t * n)
 
 	if (SPAN(next) != 0.0)
 	    continue;		/* multiedges */
-	SPAN(next) = ratio * STSIZE(next);
+	assert(STSIZE(next) <= UINT64_C(1) << 53);
+	SPAN(next) = ratio * (double)STSIZE(next);
 
 	if (NCHILD(next) > 0) {
 	    setChildSubtreeSpans(g, next);
