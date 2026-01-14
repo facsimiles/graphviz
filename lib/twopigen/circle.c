@@ -51,9 +51,7 @@ static void setNStepsToLeaf(Agraph_t * g, Agnode_t * n, Agnode_t * prev)
     }
 }
 
-/* isLeaf:
- * Return true if n is a leaf node.
- */
+/// return true if n is a leaf node
 static bool isLeaf(Agraph_t * g, Agnode_t * n)
 {
     Agnode_t *neighp = 0;
@@ -251,8 +249,7 @@ static void setPositions(Agraph_t * sg, Agnode_t * center)
     setChildPositions(sg, center);
 }
 
-/* getRankseps:
- * Return array of doubles of size maxrank+1 containing the radius of each
+/* Return array of doubles of size maxrank+1 containing the radius of each
  * rank.  Position 0 always contains 0. Use the colon-separated list of 
  * doubles provided by ranksep to get the deltas for each additional rank.
  * If not enough values are provided, the last value is repeated.
@@ -308,8 +305,7 @@ static void setAbsolutePos(Agraph_t * g, uint64_t maxrank)
     free (ranksep);
 }
 
-/* circleLayout:
- *  We assume sg is is connected and non-empty.
+/*  We assume sg is is connected and non-empty.
  *  Also, if center != 0, we are guaranteed that center is
  *  in the graph.
  */

@@ -73,8 +73,6 @@ static Agnode_t* findRootNode (Agraph_t* sg, Agsym_t* rootattr)
 
 }
 
-/* twopi_layout:
- */
 void twopi_layout(Agraph_t * g)
 {
     Agnode_t *ctr = 0;
@@ -175,8 +173,7 @@ static void twopi_cleanup_graph(graph_t * g)
     free(GD_neato_nlist(g));
 }
 
-/* twopi_cleanup:
- * The ND_alg data used by twopi is freed in twopi_layout
+/* The ND_alg data used by twopi is freed in twopi_layout
  * before edge routing as edge routing may use this field.
  */
 void twopi_cleanup(graph_t * g)
