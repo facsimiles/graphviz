@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include    <assert.h>
 #include    <cgraph/cgraph.h>
 #include    <twopigen/circle.h>
 #include    <neatogen/adjust.h>
@@ -39,8 +40,9 @@ static void twopi_init_node_edge(graph_t * g)
     int i = 0;
     int n_nodes = agnnodes(g);
 
-    rdata* alg = gv_calloc(n_nodes, sizeof(rdata));
-    GD_neato_nlist(g) = gv_calloc(n_nodes + 1, sizeof(node_t*));
+    assert(n_nodes >= 0);
+    rdata* alg = gv_calloc((size_t)n_nodes, sizeof(rdata));
+    GD_neato_nlist(g) = gv_calloc((size_t)n_nodes + 1, sizeof(node_t*));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node(n);
 	ND_alg(n) = alg + i;
