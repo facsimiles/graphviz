@@ -37,7 +37,7 @@ int solveCircuit(int nG, double **Gm, double **Gm_inv)
 
 int circuit_model(graph_t * g, int nG)
 {
-    long i, j;
+    long j;
     node_t *v;
     edge_t *e;
 
@@ -47,7 +47,7 @@ int circuit_model(graph_t * g, int nG)
     /* set non-diagonal entries */
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	for (e = agfstedge(g, v); e; e = agnxtedge(g, e, v)) {
-	    i = AGSEQ(agtail(e));
+	    const long i = AGSEQ(agtail(e));
 	    j = AGSEQ(aghead(e));
 	    if (i == j)
 		continue;
@@ -59,7 +59,7 @@ int circuit_model(graph_t * g, int nG)
     const int rv = solveCircuit(nG, Gm, Gm_inv);
 
     if (rv)
-	for (i = 0; i < nG; i++) {
+	for (int i = 0; i < nG; i++) {
 	    for (j = 0; j < nG; j++) {
 		GD_dist(g)[i][j] =
 		    Gm_inv[i][i] + Gm_inv[j][j] - 2.0 * Gm_inv[i][j];
