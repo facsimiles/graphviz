@@ -67,7 +67,6 @@
 int lu_decompose(lu_t *lu, double **a, int n) {
     assert(lu != NULL);
 
-    int k;
     int pivotindex = 0;
     double pivot, biggest, mult, tempf;
 
@@ -90,7 +89,7 @@ int lu_decompose(lu_t *lu, double **a, int n) {
 	lu->ps[i] = i; // initialize pivot sequence
     }
 
-    for (k = 0; k < n - 1; k++) {	/* For each column */
+    for (int k = 0; k < n - 1; k++) { // for each column
 	/* Find the largest element in each column to pivot around */
 	biggest = 0.0;
 	for (int i = k; i < n; i++) {
