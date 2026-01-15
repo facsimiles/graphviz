@@ -196,9 +196,59 @@ def main() -> int:
 
         webdata["sources"].append(webentry)
 
-    for stem, _, leaves in os.walk("Packages"):
-        for leaf in leaves:
-            path = Path(stem) / leaf
+    # exported artifacts to be included in the release
+    ARTIFACTS = {
+        # CI job → [artifacts…]
+        "fedora41-build": [f"fedora_41_graphviz-{version}-rpms.tar.xz"],
+        "fedora42-build": [f"fedora_42_graphviz-{version}-rpms.tar.xz"],
+        "fedora43-build": [f"fedora_43_graphviz-{version}-rpms.tar.xz"],
+        "rocky8-build": [f"rocky_8.9_graphviz-{version}-rpms.tar.xz"],
+        "rocky9-build": [f"rocky_9.3_graphviz-{version}-rpms.tar.xz"],
+        "fedora41-cmake-build": [f"fedora_41_graphviz-{version}-cmake.rpm"],
+        "fedora42-cmake-build": [f"fedora_42_graphviz-{version}-cmake.rpm"],
+        "fedora43-cmake-build": [f"fedora_43_graphviz-{version}-cmake.rpm"],
+        "rocky8-cmake-build": [f"rocky_8.9_graphviz-{version}-cmake.rpm"],
+        "rocky9-cmake-build": [f"rocky_9.3_graphviz-{version}-cmake.rpm"],
+        "ubuntu-22.04-build": [f"ubuntu_22.04_graphviz-{version}-debs.tar.xz"],
+        "ubuntu-24.04-build": [f"ubuntu_24.04_graphviz-{version}-debs.tar.xz"],
+        "ubuntu-25.04-build": [f"ubuntu_25.04_graphviz-{version}-debs.tar.xz"],
+        "ubuntu-25.10-build": [f"ubuntu_25.10_graphviz-{version}-debs.tar.xz"],
+        "ubuntu-22.04-cmake-build": [f"ubuntu_22.04_graphviz-{version}-cmake.deb"],
+        "ubuntu-24.04-cmake-build": [f"ubuntu_24.04_graphviz-{version}-cmake.deb"],
+        "ubuntu-25.04-cmake-build": [f"ubuntu_25.04_graphviz-{version}-cmake.deb"],
+        "ubuntu-25.10-cmake-build": [f"ubuntu_25.10_graphviz-{version}-cmake.deb"],
+        "macos-autotools-build": [f"Darwin_23.6.0_graphviz-{version}-arm64.pkg"],
+        "macos-cmake-build": [f"Darwin_23.6.0_Graphviz-{version}-Darwin.zip"],
+        "windows-cmake-Win32-release-build": [
+            f"windows_10_cmake_Release_graphviz-install-{version}-win32.exe",
+            f"windows_10_cmake_Release_Graphviz-{version}-win32.zip",
+        ],
+        "windows-cmake-Win32-debug-build": [
+            f"windows_10_cmake_Debug_graphviz-install-{version}-win32.exe",
+            f"windows_10_cmake_Debug_Graphviz-{version}-win32.zip",
+        ],
+        "windows-cmake-x64-release-build": [
+            f"windows_10_cmake_Release_graphviz-install-{version}-win64.exe",
+            f"windows_10_cmake_Release_Graphviz-{version}-win64.zip",
+        ],
+        "windows-cmake-x64-debug-build": [
+            f"windows_10_cmake_Debug_graphviz-install-{version}-win64.exe",
+            f"windows_10_cmake_Release_Graphviz-{version}-win64.zip",
+        ],
+        "windows-mingw64-cmake-build": [
+            f"msys2_*_Graphviz-{version}-win64.exe",
+            f"msys2_*_Graphviz-{version}-win64.zip",
+        ],
+        "windows-cygwin-build": [f"CYGWIN_*_graphviz-{version}-x86_64.tar.xz"],
+        "windows-cygwin-cmake-build": [f"CYGWIN_*_Graphviz-{version}-CYGWIN-1.tar.bz2"],
+    }
+
+    for job, artifacts in ARTIFACTS.items():
+        for artifact in artifacts:
+            paths = list((Path("Packages") / job).glob(artifact))
+            assert len(paths) != 0, f"missing artifact: {artifact}"
+            assert len(paths) == 1, f"multiple matches for {artifact}: {paths}"
+            path = paths[0]
 
             # get existing permissions
             mode = path.stat().st_mode
@@ -213,20 +263,20 @@ def main() -> int:
                 "format": get_format(path),
                 "url": url,
             }
-            if "win32" in leaf:
+            if "win32" in artifact:
                 webentry["bits"] = 32
-            elif "win64" in leaf:
+            elif "win64" in artifact:
                 webentry["bits"] = 64
 
             # if this is a standalone Windows or macOS package, also provide checksum(s)
-            if is_macos_artifact(leaf) or is_windows_artifact(leaf):
+            if is_macos_artifact(artifact) or is_windows_artifact(artifact):
                 c = checksum(path)
                 url = upload(skip_release, package_version, c)
                 assets.append(url)
                 webentry[c.suffix[1:]] = url
 
             # only expose a subset of the Windows artifacts
-            if "windows_10_cmake_Release_" in leaf:
+            if "windows_10_cmake_Release_" in artifact:
                 webdata["windows"].append(webentry)
 
     # various release pages truncate the viewable artifacts to 100 or even 50
