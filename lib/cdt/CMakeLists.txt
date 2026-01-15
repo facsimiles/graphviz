@@ -1,5 +1,3 @@
-add_definitions(-DEXPORT_CDT)
-
 add_library(cdt
   # Header files
   cdt.h
@@ -22,6 +20,8 @@ add_library(cdt
   dtview.c
   dtwalk.c
 )
+
+target_compile_definitions(cdt PRIVATE EXPORT_CDT)
 
 target_include_directories(cdt PRIVATE
   ..
