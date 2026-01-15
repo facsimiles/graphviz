@@ -135,11 +135,11 @@ int lu_decompose(lu_t *lu, double **a, int n) {
 */
 
 void lu_solve(const lu_t *lu, double *x, double *b, int n) {
-    int i, j;
+    int j;
     double dot;
 
     /* Vector reduction using U triangular matrix */
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
 	dot = 0.0;
 	for (j = 0; j < i; j++)
 	    dot += lu->lu[lu->ps[i]][j] * x[j];
@@ -147,7 +147,7 @@ void lu_solve(const lu_t *lu, double *x, double *b, int n) {
     }
 
     /* Back substitution, in L triangular matrix */
-    for (i = n - 1; i >= 0; i--) {
+    for (int i = n - 1; i >= 0; i--) {
 	dot = 0.0;
 	for (j = i + 1; j < n; j++)
 	    dot += lu->lu[lu->ps[i]][j] * x[j];
