@@ -67,7 +67,7 @@
 int lu_decompose(lu_t *lu, double **a, int n) {
     assert(lu != NULL);
 
-    int i, j, k;
+    int j, k;
     int pivotindex = 0;
     double pivot, biggest, mult, tempf;
 
@@ -75,7 +75,7 @@ int lu_decompose(lu_t *lu, double **a, int n) {
     lu->ps = gv_calloc(n, sizeof(int));
     double *const scales = gv_calloc(n, sizeof(double));
 
-    for (i = 0; i < n; i++) {	/* For each row */
+    for (int i = 0; i < n; i++) { // for each row
 	/* Find the largest element in each row for row equilibration */
 	biggest = 0.0;
 	for (j = 0; j < n; j++)
@@ -93,7 +93,7 @@ int lu_decompose(lu_t *lu, double **a, int n) {
     for (k = 0; k < n - 1; k++) {	/* For each column */
 	/* Find the largest element in each column to pivot around */
 	biggest = 0.0;
-	for (i = k; i < n; i++) {
+	for (int i = k; i < n; i++) {
 	    if (biggest < (tempf = fabs(lu->lu[lu->ps[i]][k]) * scales[lu->ps[i]])) {
 		biggest = tempf;
 		pivotindex = i;
@@ -110,7 +110,7 @@ int lu_decompose(lu_t *lu, double **a, int n) {
 
 	/* Pivot, eliminating an extra variable  each time */
 	pivot = lu->lu[lu->ps[k]][k];
-	for (i = k + 1; i < n; i++) {
+	for (int i = k + 1; i < n; i++) {
 	    lu->lu[lu->ps[i]][k] = mult = lu->lu[lu->ps[i]][k] / pivot;
 	    for (j = k + 1; j < n; j++)
 		lu->lu[lu->ps[i]][j] -= mult * lu->lu[lu->ps[k]][j];
