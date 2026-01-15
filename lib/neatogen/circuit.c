@@ -37,7 +37,6 @@ int solveCircuit(int nG, double **Gm, double **Gm_inv)
 
 int circuit_model(graph_t * g, int nG)
 {
-    int rv;
     long i, j;
     node_t *v;
     edge_t *e;
@@ -57,7 +56,7 @@ int circuit_model(graph_t * g, int nG)
 	}
     }
 
-    rv = solveCircuit(nG, Gm, Gm_inv);
+    const int rv = solveCircuit(nG, Gm, Gm_inv);
 
     if (rv)
 	for (i = 0; i < nG; i++) {
