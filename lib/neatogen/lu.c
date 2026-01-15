@@ -67,7 +67,7 @@
 int lu_decompose(lu_t *lu, double **a, int n) {
     assert(lu != NULL);
 
-    int j, k;
+    int k;
     int pivotindex = 0;
     double pivot, biggest, mult, tempf;
 
@@ -78,7 +78,7 @@ int lu_decompose(lu_t *lu, double **a, int n) {
     for (int i = 0; i < n; i++) { // for each row
 	/* Find the largest element in each row for row equilibration */
 	biggest = 0.0;
-	for (j = 0; j < n; j++)
+	for (int j = 0; j < n; j++)
 	    biggest = fmax(biggest, fabs(lu->lu[i][j] = a[i][j]));
 	if (biggest > 0.0)
 	    scales[i] = 1.0 / biggest;
@@ -112,7 +112,7 @@ int lu_decompose(lu_t *lu, double **a, int n) {
 	pivot = lu->lu[lu->ps[k]][k];
 	for (int i = k + 1; i < n; i++) {
 	    lu->lu[lu->ps[i]][k] = mult = lu->lu[lu->ps[i]][k] / pivot;
-	    for (j = k + 1; j < n; j++)
+	    for (int j = k + 1; j < n; j++)
 		lu->lu[lu->ps[i]][j] -= mult * lu->lu[lu->ps[k]][j];
 	}
     }
