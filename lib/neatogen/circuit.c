@@ -37,14 +37,12 @@ int solveCircuit(int nG, double **Gm, double **Gm_inv)
 
 int circuit_model(graph_t * g, int nG)
 {
-    edge_t *e;
-
     double **const Gm = new_array(nG, nG, 0.0);
     double **const Gm_inv = new_array(nG, nG, 0.0);
 
     /* set non-diagonal entries */
     for (node_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	for (e = agfstedge(g, v); e; e = agnxtedge(g, e, v)) {
+	for (edge_t *e = agfstedge(g, v); e; e = agnxtedge(g, e, v)) {
 	    const long i = AGSEQ(agtail(e));
 	    const long j = AGSEQ(aghead(e));
 	    if (i == j)
