@@ -1,7 +1,5 @@
 if(with_ortho)
 
-add_definitions(-DGVC_EXPORTS)
-
 add_library(ortho_obj OBJECT
   # Header files
   fPQ.h
@@ -22,6 +20,8 @@ add_library(ortho_obj OBJECT
   sgraph.c
   trapezoid.c
 )
+
+target_compile_definitions(ortho_obj PRIVATE GVC_EXPORTS)
 
 target_include_directories(ortho_obj PRIVATE
   ..
