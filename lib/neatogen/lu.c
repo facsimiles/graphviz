@@ -130,17 +130,17 @@ int lu_decompose(lu_t *lu, double **a, int n) {
  *
  *	lu - the state for the computation
  *	x - the solution vector
- *	b - the constant vector
+ *	bi - the only 1.0 element of b within an otherwise-0.0 vector
  *	n - the order of the equation
 */
 
-void lu_solve(const lu_t *lu, double *x, double *b, int n) {
+void lu_solve(const lu_t *lu, double *x, int bi, int n) {
     /* Vector reduction using U triangular matrix */
     for (int i = 0; i < n; i++) {
 	double dot = 0;
 	for (int j = 0; j < i; j++)
 	    dot += lu->lu[lu->ps[i]][j] * x[j];
-	x[i] = b[lu->ps[i]] - dot;
+	x[i] = (lu->ps[i] == bi) - dot;
     }
 
     /* Back substitution, in L triangular matrix */

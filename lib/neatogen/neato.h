@@ -41,7 +41,7 @@ typedef struct {
 } lu_t;
 
 PRIVATE int lu_decompose(lu_t *lu, double **a, int n);
-PRIVATE void lu_solve(const lu_t *lu, double *x, double *b, int n);
+PRIVATE void lu_solve(const lu_t *lu, double *x, int bi, int n);
 
 /// release resources relating to LU decomposition
 PRIVATE void lu_free(lu_t *lu);

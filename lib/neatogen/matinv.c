@@ -33,10 +33,8 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <common/render.h>
 #include <neatogen/neato.h>
-#include <util/alloc.h>
 #include <util/gv_math.h>
 
 int matinv(double **A, double **Ainv, int n)
@@ -47,14 +45,9 @@ int matinv(double **A, double **Ainv, int n)
 	return 0; // singular
 
     /* Invert matrix by solving n simultaneous equations n times */
-    double *b = gv_calloc(n, sizeof(double));
     for (int i = 0; i < n; i++) {
-	for (int j = 0; j < n; j++)
-	    b[j] = 0.0;
-	b[i] = 1.0;
-	lu_solve(&lu, Ainv[i], b, n); // into a row of Ainv: fix later
+	lu_solve(&lu, Ainv[i], i, n); // into a row of Ainv: fix later
     }
-    free(b);
     lu_free(&lu);
 
     /* Transpose matrix */
