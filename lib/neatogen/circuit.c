@@ -21,7 +21,6 @@
 
 int solveCircuit(int nG, double **Gm, double **Gm_inv)
 {
-    double sum;
     int i, j;
 
     if (Verbose)
@@ -29,7 +28,7 @@ int solveCircuit(int nG, double **Gm, double **Gm_inv)
 
     /* set diagonal entries to sum of conductances but ignore nth node */
     for (i = 0; i < nG; i++) {
-	sum = 0.0;
+	double sum = 0;
 	for (j = 0; j < nG; j++)
 	    if (i != j)
 		sum += Gm[i][j];
