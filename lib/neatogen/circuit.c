@@ -21,15 +21,13 @@
 
 int solveCircuit(int nG, double **Gm, double **Gm_inv)
 {
-    int j;
-
     if (Verbose)
 	fprintf(stderr, "Calculating circuit model");
 
     /* set diagonal entries to sum of conductances but ignore nth node */
     for (int i = 0; i < nG; i++) {
 	double sum = 0;
-	for (j = 0; j < nG; j++)
+	for (int j = 0; j < nG; j++)
 	    if (i != j)
 		sum += Gm[i][j];
 	Gm[i][i] = -sum;
