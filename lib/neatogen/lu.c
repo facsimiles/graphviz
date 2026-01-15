@@ -49,6 +49,7 @@
 #include <neatogen/neato.h>
 #include <stdlib.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 
 /* lu_decompose() decomposes the coefficient matrix A into upper and lower
  * triangular matrices, the composite being the LU matrix.
@@ -104,9 +105,7 @@ int lu_decompose(lu_t *lu, double **a, int n) {
 	    return 0;		/* Zero column: singular matrix */
 	}
 	if (pivotindex != k) {	/* Update pivot sequence */
-	    j = lu->ps[k];
-	    lu->ps[k] = lu->ps[pivotindex];
-	    lu->ps[pivotindex] = j;
+	    SWAP(&lu->ps[k], &lu->ps[pivotindex]);
 	}
 
 	/* Pivot, eliminating an extra variable  each time */
