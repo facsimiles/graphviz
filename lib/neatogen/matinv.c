@@ -41,7 +41,7 @@
 
 int matinv(double **A, double **Ainv, int n)
 {
-    int i, j;
+    int j;
 
     /* Decompose matrix into L and U triangular matrices */
     lu_t lu = {0};
@@ -50,7 +50,7 @@ int matinv(double **A, double **Ainv, int n)
 
     /* Invert matrix by solving n simultaneous equations n times */
     double *b = gv_calloc(n, sizeof(double));
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
 	for (j = 0; j < n; j++)
 	    b[j] = 0.0;
 	b[i] = 1.0;
@@ -60,7 +60,7 @@ int matinv(double **A, double **Ainv, int n)
     lu_free(&lu);
 
     /* Transpose matrix */
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
 	for (j = 0; j < i; j++) {
 	    SWAP(&Ainv[i][j], &Ainv[j][i]);
 	}
