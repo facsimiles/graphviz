@@ -46,9 +46,9 @@
 
 #include <math.h>
 #include <neatogen/neato.h>
+#include <stdlib.h>
 #include <util/alloc.h>
 
-static double *scales;
 static double **lu;
 static int *ps;
 
@@ -75,8 +75,7 @@ int lu_decompose(double **a, int n)
     lu = new_array(n, n, 0.0);
     free(ps);
     ps = gv_calloc(n, sizeof(int));
-    free(scales);
-    scales = gv_calloc(n, sizeof(double));
+    double *const scales = gv_calloc(n, sizeof(double));
 
     for (i = 0; i < n; i++) {	/* For each row */
 	/* Find the largest element in each row for row equilibration */
@@ -86,7 +85,7 @@ int lu_decompose(double **a, int n)
 	if (biggest > 0.0)
 	    scales[i] = 1.0 / biggest;
 	else {
-	    scales[i] = 0.0;
+	    free(scales);
 	    return 0;		/* Zero row: singular matrix */
 	}
 	ps[i] = i;		/* Initialize pivot sequence */
@@ -101,8 +100,10 @@ int lu_decompose(double **a, int n)
 		pivotindex = i;
 	    }
 	}
-	if (biggest <= 0.0)
+	if (biggest <= 0.0) {
+	    free(scales);
 	    return 0;		/* Zero column: singular matrix */
+	}
 	if (pivotindex != k) {	/* Update pivot sequence */
 	    j = ps[k];
 	    ps[k] = ps[pivotindex];
@@ -118,6 +119,7 @@ int lu_decompose(double **a, int n)
 	}
     }
 
+    free(scales);
     if (lu[ps[n - 1]][n - 1] == 0.0)
 	return 0;		/* Singular matrix */
     return 1;
