@@ -19,11 +19,7 @@ else
     VERSION_ID=$( uname -r | sed "s/\([0-9\.]*\).*/\1/")
 fi
 
-# Make a lowercase equivalent of `${ID}`. Bash on macOS is 3.2, which does not
-# support `${foo,,}`.
-id=$(echo "${ID}" | tr '[:upper:]' '[:lower:]')
-
-if [[ ${id} == msys* ]]; then
+if [[ ${ID} == msys* ]]; then
     # MSYS2/MinGW doesn't have VERSION_ID in /etc/os-release
     VERSION_ID=$( uname -r )
 fi
@@ -47,16 +43,16 @@ if [ "${build_system}" = "cmake" ]; then
     cmake --build .
     cpack
     popd
-    if [[ ${id} == ubuntu* ]]; then
+    if [[ ${ID} == ubuntu* ]]; then
         mv build/Graphviz-${GV_VERSION}-Linux.deb ${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-cmake.deb
-    elif [[ ${id} == fedora* || ${id} == rocky* ]]; then
+    elif [[ ${ID} == fedora* || ${ID} == rocky* ]]; then
         mv build/Graphviz-${GV_VERSION}-Linux.rpm ${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-cmake.rpm
-    elif [[ ${id} == darwin* ]]; then
+    elif [[ ${ID} == Darwin* ]]; then
         mv build/Graphviz-${GV_VERSION}-Darwin.zip ${DIR}/${ID}_${VERSION_ID}_Graphviz-${GV_VERSION}-${ID}.zip
-    elif [[ ${id} == msys* ]]; then
+    elif [[ ${ID} == msys* ]]; then
         mv build/Graphviz-${GV_VERSION}-win64.zip ${DIR}/${ID}_${VERSION_ID}_Graphviz-${GV_VERSION}-win64.zip
         mv build/Graphviz-${GV_VERSION}-win64.exe ${DIR}/${ID}_${VERSION_ID}_Graphviz-${GV_VERSION}-win64.exe
-    elif [[ ${id} == cygwin* ]]; then
+    elif [[ ${ID} == CYGWIN* ]]; then
         mv build/Graphviz-${GV_VERSION}-CYGWIN-1.tar.bz2 ${DIR}/${ID}_${VERSION_ID}_Graphviz-${GV_VERSION}-CYGWIN-1.tar.bz2
     else
         echo "Error: ID=${ID} is unknown" >&2
@@ -77,26 +73,26 @@ elif [[ "${CONFIGURE_OPTIONS:-}" =~ "--enable-static" ]]; then
         popd
     fi
 else
-    if [[ ${id} == ubuntu* ]]; then
+    if [[ ${ID} == ubuntu* ]]; then
         tar xfz graphviz-${GV_VERSION}.tar.gz
         (cd graphviz-${GV_VERSION}; fakeroot make -f debian/rules binary) | tee >(ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
         tar cf - *.deb *.ddeb | xz -9 -c - >${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-debs.tar.xz
-    elif [[ ${id} == fedora* || ${id} == rocky* ]]; then
+    elif [[ ${ID} == fedora* || ${ID} == rocky* ]]; then
         rm -rf ${HOME}/rpmbuild
         rpmbuild -ta graphviz-${GV_VERSION}.tar.gz | tee >(ci/extract-configure-log.sh >${META_DATA_DIR}/configure.log)
         pushd ${HOME}/rpmbuild/RPMS
         mv */*.rpm ./
         tar cf - *.rpm | xz -9 -c - >${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-rpms.tar.xz
         popd
-    elif [[ ${id} == darwin* ]]; then
+    elif [[ ${ID} == Darwin* ]]; then
         tar xfz graphviz-${GV_VERSION}.tar.gz
         pushd graphviz-${GV_VERSION}
         ./configure --disable-dependency-tracking --prefix=/usr/local/graphviz --with-quartz=yes
         make pkg
         cp graphviz-${ARCH}.pkg ${DIR}/${ID}_${VERSION_ID}_graphviz-${GV_VERSION}-${ARCH}.pkg
         popd
-    elif [[ ${id} == cygwin* || ${id} == msys* ]]; then
-        if [[ ${id} == msys* ]]; then
+    elif [[ ${ID} == CYGWIN* || ${ID} == msys* ]]; then
+        if [[ ${ID} == msys* ]]; then
             # ensure that MinGW tcl shell is used in order to find tcl functions
             CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS:-} --with-tclsh=${MSYSTEM_PREFIX}/bin/tclsh86"
         else # Cygwin
