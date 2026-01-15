@@ -1,5 +1,3 @@
-add_definitions(-DGVC_EXPORTS)
-
 add_library(pack_obj OBJECT
   # Header files
   pack.h
@@ -8,6 +6,8 @@ add_library(pack_obj OBJECT
   ccomps.c
   pack.c
 )
+
+target_compile_definitions(pack_obj PRIVATE GVC_EXPORTS)
 
 target_include_directories(pack_obj PRIVATE
   ..
