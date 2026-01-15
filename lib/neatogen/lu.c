@@ -67,7 +67,7 @@
 int lu_decompose(lu_t *lu, double **a, int n) {
     assert(lu != NULL);
 
-    double pivot, biggest, mult, tempf;
+    double biggest, mult, tempf;
 
     lu->lu = new_array(n, n, 0.0);
     lu->ps = gv_calloc(n, sizeof(int));
@@ -107,7 +107,7 @@ int lu_decompose(lu_t *lu, double **a, int n) {
 	}
 
 	/* Pivot, eliminating an extra variable  each time */
-	pivot = lu->lu[lu->ps[k]][k];
+	const double pivot = lu->lu[lu->ps[k]][k];
 	for (int i = k + 1; i < n; i++) {
 	    lu->lu[lu->ps[i]][k] = mult = lu->lu[lu->ps[i]][k] / pivot;
 	    for (int j = k + 1; j < n; j++)
