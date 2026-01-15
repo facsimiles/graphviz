@@ -46,7 +46,7 @@ int matinv(double **A, double **Ainv, int n)
     /* Decompose matrix into L and U triangular matrices */
     lu_t lu = {0};
     if (lu_decompose(&lu, A, n) == 0)
-	return (0);		/* Singular */
+	return 0; // singular
 
     /* Invert matrix by solving n simultaneous equations n times */
     double *b = gv_calloc(n, sizeof(double));
@@ -66,5 +66,5 @@ int matinv(double **A, double **Ainv, int n)
 	}
     }
 
-    return (1);
+    return 1;
 }
