@@ -34,6 +34,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
+#include <util/streq.h>
 #include <util/strview.h>
 
 static Dict_t *ImageDict;
@@ -210,19 +211,18 @@ static bool get_int_msb_first(FILE *f, size_t sz, int *val) {
 }
 
 static double svg_units_convert(double n, char *u) {
-  if (strcmp(u, "in") == 0)
+  if (streq(u, "in"))
     return round(n * POINTS_PER_INCH);
-  if (strcmp(u, "px") == 0)
+  if (streq(u, "px"))
     return round(n * POINTS_PER_INCH / 96);
-  if (strcmp(u, "pc") == 0)
+  if (streq(u, "pc"))
     return round(n * POINTS_PER_INCH / 6);
-  if (strcmp(u, "pt") == 0 ||
-      strcmp(u, "\"") == 0) /* ugly!!  - if there are no inits then the %2s get
-                               the trailing '"' */
+  if (streq(u, "pt") || streq(u, "\"")) /* ugly!!  - if there are no inits then
+                                           the %2s get the trailing '"' */
     return round(n);
-  if (strcmp(u, "cm") == 0)
+  if (streq(u, "cm"))
     return round(n * POINTS_PER_CM);
-  if (strcmp(u, "mm") == 0)
+  if (streq(u, "mm"))
     return round(n * POINTS_PER_MM);
   return 0;
 }
