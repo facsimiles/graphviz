@@ -814,15 +814,13 @@ point gvusershape_size_dpi(usershape_t *us, pointf dpi) {
  * Return image size in points.
  */
 point gvusershape_size(graph_t *g, char *name) {
-  point rv;
   pointf dpi;
   static char *oldpath;
   usershape_t *us;
 
   /* no shape file, no shape size */
   if (!name || (*name == '\0')) {
-    rv.x = rv.y = -1;
-    return rv;
+    return (point){.x = -1, .y = -1};
   }
 
   if (!HTTPServerEnVar && (oldpath != Gvimagepath)) {
@@ -839,6 +837,5 @@ point gvusershape_size(graph_t *g, char *name) {
     dpi.x = dpi.y = DEFAULT_DPI;
 
   us = gvusershape_open(name);
-  rv = gvusershape_size_dpi(us, dpi);
-  return rv;
+  return gvusershape_size_dpi(us, dpi);
 }
