@@ -682,9 +682,7 @@ usershape_t *gvusershape_find(const char *name) {
   return dtmatch(ImageDict, name);
 }
 
-#define MAX_USERSHAPE_FILES_OPEN 50
 bool gvusershape_file_access(usershape_t *us) {
-  static int usershape_files_open_cnt;
   const char *fn;
 
   assert(us);
@@ -703,10 +701,7 @@ bool gvusershape_file_access(usershape_t *us) {
       agwarningf("%s while opening %s\n", strerror(errno), fn);
       return false;
     }
-    if (usershape_files_open_cnt >= MAX_USERSHAPE_FILES_OPEN)
-      us->nocache = true;
-    else
-      usershape_files_open_cnt++;
+    us->nocache = true;
   }
   assert(us->f);
   return true;
