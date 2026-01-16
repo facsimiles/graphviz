@@ -799,17 +799,14 @@ static usershape_t *gvusershape_open(const char *name) {
  * Return image size in points.
  */
 point gvusershape_size_dpi(usershape_t *us, pointf dpi) {
-  point rv;
-
   if (!us) {
     return (point){.x = -1, .y = -1};
   }
   if (us->dpi != 0) {
     dpi.x = dpi.y = us->dpi;
   }
-  rv.x = (int)(us->w * POINTS_PER_INCH / dpi.x);
-  rv.y = (int)(us->h * POINTS_PER_INCH / dpi.y);
-  return rv;
+  return (point){.x = (int)(us->w * POINTS_PER_INCH / dpi.x),
+                 .y = (int)(us->h * POINTS_PER_INCH / dpi.y)};
 }
 
 /* gvusershape_size:
