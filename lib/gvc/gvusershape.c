@@ -179,11 +179,9 @@ static imagetype_t imagetype(usershape_t *us) {
 }
 
 static bool get_int_lsb_first(FILE *f, size_t sz, int *val) {
-  int ch;
-
   unsigned value = 0;
   for (size_t i = 0; i < sz; i++) {
-    ch = fgetc(f);
+    const int ch = fgetc(f);
     if (feof(f))
       return false;
     value |= (unsigned)ch << 8 * i;
