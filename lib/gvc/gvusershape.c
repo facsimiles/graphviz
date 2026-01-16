@@ -816,7 +816,6 @@ point gvusershape_size_dpi(usershape_t *us, pointf dpi) {
 point gvusershape_size(graph_t *g, char *name) {
   pointf dpi;
   static char *oldpath;
-  usershape_t *us;
 
   /* no shape file, no shape size */
   if (!name || (*name == '\0')) {
@@ -836,6 +835,6 @@ point gvusershape_size(graph_t *g, char *name) {
   else
     dpi.x = dpi.y = DEFAULT_DPI;
 
-  us = gvusershape_open(name);
+  usershape_t *const us = gvusershape_open(name);
   return gvusershape_size_dpi(us, dpi);
 }
