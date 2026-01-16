@@ -10,7 +10,16 @@
 
 #include "config.h"
 #include <assert.h>
+#include <common/globals.h>
+#include <common/render.h>
+#include <common/types.h>
+#include <common/usershape.h>
+#include <common/utils.h>
 #include <errno.h>
+#include <gvc/gvcint.h>
+#include <gvc/gvcproc.h>
+#include <gvc/gvplugin.h>
+#include <gvc/gvplugin_loadimage.h>
 #include <limits.h>
 #include <math.h>
 #include <stdbool.h>
@@ -18,22 +27,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <util/agxbuf.h>
+#include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
 #include <util/optional.h>
-
-#include <common/globals.h>
-#include <common/render.h>
-#include <common/types.h>
-#include <common/usershape.h>
-#include <common/utils.h>
-#include <gvc/gvcint.h>
-#include <gvc/gvcproc.h>
-#include <gvc/gvplugin.h>
-#include <gvc/gvplugin_loadimage.h>
-#include <util/agxbuf.h>
-#include <util/alloc.h>
-#include <util/gv_ctype.h>
 #include <util/streq.h>
 #include <util/strview.h>
 
