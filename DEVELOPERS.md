@@ -59,12 +59,6 @@ make install
 
 ### CMake build system
 
-Note that Graphviz’ CMake build system is incomplete. It only builds a subset
-of the binaries and libraries. For most code-related changes, you will probably
-want to test using Autotools instead.
-
-However, if you do want to use CMake:
-
 ```sh
 # you probably do not want to install your development version of Graphviz over
 # the top of your system binaries/libraries, so create a temporary directory as
@@ -120,6 +114,10 @@ env PATH=${PREFIX}/bin:${PATH} C_INCLUDE_PATH=${PREFIX}/include \
   graphviz_ROOT=${PREFIX} \
   python3 -m pytest tests/test_regression::test_2225
 ```
+
+If you are using the CMake build system instead of the Autotools build system,
+you will also want to add `build_system=cmake` to the list of `env` variables in
+use.
 
 *TODO: on Windows, you probably need to override different environment variables?*
 
