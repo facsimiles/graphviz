@@ -22,6 +22,7 @@
 #include <util/gv_fopen.h>
 #include <util/optional.h>
 
+#include <common/render.h>
 #include <common/types.h>
 #include <common/usershape.h>
 #include <common/utils.h>
@@ -36,7 +37,6 @@
 
 extern char *Gvimagepath;
 extern char *HTTPServerEnVar;
-extern shape_desc *find_user_shape(const char *);
 
 static Dict_t *ImageDict;
 
