@@ -673,16 +673,13 @@ static Dtdisc_t ImageDictDisc = {
 };
 
 usershape_t *gvusershape_find(const char *name) {
-  usershape_t *us;
-
   assert(name);
   assert(name[0]);
 
   if (!ImageDict)
     return NULL;
 
-  us = dtmatch(ImageDict, name);
-  return us;
+  return dtmatch(ImageDict, name);
 }
 
 #define MAX_USERSHAPE_FILES_OPEN 50
