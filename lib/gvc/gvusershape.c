@@ -22,6 +22,7 @@
 #include <util/gv_fopen.h>
 #include <util/optional.h>
 
+#include <common/globals.h>
 #include <common/render.h>
 #include <common/types.h>
 #include <common/usershape.h>
@@ -34,9 +35,6 @@
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/strview.h>
-
-extern char *Gvimagepath;
-extern char *HTTPServerEnVar;
 
 static Dict_t *ImageDict;
 
