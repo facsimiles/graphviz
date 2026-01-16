@@ -91,13 +91,13 @@ static void gs_error(GVJ_t * job, const char *name, const char *funstr, int err)
 
 static int gvloadimage_process_file(GVJ_t *job, usershape_t *us, void *instance)
 {
-    int rc = 0, exit_code;
+    int rc = 0;
 
     if (! gvusershape_file_access(us)) {
 	job->common->errorfn("Failure to read shape file\n");
 	return -1;
     }
-    rc = gsapi_run_file(instance, us->name, -1, &exit_code);
+    rc = gsapi_run_file(instance, us->name, -1, &(int){0});
     if (rc) {
 	gs_error(job, us->name, "gsapi_run_file", rc);
     }
