@@ -9,6 +9,7 @@ noinst_HEADERS = \
   base64.h \
   bitarray.h \
   debug.h \
+  dword.h \
   exit.h \
   gv_ctype.h \
   gv_find_me.h \
@@ -35,7 +36,7 @@ noinst_HEADERS = \
   xml.h
 noinst_LTLIBRARIES = libutil_C.la
 
-libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c list.c \
+libutil_C_la_SOURCES = arena.c base64.c dword.c gv_find_me.c gv_fopen.c list.c \
 	random.c xml.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 

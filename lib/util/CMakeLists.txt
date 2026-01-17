@@ -1,12 +1,18 @@
 add_library(util STATIC
   arena.c
   base64.c
+  dword.c
   gv_find_me.c
   gv_fopen.c
   list.c
   random.c
   xml.c
 )
+
+# enable 128-bit compare-and-swap instructions for dword.c
+if(HAVE_C_MCX16)
+  target_compile_options(util PRIVATE -mcx16)
+endif()
 
 target_include_directories(util PRIVATE ..)
 

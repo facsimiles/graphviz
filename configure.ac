@@ -274,6 +274,10 @@ m4_version_prereq([2.70],[],[
 if test "$ac_cv_prog_cc_c17" = "no"; then
   AC_MSG_ERROR([C compiler does not support C17])
 fi
+# enable 128-bit compare-and-swap instructions
+AX_CHECK_COMPILE_FLAG([-mcx16],[
+  CFLAGS+=" -mcx16"
+])
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17(noext,mandatory)
 AC_PROG_OBJC

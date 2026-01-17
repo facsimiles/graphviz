@@ -861,6 +861,7 @@ check_c_compiler_flag(-Wunused-parameter HAVE_C_WUNUSED_PARAMETER)
 if(HAVE_C_WUNUSED_PARAMETER)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunused-parameter")
 endif()
+check_c_compiler_flag(-mcx16 HAVE_C_MCX16)
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag(
   -Wmissing-field-initializers HAVE_CXX_WMISSING_FIELD_INITIALIZERS
