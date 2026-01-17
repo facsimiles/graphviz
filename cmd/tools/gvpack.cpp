@@ -52,11 +52,7 @@ extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
 }
 
 lt_symlist_t lt_preloaded_symbols[] = {
-#ifdef GVDLL
 	{ "gvplugin_neato_layout_LTX_library", 0 },
-#else
-	{ "gvplugin_neato_layout_LTX_library", &gvplugin_neato_layout_LTX_library },
-#endif
 	{ 0, 0 }
 };
 
@@ -711,9 +707,7 @@ int main(int argc, char *argv[])
 
     doPack = (pinfo.mode != l_undef);
 
-#if defined(_WIN32)
     lt_preloaded_symbols[0].address = &gvplugin_neato_layout_LTX_library;
-#endif
     gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
     std::optional<Agdesc_t> kind; // type of graph
     std::vector<Agraph_t*> gs = readGraphs(gvc, kind);
