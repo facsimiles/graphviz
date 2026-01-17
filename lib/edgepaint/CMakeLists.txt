@@ -1,5 +1,3 @@
-add_definitions(-DLAB_GAMUT_EXPORTS)
-
 add_library(edgepaintlib STATIC
   edge_distinct_coloring.h
   furtherest_point.h
