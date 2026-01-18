@@ -71,10 +71,12 @@ def test_dword(threads: str, cas: str):
 
     # if this platform supports libatomic, conservatively assume we need it
     link = []
-    if platform.system() != "Windows":
+    if platform.system() != "Windows" or is_mingw():
         cc = os.environ.get("CC", "cc")
         try:
-            libatomic = run([cc, "-print-file-name=libatomic.so"])
+            libatomic = run(
+                [cc, "-print-file-name=libatomic.so"], stderr=subprocess.DEVNULL
+            )
         except subprocess.CalledProcessError:
             libatomic = ""
         if Path(libatomic).is_absolute():
