@@ -78,7 +78,7 @@ def test_dword(threads: str, cas: str):
         except subprocess.CalledProcessError:
             libatomic = ""
         if Path(libatomic).is_absolute():
-            link += ["atomic"]
+            link += [libatomic.strip()]
 
     run_c(src, cflags=cflags, link=link)
 

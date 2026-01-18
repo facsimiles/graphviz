@@ -13,6 +13,7 @@ https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
 && dnf config-manager --set-enabled powertools \
 # Centos build utilities
 && dnf -y --setopt install_weak_deps=false install \
+libatomic \
 libtool-ltdl-devel \
 libedit-devel \
 cmake \

@@ -14,6 +14,7 @@ make \
 cmake \
 ninja \
 # Centos build utilities
+libatomic \
 libtool-ltdl-devel \
 libedit-devel \
 # Option xpat

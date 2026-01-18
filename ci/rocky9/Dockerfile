@@ -13,6 +13,7 @@ https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm \
 && dnf config-manager --enable crb \
 # Centos build utilities
 && dnf -y --setopt install_weak_deps=false install \
+libatomic \
 libtool-ltdl-devel \
 libedit-devel \
 cmake \
