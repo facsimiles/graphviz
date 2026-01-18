@@ -12,10 +12,62 @@ sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
     compile_c,
     is_mingw,
+    is_macos,
+    has_cflag,
     run,
     run_c,
 )
 
+@pytest.mark.parametrize("threads", ("C11 threads", "pthreads", "no threads"))
+@pytest.mark.parametrize("cas", ("FORCE_CAS=1", "FORCE_CAS=0", "FORCE_CAS auto"))
+def test_dword(threads: str, cas: str):
+    """run the unit tests of ../lib/util/dword.c"""
+
+    if threads == "C11 threads":
+        if is_macos():
+            pytest.skip("macOS does not support C11 threads")
+        if is_mingw():
+            pytest.skip("MinGW does not support C11 threads")
+    elif threads == "pthreads":
+        if platform.system() == "Windows" and not is_mingw():
+            pytest.skip("Windows does not support pthreads")
+
+    # locate the unit tests
+    src = Path(__file__).parent.resolve() / f"../lib/util/test_dword.c"
+    assert src.exists()
+
+    # locate lib directory that needs to be in the include path
+    lib = Path(__file__).parent.resolve() / "../lib"
+
+    # extra C flags this compilation needs
+    cflags = ["-I", lib]
+
+    if threads == "C11 threads":
+        cflags += ["-DUSE_C11_THREADS"]
+    elif threads == "pthreads":
+        cflags += ["-pthread", "-DUSE_PTHREADS"]
+
+    if cas == "FORCE_CAS=1":
+        cflags += ["-DFORCE_CAS=1"]
+    elif cas == "FORCE_CAS=0":
+        cflags += ["-DFORCE_CAS=0"]
+
+    # if this platform supports `-mcx16`, conservatively assumed we need it
+    if has_cflag("-mcx16"):
+        cflags += ["-mcx16"]
+
+    # if this platform supports libatomic, conservatively assume we need it
+    link = []
+    if platform.system() != "Windows":
+        cc = os.environ.get("CC", "cc")
+        try:
+            libatomic = run([cc, "-print-file-name=libatomic.so"])
+        except subprocess.CalledProcessError:
+            libatomic = ""
+        if Path(libatomic).is_absolute():
+            link += [libatomic.strip()]
+
+    run_c(src, cflags=cflags, link=link)
 
 @pytest.mark.parametrize("utility", ("arena", "bitarray", "itos", "list", "tokenize"))
 def test_utility(utility: str):

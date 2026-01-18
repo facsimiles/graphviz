@@ -270,6 +270,21 @@ def build_system() -> str:
     return os.getenv("build_system")
 
 
+def has_cflag(flag: str) -> bool:
+    with tempfile.TemporaryDirectory() as t:
+        tmp = Path(t)
+
+        # create a trivial program
+        main = tmp / "main.c"
+        main.write_text("int main(void) { return 0; }", encoding="utf-8")
+
+        # try to compile and run it with this flag
+        try:
+            run_c(main, cflags=[flag])
+        except subprocess.CalledProcessError:
+            return False
+    return True
+
 def is_asan_instrumented(binary: Path) -> bool:
     """
     is the given binary using Address Sanitizer?
