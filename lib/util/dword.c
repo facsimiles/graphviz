@@ -12,6 +12,7 @@
 #include <intrin.h>
 #endif
 
+#ifndef FORCE_CAS
 /// Callers using `dword_t` values are typically implementing lock-free
 /// algorithms. …
 #if defined(__GNUC__) && (defined(__x86_64__) || defined(__i386__) ||          \
@@ -19,6 +20,7 @@
 #define FORCE_CAS 1
 #else
 #define FORCE_CAS 0
+#endif
 #endif
 
 dword_t gv_dword_new(void) {
@@ -42,7 +44,7 @@ void gv_dword_atomic_store(_Atomic dword_t *dst, dword_t src) {
   for (dword_t old = gv_dword_new();;) {
     const dword_t expected = old;
     old = __sync_val_compare_and_swap(dst, expected, src);
-    if (old != expected) {
+    if (old == expected) {
       break;
     }
   }
@@ -56,7 +58,11 @@ bool gv_dword_atomic_cas(_Atomic dword_t *dst, dword_t *expected,
   assert(dst != NULL);
   assert(expected != NULL);
 #if FORCE_CAS
-  return __sync_bool_compare_and_swap(dst, expected, desired);
+  {
+    const dword_t expectation = *expected;
+    *expected = __sync_val_compare_and_swap(dst, expectation, desired);
+    return *expected == expectation;
+  }
 #elif defined(_WIN64)
   return _InterlockedCompareExchange128(dst, desired.word[1], desired.word[0],
                                         expected);
@@ -74,7 +80,7 @@ bool gv_dword_atomic_cas(_Atomic dword_t *dst, dword_t *expected,
 
 dword_t gv_dword_atomic_xchg(_Atomic dword_t *dst, dword_t src) {
   assert(dst != NULL);
-#if FORCE_CAS || defined(_WIN64)
+#if FORCE_CAS || defined(_WIN64) // there is no `_InterlockedExchange128`
   {
     dword_t old = gv_dword_new();
     while (!gv_dword_atomic_cas(dst, &old, src)) {
@@ -83,5 +89,7 @@ dword_t gv_dword_atomic_xchg(_Atomic dword_t *dst, dword_t src) {
   }
 #elif defined(_WIN32)
   return _InterlockedExchange64(dst, src);
+#else
+  return atomic_exchange_explicit(dst, src, memory_order_acq_rel);
 #endif
 }
