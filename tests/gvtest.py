@@ -122,15 +122,6 @@ def compile_c(
                     ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
                     libraries = []
                 ldflags += [l]
-            # toolchain components, assume we need no pkg-config lookup
-            elif l in ("atomic", "gcc", "m"):
-                # flush any pending pkg-config lookup to roughly keep the library
-                # ordering the caller requested
-                if len(libraries) > 0:
-                    cflags += run([pkgconf, "--cflags", "--"] + libraries).split()
-                    ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
-                    libraries = []
-                ldflags += [f"-l{l}"]
             else:
                 libraries += [f"lib{l}"]
         if len(libraries) > 0:
