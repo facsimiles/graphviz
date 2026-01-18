@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "smyrnadefs.h"
 #include "gvprpipe.h"
 #include <common/const.h>

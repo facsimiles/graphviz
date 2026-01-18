@@ -10,6 +10,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <common/render.h>
 #include <common/pointset.h>
 #include <stddef.h>

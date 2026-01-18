@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <ANN/ANN.h>					// ANN declarations
 #include <mingle/nearest_neighbor_graph_ann.h>
 #include <utility>

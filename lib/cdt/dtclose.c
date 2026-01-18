@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include	<cdt/dthdr.h>
 #include	<stdlib.h>
 

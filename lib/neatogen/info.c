@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <neatogen/neato.h>
 #include <stdio.h>
 #include <neatogen/info.h>

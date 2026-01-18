@@ -13,6 +13,8 @@
  *
  */
 
+#include "config.h"
+
 #include <ast/ast.h>
 #include <ast/error.h>
 #include <gvpr/parse.h>

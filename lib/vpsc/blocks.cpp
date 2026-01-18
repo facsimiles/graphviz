@@ -19,6 +19,8 @@
  * Adaptagrams repository.
  */
 
+#include "config.h"
+
 #include <vpsc/blocks.h>
 #include <vpsc/block.h>
 #include <vpsc/constraint.h>

@@ -19,6 +19,8 @@
  * Needs to be fixed before layout engines can be plugins.
  */
 
+#include "config.h"
+
 #include <assert.h>
 #include <common/render.h>
 #include <fdpgen/tlayout.h>

@@ -10,6 +10,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <common/types.h>
 #include <common/utils.h>
 #include <time.h>

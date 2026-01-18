@@ -17,6 +17,8 @@
 
 ******************************************/
 
+#include "config.h"
+
 #include <assert.h>
 #include <float.h>
 #include <neatogen/bfs.h>

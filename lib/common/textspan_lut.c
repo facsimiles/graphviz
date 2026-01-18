@@ -1,5 +1,8 @@
 /// @file
 /// @ingroup common_render
+
+#include "config.h"
+
 #include <assert.h>
 #include <common/render.h>
 #include <common/textspan_lut.h>

@@ -14,6 +14,9 @@
  * likely it could be improved by using edge weights, somehow.
  * Return 1 if successful; 0 otherwise (e.g., graph is disconnected).
  */
+
+#include "config.h"
+
 #include	<neatogen/neato.h>
 
 int solveCircuit(int nG, double **Gm, double **Gm_inv)

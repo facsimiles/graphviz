@@ -13,6 +13,8 @@
  * order to reduce/remove node overlaps.
  */
 
+#include "config.h"
+
 #include <assert.h>
 #include <neatogen/neato.h>
 #include <common/utils.h>

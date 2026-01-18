@@ -8,14 +8,14 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <string>
 #include <LASi.h>
-
-#include "config.h"
 
 #include <gvc/gvplugin_render.h>
 #include <gvc/gvplugin_device.h>

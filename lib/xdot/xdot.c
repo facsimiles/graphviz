@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <util/agxbuf.h>

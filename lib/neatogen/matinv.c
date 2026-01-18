@@ -31,6 +31,8 @@
  *	n    - the order of the matrices A and Ainv
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <common/render.h>
 #include <neatogen/neato.h>

@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <circogen/blocktree.h>
 #include <stdbool.h>
 #include <util/agxbuf.h>

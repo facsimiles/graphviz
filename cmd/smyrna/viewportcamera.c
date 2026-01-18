@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "viewportcamera.h"
 #include "gui/gui.h"
 #include <math.h>

@@ -7,6 +7,9 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
+
+#include "config.h"
+
 #include "glexpose.h"
 #include "draw.h"
 #include "topviewfuncs.h"

@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include	<cdt/dthdr.h>
 
 /*	Return the # of objects in the dictionary

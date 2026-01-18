@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <sparse/color_palette.h>
 #include <stdbool.h>
 #include <string.h>

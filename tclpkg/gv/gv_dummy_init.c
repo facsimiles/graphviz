@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <gvc/gvc.h>
 #include "gv_channel.h"
 

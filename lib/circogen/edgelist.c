@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include	<circogen/edgelist.h>
 #include	<assert.h>
 #include	<util/alloc.h>

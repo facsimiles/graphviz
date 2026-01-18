@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "matrix_market.h"
 #include "mmio.h"
 #include <sparse/SparseMatrix.h>

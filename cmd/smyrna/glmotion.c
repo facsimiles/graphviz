@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "glmotion.h"
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>

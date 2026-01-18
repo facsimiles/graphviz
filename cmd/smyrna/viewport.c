@@ -7,6 +7,9 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
+
+#include "config.h"
+
 #ifdef _WIN32
 #include <windows.h>
 #endif

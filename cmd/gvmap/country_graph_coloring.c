@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #define STANDALONE
 #include "country_graph_coloring.h"
 #include <math.h>

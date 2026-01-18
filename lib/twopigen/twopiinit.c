@@ -14,6 +14,8 @@
  * Derived from Graham Wills' algorithm described in GD'97.
  */
 
+#include "config.h"
+
 #include    <cgraph/cgraph.h>
 #include    <twopigen/circle.h>
 #include    <neatogen/adjust.h>

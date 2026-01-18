@@ -13,6 +13,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <cgraph/cgraph.h>
 #include <cgraph/ingraphs.h>
 #include <stdbool.h>

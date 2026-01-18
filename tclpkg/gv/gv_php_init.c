@@ -15,6 +15,28 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 
+// PHP ship their own config.h, so suppress this
+#ifdef HAVE_MEMRCHR
+#undef HAVE_MEMRCHR
+#endif
+#ifdef HAVE_SETENV
+#undef HAVE_SETENV
+#endif
+#ifdef HAVE_SYS_IOCTL_H
+#undef HAVE_SYS_IOCTL_H
+#endif
+#ifdef HAVE_SYS_MMAN_H
+#undef HAVE_SYS_MMAN_H
+#endif
+#ifdef HAVE_SYS_SELECT_H
+#undef HAVE_SYS_SELECT_H
+#endif
+#ifdef HAVE_SYS_TIME_H
+#undef HAVE_SYS_TIME_H
+#endif
+
+#include "config.h"
+
 #include <gvc/gvc.h>
 #include <gvc/gvplugin.h>
 #include <gvc/gvcjob.h>

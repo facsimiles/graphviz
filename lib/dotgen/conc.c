@@ -13,6 +13,8 @@
  *	build edge_t concentrators for parallel edges with a common endpoint
  */
 
+#include "config.h"
+
 #include	<dotgen/dot.h>
 #include	<stdbool.h>
 

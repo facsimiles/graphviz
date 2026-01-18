@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <sparse/general.h>
 #include <sparse/SparseMatrix.h>
 #include <mingle/nearest_neighbor_graph_ann.h>

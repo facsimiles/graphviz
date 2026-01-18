@@ -8,6 +8,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
 
 /* dbg.c:
  * Written by Emden R. Gansner

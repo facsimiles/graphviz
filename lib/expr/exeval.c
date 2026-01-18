@@ -15,6 +15,8 @@
  * expression library evaluator
  */
 
+#include "config.h"
+
 #include <expr/exlib.h>
 #include <expr/exop.h>
 #include <inttypes.h>

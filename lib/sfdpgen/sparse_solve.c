@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <assert.h>
 #include <string.h>
 #include <sfdpgen/sparse_solve.h>

@@ -15,6 +15,7 @@
  * Adaptagrams repository.
  */
 
+#include "config.h"
 
 #include <iostream>
 #include <vpsc/variable.h>

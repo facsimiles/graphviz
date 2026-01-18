@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>

@@ -42,6 +42,8 @@
  *	written 3/2/79, revised and enhanced 8/9/83.
  */
 
+#include "config.h"
+
 #include <math.h>
 #include <neatogen/neato.h>
 #include <util/alloc.h>

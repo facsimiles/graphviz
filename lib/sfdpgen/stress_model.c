@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <sfdpgen/post_process.h>
 #include <sfdpgen/spring_electrical.h>
 #include <sfdpgen/stress_model.h>

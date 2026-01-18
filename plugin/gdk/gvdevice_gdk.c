@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <assert.h>
 #include <gvc/gvplugin_device.h>
 #include <gvc/gvio.h>

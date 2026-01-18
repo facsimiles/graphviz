@@ -25,6 +25,8 @@
  * along with a map of the components.
  */
 
+#include "config.h"
+
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>

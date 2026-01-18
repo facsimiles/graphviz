@@ -5,6 +5,8 @@
 #error this is not intended to be compiled with assertions off
 #endif
 
+#define NO_CONFIG // suppress include of config.h in arena.c
+
 #include <assert.h>
 #include <limits.h>
 #include <stdint.h>

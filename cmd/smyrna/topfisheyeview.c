@@ -7,6 +7,9 @@
  *
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
+
+#include "config.h"
+
 #include "topfisheyeview.h"
 #include <math.h>
 #include "viewport.h"

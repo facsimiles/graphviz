@@ -23,6 +23,8 @@
  *  watch out for interactions between leaves and clusters.
  */
 
+#include "config.h"
+
 #include	<dotgen/dot.h>
 #include	<limits.h>
 #include	<stdbool.h>

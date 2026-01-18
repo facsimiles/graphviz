@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "hotkeymap.h"
 #include <stdint.h>
 #include <util/alloc.h>

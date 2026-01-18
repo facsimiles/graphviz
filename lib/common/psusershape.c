@@ -10,6 +10,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <sys/stat.h>
 #include <common/render.h>
 #include <gvc/gvio.h>

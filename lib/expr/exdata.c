@@ -15,6 +15,8 @@
  * expression library readonly tables
  */
 
+#include "config.h"
+
 static const char id[] = "\n@(#)$Id: libexpr (AT&T Research) 2011-06-30 $\0\n";
 
 #include <expr/exlib.h>

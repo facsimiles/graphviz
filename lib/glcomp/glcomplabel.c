@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <glcomp/glcomplabel.h>
 #include <glcomp/glcompfont.h>
 #include <glcomp/glcompset.h>

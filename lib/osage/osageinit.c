@@ -14,6 +14,8 @@
  * Written by Emden R. Gansner
  */
 
+#include "config.h"
+
 #include    <assert.h>
 #include    <common/geomprocs.h>
 #include    <common/render.h>

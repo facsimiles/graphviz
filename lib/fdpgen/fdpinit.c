@@ -13,6 +13,7 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
 
 /* fdpinit.c:
  * Written by Emden R. Gansner

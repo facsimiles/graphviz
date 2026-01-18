@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "glcompui.h"
 #include <glcomp/glcompbutton.h>
 #include <glcomp/glcomppanel.h>

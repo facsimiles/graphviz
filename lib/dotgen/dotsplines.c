@@ -12,6 +12,8 @@
  * set edge splines.
  */
 
+#include "config.h"
+
 #include <assert.h>
 #include <common/boxes.h>
 #include <dotgen/dot.h>

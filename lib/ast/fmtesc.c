@@ -15,6 +15,8 @@
  * return string with expanded escape chars
  */
 
+#include "config.h"
+
 #include <ast/ast.h>
 #include <stdbool.h>
 #include <stdlib.h>

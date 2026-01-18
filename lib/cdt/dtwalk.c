@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <cdt/dthdr.h>
 
 /*	Walk a dictionary and all dictionaries viewed through it.

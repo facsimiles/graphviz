@@ -13,6 +13,8 @@
  * Break cycles in a directed graph by depth-first search.
  */
 
+#include "config.h"
+
 #include <dotgen/dot.h>
 #include <stdbool.h>
 #include <stddef.h>

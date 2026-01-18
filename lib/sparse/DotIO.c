@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #define STANDALONE
 #include <sparse/general.h>
 #include <sparse/DotIO.h>

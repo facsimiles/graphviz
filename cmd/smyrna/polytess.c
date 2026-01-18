@@ -8,6 +8,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include "polytess.h"
 #include <stddef.h>
 #include <util/alloc.h>

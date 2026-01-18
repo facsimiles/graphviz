@@ -8,8 +8,10 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
-#include "mdichild.h"
+#include "config.h"
+
 #include "mainwindow.h"
+#include "mdichild.h"
 #include <QtGlobal>
 #include <QtWidgets>
 #include <memory>

@@ -14,6 +14,8 @@
  *
  */
 
+#include "config.h"
+
 #include <gvpr/gprstate.h>
 #include <ast/error.h>
 #include <stdbool.h>

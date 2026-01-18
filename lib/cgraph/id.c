@@ -12,6 +12,8 @@
  * Contributors: Details at https://graphviz.org
  *************************************************************************/
 
+#include "config.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>

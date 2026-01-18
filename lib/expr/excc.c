@@ -15,6 +15,8 @@
  * expression library C program generator
  */
 
+#include "config.h"
+
 #include <expr/exlib.h>
 #include <stdio.h>
 #include <stdlib.h>

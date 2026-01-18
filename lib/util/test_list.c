@@ -5,6 +5,8 @@
 #error "this is not intended to be compiled with assertions off"
 #endif
 
+#define NO_CONFIG // suppress include of config.h in list.c
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

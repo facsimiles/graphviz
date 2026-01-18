@@ -16,6 +16,8 @@
  * an edge, starting from a list of control points.
  */
 
+#include "config.h"
+
 #include <math.h>
 #include <common/geomprocs.h>
 #include <common/render.h>
