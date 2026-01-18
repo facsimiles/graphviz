@@ -75,13 +75,8 @@ color_lab RGB2LAB(color_rgb color){
 
 void LAB2RGB_real_01(double *color){
   /* convert an array[3] of LAB colors to RGB between 0 to 1, in place */
-  color_rgb rgb;
-  color_lab lab;
-
-  lab.l = color[0];
-  lab.a = color[1];
-  lab.b = color[2];
-  rgb = LAB2RGB(lab);
+  const color_lab lab = {.l = color[0], .a = color[1], .b = color[2]};
+  const color_rgb rgb = LAB2RGB(lab);
   color[0] = rgb.r/255;
   color[1] = rgb.g/255;
   color[2] = rgb.b/255;

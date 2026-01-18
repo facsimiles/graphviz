@@ -16,11 +16,13 @@
 #include <edgepaint/node_distinct_coloring.h>
 #include <edgepaint/lab.h>
 #include <edgepaint/furtherest_point.h>
+#include <math.h>
 #include <sparse/color_palette.h>
 #include <stdbool.h>
 #include <string.h>
 #include <util/alloc.h>
 #include <util/debug.h>
+#include <util/gv_math.h>
 #include <util/random.h>
 
 static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
@@ -30,22 +32,15 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
                                              double *color_diff0,
                                              double *color_diff_sum0) {
   /* here we assume the graph is connected. And that the matrix is symmetric */
-  int i, j, *ia, *ja, n, k = 0;
-  int max_level;
-  double center[3];
-  double width;
-  double *a = NULL;
   double dist_max;
-  double color_diff = 0, color_diff_old;
-  double color_diff_sum = 0, color_diff_sum_old, *cc;
+  double *cc;
   int iter = 0;
   static const int iter_max = 100;
-  double cspace_size = 0.7;
-  double red[3], black[3], min;
+  double red[3];
+  double black[] = {0, 0, 0};
 
   assert(accuracy > 0);
-  max_level = MAX(1, -log(accuracy)/log(2.));
-  max_level = MIN(30, max_level);
+  const int max_level = d2i(fmin(30, fmax(1, -log(accuracy) / log(2.))));
 
   {
     color_rgb rgb = { .r = 255*0.5, .g = 0, .b = 0 };
@@ -53,63 +48,64 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
     red[0] = lab.l; red[1] = lab.a; red[2] = lab.b;
   }
 
-  n = A->m;
+  const int n = A->m;
   if (n == 1){
     if (scheme == COLOR_LAB){
       assert(qt);
-      QuadTree_get_nearest(qt, black, colors, &(int){0}, &min);
+      QuadTree_get_nearest(qt, black, colors, &(int){0}, &(double){0});
       LAB2RGB_real_01(colors);
       *color_diff0 = 1000; *color_diff_sum0 = 1000;
     } else {
-      for (i = 0; i < cdim; i++) colors[i] = 0;
+      for (int i = 0; i < cdim; i++) colors[i] = 0;
       *color_diff0 = sqrt(cdim); *color_diff_sum0 = sqrt(cdim); 
     }
     return;
   } else if (n == 2){
     if (scheme == COLOR_LAB){
       assert(qt);
-      QuadTree_get_nearest(qt, black, colors, &(int){0}, &min);
+      QuadTree_get_nearest(qt, black, colors, &(int){0}, &(double){0});
       LAB2RGB_real_01(colors);
 
-      QuadTree_get_nearest(qt, red, colors+cdim, &(int){0}, &min);
+      QuadTree_get_nearest(qt, red, colors+cdim, &(int){0}, &(double){0});
       LAB2RGB_real_01(colors+cdim);
       *color_diff0 = 1000; *color_diff_sum0 = 1000;
 
     } else {
-      for (i = 0; i < cdim; i++) colors[i] = 0;
-      for (i = 0; i < cdim; i++) colors[cdim+i] = 0;
+      for (int i = 0; i < cdim; i++) colors[i] = 0;
+      for (int i = 0; i < cdim; i++) colors[cdim+i] = 0;
       colors[cdim] = 0.5;
       *color_diff0 = sqrt(cdim); *color_diff_sum0 = sqrt(cdim); 
     }
      return;
   }
   assert(n == A->m);
-  ia = A->ia;
-  ja = A->ja;
-  if (A->type == MATRIX_TYPE_REAL && A->a){
-    a = A->a;
-  } 
+  const int *ia = A->ia;
+  const int *ja = A->ja;
+  const double *const a = A->type == MATRIX_TYPE_REAL ? A->a : NULL;
 
   /* cube [0, cspace_size]^3: only uised if not LAB */
-  center[0] = center[1] = center[2] = cspace_size*0.5;
-  width = cspace_size*0.5;
+  const double cspace_size = 0.7;
+  double center[] = {cspace_size * 0.5, cspace_size * 0.5, cspace_size * 0.5};
+  const double width = cspace_size * 0.5;
 
   /* randomly assign colors first */
   srand(seed);
-  for (i = 0; i < n*cdim; i++) colors[i] = cspace_size*drand();
+  for (int i = 0; i < n*cdim; i++) colors[i] = cspace_size*drand();
 
   double *x = gv_calloc(cdim * n, sizeof(double));
   double *wgt = weightedQ ? gv_calloc(n, sizeof(double)) : NULL;
 
-  color_diff = 0; color_diff_old = -1;
-  color_diff_sum = 0; color_diff_sum_old = -1;
+  double color_diff = 0;
+  double color_diff_old = -1;
+  double color_diff_sum = 0;
+  double color_diff_sum_old = -1;
 
   while (iter++ < iter_max && (color_diff > color_diff_old || (color_diff == color_diff_old && color_diff_sum > color_diff_sum_old))){
     color_diff_old = color_diff;
     color_diff_sum_old = color_diff_sum;
-    for (i = 0; i < n; i++){
-      k = 0;
-      for (j = ia[i]; j < ia[i+1]; j++){
+    for (int i = 0; i < n; i++){
+      int k = 0;
+      for (int j = ia[i]; j < ia[i+1]; j++){
 	if (ja[j] == i) continue;
 	memcpy(&(x[k*cdim]), &(colors[ja[j]*cdim]), sizeof(double)*cdim);
 	if (wgt && a) wgt[k] = a[j];
@@ -138,11 +134,11 @@ static void node_distinct_coloring_internal2(int scheme, QuadTree qt,
 
   if (scheme == COLOR_LAB){
     /* convert from LAB to RGB */
-    color_rgb rgb;
-    color_lab lab;
-    for (i = 0; i < n; i++){
-      lab = color_lab_init(colors[i*cdim], colors[i*cdim+1], colors[i*cdim+2]);
-      rgb = LAB2RGB(lab);
+    for (int i = 0; i < n; i++){
+      const color_lab lab = color_lab_init(colors[i * cdim],
+                                           colors[i * cdim + 1],
+                                           colors[i * cdim + 2]);
+      const color_rgb rgb = LAB2RGB(lab);
       colors[i*cdim] = (rgb.r)/255;
       colors[i*cdim+1] = (rgb.g)/255;
       colors[i*cdim+2] = (rgb.b)/255;
