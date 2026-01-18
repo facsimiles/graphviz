@@ -11,12 +11,13 @@ import pytest
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
     compile_c,
-    is_mingw,
-    is_macos,
     has_cflag,
+    is_macos,
+    is_mingw,
     run,
     run_c,
 )
+
 
 @pytest.mark.parametrize("threads", ("C11 threads", "pthreads", "no threads"))
 @pytest.mark.parametrize("cas", ("FORCE_CAS=1", "FORCE_CAS=0", "FORCE_CAS auto"))
@@ -68,6 +69,7 @@ def test_dword(threads: str, cas: str):
             link += [libatomic.strip()]
 
     run_c(src, cflags=cflags, link=link)
+
 
 @pytest.mark.parametrize("utility", ("arena", "bitarray", "itos", "list", "tokenize"))
 def test_utility(utility: str):

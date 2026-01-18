@@ -7,16 +7,16 @@
 
 #define NO_CONFIG // suppress include of config.h in dword.c
 
-#include <util/dword.c>
 #include <assert.h>
+#include <stdatomic.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <util/unused.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdatomic.h>
+#include <util/dword.c>
 #include <util/prisize_t.h>
+#include <util/unused.h>
 
 #ifdef USE_C11_THREADS
 #include <threads.h>
@@ -25,9 +25,7 @@
 #endif
 
 /// compare 2 dwords
-static bool eq(dword_t a, dword_t b) {
-  return memcmp(&a, &b, sizeof(a)) == 0;
-}
+static bool eq(dword_t a, dword_t b) { return memcmp(&a, &b, sizeof(a)) == 0; }
 
 #if 0
 static void set(_Atomic dword_t *dst, int8_t src) {
@@ -50,7 +48,7 @@ static dword_t make(void) {
 #endif
 
 typedef struct {
-  _Atomic dword_t * ptr;
+  _Atomic dword_t *ptr;
   dword_t init_val;
   size_t thread_id;
   size_t n_threads;
@@ -71,12 +69,12 @@ static void test_load(ctxt_t *ctxt) {
 
 /// `gv_dword_atomic_store` should write as expected
 static void test_store(ctxt_t *ctxt) {
-  
+
   // derive an arbitrary different value to the initial one
   dword_t new;
   {
-    char *const d = (char*)&new;
-    const char *const s = (char*)&ctxt->init_val;
+    char *const d = (char *)&new;
+    const char *const s = (char *)&ctxt->init_val;
     for (size_t i = 0; i < sizeof(dword_t); ++i) {
       d[i] = s[sizeof(dword_t) - i - 1];
     }
@@ -116,18 +114,19 @@ static void test_cas(ctxt_t *ctxt) {
 
   // try to swap in our ID, expecting the previous thread to write its ID first
   while (true) {
-  dword_t previous;
-  memset(&previous, 0, sizeof(previous));
-  memcpy(&previous, &(uint8_t){(uint8_t)(ctxt->thread_id - 1)}, 1);
-  if (gv_dword_atomic_cas(ctxt->ptr, &previous, thread_id)) {
-    break;
-  }
+    dword_t previous;
+    memset(&previous, 0, sizeof(previous));
+    memcpy(&previous, &(uint8_t){(uint8_t)(ctxt->thread_id - 1)}, 1);
+    if (gv_dword_atomic_cas(ctxt->ptr, &previous, thread_id)) {
+      break;
+    }
   }
 }
 
 static void test_cas_fail(ctxt_t *ctxt) {
 
-  // derive an arbitrary different value to the initial one based on our thread ID
+  // derive an arbitrary different value to the initial one based on our thread
+  // ID
   assert(ctxt->thread_id <= UINT8_MAX && "thread ID will not fit in a byte");
   dword_t new;
   memset(&new, 0, sizeof(new));
@@ -142,7 +141,7 @@ static void test_cas_fail(ctxt_t *ctxt) {
   assert(!eq(new, expect));
 
   // CAS should fail because we know it differs from the initial value
-  const bool r  =gv_dword_atomic_cas(ctxt->ptr, &expect, new);
+  const bool r = gv_dword_atomic_cas(ctxt->ptr, &expect, new);
   assert(!r && "CAS succeeded with mismatching expectation");
 
   // our expectation should have been updated with the old value
@@ -155,7 +154,8 @@ static void test_cas_fail(ctxt_t *ctxt) {
 
 static void test_xchg(ctxt_t *ctxt) {
 
-  // derive an arbitrary different value to the initial one based on our thread ID
+  // derive an arbitrary different value to the initial one based on our thread
+  // ID
   assert(ctxt->thread_id <= UINT8_MAX && "thread ID will not fit in a byte");
   dword_t new;
   memset(&new, 0, sizeof(new));
@@ -175,20 +175,19 @@ static void test_xchg(ctxt_t *ctxt) {
       if (i == ctxt->thread_id)
         continue;
       dword_t them;
-  memset(&them, 0, sizeof(them));
-  memcpy(&them, &i, 1);
-  if (eq(old, them)) {
-    ok = true;
-    break;
-  }
+      memset(&them, 0, sizeof(them));
+      memcpy(&them, &i, 1);
+      if (eq(old, them)) {
+        ok = true;
+        break;
+      }
     }
   }
   assert(ok && "xchg returned unexpected value");
-
 }
 
 typedef struct {
-  void (*test)(ctxt_t*);
+  void (*test)(ctxt_t *);
   ctxt_t ctxt;
 } mt_t;
 
@@ -220,51 +219,55 @@ static bool run_mt(void (*test)(ctxt_t *), size_t n_threads) {
   mt_t *const mt = calloc(n_threads, sizeof(mt[0]));
   assert(mt != NULL && "out of memory");
   for (size_t i = 0; i < n_threads; ++i) {
-    mt[i] = (mt_t){.test = test, .ctxt = (ctxt_t){.ptr = &reference, .init_val = val, .thread_id = i, .n_threads = n_threads}};
+    mt[i] = (mt_t){.test = test,
+                   .ctxt = (ctxt_t){.ptr = &reference,
+                                    .init_val = val,
+                                    .thread_id = i,
+                                    .n_threads = n_threads}};
   }
 
 #ifdef USE_C11_THREADS
-{
-  thrd_t *const thread = calloc(n_threads, sizeof(thread[0]));
-  assert(thread != NULL);
+  {
+    thrd_t *const thread = calloc(n_threads, sizeof(thread[0]));
+    assert(thread != NULL);
 
-  // start the number of requested threads
-  for (size_t i = 0; i < n_threads; ++i) {
-    const int r = thrd_create(&thread[i], mt_trampoline, &mt[i]);
-    assert(r == thrd_success);
+    // start the number of requested threads
+    for (size_t i = 0; i < n_threads; ++i) {
+      const int r = thrd_create(&thread[i], mt_trampoline, &mt[i]);
+      assert(r == thrd_success);
+    }
+
+    // wait for them to finish
+    for (size_t i = 0; i < n_threads; ++i) {
+      int rc;
+      const int r = thrd_join(thread[i], &rc);
+      assert(r == thrd_success);
+      assert(rc == 0);
+    }
+
+    free(thread);
   }
-
-  // wait for them to finish
-  for (size_t i = 0; i < n_threads; ++i) {
-    int rc;
-    const int r = thrd_join(thread[i], &rc);
-    assert(r == thrd_success);
-    assert(rc == 0);
-  }
-
-  free(thread);
-}
 #elif defined(USE_PTHREADS)
-{
-  pthread_t *const thread = calloc(n_threads, sizeof(thread[0]));
-  assert(thread != NULL);
+  {
+    pthread_t *const thread = calloc(n_threads, sizeof(thread[0]));
+    assert(thread != NULL);
 
-  // start the number of requested threads
-  for (size_t i = 0; i < n_threads; ++i) {
-    const int r = pthread_create(&thread[i], NULL, mt_trampoline, &mt[i]);
-    assert(r == 0);
+    // start the number of requested threads
+    for (size_t i = 0; i < n_threads; ++i) {
+      const int r = pthread_create(&thread[i], NULL, mt_trampoline, &mt[i]);
+      assert(r == 0);
+    }
+
+    // wait for them to finish
+    for (size_t i = 0; i < n_threads; ++i) {
+      void *rc;
+      const int r = pthread_join(thread[i], &rc);
+      assert(r == 0);
+      assert(rc == NULL);
+    }
+
+    free(thread);
   }
-
-  // wait for them to finish
-  for (size_t i =0; i < n_threads; ++i) {
-    void *rc;
-    const int r = pthread_join(thread[i], &rc);
-    assert(r == 0);
-    assert(rc == NULL);
-  }
-
-  free(thread);
-}
 #else // multi-threading disabled
   // mark test case as skipped
   ret = false;
@@ -278,11 +281,11 @@ static bool run_mt(void (*test)(ctxt_t *), size_t n_threads) {
 static bool run_st(void (*test)(ctxt_t *)) {
   assert(test != NULL);
 
-    _Atomic dword_t reference;
-    /* initialize value to an arbitrary reference constant */ 
-    ctxt_t ctxt = {.ptr = &reference, .init_val = make(), .n_threads = 1}; 
-    atomic_store_explicit(&reference, ctxt.init_val, memory_order_release); 
-test(&ctxt);
+  _Atomic dword_t reference;
+  /* initialize value to an arbitrary reference constant */
+  ctxt_t ctxt = {.ptr = &reference, .init_val = make(), .n_threads = 1};
+  atomic_store_explicit(&reference, ctxt.init_val, memory_order_release);
+  test(&ctxt);
 
   return true;
 }
@@ -300,39 +303,39 @@ static bool run(void (*test)(ctxt_t *), size_t n_threads) {
 
 int main(void) {
 
-#define RUN(testcase, thread_count) \
-do { \
-  const size_t n_threads = (thread_count); \
-    printf("running test_%s", #testcase);                                         \
-    if (n_threads > 1) { \
-      printf(" with %" PRISIZE_T " threads...", n_threads); \
-    } else { \
-    printf(" single threaded..."); \
-    } \
+#define RUN(testcase, thread_count)                                            \
+  do {                                                                         \
+    const size_t n_threads = (thread_count);                                   \
+    printf("running test_%s", #testcase);                                      \
+    if (n_threads > 1) {                                                       \
+      printf(" with %" PRISIZE_T " threads...", n_threads);                    \
+    } else {                                                                   \
+      printf(" single threaded...");                                           \
+    }                                                                          \
     fflush(stdout);                                                            \
-    if (!run(test_##testcase, n_threads)) { \
-      printf("SKIPPED\n"); \
-    } else { \
-    printf("OK\n");                                                            \
-    } \
+    if (!run(test_##testcase, n_threads)) {                                    \
+      printf("SKIPPED\n");                                                     \
+    } else {                                                                   \
+      printf("OK\n");                                                          \
+    }                                                                          \
   } while (0)
 
-RUN(init, 1);
-RUN(load, 1);
-RUN(load, 2);
-RUN(load, 10);
-RUN(store, 1);
-RUN(store, 2);
-RUN(store, 10);
-RUN(cas, 1);
-RUN(cas, 2);
-RUN(cas, 10);
-RUN(cas_fail, 1);
-RUN(cas_fail, 2);
-RUN(cas_fail, 10);
-RUN(xchg, 1);
-RUN(xchg, 2);
-RUN(xchg, 10);
+  RUN(init, 1);
+  RUN(load, 1);
+  RUN(load, 2);
+  RUN(load, 10);
+  RUN(store, 1);
+  RUN(store, 2);
+  RUN(store, 10);
+  RUN(cas, 1);
+  RUN(cas, 2);
+  RUN(cas, 10);
+  RUN(cas_fail, 1);
+  RUN(cas_fail, 2);
+  RUN(cas_fail, 10);
+  RUN(xchg, 1);
+  RUN(xchg, 2);
+  RUN(xchg, 10);
 
 #undef RUN
 

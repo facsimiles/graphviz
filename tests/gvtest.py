@@ -285,6 +285,7 @@ def has_cflag(flag: str) -> bool:
             return False
     return True
 
+
 def is_asan_instrumented(binary: Path) -> bool:
     """
     is the given binary using Address Sanitizer?
