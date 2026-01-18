@@ -280,6 +280,7 @@ def build_system() -> str:
 
 
 def has_cflag(flag: str) -> bool:
+    """does the C compiler support the given command line option?"""
     with tempfile.TemporaryDirectory() as t:
         tmp = Path(t)
 

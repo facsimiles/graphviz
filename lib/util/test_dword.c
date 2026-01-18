@@ -1,5 +1,21 @@
 /// @file
 /// @brief Unit tester for dword.c
+///
+/// This tester comes in three variants:
+///   1. use C11 threads for multi-threading
+///   2. use POSIX threads for multi-threading
+///   3. disable multi-threaded test cases
+///
+/// Should you need to compile it standalone,
+///
+///   ${CC} -std=c17 -I lib lib/util/test_dword.c -latomic
+///
+/// On x86-64, add `-mcx16`. For (1), add `-DUSE_C11_THREADS`. For (2), add
+/// `-DUSE_PTHREADS -pthread`. Otherwise you will get (3).
+///
+/// dword.c does some gymnastics to be lock-free. This tester does not. It
+/// assumes you will be linking against libatomic (`-latomic`) and taking locks
+/// is OK.
 
 #ifdef NDEBUG
 #error "this is not intended to be compiled with assertions off"
@@ -27,13 +43,11 @@
 /// compare 2 dwords
 static bool eq(dword_t a, dword_t b) { return memcmp(&a, &b, sizeof(a)) == 0; }
 
-#if 0
-static void set(_Atomic dword_t *dst, int8_t src) {
-  dword_t s = dword_new();
-  memcpy(&s, &src, sizeof(src));
-  atomic_store_explicit(dst, s, memory_order_release);
-}
-#else
+/// create a dword with an arbitrary reference value
+///
+/// The exact value, including its interpretation in little endian vs big
+/// endian, is irrelevant. We just need it to be some known, non-zero bit
+/// pattern.
 static dword_t make(void) {
   dword_t ret = gv_dword_new();
 
@@ -45,13 +59,13 @@ static dword_t make(void) {
 
   return ret;
 }
-#endif
 
+/// context provided to test cases
 typedef struct {
-  _Atomic dword_t *ptr;
-  dword_t init_val;
-  size_t thread_id;
-  size_t n_threads;
+  _Atomic dword_t *ptr; ///< pointer to a dword to operate on for testing
+  dword_t init_val;     ///< initial value of `*ptr`
+  size_t thread_id;     ///< our thread index
+  size_t n_threads;     ///< the total number of threads
 } ctxt_t;
 
 /// initialization should always set the same value
@@ -92,10 +106,11 @@ static void test_store(ctxt_t *ctxt) {
   assert(eq(result, new));
 }
 
+/// CAS should work as expected
 static void test_cas(ctxt_t *ctxt) {
 
-  // Construct a `dword_t` that is our thread ID. Little endian vs big endian
-  // does not matter here as we will only deal with one byte of the `dword_t`.
+  // Construct a dword that is our thread ID. Little endian vs big endian does
+  // not matter here as we will only deal with one byte of the dword.
   assert(ctxt->thread_id <= UINT8_MAX && "thread ID will not fit in a byte");
   dword_t thread_id;
   memset(&thread_id, 0, sizeof(thread_id));
@@ -112,7 +127,9 @@ static void test_cas(ctxt_t *ctxt) {
     return;
   }
 
-  // try to swap in our ID, expecting the previous thread to write its ID first
+  // Try to swap in our ID, expecting the previous thread to write its ID first.
+  // If we have made a mistake, the failure mode of this test case will usually
+  // be for this to loop forever on some threads.
   while (true) {
     dword_t previous;
     memset(&previous, 0, sizeof(previous));
@@ -123,6 +140,7 @@ static void test_cas(ctxt_t *ctxt) {
   }
 }
 
+/// a failing CAS should not modify the original value
 static void test_cas_fail(ctxt_t *ctxt) {
 
   // derive an arbitrary different value to the initial one based on our thread
@@ -152,6 +170,7 @@ static void test_cas_fail(ctxt_t *ctxt) {
   assert(eq(stored, ctxt->init_val) && "failing CAS stored to destination");
 }
 
+/// exchange should work as expected
 static void test_xchg(ctxt_t *ctxt) {
 
   // derive an arbitrary different value to the initial one based on our thread
@@ -166,7 +185,7 @@ static void test_xchg(ctxt_t *ctxt) {
   const dword_t old = gv_dword_atomic_xchg(ctxt->ptr, new);
 
   // we should have seen either the initial value or something written by a
-  // thread that is now ourselves
+  // thread that is not ourselves
   bool ok = false;
   if (eq(old, ctxt->init_val)) {
     ok = true;
@@ -186,17 +205,21 @@ static void test_xchg(ctxt_t *ctxt) {
   assert(ok && "xchg returned unexpected value");
 }
 
+/// context for `mt_trampoline`
 typedef struct {
-  void (*test)(ctxt_t *);
-  ctxt_t ctxt;
+  void (*test)(ctxt_t *); ///< test case to run
+  ctxt_t ctxt;            ///< context to pass to the test case
 } mt_t;
 
+/// handle `pthread_create` vs `thrd_create` differences
 #ifdef USE_C11_THREADS
 #define TRAMPOLINE_RET_TYPE int
 #else
 #define TRAMPOLINE_RET_TYPE void *
 #endif
 
+/// a thunk to handle the calling convention difference between thread creation
+/// APIs and our test cases
 static UNUSED TRAMPOLINE_RET_TYPE mt_trampoline(void *arg) {
   assert(arg != NULL);
   mt_t *s = arg;
@@ -204,6 +227,11 @@ static UNUSED TRAMPOLINE_RET_TYPE mt_trampoline(void *arg) {
   return 0;
 }
 
+/// run a multi-threaded test case
+///
+/// @param test Test case to run
+/// @param n_threads Number of threads to create
+/// @return False if the test was skipped
 static bool run_mt(void (*test)(ctxt_t *), size_t n_threads) {
   assert(test != NULL);
   assert(n_threads > 1);
@@ -278,18 +306,22 @@ static bool run_mt(void (*test)(ctxt_t *), size_t n_threads) {
   return ret;
 }
 
+/// run a single-threaded test case
 static bool run_st(void (*test)(ctxt_t *)) {
   assert(test != NULL);
 
+  // initialize reference location to an arbitrary value
   _Atomic dword_t reference;
-  /* initialize value to an arbitrary reference constant */
-  ctxt_t ctxt = {.ptr = &reference, .init_val = make(), .n_threads = 1};
-  atomic_store_explicit(&reference, ctxt.init_val, memory_order_release);
+  const dword_t val = make();
+  atomic_store_explicit(&reference, val, memory_order_release);
+
+  ctxt_t ctxt = {.ptr = &reference, .init_val = val, .n_threads = 1};
   test(&ctxt);
 
   return true;
 }
 
+/// run a test case
 static bool run(void (*test)(ctxt_t *), size_t n_threads) {
   assert(test != NULL);
   assert(n_threads > 0);

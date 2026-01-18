@@ -22,8 +22,15 @@ from gvtest import (  # pylint: disable=wrong-import-position
 @pytest.mark.parametrize("threads", ("C11 threads", "pthreads", "no threads"))
 @pytest.mark.parametrize("cas", ("FORCE_CAS=1", "FORCE_CAS=0", "FORCE_CAS auto"))
 def test_dword(threads: str, cas: str):
-    """run the unit tests of ../lib/util/dword.c"""
+    """
+    run the unit tests of ../lib/util/dword.c
 
+    Args:
+        threads: What library to back multi-threading with
+        cas: Whether/how to force the CAS workaround in dword.c
+    """
+
+    # skip inapplicable combinations
     if threads == "C11 threads":
         if is_macos():
             pytest.skip("macOS does not support C11 threads")
@@ -34,7 +41,7 @@ def test_dword(threads: str, cas: str):
             pytest.skip("Windows does not support pthreads")
 
     # locate the unit tests
-    src = Path(__file__).parent.resolve() / f"../lib/util/test_dword.c"
+    src = Path(__file__).parent.resolve() / "../lib/util/test_dword.c"
     assert src.exists()
 
     # locate lib directory that needs to be in the include path
@@ -66,7 +73,7 @@ def test_dword(threads: str, cas: str):
         except subprocess.CalledProcessError:
             libatomic = ""
         if Path(libatomic).is_absolute():
-            link += [libatomic.strip()]
+            link += ["atomic"]
 
     run_c(src, cflags=cflags, link=link)
 
