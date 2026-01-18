@@ -80,15 +80,13 @@ bool gv_dword_atomic_cas(_Atomic dword_t *dst, dword_t *expected,
 
 dword_t gv_dword_atomic_xchg(_Atomic dword_t *dst, dword_t src) {
   assert(dst != NULL);
-#if FORCE_CAS || defined(_WIN64) // there is no `_InterlockedExchange128`
+#if FORCE_CAS || defined(_WIN32)
   {
     dword_t old = gv_dword_new();
     while (!gv_dword_atomic_cas(dst, &old, src)) {
     }
     return old;
   }
-#elif defined(_WIN32)
-  return _InterlockedExchange64(dst, src);
 #else
   return atomic_exchange_explicit(dst, src, memory_order_acq_rel);
 #endif
