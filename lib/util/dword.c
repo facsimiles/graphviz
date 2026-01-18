@@ -1,3 +1,7 @@
+#ifndef NO_CONFIG // defined by test_dword.c
+#include "config.h"
+#endif
+
 #include <assert.h>
 #include <stdatomic.h>
 #include <stdbool.h>
@@ -24,7 +28,7 @@ dword_t gv_dword_new(void) {
 }
 
 dword_t gv_dword_atomic_load(_Atomic dword_t *src) {
-  assert(dst != NULL);
+  assert(src != NULL);
 #if FORCE_CAS
   return __sync_val_compare_and_swap(src, 1, 1);
 #else
