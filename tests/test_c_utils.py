@@ -36,9 +36,14 @@ def test_dword(threads: str, cas: str):
             pytest.skip("macOS does not support C11 threads")
         if is_mingw():
             pytest.skip("MinGW does not support C11 threads")
-    elif threads == "pthreads":
+    if threads == "pthreads":
         if platform.system() == "Windows" and not is_mingw():
             pytest.skip("Windows does not support pthreads")
+    if cas == "FORCE_CAS=1":
+        if is_macos():
+            pytest.skip("Clang does not support __sync built-ins on _Atomic types")
+        if platform.system() == "Windows" and not is_mingw():
+            pytest.skip("MSVC does not support __sync built-ins")
 
     # locate the unit tests
     src = Path(__file__).parent.resolve() / "../lib/util/test_dword.c"

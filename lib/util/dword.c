@@ -15,12 +15,14 @@
 #ifndef FORCE_CAS
 /// Callers using `dword_t` values are typically implementing lock-free
 /// algorithms. …
-#if defined(__GNUC__) && (defined(__x86_64__) || defined(__i386__) ||          \
-                          (defined(__aarch64__) && !defined(__clang__)))
+#if defined(__GNUC__) && !defined(__clang__) // GCC
+#if defined(__aarch64__) || defined(__i386__) || defined(__x86_64__)
 #define FORCE_CAS 1
-#else
-#define FORCE_CAS 0
 #endif
+#endif
+#endif
+#ifndef FORCE_CAS
+#define FORCE_CAS 0
 #endif
 
 dword_t gv_dword_new(void) {
