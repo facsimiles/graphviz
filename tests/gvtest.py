@@ -280,10 +280,13 @@ def has_cflag(flag: str) -> bool:
         main.write_text("int main(void) { return 0; }", encoding="utf-8")
 
         # try to compile and run it with this flag
+        print(f" --- probing support for C compiler flag '{flag}'..... ---")
         try:
             run_c(main, cflags=[flag])
         except subprocess.CalledProcessError:
+            print(f" --- probing support for C compiler flag '{flag}': no  ---")
             return False
+    print(f" --- probing support for C compiler flag '{flag}': yes ---")
     return True
 
 
