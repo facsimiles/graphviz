@@ -86,12 +86,14 @@ def test_dword(threads: str, cas: str):
     if platform.system() != "Windows" or is_mingw():
         cc = os.environ.get("CC", "cc")
         try:
-            libatomic = run(
-                [cc, "-print-file-name=libatomic.so"], stderr=subprocess.DEVNULL
-            )
+            libatomic = run([cc, "-print-file-name=libatomic.so"])
         except subprocess.CalledProcessError:
             libatomic = ""
-        if Path(libatomic).is_absolute():
+        # Detect if our query mapped to a known file. We need to account for
+        # `is_absolute` on MinGW not recognizing native Windows paths.
+        if Path(libatomic).is_absolute() or (
+            is_mingw() and libatomic.lower().startswith("c:\\")
+        ):
             link += [libatomic.strip()]
 
     run_c(src, cflags=cflags, link=link)
