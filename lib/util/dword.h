@@ -20,13 +20,22 @@ typedef __declspec(align(8)) int64_t dword_t;
 #error "unknown platform pointer size"
 #endif
 
+#ifdef _MSC_VER
+#ifdef _ISO_VOLATILE
+#error "dword atomics require /volatile:ms"
+#endif
+typedef volatile dword_t atomic_dword_t;
+#else
+typedef _Atomic dword_t atomic_dword_t;
+#endif
+
 UTIL_API dword_t gv_dword_new(void);
 
-UTIL_API dword_t gv_dword_atomic_load(_Atomic dword_t *src);
+UTIL_API dword_t gv_dword_atomic_load(atomic_dword_t *src);
 
-UTIL_API void gv_dword_atomic_store(_Atomic dword_t *dst, dword_t src);
+UTIL_API void gv_dword_atomic_store(atomic_dword_t *dst, dword_t src);
 
-UTIL_API bool gv_dword_atomic_cas(_Atomic dword_t *dst, dword_t *expected,
+UTIL_API bool gv_dword_atomic_cas(atomic_dword_t *dst, dword_t *expected,
                                   dword_t desired);
 
-UTIL_API dword_t gv_dword_atomic_xchg(_Atomic dword_t *dst, dword_t src);
+UTIL_API dword_t gv_dword_atomic_xchg(atomic_dword_t *dst, dword_t src);

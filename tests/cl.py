@@ -159,6 +159,11 @@ def make_cmakelists(args: list[str]) -> str:
             i += 1
             continue
 
+        if re.match(r"[\-/]volatile:", args[i]):
+            cflags += [args[i]]
+            i += 1
+            continue
+
         if re.match(r"\w", args[i]):
             sources += [Path(args[i]).absolute()]
             i += 1

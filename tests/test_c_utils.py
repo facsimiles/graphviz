@@ -94,6 +94,9 @@ def test_dword(threads: str, cas: str):
     if has_cflag("-mcx16"):
         cflags += ["-mcx16"]
 
+    if platform.system() == "Windows" and not is_mingw():
+        cflags += ["/volatile:ms"]
+
     # if this platform supports libatomic, conservatively assume we need it
     link = []
     if platform.system() != "Windows" or is_mingw():

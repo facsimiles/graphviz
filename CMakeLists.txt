@@ -788,6 +788,8 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # Studio, when building C that links against C++ (e.g. lib/neatogen/*.c), uses
   # the C++ compiler options instead of the C ones
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /experimental:c11atomics")
+
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /volatile:ms")
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

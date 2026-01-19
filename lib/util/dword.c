@@ -31,16 +31,32 @@ dword_t gv_dword_new(void) {
   return d;
 }
 
-dword_t gv_dword_atomic_load(_Atomic dword_t *src) {
+dword_t gv_dword_atomic_load(atomic_dword_t *src) {
   assert(src != NULL);
 #if FORCE_CAS
   return __sync_val_compare_and_swap(src, 1, 1);
+#elif defined(_M_ARM64)
+  {
+    dword_t result = dword_new();
+    (void)_InterlockedCompareExchange128_acq(src, 0, 0, &result);
+    return result;
+  }
+#elif defined(_WIN64)
+  {
+    dword_t result = dword_new();
+    (void)_InterlockedCompareExchange128(src, 0, 0, &result);
+    return result;
+  }
+#elif defined(_M_ARM)
+  return _InterlockedCompareExchange64_acq(src, 0, 0);
+#elif defined(_WIN32)
+  return _InterlockedCompareExchange64(src, 0, 0);
 #else
   return atomic_load_explicit(src, memory_order_acquire);
 #endif
 }
 
-void gv_dword_atomic_store(_Atomic dword_t *dst, dword_t src) {
+void gv_dword_atomic_store(atomic_dword_t *dst, dword_t src) {
   assert(dst != NULL);
 #if FORCE_CAS
   for (dword_t old = gv_dword_new();;) {
@@ -50,12 +66,29 @@ void gv_dword_atomic_store(_Atomic dword_t *dst, dword_t src) {
       break;
     }
   }
+#elif defined(_WIN64)
+  for (dword_t expected = dword_new();;) {
+    if (_InterlockedCompareExchange128(dst, src.word[1], src.word[0],
+                                       &expected)) {
+      break;
+    }
+  }
+#elif defined(_M_ARM)
+  (void)_InterlockedExchange64_rel(dst, src);
+#elif defined(_WIN32)
+  for (dword_t old = dword_new();;) {
+    const dword_t expected = old;
+    old = _InterlockedCompareExchange64(dst, src, expected);
+    if (old == expected) {
+      break;
+    }
+  }
 #else
   atomic_store_explicit(dst, src, memory_order_release);
 #endif
 }
 
-bool gv_dword_atomic_cas(_Atomic dword_t *dst, dword_t *expected,
+bool gv_dword_atomic_cas(atomic_dword_t *dst, dword_t *expected,
                          dword_t desired) {
   assert(dst != NULL);
   assert(expected != NULL);
@@ -80,9 +113,11 @@ bool gv_dword_atomic_cas(_Atomic dword_t *dst, dword_t *expected,
 #endif
 }
 
-dword_t gv_dword_atomic_xchg(_Atomic dword_t *dst, dword_t src) {
+dword_t gv_dword_atomic_xchg(atomic_dword_t *dst, dword_t src) {
   assert(dst != NULL);
-#if FORCE_CAS || defined(_WIN32)
+#ifdef _M_ARM
+  return _InterlockedExchange64(dst, src);
+#elif FORCE_CAS || defined(_WIN32)
   {
     dword_t old = gv_dword_new();
     while (!gv_dword_atomic_cas(dst, &old, src)) {
