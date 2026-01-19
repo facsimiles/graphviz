@@ -24,7 +24,6 @@
 #define NO_CONFIG // suppress include of config.h in dword.c
 
 #include <assert.h>
-#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -99,7 +98,7 @@ static void test_store(ctxt_t *ctxt) {
   gv_dword_atomic_store(ctxt->ptr, new);
 
   // read back the stored value
-  const dword_t result = atomic_load_explicit(ctxt->ptr, memory_order_acquire);
+  const dword_t result = gv_dword_atomic_load(ctxt->ptr);
 
   // This should be what we wrote, even under multi-threading as all threads are
   // trying to write the same value. That is, we should see no torn writes.
@@ -166,7 +165,7 @@ static void test_cas_fail(ctxt_t *ctxt) {
   assert(eq(expect, ctxt->init_val) && "failing CAS did not read old value");
 
   // the stored value should not have been modified
-  const dword_t stored = atomic_load_explicit(ctxt->ptr, memory_order_acquire);
+  const dword_t stored = gv_dword_atomic_load(ctxt->ptr);
   assert(eq(stored, ctxt->init_val) && "failing CAS stored to destination");
 }
 
@@ -241,7 +240,7 @@ static bool run_mt(void (*test)(ctxt_t *), size_t n_threads) {
   // initialize reference location to an arbitrary value
   atomic_dword_t reference;
   const dword_t val = make();
-  atomic_store_explicit(&reference, val, memory_order_release);
+  gv_dword_atomic_store(&reference, val);
 
   // setup a context per-thread, pointing at the same reference
   mt_t *const mt = calloc(n_threads, sizeof(mt[0]));
@@ -313,7 +312,7 @@ static bool run_st(void (*test)(ctxt_t *)) {
   // initialize reference location to an arbitrary value
   atomic_dword_t reference;
   const dword_t val = make();
-  atomic_store_explicit(&reference, val, memory_order_release);
+  gv_dword_atomic_store(&reference, val);
 
   ctxt_t ctxt = {.ptr = &reference, .init_val = val, .n_threads = 1};
   test(&ctxt);
