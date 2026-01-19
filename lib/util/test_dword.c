@@ -62,10 +62,10 @@ static dword_t make(void) {
 
 /// context provided to test cases
 typedef struct {
-  _Atomic dword_t *ptr; ///< pointer to a dword to operate on for testing
-  dword_t init_val;     ///< initial value of `*ptr`
-  size_t thread_id;     ///< our thread index
-  size_t n_threads;     ///< the total number of threads
+  atomic_dword_t *ptr; ///< pointer to a dword to operate on for testing
+  dword_t init_val;    ///< initial value of `*ptr`
+  size_t thread_id;    ///< our thread index
+  size_t n_threads;    ///< the total number of threads
 } ctxt_t;
 
 /// initialization should always set the same value
@@ -239,7 +239,7 @@ static bool run_mt(void (*test)(ctxt_t *), size_t n_threads) {
   bool ret = true;
 
   // initialize reference location to an arbitrary value
-  _Atomic dword_t reference;
+  atomic_dword_t reference;
   const dword_t val = make();
   atomic_store_explicit(&reference, val, memory_order_release);
 
@@ -311,7 +311,7 @@ static bool run_st(void (*test)(ctxt_t *)) {
   assert(test != NULL);
 
   // initialize reference location to an arbitrary value
-  _Atomic dword_t reference;
+  atomic_dword_t reference;
   const dword_t val = make();
   atomic_store_explicit(&reference, val, memory_order_release);
 
