@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
     compile_c,
     has_cflag,
+    is_rocky_8,
     is_macos,
     is_mingw,
     run,
@@ -57,6 +58,10 @@ def test_dword(threads: str, cas: str):
 
     if threads == "C11 threads":
         cflags += ["-DUSE_C11_THREADS"]
+        # Rocky 8’s compiler (GCC 8.5.0) seems to back C11 threads with pthreads, so we
+        # need that too
+        if is_rocky_8():
+            cflags += ["-pthread"]
     elif threads == "pthreads":
         cflags += ["-pthread", "-DUSE_PTHREADS"]
 
