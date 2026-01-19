@@ -37,6 +37,13 @@ def test_dword(threads: str, cas: str):
             pytest.skip("macOS does not support C11 threads")
         if is_mingw():
             pytest.skip("MinGW does not support C11 threads")
+        if (
+            platform.system() == "Windows"
+            and not is_mingw()
+            and os.environ.get("configuration") == "Debug"
+            and os.environ.get("project_platform") == "Win32"
+        ):
+            pytest.skip("C11 threads do not work in 32-bit Windows Debug builds")
     if threads == "pthreads":
         if platform.system() == "Windows" and not is_mingw():
             pytest.skip("Windows does not support pthreads")
