@@ -105,6 +105,11 @@ static void test_store(ctxt_t *ctxt) {
   // written value regardless of whether the read tears. So do a bare (possibly
   // non-atomic) read.
   const dword_t result = *ctxt->ptr;
+#elif defined(__MINGW32__)
+  // libatomic on MinGW was built without support for 128-bit types. So we need
+  // to force a CMPXCHG16B.
+  // https://github.com/msys2/MINGW-packages/issues/13831
+  const dword_t result = __sync_val_compare_and_swap(ctxt->ptr, 1, 1);
 #else
   const dword_t result = atomic_load_explicit(ctxt->ptr, memory_order_acquire);
 #endif
@@ -180,6 +185,11 @@ static void test_cas_fail(ctxt_t *ctxt) {
   // if this read tears (is not atomic). So do a bare (possibly non-atomic)
   // read.
   const dword_t stored = *ctxt->ptr;
+#elif defined(__MINGW32__)
+  // libatomic on MinGW was built without support for 128-bit types. So we need
+  // to force a CMPXCHG16B.
+  // https://github.com/msys2/MINGW-packages/issues/13831
+  const dword_t stored = __sync_val_compare_and_swap(ctxt->ptr, 1, 1);
 #else
   const dword_t stored = atomic_load_explicit(ctxt->ptr, memory_order_acquire);
 #endif
@@ -262,6 +272,17 @@ static bool run_mt(void (*test)(ctxt_t *), size_t n_threads) {
   // actually need this store to be atomic, so just do a bare (possibly double
   // pumped) write.
   reference = val;
+#elif defined(__MINGW32__)
+  // libatomic on MinGW was built without support for 128-bit types. So we need
+  // to force a CMPXCHG16B.
+  // https://github.com/msys2/MINGW-packages/issues/13831
+  for (dword_t old = gv_dword_new();;) {
+    const dword_t expected = old;
+    old = __sync_val_compare_and_swap(&reference, expected, val);
+    if (old == expected) {
+      break;
+    }
+  }
 #else
   atomic_store_explicit(&reference, val, memory_order_release);
 #endif
@@ -341,6 +362,17 @@ static bool run_st(void (*test)(ctxt_t *)) {
   // actually need this store to be atomic, so just do a bare (possibly double
   // pumped) write.
   reference = val;
+#elif defined(__MINGW32__)
+  // libatomic on MinGW was built without support for 128-bit types. So we need
+  // to force a CMPXCHG16B.
+  // https://github.com/msys2/MINGW-packages/issues/13831
+  for (dword_t old = gv_dword_new();;) {
+    const dword_t expected = old;
+    old = __sync_val_compare_and_swap(&reference, expected, val);
+    if (old == expected) {
+      break;
+    }
+  }
 #else
   atomic_store_explicit(&reference, val, memory_order_release);
 #endif

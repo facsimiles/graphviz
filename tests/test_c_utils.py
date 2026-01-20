@@ -5,7 +5,6 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
-from typing import Union
 
 import pytest
 
@@ -19,18 +18,6 @@ from gvtest import (  # pylint: disable=wrong-import-position
     run,
     run_c,
 )
-
-
-def _is_absolute(path: Union[Path, str]) -> bool:
-    """is the given path absolute?"""
-    if Path(path).is_absolute():
-        return True
-    if is_mingw():
-        if str(path).lower().startswith("c:\\"):
-            return True
-        if str(path).lower().startswith("c:/"):
-            return True
-    return False
 
 
 @pytest.mark.parametrize("threads", ("C11 threads", "pthreads", "no threads"))
@@ -105,9 +92,7 @@ def test_dword(threads: str, cas: str):
             libatomic = run([cc, "-print-file-name=libatomic.so"])
         except subprocess.CalledProcessError:
             libatomic = ""
-        # Detect if our query mapped to a known file. We need to account for
-        # `is_absolute` on MinGW not recognizing native Windows paths.
-        if _is_absolute(libatomic):
+        if Path(libatomic).is_absolute():
             link += [libatomic.strip()]
 
     run_c(src, cflags=cflags, link=link)
