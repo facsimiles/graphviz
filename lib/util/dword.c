@@ -38,13 +38,13 @@ dword_t gv_dword_atomic_load(atomic_dword_t *src) {
 #elif defined(_M_ARM64)
   {
     dword_t result = gv_dword_new();
-    (void)_InterlockedCompareExchange128_acq(src, 0, 0, &result);
+    (void)_InterlockedCompareExchange128_acq(src->word, 0, 0, result.word);
     return result;
   }
 #elif defined(_WIN64)
   {
     dword_t result = gv_dword_new();
-    (void)_InterlockedCompareExchange128(src, 0, 0, &result);
+    (void)_InterlockedCompareExchange128(src->word, 0, 0, result.word);
     return result;
   }
 #elif defined(_M_ARM)
@@ -68,8 +68,8 @@ void gv_dword_atomic_store(atomic_dword_t *dst, dword_t src) {
   }
 #elif defined(_WIN64)
   for (dword_t expected = gv_dword_new();;) {
-    if (_InterlockedCompareExchange128(dst, src.word[1], src.word[0],
-                                       &expected)) {
+    if (_InterlockedCompareExchange128(dst->word, src.word[1], src.word[0],
+                                       expected.word)) {
       break;
     }
   }
@@ -99,8 +99,8 @@ bool gv_dword_atomic_cas(atomic_dword_t *dst, dword_t *expected,
     return *expected == expectation;
   }
 #elif defined(_WIN64)
-  return _InterlockedCompareExchange128(dst, desired.word[1], desired.word[0],
-                                        expected);
+  return _InterlockedCompareExchange128(dst->word, desired.word[1],
+                                        desired.word[0], expected->word);
 #elif defined(_WIN32)
   {
     const dword_t expectation = *expected;

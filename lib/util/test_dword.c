@@ -261,7 +261,7 @@ static bool run_mt(void (*test)(ctxt_t *), size_t n_threads) {
   // MSVC does not like using C11 atomics on non-`_Atomic` variables. We do not
   // actually need this store to be atomic, so just do a bare (possibly double
   // pumped) write.
-  *reference = val;
+  reference = val;
 #else
   atomic_store_explicit(&reference, val, memory_order_release);
 #endif
@@ -340,7 +340,7 @@ static bool run_st(void (*test)(ctxt_t *)) {
   // MSVC does not like using C11 atomics on non-`_Atomic` variables. We do not
   // actually need this store to be atomic, so just do a bare (possibly double
   // pumped) write.
-  *reference = val;
+  reference = val;
 #else
   atomic_store_explicit(&reference, val, memory_order_release);
 #endif
