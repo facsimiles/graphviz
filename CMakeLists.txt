@@ -789,7 +789,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # the C++ compiler options instead of the C ones
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /experimental:c11atomics")
 
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /volatile:ms")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /volatile:ms /w14746")
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

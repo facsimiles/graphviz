@@ -21,7 +21,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
 
 
 @pytest.mark.parametrize("threads", ("C11 threads", "pthreads", "no threads"))
-@pytest.mark.parametrize("cas", ("FORCE_CAS=1", "FORCE_CAS=0", "FORCE_CAS auto"))
+@pytest.mark.parametrize("cas", ("FORCE_CAS=1", "FORCE_CAS=0", "FORCE_CAS=auto"))
 def test_dword(threads: str, cas: str):
     """
     run the unit tests of ../lib/util/dword.c
@@ -39,7 +39,6 @@ def test_dword(threads: str, cas: str):
             pytest.skip("MinGW does not support C11 threads")
         if (
             platform.system() == "Windows"
-            and not is_mingw()
             and os.environ.get("configuration") == "Debug"
             and os.environ.get("project_platform") == "Win32"
         ):
@@ -50,7 +49,11 @@ def test_dword(threads: str, cas: str):
     if cas == "FORCE_CAS=1":
         if is_macos():
             pytest.skip("Clang does not support __sync built-ins on _Atomic types")
-        if platform.system() == "Windows" and not is_mingw():
+        # libatomic on MinGW was built without support for 128-bit types
+        # https://github.com/msys2/MINGW-packages/issues/13831
+        if is_mingw():
+            pytest.skip("MinGW does not support out-of-line 128-bit ops")
+        if platform.system() == "Windows":
             pytest.skip("MSVC does not support __sync built-ins")
 
     # locate the unit tests
