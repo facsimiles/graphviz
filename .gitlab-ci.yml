@@ -85,8 +85,8 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*.tar.xz
-            - Packages/*/*/*.rpm
+            - Packages/*/*.tar.xz
+            - Packages/*/*.rpm
             - Metadata/*/*/configure.log
         reports:
             metrics: metrics.txt
@@ -109,8 +109,8 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*.tar.xz
-            - Packages/*/*/*deb
+            - Packages/*/*.tar.xz
+            - Packages/*/*deb
             - Metadata/*/*/configure.log
         reports:
             metrics: metrics.txt
@@ -135,8 +135,8 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-            - Packages/*/*/*.zip
-            - Packages/*/*/*.pkg
+            - Packages/*/*.zip
+            - Packages/*/*.pkg
         reports:
             metrics: metrics.txt
     except:
@@ -181,8 +181,8 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-        - Packages/*/*/*/*/*.exe
-        - Packages/*/*/*/*/*.zip
+        - Packages/*/*.exe
+        - Packages/*/*.zip
         reports:
             metrics: metrics.txt
             junit: report.xml
@@ -463,7 +463,7 @@ windows-cygwin-build:
         when: always
         expire_in: 1 week
         paths:
-            - Packages/*/*/*.xz
+            - Packages/*/*.xz
     tags:
         - saas-windows-medium-amd64
     except:
@@ -853,8 +853,8 @@ windows-mingw64-cmake-build:
         when: always
         expire_in: 1 week
         paths:
-            - Packages/*/*/*.exe
-            - Packages/*/*/*.zip
+            - Packages/*/*.exe
+            - Packages/*/*.zip
     tags:
         - saas-windows-medium-amd64
     except:
@@ -913,7 +913,7 @@ windows-cygwin-cmake-build:
         when: always
         expire_in: 1 week
         paths:
-            - Packages/*/*/*.bz2
+            - Packages/*/*.bz2
     tags:
         - saas-windows-medium-amd64
     except:
@@ -1209,8 +1209,7 @@ windows-mingw64-cmake-test:
         - $Env:build_system = "cmake"
         - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-install.sh'
         - $Env:graphviz_install_dir = "C:\Graphviz"
-        - $msys2_release = $(C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'uname -r')
-        - Invoke-Expression "./Packages/msys2/$msys2_release/Graphviz-*.exe /S /D=$Env:graphviz_install_dir" | Out-Null
+        - Invoke-Expression "./Packages/windows-mingw64-cmake-build/*.exe /S /D=$Env:graphviz_install_dir" | Out-Null
         - $Env:Path = $Env:graphviz_install_dir + "\bin" + ";" + $Env:Path
         - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-test.sh'
     needs:
