@@ -293,7 +293,6 @@ include("gv.php")
         Syntax("gv.", "(", ", ", ");"),
         """\
 #!/usr/bin/python
-import sys
 import gv""",
     ),
     "R": Lang(
