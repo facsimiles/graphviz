@@ -10,7 +10,16 @@
 
 #include "config.h"
 #include <assert.h>
+#include <common/globals.h>
+#include <common/render.h>
+#include <common/types.h>
+#include <common/usershape.h>
+#include <common/utils.h>
 #include <errno.h>
+#include <gvc/gvcint.h>
+#include <gvc/gvcproc.h>
+#include <gvc/gvplugin.h>
+#include <gvc/gvplugin_loadimage.h>
 #include <limits.h>
 #include <math.h>
 #include <stdbool.h>
@@ -18,25 +27,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <util/agxbuf.h>
+#include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
 #include <util/optional.h>
-
-#include <common/types.h>
-#include <common/usershape.h>
-#include <common/utils.h>
-#include <gvc/gvcint.h>
-#include <gvc/gvcproc.h>
-#include <gvc/gvplugin.h>
-#include <gvc/gvplugin_loadimage.h>
-#include <util/agxbuf.h>
-#include <util/alloc.h>
-#include <util/gv_ctype.h>
+#include <util/streq.h>
 #include <util/strview.h>
-
-extern char *Gvimagepath;
-extern char *HTTPServerEnVar;
-extern shape_desc *find_user_shape(const char *);
 
 static Dict_t *ImageDict;
 
@@ -181,11 +177,9 @@ static imagetype_t imagetype(usershape_t *us) {
 }
 
 static bool get_int_lsb_first(FILE *f, size_t sz, int *val) {
-  int ch;
-
   unsigned value = 0;
   for (size_t i = 0; i < sz; i++) {
-    ch = fgetc(f);
+    const int ch = fgetc(f);
     if (feof(f))
       return false;
     value |= (unsigned)ch << 8 * i;
@@ -198,11 +192,9 @@ static bool get_int_lsb_first(FILE *f, size_t sz, int *val) {
 }
 
 static bool get_int_msb_first(FILE *f, size_t sz, int *val) {
-  int ch;
-
   unsigned value = 0;
   for (size_t i = 0; i < sz; i++) {
-    ch = fgetc(f);
+    const int ch = fgetc(f);
     if (feof(f))
       return false;
     value <<= 8;
@@ -216,19 +208,18 @@ static bool get_int_msb_first(FILE *f, size_t sz, int *val) {
 }
 
 static double svg_units_convert(double n, char *u) {
-  if (strcmp(u, "in") == 0)
+  if (streq(u, "in"))
     return round(n * POINTS_PER_INCH);
-  if (strcmp(u, "px") == 0)
+  if (streq(u, "px"))
     return round(n * POINTS_PER_INCH / 96);
-  if (strcmp(u, "pc") == 0)
+  if (streq(u, "pc"))
     return round(n * POINTS_PER_INCH / 6);
-  if (strcmp(u, "pt") == 0 ||
-      strcmp(u, "\"") == 0) /* ugly!!  - if there are no inits then the %2s get
-                               the trailing '"' */
+  if (streq(u, "pt") || streq(u, "\"")) /* ugly!!  - if there are no inits then
+                                           the %2s get the trailing '"' */
     return round(n);
-  if (strcmp(u, "cm") == 0)
+  if (streq(u, "cm"))
     return round(n * POINTS_PER_CM);
-  if (strcmp(u, "mm") == 0)
+  if (streq(u, "mm"))
     return round(n * POINTS_PER_MM);
   return 0;
 }
@@ -679,21 +670,16 @@ static Dtdisc_t ImageDictDisc = {
 };
 
 usershape_t *gvusershape_find(const char *name) {
-  usershape_t *us;
-
   assert(name);
   assert(name[0]);
 
   if (!ImageDict)
     return NULL;
 
-  us = dtmatch(ImageDict, name);
-  return us;
+  return dtmatch(ImageDict, name);
 }
 
-#define MAX_USERSHAPE_FILES_OPEN 50
 bool gvusershape_file_access(usershape_t *us) {
-  static int usershape_files_open_cnt;
   const char *fn;
 
   assert(us);
@@ -712,10 +698,7 @@ bool gvusershape_file_access(usershape_t *us) {
       agwarningf("%s while opening %s\n", strerror(errno), fn);
       return false;
     }
-    if (usershape_files_open_cnt >= MAX_USERSHAPE_FILES_OPEN)
-      us->nocache = true;
-    else
-      usershape_files_open_cnt++;
+    us->nocache = true;
   }
   assert(us->f);
   return true;
@@ -808,18 +791,14 @@ static usershape_t *gvusershape_open(const char *name) {
  * Return image size in points.
  */
 point gvusershape_size_dpi(usershape_t *us, pointf dpi) {
-  point rv;
-
   if (!us) {
-    rv.x = rv.y = -1;
-  } else {
-    if (us->dpi != 0) {
-      dpi.x = dpi.y = us->dpi;
-    }
-    rv.x = (int)(us->w * POINTS_PER_INCH / dpi.x);
-    rv.y = (int)(us->h * POINTS_PER_INCH / dpi.y);
+    return (point){.x = -1, .y = -1};
   }
-  return rv;
+  if (us->dpi != 0) {
+    dpi.x = dpi.y = us->dpi;
+  }
+  return (point){.x = (int)(us->w * POINTS_PER_INCH / dpi.x),
+                 .y = (int)(us->h * POINTS_PER_INCH / dpi.y)};
 }
 
 /* gvusershape_size:
@@ -827,15 +806,12 @@ point gvusershape_size_dpi(usershape_t *us, pointf dpi) {
  * Return image size in points.
  */
 point gvusershape_size(graph_t *g, char *name) {
-  point rv;
   pointf dpi;
   static char *oldpath;
-  usershape_t *us;
 
   /* no shape file, no shape size */
   if (!name || (*name == '\0')) {
-    rv.x = rv.y = -1;
-    return rv;
+    return (point){.x = -1, .y = -1};
   }
 
   if (!HTTPServerEnVar && (oldpath != Gvimagepath)) {
@@ -851,7 +827,6 @@ point gvusershape_size(graph_t *g, char *name) {
   else
     dpi.x = dpi.y = DEFAULT_DPI;
 
-  us = gvusershape_open(name);
-  rv = gvusershape_size_dpi(us, dpi);
-  return rv;
+  usershape_t *const us = gvusershape_open(name);
+  return gvusershape_size_dpi(us, dpi);
 }
