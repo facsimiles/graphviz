@@ -25,6 +25,12 @@ gvpr_LDADD = $(top_builddir)/lib/gvpr/libgvpr.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_gvpr_SOURCES = fake.cxx
+endif
+
 .1.1.pdf:
 	rm -f $@; pdffile=$@; psfile=$${pdffile%pdf}ps; \
 	$(GROFF) -Tps -man $< > $$psfile || { rm -f $$psfile; exit 1; }; \
