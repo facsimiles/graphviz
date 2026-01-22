@@ -415,6 +415,13 @@ def is_rocky_8() -> bool:
     return is_rocky("8")
 
 
+def is_rocky_10() -> bool:
+    """
+    is the current environment Rocky Linux 10?
+    """
+    return is_rocky("10")
+
+
 def has_sandbox() -> bool:
     """
     do we have an available sandbox mechanism?

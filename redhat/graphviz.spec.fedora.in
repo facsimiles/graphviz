@@ -62,7 +62,11 @@ BuildRequires: libX11-devel freeglut-devel
 BuildRequires: freetype-devel fontconfig-devel cairo-devel pango-devel
 BuildRequires: gmp-devel gd gd-devel librsvg2-devel
 BuildRequires: ghostscript ghostscript-devel poppler-glib-devel libtool-ltdl libtool-ltdl-devel
+%if 0%{?rhel} > 9
+BuildRequires: qt6-qtbase-devel
+%else
 BuildRequires: qt5-qtbase-devel
+%endif
 BuildRequires: ruby ruby-devel lua-devel
 BuildRequires: perl-devel perl-libs tcl tcl-devel tk tk-devel
 BuildRequires: python3 python3-devel
@@ -88,9 +92,9 @@ BuildRequires: gtk2-devel libglade2-devel gtkglext-devel
 %if %{GTS}
 BuildRequires: gts-devel
 %endif
-%if 0%{?fedora} > 0 || 0%{?rhel} >= 9
+%if 0%{?fedora} > 0 || 0%{?rhel} == 9
 BuildRequires: guile30-devel
-%else
+%elif 0%{?rhel} == 8
 BuildRequires: guile-devel
 %endif
 %if %{LASI}
@@ -568,6 +572,7 @@ Go extension for graphviz.
 %endif
 
 #-- graphviz-lang-guile rpm --------------------------------------------
+%if 0%{?fedora} > 0 || 0%{?rhel} == 8 || 0%{?rhel} == 9
 %package lang-guile
 Group:          Applications/Multimedia
 Summary:        Guile extension for graphviz
@@ -587,6 +592,7 @@ Guile extension for graphviz.
 %dir %{_libdir}/graphviz/guile
 %{_libdir}/graphviz/guile/*
 %{_mandir}/man3/*.3guile.*
+%endif
 
 #-- graphviz-lang-java rpm ---------------------------------------------
 %package lang-java
@@ -677,13 +683,13 @@ PHP extension for graphviz.
 %defattr(-,root,root,-)
 %config(noreplace) %{_sysconfdir}/php.d/%{name}.ini
 %{php_extdir}/gv.so
-%if 0%{?rhel}
+%if 0%{?rhel} == 8 || 0%{?rhel} == 9
 %{_datadir}/php*/*
 %endif
 %{_datadir}/graphviz/demo/*.php*
 %{_mandir}/man3/*.3php.*
 %exclude %{_libdir}/graphviz/php/*.so
-%if 0%{?rhel}
+%if 0%{?rhel} == 8 || 0%{?rhel} == 9
 %exclude %{_libdir}/graphviz/php/*.php
 %endif
 %endif
@@ -861,7 +867,9 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --disable-static \
         --disable-dependency-tracking \
         --enable-sharp \
+%if 0%{?fedora} > 0 || 0%{?rhel} == 8 || 0%{?rhel} == 9
         --enable-guile \
+%endif
         --enable-java \
         --disable-d \
         --disable-javascript \
