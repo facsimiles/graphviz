@@ -558,7 +558,7 @@ Obsoletes:      %{name}-go <= 2.41
 Provides:       %{name}-go = %{version}-%{release}
 
 %description lang-go
-Guile extension for graphviz.
+Go extension for graphviz.
 
 %files lang-go
 %defattr(-,root,root,-)
