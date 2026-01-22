@@ -23,7 +23,7 @@ freeglut-devel \
 # Option gts
 # Option swig
 swig \
-# Command smyra
+# Command smyrna
 libglade2-devel \
 # Command gvedit
 qt5-devel \
