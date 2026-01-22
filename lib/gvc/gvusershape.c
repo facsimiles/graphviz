@@ -30,10 +30,12 @@
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
+#include <util/mutex.h>
 #include <util/optional.h>
 #include <util/streq.h>
 #include <util/strview.h>
 
+static mutex_t *_Atomic ImageDict_lock;
 static Dict_t *ImageDict;
 
 typedef struct {
@@ -673,10 +675,16 @@ usershape_t *gvusershape_find(const char *name) {
   assert(name);
   assert(name[0]);
 
-  if (!ImageDict)
-    return NULL;
+  mutex_lazy_init_or_die(&ImageDict_lock);
+  gv_mutex_lock(ImageDict_lock);
 
-  return dtmatch(ImageDict, name);
+  usershape_t *us = NULL;
+  if (ImageDict != NULL) {
+    us = dtmatch(ImageDict, name);
+  }
+
+  gv_mutex_unlock(ImageDict_lock);
+  return us;
 }
 
 #define MAX_USERSHAPE_FILES_OPEN 50
@@ -728,9 +736,6 @@ static usershape_t *gvusershape_open(const char *name) {
   usershape_t *us;
 
   assert(name);
-
-  if (!ImageDict)
-    ImageDict = dtopen(&ImageDictDisc, Dttree);
 
   if (!(us = gvusershape_find(name))) {
     us = gv_alloc(sizeof(usershape_t));
@@ -785,7 +790,13 @@ static usershape_t *gvusershape_open(const char *name) {
       break;
     }
     gvusershape_file_release(us);
+    mutex_lazy_init_or_die(&ImageDict_lock);
+    gv_mutex_lock(ImageDict_lock);
+    if (ImageDict == NULL) {
+      ImageDict = dtopen(&ImageDictDisc, Dttree);
+    }
     dtinsert(ImageDict, us);
+    gv_mutex_unlock(ImageDict_lock);
     return us;
   }
   gvusershape_file_release(us);
@@ -821,10 +832,13 @@ point gvusershape_size(graph_t *g, char *name) {
 
   if (!HTTPServerEnVar && (oldpath != Gvimagepath)) {
     oldpath = Gvimagepath;
+    mutex_lazy_init_or_die(&ImageDict_lock);
+    gv_mutex_lock(ImageDict_lock);
     if (ImageDict) {
       dtclose(ImageDict);
       ImageDict = NULL;
     }
+    gv_mutex_unlock(ImageDict_lock);
   }
 
   if ((dpi.y = GD_drawing(g)->dpi) >= 1.0)
