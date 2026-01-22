@@ -15,3 +15,10 @@
 #define GRAPHVIZ_VERSION_MAJOR @GRAPHVIZ_VERSION_MAJOR@
 #define GRAPHVIZ_VERSION_MINOR @GRAPHVIZ_VERSION_MINOR@
 #define GRAPHVIZ_VERSION_PATCH @GRAPHVIZ_VERSION_PATCH@
+
+/// threading library Graphviz was built with and uses internally
+///   0 – none; internal operations assume your program is single-threaded
+///   43 – C++ threads
+///   99 – C11 threads
+///   112 – POSIX threads
+#define GRAPHVIZ_THREADS @GRAPHVIZ_THREADS@

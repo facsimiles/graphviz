@@ -10,6 +10,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Using long node names in combination with the fdp layout algorithm no longer
   results in truncated generated names.
+- Graphviz libraries and programs optionally depend on a threading library. The
+  options of library to use and how to select between them in the Autotools and
+  CMake build systems are:
+    - C11 threads: `./configure --with-threads=c11`,
+      `cmake -DWITH_THREADS=c11`.
+    - C++11 threads: `./configure --with-threads=cxx`,
+      `cmake -DWITH_THREADS=cxx`.
+    - POSIX threads: `./configure --with-threads=posix`,
+      `cmake -DWITH_THREADS=posix`.
+    - Disabled: `./configure --with-threads=no` or
+      `./configure --without-threads`, `cmake -DWITH_THREADS=no`. Mutual
+      exclusion operations within Graphviz will be compiled as no-ops. (Default)
+  If you are using pre-built Graphviz libraries and need to detect which of
+  these options the library was built with, you can use the following code:
+
+  ```c
+  #include <graphviz/graphviz_version.h>
+  …
+  #if !defined(GRAPHVIZ_THREADS) || !GRAPHVIZ_THREADS
+    // no threading support
+  #elif GRAPHVIZ_THREADS == 'c'
+    // C11 threads
+  #elif GRAPHVIZ_THREADS == '+'
+    // C++11 threads
+  #elif GRAPHVIZ_THREADS == 'p'
+    // POSIX threads
+  #endif
+  ```
 
 ### Fixed
 
