@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased (14.1.3)]
+
+### Changed
+
+- Graphviz libraries and programs optionally depend on a threading library. The
+  options of library to use and how to select between them in the Autotools and
+  CMake build systems are:
+    - C11 threads: `./configure --with-threads=c11`,
+      `cmake -DWITH_THREADS=c11`.
+    - C++11 threads: `./configure --with-threads=cxx`,
+      `cmake -DWITH_THREADS=cxx`.
+    - POSIX threads: `./configure --with-threads=posix`,
+      `cmake -DWITH_THREADS=posix`.
+    - Disabled: `./configure --with-threads=no` or
+      `./configure --without-threads`, `cmake -DWITH_THREADS=no`. Mutual
+      exclusion operations within Graphviz will be compiled as no-ops. (Default)
+  If you are using pre-built Graphviz libraries and need to detect which of
+  these options the library was built with, you can use the following code:
+
+  ```c
+  #include <graphviz/graphviz_version.h>
+  …
+  #if !defined(GRAPHVIZ_THREADS) || !GRAPHVIZ_THREADS
+    // no threading support
+  #elif GRAPHVIZ_THREADS == 'c'
+    // C11 threads
+  #elif GRAPHVIZ_THREADS == '+'
+    // C++11 threads
+  #elif GRAPHVIZ_THREADS == 'p'
+    // POSIX threads
+  #endif
+  ```
+
 ## [14.1.2] – 2026-01-24
 
 ### Changed
@@ -3445,6 +3478,7 @@ March 13, 2000: Use AM_PROG_LIBTOOL instead of AC_PROG_LIBTOOL
    in configure.in.  John Ellson <ellson@graphviz.org>
 ```
 
+[Unreleased (14.1.3)]: https://gitlab.com/graphviz/graphviz/compare/14.1.2...main
 [14.1.2]: https://gitlab.com/graphviz/graphviz/compare/14.1.1...14.1.2
 [14.1.1]: https://gitlab.com/graphviz/graphviz/compare/14.1.0...14.1.1
 [14.1.0]: https://gitlab.com/graphviz/graphviz/compare/14.0.5...14.1.0
