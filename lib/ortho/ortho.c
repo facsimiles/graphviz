@@ -1319,11 +1319,6 @@ static const char prolog2[] =
 } def\n\
 \n";
 
-static char* epilog2 =
-"showpage\n\
-%%%%Trailer\n\
-%%%%BoundingBox: %.f %.f %.f %.f\n";
-
 static pointf coordOf(cell *cp, snode *np) {
     if (cp->sides[M_TOP] == np) {
 	return (pointf){.x = (cp->bb.LL.x + cp->bb.UR.x) / 2, .y = cp->bb.UR.y};
@@ -1461,5 +1456,6 @@ static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
              .y = absbb.LL.y + TRANS},
       .UR = {.x = absbb.UR.x + TRANS,
              .y = absbb.UR.y + TRANS}};
-    fprintf (fp, epilog2, bbox.LL.x, bbox.LL.y,  bbox.UR.x, bbox.UR.y);
+    fprintf(fp, "showpage\n%%%%Trailer\n%%%%BoundingBox: %.f %.f %.f %.f\n",
+            bbox.LL.x, bbox.LL.y,  bbox.UR.x, bbox.UR.y);
 }
