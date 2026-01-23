@@ -46,9 +46,7 @@ PQinit(void)
   PQcnt = 0;
 }
 
-void
-PQcheck (void)
-{
+static void PQcheck(void) {
   int i;
  
   for (i = 1; i <= PQcnt; i++) {
