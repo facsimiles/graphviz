@@ -45,9 +45,7 @@ void PQinit(pq_t *pq)
 }
 
 static void PQcheck(const pq_t *pq) {
-  int i;
- 
-  for (i = 1; i <= pq->cnt; i++) {
+  for (int i = 1; i <= pq->cnt; i++) {
     if (N_IDX(pq->pq[i]) != i) {
       assert (0);
     }
