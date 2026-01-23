@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,10 +39,7 @@ void PQfree(pq_t *pq) {
   free(pq);
 }
 
-void PQinit(pq_t *pq)
-{
-  pq->cnt = 0;
-}
+void PQinit(pq_t *pq) { pq->cnt = 0; }
 
 static void PQcheck(const pq_t *pq) {
   for (int i = 1; i <= pq->cnt; i++) {
@@ -51,11 +48,11 @@ static void PQcheck(const pq_t *pq) {
 }
 
 static void PQupheap(pq_t *pq, int k) {
-  snode* x = pq->pq[k];
-  int     v = x->n_val;
-  int     next = k/2;
-  snode*  n;
-  
+  snode *x = pq->pq[k];
+  int v = x->n_val;
+  int next = k / 2;
+  snode *n;
+
   while (N_VAL(n = pq->pq[next]) < v) {
     pq->pq[k] = n;
     N_IDX(n) = k;
@@ -66,8 +63,7 @@ static void PQupheap(pq_t *pq, int k) {
   N_IDX(x) = k;
 }
 
-int PQ_insert(pq_t *pq, snode* np)
-{
+int PQ_insert(pq_t *pq, snode *np) {
   if (pq->cnt == pq->size) {
     agerrorf("Heap overflow\n");
     return 1;
@@ -80,9 +76,9 @@ int PQ_insert(pq_t *pq, snode* np)
 }
 
 static void PQdownheap(pq_t *pq, int k) {
-  snode*    x = pq->pq[k];
-  int      v = N_VAL(x);
-  int      lim = pq->cnt / 2;
+  snode *x = pq->pq[k];
+  int v = N_VAL(x);
+  int lim = pq->cnt / 2;
 
   while (k <= lim) {
     int j = k + k;
@@ -93,7 +89,8 @@ static void PQdownheap(pq_t *pq, int k) {
         n = pq->pq[j];
       }
     }
-    if (v >= N_VAL(n)) break;
+    if (v >= N_VAL(n))
+      break;
     pq->pq[k] = n;
     N_IDX(n) = k;
     k = j;
@@ -107,7 +104,8 @@ snode *PQremove(pq_t *pq) {
     snode *const n = pq->pq[1];
     pq->pq[1] = pq->pq[pq->cnt];
     pq->cnt--;
-    if (pq->cnt) PQdownheap(pq, 1);
+    if (pq->cnt)
+      PQdownheap(pq, 1);
     PQcheck(pq);
     return n;
   }
