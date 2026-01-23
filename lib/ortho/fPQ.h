@@ -31,4 +31,3 @@ void PQcheck (void);
 int PQ_insert(snode* np);
 snode* PQremove (void);
 void PQupdate (snode* n, int d);
-void PQprint (void);

@@ -136,18 +136,3 @@ PQupdate (snode* n, int d)
   PQupheap (n->n_idx);
   PQcheck();
 }
-
-void
-PQprint (void)
-{
-  int    i;
-  snode*  n;
-
-  fprintf (stderr, "Q: ");
-  for (i = 1; i <= PQcnt; i++) {
-    n = pq[i];
-    fprintf (stderr, "%d(%d:%d) ",  
-      n->index, N_IDX(n), N_VAL(n));
-  }
-  fprintf (stderr, "\n");
-}
