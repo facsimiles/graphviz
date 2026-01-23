@@ -58,9 +58,7 @@ PQcheck (void)
   }
 }
 
-void
-PQupheap(int k)
-{
+static void PQupheap(int k) {
   snode* x = pq[k];
   int     v = x->n_val;
   int     next = k/2;
