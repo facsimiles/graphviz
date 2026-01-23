@@ -88,9 +88,7 @@ PQ_insert(snode* np)
   return 0;
 }
 
-void
-PQdownheap (int k)
-{
+static void PQdownheap(int k) {
   snode*    x = pq[k];
   int      v = N_VAL(x);
   int      lim = PQcnt/2;

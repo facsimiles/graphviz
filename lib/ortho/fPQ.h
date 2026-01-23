@@ -29,7 +29,6 @@ void PQfree(void);
 void PQinit(void);
 void PQcheck (void);
 int PQ_insert(snode* np);
-void PQdownheap (int k);
 snode* PQremove (void);
 void PQupdate (snode* n, int d);
 void PQprint (void);
