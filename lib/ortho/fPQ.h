@@ -24,9 +24,20 @@
 #define N_EDGE(n) (n)->n_edge
 #define E_WT(e) (e->weight)
 
-void PQgen(int sz);
-void PQfree(void);
-void PQinit(void);
-int PQ_insert(snode* np);
-snode* PQremove (void);
-void PQupdate (snode* n, int d);
+/// @return Created priority queue
+pq_t *PQgen(int sz);
+
+/// @param pq Priority queue to deallocate
+void PQfree(pq_t *pq);
+
+/// @param pq Priority queue to initialize
+void PQinit(pq_t *pq);
+
+/// @param pq Priority queue to insert into
+int PQ_insert(pq_t *pq, snode* np);
+
+/// @param pq Priority queue to pop
+snode *PQremove(pq_t *pq);
+
+/// @param pq Priority queue to update
+void PQupdate(pq_t *pq, snode *n, int d);

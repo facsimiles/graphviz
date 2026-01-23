@@ -135,9 +135,7 @@ adjacentNode(sgraph* g, sedge* e, snode* n)
 	return &g->nodes[e->v1];
 }
 
-int
-shortPath (sgraph* g, snode* from, snode* to)
-{
+int shortPath(pq_t *pq, sgraph *g, snode *from, snode *to) {
     snode* n;
     sedge* e;
     snode* adjn;
@@ -149,12 +147,12 @@ shortPath (sgraph* g, snode* from, snode* to)
 	N_VAL(temp) = UNSEEN;
     }
     
-    PQinit();
-    if (PQ_insert (from)) return 1;
+    PQinit(pq);
+    if (PQ_insert(pq, from)) return 1;
     N_DAD(from) = NULL;
     N_VAL(from) = 0;
     
-    while ((n = PQremove())) {
+    while ((n = PQremove(pq))) {
 #ifdef DEBUG
 	fprintf (stderr, "process %d\n", n->index);
 #endif
@@ -170,7 +168,7 @@ shortPath (sgraph* g, snode* from, snode* to)
 		    fprintf (stderr, "new %d (%d)\n", adjn->index, -d);
 #endif
 		    N_VAL(adjn) = d;
-		    if (PQ_insert(adjn)) return 1;
+		    if (PQ_insert(pq, adjn)) return 1;
 		    N_DAD(adjn) = n;
 		    N_EDGE(adjn) = e;
             	}
@@ -179,7 +177,7 @@ shortPath (sgraph* g, snode* from, snode* to)
 #ifdef DEBUG
 			fprintf (stderr, "adjust %d (%d)\n", adjn->index, -d);
 #endif
-			PQupdate(adjn, d);
+			PQupdate(pq, adjn, d);
 			N_DAD(adjn) = n;
 			N_EDGE(adjn) = e;
 		    }

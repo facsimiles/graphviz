@@ -1234,7 +1234,7 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
     qsort(es, n_edges, sizeof(epair_t), edgecmp);
 
     const int gstart = sg->nnodes;
-    PQgen (sg->nnodes+2);
+    pq_t *const pq = PQgen(sg->nnodes + 2);
     snode *const sn = &sg->nodes[gstart];
     snode *const dn = &sg->nodes[gstart+1];
     for (size_t i = 0; i < n_edges; i++) {
@@ -1254,13 +1254,16 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
        		addNodeEdges (sg, dest, dn);
 		addNodeEdges (sg, start, sn);
 	    }
-       	    if (shortPath (sg, dn, sn)) goto orthofinish;
+       	    if (shortPath(pq, sg, dn, sn)) {
+		PQfree(pq);
+		goto orthofinish;
+       	    }
 	}
 	    
        	route_list[i] = convertSPtoRoute(sg, sn, dn);
        	reset (sg);
     }
-    PQfree ();
+    PQfree(pq);
 
     mp->hchans = extractHChans (mp);
     mp->vchans = extractVChans (mp);
