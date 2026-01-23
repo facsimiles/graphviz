@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Support for HP-UX has been removed.
-- Caching of open user shape files has been removed. When user shape files are
-  re-needed after they have been released, they are reopened. The cache itself
-  was not directly accessible to users. But a side effect of this change is that
-  the `nocache` member for opened `usershape_t`s is now always set.
 
 ### Fixed
 
