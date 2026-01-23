@@ -111,7 +111,7 @@ snode *PQremove(pq_t *pq) {
     PQcheck(pq);
     return n;
   }
-  else return 0;
+  return 0;
 }
 
 void PQupdate(pq_t *pq, snode *n, int d) {
