@@ -103,10 +103,8 @@ static void PQdownheap(pq_t *pq, int k) {
 }
 
 snode *PQremove(pq_t *pq) {
-  snode* n;
-
   if (pq->cnt) {
-    n = pq->pq[1];
+    snode *const n = pq->pq[1];
     pq->pq[1] = pq->pq[pq->cnt];
     pq->cnt--;
     if (pq->cnt) PQdownheap(pq, 1);
