@@ -1153,8 +1153,6 @@ static bool swap_ends_p(edge_t * e)
     return false;
 }
 
-static splineInfo sinfo = { swap_ends_p, spline_merge, true, true };
-
 /* orthoEdges:
  * For edges without position information, construct an orthogonal routing.
  * If useLbls is true, use edge label info when available to guide routing, 
@@ -1272,6 +1270,7 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
 #ifdef DEBUG
     if (odb_flags & ODB_ROUTE) emitGraph (stderr, mp, n_edges, route_list, es);
 #endif
+    splineInfo sinfo = {swap_ends_p, spline_merge, true, true};
     attachOrthoEdges(mp, n_edges, route_list, &sinfo, es, useLbls);
 
 orthofinish:
