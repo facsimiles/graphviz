@@ -83,12 +83,11 @@ static void PQdownheap(pq_t *pq, int k) {
   snode*    x = pq->pq[k];
   int      v = N_VAL(x);
   int      lim = pq->cnt / 2;
-  snode*    n;
   int      j;
 
   while (k <= lim) {
     j = k+k;
-    n = pq->pq[j];
+    snode *n = pq->pq[j];
     if (j < pq->cnt) {
       if (N_VAL(n) < N_VAL(pq->pq[j + 1])) {
         j++;
