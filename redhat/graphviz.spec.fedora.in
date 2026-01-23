@@ -58,7 +58,7 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: java-devel
 BuildRequires: zlib-devel expat-devel bison m4 flex swig gcc-c++
-BuildRequires: libX11-devel gtk2-devel freeglut-devel
+BuildRequires: libX11-devel freeglut-devel
 BuildRequires: freetype-devel fontconfig-devel cairo-devel pango-devel
 BuildRequires: gmp-devel gd gd-devel librsvg2-devel
 BuildRequires: ghostscript ghostscript-devel poppler-glib-devel libtool-ltdl libtool-ltdl-devel
@@ -83,7 +83,7 @@ BuildRequires: DevIL-devel
 BuildRequires: golang gcc-go swig >= 3.0.2
 %endif
 %if %{GTK}
-BuildRequires: libglade2-devel gtkglext-devel
+BuildRequires: gtk2-devel libglade2-devel gtkglext-devel
 %endif
 %if %{GTS}
 BuildRequires: gts-devel
