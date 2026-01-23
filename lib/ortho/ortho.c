@@ -1434,7 +1434,7 @@ static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
     boxf absbb = {.LL = {.x = DBL_MAX, .y = DBL_MAX},
                   .UR = {.x = -DBL_MAX, .y = -DBL_MAX}};
 
-    fprintf (fp, "%s", prolog2);
+    fputs(prolog2, fp);
     fprintf (fp, "%d %d translate\n", TRANS, TRANS);
 
     fputs ("0 0 1 setrgbcolor\n", fp);
