@@ -43,8 +43,6 @@ int Ppolybarriers(Ppoly_t ** polys, int npolys, Pedge_t ** barriers,
     return 1;
 }
 
-/* make_polyline:
- */
 void
 make_polyline(Ppolyline_t line, Ppolyline_t* sline)
 {
