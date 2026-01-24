@@ -49,7 +49,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	** This function imposes HIERARCHY CONSTRAINTS  **
 	*************************************************/
 
-    int i, k;
     bool directionalityExist = false;
     float *lap1 = NULL;
     float *dist_accumulator = NULL;
@@ -57,33 +56,23 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     float **b = NULL;
     double *degrees = NULL;
     float *lap2 = NULL;
-    int lap_length;
     float *f_storage = NULL;
     float **coords = NULL;
 
-    double conj_tol = tolerance_cg;	/* tolerance of Conjugate Gradient */
+    const double conj_tol = tolerance_cg; // tolerance of Conjugate Gradient
     CMajEnv *cMajEnv = NULL;
-    double y_0;
-    int length;
-    int smart_ini = opts & opt_smart_init;
-    DistType diameter;
+    const bool smart_ini = !!(opts & opt_smart_init);
     float *Dij = NULL;
     /* to compensate noises, we never consider gaps smaller than 'abs_tol' */
-    double abs_tol = 1e-2;
+    const double abs_tol = 1e-2;
     /* Additionally, we never consider gaps smaller than 'abs_tol'*<avg_gap> */
-    double relative_tol = levels_sep_tol;
+    const double relative_tol = levels_sep_tol;
     int *ordering = NULL, *levels = NULL;
-    float constant_term;
-    double degree;
-    int step;
-    float val;
-    double old_stress, new_stress;
     bool converged;
-    int len;
     int num_levels;
 
     if (graph[0].edists != NULL) {
-	for (i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) {
 	    for (size_t j = 1; j < graph[i].nedges; j++) {
 		directionalityExist |= graph[i].edists[j] != 0;
 	    }
@@ -100,8 +89,6 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	******************************************************************/
 
     if (smart_ini) {
-	double *x;
-	double *y;
 	if (dim > 2) {
 	    /* the dim==2 case is handled below                      */
 	    if (stress_majorization_kD_mkernel(graph, n,
@@ -109,13 +96,13 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 					   opts, model, 15) < 0)
 		return -1;
 	    /* now copy the y-axis into the (dim-1)-axis */
-	    for (i = 0; i < n; i++) {
+	    for (int i = 0; i < n; i++) {
 		d_coords[dim - 1][i] = d_coords[1][i];
 	    }
 	}
 
-	x = d_coords[0];
-	y = d_coords[1];
+	double *const x = d_coords[0];
+	double *const y = d_coords[1];
 	if (compute_y_coords(graph, n, y, n)) {
 	    iterations = -1;
 	    goto finish;
@@ -136,14 +123,13 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	if (levels_gap > 0) {
 	    /* ensure that levels are separated in the initial layout */
 	    double displacement = 0;
-	    int stop;
-	    for (i = 0; i < num_levels; i++) {
+	    for (int i = 0; i < num_levels; i++) {
 		displacement +=
 		    MAX(0.0,
 			levels_gap - (y[ordering[levels[i]]] +
 				      displacement -
 				      y[ordering[levels[i] - 1]]));
-		stop = i < num_levels - 1 ? levels[i + 1] : n;
+		const int stop = i < num_levels - 1 ? levels[i + 1] : n;
 		for (int j = levels[i]; j < stop; j++) {
 		    y[ordering[j]] += displacement;
 		}
@@ -210,24 +196,18 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	start_timer();
     }
 
-    diameter = -1;
-    length = n + n * (n - 1) / 2;
-    for (i = 0; i < length; i++) {
-	if (Dij[i] > diameter) {
-	    diameter = (int) Dij[i];
-	}
-    }
+    const int length = n + n * (n - 1) / 2;
 
     if (!smart_ini) {
 	/* for numerical stability, scale down layout            */
 	/* No Jiggling, might conflict with constraints                  */
 	double max = 1;
-	for (i = 0; i < dim; i++) {
+	for (int i = 0; i < dim; i++) {
 	    for (int j = 0; j < n; j++) {
 		max = fmax(max, fabs(d_coords[i][j]));
 	    }
 	}
-	for (i = 0; i < dim; i++) {
+	for (int i = 0; i < dim; i++) {
 	    for (int j = 0; j < n; j++) {
 		d_coords[i][j] *= 10 / max;
 	    }
@@ -235,20 +215,17 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     }
 
     if (levels_gap > 0) {
-	double sum1, sum2, scale_ratio;
-	int count;
-	sum1 = (float) (n * (n - 1) / 2);
-	sum2 = 0;
-	for (count = 0, i = 0; i < n - 1; i++) {
+	const double sum1 = n * (n - 1) / 2;
+	double sum2 = 0;
+	for (int count = 0, i = 0; i < n - 1; i++) {
 	    count++;		// skip self distance
 	    for (int j = i + 1; j < n; j++, count++) {
 		sum2 += distance_kD(d_coords, dim, i, j) / Dij[count];
 	    }
 	}
-	scale_ratio = sum2 / sum1;
-	/* double scale_ratio=10; */
-	for (i = 0; i < length; i++) {
-	    Dij[i] *= (float) scale_ratio;
+	const float scale_ratio = (float)(sum2 / sum1);
+	for (int i = 0; i < length; i++) {
+	    Dij[i] *= scale_ratio;
 	}
     }
 
@@ -256,19 +233,19 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	** Layout initialization **
 	**************************/
 
-    for (i = 0; i < dim; i++) {
+    for (int i = 0; i < dim; i++) {
 	orthog1(n, d_coords[i]);
     }
 
     /* for the y-coords, don't center them, but translate them so y[0]=0 */
-    y_0 = d_coords[1][0];
-    for (i = 0; i < n; i++) {
+    const double y_0 = d_coords[1][0];
+    for (int i = 0; i < n; i++) {
 	d_coords[1][i] -= y_0;
     }
 
     coords = gv_calloc(dim, sizeof(float *));
     f_storage = gv_calloc(dim * n, sizeof(float));
-    for (i = 0; i < dim; i++) {
+    for (int i = 0; i < dim; i++) {
 	coords[i] = f_storage + i * n;
 	for (int j = 0; j < n; j++) {
 	    coords[i][j] = (float)d_coords[i][j];
@@ -278,7 +255,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     /* compute constant term in stress sum
      * which is \sum_{i<j} w_{ij}d_{ij}^2
      */
-    constant_term = (float) (n * (n - 1) / 2);
+    const double constant_term = n * (n - 1) / 2;
 
     if (Verbose)
 	fprintf(stderr, ": %.2f sec", elapsed_sec());
@@ -288,26 +265,25 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	**************************/
 
     lap2 = Dij;
-    lap_length = n + n * (n - 1) / 2;
+    const int lap_length = n + n * (n - 1) / 2;
     square_vec(lap_length, lap2);
     /* compute off-diagonal entries */
     invert_vec(lap_length, lap2);
 
     /* compute diagonal entries */
-    int count = 0;
     degrees = gv_calloc(n, sizeof(double));
     set_vector_val(n, 0, degrees);
-    for (i = 0; i < n - 1; i++) {
-	degree = 0;
+    for (int i = 0, count = 0; i < n - 1; i++) {
+	double degree = 0;
 	count++;		// skip main diag entry
 	for (int j = 1; j < n - i; j++, count++) {
-	    val = lap2[count];
+	    const float val = lap2[count];
 	    degree += val;
 	    degrees[i + j] -= val;
 	}
 	degrees[i] -= degree;
     }
-    for (step = n, count = 0, i = 0; i < n; i++, count += step, step--) {
+    for (int step = n, count = 0, i = 0; i < n; i++, count += step, step--) {
 	lap2[count] = (float) degrees[i];
     }
 
@@ -317,7 +293,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 
     b = gv_calloc(dim, sizeof(float *));
     b[0] = gv_calloc(dim * n, sizeof(float));
-    for (k = 1; k < dim; k++) {
+    for (int k = 1; k < dim; k++) {
 	b[k] = b[0] + k * n;
     }
 
@@ -325,7 +301,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
     dist_accumulator = gv_calloc(n, sizeof(float));
     lap1 = gv_calloc(lap_length, sizeof(float));
 
-    old_stress = DBL_MAX;	/* at least one iteration */
+    double old_stress = DBL_MAX; // at least one iteration
 
     cMajEnv =
 	initConstrainedMajorization(lap2, n, ordering, levels, num_levels);
@@ -336,15 +312,15 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	/* First, construct Laplacian of 1/(d_ij*|p_i-p_j|)  */
 	set_vector_val(n, 0, degrees);
 	sqrt_vecf(lap_length, lap2, lap1);
-	for (count = 0, i = 0; i < n - 1; i++) {
-	    len = n - i - 1;
+	for (int count = 0, i = 0; i < n - 1; i++) {
+	    const int len = n - i - 1;
 	    /* init 'dist_accumulator' with zeros */
 	    set_vector_valf(n, 0, dist_accumulator);
 
 	    /* put into 'dist_accumulator' all squared distances 
 	     * between 'i' and 'i'+1,...,'n'-1
 	     */
-	    for (k = 0; k < dim; k++) {
+	    for (int k = 0; k < dim; k++) {
 		set_vector_valf(len, coords[k][i], tmp_coords);
 		vectors_mult_additionf(len, tmp_coords, -1, coords[k] + i + 1);
 		square_vec(len, tmp_coords);
@@ -361,20 +337,20 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	    }
 
 	    count++;		/* save place for the main diagonal entry */
-	    degree = 0;
+	    double degree = 0;
 	    for (int j = 0; j < len; j++, count++) {
-		val = lap1[count] *= dist_accumulator[j];
+		const float val = lap1[count] *= dist_accumulator[j];
 		degree += val;
 		degrees[i + j + 1] -= val;
 	    }
 	    degrees[i] -= degree;
 	}
-	for (step = n, count = 0, i = 0; i < n; i++, count += step, step--) {
+	for (int step = n, count = 0, i = 0; i < n; i++, count += step, step--) {
 	    lap1[count] = (float) degrees[i];
 	}
 
 	/* Now compute b[] (L^(X(t))*X(t)) */
-	for (k = 0; k < dim; k++) {
+	for (int k = 0; k < dim; k++) {
 	    /* b[k] := lap1*coords[k] */
 	    right_mult_with_vector_ff(lap1, n, coords[k], b[k]);
 	}
@@ -383,13 +359,13 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	 * remember that the Laplacians are negated, so we subtract 
 	 * instead of add and vice versa
 	 */
-	new_stress = 0;
-	for (k = 0; k < dim; k++) {
+	double new_stress = 0;
+	for (int k = 0; k < dim; k++) {
 	    new_stress += vectors_inner_productf(n, coords[k], b[k]);
 	}
 	new_stress *= 2;
 	new_stress += constant_term;	// only after mult by 2              
-	for (k = 0; k < dim; k++) {
+	for (int k = 0; k < dim; k++) {
 	    right_mult_with_vector_ff(lap2, n, coords[k], tmp_coords);
 	    new_stress -= vectors_inner_productf(n, coords[k], tmp_coords);
 	}
@@ -404,7 +380,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	 */
 	old_stress = new_stress;
 
-	for (k = 0; k < dim; k++) {
+	for (int k = 0; k < dim; k++) {
 	    /* now we find the optimizer of trace(X'LX)+X'B by solving 'dim' 
 	     * system of equations, thereby obtaining the new coordinates.
 	     * If we use the constraints (given by the var's: 'ordering', 
@@ -435,7 +411,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	}
     }
 
-    for (i = 0; i < dim; i++) {
+    for (int i = 0; i < dim; i++) {
 	for (int j = 0; j < n; j++) {
 	    d_coords[i][j] = coords[i][j];
 	}

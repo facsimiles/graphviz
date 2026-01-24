@@ -11,6 +11,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdint.h>
 #include <util/api.h>
 
 #ifdef __cplusplus
@@ -31,7 +32,7 @@ extern "C" {
 	float *ewgts;		/* preferred edge lengths */
 	float *eweights;	/* edge weights */
 #ifdef DIGCOLA
-	float *edists; /* directed dist reflecting the direction of the edge */
+	int8_t *edists; ///< directed dist reflecting the direction of the edge
 #endif
     } vtx_data;
 

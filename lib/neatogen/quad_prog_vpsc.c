@@ -211,7 +211,7 @@ CMajEnvVPSC *initCMajVPSC(int n, float *packedMat, vtx_data * graph,
 	    fprintf(stderr, "  generate edge constraints...\n");
 	for (i = 0; i < e->nv; i++) {
 	    for (size_t j = 1; j < graph[i].nedges; j++) {
-		if (graph[i].edists[j] > 0.01) {
+		if (graph[i].edists[j] > 0) {
 		    e->gm++;
 		}
 	    }
