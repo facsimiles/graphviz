@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <pathplan/pathutil.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 void freePath(Ppolyline_t* p)
 {
@@ -26,31 +27,23 @@ int Ppolybarriers(Ppoly_t ** polys, int npolys, Pedge_t ** barriers,
 		  int *n_barriers)
 {
     Ppoly_t pp;
-    int i, n, b;
+    int i;
 
-    n = 0;
-    for (i = 0; i < npolys; i++) {
-	assert(polys[i]->pn <= INT_MAX);
-	n += (int)polys[i]->pn;
-    }
+    LIST(Pedge_t) bar = {0};
 
-    Pedge_t *bar = gv_calloc(n, sizeof(Pedge_t));
-
-    b = 0;
     for (i = 0; i < npolys; i++) {
 	pp = *polys[i];
 	for (size_t j = 0; j < pp.pn; j++) {
 	    size_t k = j + 1;
 	    if (k >= pp.pn)
 		k = 0;
-	    bar[b].a = pp.ps[j];
-	    bar[b].b = pp.ps[k];
-	    b++;
+	    LIST_APPEND(&bar, ((Pedge_t){.a = pp.ps[j], .b = pp.ps[k]}));
 	}
     }
-    assert(b == n);
-    *barriers = bar;
-    *n_barriers = n;
+    size_t n;
+    LIST_DETACH(&bar, barriers, &n);
+    assert(n <= INT_MAX);
+    *n_barriers = (int)n;
     return 1;
 }
 
