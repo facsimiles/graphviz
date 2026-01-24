@@ -26,13 +26,12 @@ void freePath(Ppolyline_t* p)
 int Ppolybarriers(Ppoly_t ** polys, int npolys, Pedge_t ** barriers,
 		  int *n_barriers)
 {
-    Ppoly_t pp;
     int i;
 
     LIST(Pedge_t) bar = {0};
 
     for (i = 0; i < npolys; i++) {
-	pp = *polys[i];
+	const Ppoly_t pp = *polys[i];
 	for (size_t j = 0; j < pp.pn; j++) {
 	    size_t k = j + 1;
 	    if (k >= pp.pn)
