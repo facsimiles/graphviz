@@ -14,7 +14,6 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <pathplan/pathutil.h>
-#include <util/alloc.h>
 #include <util/list.h>
 
 void freePath(Ppolyline_t* p)
@@ -49,28 +48,23 @@ int Ppolybarriers(Ppoly_t ** polys, int npolys, Pedge_t ** barriers,
 void
 make_polyline(Ppolyline_t line, Ppolyline_t* sline)
 {
-    static size_t isz = 0;
-    static Ppoint_t* ispline = 0;
-    const size_t npts = 4 + 3 * (line.pn - 2);
+    static LIST(Ppoint_t) ispline;
+    LIST_CLEAR(&ispline);
 
-    if (npts > isz) {
-	ispline = gv_recalloc(ispline, isz, npts, sizeof(Ppoint_t));
-	isz = npts;
-    }
-
-    size_t j = 0;
     size_t i = 0;
-    ispline[j+1] = ispline[j] = line.ps[i];
-    j += 2;
+    LIST_APPEND(&ispline, line.ps[i]);
+    LIST_APPEND(&ispline, line.ps[i]);
     i++;
     for (; i + 1 < line.pn; i++) {
-	ispline[j+2] = ispline[j+1] = ispline[j] = line.ps[i];
-	j += 3;
+	LIST_APPEND(&ispline, line.ps[i]);
+	LIST_APPEND(&ispline, line.ps[i]);
+	LIST_APPEND(&ispline, line.ps[i]);
     }
-    ispline[j+1] = ispline[j] = line.ps[i];
+    LIST_APPEND(&ispline, line.ps[i]);
+    LIST_APPEND(&ispline, line.ps[i]);
 
-    sline->pn = npts;
-    sline->ps = ispline;
+    sline->pn = LIST_SIZE(&ispline);
+    sline->ps = LIST_FRONT(&ispline);
 }
 
 /**
