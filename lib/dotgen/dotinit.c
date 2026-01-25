@@ -323,13 +323,16 @@ static int dotLayout(Agraph_t *g) {
         attach_phase_attrs (g, 2);  /* positions will be attached on output */
         return 0;
     }
+    GV_INFO("Starting phase 4 [dot_sampeports]");
     if (GD_flags(g) & NEW_RANK)
 	removeFill (g);
     dot_sameports(g);
+    GV_INFO("Starting phase 4 [dot_splines]");
     const int r = dot_splines(g);
     if (r != 0) {
 	return r;
     }
+    GV_INFO("Starting phase 4 [dot_compound]");
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
     return 0;
@@ -442,6 +445,7 @@ static int doDot(Agraph_t *g) {
          * handled during layout
          */
 	const int rc = dotLayout(g);
+	GV_INFO("Finished dotLayout");
 	if (rc != 0) {
 	    return rc;
 	}
@@ -460,6 +464,7 @@ static int doDot(Agraph_t *g) {
 	ccs = cccomps(g, &ncc, 0);
 	if (ncc == 1) {
 	    const int rc = dotLayout(g);
+	    GV_INFO("Finished dotLayout");
 	    if (rc != 0) {
 		free(ccs);
 		return rc;
@@ -471,6 +476,7 @@ static int doDot(Agraph_t *g) {
 		sg = ccs[i];
 		initSubg (sg, g);
 		const int rc = dotLayout (sg);
+		GV_INFO("Finished dotLayout");
 		if (rc != 0) {
 		    free(ccs);
 		    return rc;
@@ -487,6 +493,7 @@ static int doDot(Agraph_t *g) {
              * adjustment. We would then have to re-adjust all positions.
              */
 	    const int rc = dotLayout(g);
+	    GV_INFO("Finished dotLayout");
 	    if (rc != 0) {
 		free(ccs);
 		return rc;
