@@ -213,34 +213,6 @@ static void dumpg (graph_t* g)
     }
     fprintf (stderr, "}\n");
 }
-static void dumpr (graph_t* g, int edges)
-{
-    int j, i, r;
-    node_t* v;
-    edge_t* e;
-
-    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	fprintf (stderr, "[%d] ", r);
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	  v = GD_rank(g)[r].v[i];
- 	  nname(v, stderr);
- 	  fprintf(stderr, "(%.02f,%d) ", saveorder(v),ND_order(v));
-        }
-	fprintf (stderr, "\n");
-    }
-    if (edges == 0) return;
-    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	  v = GD_rank(g)[r].v[i];
-	  for (j = 0; (e = ND_out(v).list[j]); j++) {
-             nname(v, stderr);
-             fputs(" -> ", stderr);
-             nname(aghead(e), stderr);
-             fputc('\n', stderr);
-          }
-        }
-    }
-}
 #endif
 
 typedef struct {
