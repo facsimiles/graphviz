@@ -1551,14 +1551,14 @@ static void SparseMatrix_level_sets(SparseMatrix A, int root, int *nlevel,
      nlevel: max distance to root from any node (in the connected comp)
      levelset_ptr, levelset: the level sets
    */
-  int i, j, sta = 0, sto = 1, ii;
+  int j, sta = 0, sto = 1, ii;
   int m = A->m, *ia = A->ia, *ja = A->ja;
 
   if (!(*levelset_ptr)) *levelset_ptr = gv_calloc((size_t)(m + 2), sizeof(int));
   if (!(*levelset)) *levelset = gv_calloc((size_t)m, sizeof(int));
   if (!(*mask)) {
     *mask = gv_calloc((size_t)m, sizeof(int));
-    for (i = 0; i < m; i++) (*mask)[i] = UNMASKED;
+    for (int i = 0; i < m; i++) (*mask)[i] = UNMASKED;
   }
 
   *nlevel = 0;
@@ -1571,7 +1571,7 @@ static void SparseMatrix_level_sets(SparseMatrix A, int root, int *nlevel,
   size_t nz = 1;
   sta = 0; sto = 1;
   while (sto > sta){
-    for (i = sta; i < sto; i++){
+    for (int i = sta; i < sto; i++){
       ii = (*levelset)[i];
       for (j = ia[ii]; j < ia[ii+1]; j++){
 	if (ii == ja[j]) continue;
@@ -1586,7 +1586,7 @@ static void SparseMatrix_level_sets(SparseMatrix A, int root, int *nlevel,
     sto = (int)nz;
   }
   (*nlevel)--;
-  if (reinitialize_mask) for (i = 0; i < (*levelset_ptr)[*nlevel]; i++) (*mask)[(*levelset)[i]] = UNMASKED;
+  if (reinitialize_mask) for (int i = 0; i < (*levelset_ptr)[*nlevel]; i++) (*mask)[(*levelset)[i]] = UNMASKED;
 }
 
 int *SparseMatrix_weakly_connected_components(SparseMatrix A0, int *ncomp,
