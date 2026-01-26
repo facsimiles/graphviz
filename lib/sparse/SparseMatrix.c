@@ -892,7 +892,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
   SparseMatrix C = NULL;
   int *mask = NULL;
   int *ia = A->ia, *ja = A->ja, *ib = B->ia, *jb = B->ja, *ic, *jc;
-  int i, j, k, jj, type;
+  int j, k, jj, type;
 
   assert(A->format == B->format && A->format == FORMAT_CSR);/* other format not yet supported */
 
@@ -909,10 +909,10 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
   mask = calloc((size_t)B->n, sizeof(int));
   if (!mask) return NULL;
 
-  for (i = 0; i < B->n; i++) mask[i] = -1;
+  for (int i = 0; i < B->n; i++) mask[i] = -1;
 
   size_t nz = 0;
-  for (i = 0; i < m; i++){
+  for (int i = 0; i < m; i++) {
     for (j = ia[i]; j < ia[i+1]; j++){
       jj = ja[j];
       for (k = ib[jj]; k < ib[jj+1]; k++){
@@ -943,7 +943,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
       double *b = B->a;
       double *c = C->a;
       ic[0] = 0;
-      for (i = 0; i < m; i++){
+      for (int i = 0; i < m; i++) {
 	for (j = ia[i]; j < ia[i+1]; j++){
 	  jj = ja[j];
 	  for (k = ib[jj]; k < ib[jj+1]; k++){
@@ -968,7 +968,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
       double *b = B->a;
       double *c = C->a;
       ic[0] = 0;
-      for (i = 0; i < m; i++){
+      for (int i = 0; i < m; i++) {
 	for (j = ia[i]; j < ia[i+1]; j++){
 	  jj = ja[j];
 	  for (k = ib[jj]; k < ib[jj+1]; k++){
@@ -995,7 +995,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
       int *b = B->a;
       int *c = C->a;
       ic[0] = 0;
-      for (i = 0; i < m; i++){
+      for (int i = 0; i < m; i++) {
 	for (j = ia[i]; j < ia[i+1]; j++){
 	  jj = ja[j];
 	  for (k = ib[jj]; k < ib[jj+1]; k++){
@@ -1016,7 +1016,7 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
     break;
   case MATRIX_TYPE_PATTERN:
     ic[0] = 0;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++) {
       for (j = ia[i]; j < ia[i+1]; j++){
 	jj = ja[j];
 	for (k = ib[jj]; k < ib[jj+1]; k++){
