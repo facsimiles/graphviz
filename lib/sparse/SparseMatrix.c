@@ -1625,7 +1625,7 @@ void SparseMatrix_decompose_to_supervariables(SparseMatrix A, int *ncluster, int
      We work on columns only and columns with the same pattern are grouped as a super variable
    */
   int *ia = A->ia, *ja = A->ja, n = A->n, m = A->m;
-  int *super = NULL, *nsuper = NULL, i, j, *mask = NULL, isup, *newmap, isuper;
+  int *super = NULL, *nsuper = NULL, j, *mask = NULL, isup, *newmap, isuper;
 
   super = gv_calloc((size_t)n, sizeof(int));
   nsuper = gv_calloc((size_t)(n + 1), sizeof(int));
@@ -1634,12 +1634,12 @@ void SparseMatrix_decompose_to_supervariables(SparseMatrix A, int *ncluster, int
   nsuper++;
 
   isup = 0;
-  for (i = 0; i < n; i++) super[i] = isup;/* every node belongs to super variable 0 by default */
+  for (int i = 0; i < n; i++) super[i] = isup;/* every node belongs to super variable 0 by default */
   nsuper[0] = n;
-  for (i = 0; i < n; i++) mask[i] = -1;
+  for (int i = 0; i < n; i++) mask[i] = -1;
   isup++;
 
-  for (i = 0; i < m; i++){
+  for (int i = 0; i < m; i++){
 #ifdef DEBUG_PRINT1
     printf("\n");
     printf("doing row %d-----\n",i+1);
@@ -1681,7 +1681,7 @@ void SparseMatrix_decompose_to_supervariables(SparseMatrix A, int *ncluster, int
 #endif
   }
 #ifdef DEBUG_PRINT1
-  for (i = 0; i < n; i++){
+  for (int i = 0; i < n; i++){
     printf("node %d is in supernode %d\n",i, super[i]);
   }
 #endif
@@ -1691,20 +1691,20 @@ void SparseMatrix_decompose_to_supervariables(SparseMatrix A, int *ncluster, int
   /* now accumulate super nodes */
   nsuper--;
   nsuper[0] = 0;
-  for (i = 0; i < isup; i++) nsuper[i+1] += nsuper[i];
+  for (int i = 0; i < isup; i++) nsuper[i+1] += nsuper[i];
 
   *cluster = newmap;
-  for (i = 0; i < n; i++){
+  for (int i = 0; i < n; i++) {
     isuper = super[i];
     (*cluster)[nsuper[isuper]++] = i;
   }
-  for (i = isup; i > 0; i--) nsuper[i] = nsuper[i-1];
+  for (int i = isup; i > 0; i--) nsuper[i] = nsuper[i-1];
   nsuper[0] = 0;
   *clusterp = nsuper;
   *ncluster = isup;
 
 #ifdef PRINT
-  for (i = 0; i < *ncluster; i++){
+  for (int i = 0; i < *ncluster; i++) {
     printf("{");
     for (j = (*clusterp)[i]; j < (*clusterp)[i+1]; j++){
       printf("%d, ",(*cluster)[j]);
