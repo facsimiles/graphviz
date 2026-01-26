@@ -109,6 +109,11 @@ SparseMatrix SparseMatrix_sort(SparseMatrix A);
 
 SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A);
 
+/// compute a distance matrix
+///
+/// @param D The graph. Entry values are unused.
+/// @param dist [out] Of dimension n×n, dist[i * n + j] gives the distance of
+///   node i to j.
 void SparseMatrix_distance_matrix(SparseMatrix A, double **dist_matrix);
 
 /// wrap a m×n matrix into a sparse matrix
