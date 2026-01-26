@@ -1796,7 +1796,7 @@ static int edgeidcmpf(const void *x, const void *y) {
 #define C_SS		2
 #define C_VV		4
 
-static int table[NTYPES][NTYPES] = {
+static const int table[NTYPES][NTYPES] = {
     /* ordinary */ {C_EE, C_EE, C_EE},
     /* singleton */ {C_EE, C_SS, C_VS},
     /* virtual */ {C_EE, C_VS, C_VV}
