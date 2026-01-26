@@ -403,18 +403,8 @@ static void unionNodes(Agraph_t *dg, Agraph_t *g) {
 }
 
 static int cmp(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because `agnnodes` uses
-// non-const pointers.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  Agraph_t **p0 = (Agraph_t **)x;
-  Agraph_t **p1 = (Agraph_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  Agraph_t *const *const p0 = x;
+  Agraph_t *const *const p1 = y;
   const int n0 = agnnodes(*p0);
   const int n1 = agnnodes(*p1);
   if (n0 < n1) {
