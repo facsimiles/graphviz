@@ -1135,18 +1135,18 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
 SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
   /* sum repeated entries in the same row, i.e., {1,1}->1, {1,1}->2 becomes {1,1}->3 */
   int *ia = A->ia, *ja = A->ja, type = A->type, n = A->n;
-  int *mask = NULL, i, j, sta;
+  int *mask = NULL, j, sta;
   size_t nz = 0;
 
   mask = gv_calloc((size_t)n, sizeof(int));
-  for (i = 0; i < n; i++) mask[i] = -1;
+  for (int i = 0; i < n; i++) mask[i] = -1;
 
   switch (type){
   case MATRIX_TYPE_REAL:
     {
       double *a = A->a;
       sta = ia[0];
-      for (i = 0; i < A->m; i++){
+      for (int i = 0; i < A->m; i++) {
 	for (j = sta; j < ia[i+1]; j++){
 	  if (mask[ja[j]] < ia[i]){
 	    ja[nz] = ja[j];
@@ -1166,7 +1166,7 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
     {
       double *a = A->a;
       sta = ia[0];
-      for (i = 0; i < A->m; i++) {
+      for (int i = 0; i < A->m; i++) {
         for (j = sta; j < ia[i+1]; j++) {
           if (mask[ja[j]] < ia[i]) {
             ja[nz] = ja[j];
@@ -1188,7 +1188,7 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
     {
       int *a = A->a;
       sta = ia[0];
-      for (i = 0; i < A->m; i++){
+      for (int i = 0; i < A->m; i++) {
 	for (j = sta; j < ia[i+1]; j++){
 	  if (mask[ja[j]] < ia[i]){
 	    ja[nz] = ja[j];
@@ -1207,7 +1207,7 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
   case MATRIX_TYPE_PATTERN:
     {
       sta = ia[0];
-      for (i = 0; i < A->m; i++){
+      for (int i = 0; i < A->m; i++) {
 	for (j = sta; j < ia[i+1]; j++){
 	  if (mask[ja[j]] < ia[i]){
 	    ja[nz] = ja[j];
