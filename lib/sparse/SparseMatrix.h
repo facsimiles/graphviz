@@ -115,11 +115,6 @@ SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A);
 /// @return An n×n matrix, (i,j)-th entry gives the distance of node i to j
 SparseMatrix SparseMatrix_distance_matrix(SparseMatrix D0);
 
-/// wrap a m×n matrix into a sparse matrix
-///
-/// The {i,j}-th entry of the matrix is in x[i×n+j], 0≤i<m; 0≤j<n
-SparseMatrix SparseMatrix_from_dense(int m, int n, double *x);
-
 #ifdef __cplusplus
 }
 #endif

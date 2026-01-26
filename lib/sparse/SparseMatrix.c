@@ -1947,28 +1947,6 @@ SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A){
 
 }
 
-SparseMatrix SparseMatrix_from_dense(int m, int n, double *x){
-  int i, j, *ja;
-  double *a;
-  SparseMatrix A = SparseMatrix_new(m, n, (size_t)m * (size_t)n,
-                                    MATRIX_TYPE_REAL, FORMAT_CSR);
-
-  for (i = 0; i <= m; i++) A->ia[i] = i * n;
-  
-  ja = A->ja;
-  a = A->a;
-  for (i = 0; i < m; i++){
-    for (j = 0; j < n; j++) {
-      ja[j] = j;
-      a[j] = x[i*n+j];
-    }
-    ja += n; a += j;
-  }
-  A->nz = (size_t)m * (size_t)n;
-  return A;
-
-}
-
 SparseMatrix SparseMatrix_distance_matrix(SparseMatrix D0) {
   SparseMatrix D = D0;
   int m = D->m, n = D->n;
