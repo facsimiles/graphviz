@@ -44,19 +44,19 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <math.h>
 #include <neatogen/neato.h>
+#include <stdlib.h>
 #include <util/alloc.h>
-
-static double *scales;
-static double **lu;
-static int *ps;
+#include <util/gv_math.h>
 
 /* lu_decompose() decomposes the coefficient matrix A into upper and lower
  * triangular matrices, the composite being the LU matrix.
  *
  * The arguments are:
  *
+ *	lu - the state for the computation
  *	a - the (n x n) coefficient matrix
  *	n - the order of the matrix
  *
@@ -64,62 +64,61 @@ static int *ps;
  *  and 0 is returned if the coefficient matrix is singular.
  */
 
-int lu_decompose(double **a, int n)
-{
-    int i, j, k;
-    int pivotindex = 0;
-    double pivot, biggest, mult, tempf;
+int lu_decompose(lu_t *lu, double **a, int n) {
+    assert(lu != NULL);
 
-    if (lu)
-	free_array(lu);
-    lu = new_array(n, n, 0.0);
-    free(ps);
-    ps = gv_calloc(n, sizeof(int));
-    free(scales);
-    scales = gv_calloc(n, sizeof(double));
+    lu->lu = new_array(n, n, 0.0);
+    lu->ps = gv_calloc(n, sizeof(int));
+    double *const scales = gv_calloc(n, sizeof(double));
 
-    for (i = 0; i < n; i++) {	/* For each row */
+    for (int i = 0; i < n; i++) { // for each row
 	/* Find the largest element in each row for row equilibration */
-	biggest = 0.0;
-	for (j = 0; j < n; j++)
-	    biggest = fmax(biggest, fabs(lu[i][j] = a[i][j]));
+	double biggest = 0;
+	for (int j = 0; j < n; j++)
+	    biggest = fmax(biggest, fabs(lu->lu[i][j] = a[i][j]));
 	if (biggest > 0.0)
 	    scales[i] = 1.0 / biggest;
 	else {
-	    scales[i] = 0.0;
+	    free(scales);
+	    lu_free(lu);
 	    return 0;		/* Zero row: singular matrix */
 	}
-	ps[i] = i;		/* Initialize pivot sequence */
+	lu->ps[i] = i; // initialize pivot sequence
     }
 
-    for (k = 0; k < n - 1; k++) {	/* For each column */
+    for (int k = 0, pivotindex = 0; k < n - 1; k++) { // for each column
 	/* Find the largest element in each column to pivot around */
-	biggest = 0.0;
-	for (i = k; i < n; i++) {
-	    if (biggest < (tempf = fabs(lu[ps[i]][k]) * scales[ps[i]])) {
+	double biggest = 0;
+	for (int i = k; i < n; i++) {
+	    const double tempf = fabs(lu->lu[lu->ps[i]][k]) * scales[lu->ps[i]];
+	    if (biggest < tempf) {
 		biggest = tempf;
 		pivotindex = i;
 	    }
 	}
-	if (biggest <= 0.0)
+	if (biggest <= 0.0) {
+	    free(scales);
+	    lu_free(lu);
 	    return 0;		/* Zero column: singular matrix */
+	}
 	if (pivotindex != k) {	/* Update pivot sequence */
-	    j = ps[k];
-	    ps[k] = ps[pivotindex];
-	    ps[pivotindex] = j;
+	    SWAP(&lu->ps[k], &lu->ps[pivotindex]);
 	}
 
 	/* Pivot, eliminating an extra variable  each time */
-	pivot = lu[ps[k]][k];
-	for (i = k + 1; i < n; i++) {
-	    lu[ps[i]][k] = mult = lu[ps[i]][k] / pivot;
-	    for (j = k + 1; j < n; j++)
-		lu[ps[i]][j] -= mult * lu[ps[k]][j];
+	const double pivot = lu->lu[lu->ps[k]][k];
+	for (int i = k + 1; i < n; i++) {
+	    const double mult = lu->lu[lu->ps[i]][k] = lu->lu[lu->ps[i]][k] / pivot;
+	    for (int j = k + 1; j < n; j++)
+		lu->lu[lu->ps[i]][j] -= mult * lu->lu[lu->ps[k]][j];
 	}
     }
 
-    if (lu[ps[n - 1]][n - 1] == 0.0)
+    free(scales);
+    if (lu->lu[lu->ps[n - 1]][n - 1] == 0.0) {
+	lu_free(lu);
 	return 0;		/* Singular matrix */
+    }
     return 1;
 }
 
@@ -129,29 +128,36 @@ int lu_decompose(double **a, int n)
  *
  * The arguments are:
  *
+ *	lu - the state for the computation
  *	x - the solution vector
- *	b - the constant vector
+ *	bi - the only 1.0 element of b within an otherwise-0.0 vector
  *	n - the order of the equation
 */
 
-void lu_solve(double *x, double *b, int n)
-{
-    int i, j;
-    double dot;
-
+void lu_solve(const lu_t *lu, double *x, int bi, int n) {
     /* Vector reduction using U triangular matrix */
-    for (i = 0; i < n; i++) {
-	dot = 0.0;
-	for (j = 0; j < i; j++)
-	    dot += lu[ps[i]][j] * x[j];
-	x[i] = b[ps[i]] - dot;
+    for (int i = 0; i < n; i++) {
+	double dot = 0;
+	for (int j = 0; j < i; j++)
+	    dot += lu->lu[lu->ps[i]][j] * x[j];
+	x[i] = (lu->ps[i] == bi) - dot;
     }
 
     /* Back substitution, in L triangular matrix */
-    for (i = n - 1; i >= 0; i--) {
-	dot = 0.0;
-	for (j = i + 1; j < n; j++)
-	    dot += lu[ps[i]][j] * x[j];
-	x[i] = (x[i] - dot) / lu[ps[i]][i];
+    for (int i = n - 1; i >= 0; i--) {
+	double dot = 0;
+	for (int j = i + 1; j < n; j++)
+	    dot += lu->lu[lu->ps[i]][j] * x[j];
+	x[i] = (x[i] - dot) / lu->lu[lu->ps[i]][i];
     }
+}
+
+void lu_free(lu_t *lu) {
+  if (lu == NULL) {
+    return;
+  }
+  if (lu->lu != NULL) {
+    free_array(lu->lu);
+  }
+  free(lu->ps);
 }

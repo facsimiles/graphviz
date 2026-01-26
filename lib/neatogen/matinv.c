@@ -33,36 +33,29 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <common/render.h>
 #include <neatogen/neato.h>
-#include <util/alloc.h>
 #include <util/gv_math.h>
 
 int matinv(double **A, double **Ainv, int n)
 {
-    int i, j;
-
     /* Decompose matrix into L and U triangular matrices */
-    if (lu_decompose(A, n) == 0)
-	return (0);		/* Singular */
+    lu_t lu = {0};
+    if (lu_decompose(&lu, A, n) == 0)
+	return 0; // singular
 
     /* Invert matrix by solving n simultaneous equations n times */
-    double *b = gv_calloc(n, sizeof(double));
-    for (i = 0; i < n; i++) {
-	for (j = 0; j < n; j++)
-	    b[j] = 0.0;
-	b[i] = 1.0;
-	lu_solve(Ainv[i], b, n);	/* Into a row of Ainv: fix later */
+    for (int i = 0; i < n; i++) {
+	lu_solve(&lu, Ainv[i], i, n); // into a row of Ainv: fix later
     }
-    free(b);
+    lu_free(&lu);
 
     /* Transpose matrix */
-    for (i = 0; i < n; i++) {
-	for (j = 0; j < i; j++) {
+    for (int i = 0; i < n; i++) {
+	for (int j = 0; j < i; j++) {
 	    SWAP(&Ainv[i][j], &Ainv[j][i]);
 	}
     }
 
-    return (1);
+    return 1;
 }
