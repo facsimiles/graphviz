@@ -1762,18 +1762,8 @@ static bool medians(graph_t * g, int r0, int r1)
 }
 
 static int nodeposcmpf(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  node_t **n0 = (node_t **)x;
-  node_t **n1 = (node_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  node_t *const *const n0 = x;
+  node_t *const *const n1 = y;
   if (ND_order(*n0) < ND_order(*n1)) {
     return -1;
   }
