@@ -1103,7 +1103,6 @@ void dot2_rank(graph_t *g) {
     else
 	ssize = -1;
     rank2(Xg, 1, maxiter, ssize);
-/* fastgr(Xg); */
     readout_levels(g, Xg, ncc);
 #ifdef DEBUG
     fprintf (stderr, "Xg %d nodes %d edges\n", agnnodes(Xg), agnedges(Xg));
