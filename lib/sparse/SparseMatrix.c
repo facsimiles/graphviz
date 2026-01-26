@@ -1953,8 +1953,7 @@ SparseMatrix SparseMatrix_from_dense(int m, int n, double *x){
   SparseMatrix A = SparseMatrix_new(m, n, (size_t)m * (size_t)n,
                                     MATRIX_TYPE_REAL, FORMAT_CSR);
 
-  A->ia[0] = 0;
-  for (i = 1; i <= m; i++) (A->ia)[i] = (A->ia)[i-1] + n;
+  for (i = 0; i <= m; i++) A->ia[i] = i * n;
   
   ja = A->ja;
   a = A->a;
