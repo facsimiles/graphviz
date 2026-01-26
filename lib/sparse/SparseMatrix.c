@@ -1049,7 +1049,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
   SparseMatrix D = NULL;
   int *mask = NULL;
   int *ia = A->ia, *ja = A->ja, *ib = B->ia, *jb = B->ja, *ic = C->ia, *jc = C->ja, *id, *jd;
-  int i, j, k, l, ll, jj, type;
+  int j, k, l, ll, jj, type;
 
   assert(A->format == B->format && A->format == FORMAT_CSR);/* other format not yet supported */
 
@@ -1070,10 +1070,10 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
   mask = calloc((size_t)C->n, sizeof(int));
   if (!mask) return NULL;
 
-  for (i = 0; i < C->n; i++) mask[i] = -1;
+  for (int i = 0; i < C->n; i++) mask[i] = -1;
 
   size_t nz = 0;
-  for (i = 0; i < m; i++){
+  for (int i = 0; i < m; i++){
     for (j = ia[i]; j < ia[i+1]; j++){
       jj = ja[j];
       for (l = ib[jj]; l < ib[jj+1]; l++){
@@ -1105,7 +1105,7 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
   double *c = C->a;
   double *d = D->a;
   id[0] = 0;
-  for (i = 0; i < m; i++){
+  for (int i = 0; i < m; i++){
     for (j = ia[i]; j < ia[i+1]; j++){
       jj = ja[j];
       for (l = ib[jj]; l < ib[jj+1]; l++){
