@@ -678,7 +678,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
   SparseMatrix C = NULL;
   int *mask = NULL;
   int *ia = A->ia, *ja = A->ja, *ib = B->ia, *jb = B->ja, *ic, *jc;
-  int i, j;
+  int j;
 
   assert(A && B);
   assert(A->format == B->format && A->format == FORMAT_CSR);/* other format not yet supported */
@@ -695,7 +695,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
 
   mask = gv_calloc((size_t)n, sizeof(int));
 
-  for (i = 0; i < n; i++) mask[i] = -1;
+  for (int i = 0; i < n; i++) mask[i] = -1;
 
   size_t nz = 0;
   ic[0] = 0;
@@ -704,7 +704,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
     double *a = A->a;
     double *b = B->a;
     double *c = C->a;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++) {
       for (j = ia[i]; j < ia[i+1]; j++){
 	mask[ja[j]] = (int)nz;
 	jc[nz] = ja[j];
@@ -727,7 +727,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
     double *a = A->a;
     double *b = B->a;
     double *c = C->a;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++) {
       for (j = ia[i]; j < ia[i+1]; j++){
 	mask[ja[j]] = (int)nz;
 	jc[nz] = ja[j];
@@ -754,7 +754,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
     int *a = A->a;
     int *b = B->a;
     int *c = C->a;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++) {
       for (j = ia[i]; j < ia[i+1]; j++){
 	mask[ja[j]] = (int)nz;
 	jc[nz] = ja[j];
@@ -775,7 +775,7 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
     break;
   }
   case MATRIX_TYPE_PATTERN:{
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++) {
       for (j = ia[i]; j < ia[i+1]; j++){
 	mask[ja[j]] = (int)nz;
 	jc[nz] = ja[j];
