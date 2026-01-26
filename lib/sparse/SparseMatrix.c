@@ -1969,7 +1969,7 @@ SparseMatrix SparseMatrix_from_dense(int m, int n, double *x){
 
 }
 
-void SparseMatrix_distance_matrix(SparseMatrix D0, double **dist0) {
+SparseMatrix SparseMatrix_distance_matrix(SparseMatrix D0) {
   SparseMatrix D = D0;
   int m = D->m, n = D->n;
   int *levelset_ptr = NULL, *levelset = NULL, *mask = NULL;
@@ -1982,15 +1982,25 @@ void SparseMatrix_distance_matrix(SparseMatrix D0, double **dist0) {
   assert(m == n);
   (void)m;
 
-  if (!(*dist0)) *dist0 = gv_calloc(n * n, sizeof(double));
-  for (i = 0; i < n*n; i++) (*dist0)[i] = -1;
+  SparseMatrix dist = SparseMatrix_new(n, n, (size_t)n * (size_t)n,
+                                       MATRIX_TYPE_REAL, FORMAT_CSR);
+  double *const d = dist->a;
+  for (i = 0; i <= n; ++i) {
+    dist->ia[i] = i * n;
+  }
+  for (i = 0; i < n; ++i) {
+    for (j = 0; j < n; ++j) {
+      dist->ja[i * n + j] = j;
+      d[i * n + j] = -1.0;
+    }
+  }
 
   for (k = 0; k < n; k++) {
     SparseMatrix_level_sets(D, k, &nlevel, &levelset_ptr, &levelset, &mask, true);
     assert(levelset_ptr[nlevel] == n);
     for (i = 0; i < nlevel; i++) {
       for (j = levelset_ptr[i]; j < levelset_ptr[i+1]; j++) {
-        (*dist0)[k*n+levelset[j]] = i;
+        d[k * n + levelset[j]] = i;
       }
     }
   }
@@ -2000,4 +2010,5 @@ void SparseMatrix_distance_matrix(SparseMatrix D0, double **dist0) {
   free(mask);
   
   if (D != D0) SparseMatrix_delete(D);
+  return dist;
 }
