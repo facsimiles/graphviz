@@ -432,18 +432,8 @@ static bool write_subgs(Agraph_t *g, GVJ_t *job, bool top, state_t *sp) {
 }
 
 static int agseqasc(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  Agedge_t **lhs = (Agedge_t **)x;
-  Agedge_t **rhs = (Agedge_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  Agedge_t *const *const lhs = x;
+  Agedge_t *const *const rhs = y;
     Agedge_t *e1 = *lhs;
     Agedge_t *e2 = *rhs;
 
