@@ -1774,18 +1774,8 @@ static int nodeposcmpf(const void *x, const void *y) {
 }
 
 static int edgeidcmpf(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  edge_t **e0 = (edge_t **)x;
-  edge_t **e1 = (edge_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  edge_t *const *const e0 = x;
+  edge_t *const *const e1 = y;
   if (AGSEQ(*e0) < AGSEQ(*e1)) {
     return -1;
   }
