@@ -905,18 +905,8 @@ static pointf transformf(pointf p, pointf del, int flip) {
  *  - label is higher
  */
 static int edgelblcmpfn(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  edge_t **ptr0 = (edge_t **)x;
-  edge_t **ptr1 = (edge_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  edge_t *const *const ptr0 = x;
+  edge_t *const *const ptr1 = y;
   pointf sz0, sz1;
 
   edge_t *e0 = *ptr0;
