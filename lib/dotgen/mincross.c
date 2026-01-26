@@ -163,58 +163,6 @@ static edge_t **TE_list;
 static int *TI_list;
 static bool ReMincross;
 
-#if defined(DEBUG) && DEBUG > 1
-static void indent(graph_t* g)
-{
-  if (g->parent) {
-    fprintf (stderr, "  ");
-    indent(g->parent);
-  }
-}
-
-/// @param stream Output stream to write to
-static void nname(node_t *v, FILE *stream) {
-	if (ND_node_type(v)) {
-		if (ND_ranktype(v) == CLUSTER)
-			fprintf(stream, "v%s_%p", agnameof(ND_clust(v)), v);
-		else
-			fprintf(stream, "v_%p", v);
-	} else
-		fputs(agnameof(v), stream);
-}
-static void dumpg (graph_t* g)
-{
-    edge_t* e;
-
-    fprintf (stderr, "digraph A {\n");
-    for (int r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	fprintf (stderr, "  subgraph {rank=same  ");
-	const char *trailer = " }\n";
-	for (int i = 0; i < GD_rank(g)[r].n; i++) {
-	  node_t *const v = GD_rank(g)[r].v[i];
-          if (i > 0) {
- 	    fputs(" -> ", stderr);
- 	    trailer = " [style=invis]}\n";
-          }
-          nname(v, stderr);
-        }
-        fputs(trailer, stderr);
-    }
-    for (int r = GD_minrank(g); r < GD_maxrank(g); r++) {
-	for (int i = 0; i < GD_rank(g)[r].n; i++) {
-	  node_t *const v = GD_rank(g)[r].v[i];
-	  for (int j = 0; (e = ND_out(v).list[j]); j++) {
-             nname(v, stderr);
-             fputs(" -> ", stderr);
-             nname(aghead(e), stderr);
-             fputc('\n', stderr);
-          }
-        }
-    }
-    fprintf (stderr, "}\n");
-}
-#endif
-
 typedef struct {
     Agrec_t h;
     int x, lo, hi;
