@@ -21,16 +21,13 @@
 
 int solveCircuit(int nG, double **Gm, double **Gm_inv)
 {
-    double sum;
-    int i, j;
-
     if (Verbose)
 	fprintf(stderr, "Calculating circuit model");
 
     /* set diagonal entries to sum of conductances but ignore nth node */
-    for (i = 0; i < nG; i++) {
-	sum = 0.0;
-	for (j = 0; j < nG; j++)
+    for (int i = 0; i < nG; i++) {
+	double sum = 0;
+	for (int j = 0; j < nG; j++)
 	    if (i != j)
 		sum += Gm[i][j];
 	Gm[i][i] = -sum;
@@ -40,21 +37,14 @@ int solveCircuit(int nG, double **Gm, double **Gm_inv)
 
 int circuit_model(graph_t * g, int nG)
 {
-    double **Gm;
-    double **Gm_inv;
-    int rv;
-    long i, j;
-    node_t *v;
-    edge_t *e;
-
-    Gm = new_array(nG, nG, 0.0);
-    Gm_inv = new_array(nG, nG, 0.0);
+    double **const Gm = new_array(nG, nG, 0.0);
+    double **const Gm_inv = new_array(nG, nG, 0.0);
 
     /* set non-diagonal entries */
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	for (e = agfstedge(g, v); e; e = agnxtedge(g, e, v)) {
-	    i = AGSEQ(agtail(e));
-	    j = AGSEQ(aghead(e));
+    for (node_t *v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	for (edge_t *e = agfstedge(g, v); e; e = agnxtedge(g, e, v)) {
+	    const long i = AGSEQ(agtail(e));
+	    const long j = AGSEQ(aghead(e));
 	    if (i == j)
 		continue;
 	    /* conductance is 1/resistance */
@@ -62,11 +52,11 @@ int circuit_model(graph_t * g, int nG)
 	}
     }
 
-    rv = solveCircuit(nG, Gm, Gm_inv);
+    const int rv = solveCircuit(nG, Gm, Gm_inv);
 
     if (rv)
-	for (i = 0; i < nG; i++) {
-	    for (j = 0; j < nG; j++) {
+	for (int i = 0; i < nG; i++) {
+	    for (int j = 0; j < nG; j++) {
 		GD_dist(g)[i][j] =
 		    Gm_inv[i][i] + Gm_inv[j][j] - 2.0 * Gm_inv[i][j];
 	    }

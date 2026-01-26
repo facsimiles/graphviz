@@ -34,5 +34,14 @@
 #include	<neatogen/neatoprocs.h>
 #include	<neatogen/adjust.h>
 
-PRIVATE int lu_decompose(double **a, int n);
-PRIVATE void lu_solve(double *x, double *b, int n);
+/// state for working on LU decomposition
+typedef struct {
+  double **lu; ///< composite of upper and lower triangular matrices
+  int *ps;     ///< pivot sequence
+} lu_t;
+
+PRIVATE int lu_decompose(lu_t *lu, double **a, int n);
+PRIVATE void lu_solve(const lu_t *lu, double *x, int bi, int n);
+
+/// release resources relating to LU decomposition
+PRIVATE void lu_free(lu_t *lu);
