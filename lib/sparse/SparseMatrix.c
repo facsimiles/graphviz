@@ -67,7 +67,7 @@ SparseMatrix SparseMatrix_transpose(SparseMatrix A){
   int *ia = A->ia, *ja = A->ja, *ib, *jb, m = A->m, n = A->n, type = A->type, format = A->format;
   const size_t nz = A->nz;
   SparseMatrix B;
-  int i, j;
+  int j;
 
   assert(A->format == FORMAT_CSR);/* only implemented for CSR right now */
 
@@ -76,20 +76,20 @@ SparseMatrix SparseMatrix_transpose(SparseMatrix A){
   ib = B->ia;
   jb = B->ja;
 
-  for (i = 0; i <= n; i++) ib[i] = 0;
-  for (i = 0; i < m; i++){
+  for (int i = 0; i <= n; i++) ib[i] = 0;
+  for (int i = 0; i < m; i++){
     for (j = ia[i]; j < ia[i+1]; j++){
       ib[ja[j]+1]++;
     }
   }
 
-  for (i = 0; i < n; i++) ib[i+1] += ib[i];
+  for (int i = 0; i < n; i++) ib[i+1] += ib[i];
 
   switch (A->type){
   case MATRIX_TYPE_REAL:{
     double *a = A->a;
     double *b = B->a;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
 	jb[ib[ja[j]]] = i;
 	b[ib[ja[j]]++] = a[j];
@@ -100,7 +100,7 @@ SparseMatrix SparseMatrix_transpose(SparseMatrix A){
   case MATRIX_TYPE_COMPLEX:{
     double *a = A->a;
     double *b = B->a;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
 	jb[ib[ja[j]]] = i;
 	b[2*ib[ja[j]]] = a[2*j];
@@ -113,7 +113,7 @@ SparseMatrix SparseMatrix_transpose(SparseMatrix A){
   case MATRIX_TYPE_INTEGER:{
     int *ai = A->a;
     int *bi = B->a;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
 	jb[ib[ja[j]]] = i;
 	bi[ib[ja[j]]++] = ai[j];
@@ -122,7 +122,7 @@ SparseMatrix SparseMatrix_transpose(SparseMatrix A){
     break;
   }
   case MATRIX_TYPE_PATTERN:
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++){
       for (j = ia[i]; j < ia[i+1]; j++){
 	jb[ib[ja[j]]++] = i;
       }
@@ -133,7 +133,7 @@ SparseMatrix SparseMatrix_transpose(SparseMatrix A){
   }
 
 
-  for (i = n-1; i >= 0; i--) ib[i+1] = ib[i];
+  for (int i = n-1; i >= 0; i--) ib[i+1] = ib[i];
   ib[0] = 0;
   
 
