@@ -1906,15 +1906,15 @@ SparseMatrix SparseMatrix_distance_matrix(SparseMatrix D0) {
   (void)m;
 
   SparseMatrix dist = SparseMatrix_new(n, n, (size_t)n * (size_t)n,
-                                       MATRIX_TYPE_REAL, FORMAT_CSR);
-  double *const d = dist->a;
+                                       MATRIX_TYPE_INTEGER, FORMAT_CSR);
+  int *const d = dist->a;
   for (i = 0; i <= n; ++i) {
     dist->ia[i] = i * n;
   }
   for (i = 0; i < n; ++i) {
     for (j = 0; j < n; ++j) {
       dist->ja[i * n + j] = j;
-      d[i * n + j] = -1.0;
+      d[i * n + j] = -1;
     }
   }
 
