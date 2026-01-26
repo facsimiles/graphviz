@@ -443,61 +443,6 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
 
 }
 
-static void SparseMatrix_export_coord(FILE *f, SparseMatrix A){
-  switch (A->type){
-  case MATRIX_TYPE_REAL:
-    fprintf(f,"%%%%MatrixMarket matrix coordinate real general\n");
-    break;
-  case MATRIX_TYPE_COMPLEX:
-    fprintf(f,"%%%%MatrixMarket matrix coordinate complex general\n");
-    break;
-  case MATRIX_TYPE_INTEGER:
-    fprintf(f,"%%%%MatrixMarket matrix coordinate integer general\n");
-    break;
-  case MATRIX_TYPE_PATTERN:
-    fprintf(f,"%%%%MatrixMarket matrix coordinate pattern general\n");
-    break;
-  default:
-    UNREACHABLE();
-  }
-
-  fprintf(f, "%d %d %" PRISIZE_T "\n", A->m, A->n, A->nz);
-  const int *const ia = A->ia;
-  const int *const ja = A->ja;
-  switch (A->type){
-  case MATRIX_TYPE_REAL: {
-    const double *const a = A->a;
-    for (size_t i = 0; i < A->nz; i++) {
-      fprintf(f, "%d %d %16.8g\n",ia[i]+1, ja[i]+1, a[i]);
-    }
-    break;
-  }
-  case MATRIX_TYPE_COMPLEX: {
-    const double *const a = A->a;
-    for (size_t i = 0; i < A->nz; i++) {
-      fprintf(f, "%d %d %16.8g %16.8g\n",ia[i]+1, ja[i]+1, a[2*i], a[2*i+1]);
-    }
-    break;
-  }
-  case MATRIX_TYPE_INTEGER: {
-    const int *const ai = A->a;
-    for (size_t i = 0; i < A->nz; i++) {
-      fprintf(f, "%d %d %d\n",ia[i]+1, ja[i]+1, ai[i]);
-    }
-    break;
-  case MATRIX_TYPE_PATTERN:
-    for (size_t i = 0; i < A->nz; i++){
-      fprintf(f, "%d %d\n",ia[i]+1, ja[i]+1);
-    }
-    break;
-  }
-  default:
-    UNREACHABLE();
-  }
-}
-
-
-
 void SparseMatrix_export(FILE *f, SparseMatrix A){
 
   switch (A->format){
@@ -505,8 +450,8 @@ void SparseMatrix_export(FILE *f, SparseMatrix A){
     SparseMatrix_export_csr(f, A);
     break;
   case FORMAT_COORD:
-    SparseMatrix_export_coord(f, A);
-    break;
+    fprintf(stderr, "exporting coordinate format matrices is not supported\n");
+    abort();
   default:
     UNREACHABLE();
   }
