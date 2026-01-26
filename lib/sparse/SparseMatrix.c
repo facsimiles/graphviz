@@ -1791,7 +1791,7 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
      if rindices = NULL, it is assume that 1 -- nrow is needed. Same for cindices/ncol.
    */
   size_t nz = 0;
-  int i, j, *irn, *jcn, *ia = A->ia, *ja = A->ja, m = A->m, n = A->n;
+  int j, *irn, *jcn, *ia = A->ia, *ja = A->ja, m = A->m, n = A->n;
   int *cmask, *rmask;
   void *v = NULL;
   SparseMatrix B = NULL;
@@ -1803,34 +1803,34 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
 
   rmask = gv_calloc((size_t)m, sizeof(int));
   cmask = gv_calloc((size_t)n, sizeof(int));
-  for (i = 0; i < m; i++) rmask[i] = -1;
-  for (i = 0; i < n; i++) cmask[i] = -1;
+  for (int i = 0; i < m; i++) rmask[i] = -1;
+  for (int i = 0; i < n; i++) cmask[i] = -1;
 
   if (rindices){
-    for (i = 0; i < nrow; i++) {
+    for (int i = 0; i < nrow; i++) {
       if (rindices[i] >= 0 && rindices[i] < m){
 	rmask[rindices[i]] = irow++;
       }
     }
   } else {
-    for (i = 0; i < nrow; i++) {
+    for (int i = 0; i < nrow; i++) {
       rmask[i] = irow++;
     }
   }
 
   if (cindices){
-    for (i = 0; i < ncol; i++) {
+    for (int i = 0; i < ncol; i++) {
       if (cindices[i] >= 0 && cindices[i] < n){
 	cmask[cindices[i]] = icol++;
       }
     }
   } else {
-    for (i = 0; i < ncol; i++) {
+    for (int i = 0; i < ncol; i++) {
       cmask[i] = icol++;
     }
   }
 
-  for (i = 0; i < m; i++){
+  for (int i = 0; i < m; i++) {
     if (rmask[i] < 0) continue;
     for (j = ia[i]; j < ia[i+1]; j++){
       if (cmask[ja[j]] < 0) continue;
@@ -1848,7 +1848,7 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
     val = gv_calloc(nz, sizeof(double));
 
     nz = 0;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++) {
       if (rmask[i] < 0) continue;
       for (j = ia[i]; j < ia[i+1]; j++){
 	if (cmask[ja[j]] < 0) continue;
@@ -1869,7 +1869,7 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
     val = gv_calloc(2 * nz, sizeof(double));
 
     nz = 0;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++) {
       if (rmask[i] < 0) continue;
       for (j = ia[i]; j < ia[i+1]; j++){
 	if (cmask[ja[j]] < 0) continue;
@@ -1892,7 +1892,7 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
     val = gv_calloc(nz, sizeof(int));
 
     nz = 0;
-    for (i = 0; i < m; i++){
+    for (int i = 0; i < m; i++) {
       if (rmask[i] < 0) continue;
       for (j = ia[i]; j < ia[i+1]; j++){
 	if (cmask[ja[j]] < 0) continue;
@@ -1909,7 +1909,7 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
     irn = gv_calloc(nz, sizeof(int));
     jcn = gv_calloc(nz, sizeof(int));
     nz = 0;
-     for (i = 0; i < m; i++){
+     for (int i = 0; i < m; i++) {
       if (rmask[i] < 0) continue;
       for (j = ia[i]; j < ia[i+1]; j++){
 	if (cmask[ja[j]] < 0) continue;
