@@ -147,7 +147,6 @@ static void free_matrix(adjmatrix_t * p);
 static int ordercmpf(const void *, const void *);
 static int64_t ncross(void);
 #ifdef DEBUG
-void check_rs(graph_t * g, int null_ok);
 void check_order(void);
 void check_vlists(graph_t * g);
 void node_in_root_vlist(node_t * n);
@@ -1827,32 +1826,6 @@ void virtual_weight(edge_t * e)
 }
 
 #ifdef DEBUG
-void check_rs(graph_t * g, int null_ok)
-{
-    int i, r;
-    node_t *v, *prev;
-
-    fprintf(stderr, "\n\n%s:\n", agnameof(g));
-    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	fprintf(stderr, "%d: ", r);
-	prev = NULL;
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	    v = GD_rank(g)[r].v[i];
-	    if (v == NULL) {
-		fprintf(stderr, "NULL\t");
-		if (!null_ok)
-		    abort();
-	    } else {
-		fprintf(stderr, "%s(%f)\t", agnameof(v), ND_mval(v));
-		assert(ND_rank(v) == r);
-		assert(v != prev);
-		prev = v;
-	    }
-	}
-	fprintf(stderr, "\n");
-    }
-}
-
 void check_order(void)
 {
     int i, r;
