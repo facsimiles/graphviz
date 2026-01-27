@@ -410,7 +410,7 @@ static int mapFromGraph(Agraph_t *g, params_t *pm) {
   float* rgb_r = NULL;
   float* rgb_g = NULL;
   float* rgb_b = NULL;
-  float* fsz;
+  float *fsz = NULL;
 
   initDotIO(g);
   graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, &x, &grouping, 
@@ -426,6 +426,7 @@ static int mapFromGraph(Agraph_t *g, params_t *pm) {
     free(labels[i]);
   }
   free(labels);
+  free(fsz);
   free(rgb_r);
   free(rgb_g);
   free(rgb_b);
