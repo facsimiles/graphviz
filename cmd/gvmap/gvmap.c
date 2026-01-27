@@ -425,6 +425,7 @@ static int mapFromGraph(Agraph_t *g, params_t *pm) {
   for (int i = 0; labels != NULL && i < agnnodes(g); ++i) {
     free(labels[i]);
   }
+  free(labels);
   free(rgb_r);
   free(rgb_g);
   free(rgb_b);
