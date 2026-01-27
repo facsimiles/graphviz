@@ -406,7 +406,7 @@ static int mapFromGraph(Agraph_t *g, params_t *pm) {
   double* width = NULL;
   double *x = NULL;
   char** labels = NULL;
-  int* grouping;
+  int *grouping = NULL;
   float* rgb_r = NULL;
   float* rgb_g = NULL;
   float* rgb_b = NULL;
@@ -430,6 +430,7 @@ static int mapFromGraph(Agraph_t *g, params_t *pm) {
   free(rgb_r);
   free(rgb_g);
   free(rgb_b);
+  free(grouping);
   free(x);
   free(width);
   return rc;
