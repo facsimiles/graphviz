@@ -313,41 +313,41 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
 
   switch (default_color_scheme){
   case COLOR_SCHEME_BLUE_YELLOW:
-    pal = &(palette_blue_to_yellow[0][0]);
+    pal = &palette_blue_to_yellow[0][0];
     break;
   case COLOR_SCHEME_WHITE_RED:
-    pal = &(palette_white_to_red[0][0]);
+    pal = &palette_white_to_red[0][0];
     break;
   case COLOR_SCHEME_GREY_RED:
-    pal = &(palette_grey_to_red[0][0]);
+    pal = &palette_grey_to_red[0][0];
     break;
   case COLOR_SCHEME_GREY:
-    pal = &(palette_grey[0][0]);
+    pal = &palette_grey[0][0];
     break;
   case COLOR_SCHEME_PASTEL:
-    pal = &(palette_pastel[0][0]);
+    pal = &palette_pastel[0][0];
     break;
   case COLOR_SCHEME_SEQUENTIAL_SINGLEHUE_RED:
-    pal = &(palette_sequential_singlehue_red[0][0]);
+    pal = &palette_sequential_singlehue_red[0][0];
     break;
   case COLOR_SCHEME_SEQUENTIAL_SINGLEHUE_RED_LIGHTER:
-    pal = &(palette_sequential_singlehue_red_lighter[0][0]);
+    pal = &palette_sequential_singlehue_red_lighter[0][0];
     break;
   case COLOR_SCHEME_PRIMARY:
-    pal = &(palette_primary[0][0]);
+    pal = &palette_primary[0][0];
     break;
   case COLOR_SCHEME_ADAM_BLEND:
-    pal = &(palette_adam_blend[0][0]);
+    pal = &palette_adam_blend[0][0];
     break;
   case COLOR_SCHEME_ADAM:
-    pal = &(palette_adam[0][0]);
+    pal = &palette_adam[0][0];
     max_color = 11;
     break;
   case COLOR_SCHEME_NONE:
     pal = NULL;
     break;
   default:
-    pal = &(palette_pastel[0][0]);
+    pal = &palette_pastel[0][0];
     break;
   }
     
@@ -421,7 +421,7 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   else if (clust_sym) {
     for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
       i = ND_id(n);
-      if ((sscanf(agxget(n,clust_sym), "%d", &ic)>0)) {
+      if (sscanf(agxget(n, clust_sym), "%d", &ic) > 0) {
         (*clusters)[i] = ic;
         nc = MAX(nc, ic);
         if (first){
