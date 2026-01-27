@@ -3425,7 +3425,6 @@ def test_gvmap_fclose():
 
 
 @pytest.mark.skipif(which("gvmap") is None, reason="gvmap not available")
-@pytest.mark.xfail(strict=False)
 def test_gvmap_invalid():
     """gvmap should not crash when processing a file without node positions etc"""
 
