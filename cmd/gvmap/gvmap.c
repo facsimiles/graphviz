@@ -422,6 +422,7 @@ static int mapFromGraph(Agraph_t *g, params_t *pm) {
   } else { // the graph was missing position information
     rc = -1;
   }
+  SparseMatrix_delete(graph);
   for (int i = 0; labels != NULL && i < agnnodes(g); ++i) {
     free(labels[i]);
   }
