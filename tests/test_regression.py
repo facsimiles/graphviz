@@ -3424,6 +3424,22 @@ def test_gvmap_fclose():
     assert proc.returncode in (0, 1), "gvmap crashed"
 
 
+@pytest.mark.skipif(which("gvmap") is None, reason="gvmap not available")
+@pytest.mark.xfail(strict=False)
+def test_gvmap_invalid():
+    """gvmap should not crash when processing a file without node positions etc"""
+
+    # an arbitrary test case that was observed to crash gvmap in the past
+    src = Path(__file__).parent / "2368_1.dot"
+    assert src.exists(), "missing test data"
+
+    # run this through gvmap
+    gvmap = which("gvmap")
+    proc = subprocess.run([gvmap, src], check=False)
+
+    assert proc.returncode in (0, 1), "gvmap crashed"
+
+
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
 def test_gvpr_usage(tmp_path: Path):
     """
