@@ -11,6 +11,7 @@
 #include "config.h"
 
 #define STANDALONE
+#include <assert.h>
 #include <sparse/general.h>
 #include <sparse/DotIO.h>
 #include <sparse/clustering.h>
@@ -536,30 +537,27 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
 
   }
 
-
-  if (x){
-    bool has_position = false;
-    *x = gv_calloc(dim * nnodes, sizeof(double));
-    for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
-      double xx,yy;
-      i = ND_id(n);
-      if (agget(n, "pos")){
-        has_position = true;
-	sscanf(agget(n, "pos"), "%lf,%lf", &xx, &yy);
-	(*x)[i*dim] = xx;
-	(*x)[i*dim+1] = yy;
-      } else {
-	fprintf(stderr,"WARNING: pos field missing for node %d, set to origin\n",i);
-	(*x)[i*dim] = 0;
-	(*x)[i*dim+1] = 0;
-      }
-    }
-    if (!has_position){
-      free(*x);
-      *x = NULL;
+  assert(x != NULL);
+  bool has_position = false;
+  *x = gv_calloc(dim * nnodes, sizeof(double));
+  for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    double xx, yy;
+    i = ND_id(n);
+    if (agget(n, "pos")) {
+      has_position = true;
+      sscanf(agget(n, "pos"), "%lf,%lf", &xx, &yy);
+      (*x)[i * dim] = xx;
+      (*x)[i * dim + 1] = yy;
+    } else {
+      fprintf(stderr, "WARNING: pos field missing for node %d, set to origin\n", i);
+      (*x)[i * dim] = 0;
+      (*x)[i * dim + 1] = 0;
     }
   }
-
+  if (!has_position){
+    free(*x);
+    *x = NULL;
+  }
 
   free(I);
   free(J);
