@@ -430,6 +430,7 @@ static int mapFromGraph(Agraph_t *g, params_t *pm) {
   free(rgb_g);
   free(rgb_b);
   free(x);
+  free(width);
   return rc;
 }
 
