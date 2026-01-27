@@ -612,10 +612,10 @@ int openFile(Expr_t *ex, const char *fname, const char *mode) {
   int idx;
 
   /* find open index */
-  for (idx = 3; idx < elementsof(ex->file); idx++)
+  for (idx = 3; (size_t)idx < elementsof(ex->file); idx++)
     if (!ex->file[idx])
       break;
-  if (idx == elementsof(ex->file)) {
+  if ((size_t)idx == elementsof(ex->file)) {
     exerror("openF: no available descriptors");
     return -1;
   }
