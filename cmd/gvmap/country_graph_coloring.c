@@ -15,6 +15,7 @@
 #include <math.h>
 #include "power.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #include <time.h>
 
 static double get_local_12_norm(int n, int i, const int *ia, const int *ja,
@@ -127,6 +128,7 @@ void country_graph_coloring(int seed, SparseMatrix A, int **p) {
   double *v = power_method(L, L->n, seed);
 
   vector_ordering(n, v, p);
+  free(v);
   if (Verbose)
     fprintf(stderr, "cpu time for spectral ordering (before greedy) = %f\n",
             ((double)(clock() - start)) / CLOCKS_PER_SEC);
