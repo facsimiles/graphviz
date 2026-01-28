@@ -108,6 +108,7 @@ void map_optimal_coloring(int seed, SparseMatrix A, float *rgb_r,  float *rgb_g,
   vector_float_take(n, rgb_b, n, p, &u);
   for (i = 0; i < n; i++) rgb_b[i] = u[i];
   free(u);
+  free(p);
 }
 
 static int get_poly_id(int ip, SparseMatrix point_poly_map){
