@@ -323,7 +323,7 @@ static int makeMap(SparseMatrix graph, int n, double *x, double *width,
   SparseMatrix poly_lines, polys, poly_point_map;
   int nverts, *polys_groups;
   double *x_poly;
-  SparseMatrix country_graph;
+  SparseMatrix country_graph = NULL;
   int improve_contiguity_n = pm->improve_contiguity_n;
 #ifdef TIME
   clock_t  cpu;
@@ -394,6 +394,7 @@ static int makeMap(SparseMatrix graph, int n, double *x, double *width,
   SparseMatrix_delete(polys);
   SparseMatrix_delete(poly_lines);
   SparseMatrix_delete(poly_point_map);
+  SparseMatrix_delete(country_graph);
   free(x_poly);
   free(polys_groups);
   return 0;
