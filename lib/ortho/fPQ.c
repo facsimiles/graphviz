@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,142 +16,104 @@
 
 #include <ortho/fPQ.h>
 
-static snode**  pq;
-static int     PQcnt;
-static snode    guard;
-static int     PQsize;
+struct pq {
+  snode **pq;
+  int cnt;
+  snode guard;
+  int size;
+};
 
-void
-PQgen(int sz)
-{
-  if (!pq) {
-    pq = gv_calloc(sz + 1, sizeof(snode*));
-    pq[0] = &guard;
-    PQsize = sz;
+pq_t *PQgen(int sz) {
+  pq_t *const pq = gv_alloc(sizeof(*pq));
+  pq->pq = gv_calloc(sz + 1, sizeof(snode *));
+  pq->pq[0] = &pq->guard;
+  pq->size = sz;
+  pq->cnt = 0;
+  return pq;
+}
+
+void PQfree(pq_t *pq) {
+  if (pq != NULL) {
+    free(pq->pq);
   }
-  PQcnt = 0;
+  free(pq);
 }
 
-void
-PQfree(void)
-{
-  free (pq);
-  pq = NULL;
-  PQcnt = 0;
-}
+void PQinit(pq_t *pq) { pq->cnt = 0; }
 
-void
-PQinit(void)
-{
-  PQcnt = 0;
-}
-
-void
-PQcheck (void)
-{
-  int i;
- 
-  for (i = 1; i <= PQcnt; i++) {
-    if (N_IDX(pq[i]) != i) {
-      assert (0);
-    }
+static void PQcheck(const pq_t *pq) {
+  for (int i = 1; i <= pq->cnt; i++) {
+    assert(N_IDX(pq->pq[i]) == i);
   }
 }
 
-void
-PQupheap(int k)
-{
-  snode* x = pq[k];
-  int     v = x->n_val;
-  int     next = k/2;
-  snode*  n;
-  
-  while (N_VAL(n = pq[next]) < v) {
-    pq[k] = n;
+static void PQupheap(pq_t *pq, int k) {
+  snode *x = pq->pq[k];
+  int v = x->n_val;
+  int next = k / 2;
+  snode *n;
+
+  while (N_VAL(n = pq->pq[next]) < v) {
+    pq->pq[k] = n;
     N_IDX(n) = k;
     k = next;
     next /= 2;
   }
-  pq[k] = x;
+  pq->pq[k] = x;
   N_IDX(x) = k;
 }
 
-int
-PQ_insert(snode* np)
-{
-  if (PQcnt == PQsize) {
+int PQ_insert(pq_t *pq, snode *np) {
+  if (pq->cnt == pq->size) {
     agerrorf("Heap overflow\n");
     return 1;
   }
-  PQcnt++;
-  pq[PQcnt] = np;
-  PQupheap (PQcnt);
-  PQcheck();
+  pq->cnt++;
+  pq->pq[pq->cnt] = np;
+  PQupheap(pq, pq->cnt);
+  PQcheck(pq);
   return 0;
 }
 
-void
-PQdownheap (int k)
-{
-  snode*    x = pq[k];
-  int      v = N_VAL(x);
-  int      lim = PQcnt/2;
-  snode*    n;
-  int      j;
+static void PQdownheap(pq_t *pq, int k) {
+  snode *x = pq->pq[k];
+  int v = N_VAL(x);
+  int lim = pq->cnt / 2;
 
   while (k <= lim) {
-    j = k+k;
-    n = pq[j];
-    if (j < PQcnt) {
-      if (N_VAL(n) < N_VAL(pq[j+1])) {
+    int j = k + k;
+    snode *n = pq->pq[j];
+    if (j < pq->cnt) {
+      if (N_VAL(n) < N_VAL(pq->pq[j + 1])) {
         j++;
-        n = pq[j];
+        n = pq->pq[j];
       }
     }
-    if (v >= N_VAL(n)) break;
-    pq[k] = n;
+    if (v >= N_VAL(n))
+      break;
+    pq->pq[k] = n;
     N_IDX(n) = k;
     k = j;
   }
-  pq[k] = x;
+  pq->pq[k] = x;
   N_IDX(x) = k;
 }
 
-snode*
-PQremove (void)
-{
-  snode* n;
-
-  if (PQcnt) {
-    n = pq[1];
-    pq[1] = pq[PQcnt];
-    PQcnt--;
-    if (PQcnt) PQdownheap (1);
-    PQcheck();
+snode *PQremove(pq_t *pq) {
+  if (pq->cnt) {
+    snode *const n = pq->pq[1];
+    pq->pq[1] = pq->pq[pq->cnt];
+    pq->cnt--;
+    if (pq->cnt)
+      PQdownheap(pq, 1);
+    PQcheck(pq);
     return n;
   }
-  else return 0;
+  return 0;
 }
 
-void
-PQupdate (snode* n, int d)
-{
+void PQupdate(pq_t *pq, snode *n, int d) {
   N_VAL(n) = d;
-  PQupheap (n->n_idx);
-  PQcheck();
-}
-
-void
-PQprint (void)
-{
-  int    i;
-  snode*  n;
-
-  fprintf (stderr, "Q: ");
-  for (i = 1; i <= PQcnt; i++) {
-    n = pq[i];
-    fprintf (stderr, "%d(%d:%d) ",  
-      n->index, N_IDX(n), N_VAL(n));
-  }
-  fprintf (stderr, "\n");
+  PQupheap(pq, n->n_idx);
+  PQcheck(pq);
 }

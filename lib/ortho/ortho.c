@@ -1153,8 +1153,6 @@ static bool swap_ends_p(edge_t * e)
     return false;
 }
 
-static splineInfo sinfo = { swap_ends_p, spline_merge, true, true };
-
 /* orthoEdges:
  * For edges without position information, construct an orthogonal routing.
  * If useLbls is true, use edge label info when available to guide routing, 
@@ -1236,7 +1234,7 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
     qsort(es, n_edges, sizeof(epair_t), edgecmp);
 
     const int gstart = sg->nnodes;
-    PQgen (sg->nnodes+2);
+    pq_t *const pq = PQgen(sg->nnodes + 2);
     snode *const sn = &sg->nodes[gstart];
     snode *const dn = &sg->nodes[gstart+1];
     for (size_t i = 0; i < n_edges; i++) {
@@ -1256,13 +1254,16 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
        		addNodeEdges (sg, dest, dn);
 		addNodeEdges (sg, start, sn);
 	    }
-       	    if (shortPath (sg, dn, sn)) goto orthofinish;
+       	    if (shortPath(pq, sg, dn, sn)) {
+		PQfree(pq);
+		goto orthofinish;
+       	    }
 	}
 	    
        	route_list[i] = convertSPtoRoute(sg, sn, dn);
        	reset (sg);
     }
-    PQfree ();
+    PQfree(pq);
 
     mp->hchans = extractHChans (mp);
     mp->vchans = extractVChans (mp);
@@ -1272,6 +1273,7 @@ void orthoEdges(Agraph_t *g, bool useLbls) {
 #ifdef DEBUG
     if (odb_flags & ODB_ROUTE) emitGraph (stderr, mp, n_edges, route_list, es);
 #endif
+    splineInfo sinfo = {swap_ends_p, spline_merge, true, true};
     attachOrthoEdges(mp, n_edges, route_list, &sinfo, es, useLbls);
 
 orthofinish:
@@ -1288,7 +1290,7 @@ orthofinish:
 #include <common/arith.h>
 #define TRANS 10
 
-static char* prolog2 =
+static const char prolog2[] =
 "%%!PS-Adobe-2.0\n\
 %%%%BoundingBox: (atend)\n\
 /point {\n\
@@ -1319,11 +1321,6 @@ static char* prolog2 =
  closepath fill\n\
 } def\n\
 \n";
-
-static char* epilog2 =
-"showpage\n\
-%%%%Trailer\n\
-%%%%BoundingBox: %.f %.f %.f %.f\n";
 
 static pointf coordOf(cell *cp, snode *np) {
     if (cp->sides[M_TOP] == np) {
@@ -1434,7 +1431,7 @@ static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
     boxf absbb = {.LL = {.x = DBL_MAX, .y = DBL_MAX},
                   .UR = {.x = -DBL_MAX, .y = -DBL_MAX}};
 
-    fprintf (fp, "%s", prolog2);
+    fputs(prolog2, fp);
     fprintf (fp, "%d %d translate\n", TRANS, TRANS);
 
     fputs ("0 0 1 setrgbcolor\n", fp);
@@ -1462,5 +1459,6 @@ static UNUSED void emitGraph(FILE *fp, maze *mp, size_t n_edges,
              .y = absbb.LL.y + TRANS},
       .UR = {.x = absbb.UR.x + TRANS,
              .y = absbb.UR.y + TRANS}};
-    fprintf (fp, epilog2, bbox.LL.x, bbox.LL.y,  bbox.UR.x, bbox.UR.y);
+    fprintf(fp, "showpage\n%%%%Trailer\n%%%%BoundingBox: %.f %.f %.f %.f\n",
+            bbox.LL.x, bbox.LL.y,  bbox.UR.x, bbox.UR.y);
 }
