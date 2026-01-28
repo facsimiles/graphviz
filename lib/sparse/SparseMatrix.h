@@ -73,8 +73,21 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
 
 enum {SUM_REPEATED_NONE = 0, SUM_REPEATED_ALL, };
 SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A);
-SparseMatrix SparseMatrix_coordinate_form_add_entry(SparseMatrix A, int irn,
-                                                    int jcn, const void *val);
+
+SparseMatrix SparseMatrix_coordinate_form_add_entry_(SparseMatrix A, int irn,
+                                                     int jcn, const void *val,
+                                                     int type);
+
+/// wrap `SparseMatrix_coordinate_form_add_entry_` for type safety
+#ifndef __cplusplus
+#define SparseMatrix_coordinate_form_add_entry(A, irn, jcn, val)               \
+  SparseMatrix_coordinate_form_add_entry_((A), (irn), (jcn), (val),            \
+    _Generic((val),                                                            \
+      double *: MATRIX_TYPE_REAL,                                              \
+      int *:MATRIX_TYPE_INTEGER,                                               \
+      void *:MATRIX_TYPE_PATTERN                                               \
+  ))
+#endif
 bool SparseMatrix_is_symmetric(SparseMatrix A, bool test_pattern_symmetry_only);
 SparseMatrix SparseMatrix_transpose(SparseMatrix A);
 SparseMatrix SparseMatrix_symmetrize(SparseMatrix A,
@@ -117,4 +130,26 @@ SparseMatrix SparseMatrix_distance_matrix(SparseMatrix D0);
 
 #ifdef __cplusplus
 }
+
+/// reimplement C `SparseMatrix_coordinate_form_add_entry` as an overloaded C++
+/// function because C++ has no `_Generic`
+static inline SparseMatrix
+SparseMatrix_coordinate_form_add_entry(SparseMatrix A, int irn, int jcn,
+                                       const double *val) {
+  return SparseMatrix_coordinate_form_add_entry_(A, irn, jcn, val,
+                                                 MATRIX_TYPE_REAL);
+}
+static inline SparseMatrix
+SparseMatrix_coordinate_form_add_entry(SparseMatrix A, int irn, int jcn,
+                                       const int *val) {
+  return SparseMatrix_coordinate_form_add_entry_(A, irn, jcn, val,
+                                                 MATRIX_TYPE_INTEGER);
+}
+static inline SparseMatrix
+SparseMatrix_coordinate_form_add_entry(SparseMatrix A, int irn, int jcn,
+                                       std::nullptr_t) {
+  return SparseMatrix_coordinate_form_add_entry_(A, irn, jcn, nullptr,
+                                                 MATRIX_TYPE_PATTERN);
+}
+
 #endif
