@@ -117,7 +117,7 @@ LANGS = {
             "void": None,
         },
         Syntax("gv.", "(", ", ", ");"),
-        '(load-extension "./libgv.so" "SWIG_init")',
+        '(load-extension "/usr/lib/graphviz/guile/libgv.so" "SWIG_init")',
     ),
     "java": Lang(
         {
@@ -293,7 +293,6 @@ include("gv.php")
         Syntax("gv.", "(", ", ", ");"),
         """\
 #!/usr/bin/python
-import sys
 import gv""",
     ),
     "R": Lang(
