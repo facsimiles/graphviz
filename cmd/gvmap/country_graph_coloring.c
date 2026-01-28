@@ -112,7 +112,7 @@ void country_graph_coloring(int seed, SparseMatrix A, int **p) {
       const int jj = ja[j];
       if (jj != i){
 	nrow ++;
-	L = SparseMatrix_coordinate_form_add_entry(L, i, jj, &(int){-1});
+	L = SparseMatrix_coordinate_form_add_entry(L, i, jj, &(double){-1});
       }
     }
     L = SparseMatrix_coordinate_form_add_entry(L, i, i, &nrow);

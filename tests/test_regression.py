@@ -3440,7 +3440,12 @@ def test_gvmap_invalid():
 
 
 @pytest.mark.skipif(which("gvmap") is None, reason="gvmap not available")
-@pytest.mark.xfail(strict=False)
+@pytest.mark.xfail(
+    is_rocky(),
+    strict=True,
+    raises=subprocess.CalledProcessError,
+    reason="libgts unavailable on Rocky Linux",
+)
 def test_gvmap_add_coordinate():
     """gvmap should not read out of bounds when processing coordinates"""
 
