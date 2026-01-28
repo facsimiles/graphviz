@@ -3439,6 +3439,20 @@ def test_gvmap_invalid():
     assert proc.returncode in (0, 1), "gvmap crashed"
 
 
+@pytest.mark.skipif(which("gvmap") is None, reason="gvmap not available")
+@pytest.mark.xfail(strict=False)
+def test_gvmap_add_coordinate():
+    """gvmap should not read out of bounds when processing coordinates"""
+
+    # an arbitrary test case that was observed to crash gvmap in the past
+    src = Path(__file__).parent / "2239.dot"
+    assert src.exists(), "missing test data"
+
+    # run this through gvmap
+    gvmap = which("gvmap")
+    run([gvmap, src])
+
+
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
 def test_gvpr_usage(tmp_path: Path):
     """
