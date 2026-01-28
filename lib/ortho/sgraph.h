@@ -55,11 +55,14 @@ typedef struct {
   sedge* edges;
 } sgraph;
 
+/// state for a priority queue
+typedef struct pq pq_t;
+
 extern void reset(sgraph*);
 extern void gsave(sgraph*);
 extern sgraph *createSGraph(size_t);
 extern void freeSGraph (sgraph*);
 extern void initSEdges(sgraph *g, size_t maxdeg);
-extern int shortPath (sgraph* g, snode* from, snode* to);
+extern int shortPath(pq_t *pq, sgraph *g, snode *from, snode *to);
 extern snode* createSNode (sgraph*);
 extern sedge* createSEdge (sgraph* g, snode* v0, snode* v1, double wt);
