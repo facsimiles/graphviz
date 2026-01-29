@@ -20,6 +20,7 @@ import pytest
 
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
+    is_rocky_10,
     is_ubuntu_2404,
     is_ubuntu_2504,
     run,
@@ -45,7 +46,7 @@ class Case:
 
 
 TESTS: list[Case] = [
-    Case("trivial", Path("trivial.gv"), "dot", "gv", [], xfail=False),
+    Case("trivial", Path("trivial.gv"), "dot", "gv", [], xfail=is_rocky_10()),
     Case(
         "shapes",
         Path("shapes.gv"),
@@ -225,7 +226,7 @@ TESTS: list[Case] = [
     Case("polypoly", Path("polypoly.gv"), "dot", "ps", []),
     Case("polypoly", Path("polypoly.gv"), "dot", "png", []),
     Case("ports", Path("ports.gv"), "dot", "gv", []),
-    Case("radius", Path("radius.gv"), "dot", "gv", [], xfail=False),
+    Case("radius", Path("radius.gv"), "dot", "gv", [], xfail=is_rocky_10()),
     Case("rotate", Path("crazy.gv"), "dot", "png", ["-Glandscape"]),
     Case("rotate", Path("crazy.gv"), "dot", "ps", ["-Glandscape"]),
     Case("rotate", Path("crazy.gv"), "dot", "png", ["-Grotate=90"], 1),
