@@ -92,12 +92,12 @@ def checksum(path: Path) -> Path:
 
 def is_macos_artifact(name: str) -> bool:
     """is this a deployment artifact for macOS?"""
-    return re.search(r"\bDarwin\b", name) is not None
+    return name.startswith("Darwin_")
 
 
 def is_windows_artifact(name: str) -> bool:
     """is this a deployment artifact for Windows?"""
-    return re.search(r"\bwindows\b", name) is not None
+    return name.startswith("windows_")
 
 
 def get_format(path: Path) -> str:
