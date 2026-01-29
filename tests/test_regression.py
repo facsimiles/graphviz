@@ -44,6 +44,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_mingw,
     is_rocky,
     is_rocky_8,
+    is_rocky_10,
     is_static_build,
     plugin_version,
     remove_asan_summary,
@@ -1143,6 +1144,11 @@ def test_1514():
     ), "malformed input caused an assertion failure"
 
 
+@pytest.mark.xfail(
+    is_autotools() and is_rocky_10(),
+    strict=False,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2807",
+)
 def test_1554():
     """
     small distances between nodes should not cause a crash in majorization

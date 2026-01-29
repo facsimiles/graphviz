@@ -1,5 +1,5 @@
-# Digest from https://hub.docker.com/r/rockylinux/rockylinux/tags?name=9-ubi-init
-FROM rockylinux/rockylinux:9-ubi-init@sha256:29c3944097e95f6bfe66e848f5fb1c928e12e6a42bd7fb21d8de8914a27ed5be
+# Digest from https://hub.docker.com/r/rockylinux/rockylinux/tags?name=10-ubi-init
+FROM rockylinux/rockylinux:10-ubi-init@sha256:ba1d06ca5bb30cff2883af1fe29af5eea6ae6698965f0a1c2224cf6f5729d839
 
 COPY requirements.txt ./requirements.txt
 
@@ -7,26 +7,19 @@ COPY requirements.txt ./requirements.txt
 RUN dnf -y --setopt install_weak_deps=false groupinstall 'Development Tools' \
 # for dnf config-manager plugin
 && dnf install -y --setopt install_weak_deps=false python3-dnf-plugins-core \
-&& dnf install -y \
-# Install epel-release rpm (Needed for libglade2-devel. Must be a separate step)
-https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm \
 && dnf config-manager --enable crb \
 # Centos build utilities
 && dnf -y --setopt install_weak_deps=false install \
 libtool-ltdl-devel \
 libedit-devel \
 cmake \
-# security-hardened alternatives of packages
-rocky-release-security \
 # Option glut
 freeglut-devel \
 # Option gts
 # Option swig
 swig \
-# Command smyrna
-libglade2-devel \
 # Command gvedit
-qt5-devel \
+qt6-qtbase-devel \
 # Plugin library devil
 # Plugin library gd
 gd-devel \
@@ -40,12 +33,10 @@ gtk3-devel \
 # Plugin library pangocairo
 # Plugin library poppler
 poppler-glib-devel \
-poppler-qt5 \
+poppler-qt6 \
 # Plugin library rsvg
 librsvg2-devel \
 # Plugin library webp
-# Language extension gv_guile
-guile30-devel \
 # Language extension gv_java
 java-devel \
 # Language extension gv_lua

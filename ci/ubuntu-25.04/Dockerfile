@@ -30,7 +30,7 @@ freeglut3-dev \
 libgts-dev \
 # Option swig
 swig \
-# Command smyra
+# Command smyrna
 libgtkglext1-dev \
 libglade2-dev \
 # Command gvedit

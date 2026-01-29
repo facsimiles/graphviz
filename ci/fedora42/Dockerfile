@@ -26,7 +26,6 @@ ann-devel \
 gts-devel \
 # Option swig
 swig \
-# Command smyra
 # Command gvedit
 qt5-qtbase-devel \
 # Plugin library devil
