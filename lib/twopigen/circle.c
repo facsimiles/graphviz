@@ -51,9 +51,7 @@ static void setNStepsToLeaf(Agraph_t * g, Agnode_t * n, Agnode_t * prev)
     }
 }
 
-/* isLeaf:
- * Return true if n is a leaf node.
- */
+/// return true if n is a leaf node
 static bool isLeaf(Agraph_t * g, Agnode_t * n)
 {
     Agnode_t *neighp = 0;
@@ -187,16 +185,21 @@ static void setChildSubtreeSpans(Agraph_t * g, Agnode_t * n)
 {
     Agnode_t *next;
 
-    double ratio = SPAN(n) / STSIZE(n);
+    // Only integers up to 2⁵³ can be precisely stored in an IEEE 754 double. We
+    // do not expect subtree size to exceed this.
+    assert(STSIZE(n) <= UINT64_C(1) << 53);
+
+    const double ratio = SPAN(n) / (double)STSIZE(n);
     for (Agedge_t *ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
 	if ((next = agtail(ep)) == n)
 	    next = aghead(ep);
 	if (SPARENT(next) != n)
 	    continue;		/* handles loops */
 
-	if (SPAN(next) != 0.0)
+	if (!is_exactly_zero(SPAN(next)))
 	    continue;		/* multiedges */
-	SPAN(next) = ratio * STSIZE(next);
+	assert(STSIZE(next) <= UINT64_C(1) << 53);
+	SPAN(next) = ratio * (double)STSIZE(next);
 
 	if (NCHILD(next) > 0) {
 	    setChildSubtreeSpans(g, next);
@@ -246,8 +249,7 @@ static void setPositions(Agraph_t * sg, Agnode_t * center)
     setChildPositions(sg, center);
 }
 
-/* getRankseps:
- * Return array of doubles of size maxrank+1 containing the radius of each
+/* Return array of doubles of size maxrank+1 containing the radius of each
  * rank.  Position 0 always contains 0. Use the colon-separated list of 
  * doubles provided by ranksep to get the deltas for each additional rank.
  * If not enough values are provided, the last value is repeated.
@@ -258,7 +260,6 @@ getRankseps (Agraph_t* g, uint64_t maxrank)
 {
     char *p;
     char *endp;
-    char c;
     uint64_t rk = 1;
     double* ranks = gv_calloc(maxrank + 1, sizeof(double));
     double xf = 0.0, delx = 0.0, d;
@@ -269,7 +270,7 @@ getRankseps (Agraph_t* g, uint64_t maxrank)
 	    xf += delx;
 	    ranks[rk++] = xf;
 	    p = endp;
-	    while ((c = *p) && (gv_isspace(c) || c == ':'))
+	    while (gv_isspace(*p) || *p == ':')
 		p++;
 	}
     }
@@ -304,8 +305,7 @@ static void setAbsolutePos(Agraph_t * g, uint64_t maxrank)
     free (ranksep);
 }
 
-/* circleLayout:
- *  We assume sg is is connected and non-empty.
+/*  We assume sg is is connected and non-empty.
  *  Also, if center != 0, we are guaranteed that center is
  *  in the graph.
  */
