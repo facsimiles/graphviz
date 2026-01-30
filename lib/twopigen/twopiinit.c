@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include    <assert.h>
 #include    <cgraph/cgraph.h>
 #include    <twopigen/circle.h>
 #include    <neatogen/adjust.h>
@@ -39,8 +40,9 @@ static void twopi_init_node_edge(graph_t * g)
     int i = 0;
     int n_nodes = agnnodes(g);
 
-    rdata* alg = gv_calloc(n_nodes, sizeof(rdata));
-    GD_neato_nlist(g) = gv_calloc(n_nodes + 1, sizeof(node_t*));
+    assert(n_nodes >= 0);
+    rdata* alg = gv_calloc((size_t)n_nodes, sizeof(rdata));
+    GD_neato_nlist(g) = gv_calloc((size_t)n_nodes + 1, sizeof(node_t*));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node(n);
 	ND_alg(n) = alg + i;
@@ -56,7 +58,6 @@ static void twopi_init_node_edge(graph_t * g)
 void twopi_init_graph(graph_t * g)
 {
     setEdgeType (g, EDGETYPE_LINE);
-    /* GD_ndim(g) = late_int(g,agfindgraphattr(g,"dim"),2,2); */
 	Ndim = GD_ndim(agroot(g)) = 2;	/* The algorithm only makes sense in 2D */
     twopi_init_node_edge(g);
 }
@@ -72,16 +73,13 @@ static Agnode_t* findRootNode (Agraph_t* sg, Agsym_t* rootattr)
 
 }
 
-/* twopi_layout:
- */
 void twopi_layout(Agraph_t * g)
 {
     Agnode_t *ctr = 0;
     char *s;
-    int setRoot = 0;
-    int setLocalRoot = 0;
+    bool setRoot = false;
+    bool setLocalRoot = false;
     pointf sc;
-    int r;
     Agsym_t* rootattr;
 
     if (agnnodes(g) == 0) return;
@@ -93,20 +91,20 @@ void twopi_layout(Agraph_t * g)
 	    if (!ctr) {
 		agwarningf("specified root node \"%s\" was not found.", s);
 		agerr(AGPREV, "Using default calculation for root node\n");
-		setRoot = 1;
+		setRoot = true;
 	    }
 	}
 	else {
-	    setRoot = 1;
+	    setRoot = true;
 	}
     }
     if ((rootattr = agattr_text(g, AGNODE, "root", 0))) {
-	setLocalRoot = 1;
+	setLocalRoot = true;
     }
 
     if ((s = agget(g, "scale")) && *s) {
-	if ((r = sscanf (s, "%lf,%lf",&sc.x,&sc.y))) {
-	    if (r == 1) sc.y = sc.x;
+	if (sscanf(s, "%lf,%lf", &sc.x, &sc.y) == 1) {
+	    sc.y = sc.x;
 	}
     }
 
@@ -175,8 +173,7 @@ static void twopi_cleanup_graph(graph_t * g)
     free(GD_neato_nlist(g));
 }
 
-/* twopi_cleanup:
- * The ND_alg data used by twopi is freed in twopi_layout
+/* The ND_alg data used by twopi is freed in twopi_layout
  * before edge routing as edge routing may use this field.
  */
 void twopi_cleanup(graph_t * g)
@@ -186,7 +183,6 @@ void twopi_cleanup(graph_t * g)
 
     n = agfstnode (g);
     if (!n) return; /* empty graph */
-    /* free (ND_alg(n)); */
     for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    gv_cleanup_edge(e);
