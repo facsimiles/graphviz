@@ -147,7 +147,7 @@ static char *gettok(char **sp) {
 /* Split s into whitespace separated tokens, allowing quotes.
  * Append tokens to argument list and return new number of arguments.
  *
- * @param arg [inout] The current arguments
+ * @param arg [in,out] The current arguments
  */
 static void parseArgs(char *s, strviews_t *arg) {
   char *t;

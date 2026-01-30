@@ -1016,7 +1016,7 @@ typedef struct {
 ///
 /// \param g Graph to operate on
 /// \param opts Options to control acyclic algorithm
-/// \param num_rev [inout] Running total of reversed edges
+/// \param num_rev [in,out] Running total of reversed edges
 /// \return True if a cycle was found, indicating failure
 CGRAPH_API bool graphviz_acyclic(Agraph_t *g,
                                  const graphviz_acyclic_options_t *opts,
