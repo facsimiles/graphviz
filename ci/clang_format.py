@@ -402,7 +402,6 @@ EXCLUDE = (
     "lib/pathplan/solvers.c",
     "lib/pathplan/solvers.h",
     "lib/pathplan/triang.c",
-    "lib/pathplan/util.c",
     "lib/pathplan/vis.h",
     "lib/pathplan/visibility.c",
     "lib/pathplan/vispath.h",
