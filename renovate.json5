@@ -25,4 +25,8 @@
   // up our CI quota. Better to make renovate only propose changes serially in
   // the first place.
   "prConcurrentLimit": 1,
+  // Wait a somewhat arbitrary amount before applying.
+  // Motivated mostly to throttle these PRs a little so they don't chew up so
+  // much CI quota if the upstream is flapping.
+  "minimumReleaseAge": "7 days",
 }
