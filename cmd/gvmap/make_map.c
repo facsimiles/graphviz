@@ -54,13 +54,11 @@ void map_palette_optimal_coloring(char *color_scheme, SparseMatrix A0,
   SparseMatrix A;
   bool weightedQ = true;
 
-  {double *dist = NULL;
+  {
     A = SparseMatrix_symmetrize(A0, false);
-    SparseMatrix_distance_matrix(A, &dist);
+    SparseMatrix dist = SparseMatrix_distance_matrix(A);
     SparseMatrix_delete(A);
-    A = SparseMatrix_from_dense(n, n, dist);
-    free(dist);
-    A = SparseMatrix_remove_diagonal(A);
+    A = SparseMatrix_remove_diagonal(dist);
     SparseMatrix_export(stdout, A);
   }
 
