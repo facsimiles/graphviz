@@ -147,7 +147,6 @@ static void free_matrix(adjmatrix_t * p);
 static int ordercmpf(const void *, const void *);
 static int64_t ncross(void);
 #ifdef DEBUG
-void check_rs(graph_t * g, int null_ok);
 void check_order(void);
 void check_vlists(graph_t * g);
 void node_in_root_vlist(node_t * n);
@@ -163,86 +162,6 @@ static int GlobalMinRank, GlobalMaxRank;
 static edge_t **TE_list;
 static int *TI_list;
 static bool ReMincross;
-
-#if defined(DEBUG) && DEBUG > 1
-static void indent(graph_t* g)
-{
-  if (g->parent) {
-    fprintf (stderr, "  ");
-    indent(g->parent);
-  }
-}
-
-/// @param stream Output stream to write to
-static void nname(node_t *v, FILE *stream) {
-	if (ND_node_type(v)) {
-		if (ND_ranktype(v) == CLUSTER)
-			fprintf(stream, "v%s_%p", agnameof(ND_clust(v)), v);
-		else
-			fprintf(stream, "v_%p", v);
-	} else
-		fputs(agnameof(v), stream);
-}
-static void dumpg (graph_t* g)
-{
-    edge_t* e;
-
-    fprintf (stderr, "digraph A {\n");
-    for (int r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	fprintf (stderr, "  subgraph {rank=same  ");
-	const char *trailer = " }\n";
-	for (int i = 0; i < GD_rank(g)[r].n; i++) {
-	  node_t *const v = GD_rank(g)[r].v[i];
-          if (i > 0) {
- 	    fputs(" -> ", stderr);
- 	    trailer = " [style=invis]}\n";
-          }
-          nname(v, stderr);
-        }
-        fputs(trailer, stderr);
-    }
-    for (int r = GD_minrank(g); r < GD_maxrank(g); r++) {
-	for (int i = 0; i < GD_rank(g)[r].n; i++) {
-	  node_t *const v = GD_rank(g)[r].v[i];
-	  for (int j = 0; (e = ND_out(v).list[j]); j++) {
-             nname(v, stderr);
-             fputs(" -> ", stderr);
-             nname(aghead(e), stderr);
-             fputc('\n', stderr);
-          }
-        }
-    }
-    fprintf (stderr, "}\n");
-}
-static void dumpr (graph_t* g, int edges)
-{
-    int j, i, r;
-    node_t* v;
-    edge_t* e;
-
-    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	fprintf (stderr, "[%d] ", r);
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	  v = GD_rank(g)[r].v[i];
- 	  nname(v, stderr);
- 	  fprintf(stderr, "(%.02f,%d) ", saveorder(v),ND_order(v));
-        }
-	fprintf (stderr, "\n");
-    }
-    if (edges == 0) return;
-    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	  v = GD_rank(g)[r].v[i];
-	  for (j = 0; (e = ND_out(v).list[j]); j++) {
-             nname(v, stderr);
-             fputs(" -> ", stderr);
-             nname(aghead(e), stderr);
-             fputc('\n', stderr);
-          }
-        }
-    }
-}
-#endif
 
 typedef struct {
     Agrec_t h;
@@ -1762,18 +1681,8 @@ static bool medians(graph_t * g, int r0, int r1)
 }
 
 static int nodeposcmpf(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  node_t **n0 = (node_t **)x;
-  node_t **n1 = (node_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  node_t *const *const n0 = x;
+  node_t *const *const n1 = y;
   if (ND_order(*n0) < ND_order(*n1)) {
     return -1;
   }
@@ -1784,18 +1693,8 @@ static int nodeposcmpf(const void *x, const void *y) {
 }
 
 static int edgeidcmpf(const void *x, const void *y) {
-// Suppress Clang/GCC -Wcast-qual warning. Casting away const here is acceptable
-// as the later usage is const. We need the cast because the macros use
-// non-const pointers for genericity.
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-  edge_t **e0 = (edge_t **)x;
-  edge_t **e1 = (edge_t **)y;
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+  edge_t *const *const e0 = x;
+  edge_t *const *const e1 = y;
   if (AGSEQ(*e0) < AGSEQ(*e1)) {
     return -1;
   }
@@ -1816,7 +1715,7 @@ static int edgeidcmpf(const void *x, const void *y) {
 #define C_SS		2
 #define C_VV		4
 
-static int table[NTYPES][NTYPES] = {
+static const int table[NTYPES][NTYPES] = {
     /* ordinary */ {C_EE, C_EE, C_EE},
     /* singleton */ {C_EE, C_SS, C_VS},
     /* virtual */ {C_EE, C_VS, C_VV}
@@ -1847,32 +1746,6 @@ void virtual_weight(edge_t * e)
 }
 
 #ifdef DEBUG
-void check_rs(graph_t * g, int null_ok)
-{
-    int i, r;
-    node_t *v, *prev;
-
-    fprintf(stderr, "\n\n%s:\n", agnameof(g));
-    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	fprintf(stderr, "%d: ", r);
-	prev = NULL;
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	    v = GD_rank(g)[r].v[i];
-	    if (v == NULL) {
-		fprintf(stderr, "NULL\t");
-		if (!null_ok)
-		    abort();
-	    } else {
-		fprintf(stderr, "%s(%f)\t", agnameof(v), ND_mval(v));
-		assert(ND_rank(v) == r);
-		assert(v != prev);
-		prev = v;
-	    }
-	}
-	fprintf(stderr, "\n");
-    }
-}
-
 void check_order(void)
 {
     int i, r;
