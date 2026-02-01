@@ -10,13 +10,13 @@
 
 #pragma once
 
+#include <neatogen/adjust.h>
 #include <stdbool.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include <neatogen/adjust.h>
 
 #ifdef GVDLL
 #ifdef NEATOGEN_EXPORTS

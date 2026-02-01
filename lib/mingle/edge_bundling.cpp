@@ -448,7 +448,7 @@ static void force_directed_edge_bundling(SparseMatrix A,
 static void modularity_ink_bundling(int dim, int ne, SparseMatrix B,
                                     std::vector<pedge> &edges,
                                     double angle_param, double angle) {
-  int *assignment = NULL, nclusters;
+  int *assignment = nullptr, nclusters;
   double modularity;
   int *clusterp, *clusters;
   SparseMatrix D, C;
@@ -470,7 +470,7 @@ static void modularity_ink_bundling(int dim, int ne, SparseMatrix B,
   
   for (i = 0; i < ne; i++){
     jj = assignment[i];
-    SparseMatrix_coordinate_form_add_entry(C, jj, i, NULL);
+    SparseMatrix_coordinate_form_add_entry(C, jj, i, nullptr);
   }
   
   D = SparseMatrix_from_coordinate_format(C);
@@ -556,7 +556,7 @@ std::vector<pedge> edge_bundling(SparseMatrix A0, int dim,
 
   */
   int ne = A0->m;
-  SparseMatrix A = A0, B = NULL;
+  SparseMatrix A = A0, B = nullptr;
   int i;
   double tol = 0.001;
   int k;

@@ -1134,11 +1134,14 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
   return A;
 }
 
-SparseMatrix SparseMatrix_coordinate_form_add_entry(SparseMatrix A, int irn,
-                                                    int jcn, const void *val) {
+SparseMatrix SparseMatrix_coordinate_form_add_entry_(SparseMatrix A, int irn,
+                                                     int jcn, const void *val,
+                                                     int type) {
   static const size_t nentries = 1;
   
   assert(A->format == FORMAT_COORD);
+  assert(A->type == type && "call to SparseMatrix_coordinate_form_add_entry "
+                            "with incompatible value type");
   const size_t nz = A->nz;
 
   if (nz + nentries >= A->nzmax){

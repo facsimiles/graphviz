@@ -103,7 +103,7 @@ static void Agglomerative_Ink_Bundling_establish(aib_t &grid, int *pick,
   const std::vector<double> &inks = grid.front().inks;
   double inki, inkj;
   double gain, maxgain, minink, total_gain = 0;
-  int *ip = NULL, *jp = NULL, ie;
+  int *ip = nullptr, *jp = nullptr, ie;
   std::vector<std::vector<int>> cedges;/* a table listing the content of bundled edges in the coarsen grid.
 		    cedges[i] contain the list of origonal edges that make up the bundle i in the next level */
   double ink0, ink1, grand_total_ink = 0, grand_total_gain = 0;
