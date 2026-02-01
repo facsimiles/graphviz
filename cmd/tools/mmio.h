@@ -68,7 +68,6 @@ int mm_read_mtx_crd_size(FILE * f, int *M, int *N, size_t *nz);
 #define MM_MTX_STR		"matrix"
 #define MM_COORDINATE_STR "coordinate"
 #define MM_SPARSE_STR	"coordinate"
-#define MM_COMPLEX_STR	"complex"
 #define MM_REAL_STR		"real"
 #define MM_INT_STR		"integer"
 #define MM_GENERAL_STR  "general"

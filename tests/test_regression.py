@@ -7600,7 +7600,6 @@ def test_library_so_version(lib: str):
 
 
 @pytest.mark.skipif(which("mm2gv") is None, reason="mm2gv not available")
-@pytest.mark.xfail(strict=False)
 def test_mm2gv_cmplx():
     """mm2gv should not crash when processing matrices with complex elements"""
 
