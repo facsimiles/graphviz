@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <sparse/SparseMatrix.h>
 #include <util/api.h>
 
 #ifdef __cplusplus
@@ -17,7 +18,6 @@ extern "C" {
 #endif
 
 #include "geom.h"
-#include <sparse/SparseMatrix.h>
 #include <stdbool.h>
 
 #define DFLT_MARGIN     4   /* 4 points */

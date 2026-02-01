@@ -108,6 +108,7 @@ void map_optimal_coloring(int seed, SparseMatrix A, float *rgb_r,  float *rgb_g,
   vector_float_take(n, rgb_b, n, p, &u);
   for (i = 0; i < n; i++) rgb_b[i] = u[i];
   free(u);
+  free(p);
 }
 
 static int get_poly_id(int ip, SparseMatrix point_poly_map){
@@ -952,7 +953,7 @@ static int make_map_internal(bool include_OK_points, int n, int dim, double *x0,
 
   double xmax[2], xmin[2], area, *x = x0;
   int i, j;
-  QuadTree qt;
+  QuadTree qt = NULL;
   int dim2 = 2, nn = 0;
   int max_qtree_level = 10;
   double ymin[2], min;
@@ -1198,6 +1199,7 @@ done:
   free(xcombined);
   free(xran);
   if (grouping != grouping0) free(grouping);
+  QuadTree_delete(qt);
   if (x != x0) free(x);
   return rc;
 }

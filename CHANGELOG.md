@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `gvmap` no longer dereferences a null pointer when reading position-less
   graphs.
+- `gvmap` no longer crashes when adding coordinate data.
 
 ## [14.1.2] – 2026-01-24
 
