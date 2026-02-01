@@ -30,9 +30,6 @@ static size_t size_of_matrix_type(int type){
   case MATRIX_TYPE_REAL:
     size = sizeof(double);
     break;
-  case MATRIX_TYPE_COMPLEX:
-    size = 2*sizeof(double);
-    break;
   case MATRIX_TYPE_INTEGER:
     size = sizeof(int);
     break;
@@ -93,19 +90,6 @@ SparseMatrix SparseMatrix_transpose(SparseMatrix A){
       for (j = ia[i]; j < ia[i+1]; j++){
 	jb[ib[ja[j]]] = i;
 	b[ib[ja[j]]++] = a[j];
-      }
-    }
-    break;
-  }
-  case MATRIX_TYPE_COMPLEX:{
-    double *a = A->a;
-    double *b = B->a;
-    for (int i = 0; i < m; i++){
-      for (j = ia[i]; j < ia[i+1]; j++){
-	jb[ib[ja[j]]] = i;
-	b[2*ib[ja[j]]] = a[2*j];
-	b[2*ib[ja[j]]+1] = a[2*j+1];
-	ib[ja[j]]++;
       }
     }
     break;
@@ -198,25 +182,6 @@ bool SparseMatrix_is_symmetric(SparseMatrix A, bool test_pattern_symmetry_only) 
       }
       for (j = ib[i]; j < ib[i+1]; j++){
 	if (fabs(b[j] - a[mask[jb[j]]]) > SYMMETRY_EPSILON) goto RETURN;
-      }
-    }
-    res = true;
-    break;
-  }
-  case MATRIX_TYPE_COMPLEX:{
-    double *a = A->a;
-    double *b = B->a;
-    for (i = 0; i <= m; i++) if (ia[i] != ib[i]) goto RETURN;
-    for (i = 0; i < m; i++){
-      for (j = ia[i]; j < ia[i+1]; j++){
-	mask[ja[j]] = j;
-      }
-      for (j = ib[i]; j < ib[i+1]; j++){
-	if (mask[jb[j]] < ia[i]) goto RETURN;
-      }
-      for (j = ib[i]; j < ib[i+1]; j++){
-	if (fabs(b[2*j] - a[2*mask[jb[j]]]) > SYMMETRY_EPSILON) goto RETURN;
-	if (fabs(b[2*j+1] - a[2*mask[jb[j]]+1]) > SYMMETRY_EPSILON) goto RETURN;
       }
     }
     res = true;
@@ -498,25 +463,6 @@ static SparseMatrix SparseMatrix_from_coordinate_arrays_internal(size_t nz,
     ia[0] = 0;
     break;
   }
-  case MATRIX_TYPE_COMPLEX: {
-    const double *const val = val0;
-    a = A->a;
-    for (size_t i = 0; i < nz; i++){
-      if (irn[i] < 0 || irn[i] >= m || jcn[i] < 0 || jcn[i] >= n) {
-	UNREACHABLE();
-      }
-      ia[irn[i]+1]++;
-    }
-    for (int i = 0; i < m; i++) ia[i+1] += ia[i];
-    for (size_t i = 0; i < nz; i++){
-      a[2*ia[irn[i]]] = val[2 * i];
-      a[2*ia[irn[i]]+1] = val[2 * i + 1];
-      ja[ia[irn[i]]++] = jcn[i];
-    }
-    for (int i = m; i > 0; i--) ia[i] = ia[i - 1];
-    ia[0] = 0;
-    break;
-  }
   case MATRIX_TYPE_INTEGER: {
     const int *const vali = val0;
     ai = A->a;
@@ -621,33 +567,6 @@ SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B){
 	  c[nz++] = b[j];
 	} else {
 	  c[mask[jb[j]]] += b[j];
-	}
-      }
-      ic[i + 1] = (int)nz;
-    }
-    break;
-  }
-  case MATRIX_TYPE_COMPLEX:{
-    double *a = A->a;
-    double *b = B->a;
-    double *c = C->a;
-    for (int i = 0; i < m; i++) {
-      for (j = ia[i]; j < ia[i+1]; j++){
-	mask[ja[j]] = (int)nz;
-	jc[nz] = ja[j];
-	c[2*nz] = a[2*j];
-	c[2*nz+1] = a[2*j+1];
-	nz++;
-      }
-      for (j = ib[i]; j < ib[i+1]; j++){
-	if (mask[jb[j]] < ic[i]){
-	  jc[nz] = jb[j];
-	  c[2*nz] = b[2*j];
-	  c[2*nz+1] = b[2*j+1];
-	  nz++;
-	} else {
-	  c[2*mask[jb[j]]] += b[2*j];
-	  c[2*mask[jb[j]]+1] += b[2*j+1];
 	}
       }
       ic[i + 1] = (int)nz;
@@ -866,33 +785,6 @@ SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B){
       }
     }
     break;
-  case MATRIX_TYPE_COMPLEX:
-    {
-      double *a = A->a;
-      double *b = B->a;
-      double *c = C->a;
-      ic[0] = 0;
-      for (int i = 0; i < m; i++) {
-	for (j = ia[i]; j < ia[i+1]; j++){
-	  jj = ja[j];
-	  for (k = ib[jj]; k < ib[jj+1]; k++){
-	    if (mask[jb[k]] < ic[i]){
-	      mask[jb[k]] = (int)nz;
-	      jc[nz] = jb[k];
-	      c[2*nz] = a[2*j]*b[2*k] - a[2*j+1]*b[2*k+1];/*real part */
-	      c[2*nz+1] = a[2*j]*b[2*k+1] + a[2*j+1]*b[2*k];/*img part */
-	      nz++;
-	    } else {
-	      assert(jc[mask[jb[k]]] == jb[k]);
-	      c[2*mask[jb[k]]] += a[2*j]*b[2*k] - a[2*j+1]*b[2*k+1];/*real part */
-	      c[2*mask[jb[k]]+1] += a[2*j]*b[2*k+1] + a[2*j+1]*b[2*k];/*img part */
-	    }
-	  }
-	}
-	ic[i + 1] = (int)nz;
-      }
-    }
-    break;
   case MATRIX_TYPE_INTEGER:
     {
       int *a = A->a;
@@ -1066,28 +958,6 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A){
       }
     }
     break;
-  case MATRIX_TYPE_COMPLEX:
-    {
-      double *a = A->a;
-      sta = ia[0];
-      for (int i = 0; i < A->m; i++) {
-        for (j = sta; j < ia[i+1]; j++) {
-          if (mask[ja[j]] < ia[i]) {
-            ja[nz] = ja[j];
-            a[2 * nz] = a[2 * j];
-            a[2 * nz + 1] = a[2 * j + 1];
-            mask[ja[j]] = (int)nz++;
-          } else {
-            assert(ja[mask[ja[j]]] == ja[j]);
-            a[2 * mask[ja[j]]] += a[2 * j];
-            a[2 * mask[ja[j]]+1] += a[2 * j + 1];
-          }
-        }
-        sta = ia[i + 1];
-        ia[i + 1] = (int)nz;
-      }
-    }
-    break;
   case MATRIX_TYPE_INTEGER:
     {
       int *a = A->a;
@@ -1183,23 +1053,6 @@ SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A){
     A->nz = nz;
     break;
   }
-  case MATRIX_TYPE_COMPLEX:{
-    double *a = A->a;
-    for (i = 0; i < A->m; i++){
-      for (j = sta; j < ia[i+1]; j++){
-	if (ja[j] != i){
-	  ja[nz] = ja[j];
-	  a[2*nz] = a[2*j];
-	  a[2*nz+1] = a[2*j+1];
-	  nz++;
-	}
-      }
-      sta = ia[i+1];
-      ia[i + 1] = (int)nz;
-    }
-    A->nz = nz;
-    break;
-  }
   case MATRIX_TYPE_INTEGER:{
     int *a = A->a;
     for (i = 0; i < A->m; i++){
@@ -1261,23 +1114,6 @@ SparseMatrix SparseMatrix_remove_upper(SparseMatrix A){/* remove diag and upper 
     A->nz = nz;
     break;
   }
-  case MATRIX_TYPE_COMPLEX:{
-    double *a = A->a;
-    for (i = 0; i < A->m; i++){
-      for (j = sta; j < ia[i+1]; j++){
-	if (ja[j] < i){
-	  ja[nz] = ja[j];
-	  a[2*nz] = a[2*j];
-	  a[2*nz+1] = a[2*j+1];
-	  nz++;
-	}
-      }
-      sta = ia[i+1];
-      ia[i + 1] = (int)nz;
-    }
-    A->nz = nz;
-    break;
-  }
   case MATRIX_TYPE_INTEGER:{
     int *a = A->a;
     for (i = 0; i < A->m; i++){
@@ -1319,13 +1155,12 @@ SparseMatrix SparseMatrix_remove_upper(SparseMatrix A){/* remove diag and upper 
 
 
 SparseMatrix SparseMatrix_divide_row_by_degree(SparseMatrix A){
-  int i, j, *ia, *ja;
+  int i, j, *ia;
   double deg;
 
   if (!A) return A;
 
   ia = A->ia;
-  ja = A->ja;
   switch (A->type){
   case MATRIX_TYPE_REAL:{
     double *a = A->a;
@@ -1333,19 +1168,6 @@ SparseMatrix SparseMatrix_divide_row_by_degree(SparseMatrix A){
       deg = ia[i+1] - ia[i];
       for (j = ia[i]; j < ia[i+1]; j++){
 	a[j] = a[j]/deg;
-      }
-    }
-    break;
-  }
-  case MATRIX_TYPE_COMPLEX:{
-    double *a = A->a;
-    for (i = 0; i < A->m; i++){
-      deg = ia[i+1] - ia[i];
-      for (j = ia[i]; j < ia[i+1]; j++){
-	if (ja[j] != i){
-	  a[2*j] = a[2*j]/deg;
-	  a[2*j+1] = a[2*j+1]/deg;
-	}
       }
     }
     break;
@@ -1762,29 +1584,6 @@ SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int 
 	irn[nz] = rmask[i];
 	jcn[nz] = cmask[ja[j]];
 	val[nz++] = a[j];
-      }
-    }
-    v = val;
-    break;
-  }
-  case MATRIX_TYPE_COMPLEX:{
-    double *a = A->a;
-    double *val;
-
-    irn = gv_calloc(nz, sizeof(int));
-    jcn = gv_calloc(nz, sizeof(int));
-    val = gv_calloc(2 * nz, sizeof(double));
-
-    nz = 0;
-    for (int i = 0; i < m; i++) {
-      if (rmask[i] < 0) continue;
-      for (j = ia[i]; j < ia[i+1]; j++){
-	if (cmask[ja[j]] < 0) continue;
-	irn[nz] = rmask[i];
-	jcn[nz] = cmask[ja[j]];
-	val[2*nz] = a[2*j];
-	val[2*nz+1] = a[2*j+1];
-	nz++;
       }
     }
     v = val;
