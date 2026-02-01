@@ -7599,6 +7599,23 @@ def test_library_so_version(lib: str):
     ), "Autotools and Debian lintian overrides disagree on library version"
 
 
+@pytest.mark.skipif(which("mm2gv") is None, reason="mm2gv not available")
+@pytest.mark.xfail(strict=False)
+def test_mm2gv_cmplx():
+    """mm2gv should not crash when processing matrices with complex elements"""
+
+    # locate our associated test case in this directory, Matrix Market input that
+    # specifies a matrix with elements of complex type
+    src = Path(__file__).parent / "mm-cmplx.mm"
+    assert src.exists(), "unexpectedly missing test case"
+
+    # run this through mm2gv
+    mm2gv = which("mm2gv")
+    proc = subprocess.run([mm2gv, "-o", os.devnull, src], check=False)
+
+    assert proc.returncode in (0, 1), "mm2gv crashed"
+
+
 def test_negative_dpi():
     """can Graphviz deal with an illegal negative `dpi` value?"""
 
