@@ -28,6 +28,7 @@
 #include <neatogen/digcola.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/gv_math.h>
 #ifdef IPSEPCOLA
 #include <math.h>
 #include <stdlib.h>
@@ -141,7 +142,7 @@ constrained_majorization_vpsc(CMajEnvVPSC * e, float *b, float *place,
 	    }
 	    denominator += r * d[i];
 	}
-	if (denominator != 0.0)
+	if (!is_exactly_zero(denominator) && !is_exactly_equal(denominator, -0.0))
 	    beta = numerator / denominator;
 	else
 	    beta = 1.0;

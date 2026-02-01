@@ -5,8 +5,9 @@ variables:
     # exitcode=42 – allow distinguishing ASan crashes from regular error exits
     ASAN_OPTIONS: detect_leaks=0,detect_stack_use_after_return=1,exitcode=42
     FF_TIMESTAMPS: true
-    # make UBSan failures more debuggable
-    UBSAN_OPTIONS: print_stacktrace=1
+    # exitcode=42 – allow distinguishing UBSan crashes from regular error exits
+    # print_stacktrace=1 – show a usable backtrace on error
+    UBSAN_OPTIONS: exitcode=42,print_stacktrace=1
 
 stages:
     - build_docker_images
