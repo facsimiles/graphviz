@@ -7150,7 +7150,8 @@ def test_mm_banner_overflow(tmp_path: Path):
     mm.write_text(f"%{'a' * 10000}", encoding="utf-8")
 
     # run this through mm2gv
-    ret = subprocess.call(["mm2gv", "-o", os.devnull, mm])
+    mm2gv = which("mm2gv")
+    ret = subprocess.call([mm2gv, "-o", os.devnull, mm])
 
     assert ret in (0, 1), "mm2gv crashed when processing malformed input"
     assert ret == 1, "mm2gv did not reject malformed input"
