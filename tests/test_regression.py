@@ -3630,7 +3630,7 @@ def test_gvmap_invalid():
 
     # run this through gvmap
     gvmap = which("gvmap")
-    proc = subprocess.run([gvmap, src], check=False)
+    proc = subprocess.run([gvmap, src, "-o", os.devnull], check=False)
 
     assert proc.returncode in (0, 1), "gvmap crashed"
 
