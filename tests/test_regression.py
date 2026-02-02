@@ -3658,7 +3658,7 @@ def test_gvmap_add_coordinate():
 
     # run this through gvmap
     gvmap = which("gvmap")
-    run([gvmap, src])
+    run([gvmap, src, "-o", os.devnull])
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="gvpr not available")
