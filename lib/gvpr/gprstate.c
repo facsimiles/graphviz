@@ -61,7 +61,9 @@ Gpr_t *openGPRState(gpr_info* info)
 static int
 bindingcmpf (const void *key, const void *ip)
 {
-    return strcmp (((const gvprbinding*)key)->name, ((const gvprbinding*)ip)->name);
+    const gvprbinding *const k = key;
+    const gvprbinding *const i = ip;
+    return strcmp(k->name, i->name);
 }
 
 /* findBinding:
