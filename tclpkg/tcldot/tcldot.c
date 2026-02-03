@@ -159,6 +159,9 @@ static int dotstring(ClientData clientData, Tcl_Interp *interp, int argc,
   return TCL_OK;
 }
 
+#ifdef GVDLL
+__declspec(dllexport)
+#endif
 int Tcldot_Init(Tcl_Interp *interp);
 int Tcldot_Init(Tcl_Interp *interp) {
   ictx_t *ictx = calloc(1, sizeof(ictx_t));
@@ -217,8 +220,14 @@ int Tcldot_Init(Tcl_Interp *interp) {
   return TCL_OK;
 }
 
+#ifdef GVDLL
+__declspec(dllexport)
+#endif
 int Tcldot_SafeInit(Tcl_Interp *interp);
 int Tcldot_SafeInit(Tcl_Interp *interp) { return Tcldot_Init(interp); }
 
+#ifdef GVDLL
+__declspec(dllexport)
+#endif
 int Tcldot_builtin_Init(Tcl_Interp *interp);
 int Tcldot_builtin_Init(Tcl_Interp *interp) { return Tcldot_Init(interp); }
