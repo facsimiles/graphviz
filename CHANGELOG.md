@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   out-of-bounds memory reads and writes.
 - The `Tcldot_Init`, `Tcldot_builtin_Init`, and `Tcldot_SafeInit` symbols in
   `tcldot.dll` are externally visible on Windows. #2809
+- The `Tclpathplan_Init` and `Tclpathplan_SafeInit` symbols in `tclpathplan.dll`
+  are externally visible on Windows. #2809
 
 ## [14.1.2] – 2026-01-24
 
