@@ -188,9 +188,7 @@ static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
 
 static void freeattr(Agobj_t * obj, Agattr_t * attr)
 {
-    Agraph_t *g;
-
-    g = agraphof(obj);
+    Agraph_t *const g = agraphof(obj);
     const int sz = topdictsize(obj);
     for (int i = 0; i < sz; i++)
 	agstrfree(g, attr->str[i], aghtmlstr(attr->str[i]));
