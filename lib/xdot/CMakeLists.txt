@@ -1,5 +1,3 @@
-add_definitions(-DEXPORT_XDOT)
-
 add_library(xdot
   # Header files
   xdot.h
@@ -7,6 +5,8 @@ add_library(xdot
   # Source files
   xdot.c
 )
+
+target_compile_definitions(xdot PRIVATE EXPORT_XDOT)
 
 target_include_directories(xdot
   PUBLIC

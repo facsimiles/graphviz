@@ -7,7 +7,6 @@ FLEX_TARGET(Scan
 )
 ADD_FLEX_BISON_DEPENDENCY(Scan Grammar)
 
-add_definitions(-DEXPORT_CGRAPH -DEXPORT_CGHDR)
 if(WIN32 AND NOT MINGW)
   add_definitions(-DYY_NO_UNISTD_H)
 endif()
@@ -51,6 +50,8 @@ if(HAVE_C_WUNUSED_BUT_SET_VARIABLE)
   set_source_files_properties(${BISON_Grammar_OUTPUTS}
     PROPERTIES COMPILE_FLAGS -Wno-unused-but-set-variable)
 endif()
+
+target_compile_definitions(cgraph PRIVATE EXPORT_CGRAPH EXPORT_CGHDR)
 
 target_include_directories(cgraph
   PUBLIC

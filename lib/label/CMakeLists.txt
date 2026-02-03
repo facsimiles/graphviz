@@ -1,5 +1,3 @@
-add_definitions(-DGVC_EXPORTS)
-
 add_library(label STATIC
   # Header files
   index.h

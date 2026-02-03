@@ -1,5 +1,3 @@
-add_definitions(-DEXPORT_GVPR)
-
 add_executable(gvpr-bin
   # Source files
   gvprmain.c

@@ -1,5 +1,3 @@
-add_definitions(-DGVC_EXPORTS -DGVLIBDIR="${LIBRARY_INSTALL_DIR}/graphviz")
-
 add_library(gvc
   # Header files
   gvc.h
@@ -31,6 +29,10 @@ add_library(gvc
   gvtextlayout.c
   gvtool_tred.c
   gvusershape.c
+)
+
+target_compile_definitions(gvc
+  PRIVATE GVC_EXPORTS GVLIBDIR="${LIBRARY_INSTALL_DIR}/graphviz"
 )
 
 target_include_directories(gvc

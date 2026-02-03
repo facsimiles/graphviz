@@ -1,5 +1,3 @@
-add_definitions(-DPATHPLAN_EXPORTS)
-
 add_library(pathplan
   # Header files
   pathgeom.h
@@ -21,6 +19,8 @@ add_library(pathplan
   util.c
   visibility.c
 )
+
+target_compile_definitions(pathplan PRIVATE PATHPLAN_EXPORTS)
 
 target_include_directories(pathplan
   PUBLIC

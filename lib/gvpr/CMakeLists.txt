@@ -1,5 +1,3 @@
-add_definitions(-DEXPORT_GVPR)
-
 add_library(gvpr
   # Header files
   actions.h
@@ -18,6 +16,8 @@ add_library(gvpr
   gprstate.c
   parse.c
 )
+
+target_compile_definitions(gvpr PRIVATE EXPORT_GVPR)
 
 target_include_directories(gvpr
   PUBLIC

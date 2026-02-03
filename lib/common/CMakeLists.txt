@@ -1,8 +1,6 @@
 BISON_TARGET(HTMLparse ${CMAKE_CURRENT_SOURCE_DIR}/htmlparse.y
                        ${CMAKE_CURRENT_BINARY_DIR}/htmlparse.c)
 
-add_definitions(-DGVC_EXPORTS)
-
 # Generate colortbl.h from sources
 add_custom_command(
   OUTPUT common/colortbl.h
@@ -90,6 +88,8 @@ if(HAVE_C_WUNUSED_BUT_SET_VARIABLE)
   set_source_files_properties(${BISON_HTMLparse_OUTPUTS}
     PROPERTIES COMPILE_FLAGS -Wno-unused-but-set-variable)
 endif()
+
+target_compile_definitions(common_obj PRIVATE GVC_EXPORTS)
 
 target_include_directories(common_obj PRIVATE
   ..
