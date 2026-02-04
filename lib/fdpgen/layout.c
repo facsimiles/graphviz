@@ -533,14 +533,13 @@ static int ecmp(const void *v1, const void *v2)
     const erec *e2 = v2;
     if (e1->alpha > e2->alpha)
 	return 1;
-    else if (e1->alpha < e2->alpha)
+    if (e1->alpha < e2->alpha)
 	return -1;
-    else if (e1->dist2 > e2->dist2)
+    if (e1->dist2 > e2->dist2)
 	return 1;
-    else if (e1->dist2 < e2->dist2)
+    if (e1->dist2 < e2->dist2)
 	return -1;
-    else
-	return 0;
+    return 0;
 }
 
 #define ANG (M_PI/90)		/* Maximum angular change: 2 degrees */
