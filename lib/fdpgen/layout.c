@@ -68,8 +68,7 @@ typedef struct {
 
 #define NEW_EDGE(e) (ED_to_virt(e) == 0)
 
-/* finalCC:
- * Set graph bounding box given list of connected
+/* Set graph bounding box given list of connected
  * components, each with its bounding box set.
  * If c_cnt > 1, then pts != NULL and gives translations for components.
  * Add margin about whole graph unless isRoot is true.
@@ -176,8 +175,7 @@ static void finalCC(graph_t *g, size_t c_cnt, graph_t **cc, pointf *pts,
 
 }
 
-/* mkDeriveNode:
- * Constructor for a node in a derived graph.
+/* Constructor for a node in a derived graph.
  * Allocates dndata.
  */
 static node_t *mkDeriveNode(graph_t * dg, char *name)
@@ -229,8 +227,7 @@ static void freeDerivedGraph(graph_t * g, graph_t ** cc)
     agclose(g);
 }
 
-/* evalPositions:
- * The input is laid out, but node coordinates
+/* The input is laid out, but node coordinates
  * are relative to smallest containing cluster.
  * Walk through all nodes and clusters, translating
  * the positions to absolute coordinates.
@@ -275,8 +272,7 @@ static void evalPositions(graph_t * g, graph_t* rootg)
 
 typedef LIST(graph_t *) clist_t;
 
-/* portName:
- * Generate a name for a port.
+/* Generate a name for a port.
  * We use the ids of the nodes.
  * This is for debugging. For production, just use edge id and some
  * id for the graph. Note that all the graphs are subgraphs of the
@@ -296,8 +292,7 @@ static char *portName(graph_t *g, bport_t *p, agxbuf *out) {
     return agxbuse(out);
 }
 
-/* chkPos:
- * If cluster has coords attribute, use to supply initial position
+/* If cluster has coords attribute, use to supply initial position
  * of derived node.
  * Only called if G_coord is defined.
  * We also look at the parent graph's G_coord attribute. If this
@@ -343,8 +338,7 @@ static void chkPos(graph_t* g, node_t* n, layout_info* infop, boxf* bbp)
     }
 }
 
-/* addEdge:
- * Add real edge e to its image de in the derived graph.
+/* Add real edge e to its image de in the derived graph.
  * We use the to_virt and count fields to store the list.
  */
 static void addEdge(edge_t * de, edge_t * e)
@@ -359,9 +353,7 @@ static void addEdge(edge_t * de, edge_t * e)
     ED_count(de)++;
 }
 
-/* copyAttr:
- * Copy given attribute from g to dg.
- */
+/// copy given attribute from g to dg
 static void
 copyAttr (graph_t* g, graph_t* dg, char* attr)
 {
@@ -381,8 +373,7 @@ copyAttr (graph_t* g, graph_t* dg, char* attr)
     }
 }
 
-/* deriveGraph:
- * Create derived graph of g by collapsing clusters into
+/* Create derived graph of g by collapsing clusters into
  * nodes. An edge is created between nodes if there is
  * an edge between two nodes in the clusters of the base graph.
  * Such edges record all corresponding real edges.
@@ -535,9 +526,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
     return dg;
 }
 
-/* ecmp:
- * Sort edges by angle, then distance.
- */
+/// sort edges by angle, then distance
 static int ecmp(const void *v1, const void *v2)
 {
     const erec *e1 = v1;
@@ -556,8 +545,7 @@ static int ecmp(const void *v1, const void *v2)
 
 #define ANG (M_PI/90)		/* Maximum angular change: 2 degrees */
 
-/* getEdgeList:
- * Generate list of edges in derived graph g using
+/* Generate list of edges in derived graph g using
  * node n. The list is in counterclockwise order.
  * This, of course, assumes we have an initial layout for g.
  */
@@ -618,8 +606,7 @@ static erec *getEdgeList(node_t * n, graph_t * g)
     return erecs;
 }
 
-/* genPorts:
- * Given list of edges with node n in derived graph, add corresponding
+/* Given list of edges with node n in derived graph, add corresponding
  * ports to port list pp, starting at index idx. Return next index.
  * If an edge in the derived graph corresponds to multiple real edges,
  * add them in order if address of n is smaller than other node address.
@@ -669,8 +656,7 @@ genPorts(node_t * n, erec * er, bport_t * pp, int idx, double bnd)
     return (idx + cnt);
 }
 
-/* expandCluster;
- * Given positioned derived graph cg with node n which corresponds
+/* Given positioned derived graph cg with node n which corresponds
  * to a cluster, generate a graph containing the interior of the
  * cluster, plus port information induced by the layout of cg.
  * Basically, we use the cluster subgraph to which n corresponds,
@@ -712,8 +698,7 @@ static graph_t *expandCluster(node_t * n, graph_t * cg)
     return sg;
 }
 
-/* setClustNodes:
- * At present, cluster nodes are not assigned a position during layout,
+/* At present, cluster nodes are not assigned a position during layout,
  * but positioned in the center of its associated cluster. Because the
  * dummy edge associated with a cluster node may not occur at a sufficient
  * level of cluster, the edge may not be used during layout and we cannot
@@ -787,8 +772,7 @@ setClustNodes(graph_t* root)
     }
 }
 
-/* layout:
- * Given g with ports:
+/* Given g with ports:
  *  Derive g' from g by reducing clusters to points (deriveGraph)
  *  Compute connected components of g' (findCComp)
  *  For each cc of g': 
@@ -943,9 +927,7 @@ static int layout(graph_t * g, layout_info * infop)
     return 0;
 }
 
-/* setBB;
- * Set point box g->bb from inch box BB(g).
- */
+/// set point box g->bb from inch box BB(g)
 static void setBB(graph_t * g)
 {
     int i;
@@ -961,8 +943,7 @@ static void setBB(graph_t * g)
     }
 }
 
-/* init_info:
- * Initialize graph-dependent information and
+/* Initialize graph-dependent information and
  * state variable.s
  */
 static void init_info(graph_t * g, layout_info * infop)
@@ -975,8 +956,7 @@ static void init_info(graph_t * g, layout_info * infop)
     infop->pack.mode = getPackInfo(g, l_node, CL_OFFSET / 2, &infop->pack);
 }
 
-/* mkClusters:
- * Attach list of immediate child clusters.
+/* Attach list of immediate child clusters.
  * NB: By convention, the indexing starts at 1.
  * If pclist is NULL, the graph is the root graph or a cluster
  * If pclist is non-NULL, we are recursively scanning a non-cluster
