@@ -52,6 +52,8 @@ static void free_node(gmlnode *p) {
 static void free_edge(gmledge *p) {
     if (!p) return;
     LIST_FREE(&p->attrlist);
+    free(p->target);
+    free(p->source);
     free (p);
 }
 
