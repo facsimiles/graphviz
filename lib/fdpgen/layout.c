@@ -47,6 +47,7 @@
 #include <fdpgen/dbg.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/list.h>
 
@@ -275,25 +276,25 @@ static void evalPositions(graph_t * g, graph_t* rootg)
 
 typedef LIST(graph_t *) clist_t;
 
-#define BSZ 1000
-
 /* portName:
  * Generate a name for a port.
  * We use the ids of the nodes.
  * This is for debugging. For production, just use edge id and some
  * id for the graph. Note that all the graphs are subgraphs of the
  * root graph.
+ *
+ * @param out [out] Buffer to write generated name to
  */
-static char *portName(graph_t * g, bport_t * p)
-{
+static char *portName(graph_t *g, bport_t *p, agxbuf *out) {
+    assert(out != NULL);
+
     edge_t *e = p->e;
     node_t *h = aghead(e);
     node_t *t = agtail(e);
-    static char buf[BSZ + 1];
 
-	snprintf(buf, sizeof(buf), "_port_%s_(%d)_(%d)_%u",agnameof(g),
-		ND_id(t), ND_id(h), AGSEQ(e));
-    return buf;
+    agxbprint(out, "_port_%s_(%d)_(%d)_%u", agnameof(g), ND_id(t), ND_id(h),
+              AGSEQ(e));
+    return agxbuse(out);
 }
 
 /* chkPos:
@@ -501,11 +502,12 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	/* freed in freeDeriveGraph */
 	PORTS(dg) = pq = gv_calloc(sz + 1, sizeof(bport_t));
 	sz = 0;
+	agxbuf portname = {0};
 	while (pp->e) {
 	    m = DNODE(pp->n);
 	    /* Create port in derived graph only if hooks to internal node */
 	    if (m) {
-		dn = mkDeriveNode(dg, portName(g, pp));
+		dn = mkDeriveNode(dg, portName(g, pp, &portname));
 		sz++;
 		ND_id(dn) = id++;
 		if (dn > m)
@@ -527,6 +529,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	    }
 	    pp++;
 	}
+	agxbfree(&portname);
 	NPORTS(dg) = sz;
     }
 
