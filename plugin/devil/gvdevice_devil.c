@@ -21,7 +21,7 @@
 ///
 /// @param width Width of the image in pixels
 /// @param height Height of the image in pixels
-/// @param data [inout] Image content in 4-byte-per-pixel, row-major format
+/// @param data [in,out] Image content in 4-byte-per-pixel, row-major format
 static void Y_inv(unsigned width, unsigned height, unsigned char *data) {
         unsigned int x, y;
 

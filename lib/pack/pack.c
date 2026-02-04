@@ -581,8 +581,8 @@ static int acmpf(const void *X, const void *Y) {
 /// step to the next iteration of a matrix cell loop
 ///
 /// @param m Is the matrix in row-major order?
-/// @param c [inout] Column index
-/// @param r [inout] Row index
+/// @param c [in,out] Column index
+/// @param r [in,out] Row index
 /// @param nc Total column count
 /// @param nr Total row count
 static void INC(bool m, size_t *c, size_t *r, size_t nc, size_t nr) {

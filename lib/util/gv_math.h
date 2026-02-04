@@ -104,7 +104,7 @@ enum { BYTES_PER_PIXEL = 4 };
 ///
 /// @param width Width of the image in pixels
 /// @param height Height of the image in pixels
-/// @param data [inout] Image data in ARGB32 format on entry and RGBA32 format
+/// @param data [in,out] Image data in ARGB32 format on entry and RGBA32 format
 ///   on exit
 static inline void argb2rgba(size_t width, size_t height, unsigned char *data) {
   assert(data != NULL || (width == 0 && height == 0));
