@@ -17,6 +17,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     build_system,
     dot,
     freedesktop_os_release,
+    is_asan_instrumented,
     is_cmake,
     is_macos,
     is_mingw,
@@ -132,6 +133,13 @@ def check_that_tool_does_not_exist(tool, os_id):
     )
 
 
+@pytest.mark.xfail(
+    which("dot") is not None
+    and is_asan_instrumented(which("dot"))
+    and platform.system() != "Windows",
+    reason="memory leaks",
+    strict=True,
+)
 def test_1786():
     """
     png:gd format should be supported
