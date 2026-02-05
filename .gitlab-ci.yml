@@ -1,9 +1,7 @@
 variables:
-    # detect_leaks=0 – many of the tests currently trigger ASan memory leak
-    #   detections, so disable these for now
     # detect_stack_use_after_return=1 – stronger checks on variable lifetimes
     # exitcode=42 – allow distinguishing ASan crashes from regular error exits
-    ASAN_OPTIONS: detect_leaks=0,detect_stack_use_after_return=1,exitcode=42
+    ASAN_OPTIONS: detect_stack_use_after_return=1,exitcode=42
     FF_TIMESTAMPS: true
     # exitcode=42 – allow distinguishing UBSan crashes from regular error exits
     # print_stacktrace=1 – show a usable backtrace on error

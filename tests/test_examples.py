@@ -10,6 +10,7 @@ import pytest
 
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
+    is_asan_instrumented,
     is_static_build,
     run,
     run_c,
@@ -98,6 +99,13 @@ def test_gvpr_example(src):
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="GVPR not available")
+@pytest.mark.xfail(
+    which("dot") is not None
+    and is_asan_instrumented(which("dot"))
+    and platform.system() != "Windows",
+    reason="memory leaks",
+    strict=True,
+)
 def test_gvpr_clustg():
     """check cmd/gvpr/lib/clustg works"""
 
