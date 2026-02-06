@@ -22,7 +22,6 @@ sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky_10,
     is_ubuntu_2404,
-    is_ubuntu_2504,
     run,
 )
 
@@ -53,7 +52,7 @@ TESTS: list[Case] = [
         "dot",
         "gv",
         [],
-        xfail=not (is_ubuntu_2404() or is_ubuntu_2504()),
+        xfail=not is_ubuntu_2404(),
     ),
     Case("shapes", Path("shapes.gv"), "dot", "ps", []),
     Case("crazy", Path("crazy.gv"), "dot", "png", []),
