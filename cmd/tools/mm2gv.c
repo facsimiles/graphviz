@@ -73,8 +73,7 @@ static char *hue2rgb(double hue, agxbuf *xb) {
 }
 
 static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
-			      double * x, int with_color, int with_label, int with_val)
-{
+                              int with_color, int with_label, int with_val) {
     Agraph_t *g;
     Agnode_t *n;
     Agnode_t *h;
@@ -94,7 +93,7 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
 	    fprintf (stderr, "Warning: input matrix has no values, -c flag ignored\n");
 	    with_color = 0;
 	}
-	else if (A->type != MATRIX_TYPE_REAL && !x) {
+	else if (A->type != MATRIX_TYPE_REAL) {
 	    fprintf (stderr, "Warning: input has no coordinates, -c flag ignored\n");
 	    with_color = 0;
 	}
@@ -135,7 +134,7 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
 	    i = ND_id(n);
 	    if (A->type != MATRIX_TYPE_REAL) {
 		for (j = ia[i]; j < ia[i + 1]; j++) {
-		    color[j] = distance(x, dim, i, ja[j]);
+		    color[j] = distance(NULL, dim, i, ja[j]);
 		    if (i != ja[j]) {
 			if (first) {
 			    mindist = color[j];
@@ -330,7 +329,7 @@ int main(int argc, char *argv[])
 	SparseMatrix_delete(A);
 	A = B;
     }
-    g = makeDotGraph(A, pv.infile, dim, NULL, pv.with_color, pv.with_label, pv.with_val);
+    g = makeDotGraph(A, pv.infile, dim, pv.with_color, pv.with_label, pv.with_val);
 
     agwrite(g, pv.outf);
 
