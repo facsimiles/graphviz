@@ -152,65 +152,6 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       goto done;
     }
     break;
-  case MATRIX_TYPE_COMPLEX: {
-    val = gv_calloc(2 * nz, sizeof(double));
-    double *const v = val;
-    for (size_t i = 0; i < nz; i++) {
-      int num =
-          fscanf(f, "%d %d %lg %lg\n", &I[i], &J[i], &v[2 * i], &v[2 * i + 1]);
-      if (num != 4) {
-        goto done;
-      }
-      I[i]--; /* adjust from 1-based to 0-based */
-      J[i]--;
-    }
-    if (matcode.shape == MS_SYMMETRIC) {
-      I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
-      J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      val = gv_recalloc(val, 2 * nz, 4 * nz, sizeof(double));
-      const size_t nzold = nz;
-      for (size_t i = 0; i < nzold; i++) {
-        if (I[i] != J[i]) {
-          I[nz] = J[i];
-          J[nz] = I[i];
-          val[2 * nz] = val[2 * i];
-          val[2 * nz + 1] = val[2 * i + 1];
-          nz++;
-        }
-      }
-    } else if (matcode.shape == MS_SKEW) {
-      I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
-      J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      val = gv_recalloc(val, 2 * nz, 4 * nz, sizeof(double));
-      const size_t nzold = nz;
-      for (size_t i = 0; i < nzold; i++) {
-        if (I[i] == J[i]) { // skew symm should have no diag
-          goto done;
-        }
-        I[nz] = J[i];
-        J[nz] = I[i];
-        val[2 * nz] = -val[2 * i];
-        val[2 * nz + 1] = -val[2 * i + 1];
-        nz++;
-      }
-    } else if (matcode.shape == MS_HERMITIAN) {
-      I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
-      J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      val = gv_recalloc(val, 2 * nz, 4 * nz, sizeof(double));
-      const size_t nzold = nz;
-      for (size_t i = 0; i < nzold; i++) {
-        if (I[i] != J[i]) {
-          I[nz] = J[i];
-          J[nz] = I[i];
-          val[2 * nz] = val[2 * i];
-          val[2 * nz + 1] = -val[2 * i + 1];
-          nz++;
-        }
-      }
-    }
-    vp = val;
-    break;
-  }
   default:
     goto done;
   }

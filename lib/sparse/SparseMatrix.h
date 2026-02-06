@@ -43,7 +43,7 @@ struct SparseMatrix_struct {
 
 typedef struct SparseMatrix_struct* SparseMatrix;
 
-enum {MATRIX_TYPE_REAL = 1<<0, MATRIX_TYPE_COMPLEX = 1<<1, MATRIX_TYPE_INTEGER = 1<<2, MATRIX_TYPE_PATTERN = 1<<3};
+enum {MATRIX_TYPE_REAL = 1<<0, MATRIX_TYPE_INTEGER = 1<<2, MATRIX_TYPE_PATTERN = 1<<3};
 
 SparseMatrix SparseMatrix_new(int m, int n, size_t nz, int type, int format);
 

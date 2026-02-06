@@ -51,7 +51,7 @@ int mm_read_banner(FILE * f, MM_typecode * matcode)
     if (!startswith(banner, MatrixMarketBanner))
 	return MM_NO_HEADER;
 
-    /* first field should be "mtx" */
+    // first field should be “matrix”
     if (strcasecmp(mtx, MM_MTX_STR) != 0)
 	return MM_UNSUPPORTED_TYPE;
 
@@ -65,8 +65,6 @@ int mm_read_banner(FILE * f, MM_typecode * matcode)
 
     if (strcasecmp(data_type, MM_REAL_STR) == 0)
 	matcode->type = MATRIX_TYPE_REAL;
-    else if (strcasecmp(data_type, MM_COMPLEX_STR) == 0)
-	matcode->type = MATRIX_TYPE_COMPLEX;
     else if (strcasecmp(data_type, MM_PATTERN_STR) == 0)
 	matcode->type = MATRIX_TYPE_PATTERN;
     else if (strcasecmp(data_type, MM_INT_STR) == 0)
