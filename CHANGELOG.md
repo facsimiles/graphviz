@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `mm2gv` no longer accepts input matrices with `complex` element type.
   Previously these would be accepted but processed incorrectly leading to
   out-of-bounds memory reads and writes.
+- The `Tcldot_Init`, `Tcldot_builtin_Init`, and `Tcldot_SafeInit` symbols in
+  `tcldot.dll` are externally visible on Windows. #2809
+- The `Tclpathplan_Init` and `Tclpathplan_SafeInit` symbols in `tclpathplan.dll`
+  are externally visible on Windows. #2809
 
 ## [14.1.2] – 2026-01-24
 

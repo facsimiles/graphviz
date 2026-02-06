@@ -921,6 +921,9 @@ vgpane(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[])
     return TCL_OK;
 }
 
+#ifdef GVDLL
+__declspec(dllexport)
+#endif
 int Tclpathplan_Init(Tcl_Interp *interp);
 int Tclpathplan_Init(Tcl_Interp * interp)
 {
@@ -951,6 +954,9 @@ int Tclpathplan_Init(Tcl_Interp * interp)
     return TCL_OK;
 }
 
+#ifdef GVDLL
+__declspec(dllexport)
+#endif
 int Tclpathplan_SafeInit(Tcl_Interp *interp);
 int Tclpathplan_SafeInit(Tcl_Interp * interp)
 {
