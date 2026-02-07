@@ -20,7 +20,7 @@
 SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
   MM_typecode matcode;
   double *val = NULL;
-  int *vali = NULL, m, n;
+  int m, n;
   void *vp = NULL;
   SparseMatrix A = NULL;
   int c;
@@ -89,69 +89,6 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
     }
     vp = val;
     break;
-  case MATRIX_TYPE_INTEGER:
-    vali = gv_calloc(nz, sizeof(int));
-    for (size_t i = 0; i < nz; i++) {
-      int num = fscanf(f, "%d %d %d\n", &I[i], &J[i], &vali[i]);
-      if (num != 3) {
-        goto done;
-      }
-      I[i]--; /* adjust from 1-based to 0-based */
-      J[i]--;
-    }
-    if (matcode.shape == MS_SYMMETRIC) {
-      I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
-      J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      vali = gv_recalloc(vali, nz, 2 * nz, sizeof(int));
-      const size_t nzold = nz;
-      for (size_t i = 0; i < nzold; i++) {
-        if (I[i] != J[i]) {
-          I[nz] = J[i];
-          J[nz] = I[i];
-          vali[nz++] = vali[i];
-        }
-      }
-    } else if (matcode.shape == MS_SKEW) {
-      I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
-      J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      vali = gv_recalloc(vali, nz, 2 * nz, sizeof(int));
-      const size_t nzold = nz;
-      for (size_t i = 0; i < nzold; i++) {
-        if (I[i] == J[i]) { // skew symm should have no diag
-          goto done;
-        }
-        I[nz] = J[i];
-        J[nz] = I[i];
-        vali[nz++] = -vali[i];
-      }
-    } else if (matcode.shape == MS_HERMITIAN) {
-      goto done;
-    }
-    vp = vali;
-    break;
-  case MATRIX_TYPE_PATTERN:
-    for (size_t i = 0; i < nz; i++) {
-      int num = fscanf(f, "%d %d\n", &I[i], &J[i]);
-      if (num != 2) {
-        goto done;
-      }
-      I[i]--; /* adjust from 1-based to 0-based */
-      J[i]--;
-    }
-    if (matcode.shape == MS_SYMMETRIC || matcode.shape == MS_SKEW) {
-      I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
-      J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      const size_t nzold = nz;
-      for (size_t i = 0; i < nzold; i++) {
-        if (I[i] != J[i]) {
-          I[nz] = J[i];
-          J[nz++] = I[i];
-        }
-      }
-    } else if (matcode.shape == MS_HERMITIAN) {
-      goto done;
-    }
-    break;
   default:
     goto done;
   }
@@ -162,7 +99,6 @@ done:
   free(I);
   free(J);
   free(val);
-  free(vali);
 
   if (A != NULL && matcode.shape == MS_SYMMETRIC) {
     A->is_symmetric = true;
