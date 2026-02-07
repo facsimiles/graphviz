@@ -16,12 +16,14 @@
 
 #include "config.h"
 
+#include <cgraph/cgraph.h>
 #include <gvpr/gprstate.h>
 #include <ast/error.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/list.h>
 
 static int name_used;
 
@@ -59,7 +61,9 @@ Gpr_t *openGPRState(gpr_info* info)
 static int
 bindingcmpf (const void *key, const void *ip)
 {
-    return strcmp (((const gvprbinding*)key)->name, ((const gvprbinding*)ip)->name);
+    const gvprbinding *const k = key;
+    const gvprbinding *const i = ip;
+    return strcmp(k->name, i->name);
 }
 
 /* findBinding:
@@ -118,6 +122,15 @@ void addBindings (Gpr_t* state, gvprbinding* bindings)
 void closeGPRState(Gpr_t* state)
 {
     if (!state) return;
+
+    // we manually delete the managed graphs rather than setting
+    // `state->open_graphs.dtor` in `openGPRState` to allow list items to be
+    // removed in e.g. `getval` without closing the graph
+    for (size_t i = 0; i < LIST_SIZE(&state->open_graphs); ++i) {
+	(void)agclose(LIST_GET(&state->open_graphs, i));
+    }
+    LIST_FREE(&state->open_graphs);
+
     name_used = state->name_used;
     free(state->tgtname);
     free (state->dp);
