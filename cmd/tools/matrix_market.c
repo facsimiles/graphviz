@@ -18,7 +18,7 @@
 #include <util/alloc.h>
 
 SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
-  MM_typecode matcode;
+  matrix_shape_t shape;
   double *val = NULL;
   int m, n;
   void *vp = NULL;
@@ -30,7 +30,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
     return NULL;
   }
   ungetc(c, f);
-  if (mm_read_banner(f, &matcode) != 0) {
+  if (mm_read_banner(f, &shape) != 0) {
 #ifdef DEBUG
     printf("Could not process Matrix Market banner.\n");
 #endif
@@ -56,7 +56,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
     I[i]--; /* adjust from 1-based to 0-based */
     J[i]--;
   }
-  if (matcode.shape == MS_SYMMETRIC) {
+  if (shape == MS_SYMMETRIC) {
     I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
     J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
     val = gv_recalloc(val, nz, 2 * nz, sizeof(double));
@@ -68,7 +68,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
         val[nz++] = val[i];
       }
     }
-  } else if (matcode.shape == MS_SKEW) {
+  } else if (shape == MS_SKEW) {
     I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
     J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
     val = gv_recalloc(val, nz, 2 * nz, sizeof(double));
@@ -81,7 +81,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
       J[nz] = I[i];
       val[nz++] = -val[i];
     }
-  } else if (matcode.shape == MS_HERMITIAN) {
+  } else if (shape == MS_HERMITIAN) {
     goto done;
   }
   vp = val;
@@ -93,7 +93,7 @@ done:
   free(J);
   free(val);
 
-  if (A != NULL && matcode.shape == MS_SYMMETRIC) {
+  if (A != NULL && shape == MS_SYMMETRIC) {
     A->is_symmetric = true;
     A->is_pattern_symmetric = true;
   }
