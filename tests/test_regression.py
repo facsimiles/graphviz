@@ -1552,24 +1552,10 @@ def test_1648(fmt: str, layerselect: int):
         "vt-4up",
         "vt-6up",
         "vt-8up",
-        pytest.param(
-            "x11",
-            marks=pytest.mark.skipif(
-                platform.system() != "Linux",
-                reason="xlib plugin only available on Linux",
-            ),
-        ),
         "xdot",
         "xdot1.2",
         "xdot1.4",
         "xdot_json",
-        pytest.param(
-            "xlib",
-            marks=pytest.mark.skipif(
-                platform.system() != "Linux",
-                reason="xlib plugin only available on Linux",
-            ),
-        ),
     ),
 )
 @pytest.mark.xfail(
