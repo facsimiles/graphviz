@@ -31,11 +31,7 @@
 
 typedef enum { MS_GENERAL, MS_SYMMETRIC, MS_HERMITIAN, MS_SKEW } matrix_shape_t;
 
-typedef struct {
-  matrix_shape_t shape;
-} MM_typecode;
-
-int mm_read_banner(FILE * f, MM_typecode * matcode);
+int mm_read_banner(FILE *f, matrix_shape_t *shape);
 int mm_read_mtx_crd_size(FILE * f, int *M, int *N, size_t *nz);
 
 /********************* Matrix Market error codes ***************************/
