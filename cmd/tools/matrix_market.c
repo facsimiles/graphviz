@@ -47,53 +47,46 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE *f) {
   int *I = gv_calloc(nz, sizeof(int));
   int *J = gv_calloc(nz, sizeof(int));
 
-  const int type = matcode.type;
-  switch (type) {
-  case MATRIX_TYPE_REAL:
-    val = gv_calloc(nz, sizeof(double));
-    for (size_t i = 0; i < nz; i++) {
-      int num = fscanf(f, "%d %d %lg\n", &I[i], &J[i], &val[i]);
-      if (num != 3) {
-        goto done;
-      }
-      I[i]--; /* adjust from 1-based to 0-based */
-      J[i]--;
-    }
-    if (matcode.shape == MS_SYMMETRIC) {
-      I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
-      J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      val = gv_recalloc(val, nz, 2 * nz, sizeof(double));
-      const size_t nzold = nz;
-      for (size_t i = 0; i < nzold; i++) {
-        if (I[i] != J[i]) {
-          I[nz] = J[i];
-          J[nz] = I[i];
-          val[nz++] = val[i];
-        }
-      }
-    } else if (matcode.shape == MS_SKEW) {
-      I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
-      J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
-      val = gv_recalloc(val, nz, 2 * nz, sizeof(double));
-      const size_t nzold = nz;
-      for (size_t i = 0; i < nzold; i++) {
-        if (I[i] == J[i]) { // skew symm should have no diag
-          goto done;
-        }
-        I[nz] = J[i];
-        J[nz] = I[i];
-        val[nz++] = -val[i];
-      }
-    } else if (matcode.shape == MS_HERMITIAN) {
+  val = gv_calloc(nz, sizeof(double));
+  for (size_t i = 0; i < nz; i++) {
+    int num = fscanf(f, "%d %d %lg\n", &I[i], &J[i], &val[i]);
+    if (num != 3) {
       goto done;
     }
-    vp = val;
-    break;
-  default:
+    I[i]--; /* adjust from 1-based to 0-based */
+    J[i]--;
+  }
+  if (matcode.shape == MS_SYMMETRIC) {
+    I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
+    J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
+    val = gv_recalloc(val, nz, 2 * nz, sizeof(double));
+    const size_t nzold = nz;
+    for (size_t i = 0; i < nzold; i++) {
+      if (I[i] != J[i]) {
+        I[nz] = J[i];
+        J[nz] = I[i];
+        val[nz++] = val[i];
+      }
+    }
+  } else if (matcode.shape == MS_SKEW) {
+    I = gv_recalloc(I, nz, 2 * nz, sizeof(int));
+    J = gv_recalloc(J, nz, 2 * nz, sizeof(int));
+    val = gv_recalloc(val, nz, 2 * nz, sizeof(double));
+    const size_t nzold = nz;
+    for (size_t i = 0; i < nzold; i++) {
+      if (I[i] == J[i]) { // skew symm should have no diag
+        goto done;
+      }
+      I[nz] = J[i];
+      J[nz] = I[i];
+      val[nz++] = -val[i];
+    }
+  } else if (matcode.shape == MS_HERMITIAN) {
     goto done;
   }
+  vp = val;
 
-  A = SparseMatrix_from_coordinate_arrays(nz, m, n, I, J, vp, type,
+  A = SparseMatrix_from_coordinate_arrays(nz, m, n, I, J, vp, MATRIX_TYPE_REAL,
                                           sizeof(double));
 done:
   free(I);

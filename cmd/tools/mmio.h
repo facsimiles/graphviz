@@ -32,7 +32,6 @@
 typedef enum { MS_GENERAL, MS_SYMMETRIC, MS_HERMITIAN, MS_SKEW } matrix_shape_t;
 
 typedef struct {
-  int type; ///< one of the `MATRIX_TYPE_*` values from lib/sparse
   matrix_shape_t shape;
 } MM_typecode;
 

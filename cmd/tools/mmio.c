@@ -63,9 +63,7 @@ int mm_read_banner(FILE * f, MM_typecode * matcode)
 
     /* third field */
 
-    if (strcasecmp(data_type, MM_REAL_STR) == 0)
-	matcode->type = MATRIX_TYPE_REAL;
-    else
+    if (strcasecmp(data_type, MM_REAL_STR) != 0)
 	return MM_UNSUPPORTED_TYPE;
 
 
