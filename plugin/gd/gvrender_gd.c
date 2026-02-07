@@ -324,11 +324,13 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	epf.y = spf.y = p.y - span->yoffset_centerline * job->zoom * job->dpi.x / POINTS_PER_INCH;
     }
 
+    bool fontname_needs_free = false;
 #ifdef HAVE_GD_FONTCONFIG
     PostscriptAlias *const pA = span->font->postscript_alias;
-    if (pA)
+    if (pA) {
 	fontname = gd_psfontResolve (pA);
-    else
+	fontname_needs_free = true;
+    } else
 #endif
 	fontname = span->font->name;
 
@@ -339,6 +341,9 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	    job->rotation ? M_PI / 2 : 0,
 	    fontname,
 	    span->str);
+    if (fontname_needs_free) {
+	free(fontname);
+    }
 }
 
 static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
