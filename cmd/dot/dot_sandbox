@@ -59,7 +59,16 @@ class Bubblewrap(Sandbox):
 
     @staticmethod
     def _run(args: list[Union[Path, str]]) -> sp.CompletedProcess:
-        prefix = ["bwrap", "--ro-bind", "/", "/", "--unshare-all", "--"]
+        prefix = [
+            "bwrap",
+            "--ro-bind",
+            "/",
+            "/",
+            "--proc",
+            "/proc",
+            "--unshare-all",
+            "--",
+        ]
         return sp.call(prefix + args)
 
 
