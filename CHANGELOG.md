@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `gvmap` no longer dereferences a null pointer when reading position-less
   graphs.
 - `gvmap` no longer crashes when adding coordinate data.
-- `mm2gv` no longer accepts input matrices with `complex` element type.
+- `mm2gv` no longer accepts input matrices with non-`real` element type.
   Previously these would be accepted but processed incorrectly leading to
   out-of-bounds memory reads and writes.
 - The `Tcldot_Init`, `Tcldot_builtin_Init`, and `Tcldot_SafeInit` symbols in
