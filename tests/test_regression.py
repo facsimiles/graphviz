@@ -5124,13 +5124,6 @@ def test_2572():
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="GVPR not available")
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2577():
     """
     accessing an uninitialized string should not corrupt GVPR’s state

@@ -58,6 +58,7 @@ typedef LIST(strview_t) strviews_t;
 	gvprbinding* bindings;
 	size_t n_bindings;
 	jmp_buf jbuf;
+	LIST(Agraph_t *) open_graphs;
     } Gpr_t;
 
     typedef struct {

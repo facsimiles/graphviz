@@ -581,6 +581,9 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
     switch (sym->index) {
     case F_graph:
       gp = openG(args[0].string, xargs(args[1].string));
+      if (gp != NULL) {
+        LIST_APPEND(&state->open_graphs, gp);
+      }
       v.integer = ptr2int(gp);
       break;
     case F_subg:
@@ -1163,8 +1166,14 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
       } else if (objp == state->curobj) {
         if (!(v.integer = deleteObj(gp, objp)))
           state->curobj = NULL;
-      } else
+      } else {
+        // Drop this from the list of managed open graphs. If it was not open,
+        // let this silently fail.
+        if (AGTYPE(objp) == AGRAPH) {
+          LIST_REMOVE(&state->open_graphs, (Agraph_t *)objp);
+        }
         v.integer = deleteObj(gp, objp);
+      }
       break;
     case F_lock:
       gp = int2ptr(args[0].integer);
