@@ -33,7 +33,7 @@ def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     """
 
     # dump the command being run for the user to observe if the test fails
-    print(f"+ {shlex.join(str(x) for x in args)}")
+    print(f"+ {shlex.join(str(x) for x in args)}", flush=True)
 
     is_stdout_decoded = kwargs.get("universal_newlines") or kwargs.get("text")
 
@@ -43,7 +43,11 @@ def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     else:
         is_stdout_captured = False
 
-    proc = subprocess.run(args, check=False, **kwargs)
+    try:
+        proc = subprocess.run(args, check=False, **kwargs)
+    except subprocess.TimeoutExpired as e:
+        stdout = e.stdout
+        return stdout
 
     if proc.returncode != 0:
         if is_stdout_captured:
@@ -230,7 +234,7 @@ def dot(
         kwargs["input"] = source
 
     # dump the command being run for the user to observe if the test fails
-    print(f"+ {shlex.join(str(x) for x in args)}")
+    print(f"+ {shlex.join(str(x) for x in args)}", flush=True)
 
     proc = subprocess.run(args, stdout=subprocess.PIPE, check=True, **kwargs)
     return proc.stdout
@@ -489,7 +493,7 @@ def run_c(
 
         # dump the command being run for the user to observe if the test fails
         argv = [exe] + args
-        print(f"+ {shlex.join(str(x) for x in argv)}")
+        print(f"+ {shlex.join(str(x) for x in argv)}", flush=True)
 
         input_bytes = None
         if input is not None:
