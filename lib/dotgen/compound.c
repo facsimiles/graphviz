@@ -258,10 +258,7 @@ static int splineIntersectf(pointf * pts, boxf * bb)
 	tmin = t;
     }
 
-    if (tmin < 2.0) {
-	return 1;
-    } else
-	return 0;
+    return tmin < 2.0 ? 1 : 0;
 }
 
 /* If edge e has a cluster head and/or cluster tail,
