@@ -23,6 +23,7 @@
 #include "config.h"
 
 #include <cgraph/cghdr.h>
+#include <cgraph/node_set.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -191,7 +192,7 @@ void graphviz_tred(Agraph_t *g, const graphviz_tred_options_t *opts) {
   nodeinfo_t *ninfo;
   size_t infosize;
 
-  infosize = (agnnodes(g) + 1) * sizeof(nodeinfo_t);
+  infosize = (node_set_size(g->n_id) + 1) * sizeof(nodeinfo_t);
   ninfo = gv_alloc(infosize);
 
   if (opts->Verbose && opts->err != NULL)
