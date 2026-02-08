@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.1.3)]
 
+### Changed
+
+- Using long node names in combination with the fdp layout algorithm no longer
+  results in truncated generated names.
+
 ### Fixed
 
 - `gvmap` no longer dereferences a null pointer when reading position-less
