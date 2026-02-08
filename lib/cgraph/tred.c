@@ -190,9 +190,8 @@ void graphviz_tred(Agraph_t *g, const graphviz_tred_options_t *opts) {
   time_t secs;
   time_t total_secs = 0;
   nodeinfo_t *ninfo;
-  size_t infosize;
 
-  infosize = (node_set_size(g->n_id) + 1) * sizeof(nodeinfo_t);
+  const size_t infosize = (node_set_size(g->n_id) + 1) * sizeof(nodeinfo_t);
   ninfo = gv_alloc(infosize);
 
   if (opts->Verbose && opts->err != NULL)
