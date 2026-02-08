@@ -199,6 +199,8 @@ findSource (Agraph_t* g, Agraph_t* sg)
     return NULL;
 }
 
+typedef LIST(node_t *) nodes_t;
+
 static int
 topsort (Agraph_t* g, Agraph_t* sg, Agnode_t** arr)
 {
@@ -1318,8 +1320,6 @@ static bool constraining_flat_edge(Agraph_t *g, Agedge_t *e) {
     return false;
   return true;
 }
-
-typedef LIST(node_t *) nodes_t;
 
 /* construct nodes reachable from 'here' in post-order.
 * This is the same as doing a topological sort in reverse order.
