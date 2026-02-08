@@ -28,16 +28,13 @@
 
 #include "mmio.h"
 
-int mm_read_banner(FILE * f, MM_typecode * matcode)
-{
+int mm_read_banner(FILE *f, matrix_shape_t *shape) {
     char line[MM_MAX_LINE_LENGTH];
     char banner[MM_MAX_TOKEN_LENGTH] = {0};
     char mtx[MM_MAX_TOKEN_LENGTH] = {0};
     char crd[MM_MAX_TOKEN_LENGTH] = {0};
     char data_type[MM_MAX_TOKEN_LENGTH] = {0};
     char storage_scheme[MM_MAX_TOKEN_LENGTH] = {0};
-
-    *matcode = (MM_typecode){0};
 
     if (fgets(line, MM_MAX_LINE_LENGTH, f) == NULL)
 	return MM_PREMATURE_EOF;
@@ -63,26 +60,20 @@ int mm_read_banner(FILE * f, MM_typecode * matcode)
 
     /* third field */
 
-    if (strcasecmp(data_type, MM_REAL_STR) == 0)
-	matcode->type = MATRIX_TYPE_REAL;
-    else if (strcasecmp(data_type, MM_PATTERN_STR) == 0)
-	matcode->type = MATRIX_TYPE_PATTERN;
-    else if (strcasecmp(data_type, MM_INT_STR) == 0)
-	matcode->type = MATRIX_TYPE_INTEGER;
-    else
+    if (strcasecmp(data_type, MM_REAL_STR) != 0)
 	return MM_UNSUPPORTED_TYPE;
 
 
     /* fourth field */
 
     if (strcasecmp(storage_scheme, MM_GENERAL_STR) == 0)
-	matcode->shape = MS_GENERAL;
+	*shape = MS_GENERAL;
     else if (strcasecmp(storage_scheme, MM_SYMM_STR) == 0)
-	matcode->shape = MS_SYMMETRIC;
+	*shape = MS_SYMMETRIC;
     else if (strcasecmp(storage_scheme, MM_HERM_STR) == 0)
-	matcode->shape = MS_HERMITIAN;
+	*shape = MS_HERMITIAN;
     else if (strcasecmp(storage_scheme, MM_SKEW_STR) == 0)
-	matcode->shape = MS_SKEW;
+	*shape = MS_SKEW;
     else
 	return MM_UNSUPPORTED_TYPE;
 

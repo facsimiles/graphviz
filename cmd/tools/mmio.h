@@ -31,12 +31,7 @@
 
 typedef enum { MS_GENERAL, MS_SYMMETRIC, MS_HERMITIAN, MS_SKEW } matrix_shape_t;
 
-typedef struct {
-  int type; ///< one of the `MATRIX_TYPE_*` values from lib/sparse
-  matrix_shape_t shape;
-} MM_typecode;
-
-int mm_read_banner(FILE * f, MM_typecode * matcode);
+int mm_read_banner(FILE *f, matrix_shape_t *shape);
 int mm_read_mtx_crd_size(FILE * f, int *M, int *N, size_t *nz);
 
 /********************* Matrix Market error codes ***************************/
@@ -69,9 +64,7 @@ int mm_read_mtx_crd_size(FILE * f, int *M, int *N, size_t *nz);
 #define MM_COORDINATE_STR "coordinate"
 #define MM_SPARSE_STR	"coordinate"
 #define MM_REAL_STR		"real"
-#define MM_INT_STR		"integer"
 #define MM_GENERAL_STR  "general"
 #define MM_SYMM_STR		"symmetric"
 #define MM_HERM_STR		"hermitian"
 #define MM_SKEW_STR		"skew-symmetric"
-#define MM_PATTERN_STR  "pattern"
