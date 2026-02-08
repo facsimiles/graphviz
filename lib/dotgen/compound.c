@@ -242,20 +242,17 @@ static int splineIntersectf(pointf * pts, boxf * bb)
 	Bezier(origpts, t, pts, NULL);
 	tmin = t;
     }
-    t = findVertical(pts, 0.0, MIN(1.0, tmin), bb->UR.x, bb->LL.y,
-		     bb->UR.y);
+    t = findVertical(pts, 0.0, MIN(1.0, tmin), bb->UR.x, bb->LL.y, bb->UR.y);
     if (t >= 0 && t < tmin) {
 	Bezier(origpts, t, pts, NULL);
 	tmin = t;
     }
-    t = findHorizontal(pts, 0.0, MIN(1.0, tmin), bb->LL.y, bb->LL.x,
-		       bb->UR.x);
+    t = findHorizontal(pts, 0.0, MIN(1.0, tmin), bb->LL.y, bb->LL.x, bb->UR.x);
     if (t >= 0 && t < tmin) {
 	Bezier(origpts, t, pts, NULL);
 	tmin = t;
     }
-    t = findHorizontal(pts, 0.0, MIN(1.0, tmin), bb->UR.y, bb->LL.x,
-		       bb->UR.x);
+    t = findHorizontal(pts, 0.0, MIN(1.0, tmin), bb->UR.y, bb->LL.x, bb->UR.x);
     if (t >= 0 && t < tmin) {
 	Bezier(origpts, t, pts, NULL);
 	tmin = t;
