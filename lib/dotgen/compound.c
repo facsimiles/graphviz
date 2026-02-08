@@ -236,12 +236,7 @@ static int splineIntersectf(pointf * pts, boxf * bb)
 {
     double tmin = 2.0;
     double t;
-    pointf origpts[4];
-    int i;
-
-    for (i = 0; i < 4; i++) {
-	origpts[i] = pts[i];
-    }
+    const pointf origpts[] = {pts[0], pts[1], pts[2], pts[3]};
 
     t = findVertical(pts, 0.0, 1.0, bb->LL.x, bb->LL.y, bb->UR.y);
     if (t >= 0 && t < tmin) {
