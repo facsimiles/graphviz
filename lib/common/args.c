@@ -89,7 +89,7 @@ config_extra_args(GVC_t *gvc, int argc, char** argv)
     if (arg[0] == '-') {
       switch (arg[1]) {
       case 'v':
-	gvc->common.verbose = 1;
+	gvc->common.verbose += 1;
 	if (gv_isdigit(arg[2]))
 	  gvc->common.verbose = atoi(&arg[2]);
         break;

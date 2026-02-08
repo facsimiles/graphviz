@@ -12,9 +12,9 @@
 /// print an informational message
 ///
 /// This assumes the `Verbose` global is in scope.
-#define GV_INFO(...)                                                           \
+#define GV_MESSAGE(enabled, ...)                                               \
   do {                                                                         \
-    if (Verbose) {                                                             \
+    if (enabled) {                                                             \
       const char *const name_ = strrchr(__FILE__, '/') == NULL                 \
                                     ? __FILE__                                 \
                                     : strrchr(__FILE__, '/') + 1;              \
@@ -30,10 +30,15 @@
     }                                                                          \
   } while (0)
 
+/// print an informational message
+///
+/// This assumes the `Verbose` global is in scope.
+#define GV_INFO(...) GV_MESSAGE(Verbose, __VA_ARGS__)
+
 /// print a debug message
 ///
 /// The distinction between this and `GV_INFO` is purely semantic; this is
 /// intended for messages for Graphviz developers while `GV_INFO` is intended
 /// for messages for Graphviz users. In future, `GV_DEBUG` may use something
 /// other than `Verbose` to guard its output.
-#define GV_DEBUG(...) GV_INFO(__VA_ARGS__)
+#define GV_DEBUG(...) GV_MESSAGE(((Verbose) > 1), __VA_ARGS__)
