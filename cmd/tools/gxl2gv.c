@@ -468,17 +468,17 @@ startElementHandler(void *userData, const char *name, const char **atts)
 
 	pos = get_xml_attr("fromorder", atts);
 	if (pos > 0) {
-	    setEdgeAttr(E, GXL_FROM, (char *) atts[pos], ud, false);
+	    setEdgeAttr(E, GXL_FROM, atts[pos], ud, false);
 	}
 
 	pos = get_xml_attr("toorder", atts);
 	if (pos > 0) {
-	    setEdgeAttr(E, GXL_TO, (char *) atts[pos], ud, false);
+	    setEdgeAttr(E, GXL_TO, atts[pos], ud, false);
 	}
 
 	pos = get_xml_attr("id", atts);
 	if (pos > 0) {
-	    setEdgeAttr(E, GXL_ID, (char *) atts[pos], ud, false);
+	    setEdgeAttr(E, GXL_ID, atts[pos], ud, false);
 	}
     } else if (streq(name, "attr")) {
 	const char *attrname = atts[get_xml_attr("name", atts)];
