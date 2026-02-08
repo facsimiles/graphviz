@@ -331,10 +331,10 @@ static_assert(
 /// You can think of this macro as having the C type:
 ///
 ///   void LIST_SORT(LIST(<type>) *list,
-///                  int (*comparator)(const void *a, const void *b));
+///                  int (*cmp)(const void *a, const void *b));
 ///
 /// @param list List to operate on
-/// @param comparator How to compare two list items
+/// @param cmp How to compare two list items
 #define LIST_SORT(list, cmp)                                                   \
   gv_list_sort_(&(list)->impl, (cmp), sizeof((list)->base[0]))
 
