@@ -36,7 +36,7 @@ static char *usageFmt =
 
 static char *genericItems = "\n\
  -V          - Print version and exit\n\
- -v          - Enable verbose mode \n\
+ -v[n]       - Enable verbose mode at level 1, or set to the level 'n' if provided\n\
  -Gname=val  - Set graph attribute 'name' to 'val'\n\
  -Nname=val  - Set node attribute 'name' to 'val'\n\
  -Ename=val  - Set edge attribute 'name' to 'val'\n\
