@@ -187,7 +187,6 @@ void graphviz_tred(Agraph_t *g, const graphviz_tred_options_t *opts) {
   Agnode_t *n;
   int cnt = 0;
   int warn = 0;
-  time_t secs;
   time_t total_secs = 0;
 
   const size_t infosize = (node_set_size(g->n_id) + 1) * sizeof(nodeinfo_t);
@@ -200,7 +199,7 @@ void graphviz_tred(Agraph_t *g, const graphviz_tred_options_t *opts) {
     const time_t start = time(NULL);
     warn = dfs(n, ninfo, warn, opts);
     if (opts->Verbose) {
-      secs = time(NULL) - start;
+      const time_t secs = time(NULL) - start;
       total_secs += secs;
       cnt++;
       if (cnt % 1000 == 0 && opts->err != NULL) {
