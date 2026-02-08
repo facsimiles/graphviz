@@ -267,10 +267,8 @@ setGlobalNodeAttr(Agraph_t * g, char *name, char *value)
     agattr_text(G, AGNODE, name, value);
 }
 
-static void
-setEdgeAttr(Agedge_t * ep, char *name, char *value, userdata_t * ud,
-  bool is_html)
-{
+static void setEdgeAttr(Agedge_t *ep, char *name, const char *value,
+                        userdata_t *ud, bool is_html) {
     Agsym_t *ap;
     char *attrname;
 
