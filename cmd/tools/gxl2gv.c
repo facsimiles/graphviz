@@ -126,8 +126,7 @@ static void freeUserdata(userdata_t ud) {
   agxbfree(&ud.composite_buffer);
 }
 
-static void addToMap(Dt_t * map, char *name, char *uniqueName)
-{
+static void addToMap(Dt_t *map, char *name, const char *uniqueName) {
     namev_t obj;
     namev_t *objp;
 
