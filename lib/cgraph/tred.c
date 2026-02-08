@@ -184,7 +184,6 @@ static int dfs(Agnode_t *n, nodeinfo_t *ninfo, int warn,
  * complexity is O(|V||E|).
  */
 void graphviz_tred(Agraph_t *g, const graphviz_tred_options_t *opts) {
-  Agnode_t *n;
   int cnt = 0;
   int warn = 0;
   time_t total_secs = 0;
@@ -194,7 +193,7 @@ void graphviz_tred(Agraph_t *g, const graphviz_tred_options_t *opts) {
 
   if (opts->Verbose && opts->err != NULL)
     fprintf(stderr, "Processing graph %s\n", agnameof(g));
-  for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+  for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
     memset(ninfo, 0, infosize);
     const time_t start = time(NULL);
     warn = dfs(n, ninfo, warn, opts);
