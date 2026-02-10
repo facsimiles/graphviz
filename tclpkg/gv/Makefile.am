@@ -288,7 +288,7 @@ DEVTSTS += test_tcl
 all-local: pkgIndex.tcl
 
 pkgIndex.tcl:
-	python3 $(top_srcdir)/tclpkg/mkpkgindex.py \
+	$(PYTHON3) $(top_srcdir)/tclpkg/mkpkgindex.py \
 	  --file libgv_tcl$(SHARED_LIBRARY_SUFFIX) \
 	  --name gv \
 	  --version 0
@@ -304,7 +304,7 @@ $(man): gv_doc_writer.intermediate ;
 
 .INTERMEDIATE: gv_doc_writer.intermediate
 gv_doc_writer.intermediate: gv.i gv_doc_writer.py
-	python3 $(srcdir)/gv_doc_writer.py
+	$(PYTHON3) $(srcdir)/gv_doc_writer.py
 
 .3sharp.3sharp.pdf:
 	rm -f $@; pdffile=$@; psfile=$${pdffile%pdf}ps; \
