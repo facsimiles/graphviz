@@ -39,7 +39,7 @@ colortbl.h: $(top_srcdir)/lib/common/brewer_colors \
             $(top_srcdir)/lib/common/svgcolor_names \
             $(top_srcdir)/lib/common/color_names \
             $(top_srcdir)/lib/common/make_colortbl.py
-	python3 $(top_srcdir)/lib/common/make_colortbl.py \
+	$(PYTHON3) $(top_srcdir)/lib/common/make_colortbl.py \
 	  $(top_srcdir)/lib/common/brewer_colors \
 	  $(top_srcdir)/lib/common/svgcolor_names \
 	  $(top_srcdir)/lib/common/color_names colortbl.h
@@ -48,7 +48,7 @@ utils.$(OBJEXT) utils.lo: entities.h
 
 entities.h: $(top_srcdir)/lib/common/entities.html \
             $(top_srcdir)/lib/common/entities.py
-	python3 $(top_srcdir)/lib/common/entities.py "$@"
+	$(PYTHON3) $(top_srcdir)/lib/common/entities.py "$@"
 
 htmllex.$(OBJEXT) htmllex.lo: htmllex.c htmllex.h htmlparse.h
 htmlparse.$(OBJEXT) htmlparse.lo: htmlparse.c htmlparse.h
