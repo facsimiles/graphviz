@@ -1,5 +1,5 @@
 # Digest from https://hub.docker.com/_/fedora/tags?name=42
-FROM fedora:42@sha256:b3d16134560afa00d7cc2a9e4967eb5b954512805f3fe27d8e70bbed078e22ea
+FROM fedora:42@sha256:eb167a7adffa1489a205c83a7b9324e4cb0fae5c54645f263e70ac13f661f0e8
 
 COPY requirements.txt ./requirements.txt
 
