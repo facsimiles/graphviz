@@ -1,12 +1,15 @@
 add_library(util STATIC
   arena.c
   base64.c
+  debug.c
   gv_find_me.c
   gv_fopen.c
   list.c
   random.c
   xml.c
 )
+
+target_compile_definitions(common_obj PRIVATE UTIL_EXPORTS)
 
 target_include_directories(util PRIVATE ..)
 

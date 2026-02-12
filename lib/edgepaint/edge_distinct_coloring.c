@@ -21,6 +21,7 @@
 #include <sparse/DotIO.h>
 #include <edgepaint/intersection.h>
 #include <sparse/QuadTree.h>
+#include <util/debug.h>
 #include <util/list.h>
 #include <util/prisize_t.h>
 

@@ -28,6 +28,7 @@
 #include    <stdbool.h>
 #include    <stddef.h>
 #include    <util/alloc.h>
+#include    <util/debug.h>
 #include    <util/list.h>
 #include    <util/startswith.h>
 
