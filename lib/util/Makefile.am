@@ -29,6 +29,7 @@ noinst_HEADERS = \
   strcasecmp.h \
   streq.h \
   strview.h \
+  time.h \
   tokenize.h \
   unreachable.h \
   unused.h \

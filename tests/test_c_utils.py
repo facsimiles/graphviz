@@ -75,6 +75,24 @@ def test_debug_h():
     run_c(src, cflags=cflags)
 
 
+def test_gv_time_h():
+    """test ../lib/util/gv_time.h"""
+
+    # locate the unit test
+    src = Path(__file__).parent.resolve() / "../lib/util/test_gv_time.c"
+    assert src.exists()
+
+    # locate lib directory that needs to be in the include path
+    lib = Path(__file__).parent.resolve() / "../lib"
+
+    # extra C flags this compilation needs
+    cflags = ["-I", lib]
+    if platform.system() != "Windows":
+        cflags += ["-std=gnu17"]
+
+    run_c(src, cflags=cflags)
+
+
 @pytest.mark.parametrize(
     "bad_test",
     (
