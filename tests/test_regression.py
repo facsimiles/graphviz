@@ -7008,6 +7008,7 @@ Usage: dot [-Vv?] [-(GNEA)name=val] [-(KTlso)<val>] <dot files>
  -P          - Internally generate a graph of the current plugins. 
  -q[l]       - Set level of message suppression (=1)
  -s[v]       - Scale input by 'v' (=72)
+ -t[k]       - Show phase timings, with 'k' units of sub-second precision if specified
  -y          - Invert y coordinate in output
 
  -n[v]       - No layout mode 'v' (=1)

@@ -9,6 +9,7 @@
 // mock the functionality we use.
 
 #include <time.h>
+#include <util/gv_time.h>
 #include <util/lockfile.h>
 
 // Define the mock replacements BEFORE including the header under test
@@ -16,8 +17,8 @@
 #define unlockfile unlockfile_mock
 #define fprintf fprintf_mock
 #define vfprintf vfprintf_mock
-#define time time_mock
-#define localtime localtime_mock
+#define get_nanoseconds get_nanoseconds_mock
+#define portable_gmtime_r portable_gmtime_r_mock
 
 // * Mocks
 
@@ -42,30 +43,24 @@ static void unlockfile(FILE *fd) {
   fprintf_mock(NULL, "UNLOCK");
 }
 
-static time_t counter = 0;
-static time_t time_mock_result;
-
-static time_t time_mock(time_t *timer) {
-  if (timer) {
-    time_mock_result = *timer;
-  }
-  return time_mock_result + ++counter;
+// Mock time retrieval to return a fixed time
+static int get_nanoseconds_mock(struct timespec *ts) {
+  ts->tv_sec = 1672531200; // Fixed timestamp (e.g., 2023-01-01)
+  ts->tv_nsec = 153456789; // Fixed nanoseconds
+  return 1;
 }
 
 // Mock gmtime helper
-static const struct tm *localtime_mock(const time_t *now) {
-  // Make sure we got the value returned by time_mock.
-  assert(*now == time_mock_result + counter);
-  // return an arbitrary value
-  static struct tm result;
-  memset(&result, 0, sizeof(result));
-  result.tm_year = 123; // 2023
-  result.tm_mon = 0;    // Jan
-  result.tm_mday = 1;
-  result.tm_hour = 12;
-  result.tm_min = 0;
-  result.tm_sec = 0;
-  return &result;
+static int portable_gmtime_r_mock(const time_t *timer, struct tm *result) {
+  (void)timer;
+  memset(result, 0, sizeof(*result));
+  result->tm_year = 123; // 2023
+  result->tm_mon = 0;    // Jan
+  result->tm_mday = 1;
+  result->tm_hour = 12;
+  result->tm_min = 0;
+  result->tm_sec = 0;
+  return 1;
 }
 
 // Now include the header and source file under test
@@ -175,6 +170,22 @@ static void test_gv_debug_levels(void) {
   assert(output_contains("Visible Debug Message"));
 }
 
+static void test_gv_log_timing_disabled(void) {
+  reset_mock();
+  Timing = 0;
+  GV_LOG_TIMING("Timing info");
+  assert(mock_buffer[0] == '\0');
+}
+
+static void test_gv_log_timing_enabled(void) {
+  reset_mock();
+  Timing = 1;
+
+  GV_LOG_TIMING("Operation took %d ms", 42);
+
+  assert(output_contains("Operation took 42 ms"));
+}
+
 static void test_timestamp_formatting(void) {
   reset_mock();
   Verbose = 1;
@@ -182,6 +193,51 @@ static void test_timestamp_formatting(void) {
 
   // Based on our mock time values
   assert(output_contains("2023-01-01 12:00:00 "));
+}
+
+static void test_log_timing_1(void) {
+  reset_mock();
+  Timing = 1;
+  GV_LOG_TIMING("Checking log timing 1");
+
+  // Based on our mock time values
+  assert(output_contains("2023-01-01 12:00:00 "));
+}
+
+static void test_log_timing_2(void) {
+  reset_mock();
+  Timing = 2;
+  GV_LOG_TIMING("Checking log timing 2");
+
+  // Based on our mock time values
+  assert(output_contains("2023-01-01 12:00:00.2 "));
+}
+
+static void test_log_timing_3(void) {
+  reset_mock();
+  Timing = 3;
+  GV_LOG_TIMING("Checking log timing 3");
+
+  // Based on our mock time values
+  assert(output_contains("2023-01-01 12:00:00.15 "));
+}
+
+static void test_log_timing_10(void) {
+  reset_mock();
+  Timing = 10;
+  GV_LOG_TIMING("Checking log timing 10");
+
+  // Based on our mock time values
+  assert(output_contains("2023-01-01 12:00:00.153456789 "));
+}
+
+static void test_log_timing_11(void) {
+  reset_mock();
+  Timing = 11;
+  GV_LOG_TIMING("Checking log timing 11");
+
+  // Based on our mock time values
+  assert(output_contains("2023-01-01 12:00:00.153456789 "));
 }
 
 int main(void) {
@@ -196,5 +252,12 @@ int main(void) {
   RUN(gv_info_disabled);
   RUN(gv_info_enabled);
   RUN(gv_debug_levels);
+  RUN(gv_log_timing_disabled);
+  RUN(gv_log_timing_enabled);
   RUN(timestamp_formatting);
+  RUN(log_timing_1);
+  RUN(log_timing_2);
+  RUN(log_timing_3);
+  RUN(log_timing_10);
+  RUN(log_timing_11);
 }
