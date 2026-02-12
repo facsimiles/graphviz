@@ -15,6 +15,7 @@ noinst_HEADERS = \
   gv_fopen.h \
   gv_ftell.h \
   gv_math.h \
+  gv_time.h \
   itos.h \
   list.h \
   list-private.h \

@@ -296,42 +296,57 @@ attach_phase_attrs (Agraph_t * g, int maxphase)
 static int dotLayout(Agraph_t *g) {
     int maxphase = late_int(g, agfindgraphattr(g,"phase"), -1, 1);
 
+    GV_LOG_TIMING("Starting dotLayout [init]");
     setEdgeType (g, EDGETYPE_SPLINE);
     setAspect(g);
 
     dot_init_subg(g,g);
     dot_init_node_edge(g);
 
-    GV_INFO("Starting phase 1 [dot_rank]");
+    GV_LOG_TIMING("Starting phase 1 [dot_rank]");
     dot_rank(g);
+    GV_LOG_TIMING("Finished phase 1 [dot_rank]");
     if (maxphase == 1) {
         attach_phase_attrs (g, 1);
         return 0;
     }
-    GV_INFO("Starting phase 2 [dot_mincross]");
+    GV_LOG_TIMING("Starting phase 2 [dot_mincross]");
     const int rc = dot_mincross(g);
+    GV_LOG_TIMING("Finished phase 2 [dot_mincross]");
     if (rc != 0) {
         return rc;
     }
     if (maxphase == 2) {
+        GV_LOG_TIMING("Exiting after phase 2 [dot_mincross]");
         attach_phase_attrs (g, 2);
         return 0;
     }
-    GV_INFO("Starting phase 3 [dot_position]");
+    GV_LOG_TIMING("Starting phase 3 [dot_position]");
     dot_position(g);
     if (maxphase == 3) {
+        GV_LOG_TIMING("Exiting after phase 3 [dot_position]");
         attach_phase_attrs (g, 2);  /* positions will be attached on output */
         return 0;
     }
-    if (GD_flags(g) & NEW_RANK)
-	removeFill (g);
+    GV_LOG_TIMING("Continuing after phase 3 [dot_position]");
+    if (GD_flags(g) & NEW_RANK) {
+        GV_LOG_TIMING("Starting phase removeFill4 [removeFill]");
+        removeFill (g);
+    }
+    GV_LOG_TIMING("Starting phase 5 [dot_sameports]");
     dot_sameports(g);
+    GV_LOG_TIMING("Starting phase 6 [dot_splines]");
     const int r = dot_splines(g);
     if (r != 0) {
+      GV_LOG_TIMING("Finished phase 6 [dot_splines] with error");
 	return r;
+    } else {
+      GV_LOG_TIMING("Finished phase 6 [dot_splines] successfully");
     }
-    if (mapbool(agget(g, "compound")))
-	dot_compoundEdges(g);
+    if (mapbool(agget(g, "compound"))) {
+      GV_LOG_TIMING("Starting phase 7 [dot_compoundEdges]");
+      dot_compoundEdges(g);
+    }
     return 0;
 }
 
@@ -443,8 +458,10 @@ static int doDot(Agraph_t *g) {
          */
 	const int rc = dotLayout(g);
 	if (rc != 0) {
+	    GV_LOG_TIMING("Finished dotLayout with error");
 	    return rc;
 	}
+	GV_LOG_TIMING("Finished dotLayout");
     } else {
 	/* fill in default values */
 	if (mode == l_undef) 
@@ -460,6 +477,7 @@ static int doDot(Agraph_t *g) {
 	ccs = cccomps(g, &ncc, 0);
 	if (ncc == 1) {
 	    const int rc = dotLayout(g);
+	    GV_LOG_TIMING("Finished dotLayout");
 	    if (rc != 0) {
 		free(ccs);
 		return rc;
@@ -471,6 +489,7 @@ static int doDot(Agraph_t *g) {
 		sg = ccs[i];
 		initSubg (sg, g);
 		const int rc = dotLayout (sg);
+		GV_LOG_TIMING("Finished dotLayout");
 		if (rc != 0) {
 		    free(ccs);
 		    return rc;
@@ -487,6 +506,7 @@ static int doDot(Agraph_t *g) {
              * adjustment. We would then have to re-adjust all positions.
              */
 	    const int rc = dotLayout(g);
+	    GV_LOG_TIMING("Finished dotLayout");
 	    if (rc != 0) {
 		free(ccs);
 		return rc;
