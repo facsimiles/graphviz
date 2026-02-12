@@ -27,6 +27,7 @@
 #include <cgraph/ingraphs.h>
 #include <sparse/DotIO.h>
 #include <sparse/colorutil.h>
+#include <util/debug.h>
 #include <util/unreachable.h>
 
 typedef struct {
