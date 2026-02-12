@@ -65,6 +65,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/list.h>
 
 static double get_mq(SparseMatrix A, int *assignment, int *ncluster0, double *mq_in0, double *mq_out0, double **dout0){

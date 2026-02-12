@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/prisize_t.h>
 #include <util/sort.h>
 #include <util/startswith.h>
