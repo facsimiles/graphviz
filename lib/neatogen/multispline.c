@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_math.h>
 
 static bool spline_merge(node_t * n)

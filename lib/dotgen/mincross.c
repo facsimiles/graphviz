@@ -29,6 +29,7 @@
 #include <string.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/itos.h>

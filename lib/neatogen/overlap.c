@@ -24,6 +24,7 @@
 #include <common/globals.h>
 #include <stdbool.h>
 #include <time.h>
+#include <util/debug.h>
 
 static void ideal_distance_avoid_overlap(int dim, SparseMatrix A, double *x, double *width, double *ideal_distance, double *tmax, double *tmin){
   /*  if (x1>x2 && y1 > y2) we want either x1 + t (x1-x2) - x2 > (width1+width2), or y1 + t (y1-y2) - y2 > (height1+height2),
@@ -583,7 +584,7 @@ void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes, int
 #endif
 }
 
-#else
+#else // ! (defined(HAVE_GTS) && defined(SFDP))
 #include <common/types.h>
 #include <sparse/SparseMatrix.h>
 void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes, int ntry, double initial_scaling,
@@ -607,4 +608,4 @@ void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes, int
 	agerrorf("remove_overlap: Graphviz not built with triangulation library\n");
     }
 }
-#endif
+#endif // defined(HAVE_GTS) && defined(SFDP)
