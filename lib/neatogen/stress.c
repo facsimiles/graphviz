@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 
 // the terms in the stress energy are normalized by dᵢⱼ¯²
 

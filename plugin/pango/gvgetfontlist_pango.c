@@ -21,6 +21,7 @@
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_ctype.h>
 #include <util/prisize_t.h>
 #include <util/strcasecmp.h>

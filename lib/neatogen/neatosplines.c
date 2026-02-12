@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_math.h>
 #include <util/unreachable.h>
 

@@ -16,6 +16,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/random.h>
 
 static const int minsize = 4;

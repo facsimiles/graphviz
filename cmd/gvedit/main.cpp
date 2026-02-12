@@ -25,6 +25,7 @@
 #include <common/globals.h>
 #include <gvc/gvc.h>
 #include <stdio.h>
+#include <util/debug.h>
 #include <util/exit.h>
 
 QTextStream errout(stderr, QIODevice::WriteOnly);

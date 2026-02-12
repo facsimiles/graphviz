@@ -35,6 +35,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <time.h>
+#ifdef DEBUG
+#include <util/debug.h>
+#endif // DEBUG
 
 #ifndef HAVE_SRAND48
 #define srand48 srand
