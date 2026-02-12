@@ -28,6 +28,7 @@
 #include <neatogen/digcola.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_math.h>
 #ifdef IPSEPCOLA
 #include <math.h>

@@ -27,6 +27,7 @@
 #include <gvc/gvc.h>
 #include <fdpgen/fdp.h>
 #include <stdbool.h>
+#include <util/debug.h>
 #include <util/gv_ctype.h>
 
 /* Handle special neato arguments.
@@ -98,6 +99,12 @@ config_extra_args(GVC_t *gvc, int argc, char** argv)
 	  break;
       case 'c' :
           gvc->common.config = true;
+	  break;
+      case 't' :
+          gvc->common.timing = 1;
+	  if (gv_isdigit(arg[2]))
+	    gvc->common.timing = atoi(&arg[2]) + 1;
+        break;
 	  break;
       default :
         cnt++;
