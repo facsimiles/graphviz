@@ -76,7 +76,7 @@ portable-source:
             - runner_system_failure
             - job_execution_timeout
 
-.build_template: &rpm_build_definition
+.rpm_build_template: &rpm_build_definition
     stage: build
     script:
         - ci/linux-build-job-script.sh
@@ -99,7 +99,7 @@ portable-source:
             - runner_system_failure
             - job_execution_timeout
 
-.build_template: &deb_build_definition
+.deb_build_template: &deb_build_definition
     stage: build
     script:
         - source /opt/virtualenv/bin/activate
@@ -157,10 +157,24 @@ portable-source:
             - job_execution_timeout
 
 
-.build_template: &windows_build_definition
+.windows_cleanup:
+    script:
+        - |
+          # 1. HEALTH REPORT
+          Write-Host "--- Runner Health ---"
+          Get-PSDrive C | Select-Object @{N="FreeGB";E={[math]::round($_.Free/1GB,2)}} | Out-Host
+          $mem = Get-CimInstance Win32_OperatingSystem
+          Write-Host "Free Memory: $([math]::round($mem.FreePhysicalMemory/1MB, 2)) GB"
+          # 2. disable Windows Defender
+          Add-MpPreference -ExclusionPath 'C:\'
+
+
+.windows_build_template: &windows_build_definition
     stage: build
     needs: []
     script:
+        # get windows ready
+        - !reference [.windows_cleanup, script]
         # abort on cmdlet non-terminating errors
         - $ErrorActionPreference = "Stop"
         # make sub-scripts default to aborting on cmdlet non-terminating errors
@@ -195,6 +209,47 @@ portable-source:
             - stuck_or_timeout_failure
             - runner_system_failure
             - job_execution_timeout
+
+.cygwin_setup_template:
+    script:
+        # drop environment variables we do not need
+        - $Env:CI_COMMIT_DESCRIPTION = $null
+        - $Env:CI_COMMIT_MESSAGE = $null
+        - $Env:CI_COMMIT_TITLE = $null
+        # get windows ready
+        - !reference [.windows_cleanup, script]
+        # Cygwin-specific setup
+        - |
+          $cygwinPath = "C:\cygwin64"
+          $mirror = "https://mirrors.kernel.org"
+          $mirrorHost = "mirrors.kernel.org"
+
+          # 1. NETWORK CHECK
+          if (-not (Test-NetConnection $mirrorHost -Port 443).TcpTestSucceeded) {
+              Write-Error "Mirror $mirrorHost is unreachable. Installation likely to fail."
+          }
+
+          # 2. CLEANUP (Services & Processes)
+          Write-Host "--- Cleaning Up Existing Cygwin ---"
+          Get-Service | Where-Object { $_.Status -eq 'Running' } | ForEach-Object {
+              $path = (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\$($_.Name)").ImagePath
+              if ($path -like "*$cygwinPath*") { Stop-Service $_.Name -Force }
+          }
+          Get-Process | Where-Object { $_.Path -like "$cygwinPath*" } | Stop-Process -Force -EA 0
+
+          # 3. RETRY LOOP
+          $success = $false
+          for ($i=1; $i -le 3; $i++) {
+              Write-Host "Cygwin Setup Attempt $i..."
+              $p = Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site $mirror --wait" -Wait -PassThru
+              if ($p.ExitCode -eq 0) { $success = $true; break }
+              Write-Warning "Attempt $i failed (Code: $($p.ExitCode)). Sleeping 15s..."
+              Start-Sleep -Seconds 15
+          }
+
+          if (-not $success) { throw "Cygwin installation failed after 3 attempts." }
+        # 4. remove pre-installed Windows Python to avoid build/test picking it up
+        - Remove-Item -Path 'C:\Python313' -Recurse -Force
 
 .test_template: &test_definition
     stage: test
@@ -398,8 +453,7 @@ windows-mingw64-build:
         - job: portable-source
           artifacts: true
     script:
-        # disable Windows Defender
-        - Add-MpPreference -ExclusionPath 'C:\'
+        - !reference [.windows_cleanup, script]
         - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
         - $Env:build_system = "autotools"
         - $Env:use_autogen = "yes"
@@ -421,8 +475,7 @@ windows-mingw64-static-build:
         - job: portable-source
           artifacts: true
     script:
-        # disable Windows Defender
-        - Add-MpPreference -ExclusionPath 'C:\'
+        - !reference [.windows_cleanup, script]
         - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
         - $Env:build_system = "autotools"
         - $Env:CONFIGURE_OPTIONS = "--disable-shared --enable-static"
@@ -445,18 +498,15 @@ windows-cygwin-build:
         - job: portable-source
           artifacts: true
     script:
-        # drop environment variables we do not need
-        - $Env:CI_COMMIT_DESCRIPTION = $null
-        - $Env:CI_COMMIT_MESSAGE = $null
-        - $Env:CI_COMMIT_TITLE = $null
-        # disable Windows Defender
-        - Add-MpPreference -ExclusionPath 'C:\'
-        - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
-        - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
+        - !reference [.cygwin_setup_template, script]
         - $Env:Path = "C:\cygwin64\bin;" + $Env:Path
-        - $Env:build_system = "autotools"
+        # fail on any compiler warnings
+        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough"
+        - $Env:CXXFLAGS = "-Werror"
         # change line endings from crlf to lf
         - C:\cygwin64\bin\sed -i 's/\r//g' ci/*.sh
+        # run the build
+        - $Env:build_system = "autotools"
         - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
     artifacts:
         when: always
@@ -478,20 +528,13 @@ windows-cygwin-build-using-autogen:
     stage: build
     needs: []
     script:
-        # drop environment variables we do not need
-        - $Env:CI_COMMIT_DESCRIPTION = $null
-        - $Env:CI_COMMIT_MESSAGE = $null
-        - $Env:CI_COMMIT_TITLE = $null
-        # disable Windows Defender
-        - Add-MpPreference -ExclusionPath 'C:\'
-        - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
-        - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
+        - !reference [.cygwin_setup_template, script]
         - $Env:Path = "C:\cygwin64\bin;" + $Env:Path
-        - $Env:build_system = "autotools"
-        - $Env:use_autogen = "yes"
-        # change line endings from crlf to lf
+        # change line endings of needed scripts and config from crlf to lf
         - C:\cygwin64\bin\find . '(' -name Makefile.am -or -name "*.def" ')' -exec C:\cygwin64\bin\sed -i 's/\r//g' "{}" ';'
         - C:\cygwin64\bin\sed -i 's/\r//g' autogen.sh ci/*.sh configure.ac lib/common/color_names lib/common/brewer_colors lib/common/svgcolor_names
+        # run the build
+        - $Env:build_system = "autotools"
         - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
     tags:
         - saas-windows-medium-amd64
@@ -914,23 +957,15 @@ windows-cygwin-cmake-build:
     stage: build
     needs: []
     script:
-        # drop environment variables we do not need
-        - $Env:CI_COMMIT_DESCRIPTION = $null
-        - $Env:CI_COMMIT_MESSAGE = $null
-        - $Env:CI_COMMIT_TITLE = $null
-        # disable Windows Defender
-        - Add-MpPreference -ExclusionPath 'C:\'
-        # remove pre-installed Windows Python to avoid CMake picking it up
-        - Remove-Item -Path 'C:\Python313' -Recurse -Force
-        - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
-        - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
+        - !reference [.cygwin_setup_template, script]
         - $Env:Path = "C:\cygwin64\bin;" + $Env:Path
-        - $Env:build_system = "cmake"
         # fail on any compiler warnings
         - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough"
         - $Env:CXXFLAGS = "-Werror"
         # change line endings from crlf to lf
         - C:\cygwin64\bin\sed -i 's/\r//g' ci/*.sh lib/common/color_names lib/common/brewer_colors lib/common/svgcolor_names
+        # run the build
+        - $Env:build_system = "cmake"
         - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
     artifacts:
         when: always
