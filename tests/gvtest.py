@@ -12,8 +12,20 @@ import tempfile
 from pathlib import Path
 from typing import Optional, Union
 
+from pexpect.popen_spawn import PopenSpawn
+
 ROOT = Path(__file__).resolve().parent.parent
 """absolute path to the root of the repository"""
+
+
+def pexpect_spawn_tclsh(env, timeout=1, encoding=None, **kwargs) -> PopenSpawn:
+    """
+    Let it know we're listening.
+    """
+    proc = PopenSpawn("tclsh", env=env, timeout=timeout, encoding=encoding, **kwargs)
+    proc.sendline("fconfigure stdout -buffering none")
+    proc.sendline("set tcl_interactive 1")
+    return proc
 
 
 def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
