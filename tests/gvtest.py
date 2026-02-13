@@ -1,5 +1,6 @@
 """common Graphviz test functionality"""
 
+import collections
 import os
 import platform
 import re
@@ -12,8 +13,42 @@ import tempfile
 from pathlib import Path
 from typing import Optional, Union
 
+from pexpect.popen_spawn import PopenSpawn
+
 ROOT = Path(__file__).resolve().parent.parent
 """absolute path to the root of the repository"""
+
+
+def pexpect_spawn_tclsh(env: collections.abc.Mapping, timeout: int) -> PopenSpawn:
+    """Start `tclsh` interactively in a separate process using `PopenSpawn`.
+
+    This can be used in place of `pexepect.spawn("tclsh", ...)`, which
+    is unsafe in a multi-threaded context, as might happen if
+    tests are run in parallel using `pytest-xdist`.
+
+    See https://docs.python.org/3/library/os.html#os.fork for more.
+
+    Args:
+      env: Environment variables to pass to `tclsh` when run.
+      timeout: Timeout in seconds. `None` means no timeout.
+               `0` times out instantly if no data.
+
+    Return:
+      The created `PopenSpawn` object.
+
+    Raises:
+      pexpect.TIMEOUT: If no data is received after `timeout` seconds.
+    """
+
+    proc = PopenSpawn("tclsh", env=env, timeout=timeout)
+
+    # Send a few commands to `tclsh` to tell it to be more interactive
+    # so `expect` works better.  (`PopenSpawn` doesn't have a fake tty
+    # as `pexpect.spawn` apparently did.)
+    proc.sendline("fconfigure stdout -buffering none")
+    proc.sendline("set tcl_interactive 1")
+
+    return proc
 
 
 def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
