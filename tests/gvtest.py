@@ -1,5 +1,6 @@
 """common Graphviz test functionality"""
 
+import collections
 import os
 import platform
 import re
@@ -12,8 +13,31 @@ import tempfile
 from pathlib import Path
 from typing import Optional, Union
 
+from pexpect.popen_spawn import PopenSpawn
+
 ROOT = Path(__file__).resolve().parent.parent
 """absolute path to the root of the repository"""
+
+
+def pexpect_spawn_tclsh(env: collections.abc.Mapping, **kwargs) -> PopenSpawn:
+    """Start "tclsh' interactively in a separate process using `PopenSpawn`.
+
+    This can be used in place of `pexepect.spawn("tclsh", ...)`, since
+    `forkpty` has been deprecated, and was unavailable on Windows.
+    `env` is passed as the environment variables for `tclsh`.
+    Any additional arguments provided beyond `env` are passed through
+    to `PopenSpawn` (in case future use cases need more flexibility).
+
+    """
+    proc = PopenSpawn("tclsh", env=env, **kwargs)
+
+    # Send a few commands to `tclsh` to tell it to be more interactive
+    # so `expect` works better.  (`PopenSpawn` doesn't have a fake tty
+    # as `pexpect.spawn` apparently did.))
+    proc.sendline("fconfigure stdout -buffering none")
+    proc.sendline("set tcl_interactive 1")
+
+    return proc
 
 
 def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
