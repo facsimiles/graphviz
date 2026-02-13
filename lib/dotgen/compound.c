@@ -235,42 +235,30 @@ findHorizontal(pointf * pts, double tmin, double tmax,
 static int splineIntersectf(pointf * pts, boxf * bb)
 {
     double tmin = 2.0;
-    double t;
-    pointf origpts[4];
-    int i;
+    const pointf origpts[] = {pts[0], pts[1], pts[2], pts[3]};
 
-    for (i = 0; i < 4; i++) {
-	origpts[i] = pts[i];
-    }
-
-    t = findVertical(pts, 0.0, 1.0, bb->LL.x, bb->LL.y, bb->UR.y);
+    double t = findVertical(pts, 0.0, 1.0, bb->LL.x, bb->LL.y, bb->UR.y);
     if (t >= 0 && t < tmin) {
 	Bezier(origpts, t, pts, NULL);
 	tmin = t;
     }
-    t = findVertical(pts, 0.0, MIN(1.0, tmin), bb->UR.x, bb->LL.y,
-		     bb->UR.y);
+    t = findVertical(pts, 0.0, MIN(1.0, tmin), bb->UR.x, bb->LL.y, bb->UR.y);
     if (t >= 0 && t < tmin) {
 	Bezier(origpts, t, pts, NULL);
 	tmin = t;
     }
-    t = findHorizontal(pts, 0.0, MIN(1.0, tmin), bb->LL.y, bb->LL.x,
-		       bb->UR.x);
+    t = findHorizontal(pts, 0.0, MIN(1.0, tmin), bb->LL.y, bb->LL.x, bb->UR.x);
     if (t >= 0 && t < tmin) {
 	Bezier(origpts, t, pts, NULL);
 	tmin = t;
     }
-    t = findHorizontal(pts, 0.0, MIN(1.0, tmin), bb->UR.y, bb->LL.x,
-		       bb->UR.x);
+    t = findHorizontal(pts, 0.0, MIN(1.0, tmin), bb->UR.y, bb->LL.x, bb->UR.x);
     if (t >= 0 && t < tmin) {
 	Bezier(origpts, t, pts, NULL);
 	tmin = t;
     }
 
-    if (tmin < 2.0) {
-	return 1;
-    } else
-	return 0;
+    return tmin < 2.0 ? 1 : 0;
 }
 
 /* If edge e has a cluster head and/or cluster tail,
