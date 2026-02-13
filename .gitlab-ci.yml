@@ -123,7 +123,7 @@ portable-source:
             - runner_system_failure
             - job_execution_timeout
 
-.build_template: &macos_build_definition
+.macos_build_template: &macos_build_definition
     stage: build
     script:
         - source ci/macos-install-build-dependencies.sh
@@ -210,6 +210,58 @@ portable-source:
             - runner_system_failure
             - job_execution_timeout
 
+.network_diag_logic:
+    script:
+        - |
+          # List of alternate reliable mirrors to test
+          $altMirrors = @(
+              "mirrors.sonstiges.net",
+              "plug-mirror.rcac.purdue.edu",
+              "ftp.eq.uc.pt"
+          )
+
+          Write-Host "!!! NETWORK DIAGNOSTICS REPORT !!!" -ForegroundColor Cyan
+
+          # 1. Test the Primary Target
+          $primary = "mirrors.kernel.org"
+          Write-Host "Testing Primary: $primary..."
+          $t1 = Test-NetConnection -ComputerName $primary -Port 443
+          # -InformationLevel Quiet
+          if ($t1) {
+              Write-Host "  [OK] Primary is reachable." -ForegroundColor Green
+          } else {
+              Write-Host "  [FAIL] Primary is unreachable." -ForegroundColor Red
+
+              # 2. Test Alternates (Only if primary fails)
+              Write-Host "Testing Alternate Mirrors..."
+              foreach ($m in $altMirrors) {
+                  $t = Test-NetConnection -ComputerName $m -Port 443 -InformationLevel Quiet
+                  if ($t) {
+                      Write-Host "  [OK] $m is reachable." -ForegroundColor Green
+                  } else {
+                      Write-Host "  [FAIL] $m is unreachable." -ForegroundColor Red
+                  }
+              }
+          }
+
+          # 3. DNS Resolution Check
+          Write-Host "`n--- DNS Status ---"
+          try {
+              $dns = Resolve-DnsName -Name $primary -ErrorAction Stop
+              Write-Host "  DNS Resolution for $primary: SUCCESS ($($dns.IPAddress))"
+          } catch {
+              Write-Host "  DNS Resolution for $primary: FAILED" -ForegroundColor Red
+              Get-DnsClientServerAddress | Select-Object InterfaceAlias, ServerAddresses | Format-Table -AutoSize | Out-String | Write-Host
+          }
+
+          # 4. Routing & Interface Stats (Did we lose the gateway?)
+          Write-Host "--- Routing & Interface ---"
+          Get-NetRoute -DestinationPrefix "0.0.0.0/0" | Select-Object DestinationPrefix, NextHop, RouteMetric | Format-Table -AutoSize | Out-String | Write-Host
+
+          # Check if the interface is actually sending/receiving packets
+          Get-NetAdapter | Get-NetAdapterStatistics | Select-Object Name, ReceivedBytes, SentBytes, ReceivedPacketErrors | Format-Table -AutoSize | Out-String | Write-Host
+
+
 .cygwin_setup_template:
     script:
         # drop environment variables we do not need
@@ -237,7 +289,22 @@ portable-source:
           }
           Get-Process | Where-Object { $_.Path -like "$cygwinPath*" } | Stop-Process -Force -EA 0
 
-          # 3. RETRY LOOP
+          # 3. FETCH INSTALLER RETRY LOOP
+          $success = $false
+          for ($i=1; $i -le 3; $i++) {
+              Write-Host "Cygwin Setup Attempt $i..."
+              wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
+              if ($p.ExitCode -eq 0) { $success = $true; break }
+              Write-Warning "Attempt $i failed (Code: $($p.ExitCode)). Sleeping 7s..."
+              Start-Sleep -Seconds 7
+          }
+
+          if (-not $success) {
+              Write-Error "Cygwin installater download failed after 3 attempts."
+              $global::diag_needed = $true
+          }
+
+          # 4. INSTALL CYGWIN RETRY LOOP
           $success = $false
           for ($i=1; $i -le 3; $i++) {
               Write-Host "Cygwin Setup Attempt $i..."
@@ -247,7 +314,13 @@ portable-source:
               Start-Sleep -Seconds 15
           }
 
-          if (-not $success) { throw "Cygwin installation failed after 3 attempts." }
+          if (-not $success) {
+              Write-Error "Cygwin installation failed after 3 attempts."
+              $global::diag_needed = $true
+          }
+        # check for errors
+        - if ($global:diag_needed) { !reference [.network_diag_logic, script]
+        - if ($global:diag_needed) { exit 1}
         # 4. remove pre-installed Windows Python to avoid build/test picking it up
         - Remove-Item -Path 'C:\Python313' -Recurse -Force
 
@@ -862,7 +935,7 @@ windows-cmake-x64-debug-build:
         - $Env:configuration = "Debug"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
-.build_template: &windows_build_without_artifacts_definition
+.windows_build_template2: &windows_build_without_artifacts_definition
     <<: *windows_build_definition
     artifacts:
         when: on_success
