@@ -159,8 +159,8 @@ portable-source:
 
 .windows_cleanup:
     script:
+        - Set-PSDebug -Trace 1
         - |
-          Set-PSDebug -Trace 1
           # 1. HEALTH REPORT
           Write-Host "--- Runner Health ---"
           Get-PSDrive C | Select-Object @{N="FreeGB";E={[math]::round($_.Free/1GB,2)}} | Out-Host
@@ -184,13 +184,13 @@ portable-source:
         - Add-MpPreference -ExclusionPath 'C:\'
         - $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
         - python --version
-        - if (-not $?) { Write-Error "Cygwin installation failed after 3 attempts."; exit 1 }
+        - if (-not $?) { Write-Error "Can't check python version"; exit 1 }
         # Install and set PATH
         - $Env:graphviz_install_dir = "C:\Graphviz"
         # Build
         - Set-ExecutionPolicy Bypass -Force -Scope Process
         - python ci/windows_build.py --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS
-        - if (-not $?) { Write-Error "Cygwin installation failed after 3 attempts."; exit 1 }
+        - if (-not $?) { Write-Error "Windows build failed"; exit 1 }
     artifacts:
         when: on_success
         expire_in: 1 week
@@ -265,6 +265,7 @@ portable-source:
 
 .cygwin_setup_template:
     script:
+        - Set-PSDebug -Trace 1
         # drop environment variables we do not need
         - $Env:CI_COMMIT_DESCRIPTION = $null
         - $Env:CI_COMMIT_MESSAGE = $null
@@ -521,7 +522,7 @@ portable-source:
     tags:
         - saas-macos-medium-m1
 
-.windows-mingw64-build:
+windows-mingw64-build:
     stage: build
     needs:
         - job: portable-source
@@ -915,7 +916,7 @@ windows-cygwin-build-using-autogen:
         - $Env:configuration = "Release"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
-.windows-cmake-Win32-debug-build:
+windows-cmake-Win32-debug-build:
     <<: *windows_build_definition
     before_script:
         - $Env:project_platform = "Win32"
@@ -929,7 +930,7 @@ windows-cygwin-build-using-autogen:
         - $Env:configuration = "Release"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
-.windows-cmake-x64-debug-build:
+windows-cmake-x64-debug-build:
     <<: *windows_build_definition
     before_script:
         - $Env:project_platform = "x64"
@@ -973,14 +974,14 @@ windows-cygwin-build-using-autogen:
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x64"
     timeout: 2 hours
 
-.windows-cmake-x64-debug-static-build:
+windows-cmake-x64-debug-static-build:
     <<: *windows_build_without_artifacts_definition
     before_script:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Debug"
         - $Env:BUILD_SHARED_LIBS = "OFF"
 
-.windows-mingw64-cmake-build:
+windows-mingw64-cmake-build:
     stage: build
     needs: []
     script:
