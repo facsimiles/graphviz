@@ -2,11 +2,11 @@
 
 Write-Host "Starting cygwin-install.ps1"
 
-Set-PSDebug -Trace 1
+# Set-PSDebug -Trace 1
 $Env:CI_COMMIT_DESCRIPTION = $null
 $Env:CI_COMMIT_MESSAGE = $null
 $Env:CI_COMMIT_TITLE = $null
-Set-PSDebug -Trace 1
+# Set-PSDebug -Trace 1
 
 # 1. HEALTH REPORT
 Write-Host "--- Runner Health ---"
@@ -43,9 +43,10 @@ for ($i=1; $i -le 3; $i++) {
     Start-Sleep -Seconds 7
 }
 
+$diag_needed = $false
 if (-not $success) {
     Write-Error "Cygwin installater download failed after 3 attempts."
-    $global::diag_needed = $true
+    $diag_needed = $true
 }
 
 # 4. INSTALL CYGWIN RETRY LOOP
@@ -60,9 +61,9 @@ for ($i=1; $i -le 3; $i++) {
 
 if (-not $success) {
     Write-Error "Cygwin installation failed after 3 attempts."
-    $global::diag_needed = $true
+    $diag_needed = $true
 }
-if ($global:diag_needed) {
+if ($diag_needed) {
     try {
         . "$PSScriptRoot/network-diag-logic.ps1"
     } catch {

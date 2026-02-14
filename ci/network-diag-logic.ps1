@@ -1,7 +1,7 @@
 # network-diag-logic.ps1: Try to diagnosis the network issues we see
 
 Write-Host "Starting network-diag-logic.ps1"
-Set-PSDebug -Trace 1
+# Set-PSDebug -Trace 1
 
 # List of alternate reliable mirrors to test
 $altMirrors = @(
