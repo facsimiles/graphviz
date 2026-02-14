@@ -169,7 +169,6 @@ portable-source:
           # 2. disable Windows Defender
           Add-MpPreference -ExclusionPath 'C:\'
 
-
 .windows_build_template: &windows_build_definition
     stage: build
     needs: []

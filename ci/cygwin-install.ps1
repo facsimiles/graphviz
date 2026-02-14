@@ -13,8 +13,6 @@ Write-Host "--- Runner Health ---"
 Get-PSDrive C | Select-Object @{N="FreeGB";E={[math]::round($_.Free/1GB,2)}} | Out-Host
 $mem = Get-CimInstance Win32_OperatingSystem
 Write-Host "Free Memory: $([math]::round($mem.FreePhysicalMemory/1MB, 2)) GB"
-# 2. disable Windows Defender
-Add-MpPreference -ExclusionPath 'C:\'
 
 $cygwinPath = "C:\cygwin64"
 $mirror = "https://mirrors.kernel.org"
