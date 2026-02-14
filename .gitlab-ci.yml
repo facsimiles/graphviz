@@ -17,6 +17,8 @@ stages:
 
 # generate doxygen documentation from sources for https://graphviz.gitlab.io/graphviz/doxygen/
 pages:
+    rules:
+        - when: never
     needs:
         - job: docker_build_ubuntu-24.04
           artifacts: false
@@ -77,6 +79,8 @@ portable-source:
             - job_execution_timeout
 
 .rpm_build_template: &rpm_build_definition
+    rules:
+        - when: never
     stage: build
     script:
         - ci/linux-build-job-script.sh
@@ -100,6 +104,8 @@ portable-source:
             - job_execution_timeout
 
 .deb_build_template: &deb_build_definition
+    rules:
+        - when: never
     stage: build
     script:
         - source /opt/virtualenv/bin/activate
@@ -124,6 +130,8 @@ portable-source:
             - job_execution_timeout
 
 .macos_build_template: &macos_build_definition
+    rules:
+        - when: never
     stage: build
     script:
         - source ci/macos-install-build-dependencies.sh
@@ -160,6 +168,7 @@ portable-source:
 .windows_cleanup:
     script:
         - |
+          Set-PSDebug -Trace 1
           # 1. HEALTH REPORT
           Write-Host "--- Runner Health ---"
           Get-PSDrive C | Select-Object @{N="FreeGB";E={[math]::round($_.Free/1GB,2)}} | Out-Host
@@ -170,6 +179,8 @@ portable-source:
 
 
 .windows_build_template: &windows_build_definition
+    rules:
+        - when: never
     stage: build
     needs: []
     script:
@@ -183,13 +194,13 @@ portable-source:
         - Add-MpPreference -ExclusionPath 'C:\'
         - $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
         - python --version
-        - if (-not $?) { throw "command failed" }
+        - if (-not $?) { Write-Error "Cygwin installation failed after 3 attempts."; exit 1 }
         # Install and set PATH
         - $Env:graphviz_install_dir = "C:\Graphviz"
         # Build
         - Set-ExecutionPolicy Bypass -Force -Scope Process
         - python ci/windows_build.py --platform $Env:project_platform --configuration $Env:configuration --build-shared-libs=$Env:BUILD_SHARED_LIBS
-        - if (-not $?) { throw "command failed" }
+        - if (-not $?) { Write-Error "Cygwin installation failed after 3 attempts."; exit 1 }
     artifacts:
         when: on_success
         expire_in: 1 week
@@ -320,7 +331,7 @@ portable-source:
           }
         # check for errors
         - if ($global:diag_needed) { !reference [.network_diag_logic, script]
-        - if ($global:diag_needed) { exit 1}
+        - if ($global:diag_needed) { exit 1 }
         # 4. remove pre-installed Windows Python to avoid build/test picking it up
         - Remove-Item -Path 'C:\Python313' -Recurse -Force
 
@@ -521,6 +532,8 @@ macos-autotools-build:
         - saas-macos-medium-m1
 
 windows-mingw64-build:
+    rules:
+        - when: never
     stage: build
     needs:
         - job: portable-source
@@ -543,6 +556,8 @@ windows-mingw64-build:
             - job_execution_timeout
 
 windows-mingw64-static-build:
+    rules:
+        - when: never
     stage: build
     needs:
         - job: portable-source
@@ -1387,6 +1402,8 @@ deployment:
             - job_execution_timeout
 
 .docker_template: &docker_definition
+  rules:
+    when: never
   image: docker:29.0.0-cli@sha256:87858a6dd14149240f4a2c33e0ec0f32a5ac1bb2548c04f5a20694ea25cb6157
   services:
     - docker:29.0.0-dind@sha256:96789d56621ae702a2f8aa316c87a1a1875dd3f02bf67cdcb56a524a09fa3af9

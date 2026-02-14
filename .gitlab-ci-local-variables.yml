@@ -1,0 +1,2 @@
+CI_REGISTRY_IMAGE: "registry.gitlab.com/graphviz/graphviz"
+CI_COMMIT_SHA: "latest"
