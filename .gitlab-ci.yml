@@ -16,9 +16,7 @@ stages:
     - deploy
 
 # generate doxygen documentation from sources for https://graphviz.gitlab.io/graphviz/doxygen/
-pages:
-    rules:
-        - when: never
+.pages:
     needs:
         - job: docker_build_ubuntu-24.04
           artifacts: false
@@ -79,8 +77,6 @@ portable-source:
             - job_execution_timeout
 
 .rpm_build_template: &rpm_build_definition
-    rules:
-        - when: never
     stage: build
     script:
         - ci/linux-build-job-script.sh
@@ -104,8 +100,6 @@ portable-source:
             - job_execution_timeout
 
 .deb_build_template: &deb_build_definition
-    rules:
-        - when: never
     stage: build
     script:
         - source /opt/virtualenv/bin/activate
@@ -130,8 +124,6 @@ portable-source:
             - job_execution_timeout
 
 .macos_build_template: &macos_build_definition
-    rules:
-        - when: never
     stage: build
     script:
         - source ci/macos-install-build-dependencies.sh
@@ -179,8 +171,6 @@ portable-source:
 
 
 .windows_build_template: &windows_build_definition
-    rules:
-        - when: never
     stage: build
     needs: []
     script:
@@ -356,7 +346,7 @@ portable-source:
     <<: *test_definition
     image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
 
-rocky8-build:
+.rocky8-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_rocky8
@@ -368,7 +358,7 @@ rocky8-build:
     variables:
       IMAGE: rocky8
 
-rocky9-build:
+.rocky9-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_rocky9
@@ -380,7 +370,7 @@ rocky9-build:
     variables:
       IMAGE: rocky9
 
-rocky10-build:
+.rocky10-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_rocky10
@@ -392,7 +382,7 @@ rocky10-build:
     variables:
       IMAGE: rocky10
 
-fedora41-build:
+.fedora41-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_fedora41
@@ -404,7 +394,7 @@ fedora41-build:
     variables:
       IMAGE: fedora41
 
-fedora42-build:
+.fedora42-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_fedora42
@@ -416,7 +406,7 @@ fedora42-build:
     variables:
       IMAGE: fedora42
 
-fedora43-build:
+.fedora43-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_fedora43
@@ -428,7 +418,7 @@ fedora43-build:
     variables:
       IMAGE: fedora43
 
-ubuntu-22.04-build:
+.ubuntu-22.04-build:
     <<: *deb_build_definition
     needs:
         - job: docker_build_ubuntu-22.04
@@ -440,7 +430,7 @@ ubuntu-22.04-build:
     variables:
       IMAGE: ubuntu-22.04
 
-ubuntu-24.04-debug-build:
+.ubuntu-24.04-debug-build:
     <<: *deb_build_definition
     needs:
         - job: docker_build_ubuntu-24.04
@@ -455,7 +445,7 @@ ubuntu-24.04-debug-build:
     variables:
       IMAGE: ubuntu-24.04
 
-ubuntu-24.04-static-build:
+.ubuntu-24.04-static-build:
     <<: *deb_build_definition
     before_script:
         - export CONFIGURE_OPTIONS="--disable-shared --enable-static"
@@ -476,7 +466,7 @@ ubuntu-24.04-static-build:
     variables:
       IMAGE: ubuntu-24.04
 
-ubuntu-24.04-build:
+.ubuntu-24.04-build:
     <<: *deb_build_definition
     needs:
         - job: docker_build_ubuntu-24.04
@@ -488,7 +478,7 @@ ubuntu-24.04-build:
     variables:
       IMAGE: ubuntu-24.04
 
-ubuntu-25.10-build:
+.ubuntu-25.10-build:
     <<: *deb_build_definition
     needs:
         - job: docker_build_ubuntu-25.10
@@ -500,7 +490,7 @@ ubuntu-25.10-build:
     variables:
       IMAGE: ubuntu-25.10
 
-out-of-source-build:
+.out-of-source-build:
     <<: *deb_build_definition
     script:
         - logfile=`mktemp`
@@ -521,7 +511,7 @@ out-of-source-build:
     variables:
       IMAGE: ubuntu-24.04
 
-macos-autotools-build:
+.macos-autotools-build:
     <<: *macos_build_definition
     needs:
         - job: portable-source
@@ -531,9 +521,7 @@ macos-autotools-build:
     tags:
         - saas-macos-medium-m1
 
-windows-mingw64-build:
-    rules:
-        - when: never
+.windows-mingw64-build:
     stage: build
     needs:
         - job: portable-source
@@ -555,9 +543,7 @@ windows-mingw64-build:
             - runner_system_failure
             - job_execution_timeout
 
-windows-mingw64-static-build:
-    rules:
-        - when: never
+.windows-mingw64-static-build:
     stage: build
     needs:
         - job: portable-source
@@ -635,7 +621,7 @@ windows-cygwin-build-using-autogen:
             - runner_system_failure
             - job_execution_timeout
 
-ubuntu-22.04-cmake-build:
+.ubuntu-22.04-cmake-build:
     <<: *deb_build_definition
     needs:
         - job: docker_build_ubuntu-22.04
@@ -656,7 +642,7 @@ ubuntu-22.04-cmake-build:
     variables:
       IMAGE: ubuntu-22.04
 
-ubuntu-24.04-cmake-build:
+.ubuntu-24.04-cmake-build:
     <<: *deb_build_definition
     needs:
         - job: docker_build_ubuntu-24.04
@@ -672,7 +658,7 @@ ubuntu-24.04-cmake-build:
     variables:
       IMAGE: ubuntu-24.04
 
-ubuntu-25.10-cmake-build:
+.ubuntu-25.10-cmake-build:
     <<: *deb_build_definition
     needs:
         - job: docker_build_ubuntu-25.10
@@ -689,7 +675,7 @@ ubuntu-25.10-cmake-build:
     variables:
       IMAGE: ubuntu-25.10
 
-ubuntu-24.04-cmake-minimal-build:
+.ubuntu-24.04-cmake-minimal-build:
     <<: *deb_build_definition
     needs:
         - job: docker_build_ubuntu-24.04
@@ -717,7 +703,7 @@ ubuntu-24.04-cmake-minimal-build:
     variables:
       IMAGE: ubuntu-24.04
 
-ubuntu-24.04-cmake-ASan-build-and-test-including-ctest:
+.ubuntu-24.04-cmake-ASan-build-and-test-including-ctest:
     stage: build
     needs:
         - job: docker_build_ubuntu-24.04
@@ -764,7 +750,7 @@ ubuntu-24.04-cmake-ASan-build-and-test-including-ctest:
             - runner_system_failure
             - job_execution_timeout
 
-rocky8-cmake-build:
+.rocky8-cmake-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_rocky8
@@ -783,7 +769,7 @@ rocky8-cmake-build:
     variables:
       IMAGE: rocky8
 
-rocky9-cmake-build:
+.rocky9-cmake-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_rocky9
@@ -802,7 +788,7 @@ rocky9-cmake-build:
     variables:
       IMAGE: rocky9
 
-rocky10-cmake-build:
+.rocky10-cmake-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_rocky10
@@ -821,7 +807,7 @@ rocky10-cmake-build:
     variables:
       IMAGE: rocky10
 
-fedora41-cmake-build:
+.fedora41-cmake-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_fedora41
@@ -841,7 +827,7 @@ fedora41-cmake-build:
     variables:
       IMAGE: fedora41
 
-fedora42-cmake-build:
+.fedora42-cmake-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_fedora42
@@ -861,7 +847,7 @@ fedora42-cmake-build:
     variables:
       IMAGE: fedora42
 
-fedora43-cmake-build:
+.fedora43-cmake-build:
     <<: *rpm_build_definition
     needs:
         - job: docker_build_fedora43
@@ -881,7 +867,7 @@ fedora43-cmake-build:
     variables:
       IMAGE: fedora43
 
-macos-cmake-build:
+.macos-cmake-build:
     <<: *macos_build_definition
     needs: []
     before_script:
@@ -901,7 +887,7 @@ macos-cmake-build:
     tags:
         - saas-macos-medium-m1
 
-macos-cmake-static-build:
+.macos-cmake-static-build:
     <<: *macos_build_definition
     needs: []
     before_script:
@@ -922,28 +908,28 @@ macos-cmake-static-build:
     tags:
         - saas-macos-medium-m1
 
-windows-cmake-Win32-release-build:
+.windows-cmake-Win32-release-build:
     <<: *windows_build_definition
     before_script:
         - $Env:project_platform = "Win32"
         - $Env:configuration = "Release"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
-windows-cmake-Win32-debug-build:
+.windows-cmake-Win32-debug-build:
     <<: *windows_build_definition
     before_script:
         - $Env:project_platform = "Win32"
         - $Env:configuration = "Debug"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
-windows-cmake-x64-release-build:
+.windows-cmake-x64-release-build:
     <<: *windows_build_definition
     before_script:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Release"
         - $Env:BUILD_SHARED_LIBS = "ON"
 
-windows-cmake-x64-debug-build:
+.windows-cmake-x64-debug-build:
     <<: *windows_build_definition
     before_script:
         - $Env:project_platform = "x64"
@@ -959,7 +945,7 @@ windows-cmake-x64-debug-build:
             metrics: metrics.txt
             junit: report.xml
 
-windows-cmake-Win32-asan-debug-build:
+.windows-cmake-Win32-asan-debug-build:
     <<: *windows_build_without_artifacts_definition
     before_script:
         - $Env:project_platform = "Win32"
@@ -973,7 +959,7 @@ windows-cmake-Win32-asan-debug-build:
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x86"
     timeout: 2 hours
 
-windows-cmake-x64-asan-debug-build:
+.windows-cmake-x64-asan-debug-build:
     <<: *windows_build_without_artifacts_definition
     before_script:
         - $Env:project_platform = "x64"
@@ -987,14 +973,14 @@ windows-cmake-x64-asan-debug-build:
         - $Env:Path += ";$msvc_path\$msvc_version\bin\Hostx64\x64"
     timeout: 2 hours
 
-windows-cmake-x64-debug-static-build:
+.windows-cmake-x64-debug-static-build:
     <<: *windows_build_without_artifacts_definition
     before_script:
         - $Env:project_platform = "x64"
         - $Env:configuration = "Debug"
         - $Env:BUILD_SHARED_LIBS = "OFF"
 
-windows-mingw64-cmake-build:
+.windows-mingw64-cmake-build:
     stage: build
     needs: []
     script:
@@ -1020,7 +1006,7 @@ windows-mingw64-cmake-build:
             - runner_system_failure
             - job_execution_timeout
 
-windows-mingw64-cmake-release-build:
+.windows-mingw64-cmake-release-build:
     stage: build
     needs: []
     script:
@@ -1071,7 +1057,7 @@ windows-cygwin-cmake-build:
             - runner_system_failure
             - job_execution_timeout
 
-meta-data:
+.meta-data:
     stage: test
     script:
         - CONFIGURE_LOGS=Metadata/*/*/configure.log
@@ -1091,7 +1077,7 @@ meta-data:
             - runner_system_failure
             - job_execution_timeout
 
-ubuntu-22.04-test:
+.ubuntu-22.04-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1103,7 +1089,7 @@ ubuntu-22.04-test:
     variables:
       IMAGE: ubuntu-22.04
 
-ubuntu-24.04-test:
+.ubuntu-24.04-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1115,7 +1101,7 @@ ubuntu-24.04-test:
     variables:
       IMAGE: ubuntu-24.04
 
-ubuntu-25.10-test:
+.ubuntu-25.10-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1127,7 +1113,7 @@ ubuntu-25.10-test:
     variables:
       IMAGE: ubuntu-25.10
 
-rocky8-test:
+.rocky8-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1139,7 +1125,7 @@ rocky8-test:
     variables:
       IMAGE: rocky8
 
-rocky9-test:
+.rocky9-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1151,7 +1137,7 @@ rocky9-test:
     variables:
       IMAGE: rocky9
 
-rocky10-test:
+.rocky10-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1163,7 +1149,7 @@ rocky10-test:
     variables:
       IMAGE: rocky10
 
-fedora41-test:
+.fedora41-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1175,7 +1161,7 @@ fedora41-test:
     variables:
       IMAGE: fedora41
 
-fedora42-test:
+.fedora42-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1187,7 +1173,7 @@ fedora42-test:
     variables:
       IMAGE: fedora42
 
-fedora43-test:
+.fedora43-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="autotools"
@@ -1199,7 +1185,7 @@ fedora43-test:
     variables:
       IMAGE: fedora43
 
-macos-autotools-test:
+.macos-autotools-test:
     <<: *test_definition
     before_script:
         - source ci/macos-install-runtime-dependencies.sh
@@ -1219,7 +1205,7 @@ macos-autotools-test:
         variables:
           - $ENABLE_GRAPHVIZ_MACOS_CI
 
-ubuntu-22.04-cmake-test:
+.ubuntu-22.04-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1231,7 +1217,7 @@ ubuntu-22.04-cmake-test:
     variables:
       IMAGE: ubuntu-22.04
 
-ubuntu-24.04-cmake-test:
+.ubuntu-24.04-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1243,7 +1229,7 @@ ubuntu-24.04-cmake-test:
     variables:
       IMAGE: ubuntu-24.04
 
-ubuntu-25.10-cmake-test:
+.ubuntu-25.10-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1255,7 +1241,7 @@ ubuntu-25.10-cmake-test:
     variables:
       IMAGE: ubuntu-25.10
 
-rocky8-cmake-test:
+.rocky8-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1267,7 +1253,7 @@ rocky8-cmake-test:
     variables:
       IMAGE: rocky8
 
-rocky9-cmake-test:
+.rocky9-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1279,7 +1265,7 @@ rocky9-cmake-test:
     variables:
       IMAGE: rocky9
 
-rocky10-cmake-test:
+.rocky10-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1291,7 +1277,7 @@ rocky10-cmake-test:
     variables:
       IMAGE: rocky10
 
-fedora41-cmake-test:
+.fedora41-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1303,7 +1289,7 @@ fedora41-cmake-test:
     variables:
       IMAGE: fedora41
 
-fedora42-cmake-test:
+.fedora42-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1315,7 +1301,7 @@ fedora42-cmake-test:
     variables:
       IMAGE: fedora42
 
-fedora43-cmake-test:
+.fedora43-cmake-test:
     <<: *linux_test_definition
     before_script:
         - export build_system="cmake"
@@ -1327,7 +1313,7 @@ fedora43-cmake-test:
     variables:
       IMAGE: fedora43
 
-macos-cmake-test:
+.macos-cmake-test:
     <<: *test_definition
     before_script:
         - source ci/macos-install-runtime-dependencies.sh
@@ -1347,7 +1333,7 @@ macos-cmake-test:
         variables:
           - $ENABLE_GRAPHVIZ_MACOS_CI
 
-windows-mingw64-cmake-test:
+.windows-mingw64-cmake-test:
     script:
         # disable Windows Defender
         - Add-MpPreference -ExclusionPath 'C:\'
@@ -1375,7 +1361,7 @@ windows-mingw64-cmake-test:
             - runner_system_failure
             - job_execution_timeout
 
-deployment:
+.deployment:
     stage: deploy
     image: registry.gitlab.com/gitlab-org/release-cli:latest@sha256:3f52d526f48e8d10625c722fa6d6423ee82aadeae1b1aa91f07b62551d96dacf
     # do not re-run this job for new Git tags of previously seen commits
@@ -1402,8 +1388,6 @@ deployment:
             - job_execution_timeout
 
 .docker_template: &docker_definition
-  rules:
-    when: never
   image: docker:29.0.0-cli@sha256:87858a6dd14149240f4a2c33e0ec0f32a5ac1bb2548c04f5a20694ea25cb6157
   services:
     - docker:29.0.0-dind@sha256:96789d56621ae702a2f8aa316c87a1a1875dd3f02bf67cdcb56a524a09fa3af9
@@ -1452,32 +1436,32 @@ deployment:
     - docker tag $CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/$IMAGE:latest
     - docker push     $CI_REGISTRY_IMAGE/$IMAGE:latest
 
-docker_build_rocky8:
+.docker_build_rocky8:
   <<: *docker_build_definition
   variables:
     IMAGE: rocky8
 
-docker_build_rocky9:
+.docker_build_rocky9:
   <<: *docker_build_definition
   variables:
     IMAGE: rocky9
 
-docker_build_rocky10:
+.docker_build_rocky10:
   <<: *docker_build_definition
   variables:
     IMAGE: rocky10
 
-docker_build_fedora41:
+.docker_build_fedora41:
   <<: *docker_build_definition
   variables:
     IMAGE: fedora41
 
-docker_build_fedora42:
+.docker_build_fedora42:
   <<: *docker_build_definition
   variables:
     IMAGE: fedora42
 
-docker_build_fedora43:
+.docker_build_fedora43:
   <<: *docker_build_definition
   variables:
     IMAGE: fedora43
@@ -1487,80 +1471,80 @@ docker_build_ubuntu-22.04:
   variables:
     IMAGE: ubuntu-22.04
 
-docker_build_ubuntu-24.04:
+.docker_build_ubuntu-24.04:
   <<: *docker_build_definition
   variables:
     IMAGE: ubuntu-24.04
 
-docker_build_ubuntu-25.10:
+.docker_build_ubuntu-25.10:
   <<: *docker_build_definition
   variables:
     IMAGE: ubuntu-25.10
 
-docker_push_rocky8:
+.docker_push_rocky8:
   <<: *docker_push_definition
   variables:
     IMAGE: rocky8
   needs:
     - docker_build_rocky8
 
-docker_push_rocky9:
+.docker_push_rocky9:
   <<: *docker_push_definition
   variables:
     IMAGE: rocky9
   needs:
     - docker_build_rocky9
 
-docker_push_rocky10:
+.docker_push_rocky10:
   <<: *docker_push_definition
   variables:
     IMAGE: rocky10
   needs:
     - docker_build_rocky10
 
-docker_push_fedora41:
+.docker_push_fedora41:
   <<: *docker_push_definition
   variables:
     IMAGE: fedora41
   needs:
     - docker_build_fedora41
 
-docker_push_fedora42:
+.docker_push_fedora42:
   <<: *docker_push_definition
   variables:
     IMAGE: fedora42
   needs:
     - docker_build_fedora42
 
-docker_push_fedora43:
+.docker_push_fedora43:
   <<: *docker_push_definition
   variables:
     IMAGE: fedora43
   needs:
     - docker_build_fedora43
 
-docker_push_ubuntu-22.04:
+.docker_push_ubuntu-22.04:
   <<: *docker_push_definition
   variables:
     IMAGE: ubuntu-22.04
   needs:
     - docker_build_ubuntu-22.04
 
-docker_push_ubuntu-24.04:
+.docker_push_ubuntu-24.04:
   <<: *docker_push_definition
   variables:
     IMAGE: ubuntu-24.04
   needs:
     - docker_build_ubuntu-24.04
 
-docker_push_ubuntu-25.10:
+.docker_push_ubuntu-25.10:
   <<: *docker_push_definition
   variables:
     IMAGE: ubuntu-25.10
   needs:
     - docker_build_ubuntu-25.10
 
-lint_clang_format:
+.lint_clang_format:
   stage: test
   needs: [] # no dependencies
   script:
@@ -1581,7 +1565,7 @@ lint_clang_format:
       - runner_system_failure
       - job_execution_timeout
 
-lint_cpplint:
+.lint_cpplint:
   stage: test
   needs: [] # no dependencies
   script:
@@ -1603,7 +1587,7 @@ lint_cpplint:
       - runner_system_failure
       - job_execution_timeout
 
-lint_cmake_format:
+.lint_cmake_format:
   stage: test
   needs: [] # no dependencies
   script:
@@ -1628,7 +1612,7 @@ lint_cmake_format:
       - runner_system_failure
       - job_execution_timeout
 
-lint_html:
+.lint_html:
   stage: test
   needs: [] # no dependencies
   script:
@@ -1649,7 +1633,7 @@ lint_html:
       - runner_system_failure
       - job_execution_timeout
 
-lint_python:
+.lint_python:
   image: "$CI_REGISTRY_IMAGE/ubuntu-24.04:$CI_COMMIT_SHA"
   stage: test
   needs:
