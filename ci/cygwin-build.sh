@@ -13,7 +13,7 @@ set -u
 set -x
 
 # address warning we may see later due to lack of available randomness
-disperf -y
+diskperf -y
 
 setup_exe=$(cygpath -u "$CYGWIN_SETUP")
 ${setup_exe} --quiet-mode --wait --packages autoconf2.5
