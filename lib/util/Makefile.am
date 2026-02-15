@@ -29,13 +29,14 @@ noinst_HEADERS = \
   strcasecmp.h \
   streq.h \
   strview.h \
+  time.h \
   tokenize.h \
   unreachable.h \
   unused.h \
   xml.h
 noinst_LTLIBRARIES = libutil_C.la
 
-libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c list.c \
+libutil_C_la_SOURCES = arena.c base64.c debug.c gv_find_me.c gv_fopen.c list.c \
 	random.c xml.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 

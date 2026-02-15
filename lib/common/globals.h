@@ -48,7 +48,6 @@ typedef LIST(char *) show_boxes_t;
     GLOBALS_API EXTERN char *Gvfilepath;  /* Per-process path of files allowed in image attributes (also ps libs) */
     GLOBALS_API EXTERN char *Gvimagepath; /* Per-graph path of files allowed in image attributes  (also ps libs) */
 
-    GLOBALS_API EXTERN unsigned char Verbose;
     GLOBALS_API EXTERN bool Reduce;
     GLOBALS_API EXTERN char *HTTPServerEnVar;
     GLOBALS_API EXTERN int graphviz_errors;

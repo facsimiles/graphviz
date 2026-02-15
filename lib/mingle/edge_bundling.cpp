@@ -24,6 +24,7 @@
 #include <mingle/agglomerative_bundling.h>
 #include <string.h>
 #include <util/prisize_t.h>
+#include <util/debug.h>
 #include <vector>
 
 #define SMALL 1.e-10
