@@ -108,8 +108,8 @@ $Env:Path = "C:\cygwin64\bin;" + $Env:Path
 $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough"
 $Env:CXXFLAGS = "-Werror"
 
-C:\cygwin64\bin\find . '(' -name Makefile.am -or -name "*.def" ')' -exec C:\cygwin64\bin\sed -i 's/\r//g' "{}" ';'
-C:\cygwin64\bin\sed -i 's/\r//g' autogen.sh ci/*.sh configure.ac lib/common/color_names lib/common/brewer_colors lib/common/svgcolor_names
+C:\cygwin64\bin\find . '(' -name Makefile.am -or -name "*.def" -or -name '*.sh' -or -name '*.ac' ')' -exec C:\cygwin64\bin\sed -i 's/\r//g' "{}" ';'
+C:\cygwin64\bin\sed -i 's/\r//g'lib/common/color_names lib/common/brewer_colors lib/common/svgcolor_names
 
 $Env:build_system = "autotools"
 C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'

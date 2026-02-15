@@ -471,7 +471,7 @@ windows-cygwin-build:
     script:
         - !reference [.cygwin_setup_template, script]
         # fail on any compiler warnings
-        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough"
+        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough -Wno-error=sign-conversion"
         - $Env:CXXFLAGS = "-Werror"
         # run the build
         - $Env:build_system = "autotools"
@@ -495,11 +495,17 @@ windows-cygwin-build:
 
 windows-cygwin-build-using-autogen:
     stage: build
-    needs: []
+    needs:
+        - job: portable-source
+          artifacts: true
     script:
         - !reference [.cygwin_setup_template, script]
+        # fail on any compiler warnings
+        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough -Wno-error=sign-conversion"
+        - $Env:CXXFLAGS = "-Werror"
         # run the build
         - $Env:build_system = "autotools"
+        - $Env:use_autogen = "yes"
         - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
     tags:
         - saas-windows-medium-amd64
@@ -920,11 +926,13 @@ windows-mingw64-cmake-build:
 
 windows-cygwin-cmake-build:
     stage: build
-    needs: []
+    needs:
+        - job: portable-source
+          artifacts: true
     script:
         - !reference [.cygwin_setup_template, script]
         # fail on any compiler warnings
-        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough"
+        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough -Wno-error=sign-conversion"
         - $Env:CXXFLAGS = "-Werror"
         # run the build
         - $Env:build_system = "cmake"
