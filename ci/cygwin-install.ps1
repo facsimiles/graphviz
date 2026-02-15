@@ -17,7 +17,7 @@ $mem = Get-CimInstance Win32_OperatingSystem
 Write-Host "Free Memory: $([math]::round($mem.FreePhysicalMemory/1MB, 2)) GB"
 
 $cygwinPath = "C:\cygwin64"
-$mirror = "https://mirrors.kernel.org"
+$mirror = "https://mirrors.kernel.org/sourceware/cygwin"
 $mirrorHost = "mirrors.kernel.org"
 Write-Host "cygwinPath=$cygwinPath, mirror=$mirror, mirrorHost=$mirrorHost"
 
