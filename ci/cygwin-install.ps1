@@ -1,7 +1,6 @@
 # cygwin-install.ps1: Prepare for running cygwin builds and tests
 
 Write-Host "Starting cygwin-install.ps1"
-$ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
 # Set-PSDebug -Trace 1
@@ -19,25 +18,28 @@ Write-Host "Free Memory: $([math]::round($mem.FreePhysicalMemory/1MB, 2)) GB"
 $cygwinPath = "C:\cygwin64"
 $mirror = "https://mirrors.kernel.org"
 $mirrorHost = "mirrors.kernel.org"
+Write-Host "cygwinPath=$cygwinPath, mirror=$mirror, mirrorHost=$mirrorHost"
 
 # 1. NETWORK CHECK
+Write-Host "--- Testing NetConnection ---"
 if (-not (Test-NetConnection $mirrorHost -Port 443).TcpTestSucceeded) {
     Write-Error "Mirror $mirrorHost is unreachable. Installation likely to fail."
 }
 
 # 2. CLEANUP (Services & Processes)
-Write-Host "--- Cleaning Up Existing Cygwin ---"
-Get-Service | Where-Object { $_.Status -eq 'Running' } | ForEach-Object {
-    $path = (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\$($_.Name)").ImagePath
-    if ($path -like "*$cygwinPath*") { Stop-Service $_.Name -Force }
-}
-Get-Process | Where-Object { $_.Path -like "$cygwinPath*" } | Stop-Process -Force -EA 0
+# Write-Host "--- Cleaning Up Existing Cygwin ---"
+# Get-Service | Where-Object { $_.Status -eq 'Running' } | ForEach-Object {
+#     $path = (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\$($_.Name)").ImagePath
+#    if ($path -like "*$cygwinPath*") { Stop-Service $_.Name -Force }
+# }
+# Get-Process | Where-Object { $_.Path -like "$cygwinPath*" } | Stop-Process -Force -EA 0
 
 # 3. FETCH INSTALLER RETRY LOOP
+Write-Host "--- Fetching Cygwin Installer ---"
 $success = $false
 for ($i=1; $i -le 3; $i++) {
     Write-Host "Cygwin Setup Attempt $i..."
-    wget https://cygwin.com/setup-x86_64.exe -OutFile $env:TEMP\setup-x86_64.exe
+    Invoke-WebRequest https://cygwin.com/setup-x86_64.exe -Verbose -Debug -OutFile $env:TEMP\setup-x86_64.exe
     if ($p.ExitCode -eq 0) { $success = $true; break }
     Write-Warning "Attempt $i failed (Code: $($p.ExitCode)). Sleeping 7s..."
     Start-Sleep -Seconds 7
