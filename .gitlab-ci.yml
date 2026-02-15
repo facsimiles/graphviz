@@ -194,8 +194,8 @@ portable-source:
         when: on_success
         expire_in: 1 week
         paths:
-        - Packages/*/*.exe
-        - Packages/*/*.zip
+            - Packages/*/*.exe
+            - Packages/*/*.zip
         reports:
             metrics: metrics.txt
             junit: report.xml
@@ -481,6 +481,7 @@ windows-cygwin-build:
         expire_in: 1 week
         paths:
             - Packages/*/*.xz
+            - C:\cygwin64\var\log\setup.log.full
     tags:
         - saas-windows-medium-amd64
     except:
@@ -933,6 +934,7 @@ windows-cygwin-cmake-build:
         expire_in: 1 week
         paths:
             - Packages/*/*.bz2
+            - C:\cygwin64\var\log\setup.log.full
     tags:
         - saas-windows-medium-amd64
     except:

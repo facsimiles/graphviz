@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "Starting cygwin-build.sh" >&2
+echo "TEMP is $TEMP" >&2
+
 if [ -z ${CI+x} ]; then
   echo "this script is only intended to run in CI" >&2
   exit 1
@@ -10,22 +13,23 @@ set -o pipefail
 set -u
 set -x
 
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages autoconf2.5
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages automake
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages bison
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages cmake
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages flex
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages gcc-core
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages gcc-g++
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages git
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages libcairo-devel
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages libexpat-devel
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages libpango1.0-devel
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages libgd-devel
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages libtool
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages make
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages python3
-/cygdrive/c/setup-x86_64.exe --quiet-mode --wait --packages zlib-devel
+setup_dir="$TEMP"
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages autoconf2.5
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages automake
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages bison
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages cmake
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages flex
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages gcc-core
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages gcc-g++
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages git
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages libcairo-devel
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages libexpat-devel
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages libpango1.0-devel
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages libgd-devel
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages libtool
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages make
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages python3
+"$setup_dir"/setup-x86_64.exe --quiet-mode -v --wait --packages zlib-devel
 
 # Use the libs installed with cygwinsetup instead of those in
 # https://gitlab.com/graphviz/graphviz-windows-dependencies. Also disable GVEdit
@@ -37,5 +41,7 @@ export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=ON"
 
 # make Git running under the Cygwin user trust files owned by the Windows user
 git config --global --add safe.directory $(pwd)
+
+echo "running ci/build.sh" >&2
 
 ci/build.sh
