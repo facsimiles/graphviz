@@ -13,22 +13,22 @@ set -u
 set -x
 
 setup_exe=$(cygpath -u "$CYGWIN_SETUP")
-${setup_exe} --quiet-mode -v --wait --packages autoconf2.5
-${setup_exe} --quiet-mode -v --wait --packages automake
-${setup_exe} --quiet-mode -v --wait --packages bison
-${setup_exe} --quiet-mode -v --wait --packages cmake
-${setup_exe} --quiet-mode -v --wait --packages flex
-${setup_exe} --quiet-mode -v --wait --packages gcc-core
-${setup_exe} --quiet-mode -v --wait --packages gcc-g++
-${setup_exe} --quiet-mode -v --wait --packages git
-${setup_exe} --quiet-mode -v --wait --packages libcairo-devel
-${setup_exe} --quiet-mode -v --wait --packages libexpat-devel
-${setup_exe} --quiet-mode -v --wait --packages libpango1.0-devel
-${setup_exe} --quiet-mode -v --wait --packages libgd-devel
-${setup_exe} --quiet-mode -v --wait --packages libtool
-${setup_exe} --quiet-mode -v --wait --packages make
-${setup_exe} --quiet-mode -v --wait --packages python3
-${setup_exe} --quiet-mode -v --wait --packages zlib-devel
+${setup_exe} --quiet-mode --wait --packages autoconf2.5
+${setup_exe} --quiet-mode --wait --packages automake
+${setup_exe} --quiet-mode --wait --packages bison
+${setup_exe} --quiet-mode --wait --packages cmake
+${setup_exe} --quiet-mode --wait --packages flex
+${setup_exe} --quiet-mode --wait --packages gcc-core
+${setup_exe} --quiet-mode --wait --packages gcc-g++
+${setup_exe} --quiet-mode --wait --packages git
+${setup_exe} --quiet-mode --wait --packages libcairo-devel
+${setup_exe} --quiet-mode --wait --packages libexpat-devel
+${setup_exe} --quiet-mode --wait --packages libpango1.0-devel
+${setup_exe} --quiet-mode --wait --packages libgd-devel
+${setup_exe} --quiet-mode --wait --packages libtool
+${setup_exe} --quiet-mode --wait --packages make
+${setup_exe} --quiet-mode --wait --packages python3
+${setup_exe} --quiet-mode --wait --packages zlib-devel
 
 # Use the libs installed with cygwinsetup instead of those in
 # https://gitlab.com/graphviz/graphviz-windows-dependencies. Also disable GVEdit

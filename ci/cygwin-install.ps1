@@ -80,7 +80,7 @@ Write-Host "--- Running Cygwin Installer ---"
 $success = $false
 for ($i=1; $i -le 3; $i++) {
     Write-Host "Cygwin Setup Run Attempt $i..."
-    $p = Start-Process "$localfile" -ArgumentList "--quiet-mode -v --site $mirror --wait" -Wait -PassThru
+    $p = Start-Process "$localfile" -ArgumentList "--quiet-mode --site $mirror --wait" -Wait -PassThru
     if ($p.ExitCode -eq 0) { $success = $true; break }
     if ($i -lt 3) {
         Write-Warning "Cygwin Setup Run attempt $i failed (Code: $($p.ExitCode)). Sleeping 15s..."
