@@ -481,7 +481,7 @@ windows-cygwin-build:
         expire_in: 1 week
         paths:
             - Packages/*/*.xz
-            - C:\cygwin64\var\log\setup.log.full
+            - setup-*.log
     tags:
         - saas-windows-medium-amd64
     except:
@@ -934,7 +934,7 @@ windows-cygwin-cmake-build:
         expire_in: 1 week
         paths:
             - Packages/*/*.bz2
-            - C:\cygwin64\var\log\setup.log.full
+            - setup-*.log
     tags:
         - saas-windows-medium-amd64
     except:

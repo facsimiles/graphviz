@@ -48,7 +48,7 @@ while ($attempt -le $maxAttempts) {
     Write-Host "Cygwin Setup Download Attempt $attempt..."
     try {
         $p = Invoke-WebRequest $uri -Verbose -Debug -OutFile $localfile
-        Write-Host "Successful fetch of https://cygwin.com/setup-x86_64.exe"
+        Write-Host "Successful fetch of https://cygwin.com/setup-x86_64.exe to $localfile"
         $success = $true
         break
     }
@@ -78,13 +78,16 @@ Write-Host "--- Running Cygwin Installer ---"
 $success = $false
 for ($i=1; $i -le 3; $i++) {
     Write-Host "Cygwin Setup Run Attempt $i..."
-    $p = Start-Process "$env:TEMP\setup-x86_64.exe" -ArgumentList "--quiet-mode -v --site $mirror --wait" -Wait -PassThru
+    $p = Start-Process "$localfile" -ArgumentList "--quiet-mode -v --site $mirror --wait" -Wait -PassThru
     if ($p.ExitCode -eq 0) { $success = $true; break }
     if ($i -lt 3) {
         Write-Warning "Cygwin Setup Run attempt $i failed (Code: $($p.ExitCode)). Sleeping 15s..."
+        copy C:\cygwin64\var\log\setup.log.full ".\setup-full-$i.log"
         Start-Sleep -Seconds 15
+        Write-Warning "Finished sleeping"
     } else {
         Write-Error "Cygwin Setup Run attempt $i failed (Code: $($p.ExitCode))."
+        gci env:
     }
 }
 
