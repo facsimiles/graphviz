@@ -28,6 +28,7 @@ if(with_sfdp)
     rbtree
     sfdpgen
     sparse
+    util
   )
 
   if(NOT HAVE_GETOPT_H)
@@ -93,6 +94,7 @@ if(with_sfdp)
     rbtree
     sfdpgen
     sparse
+    util
   )
 
   if(NOT HAVE_GETOPT_H)
