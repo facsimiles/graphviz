@@ -46,6 +46,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_rocky_8,
     is_rocky_10,
     is_static_build,
+    pexpect_spawn_tclsh,
     plugin_version,
     remove_asan_summary,
     remove_xtype_warnings,
@@ -5003,11 +5004,6 @@ def test_2564():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.skipif(
-    platform.system() == "Windows",
-    reason="pexpect.spawn is not available on Windows "
-    "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
-)
 def test_2568():
     """
     tags used in TCL output should be usable for later lookup
@@ -5030,7 +5026,7 @@ def test_2568():
         env["LD_PRELOAD"] = libasan
 
     # startup TCL and load our graph setup code
-    proc = pexpect.spawn("tclsh", timeout=1, env=env)
+    proc = pexpect_spawn_tclsh(timeout=1, env=env)
     proc.expect("% ")
     proc.sendline(f'source "{shlex.quote(str(prelude))}"')
 
@@ -5347,11 +5343,6 @@ def test_2593():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.skipif(
-    platform.system() == "Windows",
-    reason="pexpect.spawn is not available on Windows "
-    "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
-)
 @pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
@@ -5381,7 +5372,7 @@ def test_2596():
         env["LD_PRELOAD"] = libasan
 
     # startup TCL and load the pathplan module
-    proc = pexpect.spawn("tclsh", timeout=1, env=env)
+    proc = pexpect_spawn_tclsh(timeout=1, env=env)
     proc.expect("% ")
     proc.sendline("package require Tclpathplan")
     proc.expect("% ")
@@ -6666,11 +6657,6 @@ def test_import_tcl_package(package: str):
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.skipif(
-    platform.system() == "Windows",
-    reason="pexpect.spawn is not available on Windows "
-    "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
-)
 @pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
@@ -6698,10 +6684,9 @@ def test_triangulation_overflow():
         env["LD_PRELOAD"] = libasan
 
     # startup TCL and load the pathplan module
-    proc = pexpect.spawn("tclsh", timeout=1, env=env)
+    proc = pexpect_spawn_tclsh(timeout=1, env=env)
     proc.expect("% ")
     proc.sendline("package require Tclpathplan")
-    proc.expect("% ")
 
     # Create a pane. We assume the first created pane will be index 0, though
     # this is not technically required.
@@ -6725,11 +6710,6 @@ def test_triangulation_overflow():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.skipif(
-    platform.system() == "Windows",
-    reason="pexpect.spawn is not available on Windows "
-    "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
-)
 @pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
@@ -6757,7 +6737,7 @@ def test_vgpane_bad_triangulation():
         env["LD_PRELOAD"] = libasan
 
     # startup TCL and load the pathplan module
-    proc = pexpect.spawn("tclsh", timeout=1, env=env)
+    proc = pexpect_spawn_tclsh(timeout=1, env=env)
     proc.expect("% ")
     proc.sendline("package require Tclpathplan")
     proc.expect("% ")
@@ -6782,11 +6762,6 @@ def test_vgpane_bad_triangulation():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.skipif(
-    platform.system() == "Windows",
-    reason="pexpect.spawn is not available on Windows "
-    "(https://pexpect.readthedocs.io/en/stable/overview.html#pexpect-on-windows)",
-)
 @pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
@@ -6814,7 +6789,7 @@ def test_vgpane_delete():
         env["LD_PRELOAD"] = libasan
 
     # startup TCL and load the pathplan module
-    proc = pexpect.spawn("tclsh", timeout=1, env=env)
+    proc = pexpect_spawn_tclsh(timeout=1, env=env)
     proc.expect("% ")
     proc.sendline("package require Tclpathplan")
     proc.expect("% ")
