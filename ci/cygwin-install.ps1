@@ -1,6 +1,8 @@
 # cygwin-install.ps1: Prepare for running cygwin builds and tests
 
 Write-Host "Starting cygwin-install.ps1"
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
 
 # Set-PSDebug -Trace 1
 $Env:CI_COMMIT_DESCRIPTION = $null
@@ -35,7 +37,7 @@ Get-Process | Where-Object { $_.Path -like "$cygwinPath*" } | Stop-Process -Forc
 $success = $false
 for ($i=1; $i -le 3; $i++) {
     Write-Host "Cygwin Setup Attempt $i..."
-    wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
+    wget https://cygwin.com/setup-x86_64.exe -OutFile $env:TEMP\setup-x86_64.exe
     if ($p.ExitCode -eq 0) { $success = $true; break }
     Write-Warning "Attempt $i failed (Code: $($p.ExitCode)). Sleeping 7s..."
     Start-Sleep -Seconds 7
@@ -43,15 +45,20 @@ for ($i=1; $i -le 3; $i++) {
 
 $diag_needed = $false
 if (-not $success) {
-    Write-Error "Cygwin installater download failed after 3 attempts."
-    $diag_needed = $true
+    Write-Error "Cygwin installer download failed after 3 attempts."
+    try {
+        . "$PSScriptRoot/network-diag-logic.ps1"
+    } catch {
+       Write-Warning "Diagnostic script failed: $_"
+    }
+    exit 1
 }
 
 # 4. INSTALL CYGWIN RETRY LOOP
 $success = $false
 for ($i=1; $i -le 3; $i++) {
     Write-Host "Cygwin Setup Attempt $i..."
-    $p = Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site $mirror --wait" -Wait -PassThru
+    $p = Start-Process "$env:TEMP\setup-x86_64.exe" -ArgumentList "--quiet-mode --site $mirror --wait" -Wait -PassThru
     if ($p.ExitCode -eq 0) { $success = $true; break }
     Write-Warning "Attempt $i failed (Code: $($p.ExitCode)). Sleeping 15s..."
     Start-Sleep -Seconds 15
@@ -59,9 +66,6 @@ for ($i=1; $i -le 3; $i++) {
 
 if (-not $success) {
     Write-Error "Cygwin installation failed after 3 attempts."
-    $diag_needed = $true
-}
-if ($diag_needed) {
     try {
         . "$PSScriptRoot/network-diag-logic.ps1"
     } catch {

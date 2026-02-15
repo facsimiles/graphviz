@@ -38,9 +38,9 @@ if ($t1) {
 Write-Host "`n--- DNS Status ---"
 try {
     $dns = Resolve-DnsName -Name $primary -ErrorAction Stop
-    Write-Host "  DNS Resolution for $primary: SUCCESS ($($dns.IPAddress))"
+    Write-Host "  DNS Resolution for $primary : SUCCESS ($($dns.IPAddress))"
 } catch {
-    Write-Host "  DNS Resolution for $primary: FAILED" -ForegroundColor Red
+    Write-Host "  DNS Resolution for $primary : FAILED" -ForegroundColor Red
     Get-DnsClientServerAddress | Select-Object InterfaceAlias, ServerAddresses | Format-Table -AutoSize | Out-String | Write-Host
 }
 
