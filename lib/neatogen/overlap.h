@@ -14,19 +14,6 @@
 #include <stdbool.h>
 #include <util/api.h>
 
-typedef  StressMajorizationSmoother OverlapSmoother;
-
-#define OverlapSmoother_struct StressMajorizationSmoother_struct
-
-PRIVATE void OverlapSmoother_delete(OverlapSmoother sm);
-
-PRIVATE OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, int dim, double *x,
-                                    double *width, bool neighborhood_only,
-                                    double *max_overlap, double *min_overlap,
-                                    int edge_labeling_scheme,
-                                    int n_constr_nodes, int *constr_nodes,
-                                    SparseMatrix A_constr, int shrink);
-
 enum {ELSCHEME_NONE = 0, ELSCHEME_PENALTY, ELSCHEME_PENALTY2, ELSCHEME_STRAIGHTLINE_PENALTY, ELSCHEME_STRAIGHTLINE_PENALTY2};
 
 struct relative_position_constraints_struct{
@@ -48,8 +35,6 @@ struct relative_position_constraints_struct{
 };
 
 typedef struct relative_position_constraints_struct*  relative_position_constraints;
-
-PRIVATE double OverlapSmoother_smooth(OverlapSmoother sm, int dim, double *x);
 
 PRIVATE void remove_overlap(int dim, SparseMatrix A, double *x, double *label_sizes,
                     int ntry, double initial_scaling, int edge_labeling_scheme,
