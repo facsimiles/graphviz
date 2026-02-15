@@ -36,18 +36,34 @@ if (-not (Test-NetConnection $mirrorHost -Port 443).TcpTestSucceeded) {
 
 # 3. FETCH INSTALLER RETRY LOOP
 Write-Host "--- Fetching Cygwin Installer ---"
-$success = $false
-for ($i=1; $i -le 3; $i++) {
-    Write-Host "Cygwin Setup Attempt $i..."
-    Invoke-WebRequest https://cygwin.com/setup-x86_64.exe -Verbose -Debug -OutFile $env:TEMP\setup-x86_64.exe
-    if ($p.ExitCode -eq 0) { $success = $true; break }
-    Write-Warning "Attempt $i failed (Code: $($p.ExitCode)). Sleeping 7s..."
-    Start-Sleep -Seconds 7
+
+$uri = "https://cygwin.com/setup-x86_64.exe"
+$localfile = "$env:TEMP\setup-x86_64.exe"
+
+$attempt = 1
+$maxAttempts = 3
+
+while ($attempt -le $maxAttempts) {
+    Write-Host "Cygwin Setup Download Attempt $attempt..."
+    try {
+        $p = Invoke-WebRequest $uri -Verbose -Debug -OutFile $localfile
+        Write-Host "Successful fetch of https://cygwin.com/setup-x86_64.exe"
+        $success = $true
+        break
+    }
+    catch {
+        if ($attempt -lt $maxAttempts) {
+            Write-Warning "Attempt $attempt failed (Code: $($_.Exception.Message))..."
+            Start-Sleep -Seconds 17
+        } else {
+            Write-Error "Attempt $attempt failed (Code: $($_.Exception.Message))."
+        }
+    }
+    $attempt++
 }
 
-$diag_needed = $false
 if (-not $success) {
-    Write-Error "Cygwin installer download failed after 3 attempts."
+    Write-Error "Cygwin installer download failed after $maxAttempts attempts."
     try {
         . "$PSScriptRoot/network-diag-logic.ps1"
     } catch {
@@ -57,13 +73,18 @@ if (-not $success) {
 }
 
 # 4. INSTALL CYGWIN RETRY LOOP
+Write-Host "--- Running Cygwin Installer ---"
 $success = $false
 for ($i=1; $i -le 3; $i++) {
-    Write-Host "Cygwin Setup Attempt $i..."
+    Write-Host "Cygwin Setup Run Attempt $i..."
     $p = Start-Process "$env:TEMP\setup-x86_64.exe" -ArgumentList "--quiet-mode --site $mirror --wait" -Wait -PassThru
     if ($p.ExitCode -eq 0) { $success = $true; break }
-    Write-Warning "Attempt $i failed (Code: $($p.ExitCode)). Sleeping 15s..."
-    Start-Sleep -Seconds 15
+    if ($i -lt 3) {
+        Write-Warning "Cygwin Setup Run attempt $i failed (Code: $($p.ExitCode)). Sleeping 15s..."
+        Start-Sleep -Seconds 15
+    } else {
+        Write-Error "Cygwin Setup Run attempt $i failed (Code: $($p.ExitCode))."
+    }
 }
 
 if (-not $success) {
