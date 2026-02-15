@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Using long node names in combination with the fdp layout algorithm no longer
   results in truncated generated names.
+- The `-v` argument to `dot` can now be repeated to increase verbosity level.
+  This as well as existing ability to provide a numeric parameter to `-v`
+  to specify verbosity level are newly documented in `doc --help`.
 
 ### Fixed
 
