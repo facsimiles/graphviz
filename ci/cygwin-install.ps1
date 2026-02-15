@@ -73,6 +73,8 @@ if (-not $success) {
     exit 1
 }
 
+$Env:CYGWIN_SETUP = $localfile
+
 # 4. INSTALL CYGWIN RETRY LOOP
 Write-Host "--- Running Cygwin Installer ---"
 $success = $false
