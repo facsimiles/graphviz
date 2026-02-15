@@ -1592,10 +1592,19 @@ def test_1648_1(fmt: str):
     # a simple arbitrary graph
     source = "graph {}"
 
+    output_is_a_window = fmt in ("x11", "xlib")
+    kwargs = {}
+    kwargs["input"] = source
+    expect_timeout = False
+    if output_is_a_window:
+        kwargs["timeout"] = 2
+        expect_timeout = True
+
     # run this through Graphviz
     run(
         ["dot", f"-T{fmt}", "-Glayers=a, b", "-Glayerselect=b", "-o", os.devnull],
-        input=source,
+        timeout_ok=expect_timeout,
+        **kwargs,
     )
 
 
