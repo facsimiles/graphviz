@@ -484,6 +484,13 @@ fetch_cygwin_cache:
           } else {
               Write-Host "Cygwin installer found in cache"
           }
+        - Start-Process "dependencies\cygwin\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --local-package-dir dependencies/cygwin/packages --wait" -wait -PassThru
+        - Write-Host "Successfully did initial cygwin install"
+        - Start-Process "dependencies/cygwin/setup-x86_64.exe" -ArgumentList @(
+              "-q, "-D", "-l", "dependencies/cygwin/packages", "-W",
+              "-P", "autoconf2.5,automake,bison,cmake,flex,gcc-core,gcc-g++,git,libcairo-devel,libexpat-devel,libpango1.0-devel,libgd-devel,libtool,make,python3,zlib-devel",
+              "-W", "-wait") -Wait -PassThru
+        - Write-Host "Successfully added later packages"
     tags:
         - saas-windows-medium-amd64
     except:
