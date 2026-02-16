@@ -1,7 +1,7 @@
 # cygwin-install.ps1: Prepare for running cygwin builds and tests
 
 Write-Host "Starting cygwin-install.ps1"
-$ProgressPreference = "SilentlyContinue"
+# $ProgressPreference = "SilentlyContinue"
 Set-PSDebug -Trace 1
 
 # Set-PSDebug -Trace 1

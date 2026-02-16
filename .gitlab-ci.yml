@@ -463,25 +463,47 @@ windows-mingw64-build:
             - runner_system_failure
             - job_execution_timeout
 
-.setup_cygwin_cache:
-    cache:
+.cygwin_cache_definition:
+    cache: &cygwin_cache
         key: "$CI_DATE_WEEK-cygwin" # Key changes every week
         paths:
             - dependencies/cygwin/setup-x86_64.exe
             - dependencies/cygwin/packages/
-    before_script:
-        - mkdir -p dependencies/cygwin
-        - if not exist dependencies\cygwin\setup-x86_64.exe (
-            curl -o dependencies/cygwin/setup-x86_64.exe https://cygwin.com/setup-x86_64.exe
-          )
+
+fetch_cygwin_cache:
+    stage: source
+    cache:
+        <<: *cygwin_cache
+    script:
+        - $ErrorActionPreference = "Stop"
+        - New-Item -ItemType Directory -Force -Path "dependencies/cygwin"
+        - |
+          if (-not (Test-Path "dependencies/cygwin/setup-x86_64.exe")) {
+              Invoke-WebRequest "https://cygwin.com/setup-x86_64.exe" -OutFile "dependencies/cygwin/setup-x86_64.exe"
+              Write-Host "Successful fetch of  to $localfile"
+          } else {
+              Write-Host "Cygwin installer found in cache"
+          }
+    tags:
+        - saas-windows-medium-amd64
+    except:
+        - tags
+    retry:
+        max: 1
+        when:
+            - stuck_or_timeout_failure
+            - runner_system_failure
+            - job_execution_timeout
 
 windows-cygwin-build:
     stage: build
-    extends:
-      - .setup_cygwin_cache
     needs:
+        - job: fetch_cygwin_cache
         - job: portable-source
           artifacts: true
+    cache:
+        <<: *cygwin_cache
+        policy: pull
     script:
         - !reference [.cygwin_setup_template, script]
         # run the build
@@ -506,9 +528,11 @@ windows-cygwin-build:
 
 windows-cygwin-build-using-autogen:
     stage: build
-    extends:
-      - .setup_cygwin_cache
+    cache:
+        <<: *cygwin_cache
+        policy: pull
     needs:
+        - job: fetch_cygwin_cache
         - job: portable-source
           artifacts: true
     script:
@@ -936,9 +960,11 @@ windows-mingw64-cmake-build:
 
 windows-cygwin-cmake-build:
     stage: build
-    extends:
-      - .setup_cygwin_cache
+    cache:
+        <<: *cygwin_cache
+        policy: pull
     needs:
+        - job: fetch_cygwin_cache
         - job: portable-source
           artifacts: true
     script:
