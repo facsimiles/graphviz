@@ -36,46 +36,46 @@ if (-not (Test-NetConnection $mirrorHost -Port 443).TcpTestSucceeded) {
 # Get-Process | Where-Object { $_.Path -like "$cygwinPath*" } | Stop-Process -Force -EA 0
 
 # 3. FETCH INSTALLER RETRY LOOP
-Write-Host "--- Fetching Cygwin Installer ---"
+# Write-Host "--- Fetching Cygwin Installer ---"
 
-$uri = "https://cygwin.com/setup-x86_64.exe"
-$localfile = "$env:TEMP\setup-x86_64.exe"
+# $uri = "https://cygwin.com/setup-x86_64.exe"
+# $localfile = "$env:TEMP\setup-x86_64.exe"
 
-$success = $false
-$attempt = 1
-$maxAttempts = 5
-$timeoutSeconds = 73
+# $success = $false
+# $attempt = 1
+# $maxAttempts = 5
+# $timeoutSeconds = 73
 
-while ($attempt -le $maxAttempts) {
-    Write-Host "Cygwin Setup Download Attempt $attempt..."
-    try {
-        $p = Invoke-WebRequest $uri -Verbose -Debug -OutFile $localfile
-        Write-Host "Successful fetch of https://cygwin.com/setup-x86_64.exe to $localfile"
-        $success = $true
-        break
-    }
-    catch {
-        if ($attempt -lt $maxAttempts) {
-            Write-Warning "Attempt $attempt failed (Code: $($_.Exception.Message))..."
-            Start-Sleep -Seconds $timeoutSeconds
-        } else {
-            Write-Error "Attempt $attempt failed (Code: $($_.Exception.Message))."
-        }
-    }
-    $attempt++
-}
+# while ($attempt -le $maxAttempts) {
+#     Write-Host "Cygwin Setup Download Attempt $attempt..."
+#     try {
+#         $p = Invoke-WebRequest $uri -Verbose -Debug -OutFile $localfile
+#         Write-Host "Successful fetch of https://cygwin.com/setup-x86_64.exe to $localfile"
+#         $success = $true
+#         break
+#     }
+#     catch {
+#         if ($attempt -lt $maxAttempts) {
+#             Write-Warning "Attempt $attempt failed (Code: $($_.Exception.Message))..."
+#             Start-Sleep -Seconds $timeoutSeconds
+#         } else {
+#             Write-Error "Attempt $attempt failed (Code: $($_.Exception.Message))."
+#         }
+#     }
+#     $attempt++
+# }
 
-if (-not $success) {
-    Write-Error "Cygwin installer download failed after $maxAttempts attempts."
-    try {
-        . "$PSScriptRoot/network-diag-logic.ps1"
-    } catch {
-       Write-Warning "Diagnostic script failed: $_"
-    }
-    exit 1
-}
+# if (-not $success) {
+#     Write-Error "Cygwin installer download failed after $maxAttempts attempts."
+#     try {
+#         . "$PSScriptRoot/network-diag-logic.ps1"
+#     } catch {
+#        Write-Warning "Diagnostic script failed: $_"
+#     }
+#     exit 1
+# }
 
-$Env:CYGWIN_SETUP = $localfile
+$Env:CYGWIN_SETUP = dependencies\cygwin\setup-x86_64.exe
 
 # 4. INSTALL CYGWIN RETRY LOOP
 Write-Host "--- Running Cygwin Installer ---"
@@ -87,7 +87,7 @@ $timeoutSeconds = 73
 
 for ($attempt=1; $attempt -le $maxAttempts; $attempt++) {
     Write-Host "Cygwin Setup Run Attempt $attempt..."
-    $p = Start-Process "$localfile" -ArgumentList "--quiet-mode --site $mirror --wait" -Wait -PassThru
+    $p = Start-Process "$Env:CYGWIN_SETUP" -ArgumentList "--quiet-mode --site $mirror --wait --local-package-dir dependencies/cygwin/packages --packages wget,git" -Wait -PassThru
     if ($p.ExitCode -eq 0) { $success = $true; break }
     if ($attempt -lt $maxAttempts) {
         Write-Warning "Cygwin Setup Run attempt $attempt failed (Code: $($p.ExitCode)). Sleeping 15s..."

@@ -15,23 +15,25 @@ set -x
 # address warning we may see later due to lack of available randomness
 diskperf -y
 
+$Env:CYGWIN_SETUP = dependencies/cygwin/setup-x86_64.exe
+
 setup_exe=$(cygpath -u "$CYGWIN_SETUP")
-${setup_exe} --quiet-mode --wait --packages autoconf2.5
-${setup_exe} --quiet-mode --wait --packages automake
-${setup_exe} --quiet-mode --wait --packages bison
-${setup_exe} --quiet-mode --wait --packages cmake
-${setup_exe} --quiet-mode --wait --packages flex
-${setup_exe} --quiet-mode --wait --packages gcc-core
-${setup_exe} --quiet-mode --wait --packages gcc-g++
-${setup_exe} --quiet-mode --wait --packages git
-${setup_exe} --quiet-mode --wait --packages libcairo-devel
-${setup_exe} --quiet-mode --wait --packages libexpat-devel
-${setup_exe} --quiet-mode --wait --packages libpango1.0-devel
-${setup_exe} --quiet-mode --wait --packages libgd-devel
-${setup_exe} --quiet-mode --wait --packages libtool
-${setup_exe} --quiet-mode --wait --packages make
-${setup_exe} --quiet-mode --wait --packages python3
-${setup_exe} --quiet-mode --wait --packages zlib-devel
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages autoconf2.5
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages automake
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages bison
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages cmake
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages flex
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages gcc-core
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages gcc-g++
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages git
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages libcairo-devel
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages libexpat-devel
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages libpango1.0-devel
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages libgd-devel
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages libtool
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages make
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages python3
+${setup_exe} --quiet-mode --wait --local-package-dir dependencies/cygwin/packages --packages zlib-devel
 
 # Use the libs installed with cygwinsetup instead of those in
 # https://gitlab.com/graphviz/graphviz-windows-dependencies. Also disable GVEdit

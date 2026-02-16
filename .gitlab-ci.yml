@@ -463,8 +463,22 @@ windows-mingw64-build:
             - runner_system_failure
             - job_execution_timeout
 
+.setup_cygwin_cache:
+    cache:
+        key: "$CI_DATE_WEEK-cygwin" # Key changes every week
+        paths:
+            - dependencies/cygwin/setup-x86_64.exe
+            - dependencies/cygwin/packages/
+    before_script:
+        - mkdir -p dependencies/cygwin
+        - if not exist dependencies\cygwin\setup-x86_64.exe (
+            curl -o dependencies/cygwin/setup-x86_64.exe https://cygwin.com/setup-x86_64.exe
+          )
+
 windows-cygwin-build:
     stage: build
+    extends:
+      - .setup_cygwin_cache
     needs:
         - job: portable-source
           artifacts: true
@@ -492,6 +506,8 @@ windows-cygwin-build:
 
 windows-cygwin-build-using-autogen:
     stage: build
+    extends:
+      - .setup_cygwin_cache
     needs:
         - job: portable-source
           artifacts: true
@@ -594,7 +610,7 @@ windows-cygwin-build-using-autogen:
     variables:
       IMAGE: ubuntu-24.04
 
-.ubuntu-24.04-cmake-ASan-build-and-test-including-ctest:
+ubuntu-24.04-cmake-ASan-build-and-test-including-ctest:
     stage: build
     needs:
         - job: docker_build_ubuntu-24.04
@@ -920,6 +936,8 @@ windows-mingw64-cmake-build:
 
 windows-cygwin-cmake-build:
     stage: build
+    extends:
+      - .setup_cygwin_cache
     needs:
         - job: portable-source
           artifacts: true
@@ -1359,7 +1377,7 @@ docker_build_ubuntu-22.04:
   variables:
     IMAGE: ubuntu-22.04
 
-.docker_build_ubuntu-24.04:
+docker_build_ubuntu-24.04:
   <<: *docker_build_definition
   variables:
     IMAGE: ubuntu-24.04
