@@ -159,7 +159,7 @@ portable-source:
 
 .windows_cleanup:
     script:
-        - Set-PSDebug -Trace 1
+        # - Set-PSDebug -Trace 1
         - |
           # 1. HEALTH REPORT
           Write-Host "--- Runner Health ---"
@@ -221,7 +221,6 @@ portable-source:
           } else {
               Write-Host "Cygwin installer found in cache"
           }
-        - Set-PSDebug -Trace 1
         # drop environment variables we do not need
         - $Env:CI_COMMIT_DESCRIPTION = $null
         - $Env:CI_COMMIT_MESSAGE = $null
