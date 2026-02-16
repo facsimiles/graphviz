@@ -41,8 +41,10 @@ Write-Host "--- Fetching Cygwin Installer ---"
 $uri = "https://cygwin.com/setup-x86_64.exe"
 $localfile = "$env:TEMP\setup-x86_64.exe"
 
+$success = $false
 $attempt = 1
-$maxAttempts = 3
+$maxAttempts = 5
+$timeoutSeconds = 73
 
 while ($attempt -le $maxAttempts) {
     Write-Host "Cygwin Setup Download Attempt $attempt..."
@@ -55,7 +57,7 @@ while ($attempt -le $maxAttempts) {
     catch {
         if ($attempt -lt $maxAttempts) {
             Write-Warning "Attempt $attempt failed (Code: $($_.Exception.Message))..."
-            Start-Sleep -Seconds 17
+            Start-Sleep -Seconds $timeoutSeconds
         } else {
             Write-Error "Attempt $attempt failed (Code: $($_.Exception.Message))."
         }
@@ -77,18 +79,23 @@ $Env:CYGWIN_SETUP = $localfile
 
 # 4. INSTALL CYGWIN RETRY LOOP
 Write-Host "--- Running Cygwin Installer ---"
+
 $success = $false
-for ($i=1; $i -le 3; $i++) {
-    Write-Host "Cygwin Setup Run Attempt $i..."
+$attempt = 1
+$maxAttempts = 3
+$timeoutSeconds = 73
+
+for ($attempt=1; $attempt -le $maxAttempts; $attempt++) {
+    Write-Host "Cygwin Setup Run Attempt $attempt..."
     $p = Start-Process "$localfile" -ArgumentList "--quiet-mode --site $mirror --wait" -Wait -PassThru
     if ($p.ExitCode -eq 0) { $success = $true; break }
-    if ($i -lt 3) {
-        Write-Warning "Cygwin Setup Run attempt $i failed (Code: $($p.ExitCode)). Sleeping 15s..."
-        copy C:\cygwin64\var\log\setup.log.full ".\setup-full-$i.log"
+    if ($attempt -lt $maxAttempts) {
+        Write-Warning "Cygwin Setup Run attempt $attempt failed (Code: $($p.ExitCode)). Sleeping 15s..."
+        copy C:\cygwin64\var\log\setup.log.full ".\setup-full-$attempt.log"
         Start-Sleep -Seconds 15
         Write-Warning "Finished sleeping"
     } else {
-        Write-Error "Cygwin Setup Run attempt $i failed (Code: $($p.ExitCode))."
+        Write-Error "Cygwin Setup Run attempt $attempt failed (Code: $($p.ExitCode))."
         gci env:
     }
 }
