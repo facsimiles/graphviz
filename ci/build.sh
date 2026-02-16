@@ -38,9 +38,9 @@ if [ "${build_system}" = "cmake" ]; then
     cmake --version
     mkdir build
     pushd build
-    cmake --log-level=VERBOSE --warn-uninitialized -Werror=dev \
+    cmake --log-level=VERBOSE --warn-uninitialized -Werror=dev --verbose \
       ${CMAKE_OPTIONS:-} ..
-    cmake --build .
+    cmake --build . --verbose
     cpack
     popd
     if [ "${ID}" = "ubuntu" ]; then
