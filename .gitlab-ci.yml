@@ -159,10 +159,11 @@ portable-source:
 
 .windows_cleanup:
     script:
-        # - Set-PSDebug -Trace 1
+        - Set-PSDebug -Trace 1
         - |
           # 1. HEALTH REPORT
           Write-Host "--- Runner Health ---"
+          Write-Host "Hostname: $env:COMPUTERNAME"
           Get-PSDrive C | Select-Object @{N="FreeGB";E={[math]::round($_.Free/1GB,2)}} | Out-Host
           $mem = Get-CimInstance Win32_OperatingSystem
           Write-Host "Free Memory: $([math]::round($mem.FreePhysicalMemory/1MB, 2)) GB"

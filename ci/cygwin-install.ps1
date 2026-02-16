@@ -1,8 +1,14 @@
 # cygwin-install.ps1: Prepare for running cygwin builds and tests
 
 Write-Host "Starting cygwin-install.ps1"
+
+Get-Location
+dir
+
+Write-Host "We should see build dir above"
+
 # $ProgressPreference = "SilentlyContinue"
-# Set-PSDebug -Trace 1
+Set-PSDebug -Trace 1
 
 # Set-PSDebug -Trace 1
 $Env:CI_COMMIT_DESCRIPTION = $null
@@ -11,9 +17,9 @@ $Env:CI_COMMIT_TITLE = $null
 # Set-PSDebug -Trace 1
 
 # 1. HEALTH REPORT
-Write-Host "--- Runner Health ---"
-Get-PSDrive C | Select-Object @{N="FreeGB";E={[math]::round($_.Free/1GB,2)}} | Out-Host
-$mem = Get-CimInstance Win32_OperatingSystem
+# Write-Host "--- Runner Health ---"
+# Get-PSDrive C | Select-Object @{N="FreeGB";E={[math]::round($_.Free/1GB,2)}} | Out-Host
+# $mem = Get-CimInstance Win32_OperatingSystem
 Write-Host "Free Memory: $([math]::round($mem.FreePhysicalMemory/1MB, 2)) GB"
 
 $cygwinPath = "C:\cygwin64"
@@ -74,6 +80,13 @@ if (-not (Test-NetConnection $mirrorHost -Port 443).TcpTestSucceeded) {
 #     }
 #     exit 1
 # }
+
+if (-not (Test-Path "dependencies/cygwin/setup-x86_64.exe")) {
+     Invoke-WebRequest "https://cygwin.com/setup-x86_64.exe" -OutFile "dependencies/cygwin/setup-x86_64.exe"
+     Write-Host "Successful fetch of  to $localfile"
+} else {
+     Write-Host "Cygwin installer found in cache"
+}
 
 # 4. INSTALL CYGWIN RETRY LOOP
 Write-Host "--- Running Cygwin Installer ---"
