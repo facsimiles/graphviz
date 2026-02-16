@@ -212,6 +212,15 @@ portable-source:
 
 .cygwin_setup_template:
     script:
+        - $ErrorActionPreference = "Stop"
+        - New-Item -ItemType Directory -Force -Path "dependencies/cygwin"
+        - |
+          if (-not (Test-Path "dependencies/cygwin/setup-x86_64.exe")) {
+              Invoke-WebRequest "https://cygwin.com/setup-x86_64.exe" -OutFile "dependencies/cygwin/setup-x86_64.exe"
+              Write-Host "Successful fetch of  to $localfile"
+          } else {
+              Write-Host "Cygwin installer found in cache"
+          }
         - Set-PSDebug -Trace 1
         # drop environment variables we do not need
         - $Env:CI_COMMIT_DESCRIPTION = $null
@@ -507,7 +516,7 @@ windows-cygwin-build:
           artifacts: true
     cache:
         <<: *cygwin_cache
-        policy: pull
+        # policy: pull -- no, since we have no way to ensure fetch_cygwin_cache runs on same runner
     script:
         - !reference [.cygwin_setup_template, script]
         # run the build
@@ -534,7 +543,7 @@ windows-cygwin-build-using-autogen:
     stage: build
     cache:
         <<: *cygwin_cache
-        policy: pull
+        # policy: pull -- no, since we have no way to ensure fetch_cygwin_cache runs on same runner
     needs:
         - job: fetch_cygwin_cache
         - job: portable-source
@@ -966,7 +975,7 @@ windows-cygwin-cmake-build:
     stage: build
     cache:
         <<: *cygwin_cache
-        policy: pull
+        # policy: pull -- no, since we have no way to ensure fetch_cygwin_cache runs on same runner
     needs:
         - job: fetch_cygwin_cache
         - job: portable-source
