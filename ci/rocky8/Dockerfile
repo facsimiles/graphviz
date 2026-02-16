@@ -1,5 +1,5 @@
 # Digest from https://hub.docker.com/r/rockylinux/rockylinux/tags?name=8-ubi-init
-FROM rockylinux/rockylinux:8-ubi-init@sha256:f301d0f66a1f9fb79eb2ee7fecc04f94e485149f7e3c232937792d39accc1715
+FROM rockylinux/rockylinux:8-ubi-init@sha256:ab66ef91e502e5989f00f632c2e21cff5868f6f659c8ab5db0e96c97d0ca6fc3
 
 COPY requirements.txt ./requirements.txt
 
