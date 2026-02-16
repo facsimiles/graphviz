@@ -85,7 +85,7 @@ $timeoutSeconds = 73
 
 for ($attempt=1; $attempt -le $maxAttempts; $attempt++) {
     Write-Host "Cygwin Setup Run Attempt $attempt..."
-    $p = Start-Process "dependencies\cygwin\setup-x86_64" -ArgumentList "--quiet-mode --site $mirror --wait --local-package-dir dependencies/cygwin/packages --packages wget,git" -Wait -PassThru
+    $p = Start-Process "dependencies\cygwin\setup-x86_64" -ArgumentList "--quiet-mode -v --site $mirror --wait --local-package-dir dependencies/cygwin/packages " -Wait -PassThru
     if ($p.ExitCode -eq 0) { $success = $true; break }
     if ($attempt -lt $maxAttempts) {
         Write-Warning "Cygwin Setup Run attempt $attempt failed (Code: $($p.ExitCode)). Sleeping 15s..."
