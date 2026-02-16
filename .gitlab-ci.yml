@@ -470,9 +470,6 @@ windows-cygwin-build:
           artifacts: true
     script:
         - !reference [.cygwin_setup_template, script]
-        # fail on any compiler warnings
-        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough -Wno-error=sign-conversion"
-        - $Env:CXXFLAGS = "-Werror"
         # run the build
         - $Env:build_system = "autotools"
         - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
@@ -500,9 +497,6 @@ windows-cygwin-build-using-autogen:
           artifacts: true
     script:
         - !reference [.cygwin_setup_template, script]
-        # fail on any compiler warnings
-        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough -Wno-error=sign-conversion"
-        - $Env:CXXFLAGS = "-Werror"
         # run the build
         - $Env:build_system = "autotools"
         - $Env:use_autogen = "yes"
@@ -931,9 +925,6 @@ windows-cygwin-cmake-build:
           artifacts: true
     script:
         - !reference [.cygwin_setup_template, script]
-        # fail on any compiler warnings
-        - $Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough -Wno-error=sign-conversion"
-        - $Env:CXXFLAGS = "-Werror"
         # run the build
         - $Env:build_system = "cmake"
         - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'

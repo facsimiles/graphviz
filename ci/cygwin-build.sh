@@ -41,6 +41,10 @@ export CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LTDL=ON"
 export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_EXPAT=ON"
 export CMAKE_OPTIONS="$CMAKE_OPTIONS -DWITH_ZLIB=ON"
 
+# fail on warnings.
+export CFLAGS="-Werror -Wno-error=implicit-fallthrough -Wno-error=sign-conversion"
+export CXXFLAGS="-Werror"
+
 # make Git running under the Cygwin user trust files owned by the Windows user
 git config --global --add safe.directory $(pwd)
 

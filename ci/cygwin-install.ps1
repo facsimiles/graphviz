@@ -105,9 +105,8 @@ if (-not $success) {
 Remove-Item -Path 'C:\Python313' -Recurse -Force
 
 $Env:Path = "C:\cygwin64\bin;" + $Env:Path
-$Env:CFLAGS = "-Werror -Wno-error=implicit-fallthrough"
-$Env:CXXFLAGS = "-Werror"
 
+# fix CRLF in scripts we will run with cygwin
 C:\cygwin64\bin\find . -type f '(' -name Makefile.am -o -name "*.def" -o -name '*.sh' -o -name '*.ac' ')' -exec C:\cygwin64\bin\sed -i 's/\r//g' "{}" ';'
 C:\cygwin64\bin\sed -i 's/\r//g' autogen.sh ci/*.sh lib/common/color_names lib/common/brewer_colors lib/common/svgcolor_names
 
