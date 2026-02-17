@@ -484,6 +484,7 @@ fetch_cygwin_cache:
     cache:
         <<: *cygwin_cache
     script:
+        - Set-PSDebug -Trace 1
         - $ErrorActionPreference = "Stop"
         - New-Item -ItemType Directory -Force -Path "dependencies/cygwin"
         - |
@@ -493,6 +494,7 @@ fetch_cygwin_cache:
           } else {
               Write-Host "Cygwin installer found in cache"
           }
+        - Set-ExecutionPolicy Bypass -Force -Scope Process
         - Start-Process "dependencies\cygwin\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --local-package-dir dependencies/cygwin/packages --wait" -wait -PassThru
         - Write-Host "Successfully did initial cygwin install"
         - Start-Process "dependencies/cygwin/setup-x86_64.exe" -ArgumentList "-v -q -D -l dependencies/cygwin/packages -W -P autoconf2.5,automake,bison,cmake,flex,gcc-core,gcc-g++,git,libcairo-devel,libexpat-devel,libpango1.0-devel,libgd-devel,libtool,make,python3,zlib-devel -W -wait" -Wait -PassThru

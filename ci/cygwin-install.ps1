@@ -1,9 +1,10 @@
 # cygwin-install.ps1: Prepare for running cygwin builds and tests
 
 Write-Host "Starting cygwin-install.ps1"
+Set-ExecutionPolicy Bypass -Force -Scope Process
 
 Get-Location
-dir
+Get-ChildItem | Format-Table Name, @{Name="Size"; Expression={"{0:N2} {1}" -f "$(($_.Length / 1KB).ToString("N2")), "KB"}}, LastWriteTime, Mode
 
 Write-Host "We should see build dir above"
 
