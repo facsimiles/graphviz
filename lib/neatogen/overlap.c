@@ -327,12 +327,21 @@ static void overlap_scaling(int dim, int m, double *x, double *width,
   /* final scaling */
   scale_coord(dim, m, x, scale_best);
 }
- 
-OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, 
-				    int dim, double *x, double *width, bool neighborhood_only,
-				    double *max_overlap, double *min_overlap,
-				    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int shrink
-				    ){
+
+typedef StressMajorizationSmoother OverlapSmoother;
+
+#define OverlapSmoother_struct StressMajorizationSmoother_struct
+
+static void OverlapSmoother_delete(OverlapSmoother sm) {
+  StressMajorizationSmoother_delete(sm);
+}
+
+static OverlapSmoother
+OverlapSmoother_new(SparseMatrix A, int m, int dim, double *x, double *width,
+                    bool neighborhood_only, double *max_overlap,
+                    double *min_overlap, int edge_labeling_scheme,
+                    int n_constr_nodes, int *constr_nodes,
+                    SparseMatrix A_constr, int shrink) {
   int i, j, k, *iw, *jw, jdiag;
   SparseMatrix B;
   double *d, *w, diag_d, diag_w, dist;
@@ -423,13 +432,7 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
   return sm;
 }
 
-void OverlapSmoother_delete(OverlapSmoother sm){
-
-  StressMajorizationSmoother_delete(sm);
-
-}
-
-double OverlapSmoother_smooth(OverlapSmoother sm, int dim, double *x){
+static double OverlapSmoother_smooth(OverlapSmoother sm, int dim, double *x) {
   int maxit_sm = 1;/* only using 1 iteration of stress majorization 
 		      is found to give better results and save time! */
   return StressMajorizationSmoother_smooth(sm, dim, x, maxit_sm);
