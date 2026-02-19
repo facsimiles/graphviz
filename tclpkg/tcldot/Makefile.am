@@ -99,7 +99,7 @@ BUILT_SOURCES = pkgIndex.tcl
 all-local: pkgIndex.tcl
 
 pkgIndex.tcl:
-	python3 $(top_srcdir)/tclpkg/mkpkgindex.py \
+	$(PYTHON3) $(top_srcdir)/tclpkg/mkpkgindex.py \
 	  --file libtcldot$(SHARED_LIBRARY_SUFFIX) \
 	  --name Tcldot \
 	  --version $(VERSION)
