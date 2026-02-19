@@ -199,23 +199,23 @@ findSource (Agraph_t* g, Agraph_t* sg)
     return NULL;
 }
 
-static int
-topsort (Agraph_t* g, Agraph_t* sg, Agnode_t** arr)
-{
+typedef LIST(node_t *) nodes_t;
+
+static nodes_t topsort(Agraph_t *g, Agraph_t *sg) {
     Agnode_t* n;
     Agedge_t* e;
     Agedge_t* nxte;
-    int cnt = 0;
+    nodes_t arr = {0};
 
     while ((n = findSource(g, sg))) {
-	arr[cnt++] = ND_np(n); 
+	LIST_APPEND(&arr, ND_np(n)); 
 	agdelnode(sg, n);
 	for (e = agfstout(g, n); e; e = nxte) {
 	    nxte = agnxtout(g, e); 
 	    agdeledge(g, e);
 	}
     }
-    return cnt;
+    return arr;
 }
 
 static int
@@ -244,7 +244,6 @@ getComp (graph_t* g, node_t* n, graph_t* comp, int* indices)
 static void
 fixLabelOrder (graph_t* g, rank_t* rk)
 {
-    int cnt;
     bool haveBackedge = false;
     Agraph_t* sg;
     Agnode_t* n;
@@ -266,25 +265,23 @@ fixLabelOrder (graph_t* g, rank_t* rk)
     if (!haveBackedge) return;
     
     sg = agsubg(g, "comp", 1);
-    Agnode_t **arr = gv_calloc(agnnodes(g), sizeof(Agnode_t*));
     int *indices = gv_calloc(agnnodes(g), sizeof(int));
 
     for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
 	if (ND_x(n) || agdegree(g,n,1,1) == 0) continue;
 	if (getComp(g, n, sg, indices)) {
-	    int i, sz = agnnodes(sg);
-	    cnt = topsort (g, sg, arr);
-	    assert (cnt == sz);
-	    qsort(indices, cnt, sizeof(int), ordercmpf);
-	    for (i = 0; i < sz; i++) {
-		ND_order(arr[i]) = indices[i];
-		rk->v[indices[i]] = arr[i];
+	    nodes_t arr = topsort(g, sg);
+	    assert(LIST_SIZE(&arr) == (size_t)agnnodes(sg));
+	    qsort(indices, LIST_SIZE(&arr), sizeof(int), ordercmpf);
+	    for (size_t i = 0; i < LIST_SIZE(&arr); i++) {
+		ND_order(LIST_GET(&arr, i)) = indices[i];
+		rk->v[indices[i]] = LIST_GET(&arr, i);
 	    }
+	    LIST_FREE(&arr);
        }
        emptyComp(sg);
     }
     free(indices);
-    free (arr);
 }
 
 /* Check that the ordering of labels for flat edges is consistent. 
@@ -1318,8 +1315,6 @@ static bool constraining_flat_edge(Agraph_t *g, Agedge_t *e) {
     return false;
   return true;
 }
-
-typedef LIST(node_t *) nodes_t;
 
 /* construct nodes reachable from 'here' in post-order.
 * This is the same as doing a topological sort in reverse order.
