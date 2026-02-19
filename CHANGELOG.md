@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `tcldot.dll` are externally visible on Windows. #2809
 - The `Tclpathplan_Init` and `Tclpathplan_SafeInit` symbols in `tclpathplan.dll`
   are externally visible on Windows. #2809
+- The Autotools build system more consistently uses `$PYTHON3` instead of
+  `python3` when invoking Python. This ensures developers are more easily able
+  to control the Python installation in use from the top level.
 
 ## [14.1.2] – 2026-01-24
 
