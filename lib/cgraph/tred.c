@@ -23,6 +23,7 @@
 #include "config.h"
 
 #include <cgraph/cghdr.h>
+#include <cgraph/node_set.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -183,25 +184,21 @@ static int dfs(Agnode_t *n, nodeinfo_t *ninfo, int warn,
  * complexity is O(|V||E|).
  */
 void graphviz_tred(Agraph_t *g, const graphviz_tred_options_t *opts) {
-  Agnode_t *n;
   int cnt = 0;
   int warn = 0;
-  time_t secs;
   time_t total_secs = 0;
-  nodeinfo_t *ninfo;
-  size_t infosize;
 
-  infosize = (agnnodes(g) + 1) * sizeof(nodeinfo_t);
-  ninfo = gv_alloc(infosize);
+  const size_t infosize = (node_set_size(g->n_id) + 1) * sizeof(nodeinfo_t);
+  nodeinfo_t *const ninfo = gv_alloc(infosize);
 
   if (opts->Verbose && opts->err != NULL)
     fprintf(stderr, "Processing graph %s\n", agnameof(g));
-  for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+  for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
     memset(ninfo, 0, infosize);
     const time_t start = time(NULL);
     warn = dfs(n, ninfo, warn, opts);
     if (opts->Verbose) {
-      secs = time(NULL) - start;
+      const time_t secs = time(NULL) - start;
       total_secs += secs;
       cnt++;
       if (cnt % 1000 == 0 && opts->err != NULL) {
