@@ -1860,7 +1860,7 @@ else
 
   AC_CHECK_HEADER(GL/glut.h,
     AC_CHECK_LIB(glut,main,
-      [GLUT_LIBS="$GLUT_LIBS -lglut"
+      [GLUT_LIBS="$GLUT_LIBS -lglut $(pkg-config --libs glu)"
       use_glut="Yes"
       AC_DEFINE(HAVE_GLUT,1,[Define if you have the GLUT library])],
       use_glut="No (missing libglut)"
