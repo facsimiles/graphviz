@@ -9,7 +9,7 @@
 
 /// how many bytes are needed to canonicalize the given string
 static inline size_t agstrcanon_bytes(const char *str) {
-  return 2 * strlen(str) + 2;
+  return 2 * strlen(str) + 3;
 }
 
 /// get a buffer suitable for passing into `agstrcanon`
