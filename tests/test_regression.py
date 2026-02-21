@@ -6531,6 +6531,20 @@ def test_2734():
             gradient = this_gradient
 
 
+def test_2743():
+    """
+    Graphviz should not crash when processing this graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2743
+    """
+
+    # locate our associated test case in this directory
+    src = Path(__file__).parent / "2743.dot"
+    assert src.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    dot("dot", src)
+
+
 @pytest.mark.xfail(
     reason="https://gitlab.com/graphviz/graphviz/-/issues/2796", strict=True
 )
