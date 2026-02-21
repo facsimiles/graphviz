@@ -796,9 +796,10 @@ setClustNodes(graph_t* root)
  * 
  * Add edges per components to get better packing, rather than
  * wait until the end.
+ *
+ * @param counter [in,out] State used for constructing distinct subgraph names
  */
-static int layout(graph_t * g, layout_info * infop)
-{
+static int layout(graph_t *g, layout_info* infop, size_t *counter) {
     pointf *pts = NULL;
     graph_t *dg;
     node_t *dn;
@@ -828,7 +829,7 @@ static int layout(graph_t * g, layout_info * infop)
 	return -1;
     }
     size_t c_cnt;
-    cc = pg = findCComp(dg, &c_cnt, &pinned);
+    cc = pg = findCComp(dg, &c_cnt, &pinned, counter);
 
     while ((cg = *pg++)) {
 	node_t* nxtnode;
@@ -838,7 +839,7 @@ static int layout(graph_t * g, layout_info * infop)
 	    if (ND_clust(n)) {
 		pointf pt;
 		sg = expandCluster(n, cg);	/* attach ports to sg */
-		int r = layout(sg, infop);
+		int r = layout(sg, infop, counter);
 		if (r != 0) {
                     return r;
 		}
@@ -1020,7 +1021,7 @@ static int fdpLayout(graph_t * g)
     layout_info info;
 
     init_info(g, &info);
-    int r = layout(g, &info);
+    int r = layout(g, &info, &(size_t){0});
     if (r != 0) {
         return r;
     }
