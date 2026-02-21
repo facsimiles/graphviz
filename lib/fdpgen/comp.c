@@ -124,13 +124,12 @@ graphs_t findCComp(graph_t *g, int *pinned, size_t *counter) {
 	*pinned = pinflag;
     /* freed in layout */
     graphs_t comps = {0};
-    LIST_RESERVE(&comps, c_cnt + 1);
+    LIST_RESERVE(&comps, c_cnt);
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	LIST_APPEND(&comps, subg);
 	c_cnt--;
     }
     assert(c_cnt == 0);
-    LIST_APPEND(&comps, NULL);
 
     return comps;
 }
