@@ -76,31 +76,30 @@ typedef struct {
  * node's connected component.
  * Also, entire layout is translated to origin.
  */
-static void finalCC(graph_t *g, size_t c_cnt, graph_t **cc, pointf *pts,
+static void finalCC(graph_t *g, const graphs_t *cc, pointf *pts,
                     graph_t *rg, layout_info* infop) {
     attrsym_t * G_width = infop->G_width;
     attrsym_t * G_height = infop->G_height;
-    graph_t *cg;
     boxf bb;
     boxf bbf;
     pointf pt;
     int margin;
-    graph_t **cp = cc;
     pointf *pp = pts;
     int isRoot = rg == infop->rootg;
     int isEmpty = 0;
 
     /* compute graph bounding box in points */
-    if (c_cnt) {
-	cg = *cp++;
+    if (LIST_SIZE(cc) > 1) {
+	graph_t *cg = LIST_GET(cc, 0);
 	bb = GD_bb(cg);
-	if (c_cnt > 1) {
+	if (LIST_SIZE(cc) > 2) {
 	    pt = *pp++;
 	    bb.LL.x += pt.x;
 	    bb.LL.y += pt.y;
 	    bb.UR.x += pt.x;
 	    bb.UR.y += pt.y;
-	    while ((cg = *cp++)) {
+	    for (size_t i = 1; i + 1 < LIST_SIZE(cc); ++i) {
+		cg = LIST_GET(cc, i);
 		boxf b = GD_bb(cg);
 		pt = *pp++;
 		b.LL.x += pt.x;
@@ -143,10 +142,10 @@ static void finalCC(graph_t *g, size_t c_cnt, graph_t **cc, pointf *pts,
     bb.UR.y += pt.y + margin + GD_border(rg)[TOP_IX].y;
 
     /* translate nodes */
-    if (c_cnt) {
-	cp = cc;
+    if (LIST_SIZE(cc) > 1) {
 	pp = pts;
-	while ((cg = *cp++)) {
+	for (size_t i = 0; i + 1 < LIST_SIZE(cc); ++i) {
+	    graph_t *const cg = LIST_GET(cc, i);
 	    pointf p;
 	    node_t *n;
 	    pointf del;
@@ -885,7 +884,7 @@ static int layout(graph_t *g, layout_info* infop, size_t *counter) {
     }
 
     /* set bounding box of dg and reposition nodes */
-    finalCC(dg, LIST_SIZE(&cc) - 1, LIST_FRONT(&cc), pts, g, infop);
+    finalCC(dg, &cc, pts, g, infop);
     free (pts);
 
     /* record positions from derived graph to input graph */
