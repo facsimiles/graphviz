@@ -6531,9 +6531,6 @@ def test_2734():
             gradient = this_gradient
 
 
-@pytest.mark.xfail(
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2743", strict=False
-)
 def test_2743():
     """
     Graphviz should not crash when processing this graph

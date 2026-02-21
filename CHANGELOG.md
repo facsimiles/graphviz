@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to control the Python installation in use from the top level.
 - The Autotools build system explicitly links against libglu libraries when
   linking against libglut.
+- Canonicalizing an empty string or a string entirely made up of characters
+  needing escaping no longer triggers an out-of-bounds memory write. This was a
+  regression in Graphviz 13.0.1. #2743
 
 ## [14.1.2] – 2026-01-24
 
