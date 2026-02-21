@@ -31,6 +31,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 static void dfs(Agraph_t *g, Agnode_t *n, Agraph_t *out, bitarray_t *marks) {
@@ -58,15 +59,12 @@ static void dfs(Agraph_t *g, Agnode_t *n, Agraph_t *out, bitarray_t *marks) {
  * Note that if ports and/or pinned nodes exists, they will all be
  * in the first component returned by findCComp.
  */
-static size_t C_cnt = 0;
-graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
+graphs_t findCComp(graph_t *g, int *pinned, size_t *counter) {
     node_t *n;
     graph_t *subg;
     agxbuf name = {0};
     size_t c_cnt = 0;
     bport_t *pp;
-    graph_t **comps;
-    graph_t **cp;
     int pinflag = 0;
 
     assert(agnnodes(g) >= 0);
@@ -75,7 +73,7 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
     /* Create component based on port nodes */
     subg = 0;
     if ((pp = PORTS(g))) {
-	agxbprint(&name, "cc%s_%" PRISIZE_T, agnameof(g), c_cnt++ + C_cnt);
+	agxbprint(&name, "cc%s_%" PRISIZE_T, agnameof(g), c_cnt++ + *counter);
 	subg = agsubg(g, agxbuse(&name), 1);
 	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
 	GD_alg(subg) = gv_alloc(sizeof(gdata));
@@ -96,7 +94,7 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
 	if (ND_pinned(n) != P_PIN)
 	    continue;
 	if (!subg) {
-	    agxbprint(&name, "cc%s_%" PRISIZE_T, agnameof(g), c_cnt++ + C_cnt);
+	    agxbprint(&name, "cc%s_%" PRISIZE_T, agnameof(g), c_cnt++ + *counter);
 	    subg = agsubg(g, agxbuse(&name), 1);
 		agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
 	    GD_alg(subg) = gv_alloc(sizeof(gdata));
@@ -111,7 +109,7 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (bitarray_get(marks, ND_id(n)))
 	    continue;
-	agxbprint(&name, "cc%s+%" PRISIZE_T, agnameof(g), c_cnt++ + C_cnt);
+	agxbprint(&name, "cc%s+%" PRISIZE_T, agnameof(g), c_cnt++ + *counter);
 	subg = agsubg(g, agxbuse(&name), 1);
 	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);	//node custom data
 	GD_alg(subg) = gv_alloc(sizeof(gdata));
@@ -120,20 +118,18 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
     }
     bitarray_reset(&marks);
     agxbfree(&name);
-    C_cnt += c_cnt;
+    *counter += c_cnt;
 
-    if (cnt)
-	*cnt = c_cnt;
     if (pinned)
 	*pinned = pinflag;
     /* freed in layout */
-    comps = cp = gv_calloc(c_cnt + 1, sizeof(graph_t*));
+    graphs_t comps = {0};
+    LIST_RESERVE(&comps, c_cnt);
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-	*cp++ = subg;
+	LIST_APPEND(&comps, subg);
 	c_cnt--;
     }
     assert(c_cnt == 0);
-    *cp = 0;
 
     return comps;
 }
