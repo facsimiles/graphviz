@@ -200,14 +200,13 @@ static void freeGData(graph_t * g)
     free(GD_alg(g));
 }
 
-static void freeDerivedGraph(graph_t * g, graph_t ** cc)
-{
-    graph_t *cg;
+static void freeDerivedGraph(graph_t *g, const graphs_t *cc) {
     node_t *dn;
     node_t *dnxt;
     edge_t *e;
 
-    while ((cg = *cc++)) {
+    for (size_t i = 0; i + 1 < LIST_SIZE(cc); ++i) {
+	graph_t *const cg = LIST_GET(cc, i);
 	freeGData(cg);
 	agdelrec(cg, "Agraphinfo_t");
     }
@@ -908,7 +907,7 @@ static int layout(graph_t *g, layout_info* infop, size_t *counter) {
 #endif
 
     /* clean up temp graphs */
-    freeDerivedGraph(dg, LIST_FRONT(&cc));
+    freeDerivedGraph(dg, &cc);
     LIST_FREE(&cc);
     if (Verbose) {
 #ifdef DEBUG
