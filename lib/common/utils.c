@@ -16,6 +16,7 @@
 #include <common/geomprocs.h>
 #include <common/htmltable.h>
 #include <common/entities.h>
+#include <float.h>
 #include <limits.h>
 #include <math.h>
 #include <gvc/gvc.h>
@@ -345,14 +346,14 @@ bool mapbool(const char *p)
 
 pointf dotneato_closest(splines * spl, pointf pt)
 {
-    double bestdist2, d2, dlow2, dhigh2; /* squares of distances */
+    double d2, dlow2, dhigh2; /* squares of distances */
     double low, high, t;
     pointf c[4], pt2;
     bezier bz;
 
     size_t besti = SIZE_MAX;
     size_t bestj = SIZE_MAX;
-    bestdist2 = 1e+38;
+    double bestdist2 = DBL_MAX;
     for (size_t i = 0; i < spl->size; i++) {
 	bz = spl->list[i];
 	for (size_t j = 0; j < bz.size; j++) {

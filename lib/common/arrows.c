@@ -279,20 +279,17 @@ static double arrow_length(edge_t * e, uint32_t flag) {
 /* inside function for calls to bezier_clip */
 static bool inside(inside_t * inside_context, pointf p)
 {
-    return DIST2(p, inside_context->a.p[0]) <= inside_context->a.r[0];
+  return DIST(p, inside_context->a.p[0]) <= inside_context->a.r[0];
 }
 
 size_t arrowEndClip(edge_t* e, pointf * ps, size_t startp,
                     size_t endp, bezier *spl, uint32_t eflag) {
     inside_t inside_context;
     pointf sp[4];
-    double elen, elen2;
-
-    elen = arrow_length(e, eflag);
-    elen2 = elen * elen;
+    double elen = arrow_length(e, eflag);
     spl->eflag = eflag;
     spl->ep = ps[endp + 3];
-    if (endp > startp && DIST2(ps[endp], ps[endp + 3]) < elen2) {
+    if (endp > startp && DIST(ps[endp], ps[endp + 3]) < elen) {
 	endp -= 3;
     }
     sp[3] = ps[endp];
@@ -302,7 +299,7 @@ size_t arrowEndClip(edge_t* e, pointf * ps, size_t startp,
 
     if (elen > 0) {
 	inside_context.a.p = &sp[0];
-	inside_context.a.r = &elen2;
+	inside_context.a.r = &elen;
 	bezier_clip(&inside_context, inside, sp, true);
     }
 
@@ -317,13 +314,10 @@ size_t arrowStartClip(edge_t* e, pointf * ps, size_t startp,
                       size_t endp, bezier *spl, uint32_t sflag) {
     inside_t inside_context;
     pointf sp[4];
-    double slen, slen2;
-
-    slen = arrow_length(e, sflag);
-    slen2 = slen * slen;
+    double slen = arrow_length(e, sflag);
     spl->sflag = sflag;
     spl->sp = ps[startp];
-    if (endp > startp && DIST2(ps[startp], ps[startp + 3]) < slen2) {
+    if (endp > startp && DIST(ps[startp], ps[startp + 3]) < slen) {
 	startp += 3;
     }
     sp[0] = ps[startp + 3];
@@ -333,7 +327,7 @@ size_t arrowStartClip(edge_t* e, pointf * ps, size_t startp,
 
     if (slen > 0) {
 	inside_context.a.p = &sp[3];
-	inside_context.a.r = &slen2;
+	inside_context.a.r = &slen;
 	bezier_clip(&inside_context, inside, sp, false);
     }
 
