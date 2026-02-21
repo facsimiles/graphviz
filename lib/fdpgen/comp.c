@@ -31,6 +31,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
+#include <util/list.h>
 #include <util/prisize_t.h>
 
 static void dfs(Agraph_t *g, Agnode_t *n, Agraph_t *out, bitarray_t *marks) {
@@ -58,14 +59,12 @@ static void dfs(Agraph_t *g, Agnode_t *n, Agraph_t *out, bitarray_t *marks) {
  * Note that if ports and/or pinned nodes exists, they will all be
  * in the first component returned by findCComp.
  */
-graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned, size_t *counter) {
+graphs_t findCComp(graph_t *g, int *pinned, size_t *counter) {
     node_t *n;
     graph_t *subg;
     agxbuf name = {0};
     size_t c_cnt = 0;
     bport_t *pp;
-    graph_t **comps;
-    graph_t **cp;
     int pinflag = 0;
 
     assert(agnnodes(g) >= 0);
@@ -121,18 +120,17 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned, size_t *counter) {
     agxbfree(&name);
     *counter += c_cnt;
 
-    if (cnt)
-	*cnt = c_cnt;
     if (pinned)
 	*pinned = pinflag;
     /* freed in layout */
-    comps = cp = gv_calloc(c_cnt + 1, sizeof(graph_t*));
+    graphs_t comps = {0};
+    LIST_RESERVE(&comps, c_cnt + 1);
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-	*cp++ = subg;
+	LIST_APPEND(&comps, subg);
 	c_cnt--;
     }
     assert(c_cnt == 0);
-    *cp = 0;
+    LIST_APPEND(&comps, NULL);
 
     return comps;
 }
