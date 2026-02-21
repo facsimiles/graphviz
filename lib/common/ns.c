@@ -1066,16 +1066,53 @@ static int x_val(edge_t * e, node_t * v, int dir)
 
 static void dfs_cutval(node_t * v, edge_t * par)
 {
-    edge_t *e;
+    // per-node state
+    typedef struct {
+	node_t *v;
+	edge_t *par;
+	int out_i; ///< counter for iterating through `ND_tree_out(v).list`
+	int in_i;  ///< counter for iterating through `ND_tree_in(v).list`
+    } state_t;
 
-    for (int i = 0; (e = ND_tree_out(v).list[i]); i++)
-	if (e != par)
-	    dfs_cutval(aghead(e), e);
-    for (int i = 0; (e = ND_tree_in(v).list[i]); i++)
-	if (e != par)
-	    dfs_cutval(agtail(e), e);
-    if (par)
-	x_cutval(par);
+    LIST(state_t) todo = {0};
+    LIST_PUSH_BACK(&todo, ((state_t){.v = v, .par = par}));
+
+    while (!LIST_IS_EMPTY(&todo)) {
+	state_t *const top = LIST_BACK(&todo);
+
+	bool updated = false;
+	edge_t *e;
+	for (; (e = ND_tree_out(top->v).list[top->out_i]); ++top->out_i) {
+	    if (e != top->par) {
+	      ++top->out_i;
+	      LIST_PUSH_BACK(&todo, ((state_t){.v = aghead(e), .par = e}));
+	      updated = true;
+	      break;
+	    }
+	}
+	if (updated) {
+	    continue;
+	}
+
+	for (; (e = ND_tree_in(top->v).list[top->in_i]); ++top->in_i) {
+	    if (e != top->par) {
+	      ++top->in_i;
+	      LIST_PUSH_BACK(&todo, ((state_t){.v = agtail(e), .par = e}));
+	      updated = true;
+	      break;
+	    }
+	}
+	if (updated) {
+	    continue;
+	}
+
+	if (top->par) {
+	    x_cutval(top->par);
+	}
+	LIST_DROP_BACK(&todo);
+    }
+
+    LIST_FREE(&todo);
 }
 
 /// local state used by `dfs_range*`

@@ -6532,9 +6532,11 @@ def test_2734():
 
 
 @pytest.mark.xfail(
-    raises=subprocess.CalledProcessError,
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2782",
-    strict=False,
+    which("dot") is not None
+    and is_asan_instrumented(which("dot"))
+    and platform.system() != "Windows",
+    reason="memory leaks",
+    strict=True,
 )
 def test_2782():
     """
