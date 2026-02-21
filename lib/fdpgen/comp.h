@@ -11,6 +11,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <util/list.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,8 +19,10 @@ extern "C" {
 
 #include <common/render.h>
 
+typedef LIST(graph_t *) graphs_t;
+
 /// @param counter [in,out] State used for constructing distinct subgraph names
-graph_t **findCComp(graph_t *, size_t *, int *, size_t *counter);
+graphs_t findCComp(graph_t *, int *, size_t *counter);
 
 #ifdef __cplusplus
 }

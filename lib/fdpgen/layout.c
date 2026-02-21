@@ -804,10 +804,7 @@ static int layout(graph_t *g, layout_info* infop, size_t *counter) {
     graph_t *dg;
     node_t *dn;
     node_t *n;
-    graph_t *cg;
     graph_t *sg;
-    graph_t **cc;
-    graph_t **pg;
     int pinned;
     xparams xpms;
 
@@ -828,10 +825,10 @@ static int layout(graph_t *g, layout_info* infop, size_t *counter) {
     if (dg == NULL) {
 	return -1;
     }
-    size_t c_cnt;
-    cc = pg = findCComp(dg, &c_cnt, &pinned, counter);
+    graphs_t cc = findCComp(dg, &pinned, counter);
 
-    while ((cg = *pg++)) {
+    for (size_t i = 0; i + 1 < LIST_SIZE(&cc); ++i) {
+	graph_t *const cg = LIST_GET(&cc, i);
 	node_t* nxtnode;
 	fdp_tLayout(cg, &xpms);
 	for (n = agfstnode(cg); n; n = nxtnode) {
@@ -871,24 +868,24 @@ static int layout(graph_t *g, layout_info* infop, size_t *counter) {
      *   Place cluster edges separately, after layout.
      * How to combine parts, especially with disparate components?
      */
-    if (c_cnt > 1) {
+    if (LIST_SIZE(&cc) > 2) {
 	bool *bp;
 	if (pinned) {
-	    bp = gv_calloc(c_cnt, sizeof(bool));
+	    bp = gv_calloc(LIST_SIZE(&cc) - 1, sizeof(bool));
 	    bp[0] = true;
 	} else
 	    bp = NULL;
 	infop->pack.fixed = bp;
-	pts = putGraphs(c_cnt, cc, NULL, &infop->pack);
+	pts = putGraphs(LIST_SIZE(&cc) - 1, LIST_FRONT(&cc), NULL, &infop->pack);
 	free(bp);
     } else {
 	pts = NULL;
-	if (c_cnt == 1)
-	    compute_bb(cc[0]);
+	if (LIST_SIZE(&cc) == 2)
+	    compute_bb(LIST_GET(&cc, 0));
     }
 
     /* set bounding box of dg and reposition nodes */
-    finalCC(dg, c_cnt, cc, pts, g, infop);
+    finalCC(dg, LIST_SIZE(&cc) - 1, LIST_FRONT(&cc), pts, g, infop);
     free (pts);
 
     /* record positions from derived graph to input graph */
@@ -912,8 +909,8 @@ static int layout(graph_t *g, layout_info* infop, size_t *counter) {
 #endif
 
     /* clean up temp graphs */
-    freeDerivedGraph(dg, cc);
-    free(cc);
+    freeDerivedGraph(dg, LIST_FRONT(&cc));
+    LIST_FREE(&cc);
     if (Verbose) {
 #ifdef DEBUG
 	prIndent ();
