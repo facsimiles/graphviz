@@ -89,16 +89,16 @@ static void finalCC(graph_t *g, const graphs_t *cc, pointf *pts,
     int isEmpty = 0;
 
     /* compute graph bounding box in points */
-    if (LIST_SIZE(cc) > 1) {
+    if (!LIST_IS_EMPTY(cc)) {
 	graph_t *cg = LIST_GET(cc, 0);
 	bb = GD_bb(cg);
-	if (LIST_SIZE(cc) > 2) {
+	if (LIST_SIZE(cc) > 1) {
 	    pt = *pp++;
 	    bb.LL.x += pt.x;
 	    bb.LL.y += pt.y;
 	    bb.UR.x += pt.x;
 	    bb.UR.y += pt.y;
-	    for (size_t i = 1; i + 1 < LIST_SIZE(cc); ++i) {
+	    for (size_t i = 1; i < LIST_SIZE(cc); ++i) {
 		cg = LIST_GET(cc, i);
 		boxf b = GD_bb(cg);
 		pt = *pp++;
@@ -142,9 +142,9 @@ static void finalCC(graph_t *g, const graphs_t *cc, pointf *pts,
     bb.UR.y += pt.y + margin + GD_border(rg)[TOP_IX].y;
 
     /* translate nodes */
-    if (LIST_SIZE(cc) > 1) {
+    if (!LIST_IS_EMPTY(cc)) {
 	pp = pts;
-	for (size_t i = 0; i + 1 < LIST_SIZE(cc); ++i) {
+	for (size_t i = 0; i < LIST_SIZE(cc); ++i) {
 	    graph_t *const cg = LIST_GET(cc, i);
 	    pointf p;
 	    node_t *n;
@@ -205,7 +205,7 @@ static void freeDerivedGraph(graph_t *g, const graphs_t *cc) {
     node_t *dnxt;
     edge_t *e;
 
-    for (size_t i = 0; i + 1 < LIST_SIZE(cc); ++i) {
+    for (size_t i = 0; i < LIST_SIZE(cc); ++i) {
 	graph_t *const cg = LIST_GET(cc, i);
 	freeGData(cg);
 	agdelrec(cg, "Agraphinfo_t");
@@ -825,7 +825,7 @@ static int layout(graph_t *g, layout_info* infop, size_t *counter) {
     }
     graphs_t cc = findCComp(dg, &pinned, counter);
 
-    for (size_t i = 0; i + 1 < LIST_SIZE(&cc); ++i) {
+    for (size_t i = 0; i < LIST_SIZE(&cc); ++i) {
 	graph_t *const cg = LIST_GET(&cc, i);
 	node_t* nxtnode;
 	fdp_tLayout(cg, &xpms);
@@ -866,19 +866,19 @@ static int layout(graph_t *g, layout_info* infop, size_t *counter) {
      *   Place cluster edges separately, after layout.
      * How to combine parts, especially with disparate components?
      */
-    if (LIST_SIZE(&cc) > 2) {
+    if (LIST_SIZE(&cc) > 1) {
 	bool *bp;
 	if (pinned) {
-	    bp = gv_calloc(LIST_SIZE(&cc) - 1, sizeof(bool));
+	    bp = gv_calloc(LIST_SIZE(&cc), sizeof(bool));
 	    bp[0] = true;
 	} else
 	    bp = NULL;
 	infop->pack.fixed = bp;
-	pts = putGraphs(LIST_SIZE(&cc) - 1, LIST_FRONT(&cc), NULL, &infop->pack);
+	pts = putGraphs(LIST_SIZE(&cc), LIST_FRONT(&cc), NULL, &infop->pack);
 	free(bp);
     } else {
 	pts = NULL;
-	if (LIST_SIZE(&cc) == 2)
+	if (LIST_SIZE(&cc) == 1)
 	    compute_bb(LIST_GET(&cc, 0));
     }
 
