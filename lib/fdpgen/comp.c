@@ -58,8 +58,7 @@ static void dfs(Agraph_t *g, Agnode_t *n, Agraph_t *out, bitarray_t *marks) {
  * Note that if ports and/or pinned nodes exists, they will all be
  * in the first component returned by findCComp.
  */
-static size_t C_cnt = 0;
-graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
+graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned, size_t *counter) {
     node_t *n;
     graph_t *subg;
     agxbuf name = {0};
@@ -75,7 +74,7 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
     /* Create component based on port nodes */
     subg = 0;
     if ((pp = PORTS(g))) {
-	agxbprint(&name, "cc%s_%" PRISIZE_T, agnameof(g), c_cnt++ + C_cnt);
+	agxbprint(&name, "cc%s_%" PRISIZE_T, agnameof(g), c_cnt++ + *counter);
 	subg = agsubg(g, agxbuse(&name), 1);
 	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
 	GD_alg(subg) = gv_alloc(sizeof(gdata));
@@ -96,7 +95,7 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
 	if (ND_pinned(n) != P_PIN)
 	    continue;
 	if (!subg) {
-	    agxbprint(&name, "cc%s_%" PRISIZE_T, agnameof(g), c_cnt++ + C_cnt);
+	    agxbprint(&name, "cc%s_%" PRISIZE_T, agnameof(g), c_cnt++ + *counter);
 	    subg = agsubg(g, agxbuse(&name), 1);
 		agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);
 	    GD_alg(subg) = gv_alloc(sizeof(gdata));
@@ -111,7 +110,7 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (bitarray_get(marks, ND_id(n)))
 	    continue;
-	agxbprint(&name, "cc%s+%" PRISIZE_T, agnameof(g), c_cnt++ + C_cnt);
+	agxbprint(&name, "cc%s+%" PRISIZE_T, agnameof(g), c_cnt++ + *counter);
 	subg = agsubg(g, agxbuse(&name), 1);
 	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), true);	//node custom data
 	GD_alg(subg) = gv_alloc(sizeof(gdata));
@@ -120,7 +119,7 @@ graph_t **findCComp(graph_t *g, size_t *cnt, int *pinned) {
     }
     bitarray_reset(&marks);
     agxbfree(&name);
-    C_cnt += c_cnt;
+    *counter += c_cnt;
 
     if (cnt)
 	*cnt = c_cnt;

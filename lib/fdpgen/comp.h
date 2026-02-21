@@ -18,7 +18,8 @@ extern "C" {
 
 #include <common/render.h>
 
-graph_t **findCComp(graph_t *, size_t *, int *);
+/// @param counter [in,out] State used for constructing distinct subgraph names
+graph_t **findCComp(graph_t *, size_t *, int *, size_t *counter);
 
 #ifdef __cplusplus
 }
