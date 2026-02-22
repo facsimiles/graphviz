@@ -65,6 +65,9 @@ tcl-devel \
 libX11-devel \
 libXrender-devel \
 tk-devel \
+dejavu-sans-fonts \
+dejavu-sans-mono-fonts \
+dejavu-serif-fonts \
 # create a Python virtual environment
 python3.11 \
 && python3.11 -m venv /opt/virtualenv \

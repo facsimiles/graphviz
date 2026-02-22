@@ -83,6 +83,7 @@ ruby-dev \
 # Language extension gv_tcl
 tcl-dev \
 # Test utilities
+fonts-dejavu \
 python3-venv \
 gcovr \
 lcov \

@@ -71,6 +71,7 @@ tcl-devel \
 tk-devel \
 libglade2-devel \
 mono-core \
+dejavu-fonts-all \
 # create a Python virtual environment
 && python3 -m venv /opt/virtualenv \
 # install Python dependencies within the virtual environment
