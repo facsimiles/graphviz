@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Using long node names in combination with the fdp layout algorithm no longer
   results in truncated generated names.
+- Corrected time formatting in verbose info/debug messages (enabled by -v).
 
 ### Fixed
 
