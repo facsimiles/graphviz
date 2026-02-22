@@ -5,3 +5,7 @@ The file ax_check_compile_flag.m4 was obtained from commit
 The files ax_cxx_compile_stdcxx.m4 and ax_cxx_compile_stdcxx_11.m4 were obtained
 from commit efa6f204a6124e882abbbc6e056c91edfdc30555 of
     https://git.savannah.gnu.org/git/autoconf-archive.git
+
+The file ax_pthread.m4 was obtained from commit
+dcff834afae34861f7f11f3d51e0c938a35bd30f of
+    https://git.savannah.gnu.org/git/autoconf-archive.git

@@ -28,6 +28,12 @@ $(top_builddir)/graphviz_version.h: config.h
 	printf '#define GRAPHVIZ_VERSION_MAJOR @GRAPHVIZ_VERSION_MAJOR@\n' >> $(top_builddir)/graphviz_version.h
 	printf '#define GRAPHVIZ_VERSION_MINOR @GRAPHVIZ_VERSION_MINOR@\n' >> $(top_builddir)/graphviz_version.h
 	printf '#define GRAPHVIZ_VERSION_PATCH @GRAPHVIZ_VERSION_PATCH@\n' >> $(top_builddir)/graphviz_version.h
+	printf '\n/// threading library Graphviz was built with and uses internally\n' >> $(top_builddir)/graphviz_version.h
+	printf '///   0 – none; internal operations assume your program is single-threaded\n' >> $(top_builddir)/graphviz_version.h
+	printf '///   43 – C++ threads\n' >> $(top_builddir)/graphviz_version.h
+	printf '///   99 – C11 threads\n' >> $(top_builddir)/graphviz_version.h
+	printf '///   112 – POSIX threads\n' >> $(top_builddir)/graphviz_version.h
+	printf '#define GRAPHVIZ_THREADS @GRAPHVIZ_THREADS@\n' >> $(top_builddir)/graphviz_version.h
 
 EXTRA_DIST = graphviz.spec \
 	config/depcomp \
