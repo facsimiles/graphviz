@@ -28,6 +28,7 @@ Increase less between tries
 #include <neatogen/adjust.h>
 #include <fdpgen/dbg.h>
 #include <math.h>
+#include <util/debug.h>
 #include <util/gv_ctype.h>
 
 #define DFLT_overlap   "9:prism"    /* default overlap value */

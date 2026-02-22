@@ -28,6 +28,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 
   /* structure for maintaining a free list of cells */
 typedef struct _block {

@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/list.h>

@@ -34,10 +34,9 @@
 #include "config.h"
 
 #include <neatogen/digcola.h>
-#include <stdbool.h>
-#include <util/alloc.h>
 #ifdef IPSEPCOLA
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
@@ -52,6 +51,8 @@
 #include <neatogen/quad_prog_vpsc.h>
 #include <neatogen/quad_prog_solver.h>
 #include <neatogen/matrix_ops.h>
+#include <util/alloc.h>
+#include <util/debug.h>
 
 #define localConstrMajorIterations 1000
 

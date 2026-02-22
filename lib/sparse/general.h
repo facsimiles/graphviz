@@ -15,10 +15,10 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
+#include <util/debug.h>
 #include <util/exit.h>
 /* Applications that do not use the common library can define STANDALONE
  * to get definitions/definitions that are normally provided there.
- * In particular, note that Verbose is declared but undefined.
  */
 #ifndef STANDALONE
 #include "cgraph.h"
@@ -36,12 +36,6 @@ extern "C" {
 #define MIN(a,b) ((a)<(b)?(a):b)
 
 #define POINTS(inch) 72*(inch)
-
-#ifdef GVDLL
-__declspec(dllimport) extern unsigned char Verbose;
-#else
-extern unsigned char Verbose;
-#endif
 
 #endif    /* STANDALONE */
 

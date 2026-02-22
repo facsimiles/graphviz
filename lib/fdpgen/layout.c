@@ -49,6 +49,7 @@
 #include <stdbool.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/list.h>
 
 typedef struct {
