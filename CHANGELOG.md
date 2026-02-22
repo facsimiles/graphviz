@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to control the Python installation in use from the top level.
 - The Autotools build system explicitly links against libglu libraries when
   linking against libglut.
+- Further parts of the network simplex algorithm have been rewritten in a
+  non-recursive style. This allows processing larger graphs that previously
+  caused stack overflows. #2782
 
 ## [14.1.2] – 2026-01-24
 

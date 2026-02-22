@@ -6532,6 +6532,32 @@ def test_2734():
 
 
 @pytest.mark.xfail(
+    which("dot") is not None
+    and is_asan_instrumented(which("dot"))
+    and platform.system() != "Windows",
+    reason="memory leaks",
+    strict=True,
+)
+def test_2782():
+    """
+    Graphviz should not crash when processing this graph
+    https://gitlab.com/graphviz/graphviz/-/issues/2782
+    """
+
+    # locate our associated test case in this directory
+    src = Path(__file__).parent / "2782.dot"
+    assert src.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    try:
+        dot("dot", src)
+    except subprocess.CalledProcessError as e:
+        # allow failure; only fail this test case on a crash
+        if e.returncode != 1:
+            raise
+
+
+@pytest.mark.xfail(
     reason="https://gitlab.com/graphviz/graphviz/-/issues/2796", strict=True
 )
 def test_2796():
