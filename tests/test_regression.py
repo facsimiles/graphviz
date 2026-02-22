@@ -6995,7 +6995,7 @@ Usage: dot [-Vv?] [-(GNEA)name=val] [-(KTlso)<val>] <dot files>
 (additional options for config)  [-cv]
 
  -V          - Print version and exit
- -v          - Enable verbose mode 
+ -v[n]       - Enable verbose mode at level 1, or set to the level 'n' if provided
  -Gname=val  - Set graph attribute 'name' to 'val'
  -Nname=val  - Set node attribute 'name' to 'val'
  -Ename=val  - Set edge attribute 'name' to 'val'
