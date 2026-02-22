@@ -1671,8 +1671,8 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for QUARTZ
 
 AC_ARG_WITH(quartz,
-  [AS_HELP_STRING([--with-quartz=no],[Quartz framework (Mac OS X)])],
-  [], [with_quartz=no])
+  [AS_HELP_STRING([--with-quartz=yes],[Quartz framework (Mac OS X)])],
+  [], [with_quartz=yes])
 
 if test "$with_quartz" != "yes"; then
   use_quartz="No (disabled by default - Mac only)"
