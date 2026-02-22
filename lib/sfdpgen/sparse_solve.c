@@ -19,6 +19,7 @@
 #include <common/types.h>
 #include <common/globals.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 
 /* #define DEBUG_PRINT */
 

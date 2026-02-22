@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Using long node names in combination with the fdp layout algorithm no longer
   results in truncated generated names.
+- Moved `Verbose` global variable definition into `lib/util/debug.c` and
+  declared for export in `lib/util/debug.h` along with `GVC_INFO()` and `GVC_DEBUG()`
+  to reduce potential global variable conflicts among graphviz libraries
+  and applications.
+- Added a `-t` flag to `dot` to control some phase timing output;
+  previously it was controlled by the verbose flag `-v`, which also generates
+  extra debugging info output that may affect timings.  Optionally can show
+  higher-precision timing with `-t<n>` to show `n` digits of sub-second
+  timing, e.g., `-t3` shows milliseconds, e.g.: `10:03:17.123`.
 
 ### Fixed
 

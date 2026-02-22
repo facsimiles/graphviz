@@ -17,6 +17,7 @@
 #include	<stdlib.h>
 #include	<time.h>
 #include	<util/alloc.h>
+#include <util/debug.h>
 
 static double Epsilon2;
 static Agnode_t *choose_node(graph_t *, int);

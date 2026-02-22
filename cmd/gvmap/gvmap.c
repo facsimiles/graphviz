@@ -34,6 +34,7 @@
 #include <sparse/DotIO.h>
 #include <sparse/colorutil.h>
 #include <sparse/color_palette.h>
+#include <util/debug.h>
 #include <util/startswith.h>
 #include <util/unreachable.h>
 

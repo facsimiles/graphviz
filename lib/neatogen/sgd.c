@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
+#include <util/debug.h>
 #include <util/gv_math.h>
 #include <util/unreachable.h>
 

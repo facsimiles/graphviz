@@ -16,6 +16,7 @@
 #include <patchwork/tree_map.h>
 #include <common/render.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/gv_math.h>
 #include <util/list.h>
 

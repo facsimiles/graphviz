@@ -30,6 +30,7 @@
 #include <string.h>
 #include <time.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/list.h>
 
 typedef struct {

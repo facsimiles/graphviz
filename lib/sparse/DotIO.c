@@ -24,6 +24,7 @@
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/itos.h>
 #include <util/startswith.h>
 #include <util/unreachable.h>
