@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to control the Python installation in use from the top level.
 - The Autotools build system explicitly links against libglu libraries when
   linking against libglut.
+- An off-by-one error in the network simplex algorithm has been corrected. This
+  could have led to suboptimal layout in some edge cases. This was a regression
+  in Graphviz 13.0.0.
 
 ## [14.1.2] – 2026-01-24
 

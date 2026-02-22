@@ -353,6 +353,7 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
                         --LIST_BACK(&todo)->rv;
                     }
                 } else {
+                    ++top->in_i;
                     ND_subtree_set(agtail(e), st);
                     const tst_t next = {.v = agtail(e), .rv = 1};
                     LIST_PUSH_BACK(&todo, next);
@@ -376,6 +377,7 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
                         --LIST_BACK(&todo)->rv;
                     }
                 } else {
+                    ++top->out_i;
                     ND_subtree_set(aghead(e), st);
                     const tst_t next = {.v = aghead(e), .rv = 1};
                     LIST_PUSH_BACK(&todo, next);
