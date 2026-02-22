@@ -41,7 +41,7 @@ estimate_textspan_size(textspan_t * span, char **fontpath)
 
     span->size.x = 0.0;
     span->size.y = fontsize * LINESPACING;
-    span->yoffset_layout = 0.0;
+    span->yoffset_layout = fontsize;  /* estimated: ascent ≈ 1× font size from top of logical rect */
     span->yoffset_centerline = 0.1 * fontsize;
     span->layout = NULL;
     span->free_layout = NULL;
