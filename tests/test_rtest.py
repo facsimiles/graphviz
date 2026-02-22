@@ -463,5 +463,9 @@ def test_graph(
             "because it fails with Windows builds (#1790)"
         )
 
-    run(testcmd)
+    env = os.environ.copy()
+    if platform.system() == "Linux":
+        env["FONTCONFIG_FILE"] = str(Path(__file__).parent / "fonts.conf")
+
+    run(testcmd, env=env)
     doDiff(OUTPATH, REFDIR / OUTFILE, format)
