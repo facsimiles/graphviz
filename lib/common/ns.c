@@ -448,42 +448,84 @@ static subtree_t *STsetUnion(subtree_t *s0, subtree_t *s1)
   return r;
 }
 
+typedef struct tree_edge_search_state {
+    Agnode_t *from;
+    Agnode_t *v;
+    int in_i;  ///< iteration counter through `ND_in(v).list`
+    int out_i; ///< iteration counter through `ND_out(v).list`
+} tree_edge_search_state_t;
+
+typedef LIST(tree_edge_search_state_t) tree_stack;
+
 /* find tightest edge to another tree incident on the given tree */
-static Agedge_t *inter_tree_edge_search(Agnode_t *v, Agnode_t *from, Agedge_t *best)
+static Agedge_t *inter_tree_edge_search(Agnode_t *v, int tree_size)
 {
     Agedge_t *e;
     subtree_t *ts = STsetFind(v);
-    if (best && SLACK(best) == 0) return best;
-    for (int i = 0; (e = ND_out(v).list[i]); i++) {
-      if (TREE_EDGE(e)) {
-          if (aghead(e) == from) continue;  // do not search back in tree
-          best = inter_tree_edge_search(aghead(e),v,best); // search forward in tree
-      }
-      else {
-        if (STsetFind(aghead(e)) != ts) {   // encountered candidate edge
-          if (best == 0 || SLACK(e) < SLACK(best)) best = e;
-        }
-        /* else ignore non-tree edge between nodes in the same tree */
-      }
-    }
-    /* the following code must mirror the above, but for in-edges */
-    for (int i = 0; (e = ND_in(v).list[i]); i++) {
-      if (TREE_EDGE(e)) {
-          if (agtail(e) == from) continue;
-          best = inter_tree_edge_search(agtail(e),v,best);
-      }
-      else {
-        if (STsetFind(agtail(e)) != ts) {
-          if (best == 0 || SLACK(e) < SLACK(best)) best = e;
-        }
-      }
-    }
+    Agedge_t *best = NULL;
+
+    tree_stack todo = {0};
+    LIST_RESERVE(&todo, tree_size);
+
+    tree_edge_search_state_t state = (tree_edge_search_state_t) { .from = NULL, .v = v };
+    LIST_PUSH_BACK(&todo, state);
+
+    do {
+	tree_edge_search_state_t *top = LIST_BACK(&todo);
+
+	if ((e = ND_out(top->v).list[top->out_i])) {
+	    top->out_i++;
+	    if (TREE_EDGE(e)) {
+		if (aghead(e) == top->from) continue; // do not search back in tree.
+                // recursive call
+                tree_edge_search_state_t to_push = { .from = top->v, .v = aghead(e) };
+                LIST_PUSH_BACK(&todo, to_push);
+	    }
+	    else {
+		ts = STsetFind(top->v);
+		if (STsetFind(aghead(e)) != ts) { // encountered candidate edge
+		    if (best == 0 || SLACK(e) < SLACK(best)) {
+			best = e;
+			if (SLACK(best) == 0) {
+			    break;
+			}
+		    }
+		}
+		/* else ignore non-tree edge between nodes in the same tree */
+	    }
+	} else if ((e = ND_in(top->v).list[top->in_i])) {
+	    /* the following code must mirror the above, but for in-edges */
+	    top->in_i++;
+	    if (TREE_EDGE(e)) {
+		if (agtail(e) == top->from) continue;
+                // recursive call
+                tree_edge_search_state_t to_push = { .from = top->v, .v = agtail(e) };
+                LIST_PUSH_BACK(&todo, to_push);
+	    }
+	    else {
+		ts = STsetFind(top->v);
+		if (STsetFind(agtail(e)) != ts) { // encountered candidate edge
+		    if (best == 0 || SLACK(e) < SLACK(best)) {
+			best = e;
+			if (SLACK(best) == 0) {
+			    break;
+			}
+		    }
+		}
+		/* else ignore non-tree edge between nodes in the same tree */
+	    }
+	} else {
+	    // finished with the node
+	    LIST_DROP_BACK(&todo);
+	}
+    } while (!LIST_IS_EMPTY(&todo));
+    LIST_FREE(&todo);
     return best;
 }
 
 static Agedge_t *inter_tree_edge(subtree_t *tree)
 {
-    return inter_tree_edge_search(tree->rep, NULL, NULL);
+    return inter_tree_edge_search(tree->rep, tree->size);
 }
 
 static size_t STheapsize(const STheap_t *heap) { return heap->size; }
