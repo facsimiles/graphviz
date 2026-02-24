@@ -668,6 +668,21 @@ static UNUSED void test_bad_get2(void) {
 }
 #endif
 
+/// test use of a list with zero-sized items
+static void test_zero_item_size(void) {
+#ifdef __GNUC__  // Clang or GCC
+  struct foo {}; // zero-sized type, Clang/GCC extension
+  LIST(struct foo) xs = {0};
+
+  struct foo y;
+  LIST_APPEND(&xs, y);
+  LIST_APPEND(&xs, y);
+  LIST_APPEND(&xs, y);
+
+  LIST_FREE(&xs);
+#endif
+}
+
 /// test removal does not leak memory
 int main(void) {
 
@@ -712,6 +727,7 @@ int main(void) {
   RUN(detach);
   RUN(dtor);
   RUN(remove_with_dtor);
+  RUN(zero_item_size);
 
 #undef RUN
 
