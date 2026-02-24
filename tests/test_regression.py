@@ -4990,11 +4990,6 @@ def test_2564():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.xfail(
-    platform.system() == "Windows" and is_mingw(),
-    reason="tclsh still has bugs on MINGW "
-    "(https://gitlab.com/graphviz/graphviz/-/issues/2817)",
-)
 def test_2568():
     """
     tags used in TCL output should be usable for later lookup
@@ -5334,11 +5329,6 @@ def test_2593():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.xfail(
-    platform.system() == "Windows" and is_mingw(),
-    reason="tclsh still has bugs on MINGW "
-    "(https://gitlab.com/graphviz/graphviz/-/issues/2817)",
-)
 @pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
@@ -6654,11 +6644,6 @@ def test_import_tcl_package(package: str):
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
-    platform.system() == "Windows" and is_mingw(),
-    reason="tclsh still has bugs on MINGW "
-    "(https://gitlab.com/graphviz/graphviz/-/issues/2817)",
-)
-@pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
     strict=True,
@@ -6712,11 +6697,6 @@ def test_triangulation_overflow():
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
-    platform.system() == "Windows" and is_mingw(),
-    reason="tclsh still has bugs on MINGW "
-    "(https://gitlab.com/graphviz/graphviz/-/issues/2817)",
-)
-@pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
     strict=True,
@@ -6768,11 +6748,6 @@ def test_vgpane_bad_triangulation():
 
 
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
-@pytest.mark.xfail(
-    platform.system() == "Windows" and is_mingw(),
-    reason="tclsh still has bugs on MINGW "
-    "(https://gitlab.com/graphviz/graphviz/-/issues/2817)",
-)
 @pytest.mark.xfail(
     is_cmake() and is_macos(),
     reason="FIXME: 'vgpane' command is unrecognized for unknown reasons",
