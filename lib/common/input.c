@@ -23,6 +23,7 @@
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/gv_fopen.h>
@@ -49,6 +50,7 @@ static char *genericItems = "\n\
  -P          - Internally generate a graph of the current plugins. \n\
  -q[l]       - Set level of message suppression (=1)\n\
  -s[v]       - Scale input by 'v' (=72)\n\
+ -t[k]       - Show phase timings, with 'k' units of sub-second precision if specified\n\
  -y          - Invert y coordinate in output\n";
 
 static char *neatoFlags =
@@ -253,6 +255,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     Verbose = gvc->common.verbose > UCHAR_MAX
       ? UCHAR_MAX
       : (unsigned char)gvc->common.verbose;
+    Timing = (unsigned char)gvc->common.timing;
 
     size_t nfiles = 0;
     for (int i = 1; i < argc; i++)
