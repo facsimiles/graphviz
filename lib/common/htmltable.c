@@ -942,7 +942,7 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
     double width;
     textspan_t lp;
     textfont_t tf = {NULL,NULL,NULL,0.0,0,0};
-    double maxoffset, mxysize = 0.0;
+    double maxoffset, maxlayout, mxysize = 0.0;
     bool simple = true; // one item per span, same font size/face, no flags
     double prev_fsize = -1;
     char* prev_fname = NULL;
@@ -987,7 +987,7 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 
     for (size_t i = 0; i < ftxt->nspans; i++) {
 	width = 0;
-	mxysize = maxoffset = mxfsize = 0;
+	mxysize = maxoffset = maxlayout = mxfsize = 0;
 	for (size_t j = 0; j < ftxt->spans[i].nitems; j++) {
 	    lp.str =
 		strdup_and_subst_obj(ftxt->spans[i].items[j].str,
@@ -1031,6 +1031,7 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 	    mxfsize = MAX(tf.size, mxfsize);
 	    mxysize = MAX(sz.y, mxysize);
 	    maxoffset = MAX(lp.yoffset_centerline, maxoffset);
+	    maxlayout = MAX(lp.yoffset_layout, maxlayout);
 	}
 	/* lsize = mxfsize * LINESPACING; */
 	ftxt->spans[i].size = width;
@@ -1044,7 +1045,13 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 	if (simple) {
 	    lsize = mxysize;
 	    if (i == 0)
-		ftxt->spans[i].lfsize = mxfsize;
+		/* Place baseline using actual font metrics: centers the pango
+		 * logical rectangle in the cell rather than approximating with
+		 * raw font size.  maxlayout = baseline distance from box top
+		 * (yoffset_layout from the text layout engine); maxoffset =
+		 * yoffset_centerline (small above-baseline correction applied
+		 * by the renderer to convert from rendering origin to baseline). */
+		ftxt->spans[i].lfsize = maxlayout + maxoffset;
 	    else
 		ftxt->spans[i].lfsize = mxysize;
 	}

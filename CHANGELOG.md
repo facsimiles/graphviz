@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Using long node names in combination with the fdp layout algorithm no longer
   results in truncated generated names.
+- Vertical centering of text within HTML-like table cells has been improved.
 
 ### Fixed
 
