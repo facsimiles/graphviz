@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to control the Python installation in use from the top level.
 - The Autotools build system explicitly links against libglu libraries when
   linking against libglut.
+- Corrected time formatting in verbose info/debug messages (enabled by -v).
+  Previously, minutes was missing, showing HH:SS instead of HH:MM:SS.
 
 ## [14.1.2] – 2026-01-24
 
