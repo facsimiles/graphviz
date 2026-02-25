@@ -57,6 +57,9 @@ libXrender-devel \
 tk-devel \
 expat-devel \
 gmp-devel \
+dejavu-sans-fonts \
+dejavu-sans-mono-fonts \
+dejavu-serif-fonts \
 # create a Python virtual environment
 && python3 -m venv /opt/virtualenv \
 # install Python dependencies within the virtual environment
