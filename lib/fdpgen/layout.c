@@ -76,31 +76,30 @@ typedef struct {
  * node's connected component.
  * Also, entire layout is translated to origin.
  */
-static void finalCC(graph_t *g, size_t c_cnt, graph_t **cc, pointf *pts,
+static void finalCC(graph_t *g, const graphs_t *cc, pointf *pts,
                     graph_t *rg, layout_info* infop) {
     attrsym_t * G_width = infop->G_width;
     attrsym_t * G_height = infop->G_height;
-    graph_t *cg;
     boxf bb;
     boxf bbf;
     pointf pt;
     int margin;
-    graph_t **cp = cc;
     pointf *pp = pts;
     int isRoot = rg == infop->rootg;
     int isEmpty = 0;
 
     /* compute graph bounding box in points */
-    if (c_cnt) {
-	cg = *cp++;
+    if (!LIST_IS_EMPTY(cc)) {
+	graph_t *cg = LIST_GET(cc, 0);
 	bb = GD_bb(cg);
-	if (c_cnt > 1) {
+	if (LIST_SIZE(cc) > 1) {
 	    pt = *pp++;
 	    bb.LL.x += pt.x;
 	    bb.LL.y += pt.y;
 	    bb.UR.x += pt.x;
 	    bb.UR.y += pt.y;
-	    while ((cg = *cp++)) {
+	    for (size_t i = 1; i < LIST_SIZE(cc); ++i) {
+		cg = LIST_GET(cc, i);
 		boxf b = GD_bb(cg);
 		pt = *pp++;
 		b.LL.x += pt.x;
@@ -143,10 +142,10 @@ static void finalCC(graph_t *g, size_t c_cnt, graph_t **cc, pointf *pts,
     bb.UR.y += pt.y + margin + GD_border(rg)[TOP_IX].y;
 
     /* translate nodes */
-    if (c_cnt) {
-	cp = cc;
+    if (!LIST_IS_EMPTY(cc)) {
 	pp = pts;
-	while ((cg = *cp++)) {
+	for (size_t i = 0; i < LIST_SIZE(cc); ++i) {
+	    graph_t *const cg = LIST_GET(cc, i);
 	    pointf p;
 	    node_t *n;
 	    pointf del;
@@ -201,14 +200,13 @@ static void freeGData(graph_t * g)
     free(GD_alg(g));
 }
 
-static void freeDerivedGraph(graph_t * g, graph_t ** cc)
-{
-    graph_t *cg;
+static void freeDerivedGraph(graph_t *g, const graphs_t *cc) {
     node_t *dn;
     node_t *dnxt;
     edge_t *e;
 
-    while ((cg = *cc++)) {
+    for (size_t i = 0; i < LIST_SIZE(cc); ++i) {
+	graph_t *const cg = LIST_GET(cc, i);
 	freeGData(cg);
 	agdelrec(cg, "Agraphinfo_t");
     }
@@ -796,17 +794,15 @@ setClustNodes(graph_t* root)
  * 
  * Add edges per components to get better packing, rather than
  * wait until the end.
+ *
+ * @param counter [in,out] State used for constructing distinct subgraph names
  */
-static int layout(graph_t * g, layout_info * infop)
-{
+static int layout(graph_t *g, layout_info* infop, size_t *counter) {
     pointf *pts = NULL;
     graph_t *dg;
     node_t *dn;
     node_t *n;
-    graph_t *cg;
     graph_t *sg;
-    graph_t **cc;
-    graph_t **pg;
     int pinned;
     xparams xpms;
 
@@ -827,10 +823,10 @@ static int layout(graph_t * g, layout_info * infop)
     if (dg == NULL) {
 	return -1;
     }
-    size_t c_cnt;
-    cc = pg = findCComp(dg, &c_cnt, &pinned);
+    graphs_t cc = findCComp(dg, &pinned, counter);
 
-    while ((cg = *pg++)) {
+    for (size_t i = 0; i < LIST_SIZE(&cc); ++i) {
+	graph_t *const cg = LIST_GET(&cc, i);
 	node_t* nxtnode;
 	fdp_tLayout(cg, &xpms);
 	for (n = agfstnode(cg); n; n = nxtnode) {
@@ -838,7 +834,7 @@ static int layout(graph_t * g, layout_info * infop)
 	    if (ND_clust(n)) {
 		pointf pt;
 		sg = expandCluster(n, cg);	/* attach ports to sg */
-		int r = layout(sg, infop);
+		int r = layout(sg, infop, counter);
 		if (r != 0) {
                     return r;
 		}
@@ -870,24 +866,24 @@ static int layout(graph_t * g, layout_info * infop)
      *   Place cluster edges separately, after layout.
      * How to combine parts, especially with disparate components?
      */
-    if (c_cnt > 1) {
+    if (LIST_SIZE(&cc) > 1) {
 	bool *bp;
 	if (pinned) {
-	    bp = gv_calloc(c_cnt, sizeof(bool));
+	    bp = gv_calloc(LIST_SIZE(&cc), sizeof(bool));
 	    bp[0] = true;
 	} else
 	    bp = NULL;
 	infop->pack.fixed = bp;
-	pts = putGraphs(c_cnt, cc, NULL, &infop->pack);
+	pts = putGraphs(LIST_SIZE(&cc), LIST_FRONT(&cc), NULL, &infop->pack);
 	free(bp);
     } else {
 	pts = NULL;
-	if (c_cnt == 1)
-	    compute_bb(cc[0]);
+	if (LIST_SIZE(&cc) == 1)
+	    compute_bb(LIST_GET(&cc, 0));
     }
 
     /* set bounding box of dg and reposition nodes */
-    finalCC(dg, c_cnt, cc, pts, g, infop);
+    finalCC(dg, &cc, pts, g, infop);
     free (pts);
 
     /* record positions from derived graph to input graph */
@@ -911,8 +907,8 @@ static int layout(graph_t * g, layout_info * infop)
 #endif
 
     /* clean up temp graphs */
-    freeDerivedGraph(dg, cc);
-    free(cc);
+    freeDerivedGraph(dg, &cc);
+    LIST_FREE(&cc);
     if (Verbose) {
 #ifdef DEBUG
 	prIndent ();
@@ -1020,7 +1016,7 @@ static int fdpLayout(graph_t * g)
     layout_info info;
 
     init_info(g, &info);
-    int r = layout(g, &info);
+    int r = layout(g, &info, &(size_t){0});
     if (r != 0) {
         return r;
     }
