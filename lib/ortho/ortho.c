@@ -41,7 +41,7 @@
 #include <util/unused.h>
 
 typedef struct {
-    int d;
+    double d;
     Agedge_t* e;
 } epair_t;
 
@@ -1121,12 +1121,10 @@ static void attachOrthoEdges(maze *mp, size_t n_edges, route* route_list,
     LIST_FREE(&ispline);
 }
 
-static int
-edgeLen (Agedge_t* e)
-{
+static double edgeLen(Agedge_t *e) {
     pointf p = ND_coord(agtail(e));
     pointf q = ND_coord(aghead(e));
-    return (int)DIST2(p,q);
+    return DIST2(p, q);
 }
 
 static int edgecmp(const void *x, const void *y) {

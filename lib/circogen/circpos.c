@@ -48,10 +48,9 @@
  *    alpha = theta + M_PI/2 - phi - arcsin((l/R)*(cos phi))
  */
 static double getRotation(block_t *sn, double x, double y, double theta) {
-    double mindist2;
     Agraph_t *subg;
     Agnode_t *n, *closest_node, *neighbor;
-    double len2, newX, newY;
+    double newX, newY;
 
     subg = sn->sub_graph;
 
@@ -74,7 +73,7 @@ static double getRotation(block_t *sn, double x, double y, double theta) {
     neighbor = CHILD(sn);
     newX = ND_pos(neighbor)[0] + x;
     newY = ND_pos(neighbor)[1] + y;
-    mindist2 = LEN2(newX, newY);    /* save sqrts by using sqr of dist to find min */
+    double mindist2 = hypot(newX, newY);
     closest_node = neighbor;
 
     for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
@@ -84,7 +83,7 @@ static double getRotation(block_t *sn, double x, double y, double theta) {
 	newX = ND_pos(n)[0] + x;
 	newY = ND_pos(n)[1] + y;
 
-	len2 = LEN2(newX, newY);
+	const double len2 = hypot(newX, newY);
 	if (len2 < mindist2) {
 	    mindist2 = len2;
 	    closest_node = n;
