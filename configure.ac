@@ -278,6 +278,48 @@ AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17(noext,mandatory)
 AC_PROG_OBJC
 
+# enable C11 threads, C++ threads, or POSIX threads
+AC_ARG_WITH(threads,
+  [AS_HELP_STRING([--with-threads=no|c11|cxx|posix],
+    [library used for multi-threading])],[],[
+    with_threads=no
+  ])
+if test "$with_threads" = "no"; then
+  use_threads="No"
+  GRAPHVIZ_THREADS=0
+else
+  if test "$with_threads" = "c11"; then
+    use_threads="Yes (C11 threads)"
+    GRAPHVIZ_THREADS=99 # ASCII 'c'
+  else
+    if test "$with_threads" = "cxx"; then
+      use_threads="Yes (C++11 threads)"
+      GRAPHVIZ_THREADS=43 # ASCII '+'
+    else
+      if test "$with_threads" = "posix"; then
+        use_threads="Yes (POSIX threads)"
+        GRAPHVIZ_THREADS=112 # ASCII 'p'
+        AX_PTHREAD([
+          LIBS="$PTHREAD_LIBS $LIBS"
+          CFLAGS+=" $PTHREAD_CFLAGS"
+          CXXFLAGS+=" $PTHREAD_CFLAGS"
+          CC="$PTHREAD_CC"
+          CXX="$PTHREAD_CXX"
+        ],[
+          AC_MSG_ERROR([failed to discover POSIX threads])
+        ])
+      else
+        AC_MSG_ERROR([invalid option to --with-threads])
+      fi
+    fi
+  fi
+fi
+AM_CONDITIONAL(WITH_THREADS_NO, [test "$with_threads" = "no"])
+AM_CONDITIONAL(WITH_THREADS_C11, [test "$with_threads" = "c11"])
+AM_CONDITIONAL(WITH_THREADS_CXX, [test "$with_threads" = "cxx"])
+AM_CONDITIONAL(WITH_THREADS_POSIX, [test "$with_threads" = "posix"])
+AC_SUBST([GRAPHVIZ_THREADS])
+
 dnl ===========================================================================
 dnl Set GCC compiler flags
 
@@ -2176,6 +2218,7 @@ echo "  gts:           $use_gts"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  ltdl:          $use_ltdl"
 echo "  ortho:         $use_ortho"
+echo "  threads:       $use_threads"
 echo "  sfdp:          $use_sfdp"
 echo "  swig:          $use_swig ( $SWIG_VERSION )"
 echo "  shared:        $use_shared"

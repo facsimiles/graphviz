@@ -32,6 +32,12 @@ gvmap_LDADD = \
 	$(top_builddir)/lib/util/libutil_C.la \
 	$(GTS_LIBS) -lm
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_gvmap_SOURCES = fake.cxx
+endif
+
 cluster_LDADD = \
 	$(top_builddir)/lib/sfdpgen/libsfdpgen_C.la \
 	$(top_builddir)/lib/edgepaint/libedgepaint_C.la \
@@ -42,6 +48,12 @@ cluster_LDADD = \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/util/libutil_C.la \
 	$(GTS_LIBS) -lm
+
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_cluster_SOURCES = fake.cxx
+endif
 
 gvmap.sh :
 
