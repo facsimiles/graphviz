@@ -19,7 +19,9 @@
 @interface GVWindowController : NSWindowController <NSUserInterfaceValidations, PDFViewDelegate>
 {
 	IBOutlet PDFView *documentView;
+	IBOutlet NSToolbarItem *attributesToolbarItem;
 }
+@property (assign) IBOutlet NSSearchField *searchField;
 
 - (id)init;
 - (void)setDocument: (NSDocument *)document;
@@ -34,6 +36,8 @@
 - (IBAction)zoomToFitView:(id)sender;
 
 - (IBAction)printGraphDocument:(id)sender;
+
+- (void)performTextFinderAction:(id)sender;
 
 - (void)PDFViewWillClickOnLink:(PDFView *)sender withURL:(NSURL *)URL;
 
