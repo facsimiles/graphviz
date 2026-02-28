@@ -1885,7 +1885,6 @@ int make_html_label(void *obj, textlabel_t * lp)
 	if (rv == 3) {
 	    // fatal error; `parseHTML` will have printed detail of it
 	    lp->html = false;
-	    lp->text = gv_strdup(lp->text);
 	    return rv;
 	}
 	/* Parse of label failed; revert to simple text label */
