@@ -27,7 +27,6 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <string.h>
 #include <ortho/maze.h>
 #include <ortho/fPQ.h>
 #include <ortho/ortho.h>
@@ -100,6 +99,7 @@ static pointf sidePt(const snode ptr, const cell* cp) {
 static void
 setSeg (segment* sp, bool dir, double fix, double b1, double b2, int l1, int l2)
 {
+    *sp = (segment){0};
     sp->isVert = dir;
     sp->comm_coord = fix;
     if (b1 < b2) {
@@ -138,9 +138,6 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 
     LIST(segment) rte = {0};
 
-    seg.prev = seg.next = 0;
-    memset(&seg.ind_no, 0, sizeof(seg.ind_no));
-    memset(&seg.track_no, 0, sizeof(seg.track_no));
     ptr = prev = N_DAD(fst);
     next = N_DAD(ptr);
     if (IsNode(ptr->cells[0]))
