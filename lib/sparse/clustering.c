@@ -24,7 +24,6 @@ static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_init(Sp
   assert(A->type == MATRIX_TYPE_REAL);
   assert(SparseMatrix_is_symmetric(A, false));
 
-  if (!A) return NULL;
   assert(A->m == n);
   Multilevel_Modularity_Clustering grid = gv_alloc(sizeof(struct Multilevel_Modularity_Clustering_struct));
   grid->level = level;
