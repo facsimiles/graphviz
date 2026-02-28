@@ -702,31 +702,27 @@ static segment *next_seg(const segment seg, int dir) {
 /* propagate_prec propagates the precedence relationship along 
  * a series of parallel segments on 2 edges
  */
-static int
-propagate_prec(segment* seg, int prec, int hops, int dir)
-{
+static int propagate_prec(const segment seg, int prec, int hops, int dir) {
     int x;
     int ans=prec;
-    segment* next;
-    segment* current;
 
-    current = seg;
+    segment current = seg;
     for(x=1;x<=hops;x++) {
-	next = next_seg(*current, dir);
-	if(!current->isVert) {
-	    if(next->comm_coord==current->p.p1) {
-		if(current->l1==B_UP) ans *= -1;
+	const segment next = *next_seg(current, dir);
+	if (!current.isVert) {
+	    if (next.comm_coord == current.p.p1) {
+		if (current.l1 == B_UP) ans *= -1;
 	    }
 	    else {
-		if(current->l2==B_DOWN) ans *= -1;
+		if (current.l2 == B_DOWN) ans *= -1;
 	    }
 	}
 	else {
-	    if(next->comm_coord==current->p.p1) {
-		if(current->l1==B_RIGHT) ans *= -1;
+	    if (next.comm_coord == current.p.p1) {
+		if (current.l1 == B_RIGHT) ans *= -1;
 	    }
 	    else {
-		if(current->l2==B_LEFT) ans *= -1;
+		if (current.l2 == B_LEFT) ans *= -1;
 	    }
 	}
 	current = next;
@@ -769,7 +765,7 @@ decide_point(pair *ret, segment* si, segment* sj, int dir1, int dir2)
 	if (temp == -2) {
 	    return -1;
 	}
-	prec = propagate_prec(np1, temp, ans+1, 1-dir1);
+	prec = propagate_prec(*np1, temp, ans+1, 1-dir1);
     }
 		
     ret->a = ans;
