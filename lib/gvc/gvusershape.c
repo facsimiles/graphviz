@@ -331,10 +331,10 @@ static void svg_size(usershape_t *us) {
     // `height` and/or `width`, let `viewBox` determine the dimensions
     if (soft_height.has_value && soft_width.has_value) {
       if (!hard_height.has_value) {
-        OPTIONAL_SET(&hard_height, soft_height.value);
+        OPTIONAL_SET(&hard_height, OPTIONAL_VALUE(soft_height));
       }
       if (!hard_width.has_value) {
-        OPTIONAL_SET(&hard_width, soft_width.value);
+        OPTIONAL_SET(&hard_width, OPTIONAL_VALUE(soft_width));
       }
       break;
     }
