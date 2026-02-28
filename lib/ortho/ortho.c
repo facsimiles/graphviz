@@ -541,21 +541,19 @@ eqEndSeg (bend S1l2, bend S2l2, bend T1, bend T2)
 	return -1;
 }
 
-static int
-overlapSeg (segment* S1, segment* S2, bend T1, bend T2)
-{
-	if(S1->p.p2<S2->p.p2) {
-		if (S1->l2 == T1 && S2->l1 == T2) return -1;
-		if (S1->l2 == T2 && S2->l1 == T1) return 1;
+static int overlapSeg(const segment S1, const segment S2, bend T1, bend T2) {
+	if (S1.p.p2 < S2.p.p2) {
+		if (S1.l2 == T1 && S2.l1 == T2) return -1;
+		if (S1.l2 == T2 && S2.l1 == T1) return 1;
 		return 0;
 	}
-	if (S1->p.p2 > S2->p.p2) {
-		if (S2->l1 == T2 && S2->l2 == T2) return -1;
-		if (S2->l1 == T1 && S2->l2 == T1) return 1;
+	if (S1.p.p2 > S2.p.p2) {
+		if (S2.l1 == T2 && S2.l2 == T2) return -1;
+		if (S2.l1 == T1 && S2.l2 == T1) return 1;
 		return 0;
 	}
-	if (S2->l1 == T2) return eqEndSeg (S1->l2, S2->l2, T1, T2);
-	return -1 * eqEndSeg(S2->l2, S1->l2, T1, T2);
+	if (S2.l1 == T2) return eqEndSeg(S1.l2, S2.l2, T1, T2);
+	return -1 * eqEndSeg(S2.l2, S1.l2, T1, T2);
 }
 
 static int
@@ -575,10 +573,10 @@ segCmp (segment* S1, segment* S2, bend T1, bend T2)
     if (S1->p.p2 < S2->p.p1 || S1->p.p1 > S2->p.p2) return 0;
 	/* left endpoint of S2 inside S1 */
     if(S1->p.p1<S2->p.p1&&S2->p.p1<S1->p.p2)
-	return overlapSeg (S1, S2, T1, T2);
+	return overlapSeg(*S1, *S2, T1, T2);
 	/* left endpoint of S1 inside S2 */
     if (S2->p.p1 < S1->p.p1 && S1->p.p1 < S2->p.p2)
-	return -1*overlapSeg (S2, S1, T1, T2);
+	return -1 * overlapSeg(*S2, *S1, T1, T2);
     if (S1->p.p1 == S2->p.p1) {
 	if (S1->p.p2 < S2->p.p2) {
 	    if(S1->l2==T1)
