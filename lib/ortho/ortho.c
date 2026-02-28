@@ -27,6 +27,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 #include <ortho/maze.h>
 #include <ortho/fPQ.h>
 #include <ortho/ortho.h>
@@ -38,6 +39,7 @@
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/optional.h>
 #include <util/unused.h>
 
 typedef struct {
@@ -137,6 +139,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
     LIST(segment) rte = {0};
 
     seg.prev = seg.next = 0;
+    memset(&seg.ind_no, 0, sizeof(seg.ind_no));
     ptr = prev = N_DAD(fst);
     next = N_DAD(ptr);
     if (IsNode(ptr->cells[0]))
@@ -376,7 +379,7 @@ extractVChans (maze* mp)
 static void
 insertChan (channel* chan, segment* seg)
 {
-    seg->ind_no = LIST_SIZE(&chan->seg_list);
+    OPTIONAL_SET(&seg->ind_no, LIST_SIZE(&chan->seg_list));
     LIST_APPEND(&chan->seg_list, seg);
 }
 
@@ -814,7 +817,8 @@ set_parallel_edges (segment* seg1, segment* seg2, int dir1, int dir2, int hops,
 	chan = chanSearch(mp->vchans, seg1);
     else
 	chan = chanSearch(mp->hchans, seg1);
-    insert_edge(chan->G, seg1->ind_no, seg2->ind_no);
+    insert_edge(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+                OPTIONAL_VALUE(seg2->ind_no));
 
     for (x=1;x<=hops;x++) {
 	prev1 = next_seg(seg1, dir1);
@@ -823,30 +827,42 @@ set_parallel_edges (segment* seg1, segment* seg2, int dir1, int dir2, int hops,
 	    nchan = chanSearch(mp->vchans, prev1);
 	    if(prev1->comm_coord==seg1->p.p1) {
 		if(seg1->l1==B_UP) {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		    else
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		}
 		else {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		    else
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		}
 	    }
 	    else {
 		if(seg1->l2==B_UP) {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G,prev1->ind_no, prev2->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		    else
-			insert_edge(nchan->G,prev2->ind_no, prev1->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		}
 		else {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		    else
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		}
 	    }
 	}
@@ -854,30 +870,42 @@ set_parallel_edges (segment* seg1, segment* seg2, int dir1, int dir2, int hops,
 	    nchan = chanSearch(mp->hchans, prev1);
 	    if(prev1->comm_coord==seg1->p.p1) {
 		if(seg1->l1==B_LEFT) {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		    else
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		}
 		else {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		    else
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		}
 	    }
 	    else {
 		if(seg1->l2==B_LEFT) {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		    else
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		}
 		else {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		    else
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		}
 	    }
 	}
@@ -906,7 +934,8 @@ removeEdge(segment* seg1, segment* seg2, int dir, maze* mp)
 	chan = chanSearch(mp->vchans, ptr1);
     else
 	chan = chanSearch(mp->hchans, ptr1);
-    remove_redge (chan->G, ptr1->ind_no, ptr2->ind_no);
+    remove_redge(chan->G, OPTIONAL_VALUE(ptr1->ind_no),
+                 OPTIONAL_VALUE(ptr2->ind_no));
 }
 
 static int
