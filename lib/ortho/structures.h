@@ -41,7 +41,7 @@ typedef struct segment {
   paird p;      /* end points */
   bend l1, l2; 
   OPTIONAL(size_t) ind_no; ///< index number of this segment in its channel
-  int track_no;    /* track number assigned in the channel */
+  OPTIONAL(int) track_no;  ///< track number assigned in the channel
   struct segment* prev;
   struct segment* next;
 } segment;

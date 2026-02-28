@@ -140,6 +140,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 
     seg.prev = seg.next = 0;
     memset(&seg.ind_no, 0, sizeof(seg.ind_no));
+    memset(&seg.track_no, 0, sizeof(seg.track_no));
     ptr = prev = N_DAD(fst);
     next = N_DAD(ptr);
     if (IsNode(ptr->cells[0]))
@@ -518,7 +519,8 @@ assignTrackNo (Dt_t* chans)
 #endif
 		top_sort (cp->G);
 		for (size_t k = 0; k < LIST_SIZE(&cp->seg_list); ++k)
-		    LIST_GET(&cp->seg_list, k)->track_no = cp->G->vertices[k].topsort_order+1;
+		    OPTIONAL_SET(&LIST_GET(&cp->seg_list, k)->track_no,
+		                 cp->G->vertices[k].topsort_order + 1);
 	    }
    	}
     }
@@ -1079,14 +1081,16 @@ static double
 vtrack (segment* seg, maze* m)
 {
   channel* chp = chanSearch(m->vchans, seg);
-  const double f = seg->track_no / ((double)LIST_SIZE(&chp->seg_list) + 1);
+  const double f =
+    OPTIONAL_VALUE(seg->track_no) / ((double)LIST_SIZE(&chp->seg_list) + 1);
   const pointf interp = interpolate_pointf(f, chp->cp->bb.LL, chp->cp->bb.UR);
   return interp.x;
 }
 
 static double htrack(segment *seg, maze *m) {
   channel* chp = chanSearch(m->hchans, seg);
-  double f = 1.0 - seg->track_no / ((double)LIST_SIZE(&chp->seg_list) + 1);
+  double f = 1.0 - OPTIONAL_VALUE(seg->track_no) /
+    ((double)LIST_SIZE(&chp->seg_list) + 1);
   double lo = chp->cp->bb.LL.y;
   double hi = chp->cp->bb.UR.y;
   return round(lo + f * (hi - lo));
