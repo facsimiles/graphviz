@@ -566,67 +566,65 @@ ellSeg (bend S1l1, bend S1l2, bend T)
     return 1;
 }
 
-static int
-segCmp (segment* S1, segment* S2, bend T1, bend T2)
-{
+static int segCmp(const segment S1, const segment S2, bend T1, bend T2) {
 	/* no overlap */
-    if (S1->p.p2 < S2->p.p1 || S1->p.p1 > S2->p.p2) return 0;
+    if (S1.p.p2 < S2.p.p1 || S1.p.p1 > S2.p.p2) return 0;
 	/* left endpoint of S2 inside S1 */
-    if(S1->p.p1<S2->p.p1&&S2->p.p1<S1->p.p2)
-	return overlapSeg(*S1, *S2, T1, T2);
+    if (S1.p.p1 < S2.p.p1 && S2.p.p1 < S1.p.p2)
+	return overlapSeg(S1, S2, T1, T2);
 	/* left endpoint of S1 inside S2 */
-    if (S2->p.p1 < S1->p.p1 && S1->p.p1 < S2->p.p2)
-	return -1 * overlapSeg(*S2, *S1, T1, T2);
-    if (S1->p.p1 == S2->p.p1) {
-	if (S1->p.p2 < S2->p.p2) {
-	    if(S1->l2==T1)
-		return eqEndSeg (S2->l1, S1->l1, T1, T2);
-	    return -1 * eqEndSeg(S2->l1, S1->l1, T1, T2);
+    if (S2.p.p1 < S1.p.p1 && S1.p.p1 < S2.p.p2)
+	return -1 * overlapSeg(S2, S1, T1, T2);
+    if (S1.p.p1 == S2.p.p1) {
+	if (S1.p.p2 < S2.p.p2) {
+	    if (S1.l2 == T1)
+		return eqEndSeg(S2.l1, S1.l1, T1, T2);
+	    return -1 * eqEndSeg(S2.l1, S1.l1, T1, T2);
 	}
-	if (S1->p.p2 > S2->p.p2) {
-	    if (S2->l2 == T2)
-		return eqEndSeg(S1->l1, S2->l1, T1, T2);
-	    return -1 * eqEndSeg(S1->l1, S2->l1, T1, T2);
+	if (S1.p.p2 > S2.p.p2) {
+	    if (S2.l2 == T2)
+		return eqEndSeg(S1.l1, S2.l1, T1, T2);
+	    return -1 * eqEndSeg(S1.l1, S2.l1, T1, T2);
 	}
-	if (S1->l1 == S2->l1 && S1->l2 == S2->l2)
+	if (S1.l1 == S2.l1 && S1.l2 == S2.l2)
 	    return 0;
-	if (S2->l1 == S2->l2) {
-	    if (S2->l1 == T1) return 1;
-	    if (S2->l1 == T2) return -1;
-	    if (S1->l1 != T1 && S1->l2 != T1) return 1;
-	    if (S1->l1 != T2 && S1->l2 != T2) return -1;
-	    return 0;
-	}
-	if (S2->l1 == T1 && S2->l2 == T2) {
-	    if (S1->l1 != T1 && S1->l2 == T2) return 1;
-	    if (S1->l1 == T1 && S1->l2 != T2) return -1;
+	if (S2.l1 == S2.l2) {
+	    if (S2.l1 == T1) return 1;
+	    if (S2.l1 == T2) return -1;
+	    if (S1.l1 != T1 && S1.l2 != T1) return 1;
+	    if (S1.l1 != T2 && S1.l2 != T2) return -1;
 	    return 0;
 	}
-	if (S2->l2 == T1 && S2->l1 == T2) {
-	    if (S1->l2 != T1 && S1->l1 == T2) return 1;
-	    if (S1->l2 == T1 && S1->l1 != T2) return -1;
+	if (S2.l1 == T1 && S2.l2 == T2) {
+	    if (S1.l1 != T1 && S1.l2 == T2) return 1;
+	    if (S1.l1 == T1 && S1.l2 != T2) return -1;
 	    return 0;
 	}
-	if (S2->l1 == B_NODE && S2->l2 == T1) {
-	    return ellSeg (S1->l1, S1->l2, T1);
+	if (S2.l2 == T1 && S2.l1 == T2) {
+	    if (S1.l2 != T1 && S1.l1 == T2) return 1;
+	    if (S1.l2 == T1 && S1.l1 != T2) return -1;
+	    return 0;
 	}
-	if (S2->l1 == B_NODE && S2->l2 == T2) {
-	    return -1*ellSeg (S1->l1, S1->l2, T2);
+	if (S2.l1 == B_NODE && S2.l2 == T1) {
+	    return ellSeg(S1.l1, S1.l2, T1);
 	}
-	if (S2->l1 == T1 && S2->l2 == B_NODE) {
-	    return ellSeg (S1->l2, S1->l1, T1);
+	if (S2.l1 == B_NODE && S2.l2 == T2) {
+	    return -1 * ellSeg(S1.l1, S1.l2, T2);
 	}
-	/* ((S2->l1==T2)&&(S2->l2==B_NODE)) */
-	return -1 * ellSeg(S1->l2, S1->l1, T2);
+	if (S2.l1 == T1 && S2.l2 == B_NODE) {
+	    return ellSeg(S1.l2, S1.l1, T1);
+	}
+	// S2.l1 == T2 && S2.l2 == B_NODE
+	return -1 * ellSeg(S1.l2, S1.l1, T2);
     }
-    if (S1->p.p2 == S2->p.p1) {
-	if (S1->l2 == S2->l1) return 0;
-	if (S1->l2 == T2) return 1;
+    if (S1.p.p2 == S2.p.p1) {
+	if (S1.l2 == S2.l1) return 0;
+	if (S1.l2 == T2) return 1;
 	return -1;
     }
-    /* S1->p.p1==S2->p.p2 */
-    if (S1->l1 == S2->l2) return 0;
-    if (S1->l1 == T2) return 1;
+    // S1.p.p1 == S2.p.p2
+    if (S1.l1 == S2.l2) return 0;
+    if (S1.l1 == T2) return 1;
     return -1;
 }
 
@@ -653,9 +651,9 @@ seg_cmp(segment* S1, segment* S2)
 	return -2;
     }
     if(S1->isVert)
-	return segCmp (S1, S2, B_RIGHT, B_LEFT);
+	return segCmp(*S1, *S2, B_RIGHT, B_LEFT);
     else
-	return segCmp (S1, S2, B_DOWN, B_UP);
+	return segCmp(*S1, *S2, B_DOWN, B_UP);
 }
 
 static int
