@@ -643,17 +643,14 @@ static int segCmp(const segment S1, const segment S2, bend T1, bend T2) {
  * though, I'm not sure what assumptions are made in handling parallel
  * segments, so we leave the code alone for the time being.
  */
-static int
-seg_cmp(segment* S1, segment* S2)		
-{
-    if(S1->isVert!=S2->isVert||S1->comm_coord!=S2->comm_coord) {
+static int seg_cmp(const segment S1, const segment S2) {
+    if (S1.isVert != S2.isVert || S1.comm_coord != S2.comm_coord) {
 	agerrorf("incomparable segments !! -- Aborting\n");
 	return -2;
     }
-    if(S1->isVert)
-	return segCmp(*S1, *S2, B_RIGHT, B_LEFT);
-    else
-	return segCmp(*S1, *S2, B_DOWN, B_UP);
+    if (S1.isVert)
+	return segCmp(S1, S2, B_RIGHT, B_LEFT);
+    return segCmp(S1, S2, B_DOWN, B_UP);
 }
 
 static int
@@ -665,7 +662,7 @@ add_edges_in_G(channel* cp)
 
     for (size_t x = 0; x + 1 < size; ++x) {
 	for (size_t y = x + 1; y < size; ++y) {
-	    const int cmp = seg_cmp(LIST_GET(seg_list, x), LIST_GET(seg_list, y));
+	    const int cmp = seg_cmp(*LIST_GET(seg_list, x), *LIST_GET(seg_list, y));
 	    if (cmp == -2) {
 		return -1;
 	    } else if (cmp > 0) {
@@ -772,7 +769,7 @@ decide_point(pair *ret, segment* si, segment* sj, int dir1, int dir2)
     else if (!np2)
 	assert(0); /* FIXME */
     else {
-	temp = seg_cmp(np1, np2);
+	temp = seg_cmp(*np1, *np2);
 	if (temp == -2) {
 	    return -1;
 	}
