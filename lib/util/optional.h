@@ -22,12 +22,12 @@
 /// value while forgetting to set the `has_value` member.
 ///
 /// @param me The optional whose value to set
-/// @param val The value to assign
-#define OPTIONAL_SET(me, val)                                                  \
+/// @param value The value to assign
+#define OPTIONAL_SET(me, value)                                                \
   do {                                                                         \
     assert((me) != NULL);                                                      \
     (me)->has_value = true;                                                    \
-    (me)->value_ = (val);                                                      \
+    (me)->value_ = (value);                                                    \
   } while (0)
 
 /// get the value of an optional
