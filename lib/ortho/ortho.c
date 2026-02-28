@@ -743,18 +743,16 @@ static bool is_parallel(const segment s1, const segment s2) {
  * puts into prec the appropriate dependency (follows same convention as
  * seg_cmp)
  */
-static int
-decide_point(pair *ret, segment* si, segment* sj, int dir1, int dir2)
-{
+static int decide_point(pair *ret, segment si, segment sj, int dir1, int dir2) {
     int prec = 0, ans = 0, temp;
     segment* np1;
     segment *np2 = NULL;
     
-    while ((np1 = next_seg(*si, dir1)) && (np2 = next_seg(*sj, dir2)) &&
+    while ((np1 = next_seg(si, dir1)) && (np2 = next_seg(sj, dir2)) &&
 	is_parallel(*np1, *np2)) {
 	ans++;
-	si = np1;
-	sj = np2;
+	si = *np1;
+	sj = *np2;
     }
     if (!np1)
 	prec = 0;
@@ -951,14 +949,14 @@ addPEdges (channel* cp, maze* mp)
 			    dir = 1;
 		    }
 
-		    if (decide_point(&p, LIST_GET(segs, i), LIST_GET(segs, j), 0, dir)
+		    if (decide_point(&p, *LIST_GET(segs, i), *LIST_GET(segs, j), 0, dir)
 		        != 0) {
 			return -1;
 		    }
 		    hops.a = p.a;
 		    prec1 = p.b;
-		    if (decide_point(&p, LIST_GET(segs, i), LIST_GET(segs, j), 1,
-		                     1 - dir) != 0) {
+		    if (decide_point(&p, *LIST_GET(segs, i), *LIST_GET(segs, j), 1, 1 - dir)
+		                     != 0) {
 			return -1;
 		    }
 		    hops.b = p.a;
