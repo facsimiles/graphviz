@@ -96,24 +96,24 @@ static pointf sidePt(const snode ptr, const cell* cp) {
  * p1 stores smaller value
  * Assume b1 != b2
  */
-static void
-setSeg (segment* sp, bool dir, double fix, double b1, double b2, int l1, int l2)
-{
-    *sp = (segment){0};
-    sp->isVert = dir;
-    sp->comm_coord = fix;
+static segment setSeg(bool dir, double fix, double b1, double b2, int l1,
+                      int l2) {
+    segment sp = {0};
+    sp.isVert = dir;
+    sp.comm_coord = fix;
     if (b1 < b2) {
-	sp->p.p1 = b1;
-	sp->p.p2 = b2;
-	sp->l1 = l1;
-	sp->l2 = l2;
+	sp.p.p1 = b1;
+	sp.p.p2 = b2;
+	sp.l1 = l1;
+	sp.l2 = l2;
     }
     else {
-	sp->p.p2 = b1;
-	sp->p.p1 = b2;
-	sp->l2 = l1;
-	sp->l1 = l2;
+	sp.p.p2 = b1;
+	sp.p.p1 = b2;
+	sp.l2 = l1;
+	sp.l1 = l2;
     }
+    return sp;
 }
 
 /* Convert route in shortest path graph to route
@@ -131,7 +131,6 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
     snode* prev;  /* node in shortest path just previous to next */
     cell* cp;
     cell* ncp;
-    segment seg;
     double fix, b1, b2;
     int l1, l2;
     pointf bp1, prevbp = {0.0,0.0};  /* bend points */
@@ -178,7 +177,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 		b1 = cp->bb.LL.y;
 		b2 = ncp->bb.LL.y;
 	    }
-	    setSeg (&seg, !ptr->isVert, fix, b1, b2, l1, l2);
+	    const segment seg = setSeg(!ptr->isVert, fix, b1, b2, l1, l2);
 	    LIST_APPEND(&rte, seg);
 	    cp = ncp;
 	    prevbp = bp1;
@@ -199,8 +198,8 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 		    b1 = cp->bb.LL.y;
 		    b2 = ncp->bb.LL.y;
 		}
-		setSeg (&seg, !next->isVert, fix, b1, b2, l1, l2);
-		LIST_APPEND(&rte, seg);
+		const segment s = setSeg(!next->isVert, fix, b1, b2, l1, l2);
+		LIST_APPEND(&rte, s);
 	    }
 	    ptr = next;
 	}
