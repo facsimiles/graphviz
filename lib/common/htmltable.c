@@ -1890,6 +1890,7 @@ int make_html_label(void *obj, textlabel_t * lp)
 	/* Parse of label failed; revert to simple text label */
 	agxbuf xb = {0};
 	lp->html = false;
+	free(lp->text);
 	lp->text = gv_strdup(nameOf(obj, &xb));
 	switch (lp->charset) {
 	case CHAR_LATIN1:
