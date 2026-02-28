@@ -752,14 +752,12 @@ propagate_prec(segment* seg, int prec, int hops, int dir)
     return ans;
 }
 
-static bool
-is_parallel(segment* s1, segment* s2)
-{
-    assert (s1->comm_coord==s2->comm_coord);
-    return s1->p.p1 == s2->p.p1 &&
-           s1->p.p2 == s2->p.p2 &&
-           s1->l1 == s2->l1 &&
-           s1->l2 == s2->l2;
+static bool is_parallel(const segment s1, const segment s2) {
+    assert(s1.comm_coord == s2.comm_coord);
+    return s1.p.p1 == s2.p.p1 &&
+           s1.p.p2 == s2.p.p2 &&
+           s1.l1 == s2.l1 &&
+           s1.l2 == s2.l2;
 }
 
 /* decide_point returns (through ret) the number of hops needed in the given
@@ -775,7 +773,7 @@ decide_point(pair *ret, segment* si, segment* sj, int dir1, int dir2)
     segment *np2 = NULL;
     
     while ((np1 = next_seg(si,dir1)) && (np2 = next_seg(sj,dir2)) &&
-	is_parallel(np1, np2)) {
+	is_parallel(*np1, *np2)) {
 	ans++;
 	si = np1;
 	sj = np2;
@@ -924,7 +922,7 @@ removeEdge(segment* seg1, segment* seg2, int dir, maze* mp)
 
     ptr1 = seg1;
     ptr2 = seg2;
-    while(is_parallel(ptr1, ptr2)) {
+    while (is_parallel(*ptr1, *ptr2)) {
 	ptr1 = next_seg(ptr1, 1);
 	ptr2 = next_seg(ptr2, dir);
     }
@@ -956,7 +954,7 @@ addPEdges (channel* cp, maze* mp)
     for(size_t i = 0; i + 1 < LIST_SIZE(&cp->seg_list); ++i) {
 	for(size_t j = i + 1; j < LIST_SIZE(&cp->seg_list); ++j) {
 	    if (!edge_exists(G,i,j) && !edge_exists(G,j,i)) {
-		if (is_parallel(LIST_GET(segs, i), LIST_GET(segs, j))) {
+		if (is_parallel(*LIST_GET(segs, i), *LIST_GET(segs, j))) {
 		/* get_directions */
 		    if (LIST_GET(segs, i)->prev == 0) {
 			if (LIST_GET(segs, j)->prev == 0)
