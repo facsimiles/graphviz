@@ -447,28 +447,21 @@ addNodeEdges (sgraph* sg, cell* cp, snode* np)
 #endif
 }
 
-static char* bendToStr (bend b)
-{
-  char* s = NULL;
+static const char *bendToStr(bend b) {
   switch (b) {
   case B_NODE :
-    s = "B_NODE";
-    break;
+    return "B_NODE";
   case B_UP :
-    s = "B_UP";
-    break;
+    return "B_UP";
   case B_LEFT :
-    s = "B_LEFT";
-    break;
+    return "B_LEFT";
   case B_DOWN :
-    s = "B_DOWN";
-    break;
+    return "B_DOWN";
   default:
     assert(b == B_RIGHT);
-    s = "B_RIGHT";
     break;
   }
-  return s;
+  return "B_RIGHT";
 }
 
 static void putSeg (FILE* fp, segment* seg)
