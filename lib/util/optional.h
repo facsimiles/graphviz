@@ -13,7 +13,7 @@
 #define OPTIONAL(type)                                                         \
   struct {                                                                     \
     bool has_value; /**< does this have a value? */                            \
-    type value;     /**< the value if `has_value` is true */                   \
+    type value_;    /**< the value if `has_value` is true */                   \
   }
 
 /// set the value of an optional
@@ -27,7 +27,7 @@
   do {                                                                         \
     assert((me) != NULL);                                                      \
     (me)->has_value = true;                                                    \
-    (me)->value = (val);                                                       \
+    (me)->value_ = (val);                                                      \
   } while (0)
 
 /// get the value of an optional
@@ -43,7 +43,7 @@
                               "value of an empty optional type\n",             \
                               __FILE__, __LINE__),                             \
                       abort())),                                               \
-   (me).value)
+   (me).value_)
 
 /// get the value of an optional or a given value if the optional is empty
 ///
@@ -51,4 +51,4 @@
 /// @param fallback The value to return if the optional is empty
 /// @return Value of the optional or `fallback` if it was empty
 #define OPTIONAL_VALUE_OR(me, fallback)                                        \
-  ((me).has_value ? (me).value : (fallback))
+  ((me).has_value ? (me).value_ : (fallback))
