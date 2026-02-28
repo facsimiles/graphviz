@@ -693,14 +693,10 @@ add_np_edges (Dt_t* chans)
     return 0;
 }
 
-static segment*
-next_seg(segment* seg, int dir)
-{
-    assert(seg);
+static segment *next_seg(const segment seg, int dir) {
     if (!dir)
-        return seg->prev;
-    else
-        return seg->next;
+        return seg.prev;
+    return seg.next;
 }
 
 /* propagate_prec propagates the precedence relationship along 
@@ -716,7 +712,7 @@ propagate_prec(segment* seg, int prec, int hops, int dir)
 
     current = seg;
     for(x=1;x<=hops;x++) {
-	next = next_seg(current, dir);
+	next = next_seg(*current, dir);
 	if(!current->isVert) {
 	    if(next->comm_coord==current->p.p1) {
 		if(current->l1==B_UP) ans *= -1;
@@ -758,7 +754,7 @@ decide_point(pair *ret, segment* si, segment* sj, int dir1, int dir2)
     segment* np1;
     segment *np2 = NULL;
     
-    while ((np1 = next_seg(si,dir1)) && (np2 = next_seg(sj,dir2)) &&
+    while ((np1 = next_seg(*si, dir1)) && (np2 = next_seg(*sj, dir2)) &&
 	is_parallel(*np1, *np2)) {
 	ans++;
 	si = np1;
@@ -803,8 +799,8 @@ set_parallel_edges (segment* seg1, segment* seg2, int dir1, int dir2, int hops,
                 OPTIONAL_VALUE(seg2->ind_no));
 
     for (x=1;x<=hops;x++) {
-	prev1 = next_seg(seg1, dir1);
-	prev2 = next_seg(seg2, dir2);
+	prev1 = next_seg(*seg1, dir1);
+	prev2 = next_seg(*seg2, dir2);
 	if(!seg1->isVert) {
 	    nchan = chanSearch(mp->vchans, prev1);
 	    if(prev1->comm_coord==seg1->p.p1) {
@@ -909,8 +905,8 @@ removeEdge(segment* seg1, segment* seg2, int dir, maze* mp)
     ptr1 = seg1;
     ptr2 = seg2;
     while (is_parallel(*ptr1, *ptr2)) {
-	ptr1 = next_seg(ptr1, 1);
-	ptr2 = next_seg(ptr2, dir);
+	ptr1 = next_seg(*ptr1, 1);
+	ptr2 = next_seg(*ptr2, dir);
     }
     if(ptr1->isVert)
 	chan = chanSearch(mp->vchans, ptr1);
