@@ -112,7 +112,7 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   }
 
   void *const base = realloc(list->base, capacity * item_size);
-  if (base == NULL) {
+  if (base == NULL && item_size > 0) {
     return ENOMEM;
   }
 
@@ -120,7 +120,9 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   {
     void *const new = INDEX_TO(base, list->capacity, item_size);
     const size_t new_bytes = (capacity - list->capacity) * item_size;
-    memset(new, 0, new_bytes);
+    if (new_bytes > 0) { // `new_bytes` can be 0 if `item_size == 0`
+      memset(new, 0, new_bytes);
+    }
 
     // poison the new (conceptually unallocated) memory
     ASAN_POISON(new, new_bytes);
@@ -145,7 +147,11 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
     void *const target = INDEX_TO(base, new_head, item_size);
     ASAN_UNPOISON(target, prefix * item_size);
     const void *const src = INDEX_TO(base, list->head, item_size);
-    memmove(target, src, prefix * item_size);
+    if (prefix * item_size > 0) {
+      // `target` and `src` can be null when `item_size == 0`, and `memmove`
+      // would then be Undefined Behavior
+      memmove(target, src, prefix * item_size);
+    }
     // (re-)poison new gap, slots [c, f] in example
     void *const gap_begin = INDEX_TO(base, list->size - prefix, item_size);
     ASAN_POISON(gap_begin, (list->capacity - list->size) * item_size);
@@ -192,7 +198,9 @@ bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
   const size_t new_slot = (list->head + list->size) % list->capacity;
   void *const slot = INDEX_TO(list, new_slot, item_size);
   ASAN_UNPOISON(slot, item_size);
-  memcpy(slot, item, item_size);
+  if (item_size > 0) {
+    memcpy(slot, item, item_size);
+  }
   ++list->size;
 
   return true;
@@ -208,7 +216,7 @@ size_t gv_list_find_(const list_t_ list, const void *needle, size_t item_size) {
   for (size_t i = 0; i < list.size; ++i) {
     const size_t slot = gv_list_get_(list, i);
     const void *candidate = INDEX_TO(&list, slot, item_size);
-    if (memcmp(needle, candidate, item_size) == 0) {
+    if (item_size == 0 || memcmp(needle, candidate, item_size) == 0) {
       return i;
     }
   }
@@ -226,7 +234,9 @@ void gv_list_remove_(list_t_ *list, size_t index, size_t item_size) {
     void *const dst = INDEX_TO(list, dst_slot, item_size);
     const size_t src_slot = gv_list_get_(*list, i);
     const void *const src = INDEX_TO(list, src_slot, item_size);
-    memcpy(dst, src, item_size);
+    if (item_size > 0) {
+      memcpy(dst, src, item_size);
+    }
   }
   const size_t truncated_slot = gv_list_get_(*list, list->size - 1);
   void *truncated = INDEX_TO(list, truncated_slot, item_size);
@@ -275,7 +285,9 @@ list_t_ gv_list_copy_(const list_t_ list, size_t item_size) {
     const void *const src = INDEX_TO(&list, slot, item_size);
     void *const dst = INDEX_TO(&ret, ret.size, item_size);
     assert(ret.size < ret.capacity);
-    memcpy(dst, src, item_size);
+    if (item_size > 0) {
+      memcpy(dst, src, item_size);
+    }
     ++ret.size;
   }
 
@@ -329,7 +341,7 @@ void gv_list_sort_(list_t_ *list, int (*cmp)(const void *, const void *),
 
   gv_list_sync_(list, item_size);
 
-  if (list->size) {
+  if (list->size > 0 && item_size > 0) {
     qsort(list->base, list->size, item_size, cmp);
   }
 }
@@ -384,7 +396,9 @@ void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size) {
   // find and pop the first slot
   const size_t slot = gv_list_get_(*list, 0);
   void *const to_pop = INDEX_TO(list, slot, item_size);
-  memcpy(into, to_pop, item_size);
+  if (item_size > 0) {
+    memcpy(into, to_pop, item_size);
+  }
   ASAN_POISON(to_pop, item_size);
   list->head = (list->head + 1) % list->capacity;
   --list->size;
@@ -398,7 +412,9 @@ void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   // find and pop last slot
   const size_t slot = gv_list_get_(*list, list->size - 1);
   void *const to_pop = INDEX_TO(list, slot, item_size);
-  memcpy(into, to_pop, item_size);
+  if (item_size > 0) {
+    memcpy(into, to_pop, item_size);
+  }
   ASAN_POISON(to_pop, item_size);
   --list->size;
 }
