@@ -38,6 +38,7 @@
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/optional.h>
 #include <util/unused.h>
 
 typedef struct {
@@ -95,23 +96,24 @@ static pointf sidePt(const snode ptr, const cell* cp) {
  * p1 stores smaller value
  * Assume b1 != b2
  */
-static void
-setSeg (segment* sp, bool dir, double fix, double b1, double b2, int l1, int l2)
-{
-    sp->isVert = dir;
-    sp->comm_coord = fix;
+static segment setSeg(bool dir, double fix, double b1, double b2, int l1,
+                      int l2) {
+    segment sp = {0};
+    sp.isVert = dir;
+    sp.comm_coord = fix;
     if (b1 < b2) {
-	sp->p.p1 = b1;
-	sp->p.p2 = b2;
-	sp->l1 = l1;
-	sp->l2 = l2;
+	sp.p.p1 = b1;
+	sp.p.p2 = b2;
+	sp.l1 = l1;
+	sp.l2 = l2;
     }
     else {
-	sp->p.p2 = b1;
-	sp->p.p1 = b2;
-	sp->l2 = l1;
-	sp->l1 = l2;
+	sp.p.p2 = b1;
+	sp.p.p1 = b2;
+	sp.l2 = l1;
+	sp.l1 = l2;
     }
+    return sp;
 }
 
 /* Convert route in shortest path graph to route
@@ -129,14 +131,12 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
     snode* prev;  /* node in shortest path just previous to next */
     cell* cp;
     cell* ncp;
-    segment seg;
     double fix, b1, b2;
     int l1, l2;
     pointf bp1, prevbp = {0.0,0.0};  /* bend points */
 
     LIST(segment) rte = {0};
 
-    seg.prev = seg.next = 0;
     ptr = prev = N_DAD(fst);
     next = N_DAD(ptr);
     if (IsNode(ptr->cells[0]))
@@ -177,7 +177,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 		b1 = cp->bb.LL.y;
 		b2 = ncp->bb.LL.y;
 	    }
-	    setSeg (&seg, !ptr->isVert, fix, b1, b2, l1, l2);
+	    const segment seg = setSeg(!ptr->isVert, fix, b1, b2, l1, l2);
 	    LIST_APPEND(&rte, seg);
 	    cp = ncp;
 	    prevbp = bp1;
@@ -198,8 +198,8 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
 		    b1 = cp->bb.LL.y;
 		    b2 = ncp->bb.LL.y;
 		}
-		setSeg (&seg, !next->isVert, fix, b1, b2, l1, l2);
-		LIST_APPEND(&rte, seg);
+		const segment s = setSeg(!next->isVert, fix, b1, b2, l1, l2);
+		LIST_APPEND(&rte, s);
 	    }
 	    ptr = next;
 	}
@@ -376,7 +376,7 @@ extractVChans (maze* mp)
 static void
 insertChan (channel* chan, segment* seg)
 {
-    seg->ind_no = LIST_SIZE(&chan->seg_list);
+    OPTIONAL_SET(&seg->ind_no, LIST_SIZE(&chan->seg_list));
     LIST_APPEND(&chan->seg_list, seg);
 }
 
@@ -447,28 +447,21 @@ addNodeEdges (sgraph* sg, cell* cp, snode* np)
 #endif
 }
 
-static char* bendToStr (bend b)
-{
-  char* s = NULL;
+static const char *bendToStr(bend b) {
   switch (b) {
   case B_NODE :
-    s = "B_NODE";
-    break;
+    return "B_NODE";
   case B_UP :
-    s = "B_UP";
-    break;
+    return "B_UP";
   case B_LEFT :
-    s = "B_LEFT";
-    break;
+    return "B_LEFT";
   case B_DOWN :
-    s = "B_DOWN";
-    break;
+    return "B_DOWN";
   default:
     assert(b == B_RIGHT);
-    s = "B_RIGHT";
     break;
   }
-  return s;
+  return "B_RIGHT";
 }
 
 static void putSeg (FILE* fp, segment* seg)
@@ -515,7 +508,8 @@ assignTrackNo (Dt_t* chans)
 #endif
 		top_sort (cp->G);
 		for (size_t k = 0; k < LIST_SIZE(&cp->seg_list); ++k)
-		    LIST_GET(&cp->seg_list, k)->track_no = cp->G->vertices[k].topsort_order+1;
+		    OPTIONAL_SET(&LIST_GET(&cp->seg_list, k)->track_no,
+		                 cp->G->vertices[k].topsort_order + 1);
 	    }
    	}
     }
@@ -547,21 +541,19 @@ eqEndSeg (bend S1l2, bend S2l2, bend T1, bend T2)
 	return -1;
 }
 
-static int
-overlapSeg (segment* S1, segment* S2, bend T1, bend T2)
-{
-	if(S1->p.p2<S2->p.p2) {
-		if (S1->l2 == T1 && S2->l1 == T2) return -1;
-		if (S1->l2 == T2 && S2->l1 == T1) return 1;
+static int overlapSeg(const segment S1, const segment S2, bend T1, bend T2) {
+	if (S1.p.p2 < S2.p.p2) {
+		if (S1.l2 == T1 && S2.l1 == T2) return -1;
+		if (S1.l2 == T2 && S2.l1 == T1) return 1;
 		return 0;
 	}
-	if (S1->p.p2 > S2->p.p2) {
-		if (S2->l1 == T2 && S2->l2 == T2) return -1;
-		if (S2->l1 == T1 && S2->l2 == T1) return 1;
+	if (S1.p.p2 > S2.p.p2) {
+		if (S2.l1 == T2 && S2.l2 == T2) return -1;
+		if (S2.l1 == T1 && S2.l2 == T1) return 1;
 		return 0;
 	}
-	if (S2->l1 == T2) return eqEndSeg (S1->l2, S2->l2, T1, T2);
-	return -1 * eqEndSeg(S2->l2, S1->l2, T1, T2);
+	if (S2.l1 == T2) return eqEndSeg(S1.l2, S2.l2, T1, T2);
+	return -1 * eqEndSeg(S2.l2, S1.l2, T1, T2);
 }
 
 static int
@@ -574,67 +566,65 @@ ellSeg (bend S1l1, bend S1l2, bend T)
     return 1;
 }
 
-static int
-segCmp (segment* S1, segment* S2, bend T1, bend T2)
-{
+static int segCmp(const segment S1, const segment S2, bend T1, bend T2) {
 	/* no overlap */
-    if (S1->p.p2 < S2->p.p1 || S1->p.p1 > S2->p.p2) return 0;
+    if (S1.p.p2 < S2.p.p1 || S1.p.p1 > S2.p.p2) return 0;
 	/* left endpoint of S2 inside S1 */
-    if(S1->p.p1<S2->p.p1&&S2->p.p1<S1->p.p2)
-	return overlapSeg (S1, S2, T1, T2);
+    if (S1.p.p1 < S2.p.p1 && S2.p.p1 < S1.p.p2)
+	return overlapSeg(S1, S2, T1, T2);
 	/* left endpoint of S1 inside S2 */
-    if (S2->p.p1 < S1->p.p1 && S1->p.p1 < S2->p.p2)
-	return -1*overlapSeg (S2, S1, T1, T2);
-    if (S1->p.p1 == S2->p.p1) {
-	if (S1->p.p2 < S2->p.p2) {
-	    if(S1->l2==T1)
-		return eqEndSeg (S2->l1, S1->l1, T1, T2);
-	    return -1 * eqEndSeg(S2->l1, S1->l1, T1, T2);
+    if (S2.p.p1 < S1.p.p1 && S1.p.p1 < S2.p.p2)
+	return -1 * overlapSeg(S2, S1, T1, T2);
+    if (S1.p.p1 == S2.p.p1) {
+	if (S1.p.p2 < S2.p.p2) {
+	    if (S1.l2 == T1)
+		return eqEndSeg(S2.l1, S1.l1, T1, T2);
+	    return -1 * eqEndSeg(S2.l1, S1.l1, T1, T2);
 	}
-	if (S1->p.p2 > S2->p.p2) {
-	    if (S2->l2 == T2)
-		return eqEndSeg(S1->l1, S2->l1, T1, T2);
-	    return -1 * eqEndSeg(S1->l1, S2->l1, T1, T2);
+	if (S1.p.p2 > S2.p.p2) {
+	    if (S2.l2 == T2)
+		return eqEndSeg(S1.l1, S2.l1, T1, T2);
+	    return -1 * eqEndSeg(S1.l1, S2.l1, T1, T2);
 	}
-	if (S1->l1 == S2->l1 && S1->l2 == S2->l2)
+	if (S1.l1 == S2.l1 && S1.l2 == S2.l2)
 	    return 0;
-	if (S2->l1 == S2->l2) {
-	    if (S2->l1 == T1) return 1;
-	    if (S2->l1 == T2) return -1;
-	    if (S1->l1 != T1 && S1->l2 != T1) return 1;
-	    if (S1->l1 != T2 && S1->l2 != T2) return -1;
-	    return 0;
-	}
-	if (S2->l1 == T1 && S2->l2 == T2) {
-	    if (S1->l1 != T1 && S1->l2 == T2) return 1;
-	    if (S1->l1 == T1 && S1->l2 != T2) return -1;
+	if (S2.l1 == S2.l2) {
+	    if (S2.l1 == T1) return 1;
+	    if (S2.l1 == T2) return -1;
+	    if (S1.l1 != T1 && S1.l2 != T1) return 1;
+	    if (S1.l1 != T2 && S1.l2 != T2) return -1;
 	    return 0;
 	}
-	if (S2->l2 == T1 && S2->l1 == T2) {
-	    if (S1->l2 != T1 && S1->l1 == T2) return 1;
-	    if (S1->l2 == T1 && S1->l1 != T2) return -1;
+	if (S2.l1 == T1 && S2.l2 == T2) {
+	    if (S1.l1 != T1 && S1.l2 == T2) return 1;
+	    if (S1.l1 == T1 && S1.l2 != T2) return -1;
 	    return 0;
 	}
-	if (S2->l1 == B_NODE && S2->l2 == T1) {
-	    return ellSeg (S1->l1, S1->l2, T1);
+	if (S2.l2 == T1 && S2.l1 == T2) {
+	    if (S1.l2 != T1 && S1.l1 == T2) return 1;
+	    if (S1.l2 == T1 && S1.l1 != T2) return -1;
+	    return 0;
 	}
-	if (S2->l1 == B_NODE && S2->l2 == T2) {
-	    return -1*ellSeg (S1->l1, S1->l2, T2);
+	if (S2.l1 == B_NODE && S2.l2 == T1) {
+	    return ellSeg(S1.l1, S1.l2, T1);
 	}
-	if (S2->l1 == T1 && S2->l2 == B_NODE) {
-	    return ellSeg (S1->l2, S1->l1, T1);
+	if (S2.l1 == B_NODE && S2.l2 == T2) {
+	    return -1 * ellSeg(S1.l1, S1.l2, T2);
 	}
-	/* ((S2->l1==T2)&&(S2->l2==B_NODE)) */
-	return -1 * ellSeg(S1->l2, S1->l1, T2);
+	if (S2.l1 == T1 && S2.l2 == B_NODE) {
+	    return ellSeg(S1.l2, S1.l1, T1);
+	}
+	// S2.l1 == T2 && S2.l2 == B_NODE
+	return -1 * ellSeg(S1.l2, S1.l1, T2);
     }
-    if (S1->p.p2 == S2->p.p1) {
-	if (S1->l2 == S2->l1) return 0;
-	if (S1->l2 == T2) return 1;
+    if (S1.p.p2 == S2.p.p1) {
+	if (S1.l2 == S2.l1) return 0;
+	if (S1.l2 == T2) return 1;
 	return -1;
     }
-    /* S1->p.p1==S2->p.p2 */
-    if (S1->l1 == S2->l2) return 0;
-    if (S1->l1 == T2) return 1;
+    // S1.p.p1 == S2.p.p2
+    if (S1.l1 == S2.l2) return 0;
+    if (S1.l1 == T2) return 1;
     return -1;
 }
 
@@ -653,17 +643,14 @@ segCmp (segment* S1, segment* S2, bend T1, bend T2)
  * though, I'm not sure what assumptions are made in handling parallel
  * segments, so we leave the code alone for the time being.
  */
-static int
-seg_cmp(segment* S1, segment* S2)		
-{
-    if(S1->isVert!=S2->isVert||S1->comm_coord!=S2->comm_coord) {
+static int seg_cmp(const segment S1, const segment S2) {
+    if (S1.isVert != S2.isVert || S1.comm_coord != S2.comm_coord) {
 	agerrorf("incomparable segments !! -- Aborting\n");
 	return -2;
     }
-    if(S1->isVert)
-	return segCmp (S1, S2, B_RIGHT, B_LEFT);
-    else
-	return segCmp (S1, S2, B_DOWN, B_UP);
+    if (S1.isVert)
+	return segCmp(S1, S2, B_RIGHT, B_LEFT);
+    return segCmp(S1, S2, B_DOWN, B_UP);
 }
 
 static int
@@ -675,7 +662,7 @@ add_edges_in_G(channel* cp)
 
     for (size_t x = 0; x + 1 < size; ++x) {
 	for (size_t y = x + 1; y < size; ++y) {
-	    const int cmp = seg_cmp(LIST_GET(seg_list, x), LIST_GET(seg_list, y));
+	    const int cmp = seg_cmp(*LIST_GET(seg_list, x), *LIST_GET(seg_list, y));
 	    if (cmp == -2) {
 		return -1;
 	    } else if (cmp > 0) {
@@ -706,44 +693,36 @@ add_np_edges (Dt_t* chans)
     return 0;
 }
 
-static segment*
-next_seg(segment* seg, int dir)
-{
-    assert(seg);
+static segment *next_seg(const segment seg, int dir) {
     if (!dir)
-        return seg->prev;
-    else
-        return seg->next;
+        return seg.prev;
+    return seg.next;
 }
 
 /* propagate_prec propagates the precedence relationship along 
  * a series of parallel segments on 2 edges
  */
-static int
-propagate_prec(segment* seg, int prec, int hops, int dir)
-{
+static int propagate_prec(const segment seg, int prec, int hops, int dir) {
     int x;
     int ans=prec;
-    segment* next;
-    segment* current;
 
-    current = seg;
+    segment current = seg;
     for(x=1;x<=hops;x++) {
-	next = next_seg(current, dir);
-	if(!current->isVert) {
-	    if(next->comm_coord==current->p.p1) {
-		if(current->l1==B_UP) ans *= -1;
+	const segment next = *next_seg(current, dir);
+	if (!current.isVert) {
+	    if (next.comm_coord == current.p.p1) {
+		if (current.l1 == B_UP) ans *= -1;
 	    }
 	    else {
-		if(current->l2==B_DOWN) ans *= -1;
+		if (current.l2 == B_DOWN) ans *= -1;
 	    }
 	}
 	else {
-	    if(next->comm_coord==current->p.p1) {
-		if(current->l1==B_RIGHT) ans *= -1;
+	    if (next.comm_coord == current.p.p1) {
+		if (current.l1 == B_RIGHT) ans *= -1;
 	    }
 	    else {
-		if(current->l2==B_LEFT) ans *= -1;
+		if (current.l2 == B_LEFT) ans *= -1;
 	    }
 	}
 	current = next;
@@ -751,14 +730,12 @@ propagate_prec(segment* seg, int prec, int hops, int dir)
     return ans;
 }
 
-static bool
-is_parallel(segment* s1, segment* s2)
-{
-    assert (s1->comm_coord==s2->comm_coord);
-    return s1->p.p1 == s2->p.p1 &&
-           s1->p.p2 == s2->p.p2 &&
-           s1->l1 == s2->l1 &&
-           s1->l2 == s2->l2;
+static bool is_parallel(const segment s1, const segment s2) {
+    assert(s1.comm_coord == s2.comm_coord);
+    return s1.p.p1 == s2.p.p1 &&
+           s1.p.p2 == s2.p.p2 &&
+           s1.l1 == s2.l1 &&
+           s1.l2 == s2.l2;
 }
 
 /* decide_point returns (through ret) the number of hops needed in the given
@@ -766,29 +743,27 @@ is_parallel(segment* s1, segment* s2)
  * puts into prec the appropriate dependency (follows same convention as
  * seg_cmp)
  */
-static int
-decide_point(pair *ret, segment* si, segment* sj, int dir1, int dir2)
-{
+static int decide_point(pair *ret, segment si, segment sj, int dir1, int dir2) {
     int prec = 0, ans = 0, temp;
     segment* np1;
     segment *np2 = NULL;
     
-    while ((np1 = next_seg(si,dir1)) && (np2 = next_seg(sj,dir2)) &&
-	is_parallel(np1, np2)) {
+    while ((np1 = next_seg(si, dir1)) && (np2 = next_seg(sj, dir2)) &&
+	is_parallel(*np1, *np2)) {
 	ans++;
-	si = np1;
-	sj = np2;
+	si = *np1;
+	sj = *np2;
     }
     if (!np1)
 	prec = 0;
     else if (!np2)
 	assert(0); /* FIXME */
     else {
-	temp = seg_cmp(np1, np2);
+	temp = seg_cmp(*np1, *np2);
 	if (temp == -2) {
 	    return -1;
 	}
-	prec = propagate_prec(np1, temp, ans+1, 1-dir1);
+	prec = propagate_prec(*np1, temp, ans+1, 1-dir1);
     }
 		
     ret->a = ans;
@@ -814,39 +789,52 @@ set_parallel_edges (segment* seg1, segment* seg2, int dir1, int dir2, int hops,
 	chan = chanSearch(mp->vchans, seg1);
     else
 	chan = chanSearch(mp->hchans, seg1);
-    insert_edge(chan->G, seg1->ind_no, seg2->ind_no);
+    insert_edge(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+                OPTIONAL_VALUE(seg2->ind_no));
 
     for (x=1;x<=hops;x++) {
-	prev1 = next_seg(seg1, dir1);
-	prev2 = next_seg(seg2, dir2);
+	prev1 = next_seg(*seg1, dir1);
+	prev2 = next_seg(*seg2, dir2);
 	if(!seg1->isVert) {
 	    nchan = chanSearch(mp->vchans, prev1);
 	    if(prev1->comm_coord==seg1->p.p1) {
 		if(seg1->l1==B_UP) {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		    else
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		}
 		else {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		    else
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		}
 	    }
 	    else {
 		if(seg1->l2==B_UP) {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G,prev1->ind_no, prev2->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		    else
-			insert_edge(nchan->G,prev2->ind_no, prev1->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		}
 		else {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		    else
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		}
 	    }
 	}
@@ -854,30 +842,42 @@ set_parallel_edges (segment* seg1, segment* seg2, int dir1, int dir2, int hops,
 	    nchan = chanSearch(mp->hchans, prev1);
 	    if(prev1->comm_coord==seg1->p.p1) {
 		if(seg1->l1==B_LEFT) {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		    else
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		}
 		else {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		    else
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		}
 	    }
 	    else {
 		if(seg1->l2==B_LEFT) {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		    else
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		}
 		else {
-		    if(edge_exists(chan->G, seg1->ind_no, seg2->ind_no))
-			insert_edge(nchan->G, prev1->ind_no, prev2->ind_no);
+		    if (edge_exists(chan->G, OPTIONAL_VALUE(seg1->ind_no),
+		                    OPTIONAL_VALUE(seg2->ind_no)))
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev1->ind_no),
+			            OPTIONAL_VALUE(prev2->ind_no));
 		    else
-			insert_edge(nchan->G, prev2->ind_no, prev1->ind_no);
+			insert_edge(nchan->G, OPTIONAL_VALUE(prev2->ind_no),
+			            OPTIONAL_VALUE(prev1->ind_no));
 		}
 	    }
 	}
@@ -898,15 +898,16 @@ removeEdge(segment* seg1, segment* seg2, int dir, maze* mp)
 
     ptr1 = seg1;
     ptr2 = seg2;
-    while(is_parallel(ptr1, ptr2)) {
-	ptr1 = next_seg(ptr1, 1);
-	ptr2 = next_seg(ptr2, dir);
+    while (is_parallel(*ptr1, *ptr2)) {
+	ptr1 = next_seg(*ptr1, 1);
+	ptr2 = next_seg(*ptr2, dir);
     }
     if(ptr1->isVert)
 	chan = chanSearch(mp->vchans, ptr1);
     else
 	chan = chanSearch(mp->hchans, ptr1);
-    remove_redge (chan->G, ptr1->ind_no, ptr2->ind_no);
+    remove_redge(chan->G, OPTIONAL_VALUE(ptr1->ind_no),
+                 OPTIONAL_VALUE(ptr2->ind_no));
 }
 
 static int
@@ -929,7 +930,7 @@ addPEdges (channel* cp, maze* mp)
     for(size_t i = 0; i + 1 < LIST_SIZE(&cp->seg_list); ++i) {
 	for(size_t j = i + 1; j < LIST_SIZE(&cp->seg_list); ++j) {
 	    if (!edge_exists(G,i,j) && !edge_exists(G,j,i)) {
-		if (is_parallel(LIST_GET(segs, i), LIST_GET(segs, j))) {
+		if (is_parallel(*LIST_GET(segs, i), *LIST_GET(segs, j))) {
 		/* get_directions */
 		    if (LIST_GET(segs, i)->prev == 0) {
 			if (LIST_GET(segs, j)->prev == 0)
@@ -948,14 +949,14 @@ addPEdges (channel* cp, maze* mp)
 			    dir = 1;
 		    }
 
-		    if (decide_point(&p, LIST_GET(segs, i), LIST_GET(segs, j), 0, dir)
+		    if (decide_point(&p, *LIST_GET(segs, i), *LIST_GET(segs, j), 0, dir)
 		        != 0) {
 			return -1;
 		    }
 		    hops.a = p.a;
 		    prec1 = p.b;
-		    if (decide_point(&p, LIST_GET(segs, i), LIST_GET(segs, j), 1,
-		                     1 - dir) != 0) {
+		    if (decide_point(&p, *LIST_GET(segs, i), *LIST_GET(segs, j), 1, 1 - dir)
+		                     != 0) {
 			return -1;
 		    }
 		    hops.b = p.a;
@@ -1050,14 +1051,16 @@ static double
 vtrack (segment* seg, maze* m)
 {
   channel* chp = chanSearch(m->vchans, seg);
-  const double f = seg->track_no / ((double)LIST_SIZE(&chp->seg_list) + 1);
+  const double f =
+    OPTIONAL_VALUE(seg->track_no) / ((double)LIST_SIZE(&chp->seg_list) + 1);
   const pointf interp = interpolate_pointf(f, chp->cp->bb.LL, chp->cp->bb.UR);
   return interp.x;
 }
 
 static double htrack(segment *seg, maze *m) {
   channel* chp = chanSearch(m->hchans, seg);
-  double f = 1.0 - seg->track_no / ((double)LIST_SIZE(&chp->seg_list) + 1);
+  double f = 1.0 - OPTIONAL_VALUE(seg->track_no) /
+    ((double)LIST_SIZE(&chp->seg_list) + 1);
   double lo = chp->cp->bb.LL.y;
   double hi = chp->cp->bb.UR.y;
   return round(lo + f * (hi - lo));

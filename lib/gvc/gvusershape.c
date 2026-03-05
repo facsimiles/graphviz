@@ -270,12 +270,12 @@ static void svg_size(usershape_t *us) {
   bool eof = false;
 
   // authoritative constraints we learned from `height` and `width`
-  optional_double_t hard_height = {0};
-  optional_double_t hard_width = {0};
+  OPTIONAL(double) hard_height = {0};
+  OPTIONAL(double) hard_width = {0};
 
   // fallback constraints we learned from `viewBox`
-  optional_double_t soft_height = {0};
-  optional_double_t soft_width = {0};
+  OPTIONAL(double) soft_height = {0};
+  OPTIONAL(double) soft_width = {0};
 
   rewind(us->f);
   while (!eof && (!hard_width.has_value || !hard_height.has_value)) {
@@ -299,9 +299,9 @@ static void svg_size(usershape_t *us) {
       if (strview_str_eq(match.key, "width")) {
         char *value = strview_str(match.value);
         if (sscanf(value, "%lf%2s", &n, u) == 2) {
-          optional_double_set(&hard_width, svg_units_convert(n, u));
+          OPTIONAL_SET(&hard_width, svg_units_convert(n, u));
         } else if (sscanf(value, "%lf", &n) == 1) {
-          optional_double_set(&hard_width, svg_units_convert(n, "pt"));
+          OPTIONAL_SET(&hard_width, svg_units_convert(n, "pt"));
         }
         free(value);
         if (hard_height.has_value)
@@ -309,9 +309,9 @@ static void svg_size(usershape_t *us) {
       } else if (strview_str_eq(match.key, "height")) {
         char *value = strview_str(match.value);
         if (sscanf(value, "%lf%2s", &n, u) == 2) {
-          optional_double_set(&hard_height, svg_units_convert(n, u));
+          OPTIONAL_SET(&hard_height, svg_units_convert(n, u));
         } else if (sscanf(value, "%lf", &n) == 1) {
-          optional_double_set(&hard_height, svg_units_convert(n, "pt"));
+          OPTIONAL_SET(&hard_height, svg_units_convert(n, "pt"));
         }
         free(value);
         if (hard_width.has_value)
@@ -320,8 +320,8 @@ static void svg_size(usershape_t *us) {
         char *value = strview_str(match.value);
         double w, h;
         if (sscanf(value, "%*f %*f %lf %lf", &w, &h) == 2) {
-          optional_double_set(&soft_width, w);
-          optional_double_set(&soft_height, h);
+          OPTIONAL_SET(&soft_width, w);
+          OPTIONAL_SET(&soft_height, h);
         }
         free(value);
       }
@@ -331,17 +331,17 @@ static void svg_size(usershape_t *us) {
     // `height` and/or `width`, let `viewBox` determine the dimensions
     if (soft_height.has_value && soft_width.has_value) {
       if (!hard_height.has_value) {
-        optional_double_set(&hard_height, soft_height.value);
+        OPTIONAL_SET(&hard_height, OPTIONAL_VALUE(soft_height));
       }
       if (!hard_width.has_value) {
-        optional_double_set(&hard_width, soft_width.value);
+        OPTIONAL_SET(&hard_width, OPTIONAL_VALUE(soft_width));
       }
       break;
     }
   }
   us->dpi = 0;
-  const double h = optional_double_value_or(hard_height, 0);
-  const double w = optional_double_value_or(hard_width, 0);
+  const double h = OPTIONAL_VALUE_OR(hard_height, 0);
+  const double w = OPTIONAL_VALUE_OR(hard_width, 0);
   assert(w >= 0 && w <= INT_MAX);
   us->w = (int)w;
   assert(h >= 0 && h <= INT_MAX);
