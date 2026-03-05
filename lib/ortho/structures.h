@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/list.h>
+#include <util/optional.h>
 
 typedef struct {
     double p1, p2;
@@ -39,8 +40,8 @@ typedef struct segment {
   double comm_coord;  /* the common coordinate */
   paird p;      /* end points */
   bend l1, l2; 
-  size_t ind_no; ///< index number of this segment in its channel
-  int track_no;    /* track number assigned in the channel */
+  OPTIONAL(size_t) ind_no; ///< index number of this segment in its channel
+  OPTIONAL(int) track_no;  ///< track number assigned in the channel
   struct segment* prev;
   struct segment* next;
 } segment;
