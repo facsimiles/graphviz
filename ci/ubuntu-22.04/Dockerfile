@@ -91,4 +91,4 @@ shellcheck \
 # install Python dependencies within the virtual environment
 && env PATH="/opt/virtualenv/bin:$PATH" python3 -m pip install --requirement requirements.txt \
 # Clean up
-&& rm -rf /var/lib/apt/lists/*
+&& rm -rf /var/lib/apt/lists/* requirements.txt
