@@ -68,4 +68,4 @@ dejavu-serif-fonts \
 # individual Graphviz tools are missing in the current release
 && dnf remove -y graphviz \
 # Clean up
-&& dnf clean all && rm -rf /var/cache/dnf
+&& dnf clean all && rm -rf /var/cache/dnf requirements.txt

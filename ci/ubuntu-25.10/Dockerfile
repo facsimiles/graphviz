@@ -95,4 +95,4 @@ libsvgpp-dev \
 && env PATH="/opt/virtualenv/bin:$PATH" python3 -m pip install --requirement requirements.txt \
 && env PATH="/opt/virtualenv/bin:$PATH" python3 -m pip install --requirement doc-infosrc-requirements.txt \
 # Clean up
-&& rm -rf /var/lib/apt/lists/*
+&& rm -rf /var/lib/apt/lists/* doc-infosrc-requirements.txt requirements.txt
