@@ -80,7 +80,7 @@ typedef LIST(Agnode_t *) node_queue_t;
     /// @return 0 on success
     extern int dot_mincross(Agraph_t *);
     /// @return 0 on success
-    extern int dot_position(Agraph_t *);
+    extern WUR int dot_position(Agraph_t *);
     extern void dot_rank(Agraph_t *);
     extern void dot_sameports(Agraph_t *);
     /// @return 0 on success
