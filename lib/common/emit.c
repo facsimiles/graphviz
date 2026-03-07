@@ -3126,6 +3126,8 @@ textBB (double x, double y, textspan_t* span)
 	bb.UR.x = x; 
 	bb.LL.x = bb.UR.x - sz.x;
 	break; 
+    default:
+	UNREACHABLE();
     }
     bb.UR.y = y + span->yoffset_layout;
     bb.LL.y = bb.UR.y - sz.y;
