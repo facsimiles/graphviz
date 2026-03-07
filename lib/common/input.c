@@ -836,7 +836,7 @@ charsetToStr (int c)
 /// Set characteristics of graph label if it exists.
 void do_graph_label(graph_t * sg)
 {
-    char *str, *pos, *just;
+    char *str, *pos;
     int pos_ix;
 
     /* it would be nice to allow multiple graph labels in the future */
@@ -867,7 +867,7 @@ void do_graph_label(graph_t * sg)
 	    else
 		pos_flag = LABEL_AT_BOTTOM;
 	}
-	just = agget(sg, "labeljust");
+	const char *const just = agget(sg, "labeljust");
 	if (just) {
 	    if (just[0] == 'l')
 		pos_flag |= LABEL_AT_LEFT;
