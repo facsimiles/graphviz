@@ -42,6 +42,11 @@
 		[window zoom:self];
 
 	[documentView setDelegate:self];
+	[documentView setBackgroundColor:[NSColor textBackgroundColor]];
+	[documentView setAutoScales:YES];
+	if (@available(macOS 10.14, *)) {
+		[documentView enablePageShadows:NO];
+	}
 }
 
 - (void)graphDocumentDidChange:(NSNotification*)notification
@@ -80,7 +85,39 @@
 - (IBAction)zoomToFitView:(id)sender
 {
 	[documentView setAutoScales:YES];
-	[documentView setAutoScales:NO];
+}
+
+- (IBAction)search:(id)sender
+{
+	[self searchNextBackwards:NO];
+}
+
+- (void)performTextFinderAction:(id)sender
+{
+    [self.searchField becomeFirstResponder];
+}
+
+- (void)searchNextBackwards:(BOOL)backwards {
+	[documentView setHighlightedSelections:nil];
+	NSString *searchString = self.searchField.stringValue;
+	NSArray<PDFSelection*>* selection = [documentView.document findString:searchString withOptions:NSCaseInsensitiveSearch];
+	[documentView setHighlightedSelections:selection];
+
+	NSStringCompareOptions options = NSCaseInsensitiveSearch;
+	if (backwards)
+		options |= NSBackwardsSearch;
+	PDFSelection* nextSelection = [documentView.document findString:searchString fromSelection:documentView.currentSelection withOptions:options];
+	[documentView setCurrentSelection:nextSelection animate:YES];
+	if (nextSelection != nil)
+			[documentView goToSelection:nextSelection];
+}
+
+- (void)searchNext:(id)sender {
+	[self searchNextBackwards:NO];
+}
+
+- (void)searchPrevious:(id)sender {
+	[self searchNextBackwards:YES];
 }
 
 - (IBAction)printGraphDocument:(id)sender
@@ -108,6 +145,12 @@
 		return YES;
 	else if ([anItem action] == @selector(printGraphDocument:))
 		return YES;
+	else if ([anItem action] == @selector(performTextFinderAction:))
+			return YES;
+	else if ([anItem action] == @selector(searchNext:))
+			return ![[self.searchField stringValue] isEqualToString:@""];
+	else if ([anItem action] == @selector(searchPrevious:))
+			return ![[self.searchField stringValue] isEqualToString:@""];
 	else
 		return NO;
 }
