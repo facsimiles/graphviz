@@ -74,7 +74,8 @@ typedef LIST(Agnode_t *) node_queue_t;
     extern void zapinlist(elist *, Agedge_t *);
 
     extern Agraph_t* dot_root(void *);
-    extern void dot_concentrate(Agraph_t *);
+    /// @return 0 on success
+    extern int dot_concentrate(Agraph_t *);
     /// @return 0 on success
     extern int dot_mincross(Agraph_t *);
     extern void dot_position(Agraph_t *);
