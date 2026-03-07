@@ -129,8 +129,12 @@ int dot_position(graph_t *g) {
 	return 0; // ignore empty graph
     mark_lowclusters(g);	/* we could remove from splines.c now */
     set_ycoords(g);
-    if (Concentrate)
-	dot_concentrate(g);
+    if (Concentrate) {
+	const int rc = dot_concentrate(g);
+	if (rc != 0) {
+	    return rc;
+	}
+    }
     expand_leaves(g);
     if (flat_edges(g))
 	set_ycoords(g);
