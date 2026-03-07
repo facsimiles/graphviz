@@ -31,6 +31,11 @@
 ///     runtime instead of compile-time. This is a very unreliable check for
 ///     `foo` and `bar` being the same type, so should be avoided wherever
 ///     possible.
+///
+/// Note that things make break if any macro parameters have side-effects,
+/// or refer to the list being modified.  Internal list references
+/// (such as those returned by `LIST_AT`, `LIST_FRONT`, `LIST_BACK`)
+/// are invalidated by any operation modifying the list.
 
 #pragma once
 
@@ -103,7 +108,8 @@ static_assert(
                       ((list)->scratch = (item), &(list)->scratch),            \
                       sizeof((list)->base[0]))
 
-/// add an item to the end of a list
+/// add an item to the end of a list.  The expression `item` may contain
+/// accesses to `list`, but its evaluation must not itself modify `list`.
 ///
 /// You can think of this macro as having the C type:
 ///
@@ -119,13 +125,14 @@ static_assert(
 /// @param item Element to append
 #define LIST_APPEND(list, item)                                                \
   do {                                                                         \
-    (list)->scratch = (item);                                                  \
     const size_t slot_ =                                                       \
-        gv_list_append_slot_(&(list)->impl, sizeof((list)->base[0]));          \
-    (list)->base[slot_] = (list)->scratch;                                     \
+        gv_list_safe_append_slot_(&(list)->impl, sizeof((list)->base[0]));     \
+    (list)->base[slot_] = (item);                                              \
+    gv_list_finish_safe_append_(&(list)->impl);                                \
   } while (0)
 
-/// add an item to the beginning of a list
+/// add an item to the end of a list.  The expression `item` may contain
+/// accesses to `list`, but its evaluation must not itself modify `list`.
 ///
 /// You can think of this macro as having the C type:
 ///
@@ -137,13 +144,13 @@ static_assert(
 /// @param item Element to prepend
 #define LIST_PREPEND(list, item)                                               \
   do {                                                                         \
-    (list)->scratch = (item);                                                  \
     const size_t slot_ =                                                       \
-        gv_list_prepend_slot_(&(list)->impl, sizeof((list)->base[0]));         \
-    (list)->base[slot_] = (list)->scratch;                                     \
+        gv_list_safe_prepend_slot_(&(list)->impl, sizeof((list)->base[0]));    \
+    (list)->base[slot_] = (item);                                              \
+    gv_list_finish_safe_prepend_(&(list)->impl);                               \
   } while (0)
 
-/// retrieve an item from a list
+/// retrieve an item from a list by index
 ///
 /// You can think of this macro as having the C type:
 ///
@@ -155,7 +162,7 @@ static_assert(
 #define LIST_GET(list, index)                                                  \
   ((list)->base[gv_list_get_((list)->impl, (index))])
 
-/// retrieve a pointer to an item from a list
+/// retrieve a pointer to an item from a list by index
 ///
 /// You can think of this macro as having one of the C types:
 ///
@@ -205,6 +212,24 @@ static_assert(
     const size_t slot_ = gv_list_get_((list)->impl, (index));                  \
     LIST_DTOR_((list), slot_);                                                 \
     (list)->base[slot_] = (list)->scratch;                                     \
+  } while (0)
+
+/// update the value of an item in a list, with parameter expression
+/// `item` which caller guarantees not to refer to the indexed element
+/// being set, and not to change the size of this list.
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_SET_SAFE(LIST(<type>) *list, size_t index, <type> item);
+///
+/// @param list List to operate on
+/// @param index Index of item to update
+/// @param item New value to set
+#define LIST_SET_SAFE(list, index, item)                                       \
+  do {                                                                         \
+    const size_t slot_ = gv_list_get_((list)->impl, (index));                  \
+    LIST_DTOR_((list), slot_);                                                 \
+    (list)->base[slot_] = (item);                                              \
   } while (0)
 
 /// remove an item from a list
@@ -389,6 +414,15 @@ static_assert(
 ///
 ///   <type> LIST_POP_FRONT(LIST(<type>) *list);
 ///
+/// Note that it might be more efficient to use
+///   <type> tmp = *LIST_FRONT(list);
+///   LIST_DROP_FRONT(list);
+/// rather than
+///   <type> tmp = LIST_POP_FRONT(list);
+/// since this avoids an extra copy through list.scratch
+/// which must be done in `LIST_POP_FRONT(list)`, and which
+/// compilers may have difficulty removing.
+///
 /// @param list List to operate on
 /// @return Popped item
 #define LIST_POP_FRONT(list)                                                   \
@@ -402,12 +436,38 @@ static_assert(
 ///
 ///   <type> LIST_POP_BACK(LIST(<type>) *list);
 ///
+/// Note that it might be more efficient to use
+///   <type> tmp = *LIST_BACK(list);
+///   LIST_DROP_BACK(list);
+/// rather than
+///   <type> tmp = LIST_POP_BACK(list);
+/// since this avoids an extra copy through list.scratch
+/// which must be done in `LIST_POP_BACK(list)`, and which
+/// compilers may have difficulty removing.
+///
 /// @param list List to operate on
 /// @return Popped item
 #define LIST_POP_BACK(list)                                                    \
   (gv_list_pop_back_(&(list)->impl, &(list)->scratch,                          \
                      sizeof((list)->base[0])),                                 \
    (list)->scratch)
+
+/// remove the first item of a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_DROP_FRONT(LIST(<type>) *list);
+///
+/// This can be used to pop the last element when the caller does not need the
+/// popped item.
+///
+/// @param list List to operate on
+#define LIST_DROP_FRONT(list)                                                  \
+  do {                                                                         \
+    const size_t slot_ = gv_list_get_((list)->impl, 0);                        \
+    LIST_DTOR_((list), slot_);                                                 \
+    gv_list_drop_front_(&(list)->impl, sizeof((list)->base[0]));               \
+  } while (0)
 
 /// remove the last item of a list
 ///
@@ -423,8 +483,7 @@ static_assert(
   do {                                                                         \
     const size_t slot_ = gv_list_get_((list)->impl, LIST_SIZE(list) - 1);      \
     LIST_DTOR_((list), slot_);                                                 \
-    gv_list_pop_back_(&(list)->impl, &(list)->scratch,                         \
-                      sizeof((list)->base[0]));                                \
+    gv_list_drop_back_(&(list)->impl, sizeof((list)->base[0]));                \
   } while (0)
 
 /// transform a managed list into a bare array

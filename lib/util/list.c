@@ -15,6 +15,7 @@
 #include <util/gv_math.h>
 #include <util/list-private.h>
 #include <util/prisize_t.h>
+#include <util/unused.h>
 
 static const void *slot_from_const_list(const list_t_ *list, size_t index,
                                         size_t stride) {
@@ -76,6 +77,38 @@ size_t gv_list_append_slot_(list_t_ *list, size_t item_size) {
   return new_slot;
 }
 
+// Don't change the list contents yet, but make sure there is a slot
+// for an append and return its index.
+size_t gv_list_safe_append_slot_(list_t_ *list, size_t item_size) {
+  assert(list != NULL);
+
+  // do we need to expand the backing storage?
+  if (list->size == list->capacity) {
+    const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);
+    gv_list_reserve_(list, c, item_size);
+  }
+
+  assert(list->capacity > 0);
+  assert(list->size < list->capacity);
+
+  // append the new slot
+  const size_t new_slot = (list->head + list->size) % list->capacity;
+
+  // If we are running address sanitizer, we neeed to unpoison the slot.
+  void *const slot = INDEX_TO(list, new_slot, item_size);
+  ASAN_UNPOISON(slot, item_size);
+  return new_slot;
+}
+
+// Finalize a safe append by updating list admin state.
+void gv_list_finish_safe_append_(list_t_ *list) {
+  assert(list != NULL);
+  assert(list->capacity > 0);
+  assert(list->size < list->capacity);
+
+  ++list->size;
+}
+
 size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size) {
   assert(list != NULL);
 
@@ -97,6 +130,39 @@ size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size) {
   return list->head;
 }
 
+// Don't change the list size yet, but make sure there is a slot
+// for a prepend and return its index.
+size_t gv_list_safe_prepend_slot_(list_t_ *list, size_t item_size) {
+  assert(list != NULL);
+
+  // do we need to expand the backing storage?
+  if (list->size == list->capacity) {
+    const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);
+    gv_list_reserve_(list, c, item_size);
+  }
+
+  assert(list->capacity > 0);
+  assert(list->size < list->capacity);
+
+  // prepend the new slot
+  size_t new_head = (list->head + (list->capacity - 1)) % list->capacity;
+  // If we are running address sanitizer, we neeed to unpoison the slot.
+  void *const slot = INDEX_TO(list, new_head, item_size);
+  ASAN_UNPOISON(slot, item_size);
+  return new_head;
+}
+
+// Finalize a safe prepend by updating list admin state.
+void gv_list_finish_safe_prepend_(list_t_ *list) {
+  assert(list != NULL);
+  assert(list->capacity > 0);
+  assert(list->size < list->capacity);
+
+  // prepend the new slot
+  list->head = (list->head + (list->capacity - 1)) % list->capacity;
+  ++list->size;
+}
+
 static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   assert(list != NULL);
 
@@ -107,7 +173,7 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
 
   // will the arithmetic below overflow?
   assert(capacity > 0);
-  if (SIZE_MAX / capacity < item_size) {
+  if (capacity > (SIZE_MAX / item_size)) {
     return EOVERFLOW;
   }
 
@@ -203,6 +269,44 @@ bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
   }
   ++list->size;
 
+  return true;
+}
+
+// If the list doesn't have space to add an item, try to increase its
+// storage to make that possible.  If not possible, return false.
+// Return true if no resize is needed or if resizing succeeds.
+// Just after the call, an append/prepend is guaranteed to succeed
+// without resizing the list.
+bool gv_list_make_safe_to_add_item_(list_t_ *list, size_t item_size) {
+  assert(list != NULL);
+
+  // do we need to expand the backing storage?
+  if (list->size == list->capacity) {
+    do {
+      // can we attempt doubling without integer overflow?
+      if (SIZE_MAX / 2 >= list->capacity) {
+        const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);
+        if (try_reserve(list, c, item_size) == 0) {
+          // success
+          break;
+        }
+      }
+
+      // try a more conservative expansion
+      if (SIZE_MAX - 1 >= list->capacity) {
+        if (try_reserve(list, list->capacity + 1, item_size) == 0) {
+          // success
+          break;
+        }
+      }
+
+      // failed to expand the list
+      return false;
+    } while (0);
+  }
+  assert(list->size < list->capacity);
+
+  // we can now append, knowing it will not require backing storage expansion
   return true;
 }
 
@@ -404,6 +508,19 @@ void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size) {
   --list->size;
 }
 
+void gv_list_drop_front_(list_t_ *list, size_t item_size) {
+  (void) item_size;
+  assert(list != NULL);
+  assert(list->size > 0);
+
+  // find and drop the first slot
+  const size_t slot = gv_list_get_(*list, 0);
+  void *const to_pop = INDEX_TO(list, slot, item_size);
+  ASAN_POISON(to_pop, item_size);
+  list->head = (list->head + 1) % list->capacity;
+  --list->size;
+}
+
 void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   assert(list != NULL);
   assert(list->size > 0);
@@ -415,6 +532,18 @@ void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   if (item_size > 0) {
     memcpy(into, to_pop, item_size);
   }
+  ASAN_POISON(to_pop, item_size);
+  --list->size;
+}
+
+void gv_list_drop_back_(list_t_ *list, size_t item_size) {
+  (void) item_size;
+  assert(list != NULL);
+  assert(list->size > 0);
+
+  // find and drop last slot
+  const size_t slot = gv_list_get_(*list, list->size - 1);
+  void *const to_pop = INDEX_TO(list, slot, item_size);
   ASAN_POISON(to_pop, item_size);
   --list->size;
 }
