@@ -430,6 +430,64 @@ static void test_sort_complex(void) {
   LIST_FREE(&xs);
 }
 
+/// reverse on an empty list should be a no-op
+static void test_reverse_empty(void) {
+  LIST(int) xs = {0};
+  LIST_REVERSE(&xs);
+  assert(LIST_SIZE(&xs) == 0);
+  LIST_FREE(&xs);
+}
+
+static void test_reverse(void) {
+  LIST(int) xs = {0};
+
+  // a list of ints in an arbitrary order
+  const int ys[] = {4, 2, 10, 5, -42, 3};
+  size_t n = sizeof(ys) / sizeof(ys[0]);
+  for (size_t l = 0; l < n; ++l) {
+    LIST_CLEAR(&xs);
+
+    // setup this list and reverse it
+    for (size_t i = 0; i < l; ++i) {
+      LIST_APPEND(&xs, ys[i]);
+    }
+    LIST_REVERSE(&xs);
+
+    // contents should be reversed
+    assert(LIST_SIZE(&xs) == l);
+    for (size_t i = 0; i < l; ++i) {
+      assert(LIST_GET(&xs, i) == ys[l - 1 - i]);
+    }
+  }
+  LIST_FREE(&xs);
+}
+
+/// reversing a complex type should move entire values together
+static void test_reverse_complex(void) {
+  LIST(pair_t) xs = {0};
+
+  const pair_t ys[] = {{1, 2}, {-2, 3}, {-10, 4}, {0, 7}};
+
+  size_t n = sizeof(ys) / sizeof(ys[0]);
+  for (size_t l = 0; l < n; ++l) {
+    LIST_CLEAR(&xs);
+
+    // setup this list and reverse it
+    for (size_t i = 0; i < l; ++i) {
+      LIST_APPEND(&xs, ys[i]);
+    }
+    LIST_REVERSE(&xs);
+
+    // contents should be reversed
+    assert(LIST_SIZE(&xs) == l);
+    for (size_t i = 0; i < l; ++i) {
+      assert(LIST_GET(&xs, i).x == ys[l - 1 - i].x);
+      assert(LIST_GET(&xs, i).y == ys[l - 1 - i].y);
+    }
+  }
+  LIST_FREE(&xs);
+}
+
 static void test_shrink(void) {
   LIST(int) xs = {0};
 
@@ -718,6 +776,9 @@ int main(void) {
   RUN(sort);
   RUN(sort_sorted);
   RUN(sort_complex);
+  RUN(reverse_empty);
+  RUN(reverse);
+  RUN(reverse_complex);
   RUN(shrink);
   RUN(shrink_empty);
   RUN(free);
