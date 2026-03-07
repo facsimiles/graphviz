@@ -369,6 +369,7 @@ void makeBall(unsigned w, unsigned h, edgefn ef) {
  * No. of nodes is largest 2^n - 1 less than or equal to h.
  */
 void makeRandom(unsigned h, unsigned w, edgefn ef) {
+    assert(h > 0);
     const int type = rand() % 2;
 
     unsigned size = 0;
