@@ -6377,11 +6377,6 @@ def test_2801():
     assert "is not a known color" not in warnings, "`colorscheme` not working"
 
 
-@pytest.mark.xfail(
-    raises=subprocess.CalledProcessError,
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2825",
-    strict=False,
-)
 def test_2825():
     """
     Graphviz should not crash when `rebuild_vlists` returns -1
