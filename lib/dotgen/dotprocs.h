@@ -17,6 +17,7 @@ extern "C" {
 #include <dotgen/aspect.h>
 #include <stdbool.h>
 #include <util/list.h>
+#include <util/unused.h>
 
 typedef LIST(Agnode_t *) node_queue_t;
 
@@ -75,7 +76,7 @@ typedef LIST(Agnode_t *) node_queue_t;
 
     extern Agraph_t* dot_root(void *);
     /// @return 0 on success
-    extern int dot_concentrate(Agraph_t *);
+    extern WUR int dot_concentrate(Agraph_t *);
     /// @return 0 on success
     extern int dot_mincross(Agraph_t *);
     /// @return 0 on success
