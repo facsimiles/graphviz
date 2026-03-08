@@ -318,7 +318,12 @@ static int dotLayout(Agraph_t *g) {
         return 0;
     }
     GV_INFO("Starting phase 3 [dot_position]");
-    dot_position(g);
+    {
+        const int r = dot_position(g);
+        if (r != 0) {
+            return r;
+        }
+    }
     if (maxphase == 3) {
         attach_phase_attrs (g, 2);  /* positions will be attached on output */
         return 0;
