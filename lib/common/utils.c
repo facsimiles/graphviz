@@ -23,7 +23,6 @@
 #include <stdatomic.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <unistd.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
@@ -352,7 +351,7 @@ pointf dotneato_closest(splines * spl, pointf pt)
     pointf c[4], pt2;
     bezier bz;
 
-    size_t besti = SIZE_MAX;
+    OPTIONAL(size_t) besti = {0};
     OPTIONAL(size_t) bestj = {0};
     double bestdist2 = DBL_MAX;
     for (size_t i = 0; i < spl->size; i++) {
@@ -364,14 +363,14 @@ pointf dotneato_closest(splines * spl, pointf pt)
 	    b.y = bz.list[j].y;
 	    d2 = DIST2(b, pt);
 	    if (!bestj.has_value || d2 < bestdist2) {
-		besti = i;
+		OPTIONAL_SET(&besti, i);
 		OPTIONAL_SET(&bestj, j);
 		bestdist2 = d2;
 	    }
 	}
     }
 
-    bz = spl->list[besti];
+    bz = spl->list[OPTIONAL_VALUE(besti)];
     /* Pick best Bézier. If bestj is the last point in the B-spline, decrement.
      * Then set j to be the first point in the corresponding Bézier by dividing
      * then multiplying be 3. Thus, 0,1,2 => 0; 3,4,5 => 3, etc.
