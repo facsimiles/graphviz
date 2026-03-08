@@ -346,7 +346,7 @@ bool mapbool(const char *p)
 
 pointf dotneato_closest(splines * spl, pointf pt)
 {
-    double dlow2, dhigh2; /* squares of distances */
+    double dhigh2; /* squares of distances */
     double low, high, t;
     pointf pt2;
     bezier bz;
@@ -379,9 +379,8 @@ pointf dotneato_closest(splines * spl, pointf pt)
       {bz.list[j], bz.list[j + 1], bz.list[j + 2], bz.list[j + 3]};
     low = 0.0;
     high = 1.0;
-    dlow2 = DIST2(c[0], pt);
     dhigh2 = DIST2(c[3], pt);
-    do {
+    for (double dlow2 = DIST2(c[0], pt);;) {
 	t = (low + high) / 2.0;
 	pt2 = Bezier(c, t, NULL, NULL);
 	if (fabs(dlow2 - dhigh2) < 1.0)
@@ -395,7 +394,7 @@ pointf dotneato_closest(splines * spl, pointf pt)
 	    low = t;
 	    dlow2 = DIST2(pt2, pt);
 	}
-    } while (1);
+    }
     return pt2;
 }
 
