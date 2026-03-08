@@ -353,7 +353,7 @@ pointf dotneato_closest(splines * spl, pointf pt)
 
     OPTIONAL(size_t) besti = {0};
     OPTIONAL(size_t) bestj = {0};
-    double bestdist2 = DBL_MAX;
+    OPTIONAL(double) bestdist2 = {0};
     for (size_t i = 0; i < spl->size; i++) {
 	bz = spl->list[i];
 	for (size_t j = 0; j < bz.size; j++) {
@@ -362,10 +362,10 @@ pointf dotneato_closest(splines * spl, pointf pt)
 	    b.x = bz.list[j].x;
 	    b.y = bz.list[j].y;
 	    d2 = DIST2(b, pt);
-	    if (!bestj.has_value || d2 < bestdist2) {
+	    if (!bestj.has_value || d2 < OPTIONAL_VALUE(bestdist2)) {
 		OPTIONAL_SET(&besti, i);
 		OPTIONAL_SET(&bestj, j);
-		bestdist2 = d2;
+		OPTIONAL_SET(&bestdist2, d2);
 	    }
 	}
     }
