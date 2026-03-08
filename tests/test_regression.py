@@ -98,13 +98,6 @@ def test_42():
     run_raw([neato, "-n2", "-Tpng", input], stdout=subprocess.DEVNULL)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_56():
     """
     parsing a particular graph should not cause a Trapezoid-table overflow
@@ -588,13 +581,6 @@ def test_813():
     ), "rendering of shapes with multiple peripheries is unstable"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_827():
     """
     Graphviz should not crash when processing the b15.gv example
@@ -695,13 +681,6 @@ def test_1308():
     dot("svg", input)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1308_1():
     """
     processing a malformed graph found by Google Autofuzz should not crash
@@ -789,13 +768,6 @@ def test_1328():
     assert proc.returncode in (0, 1), "multiple rank constraints caused a crash"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1332():
     """
     Triangulation calculation on the associated example should succeed.
@@ -822,13 +794,6 @@ def test_1332():
     ), "warnings were printed when processing graph involving triangulation"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1367():
     """
     this graph should not generate a null pointer dereference
@@ -844,13 +809,6 @@ def test_1367():
     run_raw(["dot", "-Txdot:xdot:core", "-o", os.devnull, input])
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1408():
     """
     parsing particular ortho layouts should not cause an assertion failure
@@ -952,13 +910,6 @@ def test_1435():
     assert err.strip() == "", "errors were printed"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1436():
     """
     test a segfault from https://gitlab.com/graphviz/graphviz/-/issues/1436 has
@@ -974,13 +925,6 @@ def test_1436():
     dot("svg", input)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1444():
     """
     specifying 'headport' as an edge attribute should work regardless of what
@@ -1077,13 +1021,6 @@ def test_1449():
     assert stderr.strip() == "", "SVG color scheme use caused warnings"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1453():
     """
     `splines=curved` should not result in segfaults
@@ -1098,13 +1035,6 @@ def test_1453():
     dot("svg", input)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1472():
     """
     processing a malformed graph found by Google Autofuzz should not crash
@@ -1219,13 +1149,6 @@ def test_1514():
     strict=False,
     reason="https://gitlab.com/graphviz/graphviz/-/issues/2807",
 )
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1554():
     """
     small distances between nodes should not cause a crash in majorization
@@ -1261,13 +1184,6 @@ def test_1581():
     assert p.returncode != 42, "Address Sanitizer detect memory safety violations"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1585():
     """
     clustering nodes should not reverse their horizontal layout
@@ -1437,13 +1353,6 @@ def test_1622(test_case: str):
     dot("png:cairo:cairo", input)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1624():
     """
     record shapes should be usable
@@ -1478,13 +1387,6 @@ def test_1644():
 
 @pytest.mark.parametrize("fmt", ("dot", "gif", "svg", "xdot"))
 @pytest.mark.parametrize("layerselect", range(1, 6))
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1648(fmt: str, layerselect: int):
     """
     `layerselect` should not cause crashes
@@ -1557,13 +1459,6 @@ def test_1648(fmt: str, layerselect: int):
         "xdot1.4",
         "xdot_json",
     ),
-)
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
 )
 def test_1648_1(fmt: str):
     """
@@ -1661,13 +1556,6 @@ def test_1724():
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
-)
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
 )
 def test_1767():
     """
@@ -1902,13 +1790,6 @@ def test_1877():
     run([fdp, "-o", os.devnull], input=input)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1880():
     """
     parsing a particular graph should not cause a Trapezoid-table overflow
@@ -1974,13 +1855,6 @@ def test_1898():
     dot("svg", input)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1902():
     """
     test a segfault from https://gitlab.com/graphviz/graphviz/-/issues/1902 has
@@ -2060,13 +1934,6 @@ def test_1869(variant: int):
     assert "penwidth=2" in output, "penwidth=2 not found in DOT output"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1879():
     """https://gitlab.com/graphviz/graphviz/-/issues/1879"""
 
@@ -2085,13 +1952,6 @@ def test_1879():
     assert re.search(r"\bAssertion\b.*\bfailed\b", stdout) is None
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1879_2():
     """
     another variant of lhead/ltail + compound
@@ -2177,13 +2037,6 @@ def test_1909():
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
-)
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
 )
 def test_1910():
     """
@@ -2359,13 +2212,6 @@ def test_1939():
     dot("svg", input)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_1949():
     """
     rankdir=LR + compound=true should not lead to an assertion failure
@@ -2847,13 +2693,6 @@ def test_2168_3():
     run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2168_4():
     """
     using spline routing should not cause fdp/neato to infinite loop
@@ -2942,13 +2781,6 @@ def test_2179_1():
     ), "incorrect warning triggered"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2183():
     """
     processing `splines=ortho`, `concentrate=true` should not crash
@@ -2983,13 +2815,6 @@ def test_2184_1():
     assert m is not None, "nop rearranged a graph in a not-semantically-preserving way"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2184_2():
     """
     canonicalization should not reposition labelled graph nodes
@@ -3270,13 +3095,6 @@ def test_2242():
     and is_asan_instrumented(which("dot")),
     reason="ASan runs out of memory in its internal pool on Windows",
 )
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2331(tmp_path: Path):
     """
     the example in this test should not cause a double-free
@@ -3356,13 +3174,6 @@ def test_2356():
     run_c(c_src, link=["cgraph", "gvc"])
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2361():
     """
     using `ortho` and `concentrate` in combination should not cause a crash
@@ -3462,13 +3273,6 @@ def test_2481():
 @pytest.mark.skipif(
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
-)
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
 )
 def test_2484():
     """
@@ -3627,13 +3431,6 @@ def test_gvmap_invalid():
     strict=True,
     raises=subprocess.CalledProcessError,
     reason="libgts unavailable on Rocky Linux",
-)
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
 )
 def test_gvmap_add_coordinate():
     """gvmap should not read out of bounds when processing coordinates"""
@@ -4156,13 +3953,6 @@ def test_2371():
     platform.system() == "Windows",
     reason="gvplugin_list symbol is not exposed on Windows",
 )
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2375():
     """
     `gvplugin_list` should return full plugin names
@@ -4235,13 +4025,6 @@ def test_2391_1():
     dot("svg", input)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2397():
     """
     escapes in strings should be handled correctly
@@ -4627,13 +4410,6 @@ def test_2473_2():
         )
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2476():
     """
     tweaking `mclimit` should not lead to a “trouble in init_rank” failure
@@ -4808,13 +4584,6 @@ def test_2516():
         "2521_1.dot",
     ),
 )
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2521(testcase: str):
     """
     `newrank=false` should reset to the default behavior
@@ -4862,13 +4631,6 @@ def test_2538():
 
 
 @pytest.mark.skipif(which("sfdp") is None, reason="sfdp not available")
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2556():
     """
     sfdp should not fail a GTS assertion
@@ -4897,13 +4659,6 @@ def test_2556():
     p.check_returncode()
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2559():
     """
     `concentrate=true` should actually concentrate edges
@@ -5445,13 +5200,6 @@ def test_2598_1(tmp_path: Path):
 
 @pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
 @pytest.mark.skipif(which("mingle") is None, reason="mingle not available")
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2599():
     """
     mingle should not segfault when processing simple graphs
@@ -5587,13 +5335,6 @@ def test_2614():
     assert canonical.count('\\"') == 2, "quotes in string were not properly escaped"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2615():
     """
     cluster→cluster edges should not be duplicated
@@ -5777,13 +5518,6 @@ def test_2619_5(image: str):
     assert image_element[0].get("height") == f"{height}px"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2620():
     """
     arrows in this graph should not be truncated
@@ -5824,13 +5558,6 @@ def test_2620():
     assert abs(float(bezier2[2][1]) - expected) < 1000, "incorrect edge construction"
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2621():
     """
     this graph should not trigger an integer overflow in crossing calculation
@@ -6545,13 +6272,6 @@ def test_2743():
     dot("dot", src)
 
 
-@pytest.mark.xfail(
-    which("dot") is not None
-    and is_asan_instrumented(which("dot"))
-    and platform.system() != "Windows",
-    reason="memory leaks",
-    strict=True,
-)
 def test_2782():
     """
     Graphviz should not crash when processing this graph
