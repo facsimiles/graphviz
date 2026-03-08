@@ -30,6 +30,7 @@
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/optional.h>
 #include <util/path.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
@@ -352,7 +353,7 @@ pointf dotneato_closest(splines * spl, pointf pt)
     bezier bz;
 
     size_t besti = SIZE_MAX;
-    size_t bestj = SIZE_MAX;
+    OPTIONAL(size_t) bestj = {0};
     double bestdist2 = DBL_MAX;
     for (size_t i = 0; i < spl->size; i++) {
 	bz = spl->list[i];
@@ -362,9 +363,9 @@ pointf dotneato_closest(splines * spl, pointf pt)
 	    b.x = bz.list[j].x;
 	    b.y = bz.list[j].y;
 	    d2 = DIST2(b, pt);
-	    if (bestj == SIZE_MAX || d2 < bestdist2) {
+	    if (!bestj.has_value || d2 < bestdist2) {
 		besti = i;
-		bestj = j;
+		OPTIONAL_SET(&bestj, j);
 		bestdist2 = d2;
 	    }
 	}
@@ -375,9 +376,9 @@ pointf dotneato_closest(splines * spl, pointf pt)
      * Then set j to be the first point in the corresponding Bézier by dividing
      * then multiplying be 3. Thus, 0,1,2 => 0; 3,4,5 => 3, etc.
      */
-    if (bestj == bz.size-1)
-	bestj--;
-    const size_t j = 3 * (bestj / 3);
+    if (OPTIONAL_VALUE(bestj) == bz.size-1)
+	OPTIONAL_SET(&bestj, OPTIONAL_VALUE(bestj) - 1);
+    const size_t j = 3 * (OPTIONAL_VALUE(bestj) / 3);
     for (size_t k = 0; k < 4; k++) {
 	c[k].x = bz.list[j + k].x;
 	c[k].y = bz.list[j + k].y;
