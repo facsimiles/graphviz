@@ -347,13 +347,12 @@ bool mapbool(const char *p)
 pointf dotneato_closest(splines * spl, pointf pt)
 {
     pointf pt2;
-    bezier bz;
 
     OPTIONAL(size_t) besti = {0};
     OPTIONAL(size_t) bestj = {0};
     OPTIONAL(double) bestdist2 = {0};
     for (size_t i = 0; i < spl->size; i++) {
-	bz = spl->list[i];
+	const bezier bz = spl->list[i];
 	for (size_t j = 0; j < bz.size; j++) {
 	    const pointf b = bz.list[j];
 	    const double d2 = DIST2(b, pt);
@@ -365,7 +364,7 @@ pointf dotneato_closest(splines * spl, pointf pt)
 	}
     }
 
-    bz = spl->list[OPTIONAL_VALUE(besti)];
+    const bezier bz = spl->list[OPTIONAL_VALUE(besti)];
     /* Pick best Bézier. If bestj is the last point in the B-spline, decrement.
      * Then set j to be the first point in the corresponding Bézier by dividing
      * then multiplying be 3. Thus, 0,1,2 => 0; 3,4,5 => 3, etc.
