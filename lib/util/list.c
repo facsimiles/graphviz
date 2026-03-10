@@ -97,6 +97,8 @@ size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size) {
   return list->head;
 }
 
+#define TYPICAL_CACHE_LINE_SIZE 64
+
 static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   assert(list != NULL);
 
@@ -107,8 +109,15 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
 
   // will the arithmetic below overflow?
   assert(capacity > 0);
-  if (SIZE_MAX / capacity < item_size) {
+  if ((SIZE_MAX - TYPICAL_CACHE_LINE_SIZE + 1) / capacity < item_size) {
     return EOVERFLOW;
+  }
+  if (item_size > 0) {
+    size_t needed_size = capacity * item_size;
+    // Don't bother asking for less than a cache line.
+    size_t rounded_size = round_up_size(needed_size, TYPICAL_CACHE_LINE_SIZE);
+    // We filled out the cache line, how many items can we hold now?
+    capacity = rounded_size / item_size;
   }
 
   void *const base = realloc(list->base, capacity * item_size);

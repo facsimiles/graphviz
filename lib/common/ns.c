@@ -148,7 +148,11 @@ void init_rank(network_simplex_ctx_t *ctx)
     edge_t *e;
 
     LIST(node_t *) Q = {0};
-    LIST_RESERVE(&Q, ctx->N_nodes);
+    size_t n_count = 0;
+    for (node_t *v = GD_nlist(ctx->G); v; v = ND_next(v)) {
+	if (ND_priority(v) == 0) n_count++;
+    }
+    LIST_RESERVE(&Q, n_count);
     size_t ctr = 0;
 
     for (node_t *v = GD_nlist(ctx->G); v; v = ND_next(v)) {
@@ -218,6 +222,7 @@ static edge_t *dfs_enter_outedge(node_t *v, int Low, int Lim) {
     int Slack = INT_MAX;
 
     LIST(node_t *) todo = {0};
+    LIST_RESERVE(&todo, 1);
     LIST_APPEND(&todo, v);
 
     while (!LIST_IS_EMPTY(&todo)) {
@@ -252,6 +257,7 @@ static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
     int Slack = INT_MAX;
 
     LIST(node_t *) todo = {0};
+    LIST_RESERVE(&todo, 1);
     LIST_APPEND(&todo, v);
 
     while (!LIST_IS_EMPTY(&todo)) {
@@ -336,6 +342,7 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
     ND_subtree_set(v,st);
 
     LIST(tst_t) todo = {0};
+    LIST_RESERVE(&todo, 1);
     LIST_PUSH_BACK(&todo, ((tst_t){.v = v, .rv = 1}));
 
     while (!LIST_IS_EMPTY(&todo)) {
@@ -463,6 +470,7 @@ static Agedge_t *inter_tree_edge_search(Agnode_t *v) {
     } state_t;
 
     LIST(state_t) todo = {0};
+    LIST_RESERVE(&todo, 1);
     LIST_PUSH_BACK(&todo, ((state_t){.v = v, .ts = STsetFind(v)}));
 
     Agedge_t *best = NULL;
@@ -1118,6 +1126,7 @@ static void dfs_cutval(node_t * v, edge_t * par)
     } state_t;
 
     LIST(state_t) todo = {0};
+    LIST_RESERVE(&todo, 1);
     LIST_PUSH_BACK(&todo, ((state_t){.v = v, .par = par}));
 
     while (!LIST_IS_EMPTY(&todo)) {
@@ -1177,6 +1186,7 @@ static int dfs_range_init(node_t *v) {
     int lim = 0;
 
     LIST(dfs_state_t) todo = {0};
+    LIST_RESERVE(&todo, 1);
 
     ND_par(v) = NULL;
     ND_low(v) = 1;
@@ -1248,6 +1258,7 @@ static int dfs_range(node_t * v, edge_t * par, int low)
     }
 
     LIST(dfs_state_t) todo = {0};
+    LIST_RESERVE(&todo, 1);
 
     ND_par(v) = par;
     ND_low(v) = low;
