@@ -85,7 +85,14 @@ static inline void *gv_recalloc(void *ptr, size_t old_nmemb, size_t new_nmemb,
     graphviz_exit(EXIT_FAILURE);
   }
 
-  return gv_realloc(ptr, old_nmemb * size, new_nmemb * size);
+  size_t old_size = old_nmemb * size;
+  size_t new_size = new_nmemb * size;
+  void *rptr = gv_realloc(ptr, old_size, new_size);
+  if (new_nmemb > old_nmemb && rptr != NULL) {
+    // make sure new memory is cleared
+    memset(((char *)rptr) + old_size, 0, new_size - old_size);
+  }
+  return rptr;
 }
 
 // when including this header in a C++ source, G++ under Cygwin chooses to be
