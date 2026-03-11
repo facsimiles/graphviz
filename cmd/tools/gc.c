@@ -163,7 +163,9 @@ static Agnode_t *pop(void)
     if (LIST_IS_EMPTY(&Stk)) {
 	return 0;
     }
-    return LIST_POP_BACK(&Stk);
+    Agnode_t *res = *LIST_BACK(&Stk);
+    LIST_DROP_BACK(&Stk);
+    return res;
 }
 
 static void cc_dfs(Agraph_t * g, Agnode_t * n)

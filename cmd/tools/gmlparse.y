@@ -105,9 +105,10 @@ pushAlist (void)
 static attrs_t *popAlist(void) {
     attrs_t *lp = L;
 
-    if (!LIST_IS_EMPTY(&liststk))
-	L = LIST_POP_BACK(&liststk);
-    else
+    if (!LIST_IS_EMPTY(&liststk)) {
+        L = *LIST_BACK(&liststk);
+        LIST_DROP_BACK(&liststk);
+    } else
 	L = NULL;
 
     return lp;

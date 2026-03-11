@@ -172,7 +172,8 @@ dfs(Agraph_t * g, Agnode_t * u, bcstate * stp, Agnode_t * parent)
 		Cut(u) = 1;
 		sg = mkBlock(g, stp);
 		do {
-		    ep = LIST_POP_BACK(&stp->stk);
+		    ep = *LIST_BACK(&stp->stk);
+		    LIST_DROP_BACK(&stp->stk);
 		    agsubnode(sg, aghead(ep), 1);
 		    agsubnode(sg, agtail(ep), 1);
 		} while (ep != e);

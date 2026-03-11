@@ -1249,7 +1249,8 @@ int build_ranks(graph_t *g, int pass) {
 	    MARK(n) = true;
 	    LIST_PUSH_BACK(&q, n);
 	    while (!LIST_IS_EMPTY(&q)) {
-		node_t *n0 = LIST_POP_FRONT(&q);
+		node_t *n0 = *LIST_FRONT(&q);
+		LIST_DROP_FRONT(&q);
 		if (ND_ranktype(n0) != CLUSTER) {
 		    if (install_in_rank(g, n0) != 0) {
 		        LIST_FREE(&q);
