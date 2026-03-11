@@ -33,7 +33,8 @@ void bfs(int vertex, vtx_data *graph, int n, DistType *dist) {
   LIST_PUSH_BACK(&Q, vertex);
 
   while (!LIST_IS_EMPTY(&Q)) {
-    const int closestVertex = LIST_POP_FRONT(&Q);
+    const int closestVertex = *LIST_FRONT(&Q);
+    LIST_DROP_FRONT(&Q);
     closestDist = dist[closestVertex];
     for (size_t i = 1; i < graph[closestVertex].nedges; i++) {
       const int neighbor = graph[closestVertex].edges[i];

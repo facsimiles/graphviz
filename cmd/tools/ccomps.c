@@ -223,7 +223,9 @@ static Agnode_t *pop(void) {
   if (LIST_IS_EMPTY(&Stk)) {
     return NULL;
   }
-  return LIST_POP_BACK(&Stk);
+  Agnode_t *res = *LIST_BACK(&Stk);
+  LIST_DROP_BACK(&Stk);
+  return res;
 }
 
 static int dfs(Agraph_t *g, Agnode_t *n, Agraph_t *out) {

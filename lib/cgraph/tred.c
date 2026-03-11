@@ -65,7 +65,8 @@ static Agedge_t *pop(edge_stack_t *sp, nodeinfo_t *ninfo) {
   }
 
   // remove the top
-  Agedge_t *e = LIST_POP_BACK(sp);
+  Agedge_t *e = *LIST_BACK(sp);
+  LIST_DROP_BACK(sp);
 
   // mark it as no longer on the stack
   ON_STACK(ninfo, aghead(e)) = false;

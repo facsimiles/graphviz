@@ -161,7 +161,8 @@ void init_rank(network_simplex_ctx_t *ctx)
     }
 
     while (!LIST_IS_EMPTY(&Q)) {
-	node_t *const v = LIST_POP_FRONT(&Q);
+	node_t *const v = *LIST_FRONT(&Q);
+	LIST_DROP_FRONT(&Q);
 	ND_rank(v) = 0;
 	ctr++;
 	for (int i = 0; (e = ND_in(v).list[i]); i++)
@@ -226,7 +227,8 @@ static edge_t *dfs_enter_outedge(node_t *v, int Low, int Lim) {
     LIST_APPEND(&todo, v);
 
     while (!LIST_IS_EMPTY(&todo)) {
-	v = LIST_POP_BACK(&todo);
+	v = *LIST_BACK(&todo);
+        LIST_DROP_BACK(&todo);
 
 	for (int i = 0; (e = ND_out(v).list[i]); i++) {
 	    if (!TREE_EDGE(e)) {
@@ -261,7 +263,8 @@ static edge_t *dfs_enter_inedge(node_t *v, int Low, int Lim) {
     LIST_APPEND(&todo, v);
 
     while (!LIST_IS_EMPTY(&todo)) {
-	v = LIST_POP_BACK(&todo);
+	v = *LIST_BACK(&todo);
+        LIST_DROP_BACK(&todo);
 
 	for (int i = 0; (e = ND_in(v).list[i]); i++) {
 	    if (!TREE_EDGE(e)) {
@@ -397,7 +400,8 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
           continue;
         }
 
-        const tst_t last = LIST_POP_BACK(&todo);
+        const tst_t last = *LIST_BACK(&todo);
+        LIST_DROP_BACK(&todo);
         if (LIST_IS_EMPTY(&todo)) {
             rv = last.rv;
         } else {
