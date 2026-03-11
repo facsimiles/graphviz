@@ -31,6 +31,18 @@
 ///     runtime instead of compile-time. This is a very unreliable check for
 ///     `foo` and `bar` being the same type, so should be avoided wherever
 ///     possible.
+///
+/// Note that things make break if any macro parameters have side-effects,
+/// or refer to the list being modified.  Note however, that:
+///   • Currently, non-list parameters (e.g., `item`, `index`) are
+///     evaluated *before* any modification is done, but best to avoid
+///     future risks.
+///   • Parameters referring to the list are often evaluated multiple times,
+///     so pre-evaluating any expressions into a single variable is a good idea.
+///
+/// *** In particular, note that: internal list references returned by
+/// operations (such as `LIST_AT`, `LIST_FRONT`, `LIST_BACK`) will probably be
+/// invalidated by any operation modifying the list.
 
 #pragma once
 
@@ -103,7 +115,8 @@ static_assert(
                       ((list)->scratch = (item), &(list)->scratch),            \
                       sizeof((list)->base[0]))
 
-/// add an item to the end of a list
+/// add an item to the end of a list.  The expression `item` may contain
+/// accesses to `list`, but its evaluation must not itself modify `list`.
 ///
 /// You can think of this macro as having the C type:
 ///
@@ -125,7 +138,8 @@ static_assert(
     (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
 
-/// add an item to the beginning of a list
+/// add an item to the end of a list.  The expression `item` may contain
+/// accesses to `list`, but its evaluation must not itself modify `list`.
 ///
 /// You can think of this macro as having the C type:
 ///
@@ -143,7 +157,7 @@ static_assert(
     (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
 
-/// retrieve an item from a list
+/// retrieve an item from a list by index
 ///
 /// You can think of this macro as having the C type:
 ///
@@ -155,7 +169,7 @@ static_assert(
 #define LIST_GET(list, index)                                                  \
   ((list)->base[gv_list_get_((list)->impl, (index))])
 
-/// retrieve a pointer to an item from a list
+/// retrieve a pointer to an item from a list by index
 ///
 /// You can think of this macro as having one of the C types:
 ///
