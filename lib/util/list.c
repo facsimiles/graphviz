@@ -106,60 +106,61 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   if (list->capacity >= capacity) {
     return 0;
   }
+  if (item_size == 0) {
+    // Get this special case out of the way.
+    list->capacity = capacity;
+    return 0;
+  }
 
   // will the arithmetic below overflow?
   assert(capacity > 0);
   if ((SIZE_MAX - TYPICAL_CACHE_LINE_SIZE + 1) / capacity < item_size) {
     return EOVERFLOW;
   }
-  if (item_size > 0) {
-    size_t needed_size = capacity * item_size;
-    // Don't bother asking for less than a cache line.
-    size_t rounded_size = round_up_size(needed_size, TYPICAL_CACHE_LINE_SIZE);
-    // We filled out the cache line, how many items can we hold now?
-    capacity = rounded_size / item_size;
-  }
 
-  void *const base = realloc(list->base, capacity * item_size);
-  if (base == NULL && item_size > 0) {
+  size_t needed_size = capacity * item_size;
+  // Don't bother asking for less than a cache line.
+  size_t rounded_size = round_up_size(needed_size, TYPICAL_CACHE_LINE_SIZE);
+  // We filled out the cache line, how many items can we hold now?
+  capacity = rounded_size / item_size; // intentional floor
+
+  size_t new_size = capacity * item_size;
+  size_t old_size = list->capacity * item_size;
+  assert(old_size < new_size); // other cases handled above
+
+  // Unpoison all, since we're returning or expanding it.
+  ASAN_UNPOISON(list->base, list->capacity);
+  void *const base =
+      gv_recalloc(list->base, list->capacity, capacity, item_size);
+  if (base == NULL) { // capacity == 0 and item_size == 0 are handled above
     return ENOMEM;
-  }
-
-  // zero the new memory
-  {
-    void *const new = INDEX_TO(base, list->capacity, item_size);
-    const size_t new_bytes = (capacity - list->capacity) * item_size;
-    if (new_bytes > 0) { // `new_bytes` can be 0 if `item_size == 0`
-      memset(new, 0, new_bytes);
-    }
-
-    // poison the new (conceptually unallocated) memory
-    ASAN_POISON(new, new_bytes);
   }
 
   // Do we need to shuffle the prefix upwards? E.g.
   //
-  //        ┌───┬───┬───┬───┐
-  //   old: │ 3 │ 4 │ 1 │ 2 │
-  //        └───┴───┴─┼─┴─┼─┘
-  //                  │   └───────────────┐
-  //                  └───────────────┐   │
+  //        ┌───┬───┬───┬───┬───┐
+  //   old: │ 3 │ 4 │   │ 1 │ 2 │
+  //        └───┴───┴───┴─┼─┴─┼─┘
+  //                      │   └───────────┐
+  //                      └───────────┐   │
   //                                  ▼   ▼
   //        ┌───┬───┬───┬───┬───┬───┬───┬───┐
   //   new: │ 3 │ 4 │   │   │   │   │ 1 │ 2 │
   //        └───┴───┴───┴───┴───┴───┴───┴───┘
   //          a   b   c   d   e   f   g   h
+  // Old gap space (c) was already zeroed.
+  // New space (f-h) is zeroed by gv_recalloc above.
+  // (d-e) should by copied to (g-h),
+  // and (d-e) zeroed.
+
   if (list->head + list->size > list->capacity) {
     const size_t prefix = list->capacity - list->head;
     const size_t new_head = capacity - prefix;
-    // unpoison target range, slots [g, h] in example
     void *const target = INDEX_TO(base, new_head, item_size);
-    ASAN_UNPOISON(target, prefix * item_size);
-    const void *const src = INDEX_TO(base, list->head, item_size);
-    if (prefix * item_size > 0) {
-      // `target` and `src` can be null when `item_size == 0`, and `memmove`
-      // would then be Undefined Behavior
+    if (prefix > 0) {
+      void *src = INDEX_TO(base, list->head, item_size);
       memmove(target, src, prefix * item_size);
+      memset(src, 0, prefix * item_size);
     }
     // (re-)poison new gap, slots [c, f] in example
     void *const gap_begin = INDEX_TO(base, list->size - prefix, item_size);
