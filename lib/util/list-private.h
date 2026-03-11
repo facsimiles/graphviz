@@ -214,12 +214,24 @@ UTIL_API void gv_list_free_(list_t_ *list);
 /// @param item_size Byte size of each list item
 UTIL_API void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size);
 
+/// just remove the first item of a list
+///
+/// @param list List to operate on
+/// @param item_size Byte size of each list item
+UTIL_API void gv_list_drop_front_(list_t_ *list, size_t item_size);
+
 /// remove and return the last item of a list
 ///
 /// @param list List to operate on
 /// @param [out] into Destination to pop the item into
 /// @param item_size Byte size of each list item
 UTIL_API void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size);
+
+/// just remove the last item of a list
+///
+/// @param list List to operate on
+/// @param item_size Byte size of each list item
+UTIL_API void gv_list_drop_back_(list_t_ *list, size_t item_size);
 
 /// transform a managed list into a bare array
 ///
