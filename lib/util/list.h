@@ -33,10 +33,18 @@
 ///     possible.
 ///
 /// Note that things make break if any macro parameters have side-effects,
-/// or refer to the list being modified.  Note however, that:
-///   • Currently, non-list parameters (e.g., `item`, `index`) are
-///     evaluated *before* any modification is done, but best to avoid
-///     future risks.
+/// or refer to the list being modified, so you should avoid this.
+///
+/// Currently, a few things might work (for historic reasons), e.g.:
+///   • Generally, non-list parameters (e.g., `item`, `index`) are
+///     evaluated just once, and can safely read an element from the list,
+///     but they should not *modify* the list.  E.g.,
+///       • `LIST_SET(L1, i, 1 + LIST_GET(L1, i))` actually works, as does
+///       • `LIST_PUSH_BACK(L1, 1 + *LIST_BACK(L1))`,
+///     BUT, expressions like:
+///       • `LIST_PUSH_BACK(L1, 1 + LIST_POP_BACK(L1))`
+///     will likely do something unexpected and bad.
+///
 ///   • Parameters referring to the list are often evaluated multiple times,
 ///     so pre-evaluating any expressions into a single variable is a good idea.
 ///
@@ -124,18 +132,18 @@ static_assert(
 ///
 /// This macro succeeds or exits on out-of-memory; it never return failure.
 ///
-/// Note, in contrast to `LIST_TRY_APPEND`, `gv_list_append_slot_` and the write
-/// to `(list)->base[…]` are in separate statements because the
+/// Note, in contrast to `LIST_TRY_APPEND`, `gv_list_append_slot_` and
+/// the write to `(list)->base[…]` are in separate statements because the
 /// `gv_list_append_slot_` call here _can_ alter `(list)->base`.
 ///
 /// @param list List to operate on
 /// @param item Element to append
 #define LIST_APPEND(list, item)                                                \
   do {                                                                         \
-    (list)->scratch = (item);                                                  \
     const size_t slot_ =                                                       \
         gv_list_append_slot_(&(list)->impl, sizeof((list)->base[0]));          \
-    (list)->base[slot_] = (list)->scratch;                                     \
+    (list)->base[slot_] = (item);                                              \
+    gv_list_finish_append_(&(list)->impl);                                     \
   } while (0)
 
 /// add an item to the end of a list.  The expression `item` may contain
@@ -151,10 +159,10 @@ static_assert(
 /// @param item Element to prepend
 #define LIST_PREPEND(list, item)                                               \
   do {                                                                         \
-    (list)->scratch = (item);                                                  \
     const size_t slot_ =                                                       \
         gv_list_prepend_slot_(&(list)->impl, sizeof((list)->base[0]));         \
-    (list)->base[slot_] = (list)->scratch;                                     \
+    (list)->base[slot_] = (item);                                              \
+    gv_list_finish_prepend_(&(list)->impl);                                    \
   } while (0)
 
 /// retrieve an item from a list by index
