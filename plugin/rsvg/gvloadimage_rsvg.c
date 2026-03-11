@@ -38,6 +38,7 @@ static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
     RsvgHandle* rsvgh = NULL;
     GError *err = NULL;
 
+    (void)job;
     assert(job);
     assert(us);
     assert(us->name);
