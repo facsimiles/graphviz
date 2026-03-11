@@ -414,6 +414,19 @@ void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size) {
   --list->size;
 }
 
+void gv_list_drop_front_(list_t_ *list, size_t item_size) {
+  (void)item_size;
+  assert(list != NULL);
+  assert(list->size > 0);
+
+  // find and drop the first slot
+  const size_t slot = gv_list_get_(*list, 0);
+  void *const to_pop = INDEX_TO(list, slot, item_size);
+  ASAN_POISON(to_pop, item_size);
+  list->head = (list->head + 1) % list->capacity;
+  --list->size;
+}
+
 void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   assert(list != NULL);
   assert(list->size > 0);
@@ -425,6 +438,18 @@ void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   if (item_size > 0) {
     memcpy(into, to_pop, item_size);
   }
+  ASAN_POISON(to_pop, item_size);
+  --list->size;
+}
+
+void gv_list_drop_back_(list_t_ *list, size_t item_size) {
+  (void)item_size;
+  assert(list != NULL);
+  assert(list->size > 0);
+
+  // find and drop last slot
+  const size_t slot = gv_list_get_(*list, list->size - 1);
+  void *const to_pop = INDEX_TO(list, slot, item_size);
   ASAN_POISON(to_pop, item_size);
   --list->size;
 }

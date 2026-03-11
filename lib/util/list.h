@@ -403,6 +403,15 @@ static_assert(
 ///
 ///   <type> LIST_POP_FRONT(LIST(<type>) *list);
 ///
+/// Note that it might be more efficient to use
+///   <type> tmp = *LIST_FRONT(list);
+///   LIST_DROP_FRONT(list);
+/// rather than
+///   <type> tmp = LIST_POP_FRONT(list);
+/// since this avoids an extra copy through list.scratch
+/// which must be done in `LIST_POP_FRONT(list)`, and which
+/// compilers may have difficulty removing.
+///
 /// @param list List to operate on
 /// @return Popped item
 #define LIST_POP_FRONT(list)                                                   \
@@ -416,12 +425,38 @@ static_assert(
 ///
 ///   <type> LIST_POP_BACK(LIST(<type>) *list);
 ///
+/// Note that it might be more efficient to use
+///   <type> tmp = *LIST_BACK(list);
+///   LIST_DROP_BACK(list);
+/// rather than
+///   <type> tmp = LIST_POP_BACK(list);
+/// since this avoids an extra copy through list.scratch
+/// which must be done in `LIST_POP_BACK(list)`, and which
+/// compilers may have difficulty removing.
+///
 /// @param list List to operate on
 /// @return Popped item
 #define LIST_POP_BACK(list)                                                    \
   (gv_list_pop_back_(&(list)->impl, &(list)->scratch,                          \
                      sizeof((list)->base[0])),                                 \
    (list)->scratch)
+
+/// remove the first item of a list
+///
+/// You can think of this macro as having the C type:
+///
+///   void LIST_DROP_FRONT(LIST(<type>) *list);
+///
+/// This can be used to pop the last element when the caller does not need the
+/// popped item.
+///
+/// @param list List to operate on
+#define LIST_DROP_FRONT(list)                                                  \
+  do {                                                                         \
+    const size_t slot_ = gv_list_get_((list)->impl, 0);                        \
+    LIST_DTOR_((list), slot_);                                                 \
+    gv_list_drop_front_(&(list)->impl, sizeof((list)->base[0]));               \
+  } while (0)
 
 /// remove the last item of a list
 ///
@@ -437,8 +472,7 @@ static_assert(
   do {                                                                         \
     const size_t slot_ = gv_list_get_((list)->impl, LIST_SIZE(list) - 1);      \
     LIST_DTOR_((list), slot_);                                                 \
-    gv_list_pop_back_(&(list)->impl, &(list)->scratch,                         \
-                      sizeof((list)->base[0]));                                \
+    gv_list_drop_back_(&(list)->impl, sizeof((list)->base[0]));                \
   } while (0)
 
 /// transform a managed list into a bare array
