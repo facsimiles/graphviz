@@ -37,7 +37,7 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
   /* find the ideal distance between edges, either 1, or |N[i] \Union N[j]| - |N[i] \Intersection N[j]|
    */
   SparseMatrix D;
-  int *ia, *ja, i;
+  int *ia, *ja;
   double sum;
 
   assert(SparseMatrix_is_symmetric(A, false));
@@ -53,9 +53,9 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
   double *const d = D->a;
 
   int *mask = gv_calloc(D->m, sizeof(int));
-  for (i = 0; i < D->m; i++) mask[i] = -1;
+  for (int i = 0; i < D->m; i++) mask[i] = -1;
 
-  for (i = 0; i < D->m; i++){
+  for (int i = 0; i < D->m; i++) {
     const double di = node_degree(i);
     mask[i] = i;
     for (int j = ia[i]; j < ia[i + 1]; j++) {
@@ -78,7 +78,7 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
   sum = 0;
   double sumd = 0;
   int nz = 0;
-  for (i = 0; i < D->m; i++){
+  for (int i = 0; i < D->m; i++) {
     for (int j = ia[i]; j < ia[i + 1]; j++) {
       if (i == ja[j]) continue;
       nz++;
@@ -89,7 +89,7 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
   sum /= nz; sumd /= nz;
   sum = sum/sumd;
 
-  for (i = 0; i < D->m; i++){
+  for (int i = 0; i < D->m; i++) {
     for (int j = ia[i]; j < ia[i + 1]; j++) {
       if (i == ja[j]) continue;
       d[j] = sum*d[j];
