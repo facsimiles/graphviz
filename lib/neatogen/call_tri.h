@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <sparse/SparseMatrix.h>
 #include <util/api.h>
 
 PRIVATE SparseMatrix call_tri(int n, double * x);
