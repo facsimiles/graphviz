@@ -39,7 +39,7 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
   SparseMatrix D;
   int *ia, *ja, i, j, k, l, nz;
   double *d;
-  double len, di, sum, sumd;
+  double len, di, sum;
 
   assert(SparseMatrix_is_symmetric(A, false));
 
@@ -76,7 +76,8 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
     
   }
 
-  sum = 0; sumd = 0;
+  sum = 0;
+  double sumd = 0;
   nz = 0;
   for (i = 0; i < D->m; i++){
     for (j = ia[i]; j < ia[i+1]; j++){
