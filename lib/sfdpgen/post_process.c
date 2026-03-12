@@ -90,7 +90,11 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
   }
   if (sum.has_value) {
     sumd /= nz;
-    OPTIONAL_SET(&sum, OPTIONAL_VALUE(sum) / nz / sumd);
+    if (is_exactly_zero(sumd) || is_exactly_equal(sumd, -0.0)) {
+      OPTIONAL_SET(&sum, DBL_MAX);
+    } else {
+      OPTIONAL_SET(&sum, OPTIONAL_VALUE(sum) / nz / sumd);
+    }
   }
 
   for (i = 0; i < D->m; i++){
