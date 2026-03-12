@@ -35,8 +35,8 @@
 #define node_degree(i) (ia[(i)+1] - ia[(i)])
 
 static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
-  /* find the ideal distance between edges, either 1, or |N[i] \Union N[j]| - |N[i] \Intersection N[j]|
-   */
+  // find the ideal distance between edges, either 1, or
+  // |N[i] ∪ N[j]| - |N[i] ∩ N[j]|
   assert(SparseMatrix_is_symmetric(A, false));
 
   SparseMatrix D = SparseMatrix_copy(A);
