@@ -38,7 +38,7 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
   /* find the ideal distance between edges, either 1, or |N[i] \Union N[j]| - |N[i] \Intersection N[j]|
    */
   SparseMatrix D;
-  int *ia, *ja, i, j, k, l;
+  int *ia, *ja, i, j, k;
 
   assert(SparseMatrix_is_symmetric(A, false));
 
@@ -66,7 +66,7 @@ static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
       k = ja[j];
       if (i == k) continue;
       double len = di + node_degree(k);
-      for (l = ia[k]; l < ia[k+1]; l++){
+      for (int l = ia[k]; l < ia[k + 1]; l++) {
 	if (mask[ja[l]] == i) len--;
       }
       d[j] = len;
