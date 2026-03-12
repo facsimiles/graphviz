@@ -37,11 +37,9 @@
 static SparseMatrix ideal_distance_matrix(SparseMatrix A, int dim, double *x){
   /* find the ideal distance between edges, either 1, or |N[i] \Union N[j]| - |N[i] \Intersection N[j]|
    */
-  SparseMatrix D;
-
   assert(SparseMatrix_is_symmetric(A, false));
 
-  D = SparseMatrix_copy(A);
+  SparseMatrix D = SparseMatrix_copy(A);
   const int *const ia = D->ia;
   const int *const ja = D->ja;
   if (D->type != MATRIX_TYPE_REAL){
