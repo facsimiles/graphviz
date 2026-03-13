@@ -443,7 +443,6 @@ EXCLUDE = (
     "lib/topfish/rescale_layout.c",
     "lib/twopigen/circle.c",
     "lib/twopigen/circle.h",
-    "lib/twopigen/twopiinit.c",
     "lib/vpsc/block.cpp",
     "lib/vpsc/block.h",
     "lib/vpsc/blocks.cpp",
