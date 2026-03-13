@@ -150,7 +150,7 @@ def main(args: list[str]) -> int:
     for dot in options.candidate:
         exe = Path(dot.name).resolve()
         roots += [exe.parents[1]]
-    headers = ["test case"] + roots
+    headers = ["test case", "program"] + roots
 
     print(f"Comparing {[str(r) for r in roots]}…", flush=True)
 
@@ -165,7 +165,7 @@ def main(args: list[str]) -> int:
 
             # dump results progress, so that if the user interrupts they still have
             # something partial to analyze
-            row = [name]
+            row = [name, cmd[0]]
             for index, r in enumerate(result):
                 cell = io.StringIO()
                 if index != 0:
