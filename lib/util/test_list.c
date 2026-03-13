@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <util/list.c>
 #include <util/list.h>
+#include <util/prisize_t.h>
 #include <util/unused.h>
 
 // test construction and destruction, with nothing in-between
@@ -624,6 +625,147 @@ static void test_remove_with_dtor(void) {
   LIST_FREE(&xs);
 }
 
+typedef LIST(int) int_list_t;
+typedef LIST(char) char_list_t;
+
+static bool int_list_compare(int_list_t *l1, int_list_t *l2) {
+  if (LIST_SIZE(l1) != LIST_SIZE(l2)) {
+    fprintf(stderr, "sizes %" PRISIZE_T " and %" PRISIZE_T " don't match\n",
+            LIST_SIZE(l1), LIST_SIZE(l2));
+    return false;
+  }
+  for (size_t i = 0; i < LIST_SIZE(l1); ++i) {
+    if (LIST_GET(l1, i) != LIST_GET(l2, i)) {
+      fprintf(stderr,
+              "elements l1(%" PRISIZE_T ")=%d != l2(%" PRISIZE_T ")=%d\n", i,
+              LIST_GET(l1, i), i, LIST_GET(l2, i));
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool char_list_compare(char_list_t *l1, char_list_t *l2) {
+  if (LIST_SIZE(l1) != LIST_SIZE(l2)) {
+    fprintf(stderr, "sizes %" PRISIZE_T " and %" PRISIZE_T " don't match\n",
+            LIST_SIZE(l1), LIST_SIZE(l2));
+    return false;
+  }
+  for (size_t i = 0; i < LIST_SIZE(l1); ++i) {
+    if (LIST_GET(l1, i) != LIST_GET(l2, i)) {
+      fprintf(stderr,
+              "elements l1(%" PRISIZE_T ")=%d != l2(%" PRISIZE_T ")=%d\n", i,
+              LIST_GET(l1, i), i, LIST_GET(l2, i));
+      return false;
+    }
+  }
+  return true;
+}
+
+// test copy of various lists
+static void test_copy(void) {
+  // will have 0,..,7 [at start of buffer]
+  // rep is 0..7,0,0...
+  int_list_t list1 = {0};
+  // will have 15,..,8,0..7 [filling buffer]
+  // rep is 0..7,15,14,..8
+  int_list_t list2 = {0};
+  // will have 15,..,8 [packed at end of buffer]
+  // rep is 0,..0,15,14...,8
+  int_list_t list3 = {0};
+  LIST_RESERVE(&list1, 16);
+  LIST_RESERVE(&list2, 16);
+  LIST_RESERVE(&list3, 16);
+  for (int i = 0; i < 8; ++i) {
+    LIST_PUSH_BACK(&list1, i);
+    LIST_PUSH_BACK(&list2, i);
+  }
+  for (int i = 0; i < 8; ++i) {
+    LIST_PREPEND(&list2, 8 + i);
+    LIST_PREPEND(&list3, 8 + i);
+  }
+  fprintf(stderr, "capacity is %" PRISIZE_T ".", list1.impl.capacity);
+  assert(list1.impl.capacity == 16);
+  assert(LIST_SIZE(&list1) == 8);
+  assert(list2.impl.capacity == 16);
+  assert(LIST_SIZE(&list2) == 16);
+  assert(list3.impl.capacity == 16);
+  assert(LIST_SIZE(&list3) == 8);
+
+  int_list_t list1copy = {0};
+  int_list_t list2copy = {0};
+  int_list_t list3copy = {0};
+  LIST_RESERVE(&list1copy, 16);
+  LIST_RESERVE(&list2copy, 16);
+  LIST_RESERVE(&list3copy, 16);
+  LIST_COPY(&list1copy, &list1);
+  LIST_COPY(&list2copy, &list2);
+  LIST_COPY(&list3copy, &list3);
+  assert(int_list_compare(&list1, &list1copy));
+  assert(int_list_compare(&list2, &list2copy));
+  assert(int_list_compare(&list3, &list3copy));
+
+  int_list_t list1copy2 = {0};
+  int_list_t list2copy2 = {0};
+  int_list_t list3copy2 = {0};
+  LIST_COPY(&list1copy2, &list1copy);
+  LIST_COPY(&list2copy2, &list2copy);
+  LIST_COPY(&list3copy2, &list3copy);
+  assert(int_list_compare(&list1, &list1copy2));
+  assert(int_list_compare(&list2, &list2copy2));
+  assert(int_list_compare(&list2, &list2copy2));
+
+  // will hold 63,...,32,0,..,31
+  // rep is 0,..,31,63,...,32 [filling buffer]
+  char_list_t clist1 = {0};
+  // will have 0,..,63 [filling buffer]
+  char_list_t clist2 = {0};
+  // will hold 63,..,32,0,..,31,32..63
+  // rep will be resized into buffer size 128
+  // rep is 0,..,31,32..63,___63,..,32
+  char_list_t clist3 = {0};
+  LIST_RESERVE(&clist1, 64);
+  LIST_RESERVE(&clist2, 64);
+  LIST_RESERVE(&clist3, 128);
+  for (char i = 0; i < 32; ++i) {
+    LIST_PUSH_BACK(&clist1, i);
+    LIST_PUSH_BACK(&clist2, i);
+    LIST_PUSH_BACK(&clist3, i);
+  }
+  for (char i = 32; i < 64; ++i) {
+    LIST_PREPEND(&clist1, i);
+    LIST_PUSH_BACK(&clist2, i);
+    LIST_PREPEND(&clist3, i);
+    LIST_PUSH_BACK(&clist3, i);
+  }
+  assert(clist1.impl.capacity == 64);
+  assert(clist2.impl.capacity == 64);
+  assert(clist3.impl.capacity == 128);
+
+  char_list_t clist1copy = {0};
+  char_list_t clist2copy = {0};
+  char_list_t clist3copy = {0};
+  LIST_RESERVE(&clist1copy, 64);
+  LIST_RESERVE(&clist2copy, 64);
+  LIST_RESERVE(&clist3copy, 96);
+  LIST_COPY(&clist1copy, &clist1);
+  LIST_COPY(&clist2copy, &clist2);
+  LIST_COPY(&clist3copy, &clist3);
+  assert(char_list_compare(&clist1, &clist1copy));
+  assert(char_list_compare(&clist2, &clist2copy));
+  assert(char_list_compare(&clist3, &clist3copy));
+
+  char_list_t clist1copy2 = {0};
+  char_list_t clist2copy2 = {0};
+  char_list_t clist3copy2 = {0};
+  LIST_COPY(&clist1copy2, &clist1copy);
+  LIST_COPY(&clist2copy2, &clist2copy);
+  LIST_COPY(&clist3copy2, &clist3copy);
+  assert(char_list_compare(&clist1, &clist1copy2));
+  assert(char_list_compare(&clist2, &clist2copy2));
+  assert(char_list_compare(&clist2, &clist2copy2));
+}
+
 #ifndef BAD_TEST
 #define BAD_TEST 0
 #endif
@@ -668,7 +810,7 @@ static UNUSED void test_bad_get1(void) {
 #endif
 
 #if BAD_TEST == 4
-/// getter of an struct list should return an struct-typed value
+/// getter of an struct list should return a struct-typed value
 static UNUSED void test_bad_get2(void) {
   struct foo {
     int x;
@@ -789,6 +931,7 @@ int main(void) {
   RUN(dtor);
   RUN(remove_with_dtor);
   RUN(zero_item_size);
+  RUN(copy);
 
 #undef RUN
 
