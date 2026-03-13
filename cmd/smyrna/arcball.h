@@ -49,78 +49,78 @@
 
 //Math types derived from the KempoApi tMath library
 typedef struct {
-    float X, Y;
+    double X, Y;
 } Tuple2fT;			//A generic 2-element tuple that is represented by single-precision floating point x,y coordinates. 
 
 typedef struct {
-    float X, Y, Z;
+    double X, Y, Z;
 } Tuple3fT;			//A generic 3-element tuple that is represented by single precision-floating point x,y,z coordinates. 
 
 typedef struct {
-    float X, Y, Z, W;
+    double X, Y, Z, W;
 } Tuple4fT;			//A 4-element tuple represented by single-precision floating point x,y,z,w coordinates. 
 
 typedef union {
-    float M[9];
+    double M[9];
     struct {
 	//column major
 	union {
-	    float M00;
-	    float XX;
-	    float SX;
+	    double M00;
+	    double XX;
+	    double SX;
 	};			//XAxis.X and Scale X
 	union {
-	    float M10;
-	    float XY;
+	    double M10;
+	    double XY;
 	};			//XAxis.Y
 	union {
-	    float M20;
-	    float XZ;
+	    double M20;
+	    double XZ;
 	};			//XAxis.Z
 	union {
-	    float M01;
-	    float YX;
+	    double M01;
+	    double YX;
 	};			//YAxis.X
 	union {
-	    float M11;
-	    float YY;
-	    float SY;
+	    double M11;
+	    double YY;
+	    double SY;
 	};			//YAxis.Y and Scale Y
 	union {
-	    float M21;
-	    float YZ;
+	    double M21;
+	    double YZ;
 	};			//YAxis.Z
 	union {
-	    float M02;
-	    float ZX;
+	    double M02;
+	    double ZX;
 	};			//ZAxis.X
 	union {
-	    float M12;
-	    float ZY;
+	    double M12;
+	    double ZY;
 	};			//ZAxis.Y
 	union {
-	    float M22;
-	    float ZZ;
-	    float SZ;
+	    double M22;
+	    double ZZ;
+	    double SZ;
 	};			//ZAxis.Z and Scale Z
     } s;
 } Matrix3fT;			//A single precision floating point 3 by 3 matrix. 
 
 typedef union {
-    float M[16];
+    double M[16];
     struct {
-	float XX;
-	float XY;
-	float XZ;
-	float XW;
-	float YX;
-	float YY;
-	float YZ;
-	float YW;
-	float ZX;
-	float ZY;
-	float ZZ;
-	float ZW;
+	double XX;
+	double XY;
+	double XZ;
+	double XW;
+	double YX;
+	double YY;
+	double YZ;
+	double YW;
+	double ZX;
+	double ZY;
+	double ZZ;
+	double ZW;
     };
 } Matrix4fT;			//A single precision floating point 4 by 4 matrix. 
 
@@ -131,9 +131,6 @@ typedef union {
 #define Quat4fT     Tuple4fT	//A 4 element unit quaternion represented by single precision floating point x,y,z,w coordinates.
 
 #define Vector3fT   Tuple3fT	//A 3-element vector that is represented by single-precision floating point x,y,z coordinates.
-
-//Custom math, or speed overrides
-#define FuncSqrt    sqrtf
 
 //utility macros
 //assuming IEEE-754(float), which i believe has max precision of 7 bits
@@ -159,7 +156,7 @@ static Vector3fT Vector3fCross(Vector3fT v1, Vector3fT v2) {
       * @param  v1 the other vector
       */
 
-static float Vector3fDot(Vector3fT NewObj, Vector3fT v1) {
+static double Vector3fDot(Vector3fT NewObj, Vector3fT v1) {
     return NewObj.X * v1.X + NewObj.Y * v1.Y + NewObj.Z * v1.Z;
 }
 
@@ -168,7 +165,7 @@ static float Vector3fDot(Vector3fT NewObj, Vector3fT v1) {
       * @return the squared length of this vector
       */
 
-static float Vector3fLengthSquared(Vector3fT NewObj) {
+static double Vector3fLengthSquared(Vector3fT NewObj) {
     return NewObj.X * NewObj.X + NewObj.Y * NewObj.Y + NewObj.Z * NewObj.Z;
 }
 
@@ -177,8 +174,8 @@ static float Vector3fLengthSquared(Vector3fT NewObj) {
       * @return the length of this vector
       */
 
-static float Vector3fLength(Vector3fT NewObj) {
-    return FuncSqrt(Vector3fLengthSquared(NewObj));
+static double Vector3fLength(Vector3fT NewObj) {
+    return sqrt(Vector3fLengthSquared(NewObj));
 }
 
     /**
@@ -189,15 +186,15 @@ static float Vector3fLength(Vector3fT NewObj) {
     //$hack this can be optimized some(if s == 0)
 
 static Matrix3fT Matrix3fSetRotationFromQuat4f(Quat4fT q1) {
-    float n, s;
-    float xs, ys, zs;
-    float wx, wy, wz;
-    float xx, xy, xz;
-    float yy, yz, zz;
+    double n, s;
+    double xs, ys, zs;
+    double wx, wy, wz;
+    double xx, xy, xz;
+    double yy, yz, zz;
     Matrix3fT NewObj = {0};
 
     n = q1.X * q1.X + q1.Y * q1.Y + q1.Z * q1.Z + q1.W * q1.W;
-    s = (n > 0.0f) ? (2.0f / n) : 0.0f;
+    s = (n > 0) ? (2.0 / n) : 0;
 
     xs = q1.X * s;
     ys = q1.Y * s;
@@ -212,15 +209,15 @@ static Matrix3fT Matrix3fSetRotationFromQuat4f(Quat4fT q1) {
     yz = q1.Y * zs;
     zz = q1.Z * zs;
 
-    NewObj.s.XX = 1.0f - (yy + zz);
+    NewObj.s.XX = 1.0 - (yy + zz);
     NewObj.s.YX = xy - wz;
     NewObj.s.ZX = xz + wy;
     NewObj.s.XY = xy + wz;
-    NewObj.s.YY = 1.0f - (xx + zz);
+    NewObj.s.YY = 1.0 - (xx + zz);
     NewObj.s.ZY = yz - wx;
     NewObj.s.XZ = xz - wy;
     NewObj.s.YZ = yz + wx;
-    NewObj.s.ZZ = 1.0f - (xx + yy);
+    NewObj.s.ZZ = 1.0 - (xx + yy);
     return NewObj;
 }
 
@@ -269,10 +266,10 @@ static void Matrix3fMulMatrix3f(Matrix3fT *NewObj, Matrix3fT m1) {
       * @return scale factor
       */
 
-static float Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
+static double Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
 			   Matrix4fT * rot4)
 {
-    float s, n;
+    double s, n;
 
     assert(NewObj);
 
@@ -280,7 +277,7 @@ static float Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
     // Not complete but fast and reasonable.
     // See comment in Matrix3d.
 
-    s = FuncSqrt((NewObj->XX * NewObj->XX +
+    s = sqrt((NewObj->XX * NewObj->XX +
 		  NewObj->XY * NewObj->XY +
 		  NewObj->XZ * NewObj->XZ +
 		  NewObj->YX * NewObj->YX +
@@ -288,7 +285,7 @@ static float Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
 		  NewObj->YZ * NewObj->YZ +
 		  NewObj->ZX * NewObj->ZX +
 		  NewObj->ZY * NewObj->ZY +
-		  NewObj->ZZ * NewObj->ZZ) / 3.0f);
+		  NewObj->ZZ * NewObj->ZZ) / 3.0);
 
     if (rot3)			//if pointer not null
     {
@@ -304,21 +301,21 @@ static float Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
 
 	// zero-div may occur.
 
-	n = 1.0f / FuncSqrt(NewObj->XX * NewObj->XX +
+	n = 1.0 / sqrt(NewObj->XX * NewObj->XX +
 			    NewObj->XY * NewObj->XY +
 			    NewObj->XZ * NewObj->XZ);
 	rot3->s.XX *= n;
 	rot3->s.XY *= n;
 	rot3->s.XZ *= n;
 
-	n = 1.0f / FuncSqrt(NewObj->YX * NewObj->YX +
+	n = 1.0 / sqrt(NewObj->YX * NewObj->YX +
 			    NewObj->YY * NewObj->YY +
 			    NewObj->YZ * NewObj->YZ);
 	rot3->s.YX *= n;
 	rot3->s.YY *= n;
 	rot3->s.YZ *= n;
 
-	n = 1.0f / FuncSqrt(NewObj->ZX * NewObj->ZX +
+	n = 1.0 / sqrt(NewObj->ZX * NewObj->ZX +
 			    NewObj->ZY * NewObj->ZY +
 			    NewObj->ZZ * NewObj->ZZ);
 	rot3->s.ZX *= n;
@@ -331,21 +328,21 @@ static float Matrix4fSVD(const Matrix4fT * NewObj, Matrix3fT * rot3,
 	*rot4 = *NewObj;
 	// zero-div may occur.
 
-	n = 1.0f / FuncSqrt(NewObj->XX * NewObj->XX +
+	n = 1.0 / sqrt(NewObj->XX * NewObj->XX +
 			    NewObj->XY * NewObj->XY +
 			    NewObj->XZ * NewObj->XZ);
 	rot4->XX *= n;
 	rot4->XY *= n;
 	rot4->XZ *= n;
 
-	n = 1.0f / FuncSqrt(NewObj->YX * NewObj->YX +
+	n = 1.0 / sqrt(NewObj->YX * NewObj->YX +
 			    NewObj->YY * NewObj->YY +
 			    NewObj->YZ * NewObj->YZ);
 	rot4->YX *= n;
 	rot4->YY *= n;
 	rot4->YZ *= n;
 
-	n = 1.0f / FuncSqrt(NewObj->ZX * NewObj->ZX +
+	n = 1.0 / sqrt(NewObj->ZX * NewObj->ZX +
 			    NewObj->ZY * NewObj->ZY +
 			    NewObj->ZZ * NewObj->ZZ);
 	rot4->ZX *= n;
@@ -374,8 +371,7 @@ static void Matrix4fSetRotationScaleFromMatrix3f(Matrix4fT * NewObj,
 }
 
 
-static void Matrix4fMulRotationScale(Matrix4fT * NewObj, float scale)
-{
+static void Matrix4fMulRotationScale(Matrix4fT *NewObj, double scale) {
     assert(NewObj);
 
     NewObj->XX *= scale;
@@ -403,7 +399,7 @@ static void Matrix4fMulRotationScale(Matrix4fT * NewObj, float scale)
 static void Matrix4fSetRotationFromMatrix3f(Matrix4fT * NewObj,
 					    const Matrix3fT * m1)
 {
-    float scale;
+    double scale;
 
     assert(NewObj && m1);
 
@@ -418,8 +414,8 @@ static void Matrix4fSetRotationFromMatrix3f(Matrix4fT * NewObj,
 struct _ArcBall_t {
     Vector3fT StVec;
     Vector3fT EnVec;
-    float AdjustWidth;
-    float AdjustHeight;
+    double AdjustWidth;
+    double AdjustHeight;
     Matrix4fT Transform;
     Matrix3fT LastRot;
     Matrix3fT ThisRot;
@@ -427,6 +423,6 @@ struct _ArcBall_t {
     int isDragging;
 };
 
-ArcBall_t init_arcBall(float NewWidth, float NewHeight);
+ArcBall_t init_arcBall(double NewWidth, double NewHeight);
 void arcmouseClick(void);
 void arcmouseDrag(void);

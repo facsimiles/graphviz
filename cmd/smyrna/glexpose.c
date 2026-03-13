@@ -40,7 +40,7 @@ static void drawRotatingAxis(void)
 
 	glPushMatrix();
 	glLoadIdentity();
-	glMultMatrixf(view->arcball->Transform.M);	/*arcball transformations , experimental */
+	glMultMatrixd(view->arcball->Transform.M);	/*arcball transformations , experimental */
 	glLineWidth(3);
 	glBegin(GL_LINES);
 	glColor3f(1, 1, 0);
@@ -79,7 +79,7 @@ static int glupdatecamera(ViewInfo * vi)
 
     /*toggle to active camera */
     else {
-	glMultMatrixf(vi->arcball->Transform.M);	/*arcball transformations , experimental */
+	glMultMatrixd(vi->arcball->Transform.M);	/*arcball transformations , experimental */
 	glTranslated(-vi->cameras[vi->active_camera]->targetx,
 		     -vi->cameras[vi->active_camera]->targety, 0);
     }
