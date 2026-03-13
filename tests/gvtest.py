@@ -497,8 +497,10 @@ def plugin_version() -> tuple[int, int, int]:
     return current, revision, age
 
 
+# pylint: disable=too-many-arguments, too-many-positional-arguments
 def run_c(
     src: Path,
+    tmp_path: Path,
     args: list[Union[Path, str]] = None,
     input: str = "",
     cflags: list[str] = None,
@@ -513,37 +515,35 @@ def run_c(
     if link is None:
         link = []
 
-    # create some temporary space to work in
-    with tempfile.TemporaryDirectory() as tmp:
-        # output filename to write our compiled code to
-        exe = Path(tmp) / "a.exe"
+    # output filename to write our compiled code to
+    exe = tmp_path / "a.exe"
 
-        # compile the program
-        compile_c(src, cflags, link, exe)
+    # compile the program
+    compile_c(src, cflags, link, exe)
 
-        # dump the command being run for the user to observe if the test fails
-        argv = [exe] + args
-        print(f"+ {shlex.join(str(x) for x in argv)}", flush=True)
+    # dump the command being run for the user to observe if the test fails
+    argv = [exe] + args
+    print(f"+ {shlex.join(str(x) for x in argv)}", flush=True)
 
-        input_bytes = None
-        if input is not None:
-            input_bytes = input.encode("utf-8")
+    input_bytes = None
+    if input is not None:
+        input_bytes = input.encode("utf-8")
 
-        # run it
-        p = subprocess.run(argv, input=input_bytes, capture_output=True, check=False)
+    # run it
+    p = subprocess.run(argv, input=input_bytes, capture_output=True, check=False)
 
-        # decode output manually rather than using `text=True` above to avoid exceptions
-        # from non-UTF-8 bytes in the output
-        stdout = p.stdout.decode("utf-8", "replace")
-        stderr = p.stderr.decode("utf-8", "replace")
+    # decode output manually rather than using `text=True` above to avoid exceptions
+    # from non-UTF-8 bytes in the output
+    stdout = p.stdout.decode("utf-8", "replace")
+    stderr = p.stderr.decode("utf-8", "replace")
 
-        # check it succeeded
-        if p.returncode != 0:
-            sys.stdout.write(stdout)
-            sys.stderr.write(stderr)
-        p.check_returncode()
+    # check it succeeded
+    if p.returncode != 0:
+        sys.stdout.write(stdout)
+        sys.stderr.write(stderr)
+    p.check_returncode()
 
-        return stdout, stderr
+    return stdout, stderr
 
 
 def which(cmd: str) -> Optional[Path]:

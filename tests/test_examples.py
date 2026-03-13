@@ -25,7 +25,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_compile_example(src):
+def test_compile_example(src, tmp_path):
     """try to compile the example"""
 
     # construct an absolute path to the example
@@ -41,7 +41,7 @@ def test_compile_example(src):
     else:
         cflags = None
 
-    _, _ = run_c(filepath, args, "graph {a -- b}", cflags=cflags, link=libs)
+    _, _ = run_c(filepath, tmp_path, args, "graph {a -- b}", cflags=cflags, link=libs)
 
 
 @pytest.mark.parametrize(

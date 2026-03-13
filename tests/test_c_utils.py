@@ -18,7 +18,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
 
 
 @pytest.mark.parametrize("utility", ("arena", "bitarray", "itos", "list", "tokenize"))
-def test_utility(utility: str):
+def test_utility(utility: str, tmp_path: Path):
     """run the given utility’s unit tests"""
 
     # locate the unit tests
@@ -33,11 +33,11 @@ def test_utility(utility: str):
     if platform.system() != "Windows":
         cflags += ["-std=gnu17"]
 
-    _, _ = run_c(src, cflags=cflags)
+    _, _ = run_c(src, tmp_path, cflags=cflags)
 
 
 @pytest.mark.parametrize("builtins", (False, True))
-def test_overflow_h(builtins: bool):
+def test_overflow_h(builtins: bool, tmp_path: Path):
     """test ../lib/util/overflow.h"""
 
     # locate the unit test
@@ -54,7 +54,7 @@ def test_overflow_h(builtins: bool):
     if platform.system() != "Windows":
         cflags += ["-std=gnu17"]
 
-    run_c(src, cflags=cflags)
+    run_c(src, tmp_path, cflags=cflags)
 
 
 @pytest.mark.parametrize(
