@@ -102,14 +102,13 @@ void twopi_layout(Agraph_t * g)
     }
 
     if (agnnodes(g)) {
-	Agraph_t **ccs;
 	Agraph_t *sg;
 	Agnode_t *c = NULL;
 	Agnode_t *n;
 	Agnode_t* lctr;
 
 	size_t ncc;
-	ccs = ccomps(g, &ncc, 0);
+	Agraph_t **const ccs = ccomps(g, &ncc, 0);
 	if (ncc == 1) {
 	    if (ctr)
 		lctr = ctr;
