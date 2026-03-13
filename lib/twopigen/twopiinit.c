@@ -102,7 +102,6 @@ void twopi_layout(Agraph_t * g)
     }
 
     if (agnnodes(g)) {
-	Agnode_t *n;
 	Agnode_t* lctr;
 
 	size_t ncc;
@@ -117,7 +116,7 @@ void twopi_layout(Agraph_t * g)
 		ctr = c;
 	    if (setLocalRoot && !lctr)
 		agxset (c, rootattr, "1"); 
-	    n = agfstnode(g);
+	    Agnode_t *const n = agfstnode(g);
 	    free(ND_alg(n));
 	    ND_alg(n) = NULL;
 	    adjustNodes(g);
@@ -141,7 +140,7 @@ void twopi_layout(Agraph_t * g)
 		    agxset (c, rootattr, "1"); 
 		adjustNodes(sg);
 	    }
-	    n = agfstnode(g);
+	    Agnode_t *const n = agfstnode(g);
 	    if (n != NULL) {
 		free(ND_alg(n));
 		ND_alg(n) = NULL;
