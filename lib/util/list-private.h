@@ -30,13 +30,45 @@ typedef struct {
   size_t size; ///< number of elements in the list
   ///< size <= capacity
   size_t capacity; ///< available storage slots
+#ifdef DEBUG_LIST
+  /// sentinel value to check initialization
+  size_t sentinel;
+#endif
 } list_t_;
+
+/// The `check_sentinel` pseudo-function should be called at the start of any
+/// interesting `list_t_` operation to sanity-check that the list has been
+/// property initialized to 0.  If the `sentinel` field is not our chosen
+/// ARBITRARY_VALUE, then everything should be 0.  Otherwise, the struct
+/// was probably not properly intialized to 0.  After checking, we set setinel
+/// to note that we've checked it.
+#ifdef DEBUG_LIST
+#define ARBITRARY_VALUE 0xDEADBEEF37UL
+static inline void check_sentinel(const list_t_ *rep) {
+  if (rep->sentinel != ARBITRARY_VALUE) {
+    assert(rep->base == 0);
+    assert(rep->head == 0);
+    assert(rep->size == 0);
+    assert(rep->capacity == 0);
+    assert(rep->sentinel == 0);
+    // This is C.
+    ((list_t_ *)rep)->sentinel = ARBITRARY_VALUE;
+  }
+}
+#else
+#define check_sentinel(rep)                                                    \
+  do {                                                                         \
+  } while (0)
+#endif // DEBUG_LIST
 
 /// get the number of elements in a list
 ///
 /// @param list List to inspect
 /// @return Size of the list
-static inline size_t gv_list_size_(const list_t_ list) { return list.size; }
+static inline size_t gv_list_size_(const list_t_ *list) {
+  check_sentinel(list);
+  return list->size;
+}
 
 /// add an empty space for an item to the end of a list
 ///
@@ -70,7 +102,7 @@ UTIL_API size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size);
 /// @param list List to operate on
 /// @param index Index of item to lookup
 /// @return Slot index corresponding to the given index
-UTIL_API size_t gv_list_get_(const list_t_ list, size_t index);
+UTIL_API size_t gv_list_get_(const list_t_ *list, size_t index);
 
 /// run the destructor of a list on a given slot
 ///
@@ -86,6 +118,7 @@ UTIL_API size_t gv_list_get_(const list_t_ list, size_t index);
 /// @param slot Slot to destruct
 #define LIST_DTOR_(list, slot)                                                 \
   do {                                                                         \
+    check_sentinel(&(list)->impl);                                             \
     if ((list)->dtor == LIST_DTOR_FREE) {                                      \
       /* we need to juggle the element into a pointer to avoid compilation */  \
       /* errors from this (untaken) branch when the element type is not a  */  \
@@ -109,7 +142,7 @@ UTIL_API size_t gv_list_get_(const list_t_ list, size_t index);
 /// @param needle Item to search for
 /// @param item_size Byte size of each list item
 /// @return Slot index on success or `SIZE_MAX` if not found
-UTIL_API size_t gv_list_find_(const list_t_ list, const void *needle,
+UTIL_API size_t gv_list_find_(const list_t_ *list, const void *needle,
                               size_t item_size);
 
 /// remove a slot from a list
@@ -141,7 +174,7 @@ UTIL_API void gv_list_reserve_(list_t_ *list, size_t capacity,
 /// @param needle Item to search for
 /// @param item_size Byte size of each list item
 /// @return True if the item was found
-UTIL_API bool gv_list_contains_(const list_t_ list, const void *needle,
+UTIL_API bool gv_list_contains_(const list_t_ *list, const void *needle,
                                 size_t item_size);
 
 /// make a copy of a list
@@ -151,7 +184,8 @@ UTIL_API bool gv_list_contains_(const list_t_ list, const void *needle,
 /// @param list List to copy
 /// @param item_size Byte size of each list item
 /// @return A copy of the original list
-UTIL_API list_t_ gv_list_copy_(const list_t_ list, size_t item_size);
+UTIL_API void gv_list_copy_(const list_t_ *list, list_t_ *dest,
+                            size_t item_size);
 
 /// does the list wrap past its end?
 ///
@@ -170,7 +204,7 @@ UTIL_API list_t_ gv_list_copy_(const list_t_ list, size_t item_size);
 ///
 /// @param list List to inspect
 /// @return True if the list is contiguous
-UTIL_API bool gv_list_is_contiguous_(const list_t_ list);
+UTIL_API bool gv_list_is_contiguous_(const list_t_ *list);
 
 /// shuffle the populated contents to reset `head` to 0
 ///

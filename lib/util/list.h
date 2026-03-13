@@ -77,7 +77,7 @@ static_assert(
 ///
 /// @param list List to inspect
 /// @return Size of the list
-#define LIST_SIZE(list) gv_list_size_((list)->impl)
+#define LIST_SIZE(list) (gv_list_size_(&(list)->impl))
 
 /// does this list contain no elements?
 ///
@@ -153,7 +153,7 @@ static_assert(
 /// @param index Item index to get
 /// @return Item at the given index
 #define LIST_GET(list, index)                                                  \
-  ((list)->base[gv_list_get_((list)->impl, (index))])
+  ((list)->base[gv_list_get_(&(list)->impl, (index))])
 
 /// retrieve a pointer to an item from a list
 ///
@@ -166,7 +166,7 @@ static_assert(
 /// @param index Item index to get
 /// @return Pointer to item at the given index
 #define LIST_AT(list, index)                                                   \
-  (&(list)->base[gv_list_get_((list)->impl, (index))])
+  (&(list)->base[gv_list_get_(&(list)->impl, (index))])
 
 /// retrieve a pointer to the first item in a list
 ///
@@ -202,7 +202,7 @@ static_assert(
 #define LIST_SET(list, index, item)                                            \
   do {                                                                         \
     (list)->scratch = (item);                                                  \
-    const size_t slot_ = gv_list_get_((list)->impl, (index));                  \
+    const size_t slot_ = gv_list_get_(&(list)->impl, (index));                 \
     LIST_DTOR_((list), slot_);                                                 \
     (list)->base[slot_] = (list)->scratch;                                     \
   } while (0)
@@ -220,7 +220,7 @@ static_assert(
     /* get something we can take the address of */                             \
     (list)->scratch = (item);                                                  \
                                                                                \
-    const size_t found_ = gv_list_find_((list)->impl, &(list)->scratch,        \
+    const size_t found_ = gv_list_find_(&(list)->impl, &(list)->scratch,       \
                                         sizeof((list)->base[0]));              \
     if (found_ == SIZE_MAX) { /* not found */                                  \
       break;                                                                   \
@@ -240,7 +240,7 @@ static_assert(
 #define LIST_CLEAR(list)                                                       \
   do {                                                                         \
     for (size_t i_ = 0; i_ < LIST_SIZE(list); ++i_) {                          \
-      const size_t slot_ = gv_list_get_((list)->impl, i_);                     \
+      const size_t slot_ = gv_list_get_(&(list)->impl, i_);                    \
       LIST_DTOR_((list), slot_);                                               \
     }                                                                          \
     gv_list_clear_(&(list)->impl, sizeof((list)->base[0]));                    \
@@ -271,7 +271,7 @@ static_assert(
 /// @param needle Item to search for
 /// @return True if the item was found
 #define LIST_CONTAINS(list, needle)                                            \
-  gv_list_contains_((list)->impl,                                              \
+  gv_list_contains_(&(list)->impl,                                             \
                     ((void)((list)->base == &(needle)), &(needle)),            \
                     sizeof((list)->base[0]))
 
@@ -285,9 +285,9 @@ static_assert(
 /// @param src List to copy
 #define LIST_COPY(dst, src)                                                    \
   do {                                                                         \
-    memset((dst), 0, sizeof(*(dst)));                                          \
-    (void)((dst)->base == (src)->base);                                        \
-    (dst)->impl = gv_list_copy_((src)->impl, sizeof((src)->base[0]));          \
+    LIST_CLEAR((dst));                                                         \
+    (void)((dst)->base == (src)->base); /* check types */                      \
+    gv_list_copy_(&(src)->impl, &(dst)->impl, sizeof((src)->base[0]));         \
     (dst)->dtor = (src)->dtor;                                                 \
   } while (0)
 
@@ -312,7 +312,7 @@ static_assert(
 ///
 /// @param list List to inspect
 /// @return True if the list is contiguous
-#define LIST_IS_CONTIGUOUS(list) gv_list_is_contiguous_((list)->impl);
+#define LIST_IS_CONTIGUOUS(list) gv_list_is_contiguous_(&(list)->impl);
 
 /// shuffle the populated contents to reset `head` to 0
 ///
@@ -421,7 +421,7 @@ static_assert(
 /// @param list List to operate on
 #define LIST_DROP_BACK(list)                                                   \
   do {                                                                         \
-    const size_t slot_ = gv_list_get_((list)->impl, LIST_SIZE(list) - 1);      \
+    const size_t slot_ = gv_list_get_(&(list)->impl, LIST_SIZE(list) - 1);     \
     LIST_DTOR_((list), slot_);                                                 \
     gv_list_pop_back_(&(list)->impl, &(list)->scratch,                         \
                       sizeof((list)->base[0]));                                \
