@@ -152,8 +152,10 @@ void twopi_layout(Agraph_t * g)
 		adjustNodes(sg);
 	    }
 	    n = agfstnode(g);
-	    free(ND_alg(n));
-	    ND_alg(n) = NULL;
+	    if (n != NULL) {
+		free(ND_alg(n));
+		ND_alg(n) = NULL;
+	    }
 	    packSubgraphs(ncc, ccs, g, &pinfo);
 	    spline_edges(g);
 	}
