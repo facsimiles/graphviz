@@ -50,7 +50,6 @@
 static FILE *outFile;
 static char *CmdName;
 static char **Files;
-static int Verbose;
 static char* gname = "";
 
 typedef LIST(char *) strs_t;

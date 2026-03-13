@@ -20,6 +20,7 @@ typedef struct GVCOMMON_s {
   char **info;
   char *cmdname;
   int verbose;
+  int timing; // if positive value k, show k-1 digits of subsecond precision
   bool config, auto_outfile_names;
   void (*errorfn)(const char *fmt, ...);
   const char **show_boxes; ///< emit code for correct box coordinates
