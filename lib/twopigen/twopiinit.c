@@ -102,7 +102,6 @@ void twopi_layout(Agraph_t * g)
     }
 
     if (agnnodes(g)) {
-	Agraph_t *sg;
 	Agnode_t *c = NULL;
 	Agnode_t *n;
 	Agnode_t* lctr;
@@ -130,7 +129,7 @@ void twopi_layout(Agraph_t * g)
 	    pinfo.doSplines = false;
 
 	    for (size_t i = 0; i < ncc; i++) {
-		sg = ccs[i];
+		Agraph_t *const sg = ccs[i];
 		if (ctr && agcontains(sg, ctr))
 		    lctr = ctr;
 		else if (!rootattr || !(lctr = findRootNode(sg, rootattr)))
