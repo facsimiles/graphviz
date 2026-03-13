@@ -10,6 +10,7 @@ import pytest
 
 sys.path.append(os.path.dirname(__file__))
 from gvtest import (  # pylint: disable=wrong-import-position
+    CompilerOptions,
     is_static_build,
     run,
     run_c,
@@ -25,7 +26,7 @@ from gvtest import (  # pylint: disable=wrong-import-position
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_compile_example(src):
+def test_compile_example(src, tmp_path):
     """try to compile the example"""
 
     # construct an absolute path to the example
@@ -39,9 +40,15 @@ def test_compile_example(src):
     if platform.system() == "Windows":
         cflags = ["-DGVDLL"]
     else:
-        cflags = None
+        cflags = ["-ggdb"]
 
-    _, _ = run_c(filepath, args, "graph {a -- b}", cflags=cflags, link=libs)
+    compiler_options = CompilerOptions(tmp_path, cflags=cflags, link=libs)
+    _, _ = run_c(
+        filepath,
+        compiler_options,
+        args,
+        "graph {a -- b}",
+    )
 
 
 @pytest.mark.parametrize(
