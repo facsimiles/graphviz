@@ -102,7 +102,6 @@ void twopi_layout(Agraph_t * g)
     }
 
     if (agnnodes(g)) {
-	Agnode_t *c = NULL;
 	Agnode_t *n;
 	Agnode_t* lctr;
 
@@ -113,7 +112,7 @@ void twopi_layout(Agraph_t * g)
 		lctr = ctr;
 	    else if (!rootattr || !(lctr = findRootNode(g, rootattr)))
 		lctr = 0;
-	    c = circleLayout(g, lctr);
+	    Agnode_t *const c = circleLayout(g, lctr);
 	    if (setRoot && !ctr)
 		ctr = c;
 	    if (setLocalRoot && !lctr)
@@ -135,7 +134,7 @@ void twopi_layout(Agraph_t * g)
 		else if (!rootattr || !(lctr = findRootNode(sg, rootattr)))
 		    lctr = 0;
 		(void)graphviz_node_induce(sg, NULL);
-		c = circleLayout(sg, lctr);
+		Agnode_t *const c = circleLayout(sg, lctr);
 	        if (setRoot && !ctr)
 		    ctr = c;
 		if (setLocalRoot && (!lctr || (lctr == ctr)))
