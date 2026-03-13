@@ -108,8 +108,8 @@ glCompFont glNewFontFromParent(glCompObj *o, const char *text) {
 }
 
 /*texture base 3d text rendering*/
-void glCompDrawText3D(glCompFont f, float x, float y, double z, float w,
-                      float h) {
+void glCompDrawText3D(glCompFont f, double x, double y, double z, double w,
+                      double h) {
 	glEnable(GL_BLEND);		// Turn Blending On
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
