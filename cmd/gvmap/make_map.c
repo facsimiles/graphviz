@@ -157,6 +157,7 @@ void improve_contiguity(int n, int dim, int *grouping, SparseMatrix poly_point_m
   const int flag = stress_model(dim, D, x, maxit);
 
   assert(!flag);
+  (void)flag;
 
   SparseMatrix_delete(D);
   SparseMatrix_delete(point_poly_map);
