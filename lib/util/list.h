@@ -423,7 +423,7 @@ static_assert(
   do {                                                                         \
     const size_t slot_ = gv_list_get_((list)->impl, LIST_SIZE(list) - 1);      \
     LIST_DTOR_((list), slot_);                                                 \
-    gv_list_pop_back_(&(list)->impl, &(list)->scratch,                         \
+    gv_list_pop_back_(&(list)->impl, (char[sizeof((list)->base[0])]){0},       \
                       sizeof((list)->base[0]));                                \
   } while (0)
 
