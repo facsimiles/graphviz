@@ -23,13 +23,13 @@
 #include <stdatomic.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <unistd.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
 #include <util/list.h>
+#include <util/optional.h>
 #include <util/path.h>
 #include <util/startswith.h>
 #include <util/strcasecmp.h>
@@ -346,48 +346,37 @@ bool mapbool(const char *p)
 
 pointf dotneato_closest(splines * spl, pointf pt)
 {
-    double d2, dlow2, dhigh2; /* squares of distances */
-    double low, high, t;
-    pointf c[4], pt2;
-    bezier bz;
+    pointf pt2;
 
-    size_t besti = SIZE_MAX;
-    size_t bestj = SIZE_MAX;
-    double bestdist2 = DBL_MAX;
+    OPTIONAL(size_t) besti = {0};
+    OPTIONAL(size_t) bestj = {0};
+    OPTIONAL(double) bestdist2 = {0};
     for (size_t i = 0; i < spl->size; i++) {
-	bz = spl->list[i];
+	const bezier bz = spl->list[i];
 	for (size_t j = 0; j < bz.size; j++) {
-	    pointf b;
-
-	    b.x = bz.list[j].x;
-	    b.y = bz.list[j].y;
-	    d2 = DIST2(b, pt);
-	    if (bestj == SIZE_MAX || d2 < bestdist2) {
-		besti = i;
-		bestj = j;
-		bestdist2 = d2;
+	    const pointf b = bz.list[j];
+	    const double d2 = DIST2(b, pt);
+	    if (!bestj.has_value || d2 < OPTIONAL_VALUE(bestdist2)) {
+		OPTIONAL_SET(&besti, i);
+		OPTIONAL_SET(&bestj, j);
+		OPTIONAL_SET(&bestdist2, d2);
 	    }
 	}
     }
 
-    bz = spl->list[besti];
+    const bezier bz = spl->list[OPTIONAL_VALUE(besti)];
     /* Pick best Bézier. If bestj is the last point in the B-spline, decrement.
      * Then set j to be the first point in the corresponding Bézier by dividing
      * then multiplying be 3. Thus, 0,1,2 => 0; 3,4,5 => 3, etc.
      */
-    if (bestj == bz.size-1)
-	bestj--;
-    const size_t j = 3 * (bestj / 3);
-    for (size_t k = 0; k < 4; k++) {
-	c[k].x = bz.list[j + k].x;
-	c[k].y = bz.list[j + k].y;
-    }
-    low = 0.0;
-    high = 1.0;
-    dlow2 = DIST2(c[0], pt);
-    dhigh2 = DIST2(c[3], pt);
-    do {
-	t = (low + high) / 2.0;
+    if (OPTIONAL_VALUE(bestj) == bz.size-1)
+	OPTIONAL_SET(&bestj, OPTIONAL_VALUE(bestj) - 1);
+    const size_t j = 3 * (OPTIONAL_VALUE(bestj) / 3);
+    const pointf c[] =
+      {bz.list[j], bz.list[j + 1], bz.list[j + 2], bz.list[j + 3]};
+    for (double low = 0, high = 1.0, dlow2 = DIST2(c[0], pt),
+         dhigh2 = DIST2(c[3], pt);;) {
+	const double t = (low + high) / 2.0;
 	pt2 = Bezier(c, t, NULL, NULL);
 	if (fabs(dlow2 - dhigh2) < 1.0)
 	    break;
@@ -400,7 +389,7 @@ pointf dotneato_closest(splines * spl, pointf pt)
 	    low = t;
 	    dlow2 = DIST2(pt2, pt);
 	}
-    } while (1);
+    }
     return pt2;
 }
 
