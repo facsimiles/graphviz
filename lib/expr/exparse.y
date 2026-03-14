@@ -168,6 +168,18 @@
    */
 %token-table
 
+/* Known shift/reduce conflicts that are resolved correctly by bison's default
+ * shift behaviour:
+ *   1. Dangling-else: `IF ... IF ... stmt . ELSE` — ELSE binds to the nearest
+ *      IF, which is the standard C-like rule.
+ *   2-3. CASE/DEFAULT at a case_list boundary: an empty statement_list inside
+ *      a switch_item can either shift the next CASE/DEFAULT into the current
+ *      item or reduce and start a new switch_item; shift gives the right parse.
+ *   4. splitop with ',': the comma inside a split() call is ambiguous with
+ *      the comma operator; shift correctly consumes it as a split argument
+ *      separator. */
+%expect 4
+
 %{
 
 #include <expr/exgram.h>
