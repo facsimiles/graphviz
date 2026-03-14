@@ -149,6 +149,38 @@ The continuous integration tests include running Pylint on all Python files in
 the repository. To check your additions are compliant,
 `pylint --rcfile=.pylintrc tests/test_regression.py`.
 
+### Replicating CI test runs locally
+
+You may be able to replicate Linux CI builds and tests on your
+development machine, using the `gitlab-ci-local` project and
+Docker. It is known to work for Linux CI jobs on a Linux host with the
+same processor, but probably works on Windows and maybe even on
+different processors with emulation.
+
+To install `gitlab-ci-local`, see
+[https://github.com/firecow/gitlab-ci-local](https://github.com/firecow/gitlab-ci-local)
+for instructions for your machine. On Debian-based Linux machines
+(such as Ubuntu), installing via PPA seems to work best. Visit
+[https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+to download and install Docker.
+
+You may need to override certain variables to make it work, as it
+incorrectly guesses where to find machine images. You can add these
+variable definitions, to the config file, which defaults to
+`.gitlab-ci-local-variables.yml` in the root of the project (same
+directory place as the `.gitlab-ci.yml` file)
+```
+CI_REGISTRY_IMAGE: "registry.gitlab.com/graphviz/graphviz"
+CI_COMMIT_SHA: "latest"
+```
+
+Running
+```shell
+$ gitlab-ci-local ubuntu-24.04-cmake-ASan-build-and-test-including-ctest |& tee test.out
+```
+in the root of the checked-out repo runs build and tests in a pristine
+Ubuntu 24.04 container, saving output in file `test.out`.
+
 ## Performance and profiling
 
 The runtime and memory usage of Graphviz is dependent on the user’s graph. It is
