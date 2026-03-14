@@ -6377,6 +6377,25 @@ def test_2801():
     assert "is not a known color" not in warnings, "`colorscheme` not working"
 
 
+def test_2825():
+    """
+    Graphviz should not crash when `rebuild_vlists` returns -1
+    https://gitlab.com/graphviz/graphviz/-/issues/2825
+    """
+
+    # locate our associated test case in this directory
+    src = Path(__file__).parent / "2825.dot"
+    assert src.exists(), "unexpectedly missing test case"
+
+    # run this through Graphviz
+    try:
+        dot("png", src)
+    except subprocess.CalledProcessError as e:
+        # only fail if we crashed, not exited with failure
+        if e.returncode != 1:
+            raise
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
