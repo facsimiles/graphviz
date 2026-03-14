@@ -25,15 +25,16 @@
 #include "config.h"
 
 #include <glcomp/glcompdefs.h>
+#include <math.h>
 #define ARCBALL_C
 #include "smyrnadefs.h"
 #include "arcball.h"
 
-static void setBounds(ArcBall_t *a, float NewWidth, float NewHeight) {
-    assert((NewWidth > 1.0f) && (NewHeight > 1.0f));
+static void setBounds(ArcBall_t *a, double NewWidth, double NewHeight) {
+    assert(NewWidth > 1.0 && NewHeight > 1.0);
     //Set adjustment factor for width/height
-    a->AdjustWidth = 1.0f / ((NewWidth - 1.0f) * 0.5f);
-    a->AdjustHeight = 1.0f / ((NewHeight - 1.0f) * 0.5f);
+    a->AdjustWidth = 1.0 / ((NewWidth - 1.0) * 0.5);
+    a->AdjustHeight = 1.0 / ((NewHeight - 1.0) * 0.5);
 }
 
 static Vector3fT mapToSphere(ArcBall_t *a, const Point2fT *NewPt) {
@@ -43,45 +44,45 @@ static Vector3fT mapToSphere(ArcBall_t *a, const Point2fT *NewPt) {
     TempPt = *NewPt;
 
     //Adjust point coords and scale down to range of [-1 ... 1]
-    TempPt.X = TempPt.X * a->AdjustWidth - 1.0f;
-    TempPt.Y = 1.0f - TempPt.Y * a->AdjustHeight;
+    TempPt.X = TempPt.X * a->AdjustWidth - 1.0;
+    TempPt.Y = 1.0 - TempPt.Y * a->AdjustHeight;
 
     //Compute the square of the length of the vector to the point from the center
-    float length = TempPt.X * TempPt.X + TempPt.Y * TempPt.Y;
+    double length = TempPt.X * TempPt.X + TempPt.Y * TempPt.Y;
 
     //If the point is mapped outside of the sphere... (length > radius squared)
-    if (length > 1.0f) {
+    if (length > 1.0) {
 
 	//Compute a normalizing factor (radius / sqrt(length))
-	float norm = 1.0f / FuncSqrt(length);
+	double norm = 1.0 / sqrt(length);
 
 	//Return the "normalized" vector, a point on the sphere
 	return (Vector3fT){.X = TempPt.X * norm, .Y = TempPt.Y * norm};
     } else			//Else it's on the inside
     {
 	//Return a vector to a point mapped inside the sphere sqrt(radius squared - length)
-	return (Vector3fT){.X = TempPt.X, .Y = TempPt.Y, .Z = FuncSqrt(1.0f - length)};
+	return (Vector3fT){.X = TempPt.X, .Y = TempPt.Y, .Z = sqrt(1.0 - length)};
     }
 }
 
-static Matrix4fT Transform = { {1.0f, 0.0f, 0.0f, 0.0f,	// NEW: Final Transform
-				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f}
+static Matrix4fT Transform = { {1.0, 0, 0, 0,	// NEW: Final Transform
+				0, 1.0, 0, 0,
+				0, 0, 1.0, 0,
+				0, 0, 0, 1.0}
 };
 
-static Matrix3fT LastRot = { {1.0f, 0.0f, 0.0f,	// NEW: Last Rotation
-			      0.0f, 1.0f, 0.0f,
-			      0.0f, 0.0f, 1.0f}
+static Matrix3fT LastRot = { {1.0, 0, 0,	// NEW: Last Rotation
+			      0, 1.0, 0,
+			      0, 0, 1.0}
 };
 
-static Matrix3fT ThisRot = { {1.0f, 0.0f, 0.0f,	// NEW: This Rotation
-			      0.0f, 1.0f, 0.0f,
-			      0.0f, 0.0f, 1.0f}
+static Matrix3fT ThisRot = { {1.0, 0, 0,	// NEW: This Rotation
+			      0, 1.0, 0,
+			      0, 0, 1.0}
 };
 
 //Create/Destroy
-ArcBall_t init_arcBall(float NewWidth, float NewHeight) {
+ArcBall_t init_arcBall(double NewWidth, double NewHeight) {
     ArcBall_t a = {.Transform = Transform, .LastRot = LastRot,
                    .ThisRot = ThisRot};
 

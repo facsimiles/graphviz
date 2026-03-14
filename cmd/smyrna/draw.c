@@ -304,7 +304,7 @@ static void EmbedText(xdot_op *op, int param) {
 	sdot_op *const o = (sdot_op *)((char *)op - offsetof(sdot_op, op));
 	(void)param;
 
-	float x, y;
+	double x, y;
 	glColor4d(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 	view->Topview->global_z += o->layer * LAYER_DIFF + 0.05;
 	switch (o->op.u.text.align)

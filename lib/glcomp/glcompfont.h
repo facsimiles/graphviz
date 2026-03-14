@@ -29,8 +29,8 @@ glCompFont glNewFontFromParent(glCompObj *o, const char *text);
     void glDeleteFont(glCompFont * f);
 void glCompDrawText(glCompFont f, double x, double y);
 void glCompRenderText(glCompFont f, glCompObj *parentObj);
-void glCompDrawText3D(glCompFont f, float x, float y, double z, float w,
-                      float h);
+void glCompDrawText3D(glCompFont f, double x, double y, double z, double w,
+                      double h);
 
 #ifdef __cplusplus
 }
