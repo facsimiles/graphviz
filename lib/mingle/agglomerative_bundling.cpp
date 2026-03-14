@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include <algorithm>
+#include <util/debug.h>
 #include <common/types.h>
 #include <common/globals.h>
 #include <sparse/general.h>

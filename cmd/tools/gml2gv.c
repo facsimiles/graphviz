@@ -23,7 +23,6 @@
 #include <util/exit.h>
 #include <util/unreachable.h>
 
-static bool Verbose;
 static char *gname = "";
 static FILE *outFile;
 static char *CmdName;
@@ -86,7 +85,7 @@ static void initargs(int argc, char **argv) {
       gname = optarg;
       break;
     case 'v':
-      Verbose = true;
+      Verbose = 1;
       break;
     case 'o':
       if (outFile != NULL)

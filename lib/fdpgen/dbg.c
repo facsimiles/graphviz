@@ -23,6 +23,7 @@
 #include <neatogen/neatoprocs.h>
 #include <fdpgen/fdp.h>
 #include <math.h>
+#include <util/debug.h>
 #include <util/exit.h>
 
 static int indent = -1;

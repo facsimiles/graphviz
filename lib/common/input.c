@@ -23,6 +23,7 @@
 #include <string.h>
 #include <util/agxbuf.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <util/gv_ctype.h>
 #include <util/gv_fopen.h>

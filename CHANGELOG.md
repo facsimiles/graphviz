@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Vertical centering of text within HTML-like table cells has been improved.
 - The existing ability to provide a numeric parameter to `-v`
   to specify verbosity level are newly documented in `dot --help`.
+- Moved `Verbose` global variable definition into `lib/util/debug.c` and
+  declared for export in `lib/util/debug.h` along with `GVC_INFO()` and `GVC_DEBUG()`
+  to reduce potential global variable conflicts among graphviz libraries
+  and applications.
 
 ### Fixed
 

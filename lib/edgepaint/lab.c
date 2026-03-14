@@ -20,6 +20,7 @@
 #include <sparse/color_palette.h>
 #include <edgepaint/lab_gamut.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/prisize_t.h>
 
 color_rgb color_rgb_init(double r, double g, double b){

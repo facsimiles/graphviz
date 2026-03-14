@@ -40,6 +40,7 @@
 #include <string>
 #include <utility>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <vector>
 #include "openFile.h"
