@@ -199,13 +199,12 @@ static int rebuild_vlists(graph_t * g)
     return 0;
 }
 
-void dot_concentrate(graph_t * g)
-{
+int dot_concentrate(graph_t *g) {
     int c, r, leftpos, rightpos;
     node_t *left, *right;
 
     if (GD_maxrank(g) - GD_minrank(g) <= 1)
-	return;
+	return 0;
     /* this is the downward looking pass. r is a candidate rank. */
     for (r = 1; GD_rank(g)[r + 1].n; r++) {
 	for (leftpos = 0; leftpos < GD_rank(g)[r].n; leftpos++) {
@@ -242,7 +241,8 @@ void dot_concentrate(graph_t * g)
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	if (rebuild_vlists(GD_clust(g)[c]) != 0) {
 	    agerr(AGPREV, "concentrate=true may not work correctly.\n");
-	    return;
+	    return -1;
 	}
     }
+    return 0;
 }

@@ -1205,7 +1205,12 @@ static int make_flat_adj_edges(graph_t *g, edge_t **edges, unsigned cnt,
   if (r != 0) {
     return r;
   }
-  dot_position(auxg);
+  {
+    const int rc = dot_position(auxg);
+    if (rc != 0) {
+      return rc;
+    }
+  }
 
   /* reposition */
   midx = (ND_coord(tn).x - ND_rw(tn) + ND_coord(hn).x + ND_lw(hn)) / 2;

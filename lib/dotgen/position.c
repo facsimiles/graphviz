@@ -124,13 +124,17 @@ connectGraph (graph_t* g)
     }
 }
 
-void dot_position(graph_t *g) {
+int dot_position(graph_t *g) {
     if (GD_nlist(g) == NULL)
-	return;			/* ignore empty graph */
+	return 0; // ignore empty graph
     mark_lowclusters(g);	/* we could remove from splines.c now */
     set_ycoords(g);
-    if (Concentrate)
-	dot_concentrate(g);
+    if (Concentrate) {
+	const int rc = dot_concentrate(g);
+	if (rc != 0) {
+	    return rc;
+	}
+    }
     expand_leaves(g);
     if (flat_edges(g))
 	set_ycoords(g);
@@ -146,6 +150,7 @@ void dot_position(graph_t *g) {
     remove_aux_edges(g);	/* must come after set_aspect since we now
 				 * use GD_ln and GD_rn for bbox width.
 				 */
+    return 0;
 }
 
 static int nsiter2(graph_t * g)
