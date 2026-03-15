@@ -23,9 +23,7 @@ static inline bool sadd_overflow(int a, int b, int *res) {
   assert(res != NULL);
 
   // delegate to hardware optimized implementations where possible
-#if defined(__clang__) &&                                                      \
-    (__clang_major__ > 3 ||                                                    \
-     (__clang_major__ == 3 && __clang_minor__ > 7)) // Clang ≥ 3.8
+#if defined(__clang__)
   return __builtin_sadd_overflow(a, b, res);
 #elif defined(__GNUC__) && __GNUC__ > 4 // GCC ≥ 5
   return __builtin_sadd_overflow(a, b, res);
@@ -52,9 +50,7 @@ static inline bool size_overflow(size_t a, size_t b, size_t *res) {
   assert(res != NULL);
 
   // delegate to hardware optimized implementations where possible
-#if defined(__clang__) &&                                                      \
-    (__clang_major__ > 3 ||                                                    \
-     (__clang_major__ == 3 && __clang_minor__ > 7)) // Clang ≥ 3.8
+#if defined(__clang__)
   return __builtin_add_overflow(a, b, res);
 #elif defined(__GNUC__) && __GNUC__ > 4 // GCC ≥ 5
   return __builtin_add_overflow(a, b, res);
@@ -78,9 +74,7 @@ static inline bool u64add_overflow(uint64_t a, uint64_t b, uint64_t *res) {
   assert(res != NULL);
 
   // delegate to hardware optimized implementations where possible
-#if defined(__clang__) &&                                                      \
-    (__clang_major__ > 3 ||                                                    \
-     (__clang_major__ == 3 && __clang_minor__ > 7)) // Clang ≥ 3.8
+#if defined(__clang__)
   return __builtin_add_overflow(a, b, res);
 #elif defined(__GNUC__) && __GNUC__ > 4 // GCC ≥ 5
   return __builtin_add_overflow(a, b, res);
@@ -104,9 +98,7 @@ static inline bool u64mul_overflow(uint64_t a, uint64_t b, uint64_t *res) {
   assert(res != NULL);
 
   // delegate to hardware optimized implementations where possible
-#if defined(__clang__) &&                                                      \
-    (__clang_major__ > 3 ||                                                    \
-     (__clang_major__ == 3 && __clang_minor__ > 7)) // Clang ≥ 3.8
+#if defined(__clang__)
   return __builtin_mul_overflow(a, b, res);
 #elif defined(__GNUC__) && __GNUC__ > 4 // GCC ≥ 5
   return __builtin_mul_overflow(a, b, res);
