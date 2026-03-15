@@ -104,7 +104,7 @@ static int cmp(const void *a, const void *b, void *context) {
   return 0;
 }
 
-void quicksort_place(double *place, int *ordering, size_t size) {
+void quicksort_in_place(double *place, int *ordering, size_t size) {
   gv_sort(ordering, size, sizeof(ordering[0]), cmp, place);
 }
 
@@ -131,7 +131,7 @@ static void rescale_layout_polarFocus(v_data *graph, size_t n, double *x_coords,
 	{
 		ordering[i] = (int)i;
     }
-    quicksort_place(distances, ordering, n);
+    quicksort_in_place(distances, ordering, n);
 
     densities = compute_densities(graph, n, x_coords, y_coords);
     double *smoothed_densities = smooth_vec(densities, ordering, n, interval);
