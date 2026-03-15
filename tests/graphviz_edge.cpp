@@ -1,6 +1,7 @@
 #include <cassert>
 #include <string>
 #include <unordered_set>
+#include <util/unreachable.h>
 
 #include "graphviz_edge.h"
 #include "graphviz_node.h"
@@ -60,6 +61,7 @@ edge_arrowhead_main_svg_element_type(std::string_view primitive_arrow_shape) {
     return SVG::SVGElementType::Path;
   } else {
     assert(false && "unsupported primitive arrow shape");
+    UNREACHABLE();
   }
 }
 
@@ -92,6 +94,7 @@ SVG::SVGRect GraphvizEdge::arrowtail_outline_bbox(
     std::string_view dir, std::string_view primitive_arrow_shape) const {
   assert((dir == "back" || dir == "both") &&
          "no arrowhead for this edge direction");
+  (void)dir;
   const auto index = 0;
   const auto main_svg_element_type =
       edge_arrowhead_main_svg_element_type(primitive_arrow_shape);
