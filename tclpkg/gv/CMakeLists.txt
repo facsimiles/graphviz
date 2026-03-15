@@ -2,6 +2,8 @@ if(ENABLE_SWIG)
   set(UseSWIG_MODULE_VERSION 2) # cmake-lint: disable=C0103
   include(UseSWIG)
 
+  # SWIG-generated wrappers use type-punning that violates strict aliasing rules.
+  set(swig_generated_compile_options -fno-strict-aliasing)
   set_property(SOURCE gv.i PROPERTY CPLUSPLUS ON)
 
   if(ENABLE_SHARP)
@@ -11,6 +13,9 @@ if(ENABLE_SWIG)
     )
     target_compile_definitions(gv_sharp PRIVATE DEMAND_LOADING=1)
     set_property(TARGET gv_sharp PROPERTY SWIG_COMPILE_OPTIONS -namespace)
+    set_property(
+      TARGET gv_sharp
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS ${swig_generated_compile_options})
     target_link_libraries(gv_sharp PRIVATE cdt cgraph gvc)
 
     get_property(gv_sharp_support
@@ -35,6 +40,9 @@ if(ENABLE_SWIG)
       SOURCES gv.cpp gv.i gv_builtins.c gv_dummy_init.c
     )
     target_compile_definitions(gv_d PRIVATE DEMAND_LOADING=1)
+    set_property(
+      TARGET gv_d
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS ${swig_generated_compile_options})
     target_link_libraries(gv_d PRIVATE cdt cgraph gvc)
 
     install(
@@ -54,12 +62,14 @@ if(ENABLE_SWIG)
     set_property(
       TARGET gv_go PROPERTY SWIG_COMPILE_OPTIONS -intgosize ${INTGOSIZE}
     )
+    set(gv_go_flags ${swig_generated_compile_options})
     if(HAVE_CXX_WUNUSED_FUNCTION)
-      set_property(
-        TARGET gv_go
-        PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-unused-function
-      )
+      list(APPEND gv_go_flags -Wno-unused-function)
     endif()
+    set_property(
+      TARGET gv_go
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS ${gv_go_flags}
+    )
     target_link_libraries(gv_go PRIVATE cdt cgraph gvc)
 
     add_custom_target(gv.go
@@ -100,12 +110,14 @@ if(ENABLE_SWIG)
       TARGET gv_guile
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${GUILE_INCLUDE_DIRS}
     )
+    set(gv_guile_flags ${swig_generated_compile_options})
     if(HAVE_CXX_WUNUSED_PARAMETER)
-      set_property(
-        TARGET gv_guile
-        PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-unused-parameter
-      )
+      list(APPEND gv_guile_flags -Wno-unused-parameter)
     endif()
+    set_property(
+      TARGET gv_guile
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS ${gv_guile_flags}
+    )
     target_link_libraries(
       gv_guile PRIVATE cdt cgraph gvc ${GUILE_LINK_LIBRARIES}
     )
@@ -128,6 +140,9 @@ if(ENABLE_SWIG)
       TARGET gv_java
       PROPERTY SWIG_COMPILE_OPTIONS -package org.graphviz
     )
+    set_property(
+      TARGET gv_java
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS ${swig_generated_compile_options})
     set_property(
       TARGET gv_java
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES
@@ -155,7 +170,7 @@ if(ENABLE_SWIG)
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES
         ${JAVASCRIPTCORE_INCLUDE_DIRS}
     )
-    set(JS_FLAGS "")
+    set(JS_FLAGS ${swig_generated_compile_options})
     if(HAVE_CXX_WSHADOW)
       list(APPEND JS_FLAGS -Wno-shadow)
     endif()
@@ -191,6 +206,10 @@ if(ENABLE_SWIG)
       TARGET gv_lua
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${LUA_INCLUDE_DIR}
     )
+    set_property(
+      TARGET gv_lua
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS ${swig_generated_compile_options}
+    )
     target_link_libraries(gv_lua PRIVATE cdt cgraph gvc ${LUA_LIBRARIES})
 
     install(
@@ -211,12 +230,14 @@ if(ENABLE_SWIG)
       TARGET gv_perl
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${PERL_INCLUDE_PATH}
     )
+    set(gv_perl_flags ${swig_generated_compile_options})
     if(HAVE_CXX_WUNUSED_PARAMETER)
-      set_property(
-        TARGET gv_perl
-        PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-unused-parameter
-      )
+      list(APPEND gv_perl_flags -Wno-unused-parameter)
     endif()
+    set_property(
+      TARGET gv_perl
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS ${gv_perl_flags}
+    )
     target_link_libraries(gv_perl PRIVATE cdt cgraph gvc ${PERL_LIBRARY})
 
     install(
@@ -242,7 +263,7 @@ if(ENABLE_SWIG)
       APPEND
       PROPERTY INCLUDE_DIRECTORIES ${PHP_INCLUDE_DIRS}
     )
-    set(PHP_FLAGS "")
+    set(PHP_FLAGS ${swig_generated_compile_options})
     if(HAVE_CXX_WUNUSED_FUNCTION)
       list(APPEND PHP_FLAGS -Wno-unused-function)
     endif()
@@ -279,7 +300,7 @@ if(ENABLE_SWIG)
       TARGET gv_python3
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${Python3_INCLUDE_DIRS}
     )
-    set(PYTHON_FLAGS "")
+    set(PYTHON_FLAGS ${swig_generated_compile_options})
     if(HAVE_CXX_WMISSING_FIELD_INITIALIZERS)
       list(APPEND PYTHON_FLAGS -Wno-missing-field-initializers)
     endif()
@@ -312,6 +333,8 @@ if(ENABLE_SWIG)
       TARGET gv_R
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${R_INCLUDE_DIRS}
     )
+    set_property(TARGET gv_R PROPERTY SWIG_GENERATED_COMPILE_OPTIONS
+       ${swig_generated_compile_options})
     target_link_libraries(gv_R PRIVATE cdt cgraph gvc ${R_LIBRARIES})
 
     install(
@@ -332,7 +355,7 @@ if(ENABLE_SWIG)
       TARGET gv_ruby
       PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${Ruby_INCLUDE_DIRS}
     )
-    set(RUBY_FLAGS "")
+    set(RUBY_FLAGS ${swig_generated_compile_options})
     if(HAVE_CXX_WUNUSED_PARAMETER)
       list(APPEND RUBY_FLAGS -Wno-unused-parameter)
     endif()
@@ -361,12 +384,14 @@ if(ENABLE_SWIG)
     target_compile_definitions(gv_tcl PRIVATE DEMAND_LOADING=1)
     set_property(TARGET gv_tcl PROPERTY SWIG_COMPILE_OPTIONS -namespace)
     target_include_directories(gv_tcl PRIVATE SYSTEM ${TCL_INCLUDE_PATH})
+    set(gv_tcl_flags ${swig_generated_compile_options})
     if(HAVE_CXX_WSHADOW)
-      set_property(
-        TARGET gv_tcl
-        PROPERTY SWIG_GENERATED_COMPILE_OPTIONS -Wno-shadow
-      )
+      list(APPEND gv_tcl_flags -Wno-shadow)
     endif()
+    set_property(
+      TARGET gv_tcl
+      PROPERTY SWIG_GENERATED_COMPILE_OPTIONS ${gv_tcl_flags}
+    )
     target_link_libraries(gv_tcl PRIVATE cdt cgraph gvc tclstubs ${TCL_LIBRARY})
 
     install(
