@@ -57,6 +57,7 @@ static void *slot_from_base(void *base, size_t index, size_t stride) {
 
 size_t gv_list_append_slot_(list_t_ *list, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
 
   // do we need to expand the backing storage?
   if (list->size == list->capacity) {
@@ -78,6 +79,7 @@ size_t gv_list_append_slot_(list_t_ *list, size_t item_size) {
 
 size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
 
   // do we need to expand the backing storage?
   if (list->size == list->capacity) {
@@ -99,6 +101,7 @@ size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size) {
 
 static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
 
   // if we can already fit enough items, nothing to do
   if (list->capacity >= capacity) {
@@ -165,6 +168,7 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
 
 bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
   assert(item != NULL);
 
   // do we need to expand the backing storage?
@@ -206,16 +210,20 @@ bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
   return true;
 }
 
-size_t gv_list_get_(const list_t_ list, size_t index) {
-  assert(index < list.size && "index out of bounds");
-  return (list.head + index) % list.capacity;
+size_t gv_list_get_(const list_t_ *list, size_t index) {
+  assert(list != NULL);
+  check_sentinel(list);
+  assert(index < list->size && "index out of bounds");
+  return (list->head + index) % list->capacity;
 }
 
-size_t gv_list_find_(const list_t_ list, const void *needle, size_t item_size) {
-
-  for (size_t i = 0; i < list.size; ++i) {
+size_t gv_list_find_(const list_t_ *list, const void *needle,
+                     size_t item_size) {
+  assert(list != NULL);
+  check_sentinel(list);
+  for (size_t i = 0; i < list->size; ++i) {
     const size_t slot = gv_list_get_(list, i);
-    const void *candidate = INDEX_TO(&list, slot, item_size);
+    const void *candidate = INDEX_TO(list, slot, item_size);
     if (item_size == 0 || memcmp(needle, candidate, item_size) == 0) {
       return i;
     }
@@ -226,19 +234,20 @@ size_t gv_list_find_(const list_t_ list, const void *needle, size_t item_size) {
 
 void gv_list_remove_(list_t_ *list, size_t index, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
   assert(index < list->size);
 
   // shrink the list
   for (size_t i = index + 1; i < list->size; ++i) {
-    const size_t dst_slot = gv_list_get_(*list, i - 1);
+    const size_t dst_slot = gv_list_get_(list, i - 1);
     void *const dst = INDEX_TO(list, dst_slot, item_size);
-    const size_t src_slot = gv_list_get_(*list, i);
+    const size_t src_slot = gv_list_get_(list, i);
     const void *const src = INDEX_TO(list, src_slot, item_size);
     if (item_size > 0) {
       memcpy(dst, src, item_size);
     }
   }
-  const size_t truncated_slot = gv_list_get_(*list, list->size - 1);
+  const size_t truncated_slot = gv_list_get_(list, list->size - 1);
   void *truncated = INDEX_TO(list, truncated_slot, item_size);
   ASAN_POISON(truncated, item_size);
   --list->size;
@@ -246,9 +255,10 @@ void gv_list_remove_(list_t_ *list, size_t index, size_t item_size) {
 
 void gv_list_clear_(list_t_ *list, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
 
   for (size_t i = 0; i < list->size; ++i) {
-    const size_t slot = gv_list_get_(*list, i);
+    const size_t slot = gv_list_get_(list, i);
     void *const to_poison = INDEX_TO(list, slot, item_size);
     ASAN_POISON(to_poison, item_size);
   }
@@ -260,6 +270,8 @@ void gv_list_clear_(list_t_ *list, size_t item_size) {
 }
 
 void gv_list_reserve_(list_t_ *list, size_t capacity, size_t item_size) {
+  assert(list != NULL);
+  check_sentinel(list);
   const int err = try_reserve(list, capacity, item_size);
   if (err != 0) {
     fprintf(stderr,
@@ -270,37 +282,44 @@ void gv_list_reserve_(list_t_ *list, size_t capacity, size_t item_size) {
   }
 }
 
-bool gv_list_contains_(const list_t_ list, const void *needle,
+bool gv_list_contains_(const list_t_ *list, const void *needle,
                        size_t item_size) {
+  assert(list != NULL);
+  check_sentinel(list);
   return gv_list_find_(list, needle, item_size) != SIZE_MAX;
 }
 
-list_t_ gv_list_copy_(const list_t_ list, size_t item_size) {
-  list_t_ ret = {.base = gv_calloc(list.capacity, item_size),
-                 .capacity = list.capacity};
+// `ret` must be already cleared, since we can't call `LIST_DTOR_` here.
+void gv_list_copy_(const list_t_ *list, list_t_ *ret, size_t item_size) {
+  assert(list != NULL);
+  check_sentinel(list); // Probably redundant, but free unless DEBUG_LIST
+  assert(list != NULL);
+  check_sentinel(list); // Probably redundant, but free unless DEBUG_LIST
+
+  gv_list_reserve_(ret, list->size, item_size);
+  assert(list->size <= ret->capacity);
+  assert(ret->size == 0);
+  // `ret->base` memory should all be poisoned and 0 now.
+  ret->head = 0;
+
+  // Unpoison the area of `ret->base` which we will write.
+  ASAN_UNPOISON(ret->base, list->size * item_size);
 
   // opportunistically create the new list synced
-  for (size_t i = 0; i < list.size; ++i) {
+  for (size_t i = 0; i < list->size; ++i) {
     const size_t slot = gv_list_get_(list, i);
-    const void *const src = INDEX_TO(&list, slot, item_size);
-    void *const dst = INDEX_TO(&ret, ret.size, item_size);
-    assert(ret.size < ret.capacity);
+    const void *const src = INDEX_TO(list, slot, item_size);
+    void *const dst = INDEX_TO(ret, ret->size, item_size);
+    assert(ret->size < ret->capacity);
     if (item_size > 0) {
       memcpy(dst, src, item_size);
     }
-    ++ret.size;
+    ++ret->size;
   }
-
-  // mark the remainder of the allocated space as inaccessible
-  void *const to_poison = INDEX_TO(&ret, ret.size, item_size);
-  const size_t to_poison_len = (ret.capacity - ret.size) * item_size;
-  ASAN_POISON(to_poison, to_poison_len);
-
-  return ret;
 }
 
-bool gv_list_is_contiguous_(const list_t_ list) {
-  return list.head + list.size <= list.capacity;
+bool gv_list_is_contiguous_(const list_t_ *list) {
+  return list->head + list->size <= list->capacity;
 }
 
 void gv_list_sync_(list_t_ *list, size_t item_size) {
@@ -327,7 +346,7 @@ void gv_list_sync_(list_t_ *list, size_t item_size) {
   }
 
   /* synchronization should have ensured the list no longer wraps */
-  assert(gv_list_is_contiguous_(*list));
+  assert(gv_list_is_contiguous_(list));
 
   /* re-establish access restrictions */
   void *end = INDEX_TO(list, list->size, item_size);
@@ -337,6 +356,7 @@ void gv_list_sync_(list_t_ *list, size_t item_size) {
 void gv_list_sort_(list_t_ *list, int (*cmp)(const void *, const void *),
                    size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
   assert(cmp != NULL);
 
   gv_list_sync_(list, item_size);
@@ -360,11 +380,12 @@ static void exchange(void *a, void *b, size_t size) {
 
 void gv_list_reverse_(list_t_ *list, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
 
   // move from the outside inwards, swapping elements
   for (size_t i = 0; i < list->size / 2; ++i) {
-    const size_t a = gv_list_get_(*list, i);
-    const size_t b = gv_list_get_(*list, list->size - i - 1);
+    const size_t a = gv_list_get_(list, i);
+    const size_t b = gv_list_get_(list, list->size - i - 1);
     void *const x = INDEX_TO(list, a, item_size);
     void *const y = INDEX_TO(list, b, item_size);
     exchange(x, y, item_size);
@@ -373,6 +394,7 @@ void gv_list_reverse_(list_t_ *list, size_t item_size) {
 
 void gv_list_shrink_to_fit_(list_t_ *list, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
 
   gv_list_sync_(list, item_size);
 
@@ -384,17 +406,19 @@ void gv_list_shrink_to_fit_(list_t_ *list, size_t item_size) {
 
 void gv_list_free_(list_t_ *list) {
   assert(list != NULL);
+  check_sentinel(list);
   free(list->base);
   *list = (list_t_){0};
 }
 
 void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
   assert(list->size > 0);
   assert(into != NULL);
 
   // find and pop the first slot
-  const size_t slot = gv_list_get_(*list, 0);
+  const size_t slot = gv_list_get_(list, 0);
   void *const to_pop = INDEX_TO(list, slot, item_size);
   if (item_size > 0) {
     memcpy(into, to_pop, item_size);
@@ -406,11 +430,12 @@ void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size) {
 
 void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
   assert(list->size > 0);
   assert(into != NULL);
 
   // find and pop last slot
-  const size_t slot = gv_list_get_(*list, list->size - 1);
+  const size_t slot = gv_list_get_(list, list->size - 1);
   void *const to_pop = INDEX_TO(list, slot, item_size);
   if (item_size > 0) {
     memcpy(into, to_pop, item_size);
@@ -422,6 +447,7 @@ void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
 void gv_list_detach_(list_t_ *list, void *datap, size_t *sizep,
                      size_t item_size) {
   assert(list != NULL);
+  check_sentinel(list);
   assert(datap != NULL);
 
   gv_list_sync_(list, item_size);

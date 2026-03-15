@@ -449,7 +449,7 @@ static nodelist_t reduce(nodelist_t list, Agraph_t *subg, int *cnt) {
 		neighbor = aghead(e);
 
 	    for (j = 0; j < 2; j++) {
-		nodelist_t listCopy;
+		nodelist_t listCopy = {0};
 		LIST_COPY(&listCopy, &list);
 		insertNodelist(&list, curnode, neighbor, j);
 		newCrossings = count_all_crossings(&list, subg);
