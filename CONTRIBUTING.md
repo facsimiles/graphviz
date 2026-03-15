@@ -46,6 +46,15 @@ Make sure to:
    cover letter that orients reviewers to what your MR is changing, and _more
    importantly_ why.
 
+3. Self-review (re-read) your own work before submission. This particularly
+   applies if you used an automated tool to construct part or all of your
+   commits. If you did not read and/or do not understand the code you submit,
+   you will be banned from the Graphviz project. Because unread submissions
+   place such a high burden on the reviewer relative to the submitter, there
+   will be no warning or grace period: the ban will be on the first offense and
+   apply for one year. To appeal such a ban, email one or more of the Graphviz
+   Gitlab project owners, explaining your case for reinstatement.
+
 The policy is to merge a request when:
 
 no maintainer has objected AND ((the request was submitted by a maintainer AND
