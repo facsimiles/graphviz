@@ -9,6 +9,7 @@ import subprocess
 import sys
 import sysconfig
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Union
 
@@ -456,14 +457,38 @@ def plugin_version() -> tuple[int, int, int]:
     return current, revision, age
 
 
+@dataclass
+class CompilerOptions:
+    """
+    Bundle of compiler options for `run_c` as a simple dataclass object.
+
+    This is needed to reduce number of args to `run_c` to satisfy pylint.
+
+    Fields:
+      tmp_path: pytest provided tmp_path for storing compiled executable
+      exe_name: name of executable to create (default "a.exe")
+      cflags:   additional flags to provide to compiler, after "CFLAGS" env var
+      link:     list of additional libraries to link
+    """
+
+    tmp_path: Path
+    exe_name: str = "a.exe"
+    cflags: list[str] = None
+    link: list[Union[Path, str]] = None
+
+
 def run_c(
     src: Path,
+    compiler_options: CompilerOptions,
     args: list[Union[Path, str]] = None,
     input: str = "",
-    cflags: list[str] = None,
-    link: list[Union[Path, str]] = None,
 ) -> tuple[str, str]:
     """compile and run a C program"""
+
+    tmp_path = compiler_options.tmp_path
+    exe_name = compiler_options.exe_name
+    cflags = compiler_options.cflags
+    link = compiler_options.link
 
     if args is None:
         args = []
@@ -472,37 +497,35 @@ def run_c(
     if link is None:
         link = []
 
-    # create some temporary space to work in
-    with tempfile.TemporaryDirectory() as tmp:
-        # output filename to write our compiled code to
-        exe = Path(tmp) / "a.exe"
+    # output filename to write our compiled code to
+    exe = Path(tmp_path) / exe_name
 
-        # compile the program
-        compile_c(src, cflags, link, exe)
+    # compile the program
+    compile_c(src, cflags, link, exe)
 
-        # dump the command being run for the user to observe if the test fails
-        argv = [exe] + args
-        print(f"+ {shlex.join(str(x) for x in argv)}", flush=True)
+    # dump the command being run for the user to observe if the test fails
+    argv = [exe] + args
+    print(f"+ {shlex.join(str(x) for x in argv)}", flush=True)
 
-        input_bytes = None
-        if input is not None:
-            input_bytes = input.encode("utf-8")
+    input_bytes = None
+    if input is not None:
+        input_bytes = input.encode("utf-8")
 
-        # run it
-        p = subprocess.run(argv, input=input_bytes, capture_output=True, check=False)
+    # run it
+    p = subprocess.run(argv, input=input_bytes, capture_output=True, check=False)
 
-        # decode output manually rather than using `text=True` above to avoid exceptions
-        # from non-UTF-8 bytes in the output
-        stdout = p.stdout.decode("utf-8", "replace")
-        stderr = p.stderr.decode("utf-8", "replace")
+    # decode output manually rather than using `text=True` above to avoid exceptions
+    # from non-UTF-8 bytes in the output
+    stdout = p.stdout.decode("utf-8", "replace")
+    stderr = p.stderr.decode("utf-8", "replace")
 
-        # check it succeeded
-        if p.returncode != 0:
-            sys.stdout.write(stdout)
-            sys.stderr.write(stderr)
+    # check it succeeded
+    if p.returncode != 0:
+        sys.stdout.write(stdout)
+        sys.stderr.write(stderr)
         p.check_returncode()
 
-        return stdout, stderr
+    return stdout, stderr
 
 
 def which(cmd: str) -> Optional[Path]:
