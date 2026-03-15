@@ -562,7 +562,7 @@ static char *getDfltAttr(Agraph_t *gp, char *k, char *name) {
 // return value associated with gpr identifier
 static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
                        void *env, int elt, Exdisc_t *disc) {
-  Extype_t v;
+  Extype_t v = {0};
   Gpr_t *state;
   Extype_t *args;
   Agobj_t *objp;
@@ -1497,6 +1497,8 @@ static Extype_t getval(Expr_t *pgm, Exnode_t *node, Exid_t *sym, Exref_t *ref,
     case V_travedge:
       v.integer = ptr2int(state->tvedge);
       break;
+    default:
+      UNREACHABLE();
     }
     return v;
   } else {
