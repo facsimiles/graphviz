@@ -248,7 +248,7 @@ static void* dthash(Dt_t* dt, void* obj, int type)
 				disc->freef(obj);
 			if(disc->link < 0)
 				free(r);
-			return t ? _DTOBJ(t,lk) : NULL;
+			return _DTOBJ(t, lk);
 		}
 	}
 	else /*if(type&(DT_DELETE|DT_DETACH))*/
