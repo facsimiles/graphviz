@@ -39,7 +39,8 @@ void realignNodelist(nodelist_t *list, size_t np) {
   assert(np < LIST_SIZE(list));
   for (size_t i = np; i != 0; --i) {
     // rotate the list by 1
-    node_t *const head = LIST_POP_FRONT(list);
+    node_t *const head = *LIST_FRONT(list);
+    LIST_DROP_FRONT(list);
     LIST_PUSH_BACK(list, head);
   }
 }

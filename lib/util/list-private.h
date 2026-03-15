@@ -38,14 +38,54 @@ typedef struct {
 /// @return Size of the list
 static inline size_t gv_list_size_(const list_t_ list) { return list.size; }
 
-/// add an empty space for an item to the end of a list
+/// check whether list has a space to store a new item
 ///
-/// This function calls `exit` on failure.
+/// @param list List to inspect
+/// @return True if list has a space free
+static inline bool gv_list_has_slot_(const list_t_ list) {
+  return list.capacity > list.size;
+}
+
+/// Try to ensure that a slot can be added
+/// to the list (prepend or append), byte
+/// by resizing the backing store if needed.
+/// Returns True if there is already space
+/// or if it can be added, and False if no
+/// space can be allocated for some reason.
+///
+/// @param list List to operate on
+/// @param item_size Byte size of each list item
+/// @return True if a _append or _prepend will work.
+UTIL_API bool gv_list_make_safe_to_add_item_(list_t_ *list, size_t item_size);
+
+/// Don't change the list size yet, but prepare a
+/// slot at the end of the list.  Returns the index
+/// of the prepared slot.  If space is not available, the
+/// list may be resized to make space.
+///
+/// The caller should should call
+/// `gv_list_finish_append_` after
+/// writing to the returned slot.  The written value will
+/// not actually be part of the list without that.
+///
+/// This function calls `exit` on failure, which
+/// cannot occur if the list is known to have space
+/// available (as just after a call to
+/// `gv_list_make_safe_to_add_item_`).
 ///
 /// @param list List to operate on
 /// @param item_size Byte size of each list item
 /// @return Index of the new (empty) slot
 UTIL_API size_t gv_list_append_slot_(list_t_ *list, size_t item_size);
+
+/// Complete a safe append by adding the recently
+/// added slot to the list.  Caller should have
+/// written to that slot after obtaining it by
+/// calling `gv_list_append_slot_`.
+///
+/// @param list List to operate on
+/// @param item_size Byte size of each list item
+UTIL_API void gv_list_finish_append_(list_t_ *list);
 
 /// try to append a new item to a list
 ///
@@ -56,14 +96,34 @@ UTIL_API size_t gv_list_append_slot_(list_t_ *list, size_t item_size);
 UTIL_API bool gv_list_try_append_(list_t_ *list, const void *item,
                                   size_t item_size);
 
-/// add an empty space for an item to the beginning of a list
+/// Don't change the list size yet, but prepare a
+/// slot at the front of the list.  Returns the
+/// index of the prepared slot.  If space is not available,
+/// the list may be resized to make space.
 ///
-/// This function calls `exit` on failure.
+/// The caller should should call
+/// `gv_list_finish_prepend_` after
+/// writing to the returned slot.  The written value will
+/// not actually be part of the list without that.
+///
+/// This function calls `exit` on failure, which
+/// cannot occur if the list is known to have space
+/// available (as just after a call to
+/// `gv_list_make_safe_to_add_item_`).
 ///
 /// @param list List to operate on
 /// @param item_size Byte size of each list item
 /// @return Index of the new (empty) slot
 UTIL_API size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size);
+
+/// Complete a safe prepend by adding the recently
+/// added slot to the beginning of the list.  Caller should have
+/// written to that slot after obtaining it by
+/// calling `gv_list_prepend_slot_`.
+///
+/// @param list List to operate on
+/// @param item_size Byte size of each list item
+UTIL_API void gv_list_finish_prepend_(list_t_ *list);
 
 /// get the slot index of a given list item index
 ///
@@ -214,12 +274,24 @@ UTIL_API void gv_list_free_(list_t_ *list);
 /// @param item_size Byte size of each list item
 UTIL_API void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size);
 
+/// just remove the first item of a list
+///
+/// @param list List to operate on
+/// @param item_size Byte size of each list item
+UTIL_API void gv_list_drop_front_(list_t_ *list, size_t item_size);
+
 /// remove and return the last item of a list
 ///
 /// @param list List to operate on
 /// @param [out] into Destination to pop the item into
 /// @param item_size Byte size of each list item
 UTIL_API void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size);
+
+/// just remove the last item of a list
+///
+/// @param list List to operate on
+/// @param item_size Byte size of each list item
+UTIL_API void gv_list_drop_back_(list_t_ *list, size_t item_size);
 
 /// transform a managed list into a bare array
 ///

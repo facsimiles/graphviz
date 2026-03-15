@@ -418,7 +418,8 @@ static options scanArgs(int argc, char **argv) {
       error(ERROR_ERROR, "No program supplied via argument or -f option");
       opts.state = -1;
     } else {
-      opts.program = LIST_POP_FRONT(&input_filenames);
+      opts.program = *LIST_FRONT(&input_filenames);
+      LIST_DROP_FRONT(&input_filenames);
     }
   }
   if (LIST_IS_EMPTY(&input_filenames)) {
@@ -560,7 +561,8 @@ static void travBFS(Gpr_t *state, Expr_t *prog, comp_block *xprog) {
     PUSH(nd, 0);
     LIST_PUSH_BACK(&q, n);
     while (!LIST_IS_EMPTY(&q)) {
-      n = LIST_POP_FRONT(&q);
+      n = *LIST_FRONT(&q);
+      LIST_DROP_FRONT(&q);
       nd = nData(n);
       MARK(nd);
       POP(nd);
@@ -649,7 +651,11 @@ static void travDFS(Gpr_t *state, Expr_t *prog, comp_block *xprog,
         nd = nData(curn);
         POP(nd);
         cure = entry;
-        entry = LIST_IS_EMPTY(&stk) ? NULL : LIST_POP_BACK(&stk);
+        entry = NULL;
+        if (!LIST_IS_EMPTY(&stk)) {
+          entry = *LIST_BACK(&stk);
+          LIST_DROP_BACK(&stk);
+        }
         if (entry == &seed.out)
           state->tvedge = 0;
         else

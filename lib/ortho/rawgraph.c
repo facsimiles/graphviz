@@ -92,7 +92,8 @@ top_sort(rawgraph* g)
             time = DFS_visit(g, i, time, &sp);
     }
     while (!LIST_IS_EMPTY(&sp)) {
-        const size_t v = LIST_POP_BACK(&sp);
+        const size_t v = *LIST_BACK(&sp);
+        LIST_DROP_BACK(&sp);
         g->vertices[v].topsort_order = count;
         count++;
     }
