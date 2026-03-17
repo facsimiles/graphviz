@@ -10,6 +10,7 @@
 
 #include "config.h"
 #include <math.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -33,7 +34,7 @@
 
 enum {FORMAT_PIC};
 
-static bool onetime = true;
+static atomic_flag onetime;
 static double Fontscale;
 
 /* There are a couple of ways to generate output: 
@@ -180,9 +181,8 @@ static void pic_begin_page(GVJ_t * job)
 {
     box pbr = job->pageBoundingBox;
 
-    if (onetime && job->rotation && job->rotation != 90) {
+    if (!atomic_flag_test_and_set(&onetime) && job->rotation && job->rotation != 90) {
         unsupported("rotation");
-        onetime = false;
     }
     double height = PS2INCH((double)pbr.UR.y - (double)pbr.LL.y);
     double width = PS2INCH((double)pbr.UR.x - (double)pbr.LL.x);
