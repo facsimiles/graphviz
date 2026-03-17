@@ -184,8 +184,8 @@ static void pic_begin_page(GVJ_t * job)
     if (!atomic_flag_test_and_set(&onetime) && job->rotation && job->rotation != 90) {
         unsupported("rotation");
     }
-    double height = PS2INCH((double)pbr.UR.y - (double)pbr.LL.y);
-    double width = PS2INCH((double)pbr.UR.x - (double)pbr.LL.x);
+    double height = PS2INCH((double)pbr.UR.y - pbr.LL.y);
+    double width = PS2INCH((double)pbr.UR.x - pbr.LL.x);
     if (job->rotation == 90) {
         SWAP(&width, &height);
     }
