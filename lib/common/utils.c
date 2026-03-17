@@ -265,7 +265,7 @@ static char *findPath(const strviews_t dirs, const char *str) {
 
 const char *safefile(const char *filename)
 {
-    static bool onetime = true;
+    static atomic_flag onetime;
     static char *pathlist = NULL;
     static strviews_t dirs;
 
@@ -273,11 +273,10 @@ const char *safefile(const char *filename)
 	return NULL;
 
     if (HTTPServerEnVar) {   /* If used as a server */
-	if (onetime) {
+	if (!atomic_flag_test_and_set(&onetime)) {
 	    agwarningf(
 		      "file loading is disabled because the environment contains SERVER_NAME=\"%s\"\n",
 		      HTTPServerEnVar);
-	    onetime = false;
 	}
 	return NULL;
     }
