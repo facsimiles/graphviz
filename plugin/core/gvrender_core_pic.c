@@ -34,7 +34,6 @@
 
 enum {FORMAT_PIC};
 
-static atomic_flag onetime;
 static double Fontscale;
 
 /* There are a couple of ways to generate output: 
@@ -181,6 +180,7 @@ static void pic_begin_page(GVJ_t * job)
 {
     box pbr = job->pageBoundingBox;
 
+    static atomic_flag onetime;
     if (!atomic_flag_test_and_set(&onetime) && job->rotation && job->rotation != 90) {
         unsupported("rotation");
     }
