@@ -266,8 +266,6 @@ static char *findPath(const strviews_t dirs, const char *str) {
 const char *safefile(const char *filename)
 {
     static atomic_flag onetime;
-    static char *pathlist = NULL;
-    static strviews_t dirs;
 
     if (!filename || !filename[0])
 	return NULL;
@@ -282,11 +280,8 @@ const char *safefile(const char *filename)
     }
 
     if (Gvfilepath != NULL) {
-	if (pathlist == NULL) {
-	    LIST_FREE(&dirs);
-	    pathlist = Gvfilepath;
-	    dirs = mkDirlist(pathlist);
-	}
+	const char *const pathlist = Gvfilepath;
+	strviews_t dirs = mkDirlist(pathlist);
 
 	const char *str = filename;
 	for (const char *sep = "/\\:"; *sep != '\0'; ++sep) {
@@ -296,20 +291,25 @@ const char *safefile(const char *filename)
 	    }
 	}
 
-	return findPath(dirs, str);
-    }
-
-    if (pathlist != Gvimagepath) {
+	const char *const ret = findPath(dirs, str);
 	LIST_FREE(&dirs);
-	pathlist = Gvimagepath;
-	if (pathlist && *pathlist)
-	    dirs = mkDirlist(pathlist);
+	return ret;
     }
 
-    if (*filename == PATH_SEPARATOR || LIST_IS_EMPTY(&dirs))
-	return filename;
+    const char *const pathlist = Gvimagepath;
+    strviews_t dirs = {0};
+    if (pathlist && *pathlist)
+	dirs = mkDirlist(pathlist);
 
-    return findPath(dirs, filename);
+    const char *ret;
+    if (*filename == PATH_SEPARATOR || LIST_IS_EMPTY(&dirs)) {
+	ret = filename;
+    } else {
+	ret = findPath(dirs, filename);
+    }
+
+    LIST_FREE(&dirs);
+    return ret;
 }
 
 int maptoken(char *p, char **name, int *val) {
