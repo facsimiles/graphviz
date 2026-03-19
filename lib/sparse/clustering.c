@@ -17,6 +17,7 @@
 #include <sparse/clustering.h>
 #include <stdbool.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 
 static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_init(SparseMatrix A, int level){
   int n = A->n, i, j;

@@ -17,7 +17,8 @@
 
 #include "config.h"
 
-#include	<neatogen/neato.h>
+#include <neatogen/neato.h>
+#include <util/debug.h>
 
 int solveCircuit(int nG, double **Gm, double **Gm_inv)
 {

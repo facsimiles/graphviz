@@ -27,6 +27,7 @@
 #include <neatogen/call_tri.h>
 #include <sfdpgen/sfdp.h>
 #include <util/alloc.h>
+#include <util/debug.h>
 #include <util/exit.h>
 #include <util/gv_math.h>
 #include <util/unused.h>

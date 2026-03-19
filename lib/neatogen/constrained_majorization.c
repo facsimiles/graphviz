@@ -11,7 +11,6 @@
 #include "config.h"
 
 #include <neatogen/digcola.h>
-#include <util/alloc.h>
 #ifdef DIGCOLA
 #include <math.h>
 #include <stdbool.h>
@@ -27,6 +26,8 @@
 #include <neatogen/conjgrad.h>
 #include <neatogen/quad_prog_solver.h>
 #include <neatogen/matrix_ops.h>
+#include <util/alloc.h>
+#include <util/debug.h>
 
 #define localConstrMajorIterations 15
 #define levels_sep_tol 1e-1

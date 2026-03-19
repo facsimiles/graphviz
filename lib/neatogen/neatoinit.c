@@ -39,6 +39,7 @@
 #include <util/agxbuf.h>
 #include <util/alloc.h>
 #include <util/bitarray.h>
+#include <util/debug.h>
 #include <util/gv_ctype.h>
 #include <util/gv_math.h>
 #include <util/itos.h>

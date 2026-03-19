@@ -31,6 +31,7 @@
 #include	<stdlib.h>
 #include	<stdint.h>
 #include	<util/alloc.h>
+#include	<util/debug.h>
 #include	<util/list.h>
 #include	<util/gv_math.h>
 

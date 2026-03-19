@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
+#include <util/debug.h>
 
 static double get_local_12_norm(int n, int i, const int *ia, const int *ja,
                                 const int *p) {

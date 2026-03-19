@@ -1012,6 +1012,7 @@ SparseMatrix SparseMatrix_coordinate_form_add_entry_(SparseMatrix A, int irn,
   assert(A->format == FORMAT_COORD);
   assert(A->type == type && "call to SparseMatrix_coordinate_form_add_entry "
                             "with incompatible value type");
+  (void)type;
   const size_t nz = A->nz;
 
   if (nz + nentries >= A->nzmax){
