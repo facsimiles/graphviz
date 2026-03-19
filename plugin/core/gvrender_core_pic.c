@@ -36,6 +36,34 @@ enum {FORMAT_PIC};
 
 static double Fontscale;
 
+/// derive the scale factor to apply to fonts
+///
+/// @param job Job being processed
+/// @param height [out] Bounding box height
+/// @param width [out] Bounding box width
+/// @return Font scale to apply
+static double get_fontscale(const GVJ_t *job, double *height, double *width) {
+    assert(job != NULL);
+    assert(height != NULL);
+    assert(width != NULL);
+
+    const box pbr = job->pageBoundingBox;
+    *height = PS2INCH((double)pbr.UR.y - pbr.LL.y);
+    *width = PS2INCH((double)pbr.UR.x - pbr.LL.x);
+    if (job->rotation == 90) {
+        SWAP(width, height);
+    }
+    double fontscale;
+    if (*width > 0.0) {
+        fontscale = log10(*width);
+        fontscale += 3.0 - (int)fontscale; // between 3.0 and 4.0
+    } else {
+        fontscale = 3.0;
+    }
+    fontscale = pow(10.0, fontscale); // a power of 10 times width, between 1000 and 10000
+    return fontscale;
+}
+
 /* There are a couple of ways to generate output: 
     1. generate for whatever size is given by the bounding box
        - the drawing at its "natural" size might not fit on a physical page
@@ -178,27 +206,17 @@ static void pic_end_graph(GVJ_t * job)
 
 static void pic_begin_page(GVJ_t * job)
 {
-    box pbr = job->pageBoundingBox;
-
     static atomic_flag onetime;
     if (!atomic_flag_test_and_set(&onetime) && job->rotation && job->rotation != 90) {
         unsupported("rotation");
     }
-    double height = PS2INCH((double)pbr.UR.y - pbr.LL.y);
-    double width = PS2INCH((double)pbr.UR.x - pbr.LL.x);
-    if (job->rotation == 90) {
-        SWAP(&width, &height);
-    }
+    double height;
+    double width;
+    Fontscale = get_fontscale(job, &height, &width);
     gvprintf(job, ".PS %.5f %.5f\n", width, height);
     gvprintf(job,
             "%s to change drawing size, multiply the width and height on the .PS line above and the number on the two lines below (rounded to the nearest integer) by a scale factor\n",
             pic_comments);
-    if (width > 0.0) {
-        Fontscale = log10(width);
-        Fontscale += 3.0 - (int) Fontscale;     /* between 3.0 and 4.0 */
-    } else
-        Fontscale = 3.0;
-    Fontscale = pow(10.0, Fontscale);   /* a power of 10 times width, between 1000 and 10000 */
     gvprintf(job, ".nr SF %.0f\nscalethickness = %.0f\n", Fontscale,
             Fontscale);
     gvprintf(job,
