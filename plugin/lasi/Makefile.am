@@ -7,7 +7,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
-	$(LASI_CFLAGS) $(PANGOCAIRO_CFLAGS) $(FREETYPE2_CFLAGS) $(LIBGVC_CFLAGS)
+	$(LASI_CFLAGS) $(PANGOCAIRO_CFLAGS) $(FREETYPE2_CFLAGS)
 
 if WITH_LASI
 if WITH_PANGOCAIRO

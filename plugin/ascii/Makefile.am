@@ -7,7 +7,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
-	$(AALIB_CFLAGS) $(LIBGVC_CFLAGS)
+	$(AALIB_CFLAGS)
 
 if WITH_AALIB
 noinst_LTLIBRARIES = libgvplugin_ascii_C.la

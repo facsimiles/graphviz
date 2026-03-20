@@ -6,8 +6,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/cgraph \
-	-I$(top_srcdir)/lib/cdt \
-	$(LIBGVC_CFLAGS)
+	-I$(top_srcdir)/lib/cdt
 
 noinst_HEADERS = core_loadimage_xdot.h tcl_context.h
 noinst_LTLIBRARIES = libgvplugin_core_C.la
