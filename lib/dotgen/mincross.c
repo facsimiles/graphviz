@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <cgraph/cgraph.h>
+#include <common/utils.h>
 #include <dotgen/dot.h>
 #include <inttypes.h>
 #include <limits.h>
@@ -520,7 +521,7 @@ static void ordered_edges(graph_t * g)
 
 	for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	    /* clusters are processed by separate calls to ordered_edges */
-	    if (!is_cluster(subg))
+	    if (!is_a_cluster(subg))
 		ordered_edges(subg);
 	}
 	if (N_ordering) do_ordering_for_nodes (g);
