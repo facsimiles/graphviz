@@ -15,6 +15,7 @@
 #include "config.h"
 
 #include <common/geom.h>
+#include <common/types.h>
 #include <common/usershape.h>
 #include <stdbool.h>
 #include <stddef.h>
