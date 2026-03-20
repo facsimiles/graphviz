@@ -32,7 +32,9 @@ Count connected components.
 .TP
 .B \-C
 Count clusters. By definition, a cluster is a graph or
-subgraph whose name begins with "cluster".
+subgraph whose name begins, case insensitively, with "cluster" or who has the
+.B cluster=true
+attribute.
 .TP
 .B \-a
 Count all. Equivalent to
