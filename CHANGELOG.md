@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased (14.1.4)]
 
+### Changed
+
+- Enable ascii plugin to be built using autotools. #2828
+
 ### Fixed
 
 - Processing `concentrate=true` graphs no longer crashes Graphviz. Processing of

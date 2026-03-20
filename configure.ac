@@ -2017,6 +2017,41 @@ else
 fi
 AM_CONDITIONAL(WITH_IPSEPCOLA, [test "$use_ipsepcola" = "Yes"])
 
+dnl -----------------------------------
+dnl INCLUDES and LIBS for AALIB
+
+AC_ARG_WITH(aalib,
+  [AS_HELP_STRING([--with-aalib=yes],[AALIB allows for output to ascii])],
+  [], [with_aalib=yes])
+
+if test "$with_aalib" != "yes"; then
+  use_aalib="No (disabled)"
+else
+  use_aalib="Yes"
+  AC_ARG_WITH(aaincludedir,
+    [AS_HELP_STRING([--with-aaincludedir=DIR],[use AALIB includes from DIR])],
+    [AALIB_INCLUDES="-I$withval"])
+  AC_ARG_WITH(aalibdir,
+    [AS_HELP_STRING([--with-aalibdir=DIR],[use AA libraries from DIR])],
+    [AA_LIBS="-L$withval"])
+  save_CPPFLAGS=$CPPFLAGS
+  save_LDFLAGS=$LDFLAGS
+  CPPFLAGS="$CPPFLAGS $AA_INCLUDES"
+  LDFLAGS="$LDFLAGS $AA_LIBS"
+  AC_CHECK_HEADER(aalib.h,
+          [AC_CHECK_LIB(aa,main,
+                  [AA_LIBS="$AA_LIBS -laa"],
+                          use_aalib="No (aa library not available)")],
+          use_aalib="No (aa library not available - no aalib.h)")
+          LDFLAGS="$LDFLAGS $AA_LIBS"
+  LDFLAGS=$save_LDFLAGS
+  CPPFLAGS=$save_CPPFLAGS
+  AC_SUBST([AA_INCLUDES])
+  AC_SUBST([AA_LIBS])
+fi
+
+AM_CONDITIONAL(WITH_AALIB, [test "$use_aalib" = "Yes"])
+
 # -----------------------------------------------------------------------
 
 # This is a historical artifact ... there are no other choices these days
@@ -2081,6 +2116,7 @@ AC_CONFIG_FILES(Makefile
 	macosx/Info.plist
 	macosx/build/Distribution.xml
 	plugin/Makefile
+	plugin/ascii/Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
 	plugin/gd/Makefile
@@ -2198,6 +2234,7 @@ echo "plugin libraries:"
 echo "  dot_layout:    Yes (always enabled)"
 echo "  neato_layout:  Yes (always enabled)"
 echo "  core:          Yes (always enabled)"
+echo "  ascii:         $use_aalib"
 echo "  devil:         $use_devil"
 echo "  gd:            $use_gd"
 echo "  gdiplus:       $use_gdiplus"
