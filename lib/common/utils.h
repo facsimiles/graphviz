@@ -14,6 +14,7 @@
 
 #include "config.h"
 
+#include <common/usershape.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <util/agxbuf.h>
