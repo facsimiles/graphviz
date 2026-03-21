@@ -136,7 +136,7 @@ endif()
 
 # Specify library version and soversion
 set_target_properties(gvc PROPERTIES
-  VERSION 7.0.8
+  VERSION 7.0.9
   SOVERSION 7
 )
 
