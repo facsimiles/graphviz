@@ -265,29 +265,23 @@ static char *findPath(const strviews_t dirs, const char *str) {
 
 const char *safefile(const char *filename)
 {
-    static bool onetime = true;
-    static char *pathlist = NULL;
-    static strviews_t dirs;
+    static atomic_flag onetime;
 
     if (!filename || !filename[0])
 	return NULL;
 
     if (HTTPServerEnVar) {   /* If used as a server */
-	if (onetime) {
+	if (!atomic_flag_test_and_set(&onetime)) {
 	    agwarningf(
 		      "file loading is disabled because the environment contains SERVER_NAME=\"%s\"\n",
 		      HTTPServerEnVar);
-	    onetime = false;
 	}
 	return NULL;
     }
 
     if (Gvfilepath != NULL) {
-	if (pathlist == NULL) {
-	    LIST_FREE(&dirs);
-	    pathlist = Gvfilepath;
-	    dirs = mkDirlist(pathlist);
-	}
+	const char *const pathlist = Gvfilepath;
+	strviews_t dirs = mkDirlist(pathlist);
 
 	const char *str = filename;
 	for (const char *sep = "/\\:"; *sep != '\0'; ++sep) {
@@ -297,20 +291,25 @@ const char *safefile(const char *filename)
 	    }
 	}
 
-	return findPath(dirs, str);
-    }
-
-    if (pathlist != Gvimagepath) {
+	const char *const ret = findPath(dirs, str);
 	LIST_FREE(&dirs);
-	pathlist = Gvimagepath;
-	if (pathlist && *pathlist)
-	    dirs = mkDirlist(pathlist);
+	return ret;
     }
 
-    if (*filename == PATH_SEPARATOR || LIST_IS_EMPTY(&dirs))
-	return filename;
+    const char *const pathlist = Gvimagepath;
+    strviews_t dirs = {0};
+    if (pathlist && *pathlist)
+	dirs = mkDirlist(pathlist);
 
-    return findPath(dirs, filename);
+    const char *ret;
+    if (*filename == PATH_SEPARATOR || LIST_IS_EMPTY(&dirs)) {
+	ret = filename;
+    } else {
+	ret = findPath(dirs, filename);
+    }
+
+    LIST_FREE(&dirs);
+    return ret;
 }
 
 int maptoken(char *p, char **name, int *val) {
@@ -726,14 +725,14 @@ Agsym_t *setAttr(graph_t * g, void *obj, char *name, char *value,
  * of an edge to the cluster cg. n is a node whose name is the same
  * as the cluster cg. clg is the subgraph of all of
  * the original nodes, which will be deleted later.
+ *
+ * @param idx Counter for creating unique names
  */
-static node_t *clustNode(node_t * n, graph_t * cg, agxbuf * xb,
-			 graph_t * clg)
-{
+static node_t *clustNode(node_t *n, graph_t *cg, agxbuf *xb, graph_t *clg,
+                         int *idx) {
     node_t *cn;
-    static int idx = 0;
 
-    agxbprint(xb, "__%d:%s", idx++, agnameof(cg));
+    agxbprint(xb, "__%d:%s", *idx++, agnameof(cg));
 
     cn = agnode(agroot(cg), agxbuse(xb), 1);
     agbindrec(cn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), true);
@@ -841,11 +840,11 @@ static graph_t *mapc(Dt_t *cmap, node_t *n) {
  * so we could use a simpler model in which we create a single cluster
  * node for each cluster used in a cluster edge.
  *
+ * @param index_counter Counter for creating synthetic cluster nodes
  * Return 1 if cluster edge is created.
  */
-static int
-checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
-{
+static int checkCompound(edge_t *e, graph_t *clg, agxbuf *xb, Dt_t *map,
+                         Dt_t *cmap, int *index_counter) {
     node_t *cn;
     node_t *cn1;
     node_t *t = agtail(e);
@@ -881,8 +880,8 @@ checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
 		      agnameof(hg),agnameof(tg));
 		return 0;
 	    }
-	    cn = clustNode(t, tg, xb, clg);
-	    cn1 = clustNode(h, hg, xb, clg);
+	    cn = clustNode(t, tg, xb, clg, index_counter);
+	    cn1 = clustNode(h, hg, xb, clg, index_counter);
 	    ce = cloneEdge(e, cn, cn1);
 	    insertEdge(map, t, h, ce);
 	} else {
@@ -891,7 +890,7 @@ checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
 		      agnameof(t), agnameof(hg));
 		return 0;
 	    }
-	    cn = clustNode(h, hg, xb, clg);
+	    cn = clustNode(h, hg, xb, clg, index_counter);
 	    ce = cloneEdge(e, t, cn);
 	    insertEdge(map, t, h, ce);
 	}
@@ -901,7 +900,7 @@ checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
 		  agnameof(tg));
 	    return 0;
 	}
-	cn = clustNode(t, tg, xb, clg);
+	cn = clustNode(t, tg, xb, clg, index_counter);
 	ce = cloneEdge(e, cn, h);
 	insertEdge(map, t, h, ce);
     }
@@ -938,6 +937,7 @@ void processClusterEdges(graph_t * g)
     agxbuf xb = {0};
     Dt_t *map;
     Dt_t *cmap = mkClustMap (g);
+    int index_counter = 0;
 
     map = dtopen(&mapDisc, Dtoset);
     clg = agsubg(g, "__clusternodes",1);
@@ -945,7 +945,7 @@ void processClusterEdges(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n)) continue;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    num_cl_edges += checkCompound(e, clg, &xb, map, cmap);
+	    num_cl_edges += checkCompound(e, clg, &xb, map, cmap, &index_counter);
 	}
     }
     agxbfree(&xb);
