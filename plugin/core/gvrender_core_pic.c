@@ -10,6 +10,7 @@
 
 #include "config.h"
 #include <math.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -33,8 +34,33 @@
 
 enum {FORMAT_PIC};
 
-static bool onetime = true;
-static double Fontscale;
+/// derive the scale factor to apply to fonts
+///
+/// @param job Job being processed
+/// @param height [out] Bounding box height
+/// @param width [out] Bounding box width
+/// @return Font scale to apply
+static double get_fontscale(const GVJ_t *job, double *height, double *width) {
+    assert(job != NULL);
+    assert(height != NULL);
+    assert(width != NULL);
+
+    const box pbr = job->pageBoundingBox;
+    *height = PS2INCH((double)pbr.UR.y - pbr.LL.y);
+    *width = PS2INCH((double)pbr.UR.x - pbr.LL.x);
+    if (job->rotation == 90) {
+        SWAP(width, height);
+    }
+    double fontscale;
+    if (*width > 0.0) {
+        fontscale = log10(*width);
+        fontscale += 3.0 - (int)fontscale; // between 3.0 and 4.0
+    } else {
+        fontscale = 3.0;
+    }
+    fontscale = pow(10.0, fontscale); // a power of 10 times width, between 1000 and 10000
+    return fontscale;
+}
 
 /* There are a couple of ways to generate output: 
     1. generate for whatever size is given by the bounding box
@@ -178,29 +204,18 @@ static void pic_end_graph(GVJ_t * job)
 
 static void pic_begin_page(GVJ_t * job)
 {
-    box pbr = job->pageBoundingBox;
-
-    if (onetime && job->rotation && job->rotation != 90) {
+    static atomic_flag onetime;
+    if (!atomic_flag_test_and_set(&onetime) && job->rotation && job->rotation != 90) {
         unsupported("rotation");
-        onetime = false;
     }
-    double height = PS2INCH((double)pbr.UR.y - (double)pbr.LL.y);
-    double width = PS2INCH((double)pbr.UR.x - (double)pbr.LL.x);
-    if (job->rotation == 90) {
-        SWAP(&width, &height);
-    }
+    double height;
+    double width;
+    const double fontscale = get_fontscale(job, &height, &width);
     gvprintf(job, ".PS %.5f %.5f\n", width, height);
     gvprintf(job,
             "%s to change drawing size, multiply the width and height on the .PS line above and the number on the two lines below (rounded to the nearest integer) by a scale factor\n",
             pic_comments);
-    if (width > 0.0) {
-        Fontscale = log10(width);
-        Fontscale += 3.0 - (int) Fontscale;     /* between 3.0 and 4.0 */
-    } else
-        Fontscale = 3.0;
-    Fontscale = pow(10.0, Fontscale);   /* a power of 10 times width, between 1000 and 10000 */
-    gvprintf(job, ".nr SF %.0f\nscalethickness = %.0f\n", Fontscale,
-            Fontscale);
+    gvprintf(job, ".nr SF %.0f\nscalethickness = %.0f\n", fontscale, fontscale);
     gvprintf(job,
             "%s don't change anything below this line in this drawing\n",
             pic_comments);
@@ -314,7 +329,8 @@ static void pic_textspan(GVJ_t * job, pointf p, textspan_t * span)
     }
     double sz = fmax(span->font->size, 1);
     if (fabs(sz - lastsize) > 0.5) {
-        gvprintf(job, ".ps %.0f*\\n(SFu/%.0fu\n", sz, Fontscale);
+        const double fontscale = get_fontscale(job, &(double){0}, &(double){0});
+        gvprintf(job, ".ps %.0f*\\n(SFu/%.0fu\n", sz, fontscale);
 	lastsize = sz;
     }
     gvputc(job, '"');
