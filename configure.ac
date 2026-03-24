@@ -48,7 +48,7 @@ GVPLUGIN_CURRENT=8
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
-GVPLUGIN_REVISION=9
+GVPLUGIN_REVISION=10
 
 # Increment if any interfaces have been added; set to 0
 # if any interfaces have been removed. removal has
