@@ -195,11 +195,25 @@ static void pic_begin_graph(GVJ_t * job)
             troff_comments);
 }
 
+/// font characteristics
+typedef struct {
+    char *name;  ///< font name
+    double size; ///< font point size
+} font_t;
+
 static void pic_end_graph(GVJ_t * job)
 {
     gvprintf(job,
             "%s restore point size and font\n.ps \\n(.S\n.ft \\n(DF\n",
             troff_comments);
+
+    // discard any cached font
+    font_t *const f = job->window;
+    if (f != NULL) {
+        free(f->name);
+    }
+    free(job->window);
+    job->window = NULL;
 }
 
 static void pic_begin_page(GVJ_t * job)
@@ -303,11 +317,28 @@ static void pic_end_page(GVJ_t * job)
 	"]\n.PE\n");
 }
 
+/// does a font have the given name?
+static bool font_name_eq(const font_t *font, const char *name) {
+    assert(name != NULL);
+    if (font == NULL) {
+        return false;
+    }
+    if (font->name == NULL) {
+        return false;
+    }
+    return strcmp(font->name, name) == 0;
+}
+
+/// does a font have the given size?
+static bool font_size_eq(const font_t *font, double size) {
+    if (font == NULL) {
+        return false;
+    }
+    return fabs(size - font->size) <= 0.5;
+}
+
 static void pic_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
-    static char *lastname;
-    static double lastsize;
-
     switch (span->just) {
     case 'l': 
         break;
@@ -323,15 +354,34 @@ static void pic_textspan(GVJ_t * job, pointf p, textspan_t * span)
     p.y += span->font->size / (3.0 * POINTS_PER_INCH);
     p.x += span->size.x / (2.0 * POINTS_PER_INCH);
 
-    if (span->font->name && (!lastname || strcmp(lastname, span->font->name))) {
+    if (span->font->name && !font_name_eq(job->window, span->font->name)) {
         gvprintf(job, ".ft %s\n", picfontname(strview(span->font->name, '\0')));
-	lastname = span->font->name;
+
+	// cache the font name, ignoring failures that are non-critical
+	font_t *f = job->window;
+	if (f == NULL) {
+            f = calloc(1, sizeof(*f));
+	}
+	if (f != NULL) {
+            free(f->name);
+            f->name = strdup(span->font->name);
+	}
+	job->window = f;
     }
     double sz = fmax(span->font->size, 1);
-    if (fabs(sz - lastsize) > 0.5) {
+    if (!font_size_eq(job->window, sz)) {
         const double fontscale = get_fontscale(job, &(double){0}, &(double){0});
         gvprintf(job, ".ps %.0f*\\n(SFu/%.0fu\n", sz, fontscale);
-	lastsize = sz;
+
+	// cache the font size, ignoring failures that are non-critical
+	font_t *f = job->window;
+	if (f == NULL) {
+            f = calloc(1, sizeof(*f));
+	}
+	if (f != NULL) {
+            f->size = sz;
+	}
+	job->window = f;
     }
     gvputc(job, '"');
     gvputs_nonascii(job, span->str);
