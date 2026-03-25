@@ -69,6 +69,12 @@ gxl2gv_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/util/libutil_C.la $(EXPAT_LIBS)
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_gxl2gv_SOURCES = fake.cxx
+endif
+
 .1.1.pdf:
 	rm -f $@; pdffile=$@; psfile=$${pdffile%pdf}ps; \
 	$(GROFF) -Tps -man $< > $$psfile || { rm -f $$psfile; exit 1; }; \
@@ -81,6 +87,12 @@ sccmap_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/util/libutil_C.la $(EXPAT_LIBS)
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_sccmap_SOURCES = fake.cxx
+endif
+
 ccomps_SOURCES = ccomps.c
 
 ccomps_LDADD = \
@@ -92,30 +104,56 @@ ccomps_LDADD = \
 	$(top_builddir)/lib/util/libutil_C.la \
 	$(MATH_LIBS)
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_ccomps_SOURCES = fake.cxx
+endif
+
 tred_SOURCES = tred.c
 
 tred_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_tred_SOURCES = fake.cxx
+endif
 
 unflatten_SOURCES = unflatten.c
 
 unflatten_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_unflatten_SOURCES = fake.cxx
+endif
 
 acyclic_SOURCES = acyclic.c
 
 acyclic_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_acyclic_SOURCES = fake.cxx
+endif
 
 nop_SOURCES = nop.c
 
 nop_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_nop_SOURCES = fake.cxx
+endif
 
 gvcolor_SOURCES = gvcolor.c colxlate.c colortbl.h colorxlate.h
 
@@ -124,11 +162,23 @@ gvcolor_LDADD = \
 	$(top_builddir)/lib/util/libutil_C.la \
 	$(MATH_LIBS)
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_gvcolor_SOURCES = fake.cxx
+endif
+
 bcomps_SOURCES = bcomps.c
 
 bcomps_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/util/libutil_C.la
+
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_bcomps_SOURCES = fake.cxx
+endif
 
 gc_SOURCES = gc.c
 
@@ -140,6 +190,12 @@ gc_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/util/libutil_C.la \
 	$(MATH_LIBS)
+
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_gc_SOURCES = fake.cxx
+endif
 
 gvpack_SOURCES = gvpack.cpp
 gvpack_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
@@ -175,6 +231,11 @@ mm2gv_LDADD = \
 	$(top_builddir)/lib/util/libutil_C.la \
 	$(MATH_LIBS)
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_mm2gv_SOURCES = fake.cxx
+endif
 
 gv2gml_SOURCES = gv2gml.c
 
@@ -182,6 +243,12 @@ gv2gml_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/util/libutil_C.la
+
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_gv2gml_SOURCES = fake.cxx
+endif
 
 gml2gv_SOURCES = gml2gv.c gmlparse.y gmlscan.l
 
@@ -199,6 +266,12 @@ gml2gv_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/util/libutil_C.la $(MATH_LIBS)
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_gml2gv_SOURCES = fake.cxx
+endif
+
 graphml2gv_SOURCES = graphml2gv.c
 graphml2gv_CPPFLAGS = $(AM_CPPFLAGS) $(EXPAT_CFLAGS)
 
@@ -207,12 +280,23 @@ graphml2gv_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/util/libutil_C.la $(EXPAT_LIBS)
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_graphml2gv_SOURCES = fake.cxx
+endif
+
 dijkstra_SOURCES = dijkstra.c
 
 dijkstra_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_dijkstra_SOURCES = fake.cxx
+endif
 
 gvgen_SOURCES = gvgen.c graph_generator.c
 

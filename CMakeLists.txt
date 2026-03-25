@@ -120,6 +120,18 @@ else()
   set(AUTO_X OFF)
 endif()
 
+set(WITH_THREADS no CACHE STRING "library used for multi-threading")
+set_property(CACHE WITH_THREADS PROPERTY STRINGS c11 cxx no posix)
+if(WITH_THREADS STREQUAL "c11")
+  set(GRAPHVIZ_THREADS 99) # ASCII 'c'
+elseif(WITH_THREADS STREQUAL "cxx")
+  set(GRAPHVIZ_THREADS 43) # ASCII '+'
+elseif(WITH_THREADS STREQUAL "no")
+  set(GRAPHVIZ_THREADS 0)
+elseif(WITH_THREADS STREQUAL "posix")
+  set(GRAPHVIZ_THREADS 112) # ASCII 'p'
+endif()
+
 if(WIN32)
   if(BUILD_SHARED_LIBS)
     # build dynamic-link libraries on Windows, including MinGW
@@ -788,6 +800,22 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # Studio, when building C that links against C++ (e.g. lib/neatogen/*.c), uses
   # the C++ compiler options instead of the C ones
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /experimental:c11atomics")
+endif()
+
+if(WITH_THREADS STREQUAL "c11")
+  message(STATUS "using C11 threads")
+elseif(WITH_THREADS STREQUAL "cxx")
+  message(STATUS "using C++11 threads")
+elseif(WITH_THREADS STREQUAL "no")
+  message(STATUS "using no threading library")
+elseif(WITH_THREADS STREQUAL "posix")
+  message(STATUS "using POSIX threads")
+  find_package(Threads REQUIRED)
+  if(NOT CMAKE_USE_PTHREADS_INIT)
+    message(FATAL_ERROR "FindThreads discovered non-POSIX threads")
+  endif()
+else()
+  message(FATAL_ERROR "invalid -DWITH_THREADS= option")
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

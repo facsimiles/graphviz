@@ -17,6 +17,12 @@ prune_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/util/libutil_C.la
 
+if WITH_THREADS_CXX
+# add a non-existent C++ source to force the C++ compiler to be used for
+# linking, so the C++ standard library is included for our C++ dependencies
+nodist_EXTRA_prune_SOURCES = fake.cxx
+endif
+
 .1.1.pdf:
 	rm -f $@; pdffile=$@; psfile=$${pdffile%pdf}ps; \
 	$(GROFF) -Tps -man $< > $$psfile || { rm -f $$psfile; exit 1; }; \
