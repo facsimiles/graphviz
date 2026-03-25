@@ -25,6 +25,7 @@
 
 #include "config.h"
 
+#include	<common/utils.h>
 #include	<dotgen/dot.h>
 #include	<limits.h>
 #include	<stdbool.h>
@@ -222,7 +223,7 @@ rank_set_class(graph_t * g)
 	{ SAMERANK, MINRANK, SOURCERANK, MAXRANK, SINKRANK, 0 };
     int val;
 
-    if (is_cluster(g))
+    if (is_a_cluster(g))
 	return CLUSTER;
     val = maptoken(agget(g, "rank"), name, class);
     GD_set_type(g) = val;
@@ -527,11 +528,6 @@ void dot_rank(graph_t *g) {
 	dot1_rank(g);
     if (Verbose)
 	fprintf (stderr, "Maxrank = %d, minrank = %d\n", GD_maxrank(g), GD_minrank(g));
-}
-
-bool is_cluster(graph_t * g)
-{
-    return is_a_cluster(g);   // from utils.c
 }
 
 /* new ranking code:

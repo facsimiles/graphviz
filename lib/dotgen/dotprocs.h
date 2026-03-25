@@ -50,7 +50,6 @@ typedef LIST(Agnode_t *) node_queue_t;
     extern int install_cluster(Agraph_t *, Agnode_t *, int, node_queue_t *);
     /// @return 0 on success
     extern int install_in_rank(Agraph_t *, Agnode_t *);
-    extern bool is_cluster(Agraph_t *);
     extern void dot_compoundEdges(Agraph_t *);
     extern Agedge_t *make_aux_edge(Agnode_t *, Agnode_t *, double, int);
     extern void mark_clusters(Agraph_t *);
