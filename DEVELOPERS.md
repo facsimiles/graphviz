@@ -121,6 +121,52 @@ use.
 
 *TODO: on Windows, you probably need to override different environment variables?*
 
+### Debugging tests
+
+Many tests involve executing a single command such as `dot` with
+particular arguments.  For such tests, you can examine the failed
+output to see the command line run (on a line starting with "`+`")
+and rerun that with the environment settings shown in the previous
+section, optionally in a debugger (using a debug-mode build,
+built with cmake configured with parameter `-DCMAKE_BUILD_TYPE=Debug`
+or `RelWithDebInfo`).
+
+For example, to debug the test `tests/test_regression::test_2225`
+shown above, we might examine the failed test output and see
+a line like
+```sh
++ sfdp -Gsplines=curved -o /dev/null .../tests/2225.dot
+```
+
+To debug this with a command-line debugger such as gdb we can
+use a command like:
+```sh
+env PATH=${PREFIX}/bin:${PATH} C_INCLUDE_PATH=${PREFIX}/include \
+  LD_LIBRARY_PATH=${PREFIX}/lib LIBRARY_PATH=${PREFIX}/lib \
+  PYTHONPATH=${PREFIX}/lib/graphviz/python3 \
+  TCLLIBPATH=${PREFIX}/lib/graphviz/tcl \
+  PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig \
+  graphviz_ROOT=${PREFIX} \
+  gdb --args sfdp -Gsplines=curved -o /dev/null .../tests/2225.dot
+```
+With an IDE, you will need to set environment variables similarly.
+
+To debug failing tests that involve executing C code which is compiled
+*during* the test, you will need to also set `CFLAGS=-g` (or other
+native debugging flag) in the environment when running the test.
+After running that test once with `CFLAGS=-g` You should be able to
+spy a line in the failed test output like
+```sh
++ /tmp/.../test_23750/a.exe args...
+```
+and use the revealed line to run in the debugger as shown above:
+```sh
+env PATH=... gdb --args /tmp/.../test_23750/a.exe args...
+```
+To find the exact environment to run `a.exe` you may have to
+study the Python code corresponding to the test and extract
+more details about input/output and other environment variables.
+
 ### Writing tests
 
 Graphviz’ use of Pytest is mostly standard. You can find documentation and

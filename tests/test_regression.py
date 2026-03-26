@@ -1558,7 +1558,7 @@ def test_1724():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_1767():
+def test_1767(tmp_path: Path):
     """
     using the Pango plugin multiple times should produce consistent results
     https://gitlab.com/graphviz/graphviz/-/issues/1767
@@ -1572,7 +1572,7 @@ def test_1767():
     src = (Path(__file__).parent / "1767.dot").resolve()
     assert src.exists(), "missing test case"
 
-    stdout, _ = run_c(c_src, [src], link=["cgraph", "gvc"])
+    stdout, _ = run_c(c_src, tmp_path, args=[src], link=["cgraph", "gvc"])
 
     assert stdout.splitlines() == [
         "Loaded graph:clusters",
@@ -1809,7 +1809,7 @@ def test_1880():
 @pytest.mark.xfail(
     strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/1887"
 )
-def test_1887():
+def test_1887(tmp_path: Path):
     """
     empty strings as labels should be propagated to dot output
     https://gitlab.com/graphviz/graphviz/-/issues/1887
@@ -1820,7 +1820,7 @@ def test_1887():
     assert c_src.exists(), "missing test case"
 
     # generate a graph and pass it through dot
-    stdout, _ = run_c(c_src, link=["cgraph"])
+    stdout, _ = run_c(c_src, tmp_path, link=["cgraph"])
 
     assert (
         re.search(r'label\s*=\s*""', stdout) is not None
@@ -2039,7 +2039,7 @@ def test_1909():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_1910():
+def test_1910(tmp_path: Path):
     """
     Repeatedly using agmemread() should have consistent results
     https://gitlab.com/graphviz/graphviz/-/issues/1910
@@ -2050,7 +2050,7 @@ def test_1910():
     assert c_src.exists(), "missing test case"
 
     # run the test
-    _, _ = run_c(c_src, link=["cgraph", "gvc"])
+    _, _ = run_c(c_src, tmp_path, link=["cgraph", "gvc"])
 
 
 def test_1913():
@@ -2277,7 +2277,7 @@ def test_1990():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_2057():
+def test_2057(tmp_path: Path):
     """
     gvToolTred should be usable by user code
     https://gitlab.com/graphviz/graphviz/-/issues/2057
@@ -2288,7 +2288,7 @@ def test_2057():
     assert c_src.exists(), "missing test case"
 
     # run the test
-    _, _ = run_c(c_src, link=["gvc"])
+    _, _ = run_c(c_src, tmp_path, link=["gvc"])
 
 
 def test_2078():
@@ -2397,7 +2397,7 @@ def test_2089(html_like_first: bool):
     assert "label=<foo>" in canonical, "HTML-like label not found"
 
 
-def test_2089_2():
+def test_2089_2(tmp_path: Path):
     """
     HTML-like and non-HTML-like strings should peacefully coexist
     https://gitlab.com/graphviz/graphviz/-/issues/2089
@@ -2412,7 +2412,7 @@ def test_2089_2():
     if is_static_build():
         # in static builds, we also need transitive dependencies
         link += ["cdt"]
-    _, _ = run_c(c_src, link=link)
+    _, _ = run_c(c_src, tmp_path, link=link)
 
 
 @pytest.mark.skipif(which("dot2gxl") is None, reason="dot2gxl not available")
@@ -3161,7 +3161,7 @@ def test_2342():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_2356():
+def test_2356(tmp_path: Path):
     """
     Using `mindist` programmatically in a loop should not cause Windows crashes
     https://gitlab.com/graphviz/graphviz/-/issues/2356
@@ -3172,7 +3172,7 @@ def test_2356():
     assert c_src.exists(), "missing test case"
 
     # run the test
-    run_c(c_src, link=["cgraph", "gvc"])
+    run_c(c_src, tmp_path, link=["cgraph", "gvc"])
 
 
 def test_2361():
@@ -3275,7 +3275,7 @@ def test_2481():
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_2484():
+def test_2484(tmp_path: Path):
     """
     Graphviz context should not preserve state across calls
     https://gitlab.com/graphviz/graphviz/-/issues/2484
@@ -3292,7 +3292,8 @@ def test_2484():
     # compile and run it
     run_c(
         c_src,
-        ["-Kdot", "-Tpng", str(dot_src), "-o", os.devnull],
+        tmp_path,
+        args=["-Kdot", "-Tpng", str(dot_src), "-o", os.devnull],
         link=["cgraph", "gvc"],
     )
 
@@ -3316,7 +3317,7 @@ def test_2592():
     assert "comment not included" in svg, "missing xlabel in packed graph"
 
 
-def test_package_version():
+def test_package_version(tmp_path: Path):
     """
     The graphviz_version.h header should define a non-empty PACKAGE_VERSION
     """
@@ -3326,7 +3327,7 @@ def test_package_version():
     assert c_src.exists(), "missing test case"
 
     # run the test
-    package_version, _ = run_c(c_src)
+    package_version, _ = run_c(c_src, tmp_path)
 
     assert (
         package_version.strip() != ""
@@ -3349,7 +3350,7 @@ def test_user_shapes():
     assert '<image xlink:href="usershape.svg" width="62px" height="44px" ' in output
 
 
-def test_xdot_json():
+def test_xdot_json(tmp_path: Path):
     """
     check the output of xdot’s JSON API
     """
@@ -3361,7 +3362,7 @@ def test_xdot_json():
     input = "c 9 -#fffffe00 C 7 -#ffffff P 4 0 0 0 36 54 36 54 0"
 
     # ask our C helper to process this
-    output, err = run_c(c_src, input=input, link=["xdot"])
+    output, err = run_c(c_src, tmp_path, input=input, link=["xdot"])
     assert err == ""
 
     # confirm the output was what we expected
@@ -3571,7 +3572,7 @@ def test_2270(tmp_path: Path):
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_2272():
+def test_2272(tmp_path: Path):
     """
     using `agmemread` with an unterminated string should not fail assertions
     https://gitlab.com/graphviz/graphviz/-/issues/2272
@@ -3582,7 +3583,7 @@ def test_2272():
     assert c_src.exists(), "missing test case"
 
     # run the test
-    run_c(c_src, link=["cgraph", "gvc"])
+    run_c(c_src, tmp_path, link=["cgraph", "gvc"])
 
 
 def test_2272_2():
@@ -3954,7 +3955,7 @@ def test_2371():
     platform.system() == "Windows",
     reason="gvplugin_list symbol is not exposed on Windows",
 )
-def test_2375():
+def test_2375(tmp_path: Path):
     """
     `gvplugin_list` should return full plugin names
     https://gitlab.com/graphviz/graphviz/-/issues/2375
@@ -3965,7 +3966,7 @@ def test_2375():
     assert c_src.exists(), "missing test case"
 
     # run the test
-    run_c(c_src, link=["gvc"])
+    run_c(c_src, tmp_path, link=["gvc"])
 
 
 def test_2377():
@@ -4026,7 +4027,7 @@ def test_2391_1():
     dot("svg", input)
 
 
-def test_2397():
+def test_2397(tmp_path: Path):
     """
     escapes in strings should be handled correctly
     https://gitlab.com/graphviz/graphviz/-/issues/2397
@@ -4041,7 +4042,7 @@ def test_2397():
     if is_static_build():
         # in static builds, we also need transitive dependencies
         link += ["cdt"]
-    source, _ = run_c(c_src, link=link)
+    source, _ = run_c(c_src, tmp_path, link=link)
 
     # this should have produced a valid graph
     dot("svg", source=source)
@@ -4156,7 +4157,7 @@ def test_2436():
 @pytest.mark.xfail(
     strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2434"
 )
-def test_2434():
+def test_2434(tmp_path: Path):
     """
     the order in which `agmemread` and `gvContext` calls are made should have no impact
     https://gitlab.com/graphviz/graphviz/-/issues/2434
@@ -4167,10 +4168,10 @@ def test_2434():
     assert c_src.exists(), "missing test case"
 
     # generate an SVG by calling `gvContext` first
-    before, _ = run_c(c_src, ["before"], link=["cgraph", "gvc"])
+    before, _ = run_c(c_src, tmp_path, args=["before"], link=["cgraph", "gvc"])
 
     # generate an SVG by calling `gvContext` second
-    after, _ = run_c(c_src, ["after"], link=["cgraph", "gvc"])
+    after, _ = run_c(c_src, tmp_path, args=["after"], link=["cgraph", "gvc"])
 
     # resulting images should be identical
     assert before == after, "agmemread/gvContext ordering affected image output"
@@ -5778,7 +5779,7 @@ def test_2640(seed: int):
     is_static_build(),
     reason="dynamic libraries are unavailable to link against in static builds",
 )
-def test_2641(testcase: str):
+def test_2641(testcase: str, tmp_path: Path):
     """
     `agattr*` and friends should preserve some measure of backwards compatibility
     https://gitlab.com/graphviz/graphviz/-/issues/2641
@@ -5789,7 +5790,7 @@ def test_2641(testcase: str):
     assert c_src.exists(), "missing test case"
 
     # run it
-    run_c(c_src, link=["cgraph"])
+    run_c(c_src, tmp_path, link=["cgraph"])
 
 
 def _find_plugin_so(plugin: str) -> Optional[Path]:
@@ -6009,7 +6010,7 @@ def test_2705(tmp_path: Path):
     if is_static_build():
         # in static builds, we also need transitive dependencies
         link += ["cdt"]
-    run_c(c_src, [from_memory, from_file], link=link)
+    run_c(c_src, tmp_path, args=[from_memory, from_file], link=link)
 
     original = from_memory.read_text(encoding="utf-8")
     round_tripped = from_file.read_text(encoding="utf-8")
@@ -6835,7 +6836,7 @@ def test_dot_randomV():
     assert proc.stderr == expected, "unexpected usage info"
 
 
-def test_dot_V():
+def test_dot_V(tmp_path: Path):
     """
     test the output from `dot -V`
     """
@@ -6844,14 +6845,14 @@ def test_dot_V():
 
     c_src = (Path(__file__).parent / "get-package-version.c").resolve()
     assert c_src.exists(), "missing test case"
-    package_version, _ = run_c(c_src)
+    package_version, _ = run_c(c_src, tmp_path)
 
     assert proc.stderr.startswith(
         f"dot - graphviz version {package_version.strip()} ("
     ), "unexpected -V info"
 
 
-def test_dot_Vquestionmark():
+def test_dot_Vquestionmark(tmp_path: Path):
     """
     test the output from two short options combined
     """
@@ -6860,14 +6861,14 @@ def test_dot_Vquestionmark():
 
     c_src = (Path(__file__).parent / "get-package-version.c").resolve()
     assert c_src.exists(), "missing test case"
-    package_version, _ = run_c(c_src)
+    package_version, _ = run_c(c_src, tmp_path)
 
     assert proc.stderr.startswith(
         f"dot - graphviz version {package_version.strip()} ("
     ), "unexpected -V info"
 
 
-def test_dot_Vrandom():
+def test_dot_Vrandom(tmp_path: Path):
     """
     test the output from a short option mixed with long
     """
@@ -6878,7 +6879,7 @@ def test_dot_Vrandom():
 
     c_src = (Path(__file__).parent / "get-package-version.c").resolve()
     assert c_src.exists(), "missing test case"
-    package_version, _ = run_c(c_src)
+    package_version, _ = run_c(c_src, tmp_path)
 
     assert proc.stderr.startswith(
         f"dot - graphviz version {package_version.strip()} ("
@@ -7057,7 +7058,7 @@ def test_changelog():
                 ), f"CHANGELOG.md:{lineno}: invalid version range: {line}"
 
 
-def test_agxbuf_print_nul():
+def test_agxbuf_print_nul(tmp_path: Path):
     """
     `agxbprint` should not account for nor append a NUL byte
     """
@@ -7073,10 +7074,10 @@ def test_agxbuf_print_nul():
         # gnu17 needed for `strndup`
         cflags = ["-std=gnu17", f"-I{lib}"]
 
-    run_c(c_src, cflags=cflags)
+    run_c(c_src, tmp_path, cflags=cflags)
 
 
-def test_agxbuf_use_implicit_nul():
+def test_agxbuf_use_implicit_nul(tmp_path: Path):
     """
     `agxbuf` should be able to use its entire memory as an inline string
     """
@@ -7092,7 +7093,7 @@ def test_agxbuf_use_implicit_nul():
         # gnu17 needed for `strndup`
         cflags = ["-std=gnu17", f"-I{lib}"]
 
-    run_c(c_src, cflags=cflags)
+    run_c(c_src, tmp_path, cflags=cflags)
 
 
 @pytest.mark.skipif(which("edgepaint") is None, reason="edgepaint not available")
