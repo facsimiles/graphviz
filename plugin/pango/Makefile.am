@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
-	$(PANGOCAIRO_CFLAGS) $(FREETYPE2_CFLAGS) $(LIBGVC_CFLAGS)
+	$(PANGOCAIRO_CFLAGS) $(FREETYPE2_CFLAGS)
 
 noinst_HEADERS = gvplugin_pango.h gvgetfontlist.h
 
