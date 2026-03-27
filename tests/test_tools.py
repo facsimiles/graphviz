@@ -164,7 +164,7 @@ def test_edgepaint_options(arg: str):
 def test_sandbox_noop():
     """check trivial functionality works when sandboxed"""
     sandbox = which("dot_sandbox")
-    run_raw([sandbox, "-V"])
+    run_raw(sandbox, "-V")
 
 
 @pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")

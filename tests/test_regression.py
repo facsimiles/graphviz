@@ -96,7 +96,7 @@ def test_42():
 
     # process it with Graphviz
     neato = which("neato")
-    run_raw([neato, "-n2", "-Tpng", input], stdout=subprocess.DEVNULL)
+    run_raw(neato, "-n2", "-Tpng", input, stdout=subprocess.DEVNULL)
 
 
 def test_56():
@@ -807,7 +807,7 @@ def test_1367():
 
     # Pass it through Graphviz. Do not use `dot(…)` because input and output contain
     # invalid UTF-8.
-    run_raw(["dot", "-Txdot:xdot:core", "-o", os.devnull, input])
+    run_raw("dot", "-Txdot:xdot:core", "-o", os.devnull, input)
 
 
 def test_1408():
@@ -1721,7 +1721,7 @@ def test_1865():
 
     # fdp should not crash when processing this file
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input])
+    run_raw(fdp, "-o", os.devnull, input)
 
 
 @pytest.mark.skipif(which("gv2gml") is None, reason="gv2gml not available")
@@ -1964,7 +1964,7 @@ def test_1879_2():
     assert input.exists(), "unexpectedly missing test case"
 
     # process it with DOT
-    run_raw(["dot", "-Gmargin=0", "-Tpng", "-o", os.devnull, input])
+    run_raw("dot", "-Gmargin=0", "-Tpng", "-o", os.devnull, input)
 
 
 def test_1893():
@@ -1996,7 +1996,7 @@ def test_1906():
     assert input.exists(), "unexpectedly missing test case"
 
     # use Circo to translate it to DOT
-    run_raw(["dot", "-Kcirco", "-Tgv", "-o", os.devnull, input])
+    run_raw("dot", "-Kcirco", "-Tgv", "-o", os.devnull, input)
 
 
 @pytest.mark.skipif(which("twopi") is None, reason="twopi not available")
@@ -2270,7 +2270,7 @@ def test_1990():
 
     # process it with Graphviz
     circo = which("circo")
-    run_raw([circo, "-Tsvg", "-o", os.devnull, input])
+    run_raw(circo, "-Tsvg", "-o", os.devnull, input)
 
 
 @pytest.mark.skipif(
@@ -2496,7 +2496,7 @@ def test_2095_1():
 
     # this typically takes ~1s to run, so give a wide margin of error and require that
     # that Graphviz finishes within that
-    run_raw(["dot", "-Tpdf", "-o", os.devnull, input], timeout=timeout)
+    run_raw("dot", "-Tpdf", "-o", os.devnull, input, timeout=timeout)
 
 
 @pytest.mark.skipif(which("gv2gml") is None, reason="gv2gml not available")
@@ -2531,7 +2531,7 @@ def test_2138(examine: str):
 
     # run it with NUL input
     gvprbin = which("gvpr")
-    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
+    out = run_raw(gvprbin, "-f", script, stdin=subprocess.DEVNULL)
 
     # Decode into text. We do this instead of `text=True` above because the trailing
     # garbage can contain invalid UTF-8 data causing cryptic failures. We want to
@@ -2637,7 +2637,7 @@ def test_2168():
         timeout *= 2
 
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
+    run_raw(fdp, "-o", os.devnull, input, timeout=timeout)
 
 
 def test_2168_1():
@@ -2655,7 +2655,7 @@ def test_2168_1():
         timeout *= 2
 
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
+    run_raw(fdp, "-o", os.devnull, input, timeout=timeout)
 
 
 def test_2168_2():
@@ -2673,7 +2673,7 @@ def test_2168_2():
         timeout *= 2
 
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
+    run_raw(fdp, "-o", os.devnull, input, timeout=timeout)
 
 
 def test_2168_3():
@@ -2691,7 +2691,7 @@ def test_2168_3():
         timeout *= 2
 
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
+    run_raw(fdp, "-o", os.devnull, input, timeout=timeout)
 
 
 def test_2168_4():
@@ -2709,7 +2709,7 @@ def test_2168_4():
         timeout *= 2
 
     fdp = which("fdp")
-    run_raw([fdp, "-o", os.devnull, input], timeout=timeout)
+    run_raw(fdp, "-o", os.devnull, input, timeout=timeout)
 
 
 def test_2168_5():
@@ -2792,7 +2792,7 @@ def test_2183():
     input = Path(__file__).parent / "2183.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    run_raw(["dot", "-Tsvg", "-G8.5,11!", "-o", os.devnull, input])
+    run_raw("dot", "-Tsvg", "-G8.5,11!", "-o", os.devnull, input)
 
 
 @pytest.mark.skipif(which("nop") is None, reason="nop not available")
@@ -2863,7 +2863,7 @@ def test_2185_2():
 
     # run this with NUL input
     gvprbin = which("gvpr")
-    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
+    out = run_raw(gvprbin, "-f", script, stdin=subprocess.DEVNULL)
 
     # decode output in a separate step to gracefully cope with garbage unicode
     out = out.decode("utf-8", "replace")
@@ -2888,7 +2888,7 @@ def test_2185_3():
 
     # run this with NUL input
     gvprbin = which("gvpr")
-    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
+    out = run_raw(gvprbin, "-f", script, stdin=subprocess.DEVNULL)
 
     # decode output in a separate step to gracefully cope with garbage unicode
     out = out.decode("utf-8", "replace")
@@ -2913,7 +2913,7 @@ def test_2185_4():
 
     # run this with NUL input
     gvprbin = which("gvpr")
-    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
+    out = run_raw(gvprbin, "-f", script, stdin=subprocess.DEVNULL)
 
     # decode output in a separate step to gracefully cope with garbage unicode
     out = out.decode("utf-8", "replace")
@@ -2938,7 +2938,7 @@ def test_2185_5():
 
     # run this with NUL input
     gvprbin = which("gvpr")
-    out = run_raw([gvprbin, "-f", script], stdin=subprocess.DEVNULL)
+    out = run_raw(gvprbin, "-f", script, stdin=subprocess.DEVNULL)
 
     # decode output in a separate step to gracefully cope with garbage unicode
     out = out.decode("utf-8", "replace")
@@ -3522,7 +3522,7 @@ def test_2257():
 
     # Graphviz should refuse to process an input file
     with pytest.raises(subprocess.CalledProcessError):
-        run_raw(["dot", "-Tsvg", input, "-o", os.devnull], env=env)
+        run_raw("dot", "-Tsvg", input, "-o", os.devnull, env=env)
 
 
 def test_2258():
@@ -3561,7 +3561,7 @@ def test_2270(tmp_path: Path):
     input.write_text("digraph { hello -> world }", encoding="utf-8")
 
     # process it with Graphviz
-    run_raw(["dot", "-T", "plain:dot:core", "-O", "hello.gv"], cwd=tmp_path)
+    run_raw("dot", "-T", "plain:dot:core", "-O", "hello.gv", cwd=tmp_path)
 
     # it should have produced output in the expected location
     output = tmp_path / "hello.gv.core.dot.plain"
@@ -3752,7 +3752,7 @@ def test_2300_1():
 
     # ask `gxl2gv` to process this
     gxl2gv = which("gxl2gv")
-    run_raw([gxl2gv, input])
+    run_raw(gxl2gv, input)
 
 
 def test_2307():
@@ -3948,7 +3948,7 @@ def test_2371():
     assert input.exists(), "unexpectedly missing test case"
 
     # run it through Graphviz
-    run_raw(["dot", "-Tsvg", "-Knop2", "-o", os.devnull, input])
+    run_raw("dot", "-Tsvg", "-Knop2", "-o", os.devnull, input)
 
 
 @pytest.mark.skipif(
@@ -4070,7 +4070,7 @@ def test_2404():
     https://gitlab.com/graphviz/graphviz/-/issues/2404
     """
     gvmap_sh = Path(__file__).parent / "../cmd/gvmap/gvmap.sh"
-    run_raw(["shellcheck", "-S", "error", gvmap_sh])
+    run_raw("shellcheck", "-S", "error", gvmap_sh)
 
 
 def test_2406():
@@ -4275,8 +4275,8 @@ def test_2457():
 
     # generate PDFs
     twopi = which("twopi")
-    pdf1 = run_raw([twopi, "-Tpdf", case1], env=env)
-    pdf2 = run_raw([twopi, "-Tpdf", case2], env=env)
+    pdf1 = run_raw(twopi, "-Tpdf", case1, env=env)
+    pdf2 = run_raw(twopi, "-Tpdf", case2, env=env)
 
     assert pdf1 == pdf2, "node definition order affected PDF generation"
 
@@ -4376,13 +4376,13 @@ def test_2473_1():
     env["SOURCE_DATE_EPOCH"] = "60"
 
     # generate a PDF
-    first_run = run_raw(["dot", "-Tpdf"], input=graph, env=env)
+    first_run = run_raw("dot", "-Tpdf", input=graph, env=env)
 
     # wait long enough for the current time to change
     time.sleep(2)
 
     # generate another PDF
-    second_run = run_raw(["dot", "-Tpdf"], input=graph, env=env)
+    second_run = run_raw("dot", "-Tpdf", input=graph, env=env)
 
     assert (
         first_run == second_run
@@ -4425,7 +4425,7 @@ def test_2476():
     assert input.exists(), "unexpectedly missing test case"
 
     # run it through Graphviz
-    run_raw(["dot", "-Tsvg", "-Gmclimit=0.5", "-o", os.devnull, input])
+    run_raw("dot", "-Tsvg", "-Gmclimit=0.5", "-o", os.devnull, input)
 
 
 def test_2490():
@@ -5037,7 +5037,7 @@ def test_2588():
     # this execution depends on random numbers, so we need to run many times to
     # have a chance of provoking the bug
     for _ in range(200):
-        run_raw([gvgen, "-R", "20"], stdout=subprocess.DEVNULL)
+        run_raw(gvgen, "-R", "20", stdout=subprocess.DEVNULL)
 
 
 @pytest.mark.skipif(which("edgepaint") is None, reason="edgepaint not available")
@@ -5173,10 +5173,10 @@ def test_2598(tmp_path: Path):
     args = ["cmake", "--debug-find", "-B", tmp_path, "-S", src]
     if os.environ.get("CI_JOB_NAME", "").startswith("windows-cmake-Win32"):
         args += ["-A", "Win32"]
-    run_raw(args)
+    run_raw(*args)
 
     # run compilation
-    run_raw(["cmake", "--build", tmp_path])
+    run_raw("cmake", "--build", tmp_path)
 
 
 @pytest.mark.skipif(not is_cmake(), reason="only relevant in CMake builds")
@@ -5196,10 +5196,10 @@ def test_2598_1(tmp_path: Path):
     args = ["cmake", "--debug-find", "-B", tmp_path, "-S", src]
     if os.environ.get("CI_JOB_NAME", "").startswith("windows-cmake-Win32"):
         args += ["-A", "Win32"]
-    run_raw(args)
+    run_raw(*args)
 
     # run compilation
-    run_raw(["cmake", "--build", tmp_path])
+    run_raw("cmake", "--build", tmp_path)
 
 
 @pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
@@ -5288,7 +5288,7 @@ def test_2609(tmp_path: Path):
     # run this through Neato and convert to GIF
     neato = which("neato")
     gif = tmp_path / "2609.gif"
-    run_raw([neato, "-Tgif", input, "-o", gif])
+    run_raw(neato, "-Tgif", input, "-o", gif)
 
     # load the image and scan its pixels
     img = Image.open(gif)
@@ -5375,7 +5375,7 @@ def test_2619():
     cwd = Path(__file__).parent
 
     # our test case should be translatable to PDF
-    run_raw(["dot", "-Tpdf", "-o", os.devnull, "2619.dot"], cwd=cwd)
+    run_raw("dot", "-Tpdf", "-o", os.devnull, "2619.dot", cwd=cwd)
 
 
 @pytest.mark.xfail(
@@ -5457,7 +5457,7 @@ def test_2619_3():
     src = 'digraph {a [image="2619_1_2.jpg"]}'.encode("utf-8")
 
     # our test case shall not cause a crash
-    run_raw(["dot", "-Tpdf", "-o", os.devnull], cwd=cwd, input=src)
+    run_raw("dot", "-Tpdf", "-o", os.devnull, cwd=cwd, input=src)
 
 
 def test_2619_4():
@@ -5572,7 +5572,7 @@ def test_2621():
     input = Path(__file__).parent / "2621.dot"
     assert input.exists(), "unexpectedly missing test case"
 
-    run_raw(["dot", "-Gmclimit=.05", "-Gphase=2", "-Tsvg", "-o", os.devnull, input])
+    run_raw("dot", "-Gmclimit=.05", "-Gphase=2", "-Tsvg", "-o", os.devnull, input)
 
 
 def test_2636_1():
@@ -5678,7 +5678,7 @@ def test_2643():
 
     # run this through twopi
     twopi = which("twopi")
-    run_raw([twopi, "-o", os.devnull, input])
+    run_raw(twopi, "-o", os.devnull, input)
 
 
 @pytest.mark.slow  # ~13min
@@ -5758,7 +5758,7 @@ def test_MR_2854():
 
     # this typically takes ~10m to run, so give a wide margin of error and require that
     # Graphviz finishes within that
-    run_raw(["dot", "-Tsvg", "-o", os.devnull, input], timeout=60 * 20)
+    run_raw("dot", "-Tsvg", "-o", os.devnull, input, timeout=60 * 20)
 
 
 @pytest.mark.skipif(which("gvgen") is None, reason="gvgen not available")
@@ -5771,7 +5771,7 @@ def test_2640(seed: int):
 
     # the seed 1967 was observed previously to cause crashes on Windows
     gvgen = which("gvgen")
-    run_raw([gvgen, "-R", "20", f"-u{seed}"], stdout=subprocess.DEVNULL)
+    run_raw(gvgen, "-R", "20", f"-u{seed}", stdout=subprocess.DEVNULL)
 
 
 @pytest.mark.parametrize(
@@ -5991,7 +5991,7 @@ def test_2699():
 
     # run this through `ps2pdf`, an arbitrary PS-consuming program to validate what
     # Graphviz gave us
-    run_raw(["ps2pdf", "-", os.devnull], input=ps)
+    run_raw("ps2pdf", "-", os.devnull, input=ps)
 
 
 def test_2705(tmp_path: Path):

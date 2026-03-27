@@ -94,7 +94,7 @@ def test_gvpr_example(src):
     wd = Path(__file__).parent.parent.resolve()
 
     # run GVPR with the given script
-    run_raw(["gvpr", "-f", path], stdin=subprocess.DEVNULL, cwd=wd)
+    run_raw("gvpr", "-f", path, stdin=subprocess.DEVNULL, cwd=wd)
 
 
 @pytest.mark.skipif(which("gvpr") is None, reason="GVPR not available")

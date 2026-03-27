@@ -57,7 +57,7 @@ def pexpect_spawn_tclsh(
     return proc
 
 
-def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
+def run_raw(*args: Union[Path, str], **kwargs) -> Optional[Union[bytes, str]]:
     """
     execute an external command
 
@@ -111,7 +111,7 @@ def run(args: list[Union[Path, str]], **kwargs) -> Optional[str]:
     Return:
         The command’s stdout output.
     """
-    return run_raw(args, text=True, **kwargs)
+    return run_raw(*args, text=True, **kwargs)
 
 
 def compile_c(
@@ -208,7 +208,7 @@ def compile_c(
 
     # compile the program
     try:
-        run_raw(args)
+        run_raw(*args)
     except subprocess.CalledProcessError:
         try:
             os.remove(dst)
@@ -324,11 +324,11 @@ def is_asan_instrumented(binary: Path) -> bool:
     # Get the symbol table of the binary. We deliberately avoid `text=True` to tolerate
     # non-ASCII bytes in the symbol table.
     if objdump := shutil.which("objdump"):
-        symbols = run_raw([objdump, "--syms", binary])
+        symbols = run_raw(objdump, "--syms", binary)
     elif llvm_objdump := shutil.which("llvm-objdump"):
-        symbols = run_raw([llvm_objdump, "--syms", binary])
+        symbols = run_raw(llvm_objdump, "--syms", binary)
     elif dumpbin := shutil.which("dumpbin"):
-        dependencies = run_raw([dumpbin, "/DEPENDENTS", binary])
+        dependencies = run_raw(dumpbin, "/DEPENDENTS", binary)
         # Look for the ASan DLL dependency
         return (
             re.search(rb"\bclang_rt\.asan_dynamic-.*\.dll\b", dependencies) is not None
