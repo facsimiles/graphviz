@@ -4168,10 +4168,12 @@ def test_2434(tmp_path: Path):
     assert c_src.exists(), "missing test case"
 
     # generate an SVG by calling `gvContext` first
-    before, _ = run_c(c_src, tmp_path, args=["before"], link=["cgraph", "gvc"])
+    dst = tmp_path / "a.exe"
+    compile_c(c_src, link=["cgraph", "gvc"], dst=dst)
+    before = run([dst, "before"])
 
     # generate an SVG by calling `gvContext` second
-    after, _ = run_c(c_src, tmp_path, args=["after"], link=["cgraph", "gvc"])
+    after = run([dst, "after"])
 
     # resulting images should be identical
     assert before == after, "agmemread/gvContext ordering affected image output"
