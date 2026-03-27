@@ -4155,7 +4155,9 @@ def test_2436():
 
 
 @pytest.mark.xfail(
-    strict=True, reason="https://gitlab.com/graphviz/graphviz/-/issues/2434"
+    raises=AssertionError,
+    strict=True,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2434",
 )
 def test_2434(tmp_path: Path):
     """
