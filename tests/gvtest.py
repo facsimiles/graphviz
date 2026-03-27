@@ -97,7 +97,7 @@ def run_raw(*args: Union[Path, str], **kwargs) -> Optional[Union[bytes, str]]:
     return proc.stdout
 
 
-def run(args: list[Union[Path, str]], **kwargs) -> Optional[str]:
+def run(*args: Union[Path, str], **kwargs) -> Optional[str]:
     """
     execute an external command that takes/returns textual input/output
 
@@ -159,15 +159,15 @@ def compile_c(
                 # flush any pending pkg-config lookup to roughly keep the library
                 # ordering the caller requested
                 if len(libraries) > 0:
-                    cflags += run([pkgconf, "--cflags", "--"] + libraries).split()
-                    ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
+                    cflags += run(pkgconf, "--cflags", "--", *libraries).split()
+                    ldflags += run(pkgconf, "--libs", "--", *libraries).split()
                     libraries = []
                 ldflags += [l]
             else:
                 libraries += [f"lib{l}"]
         if len(libraries) > 0:
-            cflags += run([pkgconf, "--cflags", "--"] + libraries).split()
-            ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
+            cflags += run(pkgconf, "--cflags", "--", *libraries).split()
+            ldflags += run(pkgconf, "--libs", "--", *libraries).split()
     elif platform.system() == "Windows" and not is_mingw():
         if len(link) > 0:
             if not is_static_build():
@@ -301,7 +301,7 @@ def gvpr(program: Path) -> str:
 
     assert which("gvpr") is not None, "attempt to run GVPR without it available"
 
-    return run(["gvpr", "-f", program], stdin=subprocess.DEVNULL)
+    return run("gvpr", "-f", program, stdin=subprocess.DEVNULL)
 
 
 def build_system() -> str:

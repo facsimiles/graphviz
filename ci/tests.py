@@ -157,9 +157,9 @@ def test_installation():
     check that Graphviz reports the expected version number
     """
 
-    expected_version = run([sys.executable, ROOT / "gen_version.py"]).strip()
+    expected_version = run(sys.executable, ROOT / "gen_version.py").strip()
 
-    actual_version_string = run(["dot", "-V"], stderr=subprocess.STDOUT)
+    actual_version_string = run("dot", "-V", stderr=subprocess.STDOUT)
     try:
         actual_version = actual_version_string.split()[4]
     except IndexError:

@@ -126,6 +126,6 @@ def test_gv_find_me(tmp_path: Path):
     _ = compile_c(src, cflags, dst=exe)
 
     # run this
-    output = run([exe])
+    output = run(exe)
 
     assert output == f"{exe}\n", "gv_find_me did not determine executable absolute path"

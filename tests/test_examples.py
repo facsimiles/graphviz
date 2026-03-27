@@ -110,7 +110,7 @@ def test_gvpr_clustg():
     input = "digraph { N1; N2; N1 -> N2; N3; }"
 
     # run GVPR on this input
-    output = run(["gvpr", "-f", path], input=input, cwd=wd)
+    output = run("gvpr", "-f", path, input=input, cwd=wd)
 
     assert (
         output.strip() == 'strict digraph "clust%1" {\n'
