@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `dot -Tsvg -O file1.dot file2.dot`), page numbering state from previous jobs
   no longer leaks into the current job. This was a regression in
   Graphviz 2.40.0. #2827
+- Logic to determine whether a rendered page is non-first has been corrected.
 
 ## [14.1.4] – 2026-03-20
 

@@ -3586,7 +3586,7 @@ static void emit_end_graph(GVJ_t * job)
     pop_obj_state(job);
 }
 
-#define NotFirstPage(j) (((j)->layerNum>1)||((j)->pagesArrayElem.x > 0)||((j)->pagesArrayElem.x > 0))
+#define NotFirstPage(j) (((j)->layerNum>1)||((j)->pagesArrayElem.x > 0)||((j)->pagesArrayElem.y > 0))
 
 static void emit_page(GVJ_t * job, graph_t * g)
 {
