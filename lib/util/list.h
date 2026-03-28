@@ -383,9 +383,13 @@ static_assert(
 ///
 ///   void LIST_PUSH_BACK(LIST(<type>) *list, <type> item);
 ///
+/// This is defined as a varargs macro to allow callers to write the item to
+/// append as a C99 compound literal without resorting to extra parens to hide
+/// commas from the preprocessor.
+///
 /// @param list List to operate on
-/// @param item Item to append
-#define LIST_PUSH_BACK(list, item) LIST_APPEND((list), (item))
+/// @param ... Item to append
+#define LIST_PUSH_BACK(list, ...) LIST_APPEND((list), (__VA_ARGS__))
 
 /// remove and return the first item of a list
 ///
