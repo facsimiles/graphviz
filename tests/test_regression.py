@@ -6398,6 +6398,34 @@ def test_2825():
             raise
 
 
+@pytest.mark.xfail(
+    raises=AssertionError,
+    reason="https://gitlab.com/graphviz/graphviz/-/issues/2827",
+    strict=True,
+)
+def test_2827(tmp_path: Path):
+    """
+    page number state should not be carried across between unrelated graphs
+    https://gitlab.com/graphviz/graphviz/-/issues/2827
+    """
+
+    # write two identical trivial graphs
+    src1 = tmp_path / "a.dot"
+    src1.write_text("graph { a -- b; }", encoding="utf-8")
+    src2 = tmp_path / "b.dot"
+    src2.write_text("graph { a -- b; }", encoding="utf-8")
+
+    # translate these to SVG
+    run(["dot", "-Tsvg", "-O", src1, src2])
+
+    # the output images should be identical
+    out1 = tmp_path / "a.dot.svg"
+    svg1 = out1.read_text(encoding="utf-8")
+    out2 = tmp_path / "b.dot.svg"
+    svg2 = out2.read_text(encoding="utf-8")
+    assert svg1 == svg2, "state from one graph carried to another"
+
+
 @pytest.mark.parametrize("package", ("Tcldot", "Tclpathplan"))
 @pytest.mark.skipif(shutil.which("tclsh") is None, reason="tclsh not available")
 @pytest.mark.xfail(
