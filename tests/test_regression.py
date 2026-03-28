@@ -6398,11 +6398,6 @@ def test_2825():
             raise
 
 
-@pytest.mark.xfail(
-    raises=AssertionError,
-    reason="https://gitlab.com/graphviz/graphviz/-/issues/2827",
-    strict=True,
-)
 def test_2827(tmp_path: Path):
     """
     page number state should not be carried across between unrelated graphs
