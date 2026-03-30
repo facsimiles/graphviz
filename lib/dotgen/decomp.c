@@ -71,7 +71,9 @@ static node_t *pop(node_stack_t *sp) {
     return NULL;
   }
 
-  return LIST_POP_BACK(sp);
+  node_t *r = *LIST_BACK(sp);
+  LIST_DROP_BACK(sp);
+  return r;
 }
 
 /* iterative dfs for components.

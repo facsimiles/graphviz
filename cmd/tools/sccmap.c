@@ -146,7 +146,8 @@ static unsigned visit(Agnode_t *n, Agraph_t *map, node_stack_t *sp,
 	    agbindrec(subg, "scc_graph", sizeof(Agraphinfo_t), true);
 	    setrep(subg, agnode(map, name, 1));
 	    do {
-		t = LIST_POP_BACK(sp);
+		t = *LIST_BACK(sp);
+		LIST_DROP_BACK(sp);
 		agsubnode(subg, t, 1);
 		setval(t, INF);
 		setscc(t, subg);

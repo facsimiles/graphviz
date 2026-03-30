@@ -55,6 +55,8 @@ static void *slot_from_base(void *base, size_t index, size_t stride) {
        const void *: slot_from_const_base,                                     \
        void *: slot_from_base)((origin), (index), (stride)))
 
+// Don't change the list contents yet, but make sure there is a slot
+// for an append and return its index.
 size_t gv_list_append_slot_(list_t_ *list, size_t item_size) {
   assert(list != NULL);
 
@@ -69,13 +71,24 @@ size_t gv_list_append_slot_(list_t_ *list, size_t item_size) {
 
   // append the new slot
   const size_t new_slot = (list->head + list->size) % list->capacity;
+
+  // If we are running address sanitizer, we neeed to unpoison the slot.
   void *const slot = INDEX_TO(list, new_slot, item_size);
   ASAN_UNPOISON(slot, item_size);
-  ++list->size;
-
   return new_slot;
 }
 
+// Finalize an append by updating list admin state.
+void gv_list_finish_append_(list_t_ *list) {
+  assert(list != NULL);
+  assert(list->capacity > 0);
+  assert(list->size < list->capacity);
+
+  ++list->size;
+}
+
+// Don't change the list size yet, but make sure there is a slot
+// for a prepend and return its index.
 size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size) {
   assert(list != NULL);
 
@@ -89,13 +102,25 @@ size_t gv_list_prepend_slot_(list_t_ *list, size_t item_size) {
   assert(list->size < list->capacity);
 
   // prepend the new slot
-  list->head = (list->head + (list->capacity - 1)) % list->capacity;
-  void *const slot = INDEX_TO(list, list->head, item_size);
+  size_t new_head = (list->head + (list->capacity - 1)) % list->capacity;
+  // If we are running address sanitizer, we neeed to unpoison the slot.
+  void *const slot = INDEX_TO(list, new_head, item_size);
   ASAN_UNPOISON(slot, item_size);
-  ++list->size;
-
-  return list->head;
+  return new_head;
 }
+
+// Finalize safe prepend by updating list admin state.
+void gv_list_finish_prepend_(list_t_ *list) {
+  assert(list != NULL);
+  assert(list->capacity > 0);
+  assert(list->size < list->capacity);
+
+  // prepend the new slot
+  list->head = (list->head + (list->capacity - 1)) % list->capacity;
+  ++list->size;
+}
+
+#define TYPICAL_CACHE_LINE_SIZE 64
 
 static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   assert(list != NULL);
@@ -104,53 +129,61 @@ static int try_reserve(list_t_ *list, size_t capacity, size_t item_size) {
   if (list->capacity >= capacity) {
     return 0;
   }
+  if (item_size == 0) {
+    // Get this special case out of the way.
+    list->capacity = capacity;
+    return 0;
+  }
 
   // will the arithmetic below overflow?
   assert(capacity > 0);
-  if (SIZE_MAX / capacity < item_size) {
+  if ((SIZE_MAX - TYPICAL_CACHE_LINE_SIZE + 1) / capacity < item_size) {
     return EOVERFLOW;
   }
 
-  void *const base = realloc(list->base, capacity * item_size);
-  if (base == NULL && item_size > 0) {
+  size_t needed_size = capacity * item_size;
+  // Don't bother asking for less than a cache line.
+  size_t rounded_size = round_up_size(needed_size, TYPICAL_CACHE_LINE_SIZE);
+  // We filled out the cache line, how many items can we hold now?
+  capacity = rounded_size / item_size; // intentional floor
+
+  size_t new_size = capacity * item_size;
+  size_t old_size = list->capacity * item_size;
+  assert(old_size < new_size); // other cases handled above
+
+  // Unpoison all, since we're returning or expanding it.
+  ASAN_UNPOISON(list->base, list->capacity);
+  void *const base =
+      gv_recalloc(list->base, list->capacity, capacity, item_size);
+  if (base == NULL) { // capacity == 0 and item_size == 0 are handled above
     return ENOMEM;
-  }
-
-  // zero the new memory
-  {
-    void *const new = INDEX_TO(base, list->capacity, item_size);
-    const size_t new_bytes = (capacity - list->capacity) * item_size;
-    if (new_bytes > 0) { // `new_bytes` can be 0 if `item_size == 0`
-      memset(new, 0, new_bytes);
-    }
-
-    // poison the new (conceptually unallocated) memory
-    ASAN_POISON(new, new_bytes);
   }
 
   // Do we need to shuffle the prefix upwards? E.g.
   //
-  //        ┌───┬───┬───┬───┐
-  //   old: │ 3 │ 4 │ 1 │ 2 │
-  //        └───┴───┴─┼─┴─┼─┘
-  //                  │   └───────────────┐
-  //                  └───────────────┐   │
+  //        ┌───┬───┬───┬───┬───┐
+  //   old: │ 3 │ 4 │   │ 1 │ 2 │
+  //        └───┴───┴───┴─┼─┴─┼─┘
+  //                      │   └───────────┐
+  //                      └───────────┐   │
   //                                  ▼   ▼
   //        ┌───┬───┬───┬───┬───┬───┬───┬───┐
   //   new: │ 3 │ 4 │   │   │   │   │ 1 │ 2 │
   //        └───┴───┴───┴───┴───┴───┴───┴───┘
   //          a   b   c   d   e   f   g   h
+  // Old gap space (c) was already zeroed.
+  // New space (f-h) is zeroed by gv_recalloc above.
+  // (d-e) should by copied to (g-h),
+  // and (d-e) zeroed.
+
   if (list->head + list->size > list->capacity) {
     const size_t prefix = list->capacity - list->head;
     const size_t new_head = capacity - prefix;
-    // unpoison target range, slots [g, h] in example
     void *const target = INDEX_TO(base, new_head, item_size);
-    ASAN_UNPOISON(target, prefix * item_size);
-    const void *const src = INDEX_TO(base, list->head, item_size);
-    if (prefix * item_size > 0) {
-      // `target` and `src` can be null when `item_size == 0`, and `memmove`
-      // would then be Undefined Behavior
+    if (prefix > 0) {
+      void *src = INDEX_TO(base, list->head, item_size);
       memmove(target, src, prefix * item_size);
+      memset(src, 0, prefix * item_size);
     }
     // (re-)poison new gap, slots [c, f] in example
     void *const gap_begin = INDEX_TO(base, list->size - prefix, item_size);
@@ -203,6 +236,44 @@ bool gv_list_try_append_(list_t_ *list, const void *item, size_t item_size) {
   }
   ++list->size;
 
+  return true;
+}
+
+// If the list doesn't have space to add an item, try to increase its
+// storage to make that possible.  If not possible, return false.
+// Return true if no resize is needed or if resizing succeeds.
+// Just after the call, an append/prepend is guaranteed to succeed
+// without resizing the list.
+bool gv_list_make_safe_to_add_item_(list_t_ *list, size_t item_size) {
+  assert(list != NULL);
+
+  // do we need to expand the backing storage?
+  if (list->size == list->capacity) {
+    do {
+      // can we attempt doubling without integer overflow?
+      if (SIZE_MAX / 2 >= list->capacity) {
+        const size_t c = list->capacity == 0 ? 1 : (list->capacity * 2);
+        if (try_reserve(list, c, item_size) == 0) {
+          // success
+          break;
+        }
+      }
+
+      // try a more conservative expansion
+      if (SIZE_MAX - 1 >= list->capacity) {
+        if (try_reserve(list, list->capacity + 1, item_size) == 0) {
+          // success
+          break;
+        }
+      }
+
+      // failed to expand the list
+      return false;
+    } while (0);
+  }
+  assert(list->size < list->capacity);
+
+  // we can now append, knowing it will not require backing storage expansion
   return true;
 }
 
@@ -404,6 +475,19 @@ void gv_list_pop_front_(list_t_ *list, void *into, size_t item_size) {
   --list->size;
 }
 
+void gv_list_drop_front_(list_t_ *list, size_t item_size) {
+  (void)item_size;
+  assert(list != NULL);
+  assert(list->size > 0);
+
+  // find and drop the first slot
+  const size_t slot = gv_list_get_(*list, 0);
+  void *const to_pop = INDEX_TO(list, slot, item_size);
+  ASAN_POISON(to_pop, item_size);
+  list->head = (list->head + 1) % list->capacity;
+  --list->size;
+}
+
 void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   assert(list != NULL);
   assert(list->size > 0);
@@ -415,6 +499,18 @@ void gv_list_pop_back_(list_t_ *list, void *into, size_t item_size) {
   if (item_size > 0) {
     memcpy(into, to_pop, item_size);
   }
+  ASAN_POISON(to_pop, item_size);
+  --list->size;
+}
+
+void gv_list_drop_back_(list_t_ *list, size_t item_size) {
+  (void)item_size;
+  assert(list != NULL);
+  assert(list->size > 0);
+
+  // find and drop last slot
+  const size_t slot = gv_list_get_(*list, list->size - 1);
+  void *const to_pop = INDEX_TO(list, slot, item_size);
   ASAN_POISON(to_pop, item_size);
   --list->size;
 }

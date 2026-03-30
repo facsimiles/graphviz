@@ -57,7 +57,9 @@ static Agnode_t *pop(stk_t *sp) {
     return NULL;
   }
 
-  return LIST_POP_BACK(&sp->data);
+  Agnode_t *r = *LIST_BACK(&sp->data);
+  LIST_DROP_BACK(&sp->data);
+  return r;
 }
 
 static size_t dfs(Agraph_t *g, Agnode_t *n, void *state, stk_t *stk) {

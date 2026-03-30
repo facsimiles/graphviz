@@ -273,27 +273,105 @@ static void test_clear(void) {
   LIST_FREE(&xs);
 }
 
+// Abstract away push and pop operations for the Pop/Drop x Push/TryPush x
+// Front/Back cases that exist.  (No TryFront operations).
+typedef enum PopStyle {
+  PopFront,
+  PopBack,
+  DropFront,
+  DropBack,
+  TryPopBack,
+  TryDropBack,
+  EndStyle
+} PopStyle;
+
+static const char *popstyle_string(PopStyle style) {
+  switch (style) {
+  case PopFront:
+    return "LIST_PREPEND, LIST_POP_FRONT";
+  case PopBack:
+    return "LIST_PUSH_BACK, LIST_POP_BACK";
+  case DropFront:
+    return "LIST_PREPEND, LIST_DROP_BACK";
+  case DropBack:
+    return "LIST_PUSH_BACK, LIST_DROP_BACK";
+  case TryPopBack:
+    return "LIST_TRY_APPEND, LIST_POP_BACK";
+  case TryDropBack:
+    return "LIST_TRY_APPEND, LIST_DROP_BACK";
+  case EndStyle:
+    return "invalid";
+  }
+}
+
+typedef LIST(int) int_list;
+
+static void popstyle_push(PopStyle style, int_list *list, int value) {
+  switch (style) {
+  case PopFront:
+  case DropFront:
+    LIST_PREPEND(list, value);
+    break;
+  case PopBack:
+  case DropBack:
+    LIST_PUSH_BACK(list, value);
+    break;
+  case TryPopBack:
+  case TryDropBack: {
+    bool success = LIST_TRY_APPEND(list, value);
+    assert(success);
+  } break;
+  case EndStyle:
+    assert(false);
+    break;
+  };
+}
+
+static int popstyle_pop(PopStyle style, int_list *list) {
+  switch (style) {
+  case PopFront:
+    return LIST_POP_FRONT(list);
+  case DropFront: {
+    int x = *LIST_FRONT(list);
+    LIST_DROP_FRONT(list);
+    return x;
+  }
+  case PopBack:
+  case TryPopBack:
+    return LIST_POP_BACK(list);
+  case DropBack:
+  case TryDropBack: {
+    int x = *LIST_BACK(list);
+    LIST_DROP_BACK(list);
+    return x;
+  }
+  case EndStyle:
+    assert(false);
+    return -1;
+  };
+}
+
 // basic push then pop
-static void test_push_one(void) {
-  LIST(int) s = {0};
+static void test_push_one(PopStyle style) {
+  int_list s = {0};
   int arbitrary = 42;
-  LIST_PUSH_BACK(&s, arbitrary);
+  popstyle_push(style, &s, arbitrary);
   assert(LIST_SIZE(&s) == 1);
-  int top = LIST_POP_BACK(&s);
+  int top = popstyle_pop(style, &s);
   assert(top == arbitrary);
   assert(LIST_IS_EMPTY(&s));
   LIST_FREE(&s);
 }
 
-static void push_then_pop(int count) {
-  LIST(int) s = {0};
+static void push_then_pop(PopStyle style, int count) {
+  int_list s = {0};
   for (int i = 0; i < count; ++i) {
-    LIST_PUSH_BACK(&s, i);
+    popstyle_push(style, &s, i);
     assert(LIST_SIZE(&s) == (size_t)i + 1);
   }
   for (int i = count - 1;; --i) {
     assert(LIST_SIZE(&s) == (size_t)i + 1);
-    int p = LIST_POP_BACK(&s);
+    int p = popstyle_pop(style, &s);
     assert(p == i);
     if (i == 0) {
       break;
@@ -303,22 +381,24 @@ static void push_then_pop(int count) {
 }
 
 // push a series of items
-static void test_push_then_pop_ten(void) { push_then_pop(10); }
+static void test_push_then_pop_ten(PopStyle style) { push_then_pop(style, 10); }
 
 // push enough to cause an expansion
-static void test_push_then_pop_many(void) { push_then_pop(4096); }
+static void test_push_then_pop_many(PopStyle style) {
+  push_then_pop(style, 4096);
+}
 
 // interleave some push and pop operations
-static void test_push_pop_interleaved(void) {
-  LIST(int) s = {0};
+static void test_push_pop_interleaved(PopStyle style) {
+  int_list s = {0};
   size_t size = 0;
   for (int i = 0; i < 4096; ++i) {
     if (i % 3 == 1) {
-      int p = LIST_POP_BACK(&s);
+      int p = popstyle_pop(style, &s);
       assert(p == i - 1);
       --size;
     } else {
-      LIST_PUSH_BACK(&s, i);
+      popstyle_push(style, &s, i);
       ++size;
     }
     assert(LIST_SIZE(&s) == size);
@@ -538,7 +618,28 @@ static void test_push_back(void) {
   LIST_FREE(&xs);
 }
 
-static void test_pop_back(void) {
+static void test_pop_back(PopStyle style) {
+  int_list xs = {0};
+
+  for (size_t i = 0; i < 10; ++i) {
+    popstyle_push(style, &xs, (int)i);
+  }
+  for (size_t i = 0; i < 10; ++i) {
+    assert(LIST_SIZE(&xs) == 10 - i);
+    int x = popstyle_pop(style, &xs);
+    assert(x == 10 - (int)i - 1);
+  }
+
+  for (size_t i = 0; i < 10; ++i) {
+    popstyle_push(style, &xs, (int)i);
+    (void)popstyle_pop(style, &xs);
+    assert(LIST_IS_EMPTY(&xs));
+  }
+
+  LIST_FREE(&xs);
+}
+
+static void test_drop_back(void) {
   LIST(int) xs = {0};
 
   for (size_t i = 0; i < 10; ++i) {
@@ -546,13 +647,14 @@ static void test_pop_back(void) {
   }
   for (size_t i = 0; i < 10; ++i) {
     assert(LIST_SIZE(&xs) == 10 - i);
-    int x = LIST_POP_BACK(&xs);
+    int x = *LIST_BACK(&xs);
+    LIST_DROP_BACK(&xs);
     assert(x == 10 - (int)i - 1);
   }
 
   for (size_t i = 0; i < 10; ++i) {
     LIST_PUSH_BACK(&xs, (int)i);
-    (void)LIST_POP_BACK(&xs);
+    LIST_DROP_BACK(&xs);
     assert(LIST_IS_EMPTY(&xs));
   }
 
@@ -752,6 +854,15 @@ int main(void) {
     printf("OK\n");                                                            \
   } while (0)
 
+#define RUN_PUSH_POP_TEST(t, style)                                            \
+  do {                                                                         \
+    const char *xstring = popstyle_string(style);                              \
+    printf("running test_%s(%s)... ", #t, xstring);                            \
+    fflush(stdout);                                                            \
+    test_##t(style);                                                           \
+    printf("OK\n");                                                            \
+  } while (0)
+
   RUN(create_reset);
   RUN(init);
   RUN(init_reset);
@@ -768,10 +879,13 @@ int main(void) {
   RUN(at);
   RUN(clear_empty);
   RUN(clear);
-  RUN(push_one);
-  RUN(push_then_pop_ten);
-  RUN(push_then_pop_many);
-  RUN(push_pop_interleaved);
+  for (PopStyle style = PopFront; style != EndStyle; ++style) {
+    RUN_PUSH_POP_TEST(push_one, style);
+    RUN_PUSH_POP_TEST(push_then_pop_ten, style);
+    RUN_PUSH_POP_TEST(push_then_pop_many, style);
+    RUN_PUSH_POP_TEST(push_pop_interleaved, style);
+    RUN_PUSH_POP_TEST(pop_back, style);
+  }
   RUN(sort_empty);
   RUN(sort);
   RUN(sort_sorted);
@@ -783,7 +897,7 @@ int main(void) {
   RUN(shrink_empty);
   RUN(free);
   RUN(push_back);
-  RUN(pop_back);
+  RUN(drop_back);
   RUN(large);
   RUN(detach);
   RUN(dtor);

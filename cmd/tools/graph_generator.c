@@ -512,8 +512,10 @@ static void push(int_stack_t *sp, unsigned j, unsigned d) {
 static pair pop(int_stack_t *sp) {
 
   // extract ints in the opposite order in which they were pushed
-  const unsigned d = LIST_POP_BACK(sp);
-  const unsigned j = LIST_POP_BACK(sp);
+  const unsigned d = *LIST_BACK(sp);
+  LIST_DROP_BACK(sp);
+  const unsigned j = *LIST_BACK(sp);
+  LIST_DROP_BACK(sp);
 
   return (pair){j, d};
 }

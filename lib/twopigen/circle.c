@@ -122,7 +122,8 @@ static void setNStepsToCenter(Agraph_t * g, Agnode_t * n)
 
     LIST_PUSH_BACK(&q, n);
     while (!LIST_IS_EMPTY(&q)) {
-	n = LIST_POP_FRONT(&q);
+	n = *LIST_FRONT(&q);
+	LIST_DROP_FRONT(&q);
 	uint64_t nsteps = SCENTER(n) + 1;
 	for (Agedge_t *ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
 	    if (wt && streq(agxget(ep,wt), "0")) continue;

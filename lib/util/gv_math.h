@@ -7,8 +7,10 @@
 #include <assert.h>
 #include <float.h>
 #include <limits.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 /// comparator for doubles
@@ -180,4 +182,27 @@ static inline float d2f(double v) {
     return -FLT_MAX;
   }
   return (float)v;
+}
+
+/// Round up any non-power of 2 to next power of 2
+static inline size_t bit_ceil_size_t(size_t x) {
+  static_assert(sizeof(size_t) <= 8);
+  x = x - 1;
+  x = x | (x >> 1);
+  x = x | (x >> 2);
+  x = x | (x >> 4);
+  x = x | (x >> 8);
+  x = x | (x >> 16);
+  x = x | (x >> 32);
+  return x + 1;
+}
+
+/// Round up minim to next multiple of block_size
+/// @param minim       Minimum size needed
+/// @param block_size  Size to round up to, must be a power of two
+static inline size_t round_up_size(size_t minim, size_t block_size) {
+  assert(block_size == bit_ceil_size_t(block_size));
+  size_t mask = block_size - 1;
+  size_t needed = (minim + mask) & (~mask);
+  return needed;
 }

@@ -144,7 +144,8 @@ static Agraph_t *pop_subg(void)
   }
 
   // pop the top graph
-  Agraph_t *g = LIST_POP_BACK(&Gstack);
+  Agraph_t *g = *LIST_BACK(&Gstack);
+  LIST_DROP_BACK(&Gstack);
 
   // update the top graph
   if (!LIST_IS_EMPTY(&Gstack)) {
