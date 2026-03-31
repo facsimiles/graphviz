@@ -15,18 +15,28 @@ The main GIT Repository for graphviz can be found at:
 * https://gitlab.com/graphviz/graphviz/
 
 ## Support
+Graphviz is maintained by volunteers. Most work is aimed at improving
+the overall quality of the code (readability, consistency, organization,
+and portability), modernizing the build toolchain, and supporting the
+external audience and ecosystem for graphviz. This effort is supported
+by an extensive regression test suite. Occasionally, work can
+address new features, running time bottlenecks or specific bugs.
 
-Graphviz is maintained by a few very talented volunteers, and with some help from its founders. Financial donations are accepted on [patreon](https://patreon.com/graphviz). Anyone who is able to fund a summer intern project (or other project) based on graphviz is invited to contact any of the project leaders, e.g. send a message to north on graphviz org).
-
-This project has only 3 of its founders remaining as volunteer maintainers, and support is limited and may end soon. If you can help fund to a more formal foundation to continue this project, please contact north on graphviz org.
+Meaningful bug reports are appreciated, but because resources are limited,
+many reports will not be addressed individually. After years, the maintainers
+have reduced open issues from thousands to several hundred. The Graphviz core
+was written in an experimental style and is known to be not very resilient
+to intentional attacks. We strongly recommend not exposing graphviz in a
+potential attack surface, and it is of little benefit to submit batches of 
+issues generated through automated fuzzing and ASAN testing.
 
 ## Documentation
 
-The Graphviz documents are currently hosted at https://graphviz.org/
+The Graphviz documents are hosted at https://graphviz.org/
 
 ## Graph Visualization ( https://graphviz.org/about/ )
 
-Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks. It has important applications in networking, bioinformatics,  software engineering, database and web design, machine learning, and in visual interfaces for other technical domains.
+Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks. It has important applications in networking, bioinformatics, software engineering, database and web design, machine learning, and in visual interfaces for other technical domains.
 
 Graphviz is open source graph visualization software. It has several main layout programs. See the gallery for sample layouts. It also has web and interactive graphical interfaces, and auxiliary tools, libraries, and language bindings. We're not able to put a lot of work into GUI editors but there are quite a few external projects and even commercial tools that incorporate Graphviz. You can find some of these in the Resources section.
 
@@ -44,5 +54,3 @@ recent top committer
 (`git shortlog --email --numbered --summary origin/main~100.. | head -1`).
 
 If you have a general question or are unsure how things work, these queries can be posted in the [Graphviz Forum](https://forum.graphviz.org/).
-
-Graphviz is on [X](https://twitter.com/graphviz) and [Fosstodon](https://fosstodon.org/@graphviz).
