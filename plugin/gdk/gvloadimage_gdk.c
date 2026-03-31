@@ -12,6 +12,7 @@
 
 #include <assert.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/alloc.h>
@@ -40,12 +41,12 @@ static void gdk_set_mimedata_from_file (cairo_surface_t *image, const char *mime
     if (fp == NULL)
         return;
     fseek (fp, 0, SEEK_END);
-    const size_t len = gv_ftell(fp);
+    const int64_t len = gv_ftell(fp);
     rewind(fp);
     if (len > 0)
-        data = malloc(len);
+        data = malloc((size_t)len);
     if (data) {
-        if (fread(data, len, 1, fp) != 1) {
+        if (fread(data, (size_t)len, 1, fp) != 1) {
             free (data);
             data = NULL;
         }

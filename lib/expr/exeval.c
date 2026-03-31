@@ -1391,10 +1391,15 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 			graphviz_exit(EXIT_FAILURE);
 		}
 		print(ex, exnode, env, buffer);
-		const size_t size = gv_ftell(buffer);
+		const int64_t size = gv_ftell(buffer);
+		if (size < 0) {
+			fclose(buffer);
+			fprintf(stderr, "failed to read back temporary file\n");
+			graphviz_exit(EXIT_FAILURE);
+		}
 		rewind(buffer);
-		v.string = gv_arena_alloc(&ex->ve, 1, size + 1);
-		if (fread(v.string, size, 1, buffer) < 1) {
+		v.string = gv_arena_alloc(&ex->ve, 1, (size_t)size + 1);
+		if (fread(v.string, (size_t)size, 1, buffer) < 1) {
 			fprintf(stderr, "failed to read back temporary file\n");
 			graphviz_exit(EXIT_FAILURE);
 		}
