@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the `cluster=true` attribute as an alternative. #2187
 - The description of what defines a cluster subgraph in the `gc` man page has
   been updated. #2187
+- gvpr modulo expressions with an out-of-range modulo operand are now detected
+  and result in an error message.
 
 ## [14.1.4] – 2026-03-20
 
