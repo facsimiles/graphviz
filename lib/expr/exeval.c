@@ -20,6 +20,8 @@
 #include <expr/exlib.h>
 #include <expr/exop.h>
 #include <inttypes.h>
+#include <limits.h>
+#include <math.h>
 #include <stdalign.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -1443,12 +1445,18 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 					else
 						v.floating /= r.floating;
 					break;
-				case '%':
-					if ((r.integer = r.floating) == 0)
+				case '%': {
+					const double rounded = round(r.floating);
+					if (LLONG_MAX < (INT64_C(1) << 53) &&
+					    (rounded > (double)LLONG_MAX || rounded < (double)LLONG_MIN)) {
+						exerror("floating modulus out of range");
+					}
+					if ((long long)rounded == 0)
 						exerror("floating 0 modulus");
 					else
-						v.floating = (long long)v.floating % r.integer;
+						v.floating = (long long)v.floating % (long long)rounded;
 					break;
+				}
 				case '&':
 					v.floating = (long long)v.floating & (long long)r.floating;
 					break;
