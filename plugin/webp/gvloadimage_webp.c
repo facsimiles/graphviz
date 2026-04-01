@@ -11,7 +11,9 @@
 #include "config.h"
 
 #include <assert.h>
+#include <inttypes.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,24 +59,28 @@ static cairo_surface_t* webp_really_loadimage(const char *in_file, FILE* const i
     }
 
     fseek(in, 0, SEEK_END);
-    const size_t data_size = gv_ftell(in);
+    const int64_t data_size = gv_ftell(in);
+    if (data_size < 0) {
+        fprintf(stderr, "Error: WebP could not read %s\n", in_file);
+        return NULL;
+    }
     rewind(in);
-    data = malloc(data_size);
-    ok = data_size == 0 || (data != NULL && fread(data, data_size, 1, in) == 1);
+    data = malloc((size_t)data_size);
+    ok = data_size == 0 || (data != NULL && fread(data, (size_t)data_size, 1, in) == 1);
     if (!ok) {
-        fprintf(stderr, "Error: WebP could not read %" PRISIZE_T
+        fprintf(stderr, "Error: WebP could not read %" PRId64
                 " bytes of data from %s\n", data_size, in_file);
         free(data);
         return NULL;
     }
 
-    status = WebPGetFeatures(data, data_size, bitstream);
+    status = WebPGetFeatures(data, (size_t)data_size, bitstream);
     if (status != VP8_STATUS_OK) {
 	goto end;
     }
 
     output_buffer->colorspace = MODE_RGBA;
-    status = WebPDecode(data, data_size, &config);
+    status = WebPDecode(data, (size_t)data_size, &config);
 
     /* FIXME - this is ugly */
     if (! bitstream->has_alpha) {

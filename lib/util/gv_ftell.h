@@ -5,16 +5,17 @@
 
 #include <assert.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 
 /// `ftell`, accounting for platform limitations
-static inline size_t gv_ftell(FILE *stream) {
+static inline int64_t gv_ftell(FILE *stream) {
   assert(stream != NULL);
 
 #ifdef _WIN32
   // on Windows, `long` is 32 bits so `ftell` cannot report >2GB file sizes
-  return (size_t)_ftelli64(stream);
+  return _ftelli64(stream);
 #endif
 
-  return (size_t)ftell(stream);
+  return ftell(stream);
 }
