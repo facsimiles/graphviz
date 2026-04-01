@@ -409,7 +409,6 @@ EXCLUDE = (
     "lib/rbtree/red_black_tree.h",
     "lib/rbtree/test_red_black_tree.c",
     "lib/sfdpgen/Multilevel.c",
-    "lib/sfdpgen/post_process.c",
     "lib/sfdpgen/post_process.h",
     "lib/sfdpgen/sfdp.h",
     "lib/sfdpgen/sfdpinit.c",
