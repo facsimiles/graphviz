@@ -132,7 +132,7 @@ def test_xml_escape(tmp_path: Path):
             args += ["--utf8"]
         args += [source, destination]
 
-        run(args)
+        run(*args)
 
         return destination.read_text(encoding="utf-8")
 
