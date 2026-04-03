@@ -1160,7 +1160,7 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
 			if (exnode->data.operand.left)
 				eval(ex, exnode->data.operand.left, env);
 		}
-		/*NOTREACHED*/
+		UNREACHABLE();
 	case SWITCH:
 		v = eval(ex, x, env);
 		i.integer = x->type;
