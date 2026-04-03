@@ -155,7 +155,7 @@ def test_edgepaint_options(arg: str):
     # run edgepaint on this
     args = ["edgepaint"] + arg.split(" ")
     try:
-        run(args, input=input)
+        run(*args, input=input)
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"edgepaint rejected command line option '{arg}'") from e
 
@@ -164,21 +164,21 @@ def test_edgepaint_options(arg: str):
 def test_sandbox_noop():
     """check trivial functionality works when sandboxed"""
     sandbox = which("dot_sandbox")
-    run_raw([sandbox, "-V"])
+    run_raw(sandbox, "-V")
 
 
 @pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
 def test_sandbox_basic():
     """check processing a simple graph when sandboxed"""
     sandbox = which("dot_sandbox")
-    run([sandbox], input="graph { a -- b; }")
+    run(sandbox, input="graph { a -- b; }")
 
 
 @pytest.mark.skipif(not has_sandbox(), reason="no supported sandbox available")
 def test_sandbox_render():
     """check rendering works when sandboxed"""
     sandbox = which("dot_sandbox")
-    stdout = run([sandbox, "-Tsvg"], input="graph { a -- b; }")
+    stdout = run(sandbox, "-Tsvg", input="graph { a -- b; }")
     ET.fromstring(stdout)
 
 

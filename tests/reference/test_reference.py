@@ -379,11 +379,11 @@ def test_reference(src: str, format: str, reference: str, tmp_path: Path):
 
     # process our input with Graphviz
     output = tmp_path / reference
-    run(["dot", f"-T{format}", "-o", output], input=src)
+    run("dot", f"-T{format}", "-o", output, input=src)
 
     # compare against the reference output
     if output.suffix == ".png":
-        run_raw(["diffimg", ref, output])
+        run_raw("diffimg", ref, output)
     else:
         fail = False
         a = ref.read_text(encoding="utf-8")

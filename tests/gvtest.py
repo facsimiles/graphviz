@@ -57,7 +57,7 @@ def pexpect_spawn_tclsh(
     return proc
 
 
-def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str]]:
+def run_raw(*args: Union[Path, str], **kwargs) -> Optional[Union[bytes, str]]:
     """
     execute an external command
 
@@ -97,7 +97,7 @@ def run_raw(args: list[Union[Path, str]], **kwargs) -> Optional[Union[bytes, str
     return proc.stdout
 
 
-def run(args: list[Union[Path, str]], **kwargs) -> Optional[str]:
+def run(*args: Union[Path, str], **kwargs) -> Optional[str]:
     """
     execute an external command that takes/returns textual input/output
 
@@ -111,7 +111,7 @@ def run(args: list[Union[Path, str]], **kwargs) -> Optional[str]:
     Return:
         The command’s stdout output.
     """
-    return run_raw(args, text=True, **kwargs)
+    return run_raw(*args, text=True, **kwargs)
 
 
 def compile_c(
@@ -159,15 +159,15 @@ def compile_c(
                 # flush any pending pkg-config lookup to roughly keep the library
                 # ordering the caller requested
                 if len(libraries) > 0:
-                    cflags += run([pkgconf, "--cflags", "--"] + libraries).split()
-                    ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
+                    cflags += run(pkgconf, "--cflags", "--", *libraries).split()
+                    ldflags += run(pkgconf, "--libs", "--", *libraries).split()
                     libraries = []
                 ldflags += [l]
             else:
                 libraries += [f"lib{l}"]
         if len(libraries) > 0:
-            cflags += run([pkgconf, "--cflags", "--"] + libraries).split()
-            ldflags += run([pkgconf, "--libs", "--"] + libraries).split()
+            cflags += run(pkgconf, "--cflags", "--", *libraries).split()
+            ldflags += run(pkgconf, "--libs", "--", *libraries).split()
     elif platform.system() == "Windows" and not is_mingw():
         if len(link) > 0:
             if not is_static_build():
@@ -208,7 +208,7 @@ def compile_c(
 
     # compile the program
     try:
-        run_raw(args)
+        run_raw(*args)
     except subprocess.CalledProcessError:
         try:
             os.remove(dst)
@@ -301,7 +301,7 @@ def gvpr(program: Path) -> str:
 
     assert which("gvpr") is not None, "attempt to run GVPR without it available"
 
-    return run(["gvpr", "-f", program], stdin=subprocess.DEVNULL)
+    return run("gvpr", "-f", program, stdin=subprocess.DEVNULL)
 
 
 def build_system() -> str:
@@ -324,11 +324,11 @@ def is_asan_instrumented(binary: Path) -> bool:
     # Get the symbol table of the binary. We deliberately avoid `text=True` to tolerate
     # non-ASCII bytes in the symbol table.
     if objdump := shutil.which("objdump"):
-        symbols = run_raw([objdump, "--syms", binary])
+        symbols = run_raw(objdump, "--syms", binary)
     elif llvm_objdump := shutil.which("llvm-objdump"):
-        symbols = run_raw([llvm_objdump, "--syms", binary])
+        symbols = run_raw(llvm_objdump, "--syms", binary)
     elif dumpbin := shutil.which("dumpbin"):
-        dependencies = run_raw([dumpbin, "/DEPENDENTS", binary])
+        dependencies = run_raw(dumpbin, "/DEPENDENTS", binary)
         # Look for the ASan DLL dependency
         return (
             re.search(rb"\bclang_rt\.asan_dynamic-.*\.dll\b", dependencies) is not None

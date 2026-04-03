@@ -31,7 +31,7 @@ def test_long_chain():
 
       graph.render("long_chain")
     """
-    run_raw(["dot", "-Tsvg", "-o", os.devnull, Path(__file__).parent / "long_chain"])
+    run_raw("dot", "-Tsvg", "-o", os.devnull, Path(__file__).parent / "long_chain")
 
 
 def test_wide_clusters():

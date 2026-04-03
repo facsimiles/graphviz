@@ -371,7 +371,7 @@ def doDiff(output: Path, reference: Path, fmt):
         assert a.strip() == b.strip()
     elif F == "png":
         OUTHTML.mkdir(exist_ok=True)
-        run(["diffimg", output, reference, OUTHTML / f"dif_{reference.name}"])
+        run("diffimg", output, reference, OUTHTML / f"dif_{reference.name}")
     else:
         with open(reference, "rt", encoding="utf-8") as a:
             with open(output, "rt", encoding="utf-8") as b:
@@ -459,5 +459,5 @@ def test_graph(
             "because it fails with Windows builds (#1790)"
         )
 
-    run(testcmd)
+    run(*testcmd)
     doDiff(OUTPATH, REFDIR / OUTFILE, format)
