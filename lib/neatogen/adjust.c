@@ -123,8 +123,7 @@ static int makeInfo(Agraph_t * graph)
 {
     int (*polyf)(Poly *, Agnode_t *, double, double);
 
-    assert(agnnodes(graph) >= 0);
-    nsites = (size_t)agnnodes(graph);
+    nsites = agnnodes_z(graph);
     geominit();
 
     nodeInfo = gv_calloc(nsites, sizeof(Info_t));
