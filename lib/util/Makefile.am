@@ -15,6 +15,8 @@ noinst_HEADERS = \
   gv_fopen.h \
   gv_ftell.h \
   gv_math.h \
+  gv_stack.h \
+  gv_stack-private.h \
   itos.h \
   list.h \
   list-private.h \
@@ -35,7 +37,7 @@ noinst_HEADERS = \
   xml.h
 noinst_LTLIBRARIES = libutil_C.la
 
-libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c list.c \
+libutil_C_la_SOURCES = arena.c base64.c gv_find_me.c gv_fopen.c list.c gv_stack.c \
 	random.c xml.c
 libutil_C_la_CPPFLAGS = $(AM_CPPFLAGS)
 
