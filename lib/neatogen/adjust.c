@@ -512,7 +512,7 @@ static void updateGraph(void)
 /// Set up array of half sizes in inches.
 double *getSizes(Agraph_t * g, pointf pad, int* n_elabels, int** elabels)
 {
-    double *sizes = gv_calloc(Ndim * agnnodes(g), sizeof(double));
+    double *sizes = gv_calloc(Ndim * agnnodes_z(g), sizeof(double));
     int nedge_nodes = 0;
 
     for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
