@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the `cluster=true` attribute as an alternative. #2187
 - The description of what defines a cluster subgraph in the `gc` man page has
   been updated. #2187
+- When gvpr dumps switch statements as text, they are now printed as switch
+  statements instead of an if-else ladder. This avoids incorrect interpretation
+  of `break` statements in error messages. #2822
 
 ## [14.1.4] – 2026-03-20
 

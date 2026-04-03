@@ -183,8 +183,6 @@ static void scan(Excc_t *cc, Exnode_t *exnode) {
 static void gen(Excc_t *cc, Exnode_t *exnode) {
 	Exnode_t*	x;
 	Exnode_t*	y;
-	int		n;
-	int		m;
 	char*			s;
 	Extype_t*		v;
 	Extype_t**		p;
@@ -353,36 +351,25 @@ static void gen(Excc_t *cc, Exnode_t *exnode) {
 		return;
 	case SWITCH: {
 		long t = x->type;
-		agxbprint(cc->text, "{ %s tmp_%d = ", extype(t), ++cc->tmp);
+		agxbput(cc->text, "switch (");
 		gen(cc, x);
-		agxbputc(cc->text, ';');
+		agxbput(cc->text, ") {");
 		x = exnode->data.operand.right;
 		y = x->data.select.statement;
-		n = 0;
 		while ((x = x->data.select.next))
 		{
-			if (n)
-				agxbput(cc->text, "else ");
 			if (!(p = x->data.select.constant))
 				y = x->data.select.statement;
 			else
 			{
-				m = 0;
 				while ((v = *p++))
 				{
-					if (m)
-						agxbput(cc->text, "||");
-					else
-					{
-						m = 1;
-						agxbput(cc->text, "if (");
-					}
+					agxbput(cc->text, "case ");
 					if (t == STRING) {
 						char *quoted = fmtesq(v->string, quote);
-						agxbprint(cc->text, "strmatch(tmp_%d, \"%s\")", cc->tmp, quoted);
+						agxbprint(cc->text, "\"%s\":", quoted);
 						free(quoted);
 					} else {
-						agxbprint(cc->text, "tmp_%d == ", cc->tmp);
 						switch (t)
 						{
 						case INTEGER:
@@ -395,19 +382,18 @@ static void gen(Excc_t *cc, Exnode_t *exnode) {
 							break;
 						}
 					}
+					agxbputc(cc->text, ':');
 				}
-				agxbput(cc->text, ") {");
+				agxbputc(cc->text, '{');
 				gen(cc, x->data.select.statement);
-				agxbputc(cc->text, '}');
+				agxbput(cc->text, ";}");
 			}
 		}
 		if (y)
 		{
-			if (n)
-				agxbput(cc->text, "else ");
-			agxbputc(cc->text, '{');
+			agxbput(cc->text, "default:{");
 			gen(cc, y);
-			agxbputc(cc->text, '}');
+			agxbput(cc->text, ";}");
 		}
 		agxbputc(cc->text, '}');
 		return;
