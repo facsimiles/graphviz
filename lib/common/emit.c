@@ -1255,6 +1255,7 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     job->pagesArrayFirst = (point){0};
     job->pagesArrayMajor = pagecode(job, gvc->pagedir[0]);
     job->pagesArrayMinor = pagecode(job, gvc->pagedir[1]);
+    job->pagesArrayElem = (point){0};
     if (abs(job->pagesArrayMajor.x + job->pagesArrayMinor.x) != 1
      || abs(job->pagesArrayMajor.y + job->pagesArrayMinor.y) != 1) {
 	job->pagesArrayMajor = pagecode(job, 'B');
@@ -3585,7 +3586,9 @@ static void emit_end_graph(GVJ_t * job)
     pop_obj_state(job);
 }
 
-#define NotFirstPage(j) (((j)->layerNum>1)||((j)->pagesArrayElem.x > 0)||((j)->pagesArrayElem.x > 0))
+static bool NotFirstPage(const GVJ_t *j) {
+  return j->layerNum > 1 || j->pagesArrayElem.x > 0 || j->pagesArrayElem.y > 0;
+}
 
 static void emit_page(GVJ_t * job, graph_t * g)
 {

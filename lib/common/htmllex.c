@@ -19,6 +19,7 @@
 #include <common/htmllex.h>
 #include <cdt/cdt.h>
 #include <limits.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -768,11 +769,10 @@ int initHTMLlexer(htmlscan_t *scanner, char *src, agxbuf * xb, htmlenv_t *env)
     (void)xb;
     (void)env;
 
-    static int first;
-    if (!first) {
+    static atomic_flag first;
+    if (!atomic_flag_test_and_set(&first)) {
 	agwarningf(
 	      "Not built with libexpat. Table formatting is not available.\n");
-	first++;
     }
     return 1;
 #endif
