@@ -147,12 +147,6 @@ struct Exnode_s				/* expression tree node		*/
 	long	type; ///< value type
 	long op; ///< operator
 	bool binary; ///< data.operand.{left,right} ok
-	union
-	{
-	double	(*floating)(char**);	/* FLOATING return value	*/
-	long long (*integer)(char **); ///< INTEGER|UNSIGNED return value
-	char*	(*string)(char**);	/* STRING return value		*/
-	}		compiled;	/* compiled function pointer	*/
 	Exdata_t	data;		/* node data			*/
 
 #ifdef _EX_NODE_PRIVATE_

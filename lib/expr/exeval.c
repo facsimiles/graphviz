@@ -1934,32 +1934,12 @@ static Extype_t eval(Expr_t *ex, Exnode_t *exnode, void *env) {
  */
 
 Extype_t exeval(Expr_t *ex, Exnode_t *exnode, void *env) {
-	Extype_t	v;
-
-	if (exnode->compiled.integer)
+	Extype_t v = eval(ex, exnode, env);
+	if (ex->loopcount > 0)
 	{
-		switch (exnode->type)
-		{
-		case FLOATING:
-			v.floating = exnode->compiled.floating(ex->disc->data);
-			break;
-		case STRING:
-			v.string = exnode->compiled.string(ex->disc->data);
-			break;
-		default:
-			v.integer = exnode->compiled.integer(ex->disc->data);
-			break;
-		}
-	}
-	else
-	{
-		v = eval(ex, exnode, env);
-		if (ex->loopcount > 0)
-		{
-			ex->loopcount = 0;
-			if (ex->loopop == RETURN)
-				return ex->loopret;
-		}
+		ex->loopcount = 0;
+		if (ex->loopop == RETURN)
+			return ex->loopret;
 	}
 	return v;
 }
