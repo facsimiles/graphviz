@@ -115,11 +115,15 @@ static_assert(
 /// to `(list)->base[…]` are in separate statements because the
 /// `gv_list_append_slot_` call here _can_ alter `(list)->base`.
 ///
+/// This is defined as a varargs macro to allow callers to write the item to
+/// append as a C99 compound literal without resorting to extra parens to hide
+/// commas from the preprocessor.
+///
 /// @param list List to operate on
-/// @param item Element to append
-#define LIST_APPEND(list, item)                                                \
+/// @param ... Element to append
+#define LIST_APPEND(list, ...)                                                 \
   do {                                                                         \
-    (list)->scratch = (item);                                                  \
+    (list)->scratch = (__VA_ARGS__);                                           \
     const size_t slot_ =                                                       \
         gv_list_append_slot_(&(list)->impl, sizeof((list)->base[0]));          \
     (list)->base[slot_] = (list)->scratch;                                     \
@@ -379,9 +383,13 @@ static_assert(
 ///
 ///   void LIST_PUSH_BACK(LIST(<type>) *list, <type> item);
 ///
+/// This is defined as a varargs macro to allow callers to write the item to
+/// append as a C99 compound literal without resorting to extra parens to hide
+/// commas from the preprocessor.
+///
 /// @param list List to operate on
-/// @param item Item to append
-#define LIST_PUSH_BACK(list, item) LIST_APPEND((list), (item))
+/// @param ... Item to append
+#define LIST_PUSH_BACK(list, ...) LIST_APPEND((list), (__VA_ARGS__))
 
 /// remove and return the first item of a list
 ///
