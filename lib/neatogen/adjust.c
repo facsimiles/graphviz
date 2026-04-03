@@ -17,6 +17,7 @@
 
 #include <assert.h>
 #include <neatogen/neato.h>
+#include <cgraph/cghdr.h>
 #include <common/utils.h>
 #include <float.h>
 #include <math.h>
@@ -587,7 +588,7 @@ SparseMatrix makeMatrix(Agraph_t *g) {
 static void fdpAdjust(graph_t *g, adjust_data *am) {
     SparseMatrix A0 = makeMatrix(g);
     SparseMatrix A = A0;
-    double *pos = gv_calloc(Ndim * agnnodes(g), sizeof(double));
+    double *pos = gv_calloc(Ndim * agnnodes_z(g), sizeof(double));
     expand_t sep = sepFactor(g);
     pointf pad;
 
