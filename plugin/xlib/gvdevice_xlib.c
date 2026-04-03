@@ -110,35 +110,6 @@ static bool handle_keypress(GVJ_t *job, XKeyEvent *kev) {
   return false;
 }
 
-static Visual *find_argb_visual(Display *dpy, int scr) {
-  XVisualInfo *xvi;
-  XVisualInfo template;
-  int nvi;
-  int i;
-  XRenderPictFormat *format;
-  Visual *visual;
-
-  template.screen = scr;
-  template.depth = 32;
-  template.class = TrueColor;
-  xvi =
-      XGetVisualInfo(dpy, VisualScreenMask | VisualDepthMask | VisualClassMask,
-                     &template, &nvi);
-  if (!xvi)
-    return 0;
-  visual = 0;
-  for (i = 0; i < nvi; i++) {
-    format = XRenderFindVisualFormat(dpy, xvi[i].visual);
-    if (format->type == PictTypeDirect && format->direct.alphaMask) {
-      visual = xvi[i].visual;
-      break;
-    }
-  }
-
-  XFree(xvi);
-  return visual;
-}
-
 static void browser_show(GVJ_t *job) {
   char *exec_argv[3] = {BROWSER, NULL, NULL};
   pid_t pid;
@@ -255,7 +226,6 @@ static void update_display(GVJ_t *job, Display *dpy) {
 }
 
 static void init_window(GVJ_t *job, Display *dpy, int scr) {
-  int argb = 0;
   const char *base = "";
   XGCValues gcv;
   XSetWindowAttributes attributes;
@@ -287,24 +257,12 @@ static void init_window(GVJ_t *job, Display *dpy, int scr) {
   job->fit_mode = false;
   job->needs_refresh = true;
 
-  if (argb && (window->visual = find_argb_visual(dpy, scr))) {
-    window->cmap =
-        XCreateColormap(dpy, RootWindow(dpy, scr), window->visual, AllocNone);
-    attributes.override_redirect = False;
-    attributes.background_pixel = 0;
-    attributes.border_pixel = 0;
-    attributes.colormap = window->cmap;
-    attributemask =
-        (CWBackPixel | CWBorderPixel | CWOverrideRedirect | CWColormap);
-    window->depth = 32;
-  } else {
-    window->cmap = DefaultColormap(dpy, scr);
-    window->visual = DefaultVisual(dpy, scr);
-    attributes.background_pixel = WhitePixel(dpy, scr);
-    attributes.border_pixel = BlackPixel(dpy, scr);
-    attributemask = (CWBackPixel | CWBorderPixel);
-    window->depth = DefaultDepth(dpy, scr);
-  }
+  window->cmap = DefaultColormap(dpy, scr);
+  window->visual = DefaultVisual(dpy, scr);
+  attributes.background_pixel = WhitePixel(dpy, scr);
+  attributes.border_pixel = BlackPixel(dpy, scr);
+  attributemask = (CWBackPixel | CWBorderPixel);
+  window->depth = DefaultDepth(dpy, scr);
 
   window->win = XCreateWindow(dpy, RootWindow(dpy, scr), 0, 0, job->width,
                               job->height, 0, window->depth, InputOutput,
@@ -340,10 +298,7 @@ static void init_window(GVJ_t *job, Display *dpy, int scr) {
   assert(window->depth >= 0 && "Xlib returned invalid window depth");
   window->pix = XCreatePixmap(dpy, window->win, job->width, job->height,
                               (unsigned)window->depth);
-  if (argb)
-    gcv.foreground = 0;
-  else
-    gcv.foreground = WhitePixel(dpy, scr);
+  gcv.foreground = WhitePixel(dpy, scr);
   window->gc = XCreateGC(dpy, window->pix, GCForeground, &gcv);
   update_display(job, dpy);
 
