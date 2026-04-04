@@ -1700,7 +1700,7 @@ static tctype typeChk(tctype intype, Exid_t *sym) {
     }
     break;
   case ID:
-    if (sym->index <= MAXNAME) {
+    if (sym->index <= LAST_M) {
       switch (sym->index) {
       case V_travroot:
       case V_this:
