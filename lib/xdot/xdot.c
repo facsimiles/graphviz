@@ -698,7 +698,7 @@ static void jsonXDot_Op(xdot_op *op, pf print, void *info, int more) {
 
 static void _printXDot(xdot *x, pf print, void *info, print_op ofn) {
   xdot_op *op;
-  char *base = (char *)(x->ops);
+  char *base = (char *)x->ops;
   for (size_t i = 0; i < x->cnt; i++) {
     op = (xdot_op *)(base + i * x->sz);
     ofn(op, print, info, i < x->cnt - 1);
@@ -763,7 +763,7 @@ void freeXDot(xdot *x) {
   if (!x)
     return;
   freefunc_t ff = x->freefunc;
-  char *const base = (char *)(x->ops);
+  char *const base = (char *)x->ops;
   for (size_t i = 0; i < x->cnt; i++) {
     void *const op = base + i * x->sz;
     if (ff)
@@ -782,7 +782,7 @@ int statXDot(xdot *x, xdot_stats *sp) {
     return 1;
   memset(sp, 0, sizeof(xdot_stats));
   sp->cnt = x->cnt;
-  base = (char *)(x->ops);
+  base = (char *)x->ops;
   for (size_t i = 0; i < x->cnt; i++) {
     op = (xdot_op *)(base + i * x->sz);
     switch (op->kind) {
