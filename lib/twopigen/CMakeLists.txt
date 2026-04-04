@@ -1,10 +1,6 @@
 add_definitions(-DNEATOGEN_EXPORTS=1)
 
 add_library(twopigen STATIC
-  # Header files
-  circle.h
-
-  # Source files
   circle.c
   twopiinit.c
 )

@@ -1,11 +1,6 @@
 if(CAIRO_FOUND AND PANGOCAIRO_FOUND)
 
   add_library(gvplugin_pango
-    # Header files
-    gvgetfontlist.h
-    gvplugin_pango.h
-
-    # Source files
     gvgetfontlist_pango.c
     gvloadimage_pango.c
     gvplugin_pango.c

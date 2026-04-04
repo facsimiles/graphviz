@@ -1,9 +1,4 @@
 add_library(cdt
-  # Header files
-  cdt.h
-  dthdr.h
-
-  # Source files
   dtclose.c
   dtdisc.c
   dtextract.c

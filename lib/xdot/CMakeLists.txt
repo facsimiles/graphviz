@@ -1,8 +1,4 @@
 add_library(xdot
-  # Header files
-  xdot.h
-
-  # Source files
   xdot.c
 )
 

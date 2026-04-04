@@ -1,17 +1,6 @@
 if(with_ortho)
 
 add_library(ortho_obj OBJECT
-  # Header files
-  fPQ.h
-  maze.h
-  ortho.h
-  partition.h
-  rawgraph.h
-  sgraph.h
-  structures.h
-  trap.h
-
-  # Source files
   fPQ.c
   maze.c
   ortho.c

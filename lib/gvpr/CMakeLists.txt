@@ -1,15 +1,4 @@
 add_library(gvpr
-  # Header files
-  actions.h
-  compile.h
-  gdefs.h
-  gprdata.inc
-  gprstate.h
-  gvpr.h
-  parse.h
-  trieFA.h
-
-  # Source files
   actions.c
   compile.c
   gvpr.c

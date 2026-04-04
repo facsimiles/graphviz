@@ -1,10 +1,4 @@
 add_library(dotgen STATIC
-  # Header files
-  aspect.h
-  dot.h
-  dotprocs.h
-
-  # Source files
   aspect.c
   acyclic.c
   class1.c

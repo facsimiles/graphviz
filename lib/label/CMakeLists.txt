@@ -1,12 +1,4 @@
 add_library(label STATIC
-  # Header files
-  index.h
-  node.h
-  rectangle.h
-  split.q.h
-  xlabels.h
-
-  # Source files
   index.c
   node.c
   rectangle.c

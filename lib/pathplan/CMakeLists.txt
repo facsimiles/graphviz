@@ -1,14 +1,4 @@
 add_library(pathplan
-  # Header files
-  pathgeom.h
-  pathplan.h
-  pathutil.h
-  solvers.h
-  tri.h
-  vis.h
-  vispath.h
-
-  # Source files
   cvt.c
   inpoly.c
   route.c

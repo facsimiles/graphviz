@@ -12,34 +12,6 @@ if(WITH_SMYRNA)
   pkg_check_modules(XRENDER REQUIRED xrender)
 
   add_executable(smyrna
-    arcball.h
-    draw.h
-    glexpose.h
-    glmotion.h
-    gltemplate.h
-    glutrender.h
-    gui/appmouse.h
-    gui/callbacks.h
-    gui/datalistcallbacks.h
-    gui/frmobjectui.h
-    gui/glcompui.h
-    gui/gui.h
-    gui/menucallbacks.h
-    gui/toolboxcallbacks.h
-    gui/topviewsettings.h
-    gvprpipe.h
-    hier.h
-    hotkeymap.h
-    polytess.h
-    selectionfuncs.h
-    smyrna_utils.h
-    smyrnadefs.h
-    topfisheyeview.h
-    topviewfuncs.h
-    tvnodes.h
-    viewport.h
-    viewportcamera.h
-
     arcball.c
     draw.c
     glexpose.c

@@ -3,15 +3,6 @@ if(with_sfdp)
 add_definitions(-DNEATOGEN_EXPORTS=1)
 
 add_library(sfdpgen STATIC
-  # Header files
-  Multilevel.h
-  post_process.h
-  sfdp.h
-  sparse_solve.h
-  spring_electrical.h
-  stress_model.h
-
-  # Source files
   Multilevel.c
   post_process.c
   sfdpinit.c

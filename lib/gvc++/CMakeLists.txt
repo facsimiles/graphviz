@@ -1,9 +1,6 @@
 add_library(gvc++
-  GVContext.h
   GVContext.cpp
-  GVLayout.h
   GVLayout.cpp
-  GVRenderData.h
   GVRenderData.cpp
 )
 

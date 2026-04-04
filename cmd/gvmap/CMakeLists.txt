@@ -64,12 +64,9 @@ if(with_sfdp)
 
   add_executable(gvmap
     country_graph_coloring.c
-    country_graph_coloring.h
     gvmap.c
     make_map.c
-    make_map.h
     power.c
-    power.h
   )
 
   target_include_directories(gvmap PRIVATE

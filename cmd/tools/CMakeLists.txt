@@ -332,10 +332,6 @@ endif()
 
 # ================================== gvcolor ===================================
 add_executable(gvcolor
-  # Header files
-  colortbl.h
-
-  # Source files
   colxlate.c
   gvcolor.c
 )
