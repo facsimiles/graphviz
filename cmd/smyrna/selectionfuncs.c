@@ -250,7 +250,7 @@ static void select_polygon(Agraph_t *g, glCompPoly_t *selPoly) {
 void add_selpoly(Agraph_t *g, glCompPoly_t *selPoly, glCompPoint pt) {
     if(!close_poly(selPoly,pt))
     {
-	LIST_APPEND(selPoly, ((glCompPoint){.x = pt.x, .y = pt.y}));
+	LIST_APPEND(selPoly, (glCompPoint){.x = pt.x, .y = pt.y});
     }
     else
     {

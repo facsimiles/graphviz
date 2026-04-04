@@ -167,14 +167,14 @@ typedef LIST(pointf) bezier_path_t;
  */
 
 static void moveTo(bezier_path_t *polypath, double x, double y) {
-  LIST_APPEND(polypath, ((pointf){.x = x, .y = y}));
+  LIST_APPEND(polypath, (pointf){.x = x, .y = y});
 }
 
 static void curveTo(bezier_path_t *polypath, double x1, double y1, double x2,
                     double y2, double x3, double y3) {
-  LIST_APPEND(polypath, ((pointf){.x = x1, .y = y1}));
-  LIST_APPEND(polypath, ((pointf){.x = x2, .y = y2}));
-  LIST_APPEND(polypath, ((pointf){.x = x3, .y = y3}));
+  LIST_APPEND(polypath, (pointf){.x = x1, .y = y1});
+  LIST_APPEND(polypath, (pointf){.x = x2, .y = y2});
+  LIST_APPEND(polypath, (pointf){.x = x3, .y = y3});
 }
 
 static void lineTo(bezier_path_t *polypath, double x, double y) {

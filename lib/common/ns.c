@@ -336,7 +336,7 @@ static int tight_subtree_search(network_simplex_ctx_t *ctx, Agnode_t *v, subtree
     ND_subtree_set(v,st);
 
     LIST(tst_t) todo = {0};
-    LIST_PUSH_BACK(&todo, ((tst_t){.v = v, .rv = 1}));
+    LIST_PUSH_BACK(&todo, (tst_t){.v = v, .rv = 1});
 
     while (!LIST_IS_EMPTY(&todo)) {
         bool updated = false;
@@ -463,7 +463,7 @@ static Agedge_t *inter_tree_edge_search(Agnode_t *v) {
     } state_t;
 
     LIST(state_t) todo = {0};
-    LIST_PUSH_BACK(&todo, ((state_t){.v = v, .ts = STsetFind(v)}));
+    LIST_PUSH_BACK(&todo, (state_t){.v = v, .ts = STsetFind(v)});
 
     Agedge_t *best = NULL;
 
@@ -480,9 +480,9 @@ static Agedge_t *inter_tree_edge_search(Agnode_t *v) {
           if (TREE_EDGE(e)) {
             if (aghead(e) == s->from) continue; // do not search back in tree
             ++s->out_i;
-            LIST_PUSH_BACK(&todo, ((state_t){.v = aghead(e),
-                                             .ts = STsetFind(aghead(e)),
-                                             .from = s->v}));
+            LIST_PUSH_BACK(&todo, (state_t){.v = aghead(e),
+                                            .ts = STsetFind(aghead(e)),
+                                            .from = s->v});
               // search forward in tree
             updated = true;
             break;
@@ -502,9 +502,9 @@ static Agedge_t *inter_tree_edge_search(Agnode_t *v) {
           if (TREE_EDGE(e)) {
             if (agtail(e) == s->from) continue;
             ++s->in_i;
-            LIST_PUSH_BACK(&todo, ((state_t){.v = agtail(e),
-                                             .ts = STsetFind(agtail(e)),
-                                             .from = s->v}));
+            LIST_PUSH_BACK(&todo, (state_t){.v = agtail(e),
+                                            .ts = STsetFind(agtail(e)),
+                                            .from = s->v});
             updated = true;
             break;
           } else {
@@ -1118,7 +1118,7 @@ static void dfs_cutval(node_t * v, edge_t * par)
     } state_t;
 
     LIST(state_t) todo = {0};
-    LIST_PUSH_BACK(&todo, ((state_t){.v = v, .par = par}));
+    LIST_PUSH_BACK(&todo, (state_t){.v = v, .par = par});
 
     while (!LIST_IS_EMPTY(&todo)) {
 	state_t *const top = LIST_BACK(&todo);
@@ -1128,7 +1128,7 @@ static void dfs_cutval(node_t * v, edge_t * par)
 	for (; (e = ND_tree_out(top->v).list[top->out_i]); ++top->out_i) {
 	    if (e != top->par) {
 	      ++top->out_i;
-	      LIST_PUSH_BACK(&todo, ((state_t){.v = aghead(e), .par = e}));
+	      LIST_PUSH_BACK(&todo, (state_t){.v = aghead(e), .par = e});
 	      updated = true;
 	      break;
 	    }
@@ -1140,7 +1140,7 @@ static void dfs_cutval(node_t * v, edge_t * par)
 	for (; (e = ND_tree_in(top->v).list[top->in_i]); ++top->in_i) {
 	    if (e != top->par) {
 	      ++top->in_i;
-	      LIST_PUSH_BACK(&todo, ((state_t){.v = agtail(e), .par = e}));
+	      LIST_PUSH_BACK(&todo, (state_t){.v = agtail(e), .par = e});
 	      updated = true;
 	      break;
 	    }

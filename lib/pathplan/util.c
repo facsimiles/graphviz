@@ -31,7 +31,7 @@ int Ppolybarriers(Ppoly_t **polys, int npolys, Pedge_t **barriers,
       size_t k = j + 1;
       if (k >= pp.pn)
         k = 0;
-      LIST_APPEND(&bar, ((Pedge_t){.a = pp.ps[j], .b = pp.ps[k]}));
+      LIST_APPEND(&bar, (Pedge_t){.a = pp.ps[j], .b = pp.ps[k]});
     }
   }
   size_t n;
