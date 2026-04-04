@@ -721,13 +721,22 @@ char *sprintXDot(xdot *x) {
   return agxbdisown(&xb);
 }
 
+/// wrapper to translate `pf` calling convention to `fprintf`
+static int pf_fprintf(void *stream, char *format, ...) {
+  va_list ap;
+  va_start(ap, format);
+  const int r = vfprintf(stream, format, ap);
+  va_end(ap);
+  return r;
+}
+
 void fprintXDot(FILE *fp, xdot *x) {
-  _printXDot(x, (pf)fprintf, fp, printXDot_Op);
+  _printXDot(x, pf_fprintf, fp, printXDot_Op);
 }
 
 void jsonXDot(FILE *fp, xdot *x) {
   fputs("[\n", fp);
-  _printXDot(x, (pf)fprintf, fp, jsonXDot_Op);
+  _printXDot(x, pf_fprintf, fp, jsonXDot_Op);
   fputs("]\n", fp);
 }
 
