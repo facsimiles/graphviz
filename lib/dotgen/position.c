@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <util/alloc.h>
 #include <util/gv_math.h>
+#include <util/list.h>
 
 static int nsiter2(graph_t * g);
 static void create_aux_edges(graph_t * g);
@@ -163,21 +164,32 @@ static int nsiter2(graph_t * g)
     return maxiter;
 }
 
-static bool go(node_t *u, node_t *v) {
-    int i;
-    edge_t *e;
-
+static bool canreach(node_t *u, node_t *v) {
     if (u == v)
 	return true;
-    for (i = 0; (e = ND_out(u).list[i]); i++) {
-	if (go(aghead(e), v))
-	    return true;
+    static size_t counter;
+    if (++counter == 0)
+	++counter; /* skip 0 so initial ND_mark of 0 never matches */
+    size_t current_mark = counter;
+    ND_mark(u) = current_mark;
+    LIST(node_t *) todo = {0};
+    LIST_PUSH_BACK(&todo, u);
+    while (!LIST_IS_EMPTY(&todo)) {
+	node_t *n = LIST_POP_FRONT(&todo);
+	for (int i = 0; ND_out(n).list[i]; i++) {
+	    node_t *w = aghead(ND_out(n).list[i]);
+	    if (w == v) {
+		LIST_FREE(&todo);
+		return true;
+	    }
+	    if (ND_mark(w) != current_mark) {
+		ND_mark(w) = current_mark;
+		LIST_PUSH_BACK(&todo, w);
+	    }
+	}
     }
+    LIST_FREE(&todo);
     return false;
-}
-
-static bool canreach(node_t *u, node_t *v) {
-    return go(u, v);
 }
 
 edge_t *make_aux_edge(node_t * u, node_t * v, double len, int wt)
@@ -405,7 +417,9 @@ static void keepout_othernodes(graph_t * g)
 	    u = GD_rank(dot_root(g))[r].v[i];
 	    /* can't use "is_a_vnode_of" because elists are swapped */
 	    if (ND_node_type(u) == NORMAL || vnode_not_related_to(g, u)) {
-		make_aux_edge(u, GD_ln(g), margin + ND_rw(u), 0);
+		if (!canreach(GD_ln(g), u)) {
+		    make_aux_edge(u, GD_ln(g), margin + ND_rw(u), 0);
+                }
 		break;
 	    }
 	}
@@ -413,7 +427,9 @@ static void keepout_othernodes(graph_t * g)
 	     i++) {
 	    u = GD_rank(dot_root(g))[r].v[i];
 	    if (ND_node_type(u) == NORMAL || vnode_not_related_to(g, u)) {
-		make_aux_edge(GD_rn(g), u, margin + ND_lw(u), 0);
+		if (!canreach(u, GD_rn(g))) {
+		    make_aux_edge(GD_rn(g), u, margin + ND_lw(u), 0);
+                }
 		break;
 	    }
 	}
@@ -477,7 +493,11 @@ static void separate_subclust(graph_t * g)
 		left = high;
 		right = low;
 	    }
-	    make_aux_edge(GD_rn(left), GD_ln(right), margin, 0);
+	    if (!canreach(GD_ln(right), GD_rn(left))) {
+		make_aux_edge(GD_rn(left), GD_ln(right), margin, 0);
+	    } else {
+	        make_aux_edge(GD_ln(right), GD_rn(left), margin, 0);
+            }
 	}
 	separate_subclust(GD_clust(g)[i]);
     }
