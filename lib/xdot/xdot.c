@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <util/agxbuf.h>
@@ -29,7 +30,7 @@ static char *parseReal(char *s, double *fp) {
     return 0;
 
   *fp = d;
-  return (p);
+  return p;
 }
 
 static char *parseInt(char *s, int *ip) {
@@ -462,33 +463,42 @@ static void printAlign(xdot_align a, pf print, void *info) {
   }
 }
 
+/// wrapper to translate `pf` calling convention to `agxbprint`
+static int pf_agxbprint(void *xb, char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  const int result = vagxbprint(xb, fmt, ap);
+  va_end(ap);
+  return result;
+}
+
 static void toGradString(agxbuf *xb, xdot_color *cp) {
   int i, n_stops;
   xdot_color_stop *stops;
 
   if (cp->type == xd_linear) {
     agxbputc(xb, '[');
-    printFloat(cp->u.ling.x0, (pf)agxbprint, xb, 0);
-    printFloat(cp->u.ling.y0, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ling.x1, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ling.y1, (pf)agxbprint, xb, 1);
+    printFloat(cp->u.ling.x0, pf_agxbprint, xb, 0);
+    printFloat(cp->u.ling.y0, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ling.x1, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ling.y1, pf_agxbprint, xb, 1);
     n_stops = cp->u.ling.n_stops;
     stops = cp->u.ling.stops;
   } else {
     agxbputc(xb, '(');
-    printFloat(cp->u.ring.x0, (pf)agxbprint, xb, 0);
-    printFloat(cp->u.ring.y0, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ring.r0, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ring.x1, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ring.y1, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ring.r1, (pf)agxbprint, xb, 1);
+    printFloat(cp->u.ring.x0, pf_agxbprint, xb, 0);
+    printFloat(cp->u.ring.y0, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ring.r0, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ring.x1, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ring.y1, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ring.r1, pf_agxbprint, xb, 1);
     n_stops = cp->u.ring.n_stops;
     stops = cp->u.ring.stops;
   }
   agxbprint(xb, " %d", n_stops);
   for (i = 0; i < n_stops; i++) {
-    printFloat(stops[i].frac, (pf)agxbprint, xb, 1);
-    printString(stops[i].color, (pf)agxbprint, xb);
+    printFloat(stops[i].frac, pf_agxbprint, xb, 1);
+    printString(stops[i].color, pf_agxbprint, xb);
   }
 
   if (cp->type == xd_linear)
@@ -698,7 +708,7 @@ static void jsonXDot_Op(xdot_op *op, pf print, void *info, int more) {
 
 static void _printXDot(xdot *x, pf print, void *info, print_op ofn) {
   xdot_op *op;
-  char *base = (char *)(x->ops);
+  char *base = (char *)x->ops;
   for (size_t i = 0; i < x->cnt; i++) {
     op = (xdot_op *)(base + i * x->sz);
     ofn(op, print, info, i < x->cnt - 1);
@@ -707,17 +717,26 @@ static void _printXDot(xdot *x, pf print, void *info, print_op ofn) {
 
 char *sprintXDot(xdot *x) {
   agxbuf xb = {0};
-  _printXDot(x, (pf)agxbprint, &xb, printXDot_Op);
+  _printXDot(x, pf_agxbprint, &xb, printXDot_Op);
   return agxbdisown(&xb);
 }
 
+/// wrapper to translate `pf` calling convention to `fprintf`
+static int pf_fprintf(void *stream, char *format, ...) {
+  va_list ap;
+  va_start(ap, format);
+  const int r = vfprintf(stream, format, ap);
+  va_end(ap);
+  return r;
+}
+
 void fprintXDot(FILE *fp, xdot *x) {
-  _printXDot(x, (pf)fprintf, fp, printXDot_Op);
+  _printXDot(x, pf_fprintf, fp, printXDot_Op);
 }
 
 void jsonXDot(FILE *fp, xdot *x) {
   fputs("[\n", fp);
-  _printXDot(x, (pf)fprintf, fp, jsonXDot_Op);
+  _printXDot(x, pf_fprintf, fp, jsonXDot_Op);
   fputs("]\n", fp);
 }
 
@@ -760,15 +779,12 @@ static void freeXOpData(xdot_op *x) {
 }
 
 void freeXDot(xdot *x) {
-  xdot_op *op;
-  char *base;
-  freefunc_t ff = x->freefunc;
-
   if (!x)
     return;
-  base = (char *)(x->ops);
+  freefunc_t ff = x->freefunc;
+  char *const base = (char *)x->ops;
   for (size_t i = 0; i < x->cnt; i++) {
-    op = (xdot_op *)(base + i * x->sz);
+    void *const op = base + i * x->sz;
     if (ff)
       ff(op);
     freeXOpData(op);
@@ -783,9 +799,9 @@ int statXDot(xdot *x, xdot_stats *sp) {
 
   if (!x || !sp)
     return 1;
-  memset(sp, 0, sizeof(xdot_stats));
+  *sp = (xdot_stats){0};
   sp->cnt = x->cnt;
-  base = (char *)(x->ops);
+  base = (char *)x->ops;
   for (size_t i = 0; i < x->cnt; i++) {
     op = (xdot_op *)(base + i * x->sz);
     switch (op->kind) {
