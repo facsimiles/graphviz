@@ -17,6 +17,7 @@
 
 #include <assert.h>
 #include <neatogen/neato.h>
+#include <cgraph/cghdr.h>
 #include <common/utils.h>
 #include <float.h>
 #include <math.h>
@@ -122,8 +123,7 @@ static int makeInfo(Agraph_t * graph)
 {
     int (*polyf)(Poly *, Agnode_t *, double, double);
 
-    assert(agnnodes(graph) >= 0);
-    nsites = (size_t)agnnodes(graph);
+    nsites = agnnodes_z(graph);
     geominit();
 
     nodeInfo = gv_calloc(nsites, sizeof(Info_t));
@@ -511,7 +511,7 @@ static void updateGraph(void)
 /// Set up array of half sizes in inches.
 double *getSizes(Agraph_t * g, pointf pad, int* n_elabels, int** elabels)
 {
-    double *sizes = gv_calloc(Ndim * agnnodes(g), sizeof(double));
+    double *sizes = gv_calloc(Ndim * agnnodes_z(g), sizeof(double));
     int nedge_nodes = 0;
 
     for (Agnode_t *n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -587,7 +587,7 @@ SparseMatrix makeMatrix(Agraph_t *g) {
 static void fdpAdjust(graph_t *g, adjust_data *am) {
     SparseMatrix A0 = makeMatrix(g);
     SparseMatrix A = A0;
-    double *pos = gv_calloc(Ndim * agnnodes(g), sizeof(double));
+    double *pos = gv_calloc(Ndim * agnnodes_z(g), sizeof(double));
     expand_t sep = sepFactor(g);
     pointf pad;
 

@@ -154,10 +154,12 @@ uint64_t agnextseq(Agraph_t * g, int objtype)
     return ++(g->clos->seq[objtype]);
 }
 
+size_t agnnodes_z(const Agraph_t *g) { return node_set_size(g->n_id); }
+
 int agnnodes(Agraph_t * g)
 {
-  assert(node_set_size(g->n_id) <= INT_MAX);
-  return (int)node_set_size(g->n_id);
+  assert(agnnodes_z(g) <= INT_MAX);
+  return (int)agnnodes_z(g);
 }
 
 int agnedges(Agraph_t * g)

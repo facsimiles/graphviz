@@ -155,3 +155,13 @@ void agdelcb(Agraph_t * g, void *obj, Agcbstack_t * disc);
 /// @{
 void aginternalmapclearlocalnames(Agraph_t *g);
 /// @}
+
+/// get the number of nodes in a graph
+///
+/// Where possible, this should be used in internal code in preference to
+/// `agnnodes`. In future, this should be migrated to the public API and replace
+/// `agnnodes`.
+///
+/// @param g Graph to inspect
+/// @return Number of nodes in this graph
+CGHDR_API size_t agnnodes_z(const Agraph_t *g);
