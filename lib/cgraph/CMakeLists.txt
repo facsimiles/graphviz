@@ -12,14 +12,6 @@ if(WIN32 AND NOT MINGW)
 endif()
 
 add_library(cgraph
-  # Header files
-  cghdr.h
-  cgraph.h
-  ingraphs.h
-  node_set.h
-  rdr.h
-
-  # Source files
   acyclic.c
   agerror.c
   apply.c

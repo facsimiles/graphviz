@@ -1,41 +1,6 @@
 add_definitions(-DNEATOGEN_EXPORTS=1)
 
 add_library(neatogen STATIC
-  # Header files
-  adjust.h
-  bfs.h
-  call_tri.h
-  closest.h
-  conjgrad.h
-  defs.h
-  delaunay.h
-  digcola.h
-  dijkstra.h
-  edges.h
-  embed_graph.h
-  fPQ.h
-  geometry.h
-  heap.h
-  hedges.h
-  info.h
-  kkutils.h
-  matrix_ops.h
-  multispline.h
-  neato.h
-  neatoprocs.h
-  overlap.h
-  pca.h
-  poly.h
-  quad_prog_solver.h
-  quad_prog_vpsc.h
-  site.h
-  sparsegraph.h
-  stress.h
-  voronoi.h
-  sgd.h
-  randomkit.h
-
-  # Source files
   adjust.c
   bfs.c
   call_tri.c

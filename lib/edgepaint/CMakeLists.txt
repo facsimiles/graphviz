@@ -1,11 +1,4 @@
 add_library(edgepaintlib STATIC
-  edge_distinct_coloring.h
-  furtherest_point.h
-  intersection.h
-  lab.h
-  lab_gamut.h
-  node_distinct_coloring.h
-
   edge_distinct_coloring.c
   furtherest_point.c
   intersection.c

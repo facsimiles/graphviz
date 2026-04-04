@@ -1,17 +1,6 @@
 add_definitions(-DNEATOGEN_EXPORTS=1)
 
 add_library(circogen STATIC
-  # Header files
-  block.h
-  blockpath.h
-  blocktree.h
-  circo.h
-  circpos.h
-  circular.h
-  edgelist.h
-  nodelist.h
-
-  # Source files
   block.c
   blockpath.c
   blocktree.c

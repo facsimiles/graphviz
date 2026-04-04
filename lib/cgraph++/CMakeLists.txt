@@ -1,5 +1,4 @@
 add_library(cgraph++
-  AGraph.h
   AGraph.cpp
 )
 set_property(TARGET cgraph++ PROPERTY CXX_STANDARD 20)

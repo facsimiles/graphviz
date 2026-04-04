@@ -1,10 +1,4 @@
 add_library(gvplugin_core
-  # Header files
-  core_loadimage_xdot.h
-  ps.h
-  tcl_context.h
-
-  # Source files
   gvloadimage_core.c
   gvplugin_core.c
   gvrender_core_dot.c

@@ -1,16 +1,6 @@
 add_definitions(-DNEATOGEN_EXPORTS=1)
 
 add_library(fdpgen STATIC
-  # Header files
-  clusteredges.h
-  comp.h
-  dbg.h
-  fdp.h
-  grid.h
-  tlayout.h
-  xlayout.h
-
-  # Source files
   clusteredges.c
   comp.c
   dbg.c

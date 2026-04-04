@@ -1,9 +1,4 @@
 add_library(ast STATIC
-  # Header files
-  ast.h
-  error.h
-
-  # Source files
   chresc.c
   chrtoi.c
   error.c

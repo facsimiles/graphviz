@@ -1,14 +1,6 @@
 if(ANN_FOUND)
 
   add_library(libmingle STATIC
-    # Header files
-    agglomerative_bundling.h
-    edge_bundling.h
-    ink.h
-    nearest_neighbor_graph.h
-    nearest_neighbor_graph_ann.h
-
-    # Source files
     agglomerative_bundling.cpp
     edge_bundling.cpp
     ink.cpp

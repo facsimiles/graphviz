@@ -1,9 +1,4 @@
 add_library(patchwork STATIC
-  # Header files
-  patchwork.h
-  tree_map.h
-
-  # Source files
   patchwork.c
   patchworkinit.c
   tree_map.c

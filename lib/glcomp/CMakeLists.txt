@@ -8,20 +8,6 @@ if(WITH_SMYRNA)
   pkg_check_modules(XRENDER REQUIRED xrender)
 
   add_library(glcomp OBJECT
-    glcompbutton.h
-    glcompdefs.h
-    glcompfont.h
-    glcompimage.h
-    glcomplabel.h
-    glcompmouse.h
-    glcomppanel.h
-    glcompset.h
-    glcomptextpng.h
-    glcomptexture.h
-    glpangofont.h
-    glutils.h
-    opengl.h
-
     glcompbutton.c
     glcompfont.c
     glcompimage.c

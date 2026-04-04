@@ -32,27 +32,8 @@ add_custom_command(
 
 add_library(common_obj OBJECT
   # Header files
-  arith.h
-  boxes.h
-  color.h
-  colorprocs.h
   ${CMAKE_CURRENT_BINARY_DIR}/common/colortbl.h
-  const.h
   ${CMAKE_CURRENT_BINARY_DIR}/common/entities.h
-  geom.h
-  geomprocs.h
-  globals.h
-  htmllex.h
-  htmltable.h
-  macros.h
-  pointset.h
-  ps_font_equiv.h
-  render.h
-  textspan.h
-  textspan_lut.h
-  types.h
-  usershape.h
-  utils.h
 
   # Source files
   args.c

@@ -1,21 +1,4 @@
 add_library(gvc
-  # Header files
-  gvc.h
-  gvcext.h
-  gvcint.h
-  gvcjob.h
-  gvconfig.h
-  gvcommon.h
-  gvcproc.h
-  gvio.h
-  gvplugin.h
-  gvplugin_device.h
-  gvplugin_layout.h
-  gvplugin_loadimage.h
-  gvplugin_render.h
-  gvplugin_textlayout.h
-
-  # Source files
   gvc.c
   gvconfig.c
   gvcontext.c

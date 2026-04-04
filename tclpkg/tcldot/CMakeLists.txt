@@ -1,6 +1,5 @@
 set(SOURCES
   tcldot.c
-  tcldot.h
   tcldot-graphcmd.c
   tcldot-nodecmd.c
   tcldot-edgecmd.c

@@ -1,8 +1,4 @@
 add_library(pack_obj OBJECT
-  # Header files
-  pack.h
-
-  # Source files
   ccomps.c
   pack.c
 )

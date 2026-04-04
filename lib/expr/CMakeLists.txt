@@ -6,12 +6,6 @@ BISON_TARGET(
 )
 
 add_library(expr STATIC
-  # Header files
-  exgram.h
-  exlib.h
-  exop.h
-  expr.h
-
   # Source files
   excc.c
   excontext.c

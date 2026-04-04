@@ -1,10 +1,6 @@
 if(WITH_SMYRNA)
 
   add_library(topfish STATIC
-    # Header files
-    hierarchy.h
-
-    # Source files
     hierarchy.c
     rescale_layout.c
   )

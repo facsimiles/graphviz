@@ -1,10 +1,6 @@
 add_definitions(-DNEATOGEN_EXPORTS=1)
 
 add_library(osage STATIC
-  # Header files
-  osage.h
-
-  # Source files
   osageinit.c
 )
 

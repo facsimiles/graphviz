@@ -1,10 +1,6 @@
 if(WIN32)
 
   add_library(gvplugin_gdiplus
-    # Header files
-    gvplugin_gdiplus.h
-
-    # Source files
     gvdevice_gdiplus.cpp
     gvloadimage_gdiplus.cpp
     gvplugin_gdiplus.cpp

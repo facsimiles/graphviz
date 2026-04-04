@@ -1,8 +1,6 @@
 if(HAVE_QUARTZ)
 
   add_library(gvplugin_quartz
-    gvplugin_quartz.h
-    GVTextLayout.h
     gvdevice_quartz.c
     gvloadimage_quartz.c
     gvplugin_quartz.c
