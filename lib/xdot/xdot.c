@@ -780,7 +780,7 @@ int statXDot(xdot *x, xdot_stats *sp) {
 
   if (!x || !sp)
     return 1;
-  memset(sp, 0, sizeof(xdot_stats));
+  *sp = (xdot_stats){0};
   sp->cnt = x->cnt;
   base = (char *)x->ops;
   for (size_t i = 0; i < x->cnt; i++) {
