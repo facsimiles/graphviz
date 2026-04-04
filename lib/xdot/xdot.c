@@ -765,7 +765,7 @@ void freeXDot(xdot *x) {
   freefunc_t ff = x->freefunc;
   char *const base = (char *)(x->ops);
   for (size_t i = 0; i < x->cnt; i++) {
-    xdot_op *const op = (xdot_op *)(base + i * x->sz);
+    void *const op = base + i * x->sz;
     if (ff)
       ff(op);
     freeXOpData(op);
