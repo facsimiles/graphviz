@@ -201,6 +201,14 @@ popFont (htmlparserstate_t *html_state);
 
 %start html
 
+/* The grammar for `string` (a run of adjacent T_string tokens) and `text`
+ * (a sequence of textitems) share a left-recursive structure that bison
+ * cannot resolve without a shift/reduce conflict: after reducing a `string`,
+ * a following T_string can either extend the current string (shift) or begin
+ * a new textitem (reduce).  Both parse trees are semantically equivalent;
+ * bison's default shift gives the intended greedy concatenation. */
+%expect 2
+
 %%
 
 html  : T_html fonttext T_end_html { scanner->parser.lbl = mkLabel($2,HTML_TEXT); }

@@ -36,6 +36,7 @@ static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
     int num_pages;
 
     assert(job);
+    (void)job;
     assert(us);
     assert(us->name);
 
