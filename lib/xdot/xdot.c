@@ -29,7 +29,7 @@ static char *parseReal(char *s, double *fp) {
     return 0;
 
   *fp = d;
-  return (p);
+  return p;
 }
 
 static char *parseInt(char *s, int *ip) {
