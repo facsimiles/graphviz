@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <util/agxbuf.h>
@@ -462,33 +463,42 @@ static void printAlign(xdot_align a, pf print, void *info) {
   }
 }
 
+/// wrapper to translate `pf` calling convention to `agxbprint`
+static int pf_agxbprint(void *xb, char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  const int result = vagxbprint(xb, fmt, ap);
+  va_end(ap);
+  return result;
+}
+
 static void toGradString(agxbuf *xb, xdot_color *cp) {
   int i, n_stops;
   xdot_color_stop *stops;
 
   if (cp->type == xd_linear) {
     agxbputc(xb, '[');
-    printFloat(cp->u.ling.x0, (pf)agxbprint, xb, 0);
-    printFloat(cp->u.ling.y0, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ling.x1, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ling.y1, (pf)agxbprint, xb, 1);
+    printFloat(cp->u.ling.x0, pf_agxbprint, xb, 0);
+    printFloat(cp->u.ling.y0, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ling.x1, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ling.y1, pf_agxbprint, xb, 1);
     n_stops = cp->u.ling.n_stops;
     stops = cp->u.ling.stops;
   } else {
     agxbputc(xb, '(');
-    printFloat(cp->u.ring.x0, (pf)agxbprint, xb, 0);
-    printFloat(cp->u.ring.y0, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ring.r0, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ring.x1, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ring.y1, (pf)agxbprint, xb, 1);
-    printFloat(cp->u.ring.r1, (pf)agxbprint, xb, 1);
+    printFloat(cp->u.ring.x0, pf_agxbprint, xb, 0);
+    printFloat(cp->u.ring.y0, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ring.r0, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ring.x1, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ring.y1, pf_agxbprint, xb, 1);
+    printFloat(cp->u.ring.r1, pf_agxbprint, xb, 1);
     n_stops = cp->u.ring.n_stops;
     stops = cp->u.ring.stops;
   }
   agxbprint(xb, " %d", n_stops);
   for (i = 0; i < n_stops; i++) {
-    printFloat(stops[i].frac, (pf)agxbprint, xb, 1);
-    printString(stops[i].color, (pf)agxbprint, xb);
+    printFloat(stops[i].frac, pf_agxbprint, xb, 1);
+    printString(stops[i].color, pf_agxbprint, xb);
   }
 
   if (cp->type == xd_linear)
@@ -707,7 +717,7 @@ static void _printXDot(xdot *x, pf print, void *info, print_op ofn) {
 
 char *sprintXDot(xdot *x) {
   agxbuf xb = {0};
-  _printXDot(x, (pf)agxbprint, &xb, printXDot_Op);
+  _printXDot(x, pf_agxbprint, &xb, printXDot_Op);
   return agxbdisown(&xb);
 }
 
