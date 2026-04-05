@@ -283,17 +283,16 @@ static_assert(
 ///
 /// You can think of this macro as having the C type:
 ///
-///   void LIST_COPY(LIST(<type>) *dst, const LIST(<type>) *src);
+///   LIST(<type>) LIST_COPY(TYPE list_type, const LIST(<type>) *src);
 ///
-/// @param [out] dst Copy of the source list on completion
+/// The `list_type` argument is used because we do not have portable `typeof`.
+/// This could be simplified in C23.
+///
+/// @param list_type `typeof(*src)`
 /// @param src List to copy
-#define LIST_COPY(dst, src)                                                    \
-  do {                                                                         \
-    memset((dst), 0, sizeof(*(dst)));                                          \
-    (void)((dst)->base == (src)->base);                                        \
-    (dst)->impl = gv_list_copy_((src)->impl, sizeof((src)->base[0]));          \
-    (dst)->dtor = (src)->dtor;                                                 \
-  } while (0)
+#define LIST_COPY(list_type, src)                                              \
+  ((list_type){.impl = gv_list_copy_((src)->impl, sizeof((src)->base[0])),     \
+               .dtor = (src)->dtor})
 
 /// does the list not wrap past its end?
 ///

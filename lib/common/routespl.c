@@ -845,7 +845,7 @@ static void dfs(graph_t *g, node_t *search, nodes_t *visited, node_t *end,
 		if (search == end) {
 			if (is_cycle_unique(cycles, visited)) {
 				nodes_t *cycle = gv_alloc(sizeof(nodes_t));
-				LIST_COPY(cycle, visited);
+				*cycle = LIST_COPY(nodes_t, visited);
 				LIST_APPEND(cycles, cycle);
 			}
 		}
